@@ -5,6 +5,7 @@ from .project import load_project
 from .tts import edge_tts_with_boundaries
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
+from .visual_qa import asset_visual_gate
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -62,7 +63,11 @@ def render(manifest:str,dry_run:bool=False)->dict:
     final=dist/"final.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True)
     probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True).stdout)
-    visual_status="NOT_EVALUATED"
-    report={"status":"PASS","subtitle_reports":reports,"semantic_visual_qa":visual_status,"sources":sources,"probe":probe,"output":str(final)}
+    visual=asset_visual_gate(p,sources)
+    overall="PASS" if visual["structural_status"]=="PASS" and all(x["status"]=="PASS" for x in reports) else "FAIL"
+    report={"status":overall,"subtitle_reports":reports,"visual_qa":visual,"sources":sources,"probe":probe,"output":str(final)}
+    if overall!="PASS":
+        write_report(dist/"qa_report.json",report)
+        raise RuntimeError(f"QA failed: {report}")
     write_report(dist/"qa_report.json",report)
     return report
