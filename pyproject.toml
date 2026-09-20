@@ -16,3 +16,7 @@ testpaths=["tests"]
 
 [tool.ruff]
 line-length=100
+
+[tool.setuptools.packages.find]
+include=["shorts_studio*"]
+exclude=["assets*","examples*","tests*"]
