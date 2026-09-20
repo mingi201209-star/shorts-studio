@@ -26,7 +26,10 @@ jobs:
       - name: "Render full Comet short (production-required semantic QA: NOT_EVALUATED = FAIL)"
         env:
           SHORTS_REQUIRE_SEMANTIC_QA: "1"
-        run: python -m shorts_studio render examples/comet.json | tee render-result.json
+        # A redirect (not a pipe to tee) so this step's exit code is python's own --
+        # a pipeline's exit code is its last command's, which would let a real
+        # render FAILURE hide behind tee's exit 0 and be reported as CI success.
+        run: python -m shorts_studio render examples/comet.json > render-result.json
       - name: Verify final MP4 (resolution, fps, codecs, audio, duration)
         run: |
           python - <<'PY'

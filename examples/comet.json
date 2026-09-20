@@ -22,7 +22,7 @@
      "visual_qa_negative_labels":["an intact airplane flying in the sky","a pristine airplane parked at an airport gate"]},
     {"id":"scene_07","narration":"그래서 오늘날 비행기 창문은 모서리를 둥글게 만듭니다. 이 모양은 사고와 조사 끝에 남은 답입니다.","visual_description":"현대 여객기 둥근 창","asset_url":"https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg","attribution":"Wikimedia Commons, CC BY 2.0","motion":{"type":"pull_out"},
      "visual_qa_requirements":["현대식 둥근 모서리가 명확히 보여야 함"],
-     "visual_qa_labels":["a modern passenger airplane window with large rounded corners","an airplane cabin interior with an oval window"],
-     "visual_qa_negative_labels":["a sharp square-cornered vintage airplane window","an unrelated indoor room with no airplane window"]}
+     "visual_qa_labels":["a modern passenger airplane window with large smoothly rounded corners"],
+     "visual_qa_negative_labels":["a sharp square-cornered vintage 1950s airplane window"]}
   ]
 }
