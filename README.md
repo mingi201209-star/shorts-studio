@@ -16,7 +16,11 @@ A full render requires FFmpeg and TTS/network access. CI smoke mode uses determi
 ### Full production render (with real semantic visual QA)
 
 ```bash
-pip install torch --index-url https://download.pytorch.org/whl/cpu   # CPU wheel, avoids CUDA downloads
+# torch and torchvision must come from the SAME index so their compiled ABIs match --
+# installing them separately (e.g. torch from the CPU index, torchvision from plain
+# PyPI via open-clip-torch) can otherwise fail with "operator torchvision::nms does
+# not exist".
+pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
 pip install -e '.[dev,vision]'
 SHORTS_REQUIRE_SEMANTIC_QA=1 python -m shorts_studio render examples/comet.json
 ```
