@@ -9,23 +9,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk
       - run: pip install -e '.[dev]'
       - run: python -m shorts_studio validate examples/comet.json
-      - name: Create deterministic smoke MP4
-        run: |
-          mkdir -p dist
-          ffmpeg -y -f lavfi -i color=c=black:s=1080x1920:r=30:d=2 -f lavfi -i sine=frequency=440:sample_rate=48000:duration=2 -c:v libx264 -pix_fmt yuv420p -c:a aac -shortest dist/final.mp4
-      - name: Verify MP4 streams and dimensions
+      - name: Render full Comet short
+        run: python -m shorts_studio render examples/comet.json | tee render-result.json
+      - name: Verify final MP4
         run: |
           ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate -of default=nw=1 dist/final.mp4 | tee dist/video_probe.txt
           grep -q 'width=1080' dist/video_probe.txt
           grep -q 'height=1920' dist/video_probe.txt
           ffprobe -v error -select_streams a:0 -show_entries stream=codec_type -of default=nw=1 dist/final.mp4 | grep -q 'codec_type=audio'
-      - run: python -m shorts_studio render examples/comet.json --dry-run
+          test -s dist/qa_report.json
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
-          name: shorts-studio-smoke
+          name: shorts-studio-comet
           path: |
-            dist/final.mp4
-            dist/video_probe.txt
+            dist/
+            build/*.srt
+            build/*.timing.json
+            render-result.json
