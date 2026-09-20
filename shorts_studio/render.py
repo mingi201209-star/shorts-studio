@@ -34,14 +34,26 @@ def _visual_filter(scene, srt:Path, fps:int)->str:
     style="Alignment=2,MarginV=260,FontSize=18,Outline=2,Shadow=0,Bold=1"
     return f"scale=1400:2489:force_original_aspect_ratio=increase,crop=1400:2489,{move}:s=1080x1920:fps={fps},subtitles={srt.as_posix()}:force_style='{style}'"
 
+def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
+    # ffmpeg has no built-in SVG decoder (it only demuxes "svg_pipe", it cannot
+    # decode the vector content), so SVG assets must be rasterized before
+    # ffmpeg ever sees them.
+    if not shutil.which("rsvg-convert"):
+        raise RuntimeError("rsvg-convert (apt package librsvg2-bin) is required to rasterize SVG assets")
+    subprocess.run(["rsvg-convert","-w",str(width),"-h",str(height),str(svg),"-o",str(output)],check=True,capture_output=True)
+    return output
+
 def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|None:
     asset=candidate.get("asset"); asset_url=candidate.get("asset_url")
+    path=None
     if asset and Path(asset).exists():
-        return Path(asset)
-    if asset_url:
+        path=Path(asset)
+    elif asset_url:
         suffix=Path(asset_url.split('?')[0]).suffix or '.jpg'
-        return _download(asset_url, build/f"{scene_id}_asset_{index}{suffix}")
-    return None
+        path=_download(asset_url, build/f"{scene_id}_asset_{index}{suffix}")
+    if path and path.suffix.lower()==".svg":
+        path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
+    return path
 
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")

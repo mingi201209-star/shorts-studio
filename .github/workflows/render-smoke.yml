@@ -10,11 +10,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk
+      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk librsvg2-bin
       # CPU-only torch: keeps the runner from pulling multi-GB CUDA packages.
       - name: Install real local semantic vision QA dependencies (no API key, no payment)
         run: |
-          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          # torch and torchvision must come from the SAME index/build so their
+          # compiled ABIs match; open-clip-torch's own torchvision pin from
+          # plain PyPI can otherwise resolve to an incompatible pair
+          # ("operator torchvision::nms does not exist").
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
           pip install -e '.[dev,vision]'
       - name: Full pytest suite
         run: pytest -q
