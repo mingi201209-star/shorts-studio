@@ -20,7 +20,7 @@ def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordT
         out.append(WordTiming(t,cursor,nxt)); cursor=nxt
     return out
 
-async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str="ko-KR-HyunsuMultilingualNeural", rate: str="+20%") -> list[WordTiming]:
+async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str="ko-KR-HyunsuMultilingualNeural", rate: str="+35%") -> list[WordTiming]:
     import edge_tts
     audio_path.parent.mkdir(parents=True,exist_ok=True)
     communicate=edge_tts.Communicate(text,voice,rate=rate,boundary="SentenceBoundary")
