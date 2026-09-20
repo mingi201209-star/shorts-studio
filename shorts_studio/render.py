@@ -5,7 +5,7 @@ from .project import load_project
 from .tts import edge_tts_with_boundaries
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
-from .visual_qa import asset_visual_gate
+from .visual_qa import asset_visual_gate, semantic_visual_gate
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -64,8 +64,11 @@ def render(manifest:str,dry_run:bool=False)->dict:
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True)
     probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True).stdout)
     visual=asset_visual_gate(p,sources)
-    overall="PASS" if visual["structural_status"]=="PASS" and all(x["status"]=="PASS" for x in reports) else "FAIL"
-    report={"status":overall,"subtitle_reports":reports,"visual_qa":visual,"sources":sources,"probe":probe,"output":str(final)}
+    semantic=semantic_visual_gate(p,concat)
+    require_semantic=bool(__import__("os").environ.get("SHORTS_REQUIRE_SEMANTIC_QA"))
+    semantic_ok=(semantic["status"]=="PASS") if require_semantic else semantic["status"]!="FAIL"
+    overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in reports) else "FAIL"
+    report={"status":overall,"subtitle_reports":reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"sources":sources,"probe":probe,"output":str(final)}
     if overall!="PASS":
         write_report(dist/"qa_report.json",report)
         raise RuntimeError(f"QA failed: {report}")
