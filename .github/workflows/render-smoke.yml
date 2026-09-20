@@ -19,7 +19,7 @@ jobs:
       - name: Full pytest suite
         run: pytest -q
       - run: python -m shorts_studio validate examples/comet.json
-      - name: Render full Comet short (production-required semantic QA: NOT_EVALUATED = FAIL)
+      - name: "Render full Comet short (production-required semantic QA: NOT_EVALUATED = FAIL)"
         env:
           SHORTS_REQUIRE_SEMANTIC_QA: "1"
         run: python -m shorts_studio render examples/comet.json | tee render-result.json
