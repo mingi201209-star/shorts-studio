@@ -1,4 +1,3 @@
-from __future__ import annotations
 from pydantic import BaseModel, Field, model_validator
 
 class Motion(BaseModel):
@@ -9,6 +8,7 @@ class Scene(BaseModel):
     narration: str = Field(min_length=1)
     visual_description: str = Field(min_length=1)
     asset: str | None = None
+    asset_url: str | None = None
     attribution: str | None = None
     expected_duration: float | None = Field(default=None, gt=0)
     motion: Motion = Motion()
@@ -25,6 +25,8 @@ class Project(BaseModel):
 
     @model_validator(mode="after")
     def vertical(self):
-        if (self.width,self.height)!=(1080,1920): raise ValueError("V1 output must be 1080x1920")
-        if self.fps < 30: raise ValueError("fps must be >=30")
+        if (self.width,self.height)!=(1080,1920):
+            raise ValueError("V1 output must be 1080x1920")
+        if self.fps < 30:
+            raise ValueError("fps must be >=30")
         return self
