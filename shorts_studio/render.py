@@ -50,7 +50,10 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     else:
         vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=260,FontSize=18,Outline=2,Bold=1'"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
-    subprocess.run(cmd,check=True,capture_output=True)
+    try:
+        subprocess.run(cmd,check=True,capture_output=True,text=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"ffmpeg failed compositing {scene.id}: {e.stderr[-2000:] if e.stderr else e}") from e
     return clip
 
 def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict]:
@@ -77,11 +80,11 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             asset=_resolve_asset(candidates[index],build,scene.id,index)
+            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index)
         except Exception as e:
-            last_error=f"candidate {index} failed to resolve: {e}"
+            last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
             continue
-        clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index)
         used={"index":index,"asset":str(asset) if asset else None,"attribution":candidates[index].get("attribution")}
         if not scene.visual_qa_requirements:
             result={"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
@@ -113,7 +116,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
         concat.append(outcome["clip"])
-        sources.append({"scene":scene.id,"asset":outcome["source"]["asset"] if outcome["source"] else None,"attribution":outcome["source"]["attribution"] if outcome["source"] else None,"candidate_index":outcome["source"]["index"] if outcome["source"] else None})
+        sources.append({"scene":scene.id,"asset":outcome["source"]["asset"] if outcome["source"] else None,"attribution":outcome["source"]["attribution"] if outcome["source"] else None,"candidate_index":outcome["source"]["index"] if outcome["source"] else None,"recovery_attempts":outcome["semantic"].get("recovery_attempts",0)})
         if scene.visual_qa_requirements:
             semantic_results.append(outcome["semantic"])
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
