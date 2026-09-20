@@ -62,6 +62,17 @@ def test_recovery_never_touches_other_scenes(tmp_path,monkeypatch):
     render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=3,provider=None)
     assert all(scene_id=="s1" for scene_id,_ in render_calls)
 
+def test_zero_max_attempts_disables_recovery_entirely(tmp_path,monkeypatch):
+    scene=make_scene("s1",["bad.jpg","good.jpg"],["subject visible"])
+    monkeypatch.setattr(render_mod,"_resolve_asset",lambda cand,build,sid,idx: Path(cand["asset_url"]))
+    composited=[]
+    monkeypatch.setattr(render_mod,"_composite_scene_clip",lambda scene,asset,audio,srt,duration,fps,build,index:(composited.append(index),tmp_path/f"c{index}.mp4")[1])
+    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda *a,**k: {"scene":"s1","status":"FAIL","reason":"wrong"})
+    outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=0,provider=None)
+    assert composited==[0]  # never touches the fallback candidate
+    assert outcome["semantic"]["recovery_attempts"]==0
+    assert outcome["semantic"]["recovery_exhausted"] is True
+
 def test_pass_on_first_try_needs_no_recovery(tmp_path,monkeypatch):
     scene=make_scene("s1",["good.jpg"],["subject visible"])
     monkeypatch.setattr(render_mod,"_resolve_asset",lambda cand,build,sid,idx: Path(cand["asset_url"]))
