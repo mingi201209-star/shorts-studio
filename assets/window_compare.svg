@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920">
+<rect width="1080" height="1920" fill="#11151b"/>
+<text x="270" y="250" fill="white" font-size="72" text-anchor="middle" font-family="sans-serif" font-weight="700">네모난 창</text>
+<text x="810" y="250" fill="white" font-size="72" text-anchor="middle" font-family="sans-serif" font-weight="700">둥근 창</text>
+<rect x="90" y="520" width="360" height="650" rx="0" fill="#8ec9e8" stroke="white" stroke-width="28"/>
+<rect x="630" y="520" width="360" height="650" rx="150" fill="#8ec9e8" stroke="white" stroke-width="28"/>
+<g stroke="#ff4d4d" stroke-width="18" fill="none"><path d="M40 470 L95 525"/><path d="M500 470 L445 525"/><path d="M40 1220 L95 1165"/><path d="M500 1220 L445 1165"/></g>
+<g stroke="#5cbcff" stroke-width="18" fill="none"><path d="M610 450 Q810 350 1010 450"/><path d="M610 1240 Q810 1340 1010 1240"/></g>
+<text x="270" y="1370" fill="#ff7777" font-size="48" text-anchor="middle" font-family="sans-serif">모서리에 응력 집중</text>
+<text x="810" y="1370" fill="#7fd1ff" font-size="48" text-anchor="middle" font-family="sans-serif">곡선으로 응력 분산</text>
+</svg>

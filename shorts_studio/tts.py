@@ -1,0 +1,39 @@
+from __future__ import annotations
+import json, re
+from pathlib import Path
+from .timing import WordTiming
+
+def _tokenize(text:str)->list[str]:
+    return re.findall(r"[^\s]+",text)
+
+def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordTiming]:
+    tokens=_tokenize(text)
+    if not tokens or not boundaries: return []
+    if len(tokens)==len(boundaries):
+        return [WordTiming(t,b.start,b.end) for t,b in zip(tokens,boundaries)]
+    # Edge may emit sentence/phrase boundary events for Korean rather than whitespace words.
+    start=boundaries[0].start; end=boundaries[-1].end
+    weights=[max(1,len(re.sub(r"\W","",t))) for t in tokens]; total=sum(weights)
+    cursor=start; out=[]
+    for i,(t,w) in enumerate(zip(tokens,weights)):
+        nxt=end if i==len(tokens)-1 else cursor+(end-start)*w/total
+        out.append(WordTiming(t,cursor,nxt)); cursor=nxt
+    return out
+
+async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str="ko-KR-HyunsuMultilingualNeural", rate: str="+35%") -> list[WordTiming]:
+    import edge_tts
+    audio_path.parent.mkdir(parents=True,exist_ok=True)
+    communicate=edge_tts.Communicate(text,voice,rate=rate,boundary="SentenceBoundary")
+    boundaries=[]; audio=bytearray()
+    async for chunk in communicate.stream():
+        if chunk["type"]=="audio": audio.extend(chunk["data"])
+        elif chunk["type"] in {"WordBoundary","SentenceBoundary"}:
+            start=chunk["offset"]/10_000_000
+            dur=chunk["duration"]/10_000_000
+            boundaries.append(WordTiming(chunk.get("text",""),start,start+dur))
+    audio_path.write_bytes(audio)
+    words=_map_boundaries_to_script(text,boundaries)
+    timing_path.write_text(json.dumps({"source":"edge-boundary","raw":[w.__dict__ for w in boundaries],"words":[w.__dict__ for w in words]},ensure_ascii=False,indent=2),encoding="utf-8")
+    if not words:
+        raise RuntimeError("TTS returned no timing boundary events; do not guess from scene duration")
+    return words
