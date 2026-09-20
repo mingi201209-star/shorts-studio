@@ -1,0 +1,13 @@
+{
+  "title": "왜 비행기 창문은 둥글게 바뀌었을까?",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "scenes": [
+    {"id":"scene_01","narration":"1950년대, 세계 최초의 제트 여객기 코멧이 등장했습니다.","visual_description":"1950년대 드 하빌랜드 코멧이 활주로에서 이륙하는 기록영화풍 장면","motion":{"type":"push_in"}},
+    {"id":"scene_02","narration":"그런데 얼마 지나지 않아, 비행 중 기체가 공중에서 부서지는 사고가 이어졌습니다.","visual_description":"코멧 사고를 직접적인 충격 묘사 없이 항공 조사 다큐멘터리 방식으로 전환","motion":{"type":"pan_right"}},
+    {"id":"scene_03","narration":"원인을 찾기 위해 조사팀은 비행기 몸체를 통째로 물탱크에 넣고 압력을 반복했습니다.","visual_description":"실물 동체 수조 피로 시험과 조사팀","motion":{"type":"push_in"}},
+    {"id":"scene_04","narration":"결국 균열의 시작점은 각진 창 주변의 모서리였습니다.","visual_description":"각진 개구부 모서리에서 시작된 피로 균열을 보여주는 조사 장면","motion":{"type":"pan_left"}},
+    {"id":"scene_05","narration":"모서리를 둥글게 만들면 응력 집중을 줄일 수 있습니다. 오늘날의 둥근 창에는 이런 사고와 조사에서 얻은 교훈이 남아 있습니다.","visual_description":"현대 여객기의 둥근 모서리 창을 가까이 보여주는 마무리","motion":{"type":"pull_out"}}
+  ]
+}
