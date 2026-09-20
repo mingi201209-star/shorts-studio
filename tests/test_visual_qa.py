@@ -17,3 +17,16 @@ def test_structural_visual_gate_fails_missing_used_asset():
 def test_requirements_without_asset_fail_closed():
     p=SimpleNamespace(scenes=[scene("s1",req=["square corners"])])
     assert asset_visual_gate(p,[])["structural_status"]=="FAIL"
+
+
+def test_sidecar_provider_never_passes_without_evidence(tmp_path):
+    from shorts_studio.visual_qa import SidecarVisionProvider
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
+    assert SidecarVisionProvider().evaluate(image,["square corners"])["status"]=="NOT_EVALUATED"
+
+def test_sidecar_provider_accepts_explicit_pass(tmp_path):
+    import json
+    from shorts_studio.visual_qa import SidecarVisionProvider
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
+    image.with_suffix(".jpg.qa.json").write_text(json.dumps({"status":"PASS","details":["verified"]}))
+    assert SidecarVisionProvider().evaluate(image,["square corners"])["status"]=="PASS"
