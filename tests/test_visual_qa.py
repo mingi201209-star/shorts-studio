@@ -30,3 +30,16 @@ def test_sidecar_provider_accepts_explicit_pass(tmp_path):
     image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
     image.with_suffix(".jpg.qa.json").write_text(json.dumps({"status":"PASS","details":["verified"]}))
     assert SidecarVisionProvider().evaluate(image,["square corners"])["status"]=="PASS"
+
+def test_sidecar_provider_never_passes_on_corrupt_json(tmp_path):
+    from shorts_studio.visual_qa import SidecarVisionProvider
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
+    image.with_suffix(".jpg.qa.json").write_text("{not valid json")
+    assert SidecarVisionProvider().evaluate(image,["square corners"])["status"]=="NOT_EVALUATED"
+
+def test_sidecar_provider_never_passes_on_malformed_status(tmp_path):
+    import json
+    from shorts_studio.visual_qa import SidecarVisionProvider
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
+    image.with_suffix(".jpg.qa.json").write_text(json.dumps({"status":"MAYBE_OK"}))
+    assert SidecarVisionProvider().evaluate(image,["square corners"])["status"]=="NOT_EVALUATED"

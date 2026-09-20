@@ -7,10 +7,15 @@ class Caption:
     start: float
     end: float
 
-def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.5, max_duration: float=2.2, max_words: int=5) -> list[Caption]:
+def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.5, max_duration: float=2.2, max_words: int=5, max_gap: float=.6) -> list[Caption]:
     if not words: return []
     groups=[]; cur=[]
     for w in words:
+        # A real pause (e.g. between sentences) must start a new group; otherwise a
+        # long merged span gets clipped by max_duration below and silently drops
+        # coverage of the words after the pause -- a speech-gap regression.
+        if cur and (w.start-cur[-1].end) > max_gap:
+            groups.append(cur); cur=[]
         cur.append(w)
         span=cur[-1].end-cur[0].start
         if len(cur)>=max_words or span>=target:
