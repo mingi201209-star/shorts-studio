@@ -40,7 +40,7 @@ def _download(url:str,path:Path,max_attempts:int=4)->Path:
         time.sleep(2**(attempt+1))
     raise last_error  # pragma: no cover - loop always returns or raises above
 
-def _visual_filter(scene, srt:Path, fps:int)->str:
+def _title_filter(title:str|None)->str:\n    if not title:\n        return \"\"\n    safe=title.replace(\"\\\\\",\"\\\\\\\\\").replace(\"'\",\"\\\\'\").replace(\":\",\"\\\\:\")\n    return (f\",drawtext=text='{safe}':font='Noto Sans CJK KR':\"\n            \"fontcolor=white:fontsize=58:borderw=5:bordercolor=black:\"\n            \"x=(w-text_w)/2:y=105\")\n\ndef _visual_filter(scene, srt:Path, fps:int, title:str|None=None)->str:
     motion=scene.motion.type
     if motion=="pan_right":
         move="zoompan=z='1.10':x='(iw-iw/zoom)*on/180':y='(ih-ih/zoom)/2':d=1"
@@ -86,10 +86,10 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
     return path
 
-def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int)->Path:
+def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     if asset:
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
         vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
@@ -112,7 +112,7 @@ def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
     return [primary]+[c.model_dump() for c in scene.recovery_candidates]
 
-def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider)->dict:
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:
     """Render a scene's visual clip, running semantic visual QA and, on FAIL,
     swapping to the next declared fallback asset and re-rendering ONLY this
     scene's clip (never the whole production) until it passes or the bounded
@@ -123,7 +123,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             asset=_resolve_asset(candidates[index],build,scene.id,index)
-            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index)
+            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title)
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
@@ -155,7 +155,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
         audio,duration,srt,q=_synthesize_scene_audio(scene,build)
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
-        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider)
+        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,p.overlay_title)
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
         concat.append(outcome["clip"])
