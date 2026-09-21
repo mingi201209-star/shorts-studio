@@ -122,12 +122,12 @@ def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
     return [primary]+[c.model_dump() for c in scene.recovery_candidates]
 
-def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:\n    if title:\n        object.__setattr__(scene, '_overlay_title', title)
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:
     """Render a scene's visual clip, running semantic visual QA and, on FAIL,
     swapping to the next declared fallback asset and re-rendering ONLY this
     scene's clip (never the whole production) until it passes or the bounded
     recovery budget is exhausted."""
-    candidates=_asset_candidates(scene)
+    if title:\n        object.__setattr__(scene, '_overlay_title', title)\n    candidates=_asset_candidates(scene)
     last_index_tried=-1; last_error=None; result=None; clip=None; used=None
     for index in range(min(len(candidates), max_attempts+1)):
         last_index_tried=index
