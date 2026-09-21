@@ -1,11 +1,11 @@
 from __future__ import annotations
-import asyncio, json, shutil, subprocess, urllib.request
+import asyncio, json, os, shutil, subprocess, urllib.request
 from pathlib import Path
 from .project import load_project
 from .tts import edge_tts_with_boundaries
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
-from .visual_qa import asset_visual_gate, semantic_visual_gate
+from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -34,43 +34,117 @@ def _visual_filter(scene, srt:Path, fps:int)->str:
     style="Alignment=2,MarginV=260,FontSize=18,Outline=2,Shadow=0,Bold=1"
     return f"scale=1400:2489:force_original_aspect_ratio=increase,crop=1400:2489,{move}:s=1080x1920:fps={fps},subtitles={srt.as_posix()}:force_style='{style}'"
 
+def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
+    # ffmpeg has no built-in SVG decoder (it only demuxes "svg_pipe", it cannot
+    # decode the vector content), so SVG assets must be rasterized before
+    # ffmpeg ever sees them.
+    if not shutil.which("rsvg-convert"):
+        raise RuntimeError("rsvg-convert (apt package librsvg2-bin) is required to rasterize SVG assets")
+    subprocess.run(["rsvg-convert","-w",str(width),"-h",str(height),str(svg),"-o",str(output)],check=True,capture_output=True)
+    return output
+
+def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|None:
+    asset=candidate.get("asset"); asset_url=candidate.get("asset_url")
+    path=None
+    if asset and Path(asset).exists():
+        path=Path(asset)
+    elif asset_url:
+        suffix=Path(asset_url.split('?')[0]).suffix or '.jpg'
+        path=_download(asset_url, build/f"{scene_id}_asset_{index}{suffix}")
+    if path and path.suffix.lower()==".svg":
+        path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
+    return path
+
+def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int)->Path:
+    clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
+    if asset:
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
+    else:
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=260,FontSize=18,Outline=2,Bold=1'"
+        cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
+    try:
+        subprocess.run(cmd,check=True,capture_output=True,text=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"ffmpeg failed compositing {scene.id}: {e.stderr[-2000:] if e.stderr else e}") from e
+    return clip
+
+def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict]:
+    audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
+    words=asyncio.run(edge_tts_with_boundaries(scene.narration,audio,timing))
+    duration=max(w.end for w in words)+.25
+    caps=segment(words,duration)
+    q=subtitle_qa(caps,words,duration)
+    srt=build/f"{scene.id}.srt"; write_srt(srt,caps)
+    return audio,duration,srt,{"scene":scene.id,**q}
+
+def _asset_candidates(scene)->list[dict]:
+    primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
+    return [primary]+[c.model_dump() for c in scene.recovery_candidates]
+
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider)->dict:
+    """Render a scene's visual clip, running semantic visual QA and, on FAIL,
+    swapping to the next declared fallback asset and re-rendering ONLY this
+    scene's clip (never the whole production) until it passes or the bounded
+    recovery budget is exhausted."""
+    candidates=_asset_candidates(scene)
+    last_index_tried=-1; last_error=None; result=None; clip=None; used=None
+    for index in range(min(len(candidates), max_attempts+1)):
+        last_index_tried=index
+        try:
+            asset=_resolve_asset(candidates[index],build,scene.id,index)
+            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index)
+        except Exception as e:
+            last_error=f"candidate {index} failed to resolve/render: {e}"
+            result={"scene":scene.id,"status":"FAIL","reason":last_error}
+            continue
+        used={"index":index,"asset":str(asset) if asset else None,"attribution":candidates[index].get("attribution")}
+        if not scene.visual_qa_requirements:
+            result={"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
+            break
+        frame=build/f"{scene.id}_qa.jpg"
+        result=evaluate_scene_semantics(scene,clip,provider,frame)
+        if result["status"]!="FAIL":
+            break
+        last_error=result.get("reason")
+    recovery_attempts=last_index_tried  # index 0 is the primary asset, not a recovery
+    more_candidates_available=(last_index_tried+1)<len(candidates)
+    exhausted=result["status"]=="FAIL" and (not more_candidates_available or recovery_attempts>=max_attempts)
+    result={**result,"recovery_attempts":recovery_attempts,"recovery_exhausted":bool(exhausted)}
+    return {"clip":clip,"source":used,"semantic":result}
+
 def render(manifest:str,dry_run:bool=False)->dict:
     p=load_project(manifest)
     if dry_run: return {"status":"PASS","scenes":len(p.scenes),"mode":"dry-run"}
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         raise RuntimeError("FFmpeg/ffprobe required")
     build=Path("build"); dist=Path("dist"); build.mkdir(exist_ok=True); dist.mkdir(exist_ok=True)
-    concat=[]; reports=[]; sources=[]
+    provider=default_vision_provider()
+    concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]
     for scene in p.scenes:
-        audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
-        words=asyncio.run(edge_tts_with_boundaries(scene.narration,audio,timing))
-        duration=max(w.end for w in words)+.25
-        caps=segment(words,duration); q=subtitle_qa(caps,words,duration); reports.append({"scene":scene.id,**q})
+        audio,duration,srt,q=_synthesize_scene_audio(scene,build)
+        subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
-        srt=build/f"{scene.id}.srt"; write_srt(srt,caps)
-        asset=None
-        if scene.asset and Path(scene.asset).exists(): asset=Path(scene.asset)
-        elif scene.asset_url: asset=_download(scene.asset_url,build/f"{scene.id}_asset{Path(scene.asset_url.split('?')[0]).suffix or '.jpg'}")
-        clip=build/f"{scene.id}.mp4"
-        if asset:
-            cmd=["ffmpeg","-y","-loop","1","-framerate",str(p.fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,p.fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
-            sources.append({"scene":scene.id,"asset":str(asset),"attribution":scene.attribution})
-        else:
-            vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=260,FontSize=18,Outline=2,Bold=1'"
-            cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={p.fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
-        subprocess.run(cmd,check=True); concat.append(clip)
+        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider)
+        if outcome["clip"] is None:
+            raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
+        concat.append(outcome["clip"])
+        sources.append({"scene":scene.id,"asset":outcome["source"]["asset"] if outcome["source"] else None,"attribution":outcome["source"]["attribution"] if outcome["source"] else None,"candidate_index":outcome["source"]["index"] if outcome["source"] else None,"recovery_attempts":outcome["semantic"].get("recovery_attempts",0)})
+        if scene.visual_qa_requirements:
+            semantic_results.append(outcome["semantic"])
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"
-    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True)
+    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True)
     probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True).stdout)
     visual=asset_visual_gate(p,sources)
-    semantic=semantic_visual_gate(p,concat)
-    require_semantic=bool(__import__("os").environ.get("SHORTS_REQUIRE_SEMANTIC_QA"))
-    semantic_ok=(semantic["status"]=="PASS") if require_semantic else semantic["status"]!="FAIL"
-    overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in reports) else "FAIL"
-    report={"status":overall,"subtitle_reports":reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"sources":sources,"probe":probe,"output":str(final)}
-    if overall!="PASS":
-        write_report(dist/"qa_report.json",report)
-        raise RuntimeError(f"QA failed: {report}")
+    if any(r["status"]=="FAIL" for r in semantic_results): semantic_status="FAIL"
+    elif semantic_results and all(r["status"]=="PASS" for r in semantic_results): semantic_status="PASS"
+    else: semantic_status="NOT_EVALUATED"
+    semantic={"status":semantic_status,"results":semantic_results}
+    require_semantic=bool(os.environ.get("SHORTS_REQUIRE_SEMANTIC_QA"))
+    semantic_ok=production_semantic_ok(semantic["status"],require_semantic)
+    overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) else "FAIL"
+    report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"sources":sources,"probe":probe,"output":str(final)}
     write_report(dist/"qa_report.json",report)
+    if overall!="PASS":
+        raise RuntimeError(f"QA failed: {report}")
     return report
