@@ -40,7 +40,17 @@ def _download(url:str,path:Path,max_attempts:int=4)->Path:
         time.sleep(2**(attempt+1))
     raise last_error  # pragma: no cover - loop always returns or raises above
 
-def _title_filter(title:str|None)->str:\n    if not title:\n        return \"\"\n    safe=title.replace(\"\\\\\",\"\\\\\\\\\").replace(\"'\",\"\\\\'\").replace(\":\",\"\\\\:\")\n    return (f\",drawtext=text='{safe}':font='Noto Sans CJK KR':\"\n            \"fontcolor=white:fontsize=58:borderw=5:bordercolor=black:\"\n            \"x=(w-text_w)/2:y=105\")\n\ndef _visual_filter(scene, srt:Path, fps:int, title:str|None=None)->str:
+def _title_filter(title:str|None)->str:
+    if not title:
+        return ""
+    safe=title.replace("\\","\\\\").replace("'","\\'").replace(":","\\:")
+    return (
+        f",drawtext=text='{safe}':"
+        "fontcolor=white:fontsize=58:borderw=5:bordercolor=black:"
+        "x=(w-text_w)/2:y=105"
+    )
+
+def _visual_filter(scene, srt:Path, fps:int, title:str|None=None)->str:
     motion=scene.motion.type
     if motion=="pan_right":
         move="zoompan=z='1.10':x='(iw-iw/zoom)*on/180':y='(ih-ih/zoom)/2':d=1"
