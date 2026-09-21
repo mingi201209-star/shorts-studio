@@ -50,7 +50,7 @@ def _visual_filter(scene, srt:Path, fps:int)->str:
         move="zoompan=z='max(1.0,1.12-on*0.0007)':d=1"
     else:
         move="zoompan=z='min(zoom+0.0007,1.12)':d=1"
-    style="Alignment=2,MarginV=120,FontSize=18,Outline=2,Shadow=0,Bold=1"
+    style="Alignment=2,MarginV=48,FontSize=18,Outline=2,Shadow=0,Bold=1"
     return f"scale=1400:2489:force_original_aspect_ratio=increase,crop=1400:2489,{move}:s=1080x1920:fps={fps},subtitles={srt.as_posix()}:force_style='{style}'"
 
 def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
@@ -79,7 +79,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     if asset:
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
-        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=120,FontSize=18,Outline=2,Bold=1'"
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
