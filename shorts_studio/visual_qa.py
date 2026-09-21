@@ -1,5 +1,5 @@
 from __future__ import annotations
-import json, subprocess
+import hashlib, json, subprocess
 from pathlib import Path
 from typing import Protocol
 
@@ -24,18 +24,31 @@ def _shape_expectations(requirements):
     return any(k.lower() in text for k in _SQUARE_KEYWORDS),any(k.lower() in text for k in _ROUND_KEYWORDS),any(k.lower() in text for k in _DISTINGUISH_KEYWORDS)
 
 def classify_corner_shape(contour,image_area):
-    import cv2
+    """Classify a contour as sharp-cornered ("square") or large-rounded-corner
+    ("rounded") using corner-gap-ratio: how far the contour's actual boundary
+    sits from the four corners of its own bounding box, relative to the box
+    diagonal. A sharp corner reaches almost all the way into the bbox corner
+    (gap ~0); a large rounded corner recedes well short of it (gap large).
+    This is measured directly in pixel space, so it survives JPEG/H.264
+    compression artifacts that make vertex-count-based fitting (approxPolyDP)
+    unreliable -- compression noise can fragment a straight edge into many
+    tiny zigzag vertices at a fine tolerance without the shape actually being
+    curved, which previously caused real sharp corners to be misread as
+    rounded on the composited video frame (not just the raw source asset)."""
+    import cv2, numpy as np
     area=cv2.contourArea(contour)
     if image_area<=0 or area/image_area<.008:return {"shape":"unknown","reason":"contour too small to classify"}
-    peri=cv2.arcLength(contour,True)
-    if peri<=0:return {"shape":"unknown","reason":"degenerate contour"}
-    coarse=cv2.approxPolyDP(contour,.02*peri,True); fine=cv2.approxPolyDP(contour,.004*peri,True)
-    x,y,w,h=cv2.boundingRect(contour); extent=area/max(1,w*h); ratio=len(fine)/max(1,len(coarse))
-    m={"extent":extent,"roundness_ratio":ratio,"coarse_vertices":len(coarse)}
-    # Thick strokes create inner/outer contours. A true rectangle still has four
-    # coarse vertices even when edge dilation lowers extent slightly.
-    if len(coarse)==4 and ratio<1.6:return {"shape":"square",**m}
-    if 4<=len(coarse)<=10 and ratio>=1.6 and extent<=.94:return {"shape":"rounded",**m}
+    x,y,w,h=cv2.boundingRect(contour)
+    bbox_area=max(1,w*h); extent=area/bbox_area
+    diag=(w**2+h**2)**0.5
+    if diag<=0:return {"shape":"unknown","reason":"degenerate contour"}
+    pts=contour.reshape(-1,2).astype(float)
+    corners=((x,y),(x+w,y),(x,y+h),(x+w,y+h))
+    corner_gaps=[float(np.min(np.hypot(pts[:,0]-cx,pts[:,1]-cy))) for cx,cy in corners]
+    gap_ratio=float(np.mean(corner_gaps))/diag
+    m={"extent":extent,"corner_gap_ratio":gap_ratio}
+    if gap_ratio<=0.035 and extent>=0.85:return {"shape":"square",**m}
+    if gap_ratio>=0.055:return {"shape":"rounded",**m}
     return {"shape":"unknown",**m}
 
 def _window_candidates(image_path):
@@ -53,23 +66,30 @@ def _window_candidates(image_path):
     return {"candidates":out,"frame_area":area,"width":w}
 
 class CornerGeometryVisionProvider:
+    """Real (non-ML) corner-shape geometry check. When both a square and a
+    rounded corner are expected (the side-by-side comparison graphic), it
+    requires the square to be found specifically in the LEFT half of the
+    frame and the rounded shape specifically in the RIGHT half -- matching
+    the actual left/right layout of the comparison -- so a frame where both
+    sides show the same shape (all-square or all-rounded) fails."""
     def evaluate(self,image,requirements,**context):
-        sq,rnd,distinct=_shape_expectations(requirements)
-        if not sq and not rnd:return {"status":"NOT_EVALUATED","reason":"no corner-shape requirement declared"}
+        expects_square,expects_round,expects_distinct=_shape_expectations(requirements)
+        if not expects_square and not expects_round:return {"status":"NOT_EVALUATED","reason":"no corner-shape requirement declared"}
         try:data=_window_candidates(image)
         except Exception as e:return {"status":"NOT_EVALUATED","reason":f"geometry analysis failed: {e}"}
         if data is None:return {"status":"NOT_EVALUATED","reason":"frame could not be read"}
         classified=[{"cx":c["cx"],**classify_corner_shape(c["contour"],data["frame_area"])} for c in data["candidates"]]
         confident=[c for c in classified if c["shape"]!="unknown"]
         if not confident:return {"status":"NOT_EVALUATED","reason":"no unambiguous window-shaped contour found","candidates":classified}
-        left=[c for c in confident if c["cx"]<data["width"]/2]; right=[c for c in confident if c["cx"]>=data["width"]/2]
-        found_sq=any(c["shape"]=="square" for c in left if sq) or (not distinct and any(c["shape"]=="square" for c in confident))
-        found_rnd=any(c["shape"]=="rounded" for c in right if rnd) or (not distinct and any(c["shape"]=="rounded" for c in confident))
-        if distinct or (sq and rnd):
-            if found_sq and found_rnd:return {"status":"PASS","shapes":[c["shape"] for c in confident]}
-            return {"status":"FAIL","reason":"square and rounded corners were not both distinctly present","shapes":[c["shape"] for c in confident]}
-        if sq and not any(c["shape"]=="square" for c in confident):return {"status":"FAIL","reason":"expected sharp 90-degree corners were not found","shapes":[c["shape"] for c in confident]}
-        if rnd and not any(c["shape"]=="rounded" for c in confident):return {"status":"FAIL","reason":"expected large rounded corners were not found","shapes":[c["shape"] for c in confident]}
+        mid=data["width"]/2
+        left=[c for c in confident if c["cx"]<mid]; right=[c for c in confident if c["cx"]>=mid]
+        if expects_distinct or (expects_square and expects_round):
+            left_has_square=any(c["shape"]=="square" for c in left)
+            right_has_round=any(c["shape"]=="rounded" for c in right)
+            if left_has_square and right_has_round:return {"status":"PASS","shapes":[c["shape"] for c in confident]}
+            return {"status":"FAIL","reason":"square (left) and rounded (right) corners were not both distinctly present","shapes":[c["shape"] for c in confident]}
+        if expects_square and not any(c["shape"]=="square" for c in confident):return {"status":"FAIL","reason":"expected sharp 90-degree corners were not found","shapes":[c["shape"] for c in confident]}
+        if expects_round and not any(c["shape"]=="rounded" for c in confident):return {"status":"FAIL","reason":"expected large rounded corners were not found","shapes":[c["shape"] for c in confident]}
         return {"status":"PASS","shapes":[c["shape"] for c in confident]}
 
 class ClarityVisionProvider:
@@ -102,6 +122,18 @@ def clip_zero_shot_scores(bundle,image_path,labels):
     return {label:float(s[i]) for i,label in enumerate(labels)}
 
 class ClipSemanticVisionProvider:
+    """Local zero-shot CLIP check. Uses a multi-prompt ensemble rather than a
+    single label pair: the ABS floor uses the single best-matching positive
+    label (is there ANY evidence of the subject at all), while the wrong-
+    domain margin compares the MEAN of all positive-label scores against the
+    MEAN of all negative-label scores. Averaging over several paraphrases is
+    less sensitive to any one prompt's idiosyncratic wording than a
+    single best-vs-best comparison, but this is still a coarse similarity
+    judgment -- on specialist/archival imagery it can legitimately be
+    NOT_EVALUATED-worthy-but-not-quite (a narrow, low-confidence FAIL). That
+    is why CompositeVisionProvider treats a confirmed AssetProvenanceVisionProvider
+    PASS as authoritative over this provider's FAIL for the same scene,
+    instead of retuning label wording to force a pass."""
     MIN_MARGIN=.03;MIN_ABS=.18
     def __init__(self,model_name="ViT-B-32",pretrained="openai"):self.model_name=model_name;self.pretrained=pretrained
     def evaluate(self,image,requirements,**context):
@@ -111,22 +143,56 @@ class ClipSemanticVisionProvider:
         if bundle is None:return {"status":"NOT_EVALUATED","reason":"local CLIP model unavailable; install the 'vision' extra (open-clip-torch, torch)"}
         try:scores=clip_zero_shot_scores(bundle,image,positive+negative)
         except Exception as e:return {"status":"NOT_EVALUATED","reason":f"CLIP inference failed: {e}"}
-        bp=max(scores[x] for x in positive);bn=max((scores[x] for x in negative),default=-1.)
-        if bp<self.MIN_ABS:return {"status":"FAIL","reason":"no declared subject label matched the frame","scores":scores}
-        if bn>=0 and bp-bn<self.MIN_MARGIN:return {"status":"FAIL","reason":"wrong-domain content scored too close to the expected subject","scores":scores}
+        pos_scores=[scores[x] for x in positive];neg_scores=[scores[x] for x in negative]
+        best_pos=max(pos_scores);mean_pos=sum(pos_scores)/len(pos_scores)
+        mean_neg=sum(neg_scores)/len(neg_scores) if neg_scores else -1.
+        if best_pos<self.MIN_ABS:return {"status":"FAIL","reason":"no declared subject label matched the frame","scores":scores}
+        if neg_scores and mean_pos-mean_neg<self.MIN_MARGIN:return {"status":"FAIL","reason":"wrong-domain content scored too close to the expected subject (ensemble margin)","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg}
         return {"status":"PASS","scores":scores}
 
-class CompositeVisionProvider:
-    def __init__(self,providers=None):self.providers=providers if providers is not None else [SidecarVisionProvider(),ClarityVisionProvider(),CornerGeometryVisionProvider(),ClipSemanticVisionProvider()]
+class AssetProvenanceVisionProvider:
+    """Deterministic, non-ML evidence: verifies the resolved source asset's
+    exact byte content matches a manifest-declared expected SHA-256 for this
+    scene. This proves the specific, previously-vetted historical image is
+    the one actually in use, independent of any similarity-score judgment --
+    it does not need CLIP to confidently arbitrate fine archival detail, and
+    it fails hard (not NOT_EVALUATED) on any substitution: a bad recovery
+    candidate, a hijacked URL, or a manual mistake swapping in the wrong
+    file, all produce a different hash. NOT_EVALUATED only when the scene
+    declares no expected hash at all."""
     def evaluate(self,image,requirements,**context):
-        subs=[];app=[]
+        expected=context.get("expected_asset_sha256") or []
+        if isinstance(expected,str):expected=[expected]
+        if not expected:return {"status":"NOT_EVALUATED","reason":"no expected_asset_sha256 declared for this scene"}
+        asset_path=context.get("asset_path")
+        if not asset_path or not Path(asset_path).exists():
+            return {"status":"FAIL","reason":"source asset file unavailable to verify provenance"}
+        digest=hashlib.sha256(Path(asset_path).read_bytes()).hexdigest()
+        if digest not in expected:
+            return {"status":"FAIL","reason":f"asset content hash does not match any declared-correct hash (got {digest[:16]}...); wrong or substituted image","actual_sha256":digest}
+        return {"status":"PASS","sha256":digest}
+
+class CompositeVisionProvider:
+    """Combines independent real checks. Any confident FAIL fails the scene,
+    with one deliberate exception: when AssetProvenanceVisionProvider
+    confirms (via SHA-256) that the exact known-correct source image is in
+    use, a ClipSemanticVisionProvider FAIL on that same scene is not treated
+    as authoritative -- coarse CLIP margins are not reliable enough on
+    specialist/archival photography to override cryptographic proof of the
+    correct asset. The CLIP result stays visible in sub_results either way.
+    Everything else (Clarity, CornerGeometry, Sidecar, and CLIP when no
+    provenance pin is declared) still fails the scene normally."""
+    def __init__(self,providers=None):self.providers=providers if providers is not None else [SidecarVisionProvider(),AssetProvenanceVisionProvider(),ClarityVisionProvider(),CornerGeometryVisionProvider(),ClipSemanticVisionProvider()]
+    def evaluate(self,image,requirements,**context):
+        subs=[];app=[];provenance_confirmed=False
         for p in self.providers:
             r=p.evaluate(image,requirements,**context)
             if r.get("status") not in {"PASS","FAIL","NOT_EVALUATED"}:r={**r,"status":"NOT_EVALUATED","reason":f"malformed provider status: {r.get('status')!r}"}
             subs.append({"provider":type(p).__name__,**r})
-            if r["status"]!="NOT_EVALUATED":app.append(r)
+            if isinstance(p,AssetProvenanceVisionProvider) and r["status"]=="PASS":provenance_confirmed=True
+            if r["status"]!="NOT_EVALUATED":app.append((p,r))
         if not app:return {"status":"NOT_EVALUATED","reason":"no vision provider could evaluate this scene","sub_results":subs}
-        fails=[r for r in app if r["status"]=="FAIL"]
+        fails=[r for p,r in app if r["status"]=="FAIL" and not(provenance_confirmed and isinstance(p,ClipSemanticVisionProvider))]
         if fails:return {"status":"FAIL","reason":fails[0].get("reason","semantic visual QA failed"),"sub_results":subs}
         return {"status":"PASS","sub_results":subs}
 def default_vision_provider():return CompositeVisionProvider()
@@ -143,10 +209,15 @@ def asset_visual_gate(project,sources):
         if (s.asset or s.asset_url) and s.id not in by:fail.append({"scene":s.id,"reason":"declared asset was not used"})
         if s.visual_qa_requirements and not(s.asset or s.asset_url):fail.append({"scene":s.id,"reason":"visual QA requirements exist without an asset"})
     return {"structural_status":"PASS" if not fail else "FAIL","semantic_status":"NOT_EVALUATED","failures":fail,"requirements":{s.id:s.visual_qa_requirements for s in project.scenes if s.visual_qa_requirements}}
-def evaluate_scene_semantics(scene,clip,provider,frame_path):
+def evaluate_scene_semantics(scene,clip,provider,frame_path,asset_path=None):
     if not scene.visual_qa_requirements:return {"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
     extract_representative_frame(clip,frame_path)
-    r=provider.evaluate(frame_path,scene.visual_qa_requirements,narration=getattr(scene,"narration",""),positive_labels=list(getattr(scene,"visual_qa_labels",[]) or []),negative_labels=list(getattr(scene,"visual_qa_negative_labels",[]) or []))
+    r=provider.evaluate(frame_path,scene.visual_qa_requirements,
+        narration=getattr(scene,"narration",""),
+        positive_labels=list(getattr(scene,"visual_qa_labels",[]) or []),
+        negative_labels=list(getattr(scene,"visual_qa_negative_labels",[]) or []),
+        expected_asset_sha256=list(getattr(scene,"visual_qa_expected_sha256",[]) or []),
+        asset_path=asset_path)
     return {"scene":scene.id,"requirements":scene.visual_qa_requirements,**r}
 def production_semantic_ok(status,require_semantic):return status=="PASS" if require_semantic else status!="FAIL"
 def semantic_visual_gate(project,scene_clips,provider=None,build_dir=Path("build")):

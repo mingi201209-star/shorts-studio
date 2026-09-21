@@ -23,7 +23,7 @@ def test_recovery_swaps_asset_and_passes_on_second_candidate(tmp_path,monkeypatc
     composited=[]
     monkeypatch.setattr(render_mod,"_composite_scene_clip",lambda scene,asset,audio,srt,duration,fps,build,index:(composited.append(index),tmp_path/f"c{index}.mp4")[1])
     results=iter([{"scene":"s1","status":"FAIL","reason":"wrong domain"},{"scene":"s1","status":"PASS"}])
-    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda scene,clip,provider,frame: next(results))
+    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda scene,clip,provider,frame,**k: next(results))
     outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=2,provider=None)
     assert outcome["semantic"]["status"]=="PASS"
     assert outcome["semantic"]["recovery_attempts"]==1
@@ -58,7 +58,7 @@ def test_recovery_never_touches_other_scenes(tmp_path,monkeypatch):
         render_calls.append((scene.id,index)); return tmp_path/f"c{index}.mp4"
     monkeypatch.setattr(render_mod,"_composite_scene_clip",fake_composite)
     results=iter([{"scene":"s1","status":"FAIL"},{"scene":"s1","status":"PASS"}])
-    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda scene,clip,provider,frame: next(results))
+    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda scene,clip,provider,frame,**k: next(results))
     render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=3,provider=None)
     assert all(scene_id=="s1" for scene_id,_ in render_calls)
 

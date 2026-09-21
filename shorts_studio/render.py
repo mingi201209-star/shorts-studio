@@ -102,7 +102,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
             result={"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
             break
         frame=build/f"{scene.id}_qa.jpg"
-        result=evaluate_scene_semantics(scene,clip,provider,frame)
+        result=evaluate_scene_semantics(scene,clip,provider,frame,asset_path=asset)
         if result["status"]!="FAIL":
             break
         last_error=result.get("reason")

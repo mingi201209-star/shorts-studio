@@ -28,6 +28,11 @@ class Scene(BaseModel):
     visual_qa_negative_labels: list[str] = []
     # Fallback assets tried in order by the visual-QA recovery loop, most-preferred first.
     recovery_candidates: list[AssetCandidate] = []
+    # SHA-256 hashes of previously-vetted, known-correct source asset bytes for this
+    # scene (primary asset + any recovery candidates). Deterministic provenance
+    # evidence: proves the exact known-good file is in use, independent of any
+    # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
+    visual_qa_expected_sha256: list[str] = []
 
 class Project(BaseModel):
     title: str
