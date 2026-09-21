@@ -96,10 +96,10 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
     return path
 
-def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, *, title:str|None=None)->Path:
+def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     if asset:
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,getattr(scene, '_overlay_title', None)),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
         vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
@@ -122,7 +122,7 @@ def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
     return [primary]+[c.model_dump() for c in scene.recovery_candidates]
 
-def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:\n    if title:\n        object.__setattr__(scene, '_overlay_title', title)
     """Render a scene's visual clip, running semantic visual QA and, on FAIL,
     swapping to the next declared fallback asset and re-rendering ONLY this
     scene's clip (never the whole production) until it passes or the bounded
@@ -133,7 +133,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             asset=_resolve_asset(candidates[index],build,scene.id,index)
-            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
+            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index)
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
