@@ -51,7 +51,19 @@ def _visual_filter(scene, srt:Path, fps:int)->str:
     else:
         move="zoompan=z='min(zoom+0.0007,1.12)':d=1"
     style="Alignment=2,MarginV=48,FontSize=18,Outline=2,Shadow=0,Bold=1"
-    return f"scale=1400:2489:force_original_aspect_ratio=increase,crop=1400:2489,{move}:s=1080x1920:fps={fps},subtitles={srt.as_posix()}:force_style='{style}'"
+    # Preserve the complete source image.  The old fill+crop path could discard
+    # most of a landscape archival photo/document when forcing it into 9:16.
+    # Build a full-frame blurred backdrop, then place a sharp contain-fit copy
+    # over it. This keeps every source pixel visible while avoiding empty bars.
+    bg="scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:8"
+    fg="scale=1000:1720:force_original_aspect_ratio=decrease"
+    return (
+        f"split=2[bgsrc][fgsrc];"
+        f"[bgsrc]{bg}[bg];"
+        f"[fgsrc]{fg}[fg];"
+        f"[bg][fg]overlay=(W-w)/2:(H-h)/2,{move}:s=1080x1920:fps={fps},"
+        f"subtitles={srt.as_posix()}:force_style='{style}'"
+    )
 
 def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
     # ffmpeg has no built-in SVG decoder (it only demuxes "svg_pipe", it cannot
