@@ -50,7 +50,7 @@ def _title_filter(title:str|None)->str:
         "x=(w-text_w)/2:y=105"
     )
 
-def _visual_filter(scene, srt:Path, fps:int, title:str|None=None)->str:
+def _visual_filter(scene, srt:Path, fps:int)->str:
     motion=scene.motion.type
     if motion=="pan_right":
         move="zoompan=z='1.10':x='(iw-iw/zoom)*on/180':y='(ih-ih/zoom)/2':d=1"
@@ -73,6 +73,7 @@ def _visual_filter(scene, srt:Path, fps:int, title:str|None=None)->str:
         f"[fgsrc]{fg}[fg];"
         f"[bg][fg]overlay=(W-w)/2:(H-h)/2,{move}:s=1080x1920:fps={fps},"
         f"subtitles={srt.as_posix()}:force_style='{style}'"
+        f"{_title_filter(scene.overlay_title)}"
     )
 
 def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
@@ -99,9 +100,9 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     if asset:
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,getattr(scene, '_overlay_title', None)),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
-        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'"
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'{_title_filter(scene.overlay_title)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
@@ -122,12 +123,12 @@ def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
     return [primary]+[c.model_dump() for c in scene.recovery_candidates]
 
-def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider)->dict:
     """Render a scene's visual clip, running semantic visual QA and, on FAIL,
     swapping to the next declared fallback asset and re-rendering ONLY this
     scene's clip (never the whole production) until it passes or the bounded
     recovery budget is exhausted."""
-    if title:\n        object.__setattr__(scene, '_overlay_title', title)\n    candidates=_asset_candidates(scene)
+    candidates=_asset_candidates(scene)
     last_index_tried=-1; last_error=None; result=None; clip=None; used=None
     for index in range(min(len(candidates), max_attempts+1)):
         last_index_tried=index
@@ -165,7 +166,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
         audio,duration,srt,q=_synthesize_scene_audio(scene,build)
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
-        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,p.overlay_title)
+        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider)
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
         concat.append(outcome["clip"])
