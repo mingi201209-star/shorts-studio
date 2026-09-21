@@ -2,6 +2,7 @@ name: render-smoke
 on:
   push:
   pull_request:
+  workflow_dispatch:
 jobs:
   smoke:
     runs-on: ubuntu-latest
