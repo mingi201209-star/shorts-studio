@@ -73,7 +73,7 @@ def _visual_filter(scene, srt:Path, fps:int)->str:
         f"[fgsrc]{fg}[fg];"
         f"[bg][fg]overlay=(W-w)/2:(H-h)/2,{move}:s=1080x1920:fps={fps},"
         f"subtitles={srt.as_posix()}:force_style='{style}'"
-        f"{_title_filter(scene.overlay_title)}"
+        f"{_title_filter(getattr(scene, 'overlay_title', None))}"
     )
 
 def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
@@ -102,7 +102,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     if asset:
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
-        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'{_title_filter(scene.overlay_title)}"
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'{_title_filter(getattr(scene, 'overlay_title', None))}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
