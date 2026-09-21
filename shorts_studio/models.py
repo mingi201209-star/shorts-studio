@@ -39,7 +39,7 @@ class Project(BaseModel):
     width: int = 1080
     height: int = 1920
     fps: int = 30
-    scenes: list[Scene] = Field(min_length=1)
+    # Fixed title shown at the top for the entire Short; captions remain independent.\n    overlay_title: str | None = None\n    scenes: list[Scene] = Field(min_length=1)
     # Cap on per-scene asset-swap/re-render/re-QA cycles before the whole production FAILs.
     max_visual_recovery_attempts: int = Field(default=2, ge=0)
 
