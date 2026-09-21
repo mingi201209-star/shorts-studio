@@ -33,12 +33,14 @@ class Scene(BaseModel):
     # evidence: proves the exact known-good file is in use, independent of any
     # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
     visual_qa_expected_sha256: list[str] = []
+    overlay_title: str | None = None
 
 class Project(BaseModel):
     title: str
     width: int = 1080
     height: int = 1920
     fps: int = 30
+    overlay_title: str | None = None
     scenes: list[Scene] = Field(min_length=1)
     # Cap on per-scene asset-swap/re-render/re-QA cycles before the whole production FAILs.
     max_visual_recovery_attempts: int = Field(default=2, ge=0)
