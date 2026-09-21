@@ -96,7 +96,7 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
     return path
 
-def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
+def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, *, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     if asset:
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
@@ -133,7 +133,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             asset=_resolve_asset(candidates[index],build,scene.id,index)
-            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title)
+            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
