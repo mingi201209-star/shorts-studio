@@ -32,7 +32,7 @@ class Scene(BaseModel):
     # scene (primary asset + any recovery candidates). Deterministic provenance
     # evidence: proves the exact known-good file is in use, independent of any
     # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
-    visual_qa_expected_sha256: list[str] = []
+    visual_qa_expected_sha256: list[str] = []\n    overlay_title: str | None = None
 
 class Project(BaseModel):
     title: str
