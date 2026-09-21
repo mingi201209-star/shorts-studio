@@ -1,5 +1,5 @@
 from __future__ import annotations
-import asyncio, json, os, shutil, subprocess, urllib.request
+import asyncio, json, os, shutil, subprocess, time, urllib.error, urllib.request
 from pathlib import Path
 from .project import load_project
 from .tts import edge_tts_with_boundaries
@@ -15,11 +15,30 @@ def write_srt(path:Path,caps):
     blocks=[f"{i}\n{_srt_time(c.start)} --> {_srt_time(c.end)}\n{c.text}" for i,c in enumerate(caps,1)]
     path.write_text("\n\n".join(blocks)+"\n",encoding="utf-8")
 
-def _download(url:str,path:Path)->Path:
+_TRANSIENT_HTTP_CODES={429,500,502,503,504}
+
+def _download(url:str,path:Path,max_attempts:int=4)->Path:
+    """Download with bounded retry+backoff for transient server-side errors
+    (rate limiting, brief outages). Permanent client errors (404, 403, ...)
+    fail immediately -- retrying them would never succeed and would just
+    delay the recovery loop's move to the next candidate."""
     req=urllib.request.Request(url,headers={"User-Agent":"shorts-studio/0.1"})
-    with urllib.request.urlopen(req,timeout=60) as src, path.open("wb") as dst:
-        shutil.copyfileobj(src,dst)
-    return path
+    last_error=None
+    for attempt in range(max_attempts):
+        try:
+            with urllib.request.urlopen(req,timeout=60) as src, path.open("wb") as dst:
+                shutil.copyfileobj(src,dst)
+            return path
+        except urllib.error.HTTPError as e:
+            last_error=e
+            if e.code not in _TRANSIENT_HTTP_CODES or attempt==max_attempts-1:
+                raise
+        except (urllib.error.URLError, TimeoutError) as e:
+            last_error=e
+            if attempt==max_attempts-1:
+                raise
+        time.sleep(2**(attempt+1))
+    raise last_error  # pragma: no cover - loop always returns or raises above
 
 def _visual_filter(scene, srt:Path, fps:int)->str:
     motion=scene.motion.type
