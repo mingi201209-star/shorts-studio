@@ -35,7 +35,8 @@ def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordT
 async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, rate: str=DEFAULT_KO_RATE, pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME) -> list[WordTiming]:
     import edge_tts
     audio_path.parent.mkdir(parents=True,exist_ok=True)
-    speech_text=_prepare_korean_speech(text)\n    communicate=edge_tts.Communicate(speech_text,voice,rate=rate,pitch=pitch,volume=volume,boundary="SentenceBoundary")
+    speech_text=_prepare_korean_speech(text)
+    communicate=edge_tts.Communicate(speech_text,voice,rate=rate,pitch=pitch,volume=volume,boundary="SentenceBoundary")
     boundaries=[]; audio=bytearray()
     async for chunk in communicate.stream():
         if chunk["type"]=="audio": audio.extend(chunk["data"])
