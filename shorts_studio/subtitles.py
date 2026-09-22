@@ -34,3 +34,19 @@ def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, tar
 
 def speech_gap_violations(captions: list[Caption], words: list[WordTiming]) -> list[WordTiming]:
     return [w for w in words if not any(c.start <= (w.start+w.end)/2 <= c.end for c in captions)]
+
+def excessive_tail_violations(captions: list[Caption], words: list[WordTiming], max_tail: float=0.35) -> list[Caption]:
+    """A caption must disappear promptly once the words it covers finish
+    being spoken. Flag any caption whose end sits more than max_tail seconds
+    past the real end of the last word it covers -- this is what actually
+    catches "captions remain visible noticeably after the phrase ended",
+    not a cosmetic global offset tweak."""
+    violations = []
+    for c in captions:
+        covered = [w for w in words if w.start < c.end and w.end > c.start]
+        if not covered:
+            continue
+        real_end = max(w.end for w in covered)
+        if c.end - real_end > max_tail:
+            violations.append(c)
+    return violations

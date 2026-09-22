@@ -1,19 +1,56 @@
 from __future__ import annotations
-import json, re
+import json, re, subprocess
 from pathlib import Path
 from .timing import WordTiming
 
 DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
-DEFAULT_KO_RATE = "+24%"
-DEFAULT_KO_PITCH = "-2Hz"
+# A slower, more conversational rate is only PART of the naturalness fix here.
+# The real fix is structural: real per-word timestamps (WordBoundary, not
+# SentenceBoundary) from independent per-sentence synthesis calls, plus a real
+# audible pause between sentences (SENTENCE_GAP_SECONDS) instead of Edge's
+# own inconsistent inter-sentence timing. +24%/-2Hz alone (the old approach)
+# just made a rushed, flat delivery rush faster.
+DEFAULT_KO_RATE = "+8%"
+DEFAULT_KO_PITCH = "+0Hz"
 DEFAULT_KO_VOLUME = "+0%"
+SENTENCE_GAP_SECONDS = 0.30
+
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
 def _prepare_korean_speech(text: str) -> str:
-    """Conservative speech cleanup: preserve wording while giving Edge clearer
-    Korean phrase boundaries and avoiding the rushed +35% delivery."""
+    """Collapse stray whitespace and give Edge clear punctuation-boundary
+    spacing -- but never touch a comma sitting between two digits (a
+    thousands separator like "1,830"). The old unconditional
+    r"\\s*([,.;!?])\\s*" -> r"\\1 " substitution split "1,830" into "1, 830",
+    which changes how the number is read aloud and would misrepresent the
+    factual "1,830 additional water-tank cycles" figure."""
     text = re.sub(r"\s+", " ", text).strip()
-    text = re.sub(r"\s*([,.;!?])\s*", r"\1 ", text).strip()
-    return text
+    out = []; i = 0
+    for m in re.finditer(r"\s*([,.;!?])\s*", text):
+        start, end = m.span()
+        out.append(text[i:start])
+        ch = m.group(1)
+        prev_char = text[start - 1] if start > 0 else ""
+        next_char = text[end:end + 1]
+        if ch == "," and prev_char.isdigit() and next_char.isdigit():
+            out.append(",")
+        else:
+            out.append(ch + " ")
+        i = end
+    out.append(text[i:])
+    return "".join(out).strip()
+
+def _split_sentences(text: str) -> list[str]:
+    """Split into sentences on real sentence-ending punctuation, keeping the
+    punctuation attached. Synthesizing each sentence as its own TTS call
+    (see edge_tts_with_boundaries) resets the timing origin per sentence, so
+    a long multi-sentence scene never relies on cross-sentence
+    character-count interpolation for its middle words."""
+    text = re.sub(r"\s+", " ", text).strip()
+    if not text:
+        return []
+    parts = [p.strip() for p in _SENTENCE_SPLIT_RE.split(text) if p.strip()]
+    return parts or [text]
 
 def _tokenize(text:str)->list[str]:
     return re.findall(r"[^\s]+",text)
@@ -32,21 +69,97 @@ def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordT
         out.append(WordTiming(t,cursor,nxt)); cursor=nxt
     return out
 
-async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, rate: str=DEFAULT_KO_RATE, pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME) -> list[WordTiming]:
+async def _synthesize_sentence(text: str, voice: str, rate: str, pitch: str, volume: str) -> tuple[bytes, list[WordTiming]]:
+    """One real Edge TTS call per sentence, requesting WordBoundary events --
+    the engine's own real per-word timestamps, not a client-side guess. This
+    is what actually fixes caption/speech sync: the old SentenceBoundary-only
+    mode gave a single timestamp per whole sentence, so every caption chunk
+    *within* a multi-word sentence was positioned by linear character-count
+    interpolation, which drifts from the real audio -- the root cause of
+    captions lingering noticeably after the voice has moved on."""
     import edge_tts
+    communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch, volume=volume, boundary="WordBoundary")
+    audio = bytearray(); boundaries = []
+    async for chunk in communicate.stream():
+        if chunk["type"] == "audio":
+            audio.extend(chunk["data"])
+        elif chunk["type"] in {"WordBoundary", "SentenceBoundary"}:
+            start = chunk["offset"] / 10_000_000
+            dur = chunk["duration"] / 10_000_000
+            boundaries.append(WordTiming(chunk.get("text", ""), start, start + dur))
+    return bytes(audio), boundaries
+
+def _ffmpeg_duration_seconds(path: Path) -> float:
+    """Probe real audio duration from ffmpeg's own stderr banner -- avoids a
+    hard dependency on a separate ffprobe binary for this step. render()
+    already requires ffprobe later for the final video; this keeps TTS
+    synthesis itself consistent with the ffmpeg-only tooling every other
+    real-render test in this repo relies on."""
+    out = subprocess.run(["ffmpeg", "-i", str(path)], capture_output=True, text=True)
+    m = re.search(r"Duration:\s*(\d+):(\d+):(\d+\.\d+)", out.stderr)
+    if not m:
+        raise RuntimeError(f"could not determine audio duration for {path}: {out.stderr[-500:]}")
+    h, mnt, s = m.groups()
+    return int(h) * 3600 + int(mnt) * 60 + float(s)
+
+def _silence_clip(path: Path, seconds: float) -> Path:
+    subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(seconds), "-q:a", "9", str(path)], check=True, capture_output=True)
+    return path
+
+def _concat_audio(parts: list[Path], out_path: Path) -> Path:
+    list_file = out_path.with_suffix(".concat.txt")
+    list_file.write_text("\n".join(f"file '{p.resolve()}'" for p in parts), encoding="utf-8")
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c", "copy", str(out_path)], check=True, capture_output=True)
+    return out_path
+
+async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, rate: str=DEFAULT_KO_RATE, pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME) -> list[WordTiming]:
     audio_path.parent.mkdir(parents=True,exist_ok=True)
     speech_text=_prepare_korean_speech(text)
-    communicate=edge_tts.Communicate(speech_text,voice,rate=rate,pitch=pitch,volume=volume,boundary="SentenceBoundary")
-    boundaries=[]; audio=bytearray()
-    async for chunk in communicate.stream():
-        if chunk["type"]=="audio": audio.extend(chunk["data"])
-        elif chunk["type"] in {"WordBoundary","SentenceBoundary"}:
-            start=chunk["offset"]/10_000_000
-            dur=chunk["duration"]/10_000_000
-            boundaries.append(WordTiming(chunk.get("text",""),start,start+dur))
-    audio_path.write_bytes(audio)
-    words=_map_boundaries_to_script(text,boundaries)
-    timing_path.write_text(json.dumps({"source":"edge-boundary","voice":voice,"rate":rate,"pitch":pitch,"volume":volume,"speech_text":speech_text,"raw":[w.__dict__ for w in boundaries],"words":[w.__dict__ for w in words]},ensure_ascii=False,indent=2),encoding="utf-8")
+    sentences=_split_sentences(speech_text)
+    if not sentences:
+        raise RuntimeError("no narration text to synthesize")
+
+    sentence_audio=[]; sentence_words=[]; sentence_raw=[]
+    for i, sentence in enumerate(sentences):
+        audio_bytes, boundaries = await _synthesize_sentence(sentence, voice, rate, pitch, volume)
+        if not boundaries:
+            raise RuntimeError(f"TTS returned no timing boundary events for sentence {i+1}/{len(sentences)}: {sentence!r}; do not guess from scene duration")
+        sentence_audio.append(audio_bytes)
+        sentence_words.append(_map_boundaries_to_script(sentence, boundaries))
+        sentence_raw.append([w.__dict__ for w in boundaries])
+
+    if len(sentences) == 1:
+        audio_path.write_bytes(sentence_audio[0])
+        words = sentence_words[0]
+        gap_used = 0.0
+    else:
+        tmp_dir = audio_path.parent
+        part_paths = []
+        for i, audio_bytes in enumerate(sentence_audio):
+            part = tmp_dir / f"{audio_path.stem}_part{i}.mp3"
+            part.write_bytes(audio_bytes)
+            part_paths.append(part)
+        concat_parts = [part_paths[0]]
+        for i in range(1, len(part_paths)):
+            gap = tmp_dir / f"{audio_path.stem}_gap{i}.mp3"
+            _silence_clip(gap, SENTENCE_GAP_SECONDS)
+            concat_parts.append(gap)
+            concat_parts.append(part_paths[i])
+        _concat_audio(concat_parts, audio_path)
+
+        words = []; cursor = 0.0
+        for i, sw in enumerate(sentence_words):
+            offset = cursor
+            words.extend(WordTiming(w.text, w.start + offset, w.end + offset) for w in sw)
+            real_duration = _ffmpeg_duration_seconds(part_paths[i])
+            cursor = offset + real_duration + SENTENCE_GAP_SECONDS
+        gap_used = SENTENCE_GAP_SECONDS
+
+    timing_path.write_text(json.dumps({
+        "source": "edge-boundary-per-sentence", "voice": voice, "rate": rate, "pitch": pitch, "volume": volume,
+        "speech_text": speech_text, "sentences": sentences, "sentence_gap_seconds": gap_used,
+        "raw": sentence_raw, "words": [w.__dict__ for w in words],
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
     if not words:
         raise RuntimeError("TTS returned no timing boundary events; do not guess from scene duration")
     return words

@@ -21,7 +21,7 @@ def test_recovery_swaps_asset_and_passes_on_second_candidate(tmp_path,monkeypatc
     scene=make_scene("s1",["bad.jpg","good.jpg"],["subject visible"])
     monkeypatch.setattr(render_mod,"_resolve_asset",lambda cand,build,sid,idx: Path(cand["asset_url"]))
     composited=[]
-    monkeypatch.setattr(render_mod,"_composite_scene_clip",lambda scene,asset,audio,srt,duration,fps,build,index:(composited.append(index),tmp_path/f"c{index}.mp4")[1])
+    monkeypatch.setattr(render_mod,"_composite_scene_clip",lambda scene,asset,audio,srt,duration,fps,build,index,**k:(composited.append(index),tmp_path/f"c{index}.mp4")[1])
     results=iter([{"scene":"s1","status":"FAIL","reason":"wrong domain"},{"scene":"s1","status":"PASS"}])
     monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda scene,clip,provider,frame,**k: next(results))
     outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=2,provider=None)
@@ -54,7 +54,7 @@ def test_recovery_never_touches_other_scenes(tmp_path,monkeypatch):
     scene=make_scene("s1",["bad.jpg","good.jpg"],["subject visible"])
     monkeypatch.setattr(render_mod,"_resolve_asset",lambda cand,build,sid,idx: Path(cand["asset_url"]))
     render_calls=[]
-    def fake_composite(scene,asset,audio,srt,duration,fps,build,index):
+    def fake_composite(scene,asset,audio,srt,duration,fps,build,index,**k):
         render_calls.append((scene.id,index)); return tmp_path/f"c{index}.mp4"
     monkeypatch.setattr(render_mod,"_composite_scene_clip",fake_composite)
     results=iter([{"scene":"s1","status":"FAIL"},{"scene":"s1","status":"PASS"}])
@@ -66,7 +66,7 @@ def test_zero_max_attempts_disables_recovery_entirely(tmp_path,monkeypatch):
     scene=make_scene("s1",["bad.jpg","good.jpg"],["subject visible"])
     monkeypatch.setattr(render_mod,"_resolve_asset",lambda cand,build,sid,idx: Path(cand["asset_url"]))
     composited=[]
-    monkeypatch.setattr(render_mod,"_composite_scene_clip",lambda scene,asset,audio,srt,duration,fps,build,index:(composited.append(index),tmp_path/f"c{index}.mp4")[1])
+    monkeypatch.setattr(render_mod,"_composite_scene_clip",lambda scene,asset,audio,srt,duration,fps,build,index,**k:(composited.append(index),tmp_path/f"c{index}.mp4")[1])
     monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda *a,**k: {"scene":"s1","status":"FAIL","reason":"wrong"})
     outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=0,provider=None)
     assert composited==[0]  # never touches the fallback candidate

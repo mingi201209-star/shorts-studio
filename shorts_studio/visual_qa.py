@@ -59,9 +59,15 @@ def _window_candidates(image_path):
     edges=cv2.dilate(cv2.Canny(gray,40,120),None,iterations=1)
     contours,_=cv2.findContours(edges,cv2.RETR_LIST,cv2.CHAIN_APPROX_SIMPLE)
     h,w=gray.shape; area=float(h*w); out=[]
+    # Lower bound recalibrated for the safe-area composition fix: the
+    # contain-fit foreground band is now capped to SAFE_BOTTOM_Y-SAFE_TOP_Y
+    # tall (never bleeding into the bottom caption zone), so the window
+    # comparison graphic renders smaller in-frame than before (measured
+    # ~0.03-0.044 for the real shapes vs ~0.0016 for background noise --
+    # .02 keeps a wide margin above noise while covering the new real size).
     for c in contours:
         frac=cv2.contourArea(c)/area
-        if .08<=frac<=.45:
+        if .02<=frac<=.45:
             x,y,cw,ch=cv2.boundingRect(c); out.append({"contour":c,"cx":x+cw/2,"frac":frac})
     return {"candidates":out,"frame_area":area,"width":w}
 

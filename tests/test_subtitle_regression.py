@@ -3,7 +3,7 @@ negative/reversed/out-of-bounds timestamps, short Shorts-style caption spans,
 and captions never perceptibly lagging the voice (lead policy)."""
 import pytest
 from shorts_studio.timing import WordTiming
-from shorts_studio.subtitles import segment, speech_gap_violations
+from shorts_studio.subtitles import Caption, excessive_tail_violations, segment, speech_gap_violations
 from shorts_studio.qa import subtitle_qa
 
 def _korean_words(n, step=0.35, span=0.28):
@@ -50,7 +50,6 @@ def test_isolated_pause_between_sentences_is_not_a_violation():
     assert speech_gap_violations(caps, words) == []
 
 def test_subtitle_qa_fails_closed_on_injected_gap():
-    from shorts_studio.subtitles import Caption
     words = [WordTiming("첫", 0.0, 0.4), WordTiming("둘", 0.5, 0.9), WordTiming("셋", 1.0, 1.4)]
     duration = 1.6
     # A caption pipeline regression: the middle word's speech window is left uncovered.
@@ -58,3 +57,31 @@ def test_subtitle_qa_fails_closed_on_injected_gap():
     q = subtitle_qa(broken, words, duration)
     assert q["status"] == "FAIL"
     assert q["speech_gaps"] > 0
+
+def test_caption_disappears_promptly_no_excessive_tail():
+    # This is what would have caught "captions remain visible noticeably
+    # after the phrase ended": the old SentenceBoundary-only interpolation
+    # could position a caption's end far past the real end of its last word.
+    words = [WordTiming("안녕", 0.0, 0.4), WordTiming("하세요", 0.42, 0.9)]
+    good = [Caption("안녕 하세요", 0.0, 0.95)]  # ends just after real speech
+    assert excessive_tail_violations(good, words) == []
+
+def test_excessive_tail_is_flagged():
+    words = [WordTiming("안녕", 0.0, 0.4), WordTiming("하세요", 0.42, 0.9)]
+    # Caption lingers 1.5s past the real end of the words it covers.
+    lingering = [Caption("안녕 하세요", 0.0, 2.4)]
+    violations = excessive_tail_violations(lingering, words)
+    assert len(violations) == 1
+
+def test_subtitle_qa_fails_closed_on_excessive_tail():
+    words = [WordTiming("첫", 0.0, 0.4), WordTiming("둘", 0.5, 0.9)]
+    lingering = [Caption("첫 둘", 0.0, 2.5)]
+    q = subtitle_qa(lingering, words, 3.0)
+    assert q["status"] == "FAIL"
+    assert q["excessive_tail"] > 0
+
+def test_real_segment_output_never_produces_excessive_tail_across_many_words():
+    words = _korean_words(23)
+    duration = words[-1].end + .25
+    caps = segment(words, duration)
+    assert excessive_tail_violations(caps, words) == []

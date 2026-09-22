@@ -6,6 +6,7 @@ from .tts import edge_tts_with_boundaries
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
+from .final_video_qa import run_final_video_qa
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -40,17 +41,34 @@ def _download(url:str,path:Path,max_attempts:int=4)->Path:
         time.sleep(2**(attempt+1))
     raise last_error  # pragma: no cover - loop always returns or raises above
 
-def _title_filter(title:str|None)->str:
-    if not title:
-        return ""
-    safe=title.replace("\\","\\\\").replace("'","\\'").replace(":","\\:")
-    return (
-        f",drawtext=text='{safe}':"
-        "fontcolor=white:fontsize=58:borderw=5:bordercolor=black:"
-        "x=(w-text_w)/2:y=105"
-    )
+# Bottom rows [SAFE_BOTTOM_Y, 1920) must ALWAYS stay pure blurred background --
+# never sharp foreground -- because the burned-in caption safe area lives
+# there (see _visual_filter's caption style, measured empirically: at
+# MarginV=48 captions occupy rows ~1499-1585, so 1300 leaves >=199px of
+# headroom even for a 2-line caption). This is a generic invariant enforced
+# for every scene via the fg box's height, not a per-scene crop/position hack.
+SAFE_BOTTOM_Y=1300
+# Top rows [0, SAFE_TOP_Y) are reserved for the persistent top title so the
+# foreground image doesn't visually crowd it.
+SAFE_TOP_Y=190
+_FG_BAND_WIDTH=1000
 
-def _visual_filter(scene, srt:Path, fps:int)->str:
+# ASS/libass alignment codes rendered by this ffmpeg build follow the legacy
+# SSA numbering (5/6/7 = top row), NOT the ASS numpad convention (7/8/9 = top
+# row) -- verified empirically: Alignment=8 rendered mid-screen, not near the
+# top. Alignment=6 is the top-center value that actually works here.
+_TITLE_STYLE="Alignment=6,MarginV=15,FontSize=20,Outline=3,Shadow=0,Bold=1"
+
+def _title_clause(title_srt:Path|None)->str:
+    if not title_srt:
+        return ""
+    return f",subtitles={title_srt.as_posix()}:force_style='{_TITLE_STYLE}'"
+
+def _write_title_srt(path:Path, title:str, duration:float)->Path:
+    path.write_text(f"1\n{_srt_time(0.0)} --> {_srt_time(duration)}\n{title}\n\n",encoding="utf-8")
+    return path
+
+def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
     motion=scene.motion.type
     if motion=="pan_right":
         move="zoompan=z='1.10':x='(iw-iw/zoom)*on/180':y='(ih-ih/zoom)/2':d=1"
@@ -64,16 +82,21 @@ def _visual_filter(scene, srt:Path, fps:int)->str:
     # Preserve the complete source image.  The old fill+crop path could discard
     # most of a landscape archival photo/document when forcing it into 9:16.
     # Build a full-frame blurred backdrop, then place a sharp contain-fit copy
-    # over it. This keeps every source pixel visible while avoiding empty bars.
+    # over it, but cap the contain-fit box to the band between SAFE_TOP_Y and
+    # SAFE_BOTTOM_Y -- so no matter how the source image is framed (even a
+    # full-bleed photo with content touching its own edges), the composited
+    # foreground can never extend into the bottom caption safe area. This
+    # applies to every scene generically; there is no per-scene special case.
+    fg_h=SAFE_BOTTOM_Y-SAFE_TOP_Y
     bg="scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:8"
-    fg="scale=1000:1720:force_original_aspect_ratio=decrease"
+    fg=f"scale={_FG_BAND_WIDTH}:{fg_h}:force_original_aspect_ratio=decrease"
     return (
         f"split=2[bgsrc][fgsrc];"
         f"[bgsrc]{bg}[bg];"
         f"[fgsrc]{fg}[fg];"
-        f"[bg][fg]overlay=(W-w)/2:(H-h)/2,{move}:s=1080x1920:fps={fps},"
+        f"[bg][fg]overlay=(W-w)/2:{SAFE_TOP_Y}+({fg_h}-h)/2,{move}:s=1080x1920:fps={fps},"
         f"subtitles={srt.as_posix()}:force_style='{style}'"
-        f"{_title_filter(getattr(scene, 'overlay_title', None))}"
+        f"{_title_clause(title_srt)}"
     )
 
 def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path:
@@ -97,12 +120,13 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
     return path
 
-def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int)->Path:
+def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
+    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     if asset:
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
-        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'{_title_filter(getattr(scene, 'overlay_title', None))}"
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
@@ -110,20 +134,20 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
         raise RuntimeError(f"ffmpeg failed compositing {scene.id}: {e.stderr[-2000:] if e.stderr else e}") from e
     return clip
 
-def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict]:
+def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     words=asyncio.run(edge_tts_with_boundaries(scene.narration,audio,timing))
     duration=max(w.end for w in words)+.25
     caps=segment(words,duration)
     q=subtitle_qa(caps,words,duration)
     srt=build/f"{scene.id}.srt"; write_srt(srt,caps)
-    return audio,duration,srt,{"scene":scene.id,**q}
+    return audio,duration,srt,{"scene":scene.id,**q},caps
 
 def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
     return [primary]+[c.model_dump() for c in scene.recovery_candidates]
 
-def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider)->dict:
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:
     """Render a scene's visual clip, running semantic visual QA and, on FAIL,
     swapping to the next declared fallback asset and re-rendering ONLY this
     scene's clip (never the whole production) until it passes or the bounded
@@ -134,7 +158,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             asset=_resolve_asset(candidates[index],build,scene.id,index)
-            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index)
+            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
@@ -161,18 +185,21 @@ def render(manifest:str,dry_run:bool=False)->dict:
         raise RuntimeError("FFmpeg/ffprobe required")
     build=Path("build"); dist=Path("dist"); build.mkdir(exist_ok=True); dist.mkdir(exist_ok=True)
     provider=default_vision_provider()
-    concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]
+    concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     for scene in p.scenes:
-        audio,duration,srt,q=_synthesize_scene_audio(scene,build)
+        audio,duration,srt,q,caps=_synthesize_scene_audio(scene,build)
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
-        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider)
+        title=scene.overlay_title or p.overlay_title
+        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,title=title)
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
         concat.append(outcome["clip"])
         sources.append({"scene":scene.id,"asset":outcome["source"]["asset"] if outcome["source"] else None,"attribution":outcome["source"]["attribution"] if outcome["source"] else None,"candidate_index":outcome["source"]["index"] if outcome["source"] else None,"recovery_attempts":outcome["semantic"].get("recovery_attempts",0)})
         if scene.visual_qa_requirements:
             semantic_results.append(outcome["semantic"])
+        scene_windows.append({"scene":scene.id,"start":cumulative,"caption_window":(caps[0].start,caps[0].end) if caps else None})
+        cumulative+=duration
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True)
@@ -184,8 +211,9 @@ def render(manifest:str,dry_run:bool=False)->dict:
     semantic={"status":semantic_status,"results":semantic_results}
     require_semantic=bool(os.environ.get("SHORTS_REQUIRE_SEMANTIC_QA"))
     semantic_ok=production_semantic_ok(semantic["status"],require_semantic)
-    overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) else "FAIL"
-    report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"sources":sources,"probe":probe,"output":str(final)}
+    final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build)
+    overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) and final_video["status"]=="PASS" else "FAIL"
+    report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"output":str(final)}
     write_report(dist/"qa_report.json",report)
     if overall!="PASS":
         raise RuntimeError(f"QA failed: {report}")
