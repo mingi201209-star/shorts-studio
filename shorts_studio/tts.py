@@ -1,19 +1,20 @@
 from __future__ import annotations
 import json, re, subprocess
+from dataclasses import replace
 from pathlib import Path
 from .timing import WordTiming
+from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers
 
 DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
-# A slower, more conversational rate is only PART of the naturalness fix here.
-# The real fix is structural: real per-word timestamps (WordBoundary, not
-# SentenceBoundary) from independent per-sentence synthesis calls, plus a real
-# audible pause between sentences (SENTENCE_GAP_SECONDS) instead of Edge's
-# own inconsistent inter-sentence timing. +24%/-2Hz alone (the old approach)
-# just made a rushed, flat delivery rush faster.
+# A flat rate/pitch is only a fallback for scenes with no authored
+# narration_plan. The real naturalness fix is the Korean Prosody Planner
+# (shorts_studio/prosody.py): real per-word timestamps (WordBoundary) from
+# grouped, role-aware synthesis units, each followed by a pause that VARIES
+# by (narrative role, boundary strength) instead of one fixed silence
+# everywhere. See synthesize_plan below.
 DEFAULT_KO_RATE = "+8%"
 DEFAULT_KO_PITCH = "+0Hz"
 DEFAULT_KO_VOLUME = "+0%"
-SENTENCE_GAP_SECONDS = 0.30
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
@@ -112,54 +113,80 @@ def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c", "copy", str(out_path)], check=True, capture_output=True)
     return out_path
 
-async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, rate: str=DEFAULT_KO_RATE, pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME) -> list[WordTiming]:
-    audio_path.parent.mkdir(parents=True,exist_ok=True)
-    speech_text=_prepare_korean_speech(text)
-    sentences=_split_sentences(speech_text)
-    if not sentences:
-        raise RuntimeError("no narration text to synthesize")
+async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True) -> list[WordTiming]:
+    """Korean Prosody Planner V1 synthesis engine. Consecutive
+    "continuation"-boundary phrases are merged into ONE Edge TTS call (one
+    continuous pitch/energy contour -- no per-sentence reset, no robotic
+    stitching); a new unit starts only at a real boundary (weak/medium/
+    strong/anticipatory/terminal), each followed by a PAUSE THAT VARIES with
+    (role, boundary) rather than one fixed silence everywhere. Numbers are
+    spelled out in Sino-Korean before synthesis so "1,830" is read as one
+    number, never split by punctuation handling. WordBoundary timing (real
+    per-word timestamps) is kept throughout for caption sync -- prosody and
+    timing accuracy are handled independently, as they measure different
+    things."""
+    audio_path.parent.mkdir(parents=True, exist_ok=True)
+    if not phrases:
+        raise RuntimeError("no narration phrases to synthesize")
+    prepared = [replace(p, text=_prepare_korean_speech(spell_out_numbers(p.text))) for p in phrases]
+    units = group_into_units(prepared)
 
-    sentence_audio=[]; sentence_words=[]; sentence_raw=[]
-    for i, sentence in enumerate(sentences):
-        audio_bytes, boundaries = await _synthesize_sentence(sentence, voice, rate, pitch, volume)
+    unit_audio = []; unit_words = []; unit_raw = []; unit_meta = []
+    for idx, unit in enumerate(units):
+        unit_text = " ".join(p.text for p in unit)
+        rate = rate_for_unit(unit, base_rate) if use_role_rates else base_rate
+        audio_bytes, boundaries = await _synthesize_sentence(unit_text, voice, rate, base_pitch, volume)
         if not boundaries:
-            raise RuntimeError(f"TTS returned no timing boundary events for sentence {i+1}/{len(sentences)}: {sentence!r}; do not guess from scene duration")
-        sentence_audio.append(audio_bytes)
-        sentence_words.append(_map_boundaries_to_script(sentence, boundaries))
-        sentence_raw.append([w.__dict__ for w in boundaries])
+            raise RuntimeError(f"TTS returned no timing boundary events for unit {idx+1}/{len(units)} (role={unit[0].role!r}): {unit_text!r}; do not guess from scene duration")
+        unit_audio.append(audio_bytes)
+        unit_words.append(_map_boundaries_to_script(unit_text, boundaries))
+        unit_raw.append([w.__dict__ for w in boundaries])
+        unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit)})
 
-    if len(sentences) == 1:
-        audio_path.write_bytes(sentence_audio[0])
-        words = sentence_words[0]
-        gap_used = 0.0
+    gaps = [pause_after(unit[-1]) for unit in units[:-1]]  # gap AFTER unit i (i < last)
+
+    if len(units) == 1:
+        audio_path.write_bytes(unit_audio[0])
+        words = unit_words[0]
     else:
         tmp_dir = audio_path.parent
         part_paths = []
-        for i, audio_bytes in enumerate(sentence_audio):
+        for i, audio_bytes in enumerate(unit_audio):
             part = tmp_dir / f"{audio_path.stem}_part{i}.mp3"
             part.write_bytes(audio_bytes)
             part_paths.append(part)
         concat_parts = [part_paths[0]]
         for i in range(1, len(part_paths)):
-            gap = tmp_dir / f"{audio_path.stem}_gap{i}.mp3"
-            _silence_clip(gap, SENTENCE_GAP_SECONDS)
-            concat_parts.append(gap)
+            gap_seconds = gaps[i - 1]
+            if gap_seconds > 0:
+                gap_path = tmp_dir / f"{audio_path.stem}_gap{i}.mp3"
+                _silence_clip(gap_path, gap_seconds)
+                concat_parts.append(gap_path)
             concat_parts.append(part_paths[i])
         _concat_audio(concat_parts, audio_path)
 
         words = []; cursor = 0.0
-        for i, sw in enumerate(sentence_words):
+        for i, uw in enumerate(unit_words):
             offset = cursor
-            words.extend(WordTiming(w.text, w.start + offset, w.end + offset) for w in sw)
+            words.extend(WordTiming(w.text, w.start + offset, w.end + offset) for w in uw)
             real_duration = _ffmpeg_duration_seconds(part_paths[i])
-            cursor = offset + real_duration + SENTENCE_GAP_SECONDS
-        gap_used = SENTENCE_GAP_SECONDS
+            gap = gaps[i] if i < len(gaps) else 0.0
+            cursor = offset + real_duration + gap
 
     timing_path.write_text(json.dumps({
-        "source": "edge-boundary-per-sentence", "voice": voice, "rate": rate, "pitch": pitch, "volume": volume,
-        "speech_text": speech_text, "sentences": sentences, "sentence_gap_seconds": gap_used,
-        "raw": sentence_raw, "words": [w.__dict__ for w in words],
+        "source": "prosody-planner-v1", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
+        "units": unit_meta, "gaps_seconds": gaps, "raw": unit_raw, "words": [w.__dict__ for w in words],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     if not words:
         raise RuntimeError("TTS returned no timing boundary events; do not guess from scene duration")
     return words
+
+async def edge_tts_with_boundaries(text: str, audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, rate: str=DEFAULT_KO_RATE, pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME) -> list[WordTiming]:
+    """Backward-compatible entry point: auto-splits `text` into per-sentence
+    terminal-boundary phrases (the pre-planner behavior) and synthesizes
+    them at the given flat rate/pitch -- used when a scene declares no
+    narration_plan. See synthesize_plan for the role-aware engine."""
+    plan = build_auto_plan(text)
+    if not plan:
+        raise RuntimeError("no narration text to synthesize")
+    return await synthesize_plan(plan, audio_path, timing_path, voice, rate, pitch, volume, use_role_rates=False)

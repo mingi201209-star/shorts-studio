@@ -4,11 +4,17 @@ fall back to guessing durations from character counts.
 import asyncio, shutil, sys, types
 import pytest
 from shorts_studio.timing import WordTiming
+from shorts_studio.prosody import pause_after, PhraseSpec
 from shorts_studio.tts import (
-    DEFAULT_KO_RATE, SENTENCE_GAP_SECONDS,
+    DEFAULT_KO_RATE,
     _map_boundaries_to_script, _prepare_korean_speech, _split_sentences,
     edge_tts_with_boundaries,
 )
+
+# The auto-fallback path (build_auto_plan) tags every phrase role="SETUP",
+# boundary="terminal" -- this is the real gap the engine will insert between
+# two auto-split sentences, replacing the old fixed SENTENCE_GAP_SECONDS.
+AUTO_FALLBACK_GAP = pause_after(PhraseSpec(role="SETUP", text="x", boundary="terminal"))
 
 requires_ffmpeg = pytest.mark.skipif(not shutil.which("ffmpeg"), reason="requires a real ffmpeg binary")
 
@@ -143,7 +149,7 @@ def test_multi_sentence_narration_concatenates_with_real_gap_and_offsets(tmp_pat
     # sentence 1's real audio duration (~0.6s) plus the real inter-sentence gap.
     assert words[0].start == pytest.approx(0.0, abs=1e-6)
     sentence2_start = words[2].start
-    assert sentence2_start >= 0.6 + SENTENCE_GAP_SECONDS - 0.05, (
+    assert sentence2_start >= 0.6 + AUTO_FALLBACK_GAP - 0.05, (
         f"sentence 2 must start after sentence 1's real duration + the gap, got {sentence2_start}"
     )
     # The written audio file must itself be as long as both parts + the gap.
@@ -151,7 +157,7 @@ def test_multi_sentence_narration_concatenates_with_real_gap_and_offsets(tmp_pat
     probe = subprocess.run(["ffmpeg", "-i", str(tmp_path / "out.mp3")], capture_output=True, text=True)
     m = _re.search(r"Duration:\s*(\d+):(\d+):(\d+\.\d+)", probe.stderr)
     total = int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3))
-    assert total >= 0.6 + 0.5 + SENTENCE_GAP_SECONDS - 0.1
+    assert total >= 0.6 + 0.5 + AUTO_FALLBACK_GAP - 0.1
 
 @requires_ffmpeg
 def test_multi_sentence_fails_closed_if_any_sentence_has_no_boundaries(tmp_path):

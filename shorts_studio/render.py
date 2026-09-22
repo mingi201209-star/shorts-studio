@@ -2,7 +2,8 @@ from __future__ import annotations
 import asyncio, json, os, shutil, subprocess, time, urllib.error, urllib.request
 from pathlib import Path
 from .project import load_project
-from .tts import edge_tts_with_boundaries
+from .prosody import PhraseSpec, build_auto_plan
+from .tts import synthesize_plan
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
@@ -134,9 +135,17 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
         raise RuntimeError(f"ffmpeg failed compositing {scene.id}: {e.stderr[-2000:] if e.stderr else e}") from e
     return clip
 
+def _narration_plan(scene)->list[PhraseSpec]:
+    declared=getattr(scene,"narration_plan",None) or []
+    if declared:
+        return [PhraseSpec(role=p.role,text=p.text,boundary=p.boundary,focus=p.focus,pace=p.pace) for p in declared]
+    return build_auto_plan(scene.narration)
+
 def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
-    words=asyncio.run(edge_tts_with_boundaries(scene.narration,audio,timing))
+    plan=_narration_plan(scene)
+    use_role_rates=bool(getattr(scene,"narration_plan",None))
+    words=asyncio.run(synthesize_plan(plan,audio,timing,use_role_rates=use_role_rates))
     duration=max(w.end for w in words)+.25
     caps=segment(words,duration)
     q=subtitle_qa(caps,words,duration)

@@ -96,14 +96,15 @@ def test_render_propagates_project_level_overlay_title_to_every_scene(tmp_path, 
     real_which = R.shutil.which
     monkeypatch.setattr(R.shutil, "which", lambda name: real_which(name) or (name == "ffprobe" and real_which("ffmpeg")))
 
-    async def fake_boundaries(text, audio_path, timing_path, **kw):
+    async def fake_synthesize_plan(plan, audio_path, timing_path, **kw):
         from shorts_studio.timing import WordTiming
         audio_path.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "1", "-q:a", "9", str(audio_path)], check=True, capture_output=True)
         timing_path.write_text("{}", encoding="utf-8")
+        text = " ".join(p.text for p in plan)
         return [WordTiming(text, 0.0, 0.8)]
 
-    monkeypatch.setattr(R, "edge_tts_with_boundaries", fake_boundaries)
+    monkeypatch.setattr(R, "synthesize_plan", fake_synthesize_plan)
 
     manifest = tmp_path / "m.json"
     manifest.write_text(
