@@ -28,7 +28,15 @@ def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, tar
         if i+1 < len(groups):
             next_start=max(0.0,groups[i+1][0].start-lead)
             if next_start <= g[-1].end + .08: end=max(end,next_start)
-        if end-start > max_duration: end=min(end,start+max_duration)
+        # The max_duration cap must only trim excess BRIDGED overlap into the
+        # next caption's territory -- it must never cut below this group's
+        # own last real word's end, or a legitimately spoken word silently
+        # loses caption coverage (a real speech-gap regression). This is
+        # what let a small (sub-max_gap) pause between two prosody-planner
+        # units -- e.g. a deliberately short HOOK->SETUP transition -- merge
+        # words from both sides into one group whose natural span exceeded
+        # max_duration, then get clamped below its own last word's end.
+        if end-start > max_duration: end=max(g[-1].end,min(end,start+max_duration))
         out.append(Caption(" ".join(x.text for x in g),start,end))
     return out
 

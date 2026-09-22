@@ -85,3 +85,49 @@ def test_real_segment_output_never_produces_excessive_tail_across_many_words():
     duration = words[-1].end + .25
     caps = segment(words, duration)
     assert excessive_tail_violations(caps, words) == []
+
+def test_small_cross_unit_pause_never_drops_word_coverage():
+    """Real regression found via a full production render: the Korean
+    Prosody Planner deliberately uses SMALL pauses between some phrase
+    units (e.g. a 0.10s HOOK->SETUP transition) -- well under segment()'s
+    max_gap(0.6) merge threshold. That lets words from both sides of the
+    pause land in the SAME caption group. If that merged group's natural
+    span (which includes the pause itself) exceeds max_duration(2.2), the
+    old clamp (`end=min(end,start+max_duration)`) could cut the caption's
+    end BELOW its own last word's real end -- silently dropping caption
+    coverage for a word that was genuinely spoken. This is not a
+    synthetic corner case: it fired on real scene_01 (HOOK->SETUP) output
+    in CI. The fix must hold regardless of the exact pause value chosen by
+    the planner, so this is parametrized across several sub-max_gap pauses."""
+    for pause in (0.0, 0.10, 0.16, 0.22, 0.30, 0.45):
+        words = [
+            WordTiming("hook1", 0.00, 0.42),
+            WordTiming("hook2", 0.47, 0.89),
+            WordTiming("hook3", 0.94, 1.36),
+            WordTiming("hook4", 1.41, 1.83),
+        ]
+        gap_start = words[-1].end + pause
+        words += [
+            WordTiming("setup1", gap_start, gap_start + 0.42),
+            WordTiming("setup2", gap_start + 0.47, gap_start + 0.89),
+        ]
+        duration = words[-1].end + .25
+        caps = segment(words, duration)
+        violations = speech_gap_violations(caps, words)
+        assert violations == [], f"pause={pause}: dropped coverage for {violations}"
+        # The coverage guarantee must hold via each caption's own last word,
+        # not by accident: every caption must reach at least its own last
+        # covered word's real end.
+        for c in caps:
+            covered = [w for w in words if w.start < c.end and w.end > c.start]
+            if covered:
+                assert c.end >= max(w.end for w in covered) - 1e-9
+
+def test_max_duration_clamp_still_trims_pure_bridge_overlap():
+    """The coverage-safety fix must not disable max_duration entirely --
+    it should still cap a caption that runs long purely because of the
+    small flicker-avoidance bridge into the next caption's start, as long
+    as doing so does not cut below this group's own last real word."""
+    words = [WordTiming("only", 0.0, 0.3)]
+    caps = segment(words, audio_duration=10.0, max_duration=2.2)
+    assert caps[0].end - caps[0].start <= 2.2 + 1e-9
