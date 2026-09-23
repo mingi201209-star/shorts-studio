@@ -85,7 +85,24 @@ jobs:
               assert r["status"] == "PASS", f"required scene not PASS (NOT_EVALUATED must fail-closed here): {r}"
           assert all(s["status"] == "PASS" for s in report["subtitle_reports"]), report["subtitle_reports"]
           assert report["visual_qa"]["structural_status"] == "PASS", report["visual_qa"]
+          fv = report["final_video_qa"]
+          assert fv["status"] == "PASS", f"viewer-facing final-video QA failed: {json.dumps(fv, ensure_ascii=False, indent=2)}"
+          for name, check in fv["checks"].items():
+              assert check["status"] == "PASS", f"{name} failed: {check}"
           print("qa_report OK:", json.dumps(report["semantic_visual_qa"], ensure_ascii=False, indent=2))
+          print("final_video_qa OK:", json.dumps(fv, ensure_ascii=False, indent=2))
+          PY
+      - name: Extract representative frames for manual visual review
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          fmt = json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","format=duration","-of","json","dist/final.mp4"],capture_output=True,text=True,check=True).stdout)
+          duration = float(fmt["format"]["duration"])
+          samples = {"opening_title": 0.05, "early_scene": 0.20, "comparison_scene": 0.55, "subtitle_heavy": 0.75, "final_scene": 0.97}
+          for name, frac in samples.items():
+              ts = max(0.0, duration * frac)
+              subprocess.run(["ffmpeg","-y","-ss",str(ts),"-i","dist/final.mp4","-frames:v","1",f"dist/frame_{name}.jpg"],check=True,capture_output=True)
+          print("extracted representative frames at fractions:", samples, "of duration", duration)
           PY
       - uses: actions/upload-artifact@v4
         if: always()
@@ -96,4 +113,7 @@ jobs:
             build/*.srt
             build/*.timing.json
             build/*_qa.jpg
+            build/_titleqa_*.jpg
+            build/_capqa_*.jpg
+            build/_safeqa_*.jpg
             render-result.json

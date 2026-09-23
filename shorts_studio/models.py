@@ -9,6 +9,18 @@ class AssetCandidate(BaseModel):
     asset_url: str | None = None
     attribution: str | None = None
 
+class NarrationPhrase(BaseModel):
+    """One unit of the Korean Prosody Planner's structured representation
+    (see shorts_studio/prosody.py). A scene's spoken delivery is built from
+    an ordered list of these rather than one flat narration string synthesized
+    sentence-by-sentence with identical pauses everywhere."""
+    role: str  # HOOK|SETUP|CRISIS|INVESTIGATION|REVEAL|EXPLANATION|PAYOFF
+    text: str = Field(min_length=1)
+    # what kind of break follows THIS phrase: continuation|weak|medium|strong|anticipatory|terminal
+    boundary: str = "terminal"
+    focus: bool = False  # the emphasis/result target, e.g. a REVEAL's delivered payload
+    pace: str | None = None  # optional explicit Edge TTS rate override, e.g. "+2%"
+
 class Scene(BaseModel):
     id: str
     narration: str = Field(min_length=1)
@@ -34,6 +46,11 @@ class Scene(BaseModel):
     # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
     visual_qa_expected_sha256: list[str] = []
     overlay_title: str | None = None
+    # Structured, narrative-role-aware delivery plan for this scene's TTS
+    # audio (see shorts_studio/prosody.py). When empty, the engine falls
+    # back to auto-splitting `narration` into per-sentence terminal-boundary
+    # phrases (the previous, uniform-pause behavior).
+    narration_plan: list[NarrationPhrase] = []
 
 class Project(BaseModel):
     title: str

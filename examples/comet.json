@@ -7,7 +7,11 @@
   "scenes": [
     {
       "id": "scene_01",
-      "narration": "1950년대, 세계 최초의 제트 여객기 코멧이 등장했습니다.",
+      "narration": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다. 1950년대 세계 최초의 제트 여객기, 코멧이었습니다.",
+      "narration_plan": [
+        {"role": "HOOK", "text": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다", "boundary": "weak"},
+        {"role": "SETUP", "text": "1950년대 세계 최초의 제트 여객기, 코멧이었습니다", "boundary": "terminal"}
+      ],
       "visual_description": "1950년대 코멧",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
       "attribution": "Wikimedia Commons, public domain",
@@ -32,7 +36,11 @@
     },
     {
       "id": "scene_02",
-      "narration": "하지만 얼마 지나지 않아, 비행 중 기체가 부서지는 사고가 이어졌습니다.",
+      "narration": "그런데 얼마 지나지 않아 사고가 잇따랐지만, 원인은 오랫동안 밝혀지지 않았습니다.",
+      "narration_plan": [
+        {"role": "CRISIS", "text": "그런데 얼마 지나지 않아 사고가 잇따랐지만", "boundary": "continuation"},
+        {"role": "CRISIS", "text": "원인은 오랫동안 밝혀지지 않았습니다", "boundary": "terminal"}
+      ],
       "visual_description": "초기 코멧의 각진 창",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
       "attribution": "Wikimedia Commons, CC BY-SA 4.0",
@@ -42,7 +50,11 @@
     },
     {
       "id": "scene_03",
-      "narration": "이상하게도 시험용 동체는 1만 6천 번을 버텼습니다. 실제 기체는 훨씬 빨리 문제가 나타났습니다.",
+      "narration": "결국 조사팀은 실제 기체를 물탱크에 넣고, 비행 중 기압 변화를 그대로 재현했습니다.",
+      "narration_plan": [
+        {"role": "INVESTIGATION", "text": "결국 조사팀은 실제 기체를 물탱크에 넣고", "boundary": "continuation"},
+        {"role": "INVESTIGATION", "text": "비행 중 기압 변화를 그대로 재현했습니다", "boundary": "terminal"}
+      ],
       "visual_description": "코멧 동체 수조 피로 시험",
       "asset_url": "https://www.faa.gov/sites/faa.gov/files/images/lessons_learned/G-ALYV/Tank_FwdEscapeHatch.jpg",
       "attribution": "FAA Lessons Learned",
@@ -66,7 +78,11 @@
     },
     {
       "id": "scene_04",
-      "narration": "조사팀은 동체를 물탱크에 넣고 압력을 반복했습니다. 물탱크에서 1,830번 더 반복하자 동체가 찢어졌습니다.",
+      "narration": "실제 비행에서 약 1,230회의 압력을 견딘 기체는, 물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다.",
+      "narration_plan": [
+        {"role": "REVEAL", "text": "실제 비행에서 약 1,230회의 압력을 견딘 기체는", "boundary": "anticipatory"},
+        {"role": "REVEAL", "text": "물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다", "boundary": "terminal", "focus": true}
+      ],
       "visual_description": "수조 시험 파손",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
       "attribution": "Wikimedia Commons, CC BY-SA 4.0",
@@ -90,7 +106,11 @@
     },
     {
       "id": "scene_05",
-      "narration": "시작점은 각진 창의 모서리였습니다. 날카로운 모서리에는 힘이 집중되지만, 둥글게 만들면 더 넓게 퍼집니다.",
+      "narration": "찢어진 자리는 각진 모서리였고, 힘이 한 점에 몰리면서 균열이 자란 것입니다.",
+      "narration_plan": [
+        {"role": "EXPLANATION", "text": "찢어진 자리는 각진 모서리였고", "boundary": "continuation"},
+        {"role": "EXPLANATION", "text": "힘이 한 점에 몰리면서 균열이 자란 것입니다", "boundary": "terminal"}
+      ],
       "visual_description": "네모난 창과 둥근 창의 명확한 비교",
       "asset": "assets/window_compare.svg",
       "attribution": "shorts-studio explanatory graphic",
@@ -108,7 +128,10 @@
     },
     {
       "id": "scene_06",
-      "narration": "실제 사고기 잔해에서도 같은 부근의 피로 손상이 확인됐습니다. 기존 시험은 이 약점을 제대로 드러내지 못했습니다.",
+      "narration": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다.",
+      "narration_plan": [
+        {"role": "EXPLANATION", "text": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다", "boundary": "terminal"}
+      ],
       "visual_description": "회수된 사고기 잔해",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
       "attribution": "Wikimedia Commons, CC BY-SA 3.0",
@@ -132,7 +155,11 @@
     },
     {
       "id": "scene_07",
-      "narration": "그래서 오늘날 비행기 창문은 모서리를 둥글게 만듭니다. 이 모양은 사고와 조사 끝에 남은 답입니다.",
+      "narration": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고, 지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다.",
+      "narration_plan": [
+        {"role": "PAYOFF", "text": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고", "boundary": "continuation"},
+        {"role": "PAYOFF", "text": "지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다", "boundary": "terminal"}
+      ],
       "visual_description": "현대 여객기 둥근 창",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
       "attribution": "Wikimedia Commons, CC BY 2.0",
