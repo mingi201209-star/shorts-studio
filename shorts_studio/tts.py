@@ -111,31 +111,25 @@ def _silence_clip(path: Path, seconds: float) -> Path:
 def _trim_tts_edge_silence(path: Path, out_path: Path) -> Path:
     """Trim only leading/trailing TTS padding when real speech is present.
 
-    Synthetic all-silence fixtures (and pathological provider output) have no
-    speech to preserve; in that case keep the original clip. This makes the
-    trim conservative and prevents silenceremove from producing an invalid or
-    empty MP3 that later breaks concat.
+    The trim is an optimisation, never a correctness requirement. If ffmpeg
+    cannot produce a valid non-empty trimmed MP3 (including all-silence test
+    fixtures), fall back to the original bytes so concat remains fail-safe.
     """
-    detect = subprocess.run(
-        ["ffmpeg", "-i", str(path), "-af", "silencedetect=noise=-45dB:d=0.02", "-f", "null", "-"],
-        capture_output=True, text=True,
-    )
-    duration = _ffmpeg_duration_seconds(path)
-    silence_ends = [float(x) for x in re.findall(r"silence_end:\s*([0-9.]+)", detect.stderr)]
-    silence_starts = [float(x) for x in re.findall(r"silence_start:\s*([0-9.]+)", detect.stderr)]
-    all_silent = bool(silence_starts) and silence_starts[0] <= 0.02 and (
-        not silence_ends or silence_ends[-1] >= duration - 0.03
-    )
-    if all_silent:
-        shutil.copyfile(path, out_path)
-        return out_path
-    subprocess.run([
+    candidate = out_path.with_name(out_path.stem + "_candidate" + out_path.suffix)
+    proc = subprocess.run([
         "ffmpeg", "-y", "-i", str(path),
         "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB:"
                "stop_periods=1:stop_duration=0.02:stop_threshold=-45dB",
-        str(out_path),
-    ], check=True, capture_output=True)
-    if not out_path.exists() or out_path.stat().st_size == 0:
+        str(candidate),
+    ], capture_output=True)
+    valid = proc.returncode == 0 and candidate.exists() and candidate.stat().st_size > 0
+    if valid:
+        probe = subprocess.run(["ffmpeg", "-v", "error", "-i", str(candidate), "-f", "null", "-"], capture_output=True)
+        valid = probe.returncode == 0
+    if valid:
+        candidate.replace(out_path)
+    else:
+        candidate.unlink(missing_ok=True)
         shutil.copyfile(path, out_path)
     return out_path
 
