@@ -132,3 +132,16 @@ def test_semantic_subject_image_crops_title_and_caption_bands(tmp_path):
     # The semantic crop is the renderer's main visual band, not the full short.
     assert cropped.height < 1920
     assert cropped.width < 1080
+
+
+def test_semantic_subject_images_cover_wide_archival_frame(tmp_path):
+    from PIL import Image
+    from shorts_studio.visual_qa import _semantic_subject_images
+    image=tmp_path/"frame.png"
+    Image.new("RGB",(1080,1920),(128,128,128)).save(image)
+    crops=_semantic_subject_images(image)
+    assert len(crops) == 4
+    assert crops[0].size == (1004,1110)
+    assert all(c.height == 1110 for c in crops)
+    assert all(c.width > 0 for c in crops)
+    assert crops[1].width < crops[0].width
