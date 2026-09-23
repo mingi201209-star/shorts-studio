@@ -9,6 +9,7 @@ import pytest
 from shorts_studio.prosody import (
     PhraseSpec, build_auto_plan, group_into_units, pause_after,
     rate_for_unit, sino_korean_number, spell_out_numbers,
+    REFERENCE_PAUSE_MEDIAN, REFERENCE_PAUSE_IQR, REFERENCE_LONG_PAUSE_RANGE,
 )
 from shorts_studio.tts import synthesize_plan
 
@@ -70,6 +71,14 @@ def test_pauses_vary_by_role_and_boundary_not_fixed():
 def test_reveal_anticipatory_pause_longer_than_hook_pause():
     assert pause_after(PhraseSpec(role="REVEAL", text="x", boundary="anticipatory")) > \
         pause_after(PhraseSpec(role="HOOK", text="x", boundary="weak"))
+
+def test_human_reference_pause_profile_is_encoded_without_flattening_context():
+    assert REFERENCE_PAUSE_MEDIAN == pytest.approx(0.528, abs=0.001)
+    assert REFERENCE_PAUSE_IQR == pytest.approx((0.356, 0.582), abs=0.001)
+    assert REFERENCE_LONG_PAUSE_RANGE == pytest.approx((0.70, 0.83), abs=0.001)
+    assert pause_after(PhraseSpec(role="INVESTIGATION", text="x", boundary="continuation")) == 0.0
+    assert REFERENCE_PAUSE_IQR[0] <= pause_after(PhraseSpec(role="SETUP", text="x", boundary="medium")) <= REFERENCE_PAUSE_IQR[1]
+    assert REFERENCE_LONG_PAUSE_RANGE[0] <= pause_after(PhraseSpec(role="REVEAL", text="x", boundary="anticipatory")) <= REFERENCE_LONG_PAUSE_RANGE[1]
 
 # --- role-based rate, with a focus phrase easing off further ---------------
 
