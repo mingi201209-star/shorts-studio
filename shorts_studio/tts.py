@@ -132,8 +132,8 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
             "ffmpeg", "-v", "info", "-i", str(path),
             "-af", "silencedetect=noise=-45dB:d=0.02", "-f", "null", "-"
         ], capture_output=True, text=True)
-        starts = [float(x) for x in re.findall(r"silence_start:\\s*([0-9.]+)", detect.stderr)]
-        ends = [float(x) for x in re.findall(r"silence_end:\\s*([0-9.]+)", detect.stderr)]
+        starts = [float(x) for x in re.findall(r"silence_start:\s*([0-9.]+)", detect.stderr)]
+        ends = [float(x) for x in re.findall(r"silence_end:\s*([0-9.]+)", detect.stderr)]
         if starts and ends and starts[0] <= 0.01:
             leading_trim = ends[0]
         candidate.replace(out_path)
