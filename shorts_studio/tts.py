@@ -121,8 +121,8 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> Path:
         capture_output=True, text=True,
     )
     duration = _ffmpeg_duration_seconds(path)
-    silence_ends = [float(x) for x in re.findall(r"silence_end:\\s*([0-9.]+)", detect.stderr)]
-    silence_starts = [float(x) for x in re.findall(r"silence_start:\\s*([0-9.]+)", detect.stderr)]
+    silence_ends = [float(x) for x in re.findall(r"silence_end:\s*([0-9.]+)", detect.stderr)]
+    silence_starts = [float(x) for x in re.findall(r"silence_start:\s*([0-9.]+)", detect.stderr)]
     all_silent = bool(silence_starts) and silence_starts[0] <= 0.02 and (
         not silence_ends or silence_ends[-1] >= duration - 0.03
     )
