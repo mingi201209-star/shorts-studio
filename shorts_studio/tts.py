@@ -179,12 +179,14 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
     else:
         tmp_dir = audio_path.parent
         part_paths = []
+        leading_trims = []
         for i, audio_bytes in enumerate(unit_audio):
             part = tmp_dir / f"{audio_path.stem}_part{i}.mp3"
             part.write_bytes(audio_bytes)
             trimmed = tmp_dir / f"{audio_path.stem}_part{i}_trimmed.mp3"
-            _trim_tts_edge_silence(part, trimmed)
+            _, leading_trim = _trim_tts_edge_silence(part, trimmed)
             part_paths.append(trimmed)
+            leading_trims.append(leading_trim)
         concat_parts = [part_paths[0]]
         for i in range(1, len(part_paths)):
             gap_seconds = gaps[i - 1]
