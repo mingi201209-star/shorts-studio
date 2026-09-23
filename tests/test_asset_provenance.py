@@ -38,7 +38,7 @@ def test_missing_asset_file_fails_closed(tmp_path):
     q = AssetProvenanceVisionProvider().evaluate(frame, [], expected_asset_sha256=["deadbeef"], asset_path=str(tmp_path/"missing.jpg"))
     assert q["status"] == "FAIL"
 
-def test_provenance_plus_inconclusive_clip_passes_only_the_provenance_checks(tmp_path, monkeypatch):
+def test_provenance_plus_inconclusive_clip_remains_semantically_inconclusive(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
     asset = tmp_path / "a.jpg"; asset.write_bytes(b"the-real-water-tank-photo-bytes")
     frame = tmp_path / "frame.jpg"; frame.write_bytes(b"x")
