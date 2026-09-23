@@ -179,27 +179,38 @@ class AssetProvenanceVisionProvider:
         return {"status":"PASS","sha256":digest}
 
 class CompositeVisionProvider:
-    """Combines independent real checks. Any confident FAIL fails the scene,
-    with one deliberate exception: when AssetProvenanceVisionProvider
-    confirms (via SHA-256) that the exact known-correct source image is in
-    use, a ClipSemanticVisionProvider FAIL on that same scene is not treated
-    as authoritative -- coarse CLIP margins are not reliable enough on
-    specialist/archival photography to override cryptographic proof of the
-    correct asset. The CLIP result stays visible in sub_results either way.
-    Everything else (Clarity, CornerGeometry, Sidecar, and CLIP when no
-    provenance pin is declared) still fails the scene normally."""
-    def __init__(self,providers=None):self.providers=providers if providers is not None else [SidecarVisionProvider(),AssetProvenanceVisionProvider(),ClarityVisionProvider(),CornerGeometryVisionProvider(),ClipSemanticVisionProvider()]
+    """Combine independent visual checks without letting provenance substitute
+    for semantic evidence.
+
+    AssetProvenanceVisionProvider answers only "is this the exact pinned
+    source asset?". It must never turn a semantic mismatch into PASS. A
+    confident FAIL from any applicable provider therefore fails the scene.
+    This keeps provenance useful for substitution/hijack detection while
+    preserving the separate scene-to-script semantic contract.
+    """
+    def __init__(self,providers=None):
+        self.providers=providers if providers is not None else [
+            SidecarVisionProvider(),
+            AssetProvenanceVisionProvider(),
+            ClarityVisionProvider(),
+            CornerGeometryVisionProvider(),
+            ClipSemanticVisionProvider(),
+        ]
+
     def evaluate(self,image,requirements,**context):
-        subs=[];app=[];provenance_confirmed=False
+        subs=[];app=[]
         for p in self.providers:
             r=p.evaluate(image,requirements,**context)
-            if r.get("status") not in {"PASS","FAIL","NOT_EVALUATED"}:r={**r,"status":"NOT_EVALUATED","reason":f"malformed provider status: {r.get('status')!r}"}
+            if r.get("status") not in {"PASS","FAIL","NOT_EVALUATED"}:
+                r={**r,"status":"NOT_EVALUATED","reason":f"malformed provider status: {r.get('status')!r}"}
             subs.append({"provider":type(p).__name__,**r})
-            if isinstance(p,AssetProvenanceVisionProvider) and r["status"]=="PASS":provenance_confirmed=True
-            if r["status"]!="NOT_EVALUATED":app.append((p,r))
-        if not app:return {"status":"NOT_EVALUATED","reason":"no vision provider could evaluate this scene","sub_results":subs}
-        fails=[r for p,r in app if r["status"]=="FAIL" and not(provenance_confirmed and isinstance(p,ClipSemanticVisionProvider))]
-        if fails:return {"status":"FAIL","reason":fails[0].get("reason","semantic visual QA failed"),"sub_results":subs}
+            if r["status"]!="NOT_EVALUATED":
+                app.append((p,r))
+        if not app:
+            return {"status":"NOT_EVALUATED","reason":"no vision provider could evaluate this scene","sub_results":subs}
+        fails=[r for _,r in app if r["status"]=="FAIL"]
+        if fails:
+            return {"status":"FAIL","reason":fails[0].get("reason","semantic visual QA failed"),"sub_results":subs}
         return {"status":"PASS","sub_results":subs}
 def default_vision_provider():return CompositeVisionProvider()
 def _clip_duration(video):
