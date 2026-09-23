@@ -98,3 +98,25 @@ def test_clip_negative_ensemble_beating_positive_is_confident_fail(monkeypatch, 
     )
     assert r["status"]=="FAIL"
     assert r["margin"] <= 0
+
+
+def test_clarity_pass_cannot_promote_inconclusive_semantics(tmp_path):
+    from shorts_studio.visual_qa import CompositeVisionProvider, ClarityVisionProvider, ClipSemanticVisionProvider
+
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"frame")
+
+    class ClarityPass(ClarityVisionProvider):
+        def evaluate(self,image,requirements,**context):
+            return {"status":"PASS","sharpness":100.0}
+
+    class SemanticInconclusive(ClipSemanticVisionProvider):
+        def evaluate(self,image,requirements,**context):
+            return {"status":"NOT_EVALUATED","reason":"narrow semantic lead"}
+
+    result=CompositeVisionProvider([ClarityPass(),SemanticInconclusive()]).evaluate(
+        image,["expected subject visible"],
+        positive_labels=["expected subject"],
+        negative_labels=["wrong subject"],
+    )
+    assert result["status"]=="NOT_EVALUATED"
+    assert "semantic provider" in result["reason"]
