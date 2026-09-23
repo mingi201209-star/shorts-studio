@@ -126,12 +126,21 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
     if valid:
         probe = subprocess.run(["ffmpeg", "-v", "error", "-i", str(candidate), "-f", "null", "-"], capture_output=True)
         valid = probe.returncode == 0
+    leading_trim = 0.0
     if valid:
+        detect = subprocess.run([
+            "ffmpeg", "-v", "info", "-i", str(path),
+            "-af", "silencedetect=noise=-45dB:d=0.02", "-f", "null", "-"
+        ], capture_output=True, text=True)
+        starts = [float(x) for x in re.findall(r"silence_start:\\s*([0-9.]+)", detect.stderr)]
+        ends = [float(x) for x in re.findall(r"silence_end:\\s*([0-9.]+)", detect.stderr)]
+        if starts and ends and starts[0] <= 0.01:
+            leading_trim = ends[0]
         candidate.replace(out_path)
     else:
         candidate.unlink(missing_ok=True)
         shutil.copyfile(path, out_path)
-    return out_path
+    return out_path, leading_trim
 
 def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     list_file = out_path.with_suffix(".concat.txt")
