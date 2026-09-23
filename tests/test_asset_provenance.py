@@ -52,7 +52,7 @@ def test_provenance_plus_inconclusive_clip_passes_only_the_provenance_checks(tmp
         expected_asset_sha256=[_sha(asset)], asset_path=str(asset))
     assert q["status"] == "PASS"
     clip_sub = next(s for s in q["sub_results"] if s["provider"] == "ClipSemanticVisionProvider")
-    assert clip_sub["status"] == "FAIL"  # still visible/honest in the evidence trail
+    assert clip_sub["status"] == "NOT_EVALUATED"  # uncertainty stays visible in the evidence trail
 
 def test_inconclusive_clip_without_provenance_remains_not_evaluated(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
