@@ -108,6 +108,16 @@ def _silence_clip(path: Path, seconds: float) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(seconds), "-q:a", "9", str(path)], check=True, capture_output=True)
     return path
 
+def _trim_tts_edge_silence(path: Path, out_path: Path) -> Path:
+    """Trim only leading/trailing TTS padding; preserve internal speech pauses."""
+    subprocess.run([
+        "ffmpeg", "-y", "-i", str(path),
+        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB:"
+               "stop_periods=1:stop_duration=0.02:stop_threshold=-45dB",
+        str(out_path),
+    ], check=True, capture_output=True)
+    return out_path
+
 def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     list_file = out_path.with_suffix(".concat.txt")
     list_file.write_text("\n".join(f"file '{p.resolve()}'" for p in parts), encoding="utf-8")
@@ -157,7 +167,9 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         for i, audio_bytes in enumerate(unit_audio):
             part = tmp_dir / f"{audio_path.stem}_part{i}.mp3"
             part.write_bytes(audio_bytes)
-            part_paths.append(part)
+            trimmed = tmp_dir / f"{audio_path.stem}_part{i}_trimmed.mp3"
+            _trim_tts_edge_silence(part, trimmed)
+            part_paths.append(trimmed)
         concat_parts = [part_paths[0]]
         for i in range(1, len(part_paths)):
             gap_seconds = gaps[i - 1]
