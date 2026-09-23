@@ -50,7 +50,7 @@ def test_composite_does_not_let_provenance_override_a_semantic_clip_fail(tmp_pat
     q = provider.evaluate(frame, ["water tank test"],
         positive_labels=["a water tank fatigue test rig"], negative_labels=["an airplane flying in the sky"],
         expected_asset_sha256=[_sha(asset)], asset_path=str(asset))
-    assert q["status"] == "PASS"
+    assert q["status"] == "FAIL"
     clip_sub = next(s for s in q["sub_results"] if s["provider"] == "ClipSemanticVisionProvider")
     assert clip_sub["status"] == "FAIL"  # still visible/honest in the evidence trail
 
