@@ -120,3 +120,15 @@ def test_clarity_pass_cannot_promote_inconclusive_semantics(tmp_path):
     )
     assert result["status"]=="NOT_EVALUATED"
     assert "semantic provider" in result["reason"]
+
+
+def test_semantic_subject_image_crops_title_and_caption_bands(tmp_path):
+    from PIL import Image
+    from shorts_studio.visual_qa import _semantic_subject_image
+    image=tmp_path/"frame.png"
+    Image.new("RGB",(1080,1920),(128,128,128)).save(image)
+    cropped=_semantic_subject_image(image)
+    assert cropped.size == (1004,1110)
+    # The semantic crop is the renderer's main visual band, not the full short.
+    assert cropped.height < 1920
+    assert cropped.width < 1080
