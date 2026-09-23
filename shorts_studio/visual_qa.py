@@ -212,6 +212,18 @@ class CompositeVisionProvider:
         fails=[r for _,r in app if r["status"]=="FAIL"]
         if fails:
             return {"status":"FAIL","reason":fails[0].get("reason","semantic visual QA failed"),"sub_results":subs}
+
+        # A sharp/clear frame or a matching source hash is useful evidence, but
+        # neither proves that the frame depicts the narration. Whenever a scene
+        # declares CLIP semantic labels, require an actual semantic PASS. If
+        # CLIP is inconclusive, keep the whole scene inconclusive so strict
+        # production QA fails closed instead of being promoted by Clarity or
+        # provenance.
+        if context.get("positive_labels"):
+            semantic=[(p,r) for p,r in app if isinstance(p,(SidecarVisionProvider,ClipSemanticVisionProvider))]
+            if not any(r["status"]=="PASS" for _,r in semantic):
+                return {"status":"NOT_EVALUATED","reason":"no semantic provider confidently verified the declared subject","sub_results":subs}
+
         return {"status":"PASS","sub_results":subs}
 def default_vision_provider():return CompositeVisionProvider()
 def _clip_duration(video):
