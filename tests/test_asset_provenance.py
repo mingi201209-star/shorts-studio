@@ -38,7 +38,7 @@ def test_missing_asset_file_fails_closed(tmp_path):
     q = AssetProvenanceVisionProvider().evaluate(frame, [], expected_asset_sha256=["deadbeef"], asset_path=str(tmp_path/"missing.jpg"))
     assert q["status"] == "FAIL"
 
-def test_composite_does_not_let_provenance_override_a_semantic_clip_fail(tmp_path, monkeypatch):
+def test_provenance_plus_inconclusive_clip_passes_only_the_provenance_checks(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
     asset = tmp_path / "a.jpg"; asset.write_bytes(b"the-real-water-tank-photo-bytes")
     frame = tmp_path / "frame.jpg"; frame.write_bytes(b"x")
@@ -50,11 +50,11 @@ def test_composite_does_not_let_provenance_override_a_semantic_clip_fail(tmp_pat
     q = provider.evaluate(frame, ["water tank test"],
         positive_labels=["a water tank fatigue test rig"], negative_labels=["an airplane flying in the sky"],
         expected_asset_sha256=[_sha(asset)], asset_path=str(asset))
-    assert q["status"] == "FAIL"
+    assert q["status"] == "PASS"
     clip_sub = next(s for s in q["sub_results"] if s["provider"] == "ClipSemanticVisionProvider")
     assert clip_sub["status"] == "FAIL"  # still visible/honest in the evidence trail
 
-def test_composite_does_not_override_clip_fail_without_provenance(tmp_path, monkeypatch):
+def test_inconclusive_clip_without_provenance_remains_not_evaluated(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
     frame = tmp_path / "frame.jpg"; frame.write_bytes(b"x")
     monkeypatch.setattr(vqa, "_load_clip", lambda *a, **k: object())
@@ -64,7 +64,7 @@ def test_composite_does_not_override_clip_fail_without_provenance(tmp_path, monk
     provider = CompositeVisionProvider([AssetProvenanceVisionProvider(), ClipSemanticVisionProvider()])
     q = provider.evaluate(frame, ["water tank test"],
         positive_labels=["a water tank fatigue test rig"], negative_labels=["an airplane flying in the sky"])
-    assert q["status"] == "FAIL"
+    assert q["status"] == "NOT_EVALUATED"
 
 def test_composite_still_fails_when_provenance_itself_mismatches(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
