@@ -135,7 +135,9 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
     unit_audio = []; unit_words = []; unit_raw = []; unit_meta = []
     for idx, unit in enumerate(units):
         unit_text = " ".join(p.text for p in unit)
-        rate = rate_for_unit(unit, base_rate) if use_role_rates else base_rate
+        base_unit_rate = rate_for_unit(unit, base_rate) if use_role_rates else base_rate
+        speech_features = analyze_unit(unit)
+        rate = adjust_rate(base_unit_rate, speech_features)
         audio_bytes, boundaries = await _synthesize_sentence(unit_text, voice, rate, base_pitch, volume)
         if not boundaries:
             raise RuntimeError(f"TTS returned no timing boundary events for unit {idx+1}/{len(units)} (role={unit[0].role!r}): {unit_text!r}; do not guess from scene duration")
