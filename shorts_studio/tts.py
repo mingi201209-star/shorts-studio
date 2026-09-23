@@ -1,5 +1,5 @@
 from __future__ import annotations
-import json, re, subprocess
+import json, re, shutil, subprocess
 from dataclasses import replace
 from pathlib import Path
 from .timing import WordTiming
@@ -109,13 +109,34 @@ def _silence_clip(path: Path, seconds: float) -> Path:
     return path
 
 def _trim_tts_edge_silence(path: Path, out_path: Path) -> Path:
-    """Trim only leading/trailing TTS padding; preserve internal speech pauses."""
+    """Trim only leading/trailing TTS padding when real speech is present.
+
+    Synthetic all-silence fixtures (and pathological provider output) have no
+    speech to preserve; in that case keep the original clip. This makes the
+    trim conservative and prevents silenceremove from producing an invalid or
+    empty MP3 that later breaks concat.
+    """
+    detect = subprocess.run(
+        ["ffmpeg", "-i", str(path), "-af", "silencedetect=noise=-45dB:d=0.02", "-f", "null", "-"],
+        capture_output=True, text=True,
+    )
+    duration = _ffmpeg_duration_seconds(path)
+    silence_ends = [float(x) for x in re.findall(r"silence_end:\\s*([0-9.]+)", detect.stderr)]
+    silence_starts = [float(x) for x in re.findall(r"silence_start:\\s*([0-9.]+)", detect.stderr)]
+    all_silent = bool(silence_starts) and silence_starts[0] <= 0.02 and (
+        not silence_ends or silence_ends[-1] >= duration - 0.03
+    )
+    if all_silent:
+        shutil.copyfile(path, out_path)
+        return out_path
     subprocess.run([
         "ffmpeg", "-y", "-i", str(path),
         "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB:"
                "stop_periods=1:stop_duration=0.02:stop_threshold=-45dB",
         str(out_path),
     ], check=True, capture_output=True)
+    if not out_path.exists() or out_path.stat().st_size == 0:
+        shutil.copyfile(path, out_path)
     return out_path
 
 def _concat_audio(parts: list[Path], out_path: Path) -> Path:
