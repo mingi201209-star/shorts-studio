@@ -128,18 +128,16 @@ def clip_zero_shot_scores(bundle,image_path,labels):
     return {label:float(s[i]) for i,label in enumerate(labels)}
 
 class ClipSemanticVisionProvider:
-    """Local zero-shot CLIP check. Uses a multi-prompt ensemble rather than a
-    single label pair: the ABS floor uses the single best-matching positive
-    label (is there ANY evidence of the subject at all), while the wrong-
-    domain margin compares the MEAN of all positive-label scores against the
-    MEAN of all negative-label scores. Averaging over several paraphrases is
-    less sensitive to any one prompt's idiosyncratic wording than a
-    single best-vs-best comparison, but this is still a coarse similarity
-    judgment -- on specialist/archival imagery it can legitimately be
-    NOT_EVALUATED-worthy-but-not-quite (a narrow, low-confidence FAIL). That
-    is why CompositeVisionProvider treats a confirmed AssetProvenanceVisionProvider
-    PASS as authoritative over this provider's FAIL for the same scene,
-    instead of retuning label wording to force a pass."""
+    """Local zero-shot CLIP semantic check.
+
+    CLIP is used as a wrong-domain detector, not as a calibrated binary
+    classifier for specialist archival photography. A strong contradiction
+    (negative ensemble >= positive ensemble) is a confident FAIL. A small
+    positive lead below MIN_MARGIN is explicitly INCONCLUSIVE so another
+    independent semantic provider/evidence can arbitrate it; it must not be
+    mislabeled as wrong-domain. Production still fails closed on an overall
+    NOT_EVALUATED result.
+    """
     MIN_MARGIN=.03;MIN_ABS=.18
     def __init__(self,model_name="ViT-B-32",pretrained="openai"):self.model_name=model_name;self.pretrained=pretrained
     def evaluate(self,image,requirements,**context):
@@ -153,8 +151,11 @@ class ClipSemanticVisionProvider:
         best_pos=max(pos_scores);mean_pos=sum(pos_scores)/len(pos_scores)
         mean_neg=sum(neg_scores)/len(neg_scores) if neg_scores else -1.
         if best_pos<self.MIN_ABS:return {"status":"FAIL","reason":"no declared subject label matched the frame","scores":scores}
-        if neg_scores and mean_pos-mean_neg<self.MIN_MARGIN:return {"status":"FAIL","reason":"wrong-domain content scored too close to the expected subject (ensemble margin)","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg}
-        return {"status":"PASS","scores":scores}
+        if neg_scores:
+            margin=mean_pos-mean_neg
+            if margin<=0:return {"status":"FAIL","reason":"wrong-domain content matched at least as strongly as the expected subject","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg,"margin":margin}
+            if margin<self.MIN_MARGIN:return {"status":"NOT_EVALUATED","reason":"CLIP positive lead is too narrow for a confident archival-image verdict","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg,"margin":margin}
+        return {"status":"PASS","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg,"margin":mean_pos-mean_neg if neg_scores else None}
 
 class AssetProvenanceVisionProvider:
     """Deterministic, non-ML evidence: verifies the resolved source asset's
