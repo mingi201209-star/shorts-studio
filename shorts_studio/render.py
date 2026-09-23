@@ -158,6 +158,20 @@ def _log_narration_plan(scene, plan:list[PhraseSpec])->None:
     for i,p in enumerate(plan):
         print(f"[prosody]   unit {i}: role={p.role} boundary={p.boundary} focus={p.focus} text={p.text!r}")
 
+def _media_duration_seconds(path:Path)->float:
+    """Return the duration of the artifact that will actually be concatenated.
+
+    Scene planning/timing duration can be slightly longer than the encoded clip
+    because ffmpeg uses -shortest. Final-video QA must therefore accumulate
+    real clip durations, otherwise every later sample drifts forward and can
+    eventually seek past EOF or between captions.
+    """
+    data=json.loads(subprocess.run(
+        ["ffprobe","-v","error","-show_entries","format=duration","-of","json",str(path)],
+        capture_output=True,text=True,check=True,
+    ).stdout)
+    return float(data["format"]["duration"])
+
 def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     plan=_narration_plan(scene)
