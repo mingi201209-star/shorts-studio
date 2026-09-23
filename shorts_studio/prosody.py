@@ -46,24 +46,39 @@ class PhraseSpec:
     focus: bool = False              # the emphasis/result target (e.g. a REVEAL's payload)
     pace: str | None = None          # optional explicit rate override, e.g. "+2%"
 
+# Reference distribution from a human-read Korean Shorts recording (ffmpeg
+# silencedetect, -35 dB / >=0.18 s, 17 internal pauses): median 0.528 s, IQR
+# 0.356-0.582 s, with deliberate long/dramatic boundaries at 0.70-0.83 s.
+# These are magnitude anchors for how long a real Korean narrator holds a
+# pause of a given weight -- they say nothing about WHERE a pause belongs,
+# which is decided entirely by korean_boundary.py's grammar-driven
+# classification, never by this recording's specific wording. Using them
+# only to calibrate duration (not placement) is what keeps this general
+# rather than reintroducing per-script tuning.
+REFERENCE_PAUSE_MEDIAN = 0.528
+REFERENCE_PAUSE_IQR = (0.356, 0.582)
+REFERENCE_LONG_PAUSE_RANGE = (0.70, 0.83)
+
 # Real inserted silence for a synthesis-unit-ending transition, keyed by
-# (role, boundary). Only strong_boundary/anticipatory are ever looked up in
+# (role, boundary). Only STRONG_BOUNDARY/ANTICIPATORY are ever looked up in
 # practice (see _UNIT_ENDING_BOUNDARIES), but the table is not restricted to
 # that so an explicit manual override on a weaker boundary still resolves to
-# something sane. Deliberately varied per role -- never one fixed silence.
+# something sane. Values sit within the reference IQR for an ordinary
+# sentence break, and within the reference long-pause range for the REVEAL's
+# anticipatory beat -- deliberately varied per role, never one fixed silence.
 PAUSE_SECONDS: dict[tuple[str, str], float] = {
-    ("HOOK", STRONG_BOUNDARY): 0.20,
-    ("SETUP", STRONG_BOUNDARY): 0.26,
-    ("CRISIS", STRONG_BOUNDARY): 0.28,
-    ("INVESTIGATION", STRONG_BOUNDARY): 0.24,
-    ("REVEAL", ANTICIPATORY): 0.55,   # the deliberate pre-result beat
-    ("REVEAL", STRONG_BOUNDARY): 0.30,
-    ("EXPLANATION", STRONG_BOUNDARY): 0.30,
-    ("PAYOFF", STRONG_BOUNDARY): 0.34,  # settle, don't clip like an ad button
+    ("HOOK", STRONG_BOUNDARY): 0.40,
+    ("SETUP", STRONG_BOUNDARY): 0.48,
+    ("CRISIS", STRONG_BOUNDARY): 0.52,
+    ("INVESTIGATION", STRONG_BOUNDARY): 0.46,
+    ("REVEAL", ANTICIPATORY): 0.78,   # the deliberate pre-result beat
+    ("REVEAL", STRONG_BOUNDARY): 0.50,
+    ("EXPLANATION", STRONG_BOUNDARY): 0.50,
+    ("PAYOFF", STRONG_BOUNDARY): 0.56,  # settle, don't clip like an ad button
 }
 DEFAULT_PAUSE_BY_BOUNDARY: dict[str, float] = {
     "continue": 0.0, "weak_boundary": 0.0, PHRASE_BOUNDARY: 0.0,
-    STRONG_BOUNDARY: 0.28, ANTICIPATORY: 0.5,
+    STRONG_BOUNDARY: REFERENCE_PAUSE_MEDIAN, ANTICIPATORY: REFERENCE_LONG_PAUSE_RANGE[0] + 0.08,
 }
 
 def pause_after(phrase: PhraseSpec) -> float:
