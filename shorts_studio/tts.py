@@ -3,7 +3,7 @@ import json, re, subprocess
 from dataclasses import replace
 from pathlib import Path
 from .timing import WordTiming
-from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers
+from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers\nfrom .korean_speech_planner import adjust_rate, analyze_unit
 
 DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 # A flat rate/pitch is only a fallback for scenes with no authored
@@ -141,7 +141,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         unit_audio.append(audio_bytes)
         unit_words.append(_map_boundaries_to_script(unit_text, boundaries))
         unit_raw.append([w.__dict__ for w in boundaries])
-        unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit)})
+        unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "base_unit_rate": base_unit_rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit), "speech_features": speech_features.__dict__})
 
     gaps = [pause_after(unit[-1]) for unit in units[:-1]]  # gap AFTER unit i (i < last)
 
@@ -174,7 +174,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
             cursor = offset + real_duration + gap
 
     timing_path.write_text(json.dumps({
-        "source": "prosody-planner-v1", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
+        "source": "korean-speech-planner-v3", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
         "units": unit_meta, "gaps_seconds": gaps, "raw": unit_raw, "words": [w.__dict__ for w in words],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     if not words:
