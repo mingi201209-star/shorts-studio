@@ -3,7 +3,8 @@ import json, re, subprocess
 from dataclasses import replace
 from pathlib import Path
 from .timing import WordTiming
-from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers\nfrom .korean_speech_planner import adjust_rate, analyze_unit
+from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers
+from .korean_speech_planner import adjust_rate, analyze_unit
 
 DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 # A flat rate/pitch is only a fallback for scenes with no authored
