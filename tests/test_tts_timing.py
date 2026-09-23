@@ -187,3 +187,34 @@ def test_default_rate_is_conservative_not_rushed():
     # Not the whole fix (see the sentence-splitting/WordBoundary tests above),
     # but the old +24% rushed delivery should not silently creep back in.
     assert DEFAULT_KO_RATE in {"+0%", "+2%", "+4%", "+5%", "+6%", "+8%", "+10%", "+12%"}
+
+
+@requires_ffmpeg
+def test_edge_trim_shifts_provider_word_boundaries_to_trimmed_waveform(tmp_path, monkeypatch):
+    import subprocess
+    from shorts_studio.tts import synthesize_plan
+
+    fake_edge_tts = types.ModuleType("edge_tts")
+    class FakeCommunicate:
+        def __init__(self, text, voice, **k):
+            self.text = text
+        async def stream(self):
+            # 0.20 s provider padding followed by audible tone. Boundary starts
+            # at 0.20 s in the original provider audio and must move to ~0 after trim.
+            clip = tmp_path / ("tone_" + str(abs(hash(self.text))) + ".mp3")
+            subprocess.run([
+                "ffmpeg", "-y", "-f", "lavfi", "-i",
+                "aevalsrc=if(lt(t\\,0.20)\\,0\\,0.3*sin(2*PI*440*t)):s=24000",
+                "-t", "0.70", "-q:a", "4", str(clip)
+            ], check=True, capture_output=True)
+            yield {"type": "audio", "data": clip.read_bytes()}
+            yield {"type": "WordBoundary", "text": self.text, "offset": 2_000_000, "duration": 3_000_000}
+    fake_edge_tts.Communicate = FakeCommunicate
+    monkeypatch.setitem(sys.modules, "edge_tts", fake_edge_tts)
+
+    plan = [
+        PhraseSpec(role="SETUP", text="첫문장", boundary="strong_boundary"),
+        PhraseSpec(role="SETUP", text="둘째문장", boundary="strong_boundary"),
+    ]
+    words = asyncio.run(synthesize_plan(plan, tmp_path / "trim.mp3", tmp_path / "trim.json"))
+    assert words[0].start < 0.08, f"leading trim must be removed from boundary timing, got {words[0].start}"
