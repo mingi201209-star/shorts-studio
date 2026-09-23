@@ -9,8 +9,8 @@
       "id": "scene_01",
       "narration": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다. 1950년대 세계 최초의 제트 여객기, 코멧이었습니다.",
       "narration_plan": [
-        {"role": "HOOK", "text": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다", "boundary": "weak"},
-        {"role": "SETUP", "text": "1950년대 세계 최초의 제트 여객기, 코멧이었습니다", "boundary": "terminal"}
+        {"role": "HOOK", "text": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다"},
+        {"role": "SETUP", "text": "1950년대 세계 최초의 제트 여객기, 코멧이었습니다"}
       ],
       "visual_description": "1950년대 코멧",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
@@ -38,8 +38,8 @@
       "id": "scene_02",
       "narration": "그런데 얼마 지나지 않아 사고가 잇따랐지만, 원인은 오랫동안 밝혀지지 않았습니다.",
       "narration_plan": [
-        {"role": "CRISIS", "text": "그런데 얼마 지나지 않아 사고가 잇따랐지만", "boundary": "continuation"},
-        {"role": "CRISIS", "text": "원인은 오랫동안 밝혀지지 않았습니다", "boundary": "terminal"}
+        {"role": "CRISIS", "text": "그런데 얼마 지나지 않아 사고가 잇따랐지만"},
+        {"role": "CRISIS", "text": "원인은 오랫동안 밝혀지지 않았습니다"}
       ],
       "visual_description": "초기 코멧의 각진 창",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
@@ -52,8 +52,8 @@
       "id": "scene_03",
       "narration": "결국 조사팀은 실제 기체를 물탱크에 넣고, 비행 중 기압 변화를 그대로 재현했습니다.",
       "narration_plan": [
-        {"role": "INVESTIGATION", "text": "결국 조사팀은 실제 기체를 물탱크에 넣고", "boundary": "continuation"},
-        {"role": "INVESTIGATION", "text": "비행 중 기압 변화를 그대로 재현했습니다", "boundary": "terminal"}
+        {"role": "INVESTIGATION", "text": "결국 조사팀은 실제 기체를 물탱크에 넣고"},
+        {"role": "INVESTIGATION", "text": "비행 중 기압 변화를 그대로 재현했습니다"}
       ],
       "visual_description": "코멧 동체 수조 피로 시험",
       "asset_url": "https://www.faa.gov/sites/faa.gov/files/images/lessons_learned/G-ALYV/Tank_FwdEscapeHatch.jpg",
@@ -80,8 +80,8 @@
       "id": "scene_04",
       "narration": "실제 비행에서 약 1,230회의 압력을 견딘 기체는, 물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다.",
       "narration_plan": [
-        {"role": "REVEAL", "text": "실제 비행에서 약 1,230회의 압력을 견딘 기체는", "boundary": "anticipatory"},
-        {"role": "REVEAL", "text": "물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다", "boundary": "terminal", "focus": true}
+        {"role": "REVEAL", "text": "실제 비행에서 약 1,230회의 압력을 견딘 기체는"},
+        {"role": "REVEAL", "text": "물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다", "focus": true}
       ],
       "visual_description": "수조 시험 파손",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
@@ -108,8 +108,8 @@
       "id": "scene_05",
       "narration": "찢어진 자리는 각진 모서리였고, 힘이 한 점에 몰리면서 균열이 자란 것입니다.",
       "narration_plan": [
-        {"role": "EXPLANATION", "text": "찢어진 자리는 각진 모서리였고", "boundary": "continuation"},
-        {"role": "EXPLANATION", "text": "힘이 한 점에 몰리면서 균열이 자란 것입니다", "boundary": "terminal"}
+        {"role": "EXPLANATION", "text": "찢어진 자리는 각진 모서리였고"},
+        {"role": "EXPLANATION", "text": "힘이 한 점에 몰리면서 균열이 자란 것입니다"}
       ],
       "visual_description": "네모난 창과 둥근 창의 명확한 비교",
       "asset": "assets/window_compare.svg",
@@ -130,7 +130,7 @@
       "id": "scene_06",
       "narration": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다.",
       "narration_plan": [
-        {"role": "EXPLANATION", "text": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다", "boundary": "terminal"}
+        {"role": "EXPLANATION", "text": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다"}
       ],
       "visual_description": "회수된 사고기 잔해",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
@@ -157,8 +157,8 @@
       "id": "scene_07",
       "narration": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고, 지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다.",
       "narration_plan": [
-        {"role": "PAYOFF", "text": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고", "boundary": "continuation"},
-        {"role": "PAYOFF", "text": "지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다", "boundary": "terminal"}
+        {"role": "PAYOFF", "text": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고"},
+        {"role": "PAYOFF", "text": "지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다"}
       ],
       "visual_description": "현대 여객기 둥근 창",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
