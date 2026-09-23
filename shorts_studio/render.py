@@ -238,8 +238,9 @@ def render(manifest:str,dry_run:bool=False)->dict:
         sources.append({"scene":scene.id,"asset":outcome["source"]["asset"] if outcome["source"] else None,"attribution":outcome["source"]["attribution"] if outcome["source"] else None,"candidate_index":outcome["source"]["index"] if outcome["source"] else None,"recovery_attempts":outcome["semantic"].get("recovery_attempts",0)})
         if scene.visual_qa_requirements:
             semantic_results.append(outcome["semantic"])
-        scene_windows.append({"scene":scene.id,"start":cumulative,"caption_window":(caps[0].start,caps[0].end) if caps else None})
-        cumulative+=duration
+        clip_duration=_media_duration_seconds(outcome["clip"])
+        scene_windows.append({"scene":scene.id,"start":cumulative,"duration":clip_duration,"caption_window":(caps[0].start,caps[0].end) if caps else None})
+        cumulative+=clip_duration
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True)
