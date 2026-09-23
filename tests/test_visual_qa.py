@@ -43,3 +43,24 @@ def test_sidecar_provider_never_passes_on_malformed_status(tmp_path):
     image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
     image.with_suffix(".jpg.qa.json").write_text(json.dumps({"status":"MAYBE_OK"}))
     assert SidecarVisionProvider().evaluate(image,["square corners"])["status"]=="NOT_EVALUATED"
+
+
+def test_provenance_pass_cannot_override_semantic_fail(tmp_path):
+    from shorts_studio.visual_qa import CompositeVisionProvider, AssetProvenanceVisionProvider, ClipSemanticVisionProvider
+
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"frame")
+    asset=tmp_path/"asset.jpg"; asset.write_bytes(b"known-good-asset")
+
+    class ProvenancePass(AssetProvenanceVisionProvider):
+        def evaluate(self,image,requirements,**context):
+            return {"status":"PASS","sha256":"pinned"}
+
+    class SemanticFail(ClipSemanticVisionProvider):
+        def evaluate(self,image,requirements,**context):
+            return {"status":"FAIL","reason":"declared subject is not visible"}
+
+    result=CompositeVisionProvider([ProvenancePass(),SemanticFail()]).evaluate(
+        image,["expected subject visible"],asset_path=asset
+    )
+    assert result["status"]=="FAIL"
+    assert "subject" in result["reason"]
