@@ -135,6 +135,51 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
         raise RuntimeError(f"ffmpeg failed compositing {scene.id}: {e.stderr[-2000:] if e.stderr else e}") from e
     return clip
 
+def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
+    """Resolve timed visual beats into positive-duration windows."""
+    beats=list(getattr(scene,"visual_beats",None) or [])
+    if not beats:
+        return []
+    windows=[]
+    for i,beat in enumerate(beats):
+        end=beats[i+1].start if i+1<len(beats) else duration
+        length=max(0.0,min(duration,end)-beat.start)
+        if length>0.01:
+            windows.append((beat,length))
+    return windows
+
+def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->tuple[Path,list[Path]]:
+    """Render multiple picture cuts under one untouched narration/caption track."""
+    windows=_visual_beat_windows(scene,duration)
+    if not windows:
+        raise ValueError("visual beat renderer requires at least one positive-duration beat")
+    visual_clips=[]; assets=[]
+    for beat_index,(beat,beat_duration) in enumerate(windows):
+        candidate={"asset":beat.asset,"asset_url":beat.asset_url,"attribution":beat.attribution}
+        asset=_resolve_asset(candidate,build,f"{scene.id}_beat{beat_index}",index)
+        if asset is None:
+            raise RuntimeError(f"{scene.id}: visual beat {beat_index} asset could not be resolved")
+        assets.append(asset)
+        # Render only the moving picture here. Captions/title/audio are applied
+        # once after the cuts are joined, so their timing remains scene-global.
+        vf=_visual_filter(scene,build/f"{scene.id}.empty.srt",fps,None).split(",subtitles=",1)[0]
+        beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+        try:
+            subprocess.run(cmd,check=True,capture_output=True,text=True)
+        except subprocess.CalledProcessError as e:
+            raise RuntimeError(f"ffmpeg failed visual beat {scene.id}/{beat_index}: {e.stderr[-2000:] if e.stderr else e}") from e
+        visual_clips.append(beat_clip)
+    lst=build/f"{scene.id}_beats.txt"
+    lst.write_text("\n".join(f"file '{x.resolve()}'" for x in visual_clips),encoding="utf-8")
+    joined=build/f"{scene.id}_beats_joined.mp4"
+    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True)
+    clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
+    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
+    vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Shadow=0,Bold=1'{_title_clause(title_srt)}"
+    subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)],check=True,capture_output=True,text=True)
+    return clip,assets
+
 def _narration_plan(scene)->list[PhraseSpec]:
     """Boundary/pause placement is never authored -- it is always computed
     by the general Korean boundary planner (prosody.plan_narration ->
@@ -197,8 +242,12 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
     for index in range(min(len(candidates), max_attempts+1)):
         last_index_tried=index
         try:
-            asset=_resolve_asset(candidates[index],build,scene.id,index)
-            clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
+            if getattr(scene,"visual_beats",None):
+                clip,beat_assets=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title)
+                asset=beat_assets[0] if beat_assets else None
+            else:
+                asset=_resolve_asset(candidates[index],build,scene.id,index)
+                clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
