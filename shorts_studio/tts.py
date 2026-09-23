@@ -198,7 +198,8 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         words = []; cursor = 0.0
         for i, uw in enumerate(unit_words):
             offset = cursor
-            trim = leading_trims[i]\n            words.extend(WordTiming(w.text, max(0.0, w.start - trim) + offset, max(0.0, w.end - trim) + offset) for w in uw)
+            trim = leading_trims[i]
+            words.extend(WordTiming(w.text, max(0.0, w.start - trim) + offset, max(0.0, w.end - trim) + offset) for w in uw)
             real_duration = _ffmpeg_duration_seconds(part_paths[i])
             gap = gaps[i] if i < len(gaps) else 0.0
             cursor = offset + real_duration + gap
