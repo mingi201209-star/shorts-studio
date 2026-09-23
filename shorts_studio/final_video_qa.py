@@ -144,7 +144,7 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         first = scene_windows[0]; last = scene_windows[-1]
         mid = scene_windows[len(scene_windows)//2]
         for w in {first["scene"]: first, mid["scene"]: mid, last["scene"]: last}.values():
-            title_samples.append(w["start"] + 0.3)
+            title_samples.append(final_ts(w["start"] + 0.3))
     checks["title_visible"] = verify_title_visible(video, title_samples, build_dir) if title_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
 
     caption_points = []
@@ -154,7 +154,7 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
             cs, ce = w["caption_window"]
             ts = w["start"] + (cs + ce) / 2
             caption_points.append((ts, (1300, 1900)))
-        safe_area_samples.append(w["start"] + 0.15)
+        safe_area_samples.append(final_ts(w["start"] + 0.15))
     checks["captions_visible"] = verify_captions_visible(video, caption_points, build_dir) if caption_points else {"status": "NOT_EVALUATED", "reason": "no caption windows available"}
     checks["safe_area_clean"] = verify_bottom_safe_area_clean(video, safe_area_samples, build_dir, (1300, 1920)) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
 
