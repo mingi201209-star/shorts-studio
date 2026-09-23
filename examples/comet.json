@@ -38,6 +38,24 @@
       ],
       "visual_qa_expected_sha256": [
         "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "push_in"
+          }
+        },
+        {
+          "start": 2.2,
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+          "attribution": "Wikimedia Commons, public domain",
+          "motion": {
+            "type": "pull_out"
+          }
+        }
       ]
     },
     {
