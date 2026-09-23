@@ -58,7 +58,7 @@ _FG_BAND_WIDTH=1000
 # SSA numbering (5/6/7 = top row), NOT the ASS numpad convention (7/8/9 = top
 # row) -- verified empirically: Alignment=8 rendered mid-screen, not near the
 # top. Alignment=6 is the top-center value that actually works here.
-_TITLE_STYLE="Alignment=6,MarginV=15,FontSize=20,Outline=3,Shadow=0,Bold=1"
+_TITLE_STYLE="Alignment=6,MarginV=18,FontSize=16,Outline=2,Shadow=0,Bold=1"
 
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:
@@ -79,7 +79,7 @@ def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
         move="zoompan=z='max(1.0,1.12-on*0.0007)':d=1"
     else:
         move="zoompan=z='min(zoom+0.0007,1.12)':d=1"
-    style="Alignment=2,MarginV=48,FontSize=18,Outline=2,Shadow=0,Bold=1"
+    style="Alignment=2,MarginV=70,FontSize=20,Outline=2,Shadow=0,Bold=1"
     # Preserve the complete source image.  The old fill+crop path could discard
     # most of a landscape archival photo/document when forcing it into 9:16.
     # Build a full-frame blurred backdrop, then place a sharp contain-fit copy
@@ -127,7 +127,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     if asset:
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     else:
-        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=18,Outline=2,Bold=1'{_title_clause(title_srt)}"
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Bold=1'{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
