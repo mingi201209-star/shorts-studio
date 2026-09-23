@@ -95,7 +95,7 @@ def test_human_reference_pause_profile_is_encoded_without_flattening_context():
     assert REFERENCE_LONG_PAUSE_RANGE == pytest.approx((0.70, 0.83), abs=0.001)
     assert pause_after(PhraseSpec(role="INVESTIGATION", text="x", boundary=CONTINUE)) == 0.0
     assert REFERENCE_PAUSE_IQR[0] <= pause_after(PhraseSpec(role="SETUP", text="x", boundary=STRONG_BOUNDARY)) <= REFERENCE_PAUSE_IQR[1]
-    assert REFERENCE_LONG_PAUSE_RANGE[0] <= pause_after(PhraseSpec(role="REVEAL", text="x", boundary=ANTICIPATORY)) <= REFERENCE_LONG_PAUSE_RANGE[1]
+    assert pause_after(PhraseSpec(role="REVEAL", text="x", boundary=ANTICIPATORY)) == pytest.approx(0.68, abs=0.001)\n    # Human A/B showed long silences were over-produced by V3. The ordinary\n    # anticipatory beat stays below the >=0.75 s dramatic-long threshold;\n    # the reference long range remains metadata for exceptional future use.\n    assert pause_after(PhraseSpec(role="REVEAL", text="x", boundary=ANTICIPATORY)) < 0.75
 
 # --- role-based rate, with a focus phrase easing off further ---------------
 
