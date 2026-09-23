@@ -9,6 +9,14 @@ class AssetCandidate(BaseModel):
     asset_url: str | None = None
     attribution: str | None = None
 
+class VisualBeat(BaseModel):
+    """An optional timed visual cut inside one narration scene."""
+    start: float = Field(ge=0)
+    asset: str | None = None
+    asset_url: str | None = None
+    attribution: str | None = None
+    motion: Motion = Motion()
+
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
     (see shorts_studio/prosody.py and shorts_studio/korean_boundary.py).
@@ -34,7 +42,22 @@ class Scene(BaseModel):
     expected_duration: float | None = Field(default=None, gt=0)
     motion: Motion = Motion()
     transition: str = "cut"
+    # Optional visual-only cuts inside this scene. Empty preserves the original
+    # one-image-per-scene renderer exactly.
+    visual_beats: list[VisualBeat] = []
     factual_notes: list[str] = []
+
+    @model_validator(mode="after")
+    def valid_visual_beats(self):
+        if self.visual_beats:
+            starts=[b.start for b in self.visual_beats]
+            if starts[0] != 0:
+                raise ValueError("visual_beats must start at 0 seconds")
+            if starts != sorted(starts) or len(starts) != len(set(starts)):
+                raise ValueError("visual_beats starts must be strictly increasing")
+            if any(not (b.asset or b.asset_url) for b in self.visual_beats):
+                raise ValueError("each visual beat must declare asset or asset_url")
+        return self
     # Human-readable (any language) QA requirements shown in reports.
     visual_qa_requirements: list[str] = []
     # English zero-shot labels describing what MUST be visible for semantic QA.
