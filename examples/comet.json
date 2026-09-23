@@ -9,8 +9,14 @@
       "id": "scene_01",
       "narration": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다. 1950년대 세계 최초의 제트 여객기, 코멧이었습니다.",
       "narration_plan": [
-        {"role": "HOOK", "text": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다"},
-        {"role": "SETUP", "text": "1950년대 세계 최초의 제트 여객기, 코멧이었습니다"}
+        {
+          "role": "HOOK",
+          "text": "잘 날아가던 비행기가 하늘에서 갑자기 부서지기 시작했습니다"
+        },
+        {
+          "role": "SETUP",
+          "text": "1950년대 세계 최초의 제트 여객기, 코멧이었습니다"
+        }
       ],
       "visual_description": "1950년대 코멧",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
@@ -38,8 +44,14 @@
       "id": "scene_02",
       "narration": "그런데 얼마 지나지 않아 사고가 잇따랐지만, 원인은 오랫동안 밝혀지지 않았습니다.",
       "narration_plan": [
-        {"role": "CRISIS", "text": "그런데 얼마 지나지 않아 사고가 잇따랐지만"},
-        {"role": "CRISIS", "text": "원인은 오랫동안 밝혀지지 않았습니다"}
+        {
+          "role": "CRISIS",
+          "text": "그런데 얼마 지나지 않아 사고가 잇따랐지만"
+        },
+        {
+          "role": "CRISIS",
+          "text": "원인은 오랫동안 밝혀지지 않았습니다"
+        }
       ],
       "visual_description": "초기 코멧의 각진 창",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
@@ -52,12 +64,18 @@
       "id": "scene_03",
       "narration": "결국 조사팀은 실제 기체를 물탱크에 넣고, 비행 중 기압 변화를 그대로 재현했습니다.",
       "narration_plan": [
-        {"role": "INVESTIGATION", "text": "결국 조사팀은 실제 기체를 물탱크에 넣고"},
-        {"role": "INVESTIGATION", "text": "비행 중 기압 변화를 그대로 재현했습니다"}
+        {
+          "role": "INVESTIGATION",
+          "text": "결국 조사팀은 실제 기체를 물탱크에 넣고"
+        },
+        {
+          "role": "INVESTIGATION",
+          "text": "비행 중 기압 변화를 그대로 재현했습니다"
+        }
       ],
-      "visual_description": "코멧 동체 수조 피로 시험",
-      "asset_url": "https://www.faa.gov/sites/faa.gov/files/images/lessons_learned/G-ALYV/Tank_FwdEscapeHatch.jpg",
-      "attribution": "FAA Lessons Learned",
+      "visual_description": "물탱크에 실제 코멧 동체를 넣어 압력 반복 시험하는 시설 전경",
+      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
+      "attribution": "FAA / Wikimedia Commons, public domain",
       "motion": {
         "type": "push_in"
       },
@@ -65,27 +83,31 @@
         "수조 피로시험 장면이어야 하며, 일반 항공기 장면으로 대체되면 FAIL"
       ],
       "visual_qa_labels": [
-        "a close archival photograph of an aircraft fuselage mounted inside a large metal structural test rig",
-        "an aircraft fuselage section surrounded by beams and water-tank test equipment"
+        "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
+        "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
       ],
       "visual_qa_negative_labels": [
-        "a passenger airplane clearly flying high in an open blue sky",
-        "a complete passenger airplane parked outdoors at an airport gate"
-      ],
-      "visual_qa_expected_sha256": [
-        "e87056f62d9c3edbe25b03dc3cc1c434f050766e96bfcfa45f7b1751fd06a879"
+        "a complete passenger airplane flying in an open sky",
+        "a passenger airplane parked normally on an airport runway"
       ]
     },
     {
       "id": "scene_04",
       "narration": "실제 비행에서 약 1,230회의 압력을 견딘 기체는, 물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다.",
       "narration_plan": [
-        {"role": "REVEAL", "text": "실제 비행에서 약 1,230회의 압력을 견딘 기체는"},
-        {"role": "REVEAL", "text": "물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다", "focus": true}
+        {
+          "role": "REVEAL",
+          "text": "실제 비행에서 약 1,230회의 압력을 견딘 기체는"
+        },
+        {
+          "role": "REVEAL",
+          "text": "물탱크에서 1,830회를 추가로 반복하자 찢어졌습니다",
+          "focus": true
+        }
       ],
-      "visual_description": "수조 시험 파손",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
-      "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+      "visual_description": "압력 반복 시험에서 실제로 파손된 코멧 G-ALYU 동체 패널과 창 모서리 균열",
+      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Fuselage_panel_from_Comet_1_-G-ALYU-_%2846426204684%29.jpg",
+      "attribution": "Alan Wilson / Wikimedia Commons, CC BY-SA 2.0",
       "motion": {
         "type": "pan_left"
       },
@@ -93,23 +115,26 @@
         "수조 시험 중 파손된 동체여야 하며, 일반 항공기 장면으로 대체되면 FAIL"
       ],
       "visual_qa_labels": [
-        "a close-up archival photograph of damaged aircraft fuselage skin around a rectangular hatch opening",
-        "a torn cracked metal aircraft fuselage panel under structural testing"
+        "a museum photograph of a large damaged de Havilland Comet fuselage test panel with a long visible crack through the window area",
+        "a close view of an aircraft fuselage fatigue test specimen showing a long structural tear and window openings"
       ],
       "visual_qa_negative_labels": [
         "a complete undamaged passenger airplane flying in an open sky",
-        "a complete intact passenger airplane parked outdoors on a runway"
-      ],
-      "visual_qa_expected_sha256": [
-        "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+        "a pristine complete passenger airplane parked outdoors"
       ]
     },
     {
       "id": "scene_05",
       "narration": "찢어진 자리는 각진 모서리였고, 힘이 한 점에 몰리면서 균열이 자란 것입니다.",
       "narration_plan": [
-        {"role": "EXPLANATION", "text": "찢어진 자리는 각진 모서리였고"},
-        {"role": "EXPLANATION", "text": "힘이 한 점에 몰리면서 균열이 자란 것입니다"}
+        {
+          "role": "EXPLANATION",
+          "text": "찢어진 자리는 각진 모서리였고"
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "힘이 한 점에 몰리면서 균열이 자란 것입니다"
+        }
       ],
       "visual_description": "네모난 창과 둥근 창의 명확한 비교",
       "asset": "assets/window_compare.svg",
@@ -130,11 +155,14 @@
       "id": "scene_06",
       "narration": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다.",
       "narration_plan": [
-        {"role": "EXPLANATION", "text": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다"}
+        {
+          "role": "EXPLANATION",
+          "text": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다"
+        }
       ],
-      "visual_description": "회수된 사고기 잔해",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
-      "attribution": "Wikimedia Commons, CC BY-SA 3.0",
+      "visual_description": "지중해에서 회수된 실제 코멧 G-ALYP 동체 파편과 ADF 창 주변 파손 흔적",
+      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+      "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
       "motion": {
         "type": "pan_right"
       },
@@ -142,23 +170,26 @@
         "사고기 잔해 장면이어야 하며 narration과 일치해야 함(정상 기체로 대체되면 FAIL)"
       ],
       "visual_qa_labels": [
-        "an archival close-up photograph of broken torn aircraft fuselage wreckage and damaged metal structure",
-        "recovered damaged airplane fuselage debris shown close up"
+        "a museum photograph of a real recovered torn de Havilland Comet aircraft fuselage fragment with window openings",
+        "a close-up of recovered crashed aircraft fuselage wreckage with torn metal skin and window frames"
       ],
       "visual_qa_negative_labels": [
-        "a complete undamaged passenger airplane clearly flying in an open blue sky",
-        "a pristine complete passenger airplane parked outdoors at an airport gate"
-      ],
-      "visual_qa_expected_sha256": [
-        "c6aa9dc468346d9fca2aebdac4d299a709afc5014e669e495b09cbffddec5c5b"
+        "a complete undamaged passenger airplane flying in an open sky",
+        "a diagram or illustration of a complete airplane"
       ]
     },
     {
       "id": "scene_07",
       "narration": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고, 지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다.",
       "narration_plan": [
-        {"role": "PAYOFF", "text": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고"},
-        {"role": "PAYOFF", "text": "지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다"}
+        {
+          "role": "PAYOFF",
+          "text": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고"
+        },
+        {
+          "role": "PAYOFF",
+          "text": "지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다"
+        }
       ],
       "visual_description": "현대 여객기 둥근 창",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
