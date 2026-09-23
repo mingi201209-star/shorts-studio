@@ -50,9 +50,9 @@ def test_provenance_plus_inconclusive_clip_remains_semantically_inconclusive(tmp
     q = provider.evaluate(frame, ["water tank test"],
         positive_labels=["a water tank fatigue test rig"], negative_labels=["an airplane flying in the sky"],
         expected_asset_sha256=[_sha(asset)], asset_path=str(asset))
-    assert q["status"] == "PASS"
+    assert q["status"] == "NOT_EVALUATED"
     clip_sub = next(s for s in q["sub_results"] if s["provider"] == "ClipSemanticVisionProvider")
-    assert clip_sub["status"] == "NOT_EVALUATED"  # uncertainty stays visible in the evidence trail
+    assert clip_sub["status"] == "NOT_EVALUATED"  # provenance cannot promote semantic uncertainty
 
 def test_inconclusive_clip_without_provenance_remains_not_evaluated(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
