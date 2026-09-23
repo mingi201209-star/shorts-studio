@@ -106,3 +106,11 @@ def test_visual_beat_asset_selection_fails_closed_on_mismatched_metadata():
     from pytest import raises
     with raises(ValueError,match="counts do not match"):
         render_mod._representative_visual_asset([Path("opening.jpg")],[],4.0)
+
+
+def test_comet_identification_beat_is_visible_at_semantic_sample_midpoint():
+    from shorts_studio.project import load_project
+    scene=load_project("examples/comet.json").scenes[0]
+    assert scene.visual_beats[1].start==1.0
+    assets=[Path("opening-fuselage.jpg"),Path("comet-aircraft.jpg")]
+    assert render_mod._representative_visual_asset(assets,[1.0,3.0],4.0)==assets[1]
