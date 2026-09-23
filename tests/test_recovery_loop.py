@@ -81,3 +81,28 @@ def test_pass_on_first_try_needs_no_recovery(tmp_path,monkeypatch):
     outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",2.0,tmp_path/"a.srt",30,tmp_path,max_attempts=2,provider=None)
     assert outcome["semantic"]["recovery_attempts"]==0
     assert outcome["semantic"]["recovery_exhausted"] is False
+
+
+def test_visual_beat_provenance_uses_asset_at_sampled_clip_midpoint(tmp_path,monkeypatch):
+    scene=make_scene("s1",["unused.jpg"],["subject visible"])
+    scene.visual_beats=[object(),object()]
+    beat_assets=[tmp_path/"opening.jpg",tmp_path/"reveal.jpg"]
+    clip=tmp_path/"s1.mp4"
+    monkeypatch.setattr(render_mod,"_composite_visual_beats",lambda *a,**k:(clip,beat_assets,[2.2,3.8]))
+    monkeypatch.setattr(render_mod,"_media_duration_seconds",lambda path:6.0)
+    seen={}
+    def fake_evaluate(scene,clip,provider,frame,**kwargs):
+        seen.update(kwargs)
+        return {"scene":"s1","status":"PASS"}
+    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",fake_evaluate)
+
+    outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",6.0,tmp_path/"a.srt",30,tmp_path,max_attempts=0,provider=None)
+
+    assert outcome["semantic"]["status"]=="PASS"
+    assert seen["asset_path"]==beat_assets[1]
+
+
+def test_visual_beat_asset_selection_fails_closed_on_mismatched_metadata():
+    from pytest import raises
+    with raises(ValueError,match="counts do not match"):
+        render_mod._representative_visual_asset([Path("opening.jpg")],[],4.0)

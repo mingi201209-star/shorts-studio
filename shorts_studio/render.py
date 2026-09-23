@@ -148,7 +148,7 @@ def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
             windows.append((beat,length))
     return windows
 
-def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->tuple[Path,list[Path]]:
+def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->tuple[Path,list[Path],list[float]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
     if not windows:
@@ -178,7 +178,21 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Shadow=0,Bold=1'{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)],check=True,capture_output=True,text=True)
-    return clip,assets
+    return clip,assets,[_media_duration_seconds(path) for path in visual_clips]
+
+def _representative_visual_asset(assets:list[Path],durations:list[float],clip_duration:float)->Path:
+    """Return the source image visible at the midpoint QA actually samples."""
+    if not assets or len(assets)!=len(durations):
+        raise ValueError("visual beat asset/duration counts do not match")
+    if any(duration<=0 for duration in durations):
+        raise ValueError("visual beat durations must be positive")
+    target=max(0.0,min(clip_duration/2,sum(durations)))
+    elapsed=0.0
+    for asset,duration in zip(assets,durations):
+        if target < elapsed+duration:
+            return asset
+        elapsed+=duration
+    return assets[-1]
 
 def _narration_plan(scene)->list[PhraseSpec]:
     """Boundary/pause placement is never authored -- it is always computed
@@ -243,8 +257,8 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             if getattr(scene,"visual_beats",None):
-                clip,beat_assets=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title)
-                asset=beat_assets[0] if beat_assets else None
+                clip,beat_assets,beat_durations=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title)
+                asset=_representative_visual_asset(beat_assets,beat_durations,_media_duration_seconds(clip))
             else:
                 asset=_resolve_asset(candidates[index],build,scene.id,index)
                 clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
