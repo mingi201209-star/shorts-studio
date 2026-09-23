@@ -108,7 +108,7 @@ def _silence_clip(path: Path, seconds: float) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(seconds), "-q:a", "9", str(path)], check=True, capture_output=True)
     return path
 
-def _trim_tts_edge_silence(path: Path, out_path: Path) -> Path:
+def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
     """Trim only leading/trailing TTS padding when real speech is present.
 
     The trim is an optimisation, never a correctness requirement. If ffmpeg
@@ -198,7 +198,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         words = []; cursor = 0.0
         for i, uw in enumerate(unit_words):
             offset = cursor
-            words.extend(WordTiming(w.text, w.start + offset, w.end + offset) for w in uw)
+            trim = leading_trims[i]\n            words.extend(WordTiming(w.text, max(0.0, w.start - trim) + offset, max(0.0, w.end - trim) + offset) for w in uw)
             real_duration = _ffmpeg_duration_seconds(part_paths[i])
             gap = gaps[i] if i < len(gaps) else 0.0
             cursor = offset + real_duration + gap
