@@ -10,14 +10,17 @@ class AssetCandidate(BaseModel):
     attribution: str | None = None
 
 class NarrationPhrase(BaseModel):
-    """One unit of the Korean Prosody Planner's structured representation
-    (see shorts_studio/prosody.py). A scene's spoken delivery is built from
-    an ordered list of these rather than one flat narration string synthesized
-    sentence-by-sentence with identical pauses everywhere."""
+    """One authored, role-tagged text segment of a scene's spoken delivery
+    (see shorts_studio/prosody.py and shorts_studio/korean_boundary.py).
+    Narrative role is an authorial/semantic decision (which part of the
+    story this text plays), so it stays here; the actual pause placement
+    and synthesis-unit grouping is NOT authored -- it is computed
+    automatically from Korean grammatical structure by korean_boundary.py,
+    so the same text always segments the same way regardless of which
+    script it appears in. `pace` is a narrow escape hatch for an explicit
+    rate override; there is deliberately no boundary/pause field here."""
     role: str  # HOOK|SETUP|CRISIS|INVESTIGATION|REVEAL|EXPLANATION|PAYOFF
     text: str = Field(min_length=1)
-    # what kind of break follows THIS phrase: continuation|weak|medium|strong|anticipatory|terminal
-    boundary: str = "terminal"
     focus: bool = False  # the emphasis/result target, e.g. a REVEAL's delivered payload
     pace: str | None = None  # optional explicit Edge TTS rate override, e.g. "+2%"
 
@@ -46,10 +49,10 @@ class Scene(BaseModel):
     # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
     visual_qa_expected_sha256: list[str] = []
     overlay_title: str | None = None
-    # Structured, narrative-role-aware delivery plan for this scene's TTS
-    # audio (see shorts_studio/prosody.py). When empty, the engine falls
-    # back to auto-splitting `narration` into per-sentence terminal-boundary
-    # phrases (the previous, uniform-pause behavior).
+    # Authored role/text segments for this scene's TTS audio (see
+    # shorts_studio/prosody.py). When empty, the engine runs the same
+    # automatic Korean boundary planner over the flat `narration` string as
+    # a single segment (shorts_studio.prosody.build_auto_plan).
     narration_plan: list[NarrationPhrase] = []
 
 class Project(BaseModel):

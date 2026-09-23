@@ -1,71 +1,84 @@
-"""Korean Prosody Planner V1.
+"""Korean Prosody Planner V2.
 
-The V1 TTS pipeline treated Korean delivery as voice + a single global rate/
-pitch + splitting written sentences into synthesis units, each followed by
-the SAME fixed silence. That reads as flat and mechanical regardless of what
-is actually being said. This module adds a structured, narrative-role-aware
-representation that the synthesis engine (see tts.synthesize_plan) consumes,
-so pacing and pausing adapt to CONTEXT instead of being uniform.
+V1 required each scene's narration_plan to be hand-authored, phrase by
+phrase, with a manually-picked boundary strength -- which does not
+generalize (every future script would need the same manual tuning, and
+manual tuning is exactly what produced the reported failure: an unnatural
+pause after "1950년대" in a hand-picked "boundary" field).
 
-This is engine-level, not Comet-specific: any manifest can declare a
-Scene.narration_plan of PhraseSpec entries; a scene without one falls back to
-build_auto_plan(), which reproduces the old whole-sentence behavior so
-existing manifests/tests keep working unchanged.
+V2 delegates all boundary decisions to shorts_studio.korean_boundary, a
+deterministic Korean grammar layer that classifies CONTINUE / WEAK_BOUNDARY /
+PHRASE_BOUNDARY / STRONG_BOUNDARY between every pair of adjacent Korean
+tokens from lexical/morphological structure, not punctuation or hardcoded
+phrase lists. This module's job is what remains genuinely narrative rather
+than linguistic: given the boundary-classified chunks korean_boundary
+produces, pick a synthesis rate per narrative role and a real inserted
+silence for the (much rarer) STRONG_BOUNDARY/anticipatory transitions that
+actually end a synthesis unit. Everything at CONTINUE/WEAK_BOUNDARY/
+PHRASE_BOUNDARY stays inside ONE Edge TTS call (see korean_boundary's
+reconstruct_chunks) -- only a real sentence/discourse transition gets its
+own call and its own silence, which is what avoids a pitch/energy reset on
+every written clause.
 """
 from __future__ import annotations
 import re
 from dataclasses import dataclass
 
+from .korean_boundary import (
+    PHRASE_BOUNDARY, STRONG_BOUNDARY, boundary_max, classify_pair,
+    is_sentence_final, tokenize,
+)
+
 NARRATIVE_ROLES = ("HOOK", "SETUP", "CRISIS", "INVESTIGATION", "REVEAL", "EXPLANATION", "PAYOFF")
-BOUNDARIES = ("continuation", "weak", "medium", "strong", "anticipatory", "terminal")
+ANTICIPATORY = "anticipatory"
+# Only these two boundary values ever end a synthesis unit (see
+# group_into_units); CONTINUE/WEAK_BOUNDARY/PHRASE_BOUNDARY are always
+# absorbed into a chunk's own text by korean_boundary before a PhraseSpec is
+# ever built, but the check is kept generic here so an explicitly-authored
+# manual override (still supported) behaves consistently.
+_UNIT_ENDING_BOUNDARIES = (STRONG_BOUNDARY, ANTICIPATORY)
 
 @dataclass(frozen=True)
 class PhraseSpec:
     role: str
     text: str
-    boundary: str = "terminal"     # what kind of break follows THIS phrase
-    focus: bool = False            # the emphasis/result target (e.g. a REVEAL's payload)
-    pace: str | None = None        # optional explicit rate override, e.g. "+2%"
+    boundary: str = STRONG_BOUNDARY  # what kind of break follows THIS phrase
+    focus: bool = False              # the emphasis/result target (e.g. a REVEAL's payload)
+    pace: str | None = None          # optional explicit rate override, e.g. "+2%"
 
-# Pause AFTER a phrase, keyed by (role, boundary). Deliberately varied --
-# never the same fixed silence for every phrase. Falls back to
-# DEFAULT_PAUSE_BY_BOUNDARY when a role has no specific override.
-# Calibrated from the human-read Korean Shorts reference supplied on 2026-09-23.
-# ffmpeg silencedetect (-35 dB, >=0.18 s) found 17 internal pauses:
-# median 0.528 s, IQR 0.356-0.582 s, with deliberate long boundaries 0.70-0.83 s.
-# These are reference DISTRIBUTION anchors, not a command to insert 0.53 s
-# everywhere. Continuations stay continuous; boundary strength selects a
-# progressively larger pause. This preserves context sensitivity and avoids
-# copying the speaker's voice or exact performance.
+# Reference distribution from a human-read Korean Shorts recording (ffmpeg
+# silencedetect, -35 dB / >=0.18 s, 17 internal pauses): median 0.528 s, IQR
+# 0.356-0.582 s, with deliberate long/dramatic boundaries at 0.70-0.83 s.
+# These are magnitude anchors for how long a real Korean narrator holds a
+# pause of a given weight -- they say nothing about WHERE a pause belongs,
+# which is decided entirely by korean_boundary.py's grammar-driven
+# classification, never by this recording's specific wording. Using them
+# only to calibrate duration (not placement) is what keeps this general
+# rather than reintroducing per-script tuning.
 REFERENCE_PAUSE_MEDIAN = 0.528
 REFERENCE_PAUSE_IQR = (0.356, 0.582)
 REFERENCE_LONG_PAUSE_RANGE = (0.70, 0.83)
 
+# Real inserted silence for a synthesis-unit-ending transition, keyed by
+# (role, boundary). Only STRONG_BOUNDARY/ANTICIPATORY are ever looked up in
+# practice (see _UNIT_ENDING_BOUNDARIES), but the table is not restricted to
+# that so an explicit manual override on a weaker boundary still resolves to
+# something sane. Values sit within the reference IQR for an ordinary
+# sentence break, and within the reference long-pause range for the REVEAL's
+# anticipatory beat -- deliberately varied per role, never one fixed silence.
 PAUSE_SECONDS: dict[tuple[str, str], float] = {
-    ("HOOK", "weak"): 0.30,
-    ("HOOK", "medium"): 0.42,
-    ("HOOK", "terminal"): 0.50,
-    ("SETUP", "medium"): 0.45,
-    ("SETUP", "terminal"): 0.52,
-    ("CRISIS", "weak"): 0.30,
-    ("CRISIS", "medium"): 0.44,
-    ("CRISIS", "strong"): 0.68,
-    ("CRISIS", "terminal"): 0.52,
-    ("INVESTIGATION", "continuation"): 0.0,
-    ("INVESTIGATION", "weak"): 0.30,
-    ("INVESTIGATION", "medium"): 0.44,
-    ("INVESTIGATION", "terminal"): 0.50,
-    ("REVEAL", "anticipatory"): 0.78,
-    ("REVEAL", "medium"): 0.46,
-    ("REVEAL", "terminal"): 0.56,
-    ("EXPLANATION", "medium"): 0.46,
-    ("EXPLANATION", "terminal"): 0.52,
-    ("PAYOFF", "medium"): 0.46,
-    ("PAYOFF", "terminal"): 0.58,
+    ("HOOK", STRONG_BOUNDARY): 0.40,
+    ("SETUP", STRONG_BOUNDARY): 0.48,
+    ("CRISIS", STRONG_BOUNDARY): 0.52,
+    ("INVESTIGATION", STRONG_BOUNDARY): 0.46,
+    ("REVEAL", ANTICIPATORY): 0.78,   # the deliberate pre-result beat
+    ("REVEAL", STRONG_BOUNDARY): 0.50,
+    ("EXPLANATION", STRONG_BOUNDARY): 0.50,
+    ("PAYOFF", STRONG_BOUNDARY): 0.56,  # settle, don't clip like an ad button
 }
 DEFAULT_PAUSE_BY_BOUNDARY: dict[str, float] = {
-    "continuation": 0.0, "weak": 0.30, "medium": 0.45, "strong": 0.68,
-    "anticipatory": 0.78, "terminal": 0.52,
+    "continue": 0.0, "weak_boundary": 0.0, PHRASE_BOUNDARY: 0.0,
+    STRONG_BOUNDARY: REFERENCE_PAUSE_MEDIAN, ANTICIPATORY: REFERENCE_LONG_PAUSE_RANGE[0] + 0.08,
 }
 
 def pause_after(phrase: PhraseSpec) -> float:
@@ -88,31 +101,97 @@ def rate_for_unit(unit: list[PhraseSpec], base_rate: str) -> str:
     return ROLE_RATE.get(unit[0].role, base_rate)
 
 def group_into_units(phrases: list[PhraseSpec]) -> list[list[PhraseSpec]]:
-    """Consecutive phrases whose boundary is "continuation" are synthesized
-    as ONE Edge TTS call (same pitch/energy contour, no stitch seam); a unit
-    ends at (and includes) the first phrase whose boundary is anything else."""
+    """A unit ends at (and includes) the first phrase whose boundary is
+    STRONG_BOUNDARY or ANTICIPATORY. Phrases produced by plan_narration are
+    already one full unit's worth of text each (korean_boundary folds
+    CONTINUE/WEAK_BOUNDARY/PHRASE_BOUNDARY into a single chunk's text before
+    a PhraseSpec is built), so in practice every plan_narration phrase ends
+    its own unit here; this stays generic so an explicitly-authored manual
+    override still groups correctly."""
     units: list[list[PhraseSpec]] = []
     current: list[PhraseSpec] = []
     for p in phrases:
         current.append(p)
-        if p.boundary != "continuation":
+        if p.boundary in _UNIT_ENDING_BOUNDARIES:
             units.append(current)
             current = []
     if current:
         units.append(current)
     return units
 
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
+def plan_narration(segments: list[tuple[str, str, bool]]) -> list[PhraseSpec]:
+    """segments: [(role, text, focus), ...] in authored order. Runs the
+    Korean boundary classifier across the ENTIRE concatenated token stream,
+    including at segment/role junctions -- so a narrative-role change on its
+    own never forces a boundary the language itself doesn't justify (role is
+    metadata carried on the resulting chunks, not a segmentation rule by
+    itself).
+
+    The one narrative signal that DOES force a real break, regardless of
+    what the linguistic classifier alone would say at that exact junction,
+    is `focus`: the transition INTO an authored focus=True segment (the
+    delivered emphasis/result of any role, not just REVEAL) is floored at
+    STRONG_BOUNDARY, and gets upgraded to ANTICIPATORY. This is not the
+    classifier being overridden by role in general -- it is honoring one
+    narrow, explicit authorial marker that a writer set deliberately (this
+    text is the payload), the same way a paragraph break is real discourse
+    structure a writer chose, not something a grammar-only pass could infer
+    from wording alone. It generalizes to any future script that marks a
+    focus segment; nothing here reads specific text or a specific role."""
+    all_tokens = []  # (Token, role, focus)
+    for role, text, focus in segments:
+        for tok in tokenize(text):
+            all_tokens.append((tok, role, focus))
+    if not all_tokens:
+        return []
+    n = len(all_tokens)
+    raw_chunks: list[dict] = []
+    cur_parts: list[str] = []
+    cur_role = all_tokens[0][1]
+    cur_focus = False
+    for i, (tok, role, focus) in enumerate(all_tokens):
+        nxt = all_tokens[i + 1] if i + 1 < n else None
+        if nxt is None:
+            level = STRONG_BOUNDARY
+        else:
+            level = classify_pair(tok, nxt[0])
+            if nxt[2] and not focus:  # entering a focus segment from a non-focus one
+                level = boundary_max(level, STRONG_BOUNDARY)
+        if level == PHRASE_BOUNDARY:
+            suffix = ","
+        elif level == STRONG_BOUNDARY and is_sentence_final(tok):
+            suffix = "."
+        else:
+            suffix = ""
+        cur_parts.append(tok.base + suffix)
+        cur_focus = cur_focus or focus
+        if level == STRONG_BOUNDARY:
+            raw_chunks.append({"role": cur_role, "text": " ".join(cur_parts), "focus": cur_focus})
+            cur_parts = []
+            cur_focus = False
+            if i + 1 < n:
+                cur_role = all_tokens[i + 1][1]
+    if cur_parts:
+        raw_chunks.append({"role": cur_role, "text": " ".join(cur_parts), "focus": cur_focus})
+
+    specs = []
+    for idx, c in enumerate(raw_chunks):
+        boundary = STRONG_BOUNDARY
+        if idx + 1 < len(raw_chunks) and raw_chunks[idx + 1]["focus"] and not c["focus"]:
+            boundary = ANTICIPATORY
+        specs.append(PhraseSpec(role=c["role"], text=c["text"], boundary=boundary, focus=c["focus"]))
+    return specs
 
 def build_auto_plan(text: str, default_role: str = "SETUP") -> list[PhraseSpec]:
-    """Fallback for scenes with no authored narration_plan: reproduces the
-    previous per-sentence behavior (each sentence its own terminal-boundary
-    unit) so manifests that don't opt into the planner are unaffected."""
+    """Fallback for scenes with no authored role/text segments at all: runs
+    the same general Korean boundary planner over the whole flat narration
+    string as a single role segment. This is what makes any future script
+    that just supplies a plain `narration` string benefit from the same
+    linguistic segmentation, with no per-script configuration."""
     text = re.sub(r"\s+", " ", text).strip()
     if not text:
         return []
-    sentences = [s.strip() for s in _SENTENCE_SPLIT_RE.split(text) if s.strip()] or [text]
-    return [PhraseSpec(role=default_role, text=s, boundary="terminal") for s in sentences]
+    return plan_narration([(default_role, text, False)])
 
 # --- Sino-Korean number spelling -------------------------------------------
 # Edge's own number normalization for comma-grouped digits is not reliable
