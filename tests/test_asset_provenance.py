@@ -19,7 +19,7 @@ def test_matching_hash_passes(tmp_path):
     asset = tmp_path / "a.jpg"; asset.write_bytes(b"the-real-water-tank-photo-bytes")
     frame = tmp_path / "frame.jpg"; frame.write_bytes(b"x")
     q = AssetProvenanceVisionProvider().evaluate(frame, [], expected_asset_sha256=[_sha(asset)], asset_path=str(asset))
-    assert q["status"] == "FAIL"
+    assert q["status"] == "PASS"
 
 def test_wrong_substituted_image_fails_not_not_evaluated(tmp_path):
     # Counterexample: a completely different (wrong-domain) image was
