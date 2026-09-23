@@ -119,10 +119,29 @@ def _load_clip(model_name="ViT-B-32",pretrained="openai"):
     except ImportError:_CLIP_CACHE[key]=None;return None
     model,_,preprocess=open_clip.create_model_and_transforms(model_name,pretrained=pretrained); tokenizer=open_clip.get_tokenizer(model_name);model.eval()
     _CLIP_CACHE[key]=(torch,model,preprocess,tokenizer);return _CLIP_CACHE[key]
+def _semantic_subject_image(image_path):
+    """Crop the rendered frame to the main visual band before semantic scoring.
+
+    Shorts frames also contain a title, subtitles and a blurred background.
+    Those pixels are useful for presentation but dilute CLIP's judgment of
+    specialist archival imagery.  Score the sharp subject band instead.
+    The ratios mirror the renderer's 190..1300 safe visual band at 1920p
+    without coupling QA to one fixed resolution.
+    """
+    from PIL import Image
+    image=Image.open(image_path).convert("RGB")
+    w,h=image.size
+    if w<=0 or h<=0:
+        return image
+    top=max(0,min(h-1,round(h*(190/1920))))
+    bottom=max(top+1,min(h,round(h*(1300/1920))))
+    # Remove a small side margin where only the blurred fill commonly shows.
+    left=max(0,round(w*.035)); right=min(w,round(w*.965))
+    return image.crop((left,top,right,bottom))
+
 def clip_zero_shot_scores(bundle,image_path,labels):
     torch,model,preprocess,tokenizer=bundle
-    from PIL import Image
-    image=preprocess(Image.open(image_path).convert("RGB")).unsqueeze(0);text=tokenizer(labels)
+    image=preprocess(_semantic_subject_image(image_path)).unsqueeze(0);text=tokenizer(labels)
     with torch.no_grad():
         a=model.encode_image(image);b=model.encode_text(text);a=a/a.norm(dim=-1,keepdim=True);b=b/b.norm(dim=-1,keepdim=True);s=(a@b.T).squeeze(0)
     return {label:float(s[i]) for i,label in enumerate(labels)}
