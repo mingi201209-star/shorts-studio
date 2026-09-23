@@ -64,3 +64,37 @@ def test_provenance_pass_cannot_override_semantic_fail(tmp_path):
     )
     assert result["status"]=="FAIL"
     assert "subject" in result["reason"]
+
+
+def test_clip_narrow_positive_lead_is_inconclusive_not_wrong_domain(monkeypatch, tmp_path):
+    import shorts_studio.visual_qa as vq
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
+    monkeypatch.setattr(vq, "_load_clip", lambda *a, **k: object())
+    monkeypatch.setattr(vq, "clip_zero_shot_scores", lambda bundle, image, labels: {
+        "expected one": .220, "expected two": .210,
+        "wrong one": .205, "wrong two": .200,
+    })
+    r=vq.ClipSemanticVisionProvider().evaluate(
+        image, ["expected subject visible"],
+        positive_labels=["expected one","expected two"],
+        negative_labels=["wrong one","wrong two"],
+    )
+    assert r["status"]=="NOT_EVALUATED"
+    assert 0 < r["margin"] < .03
+
+
+def test_clip_negative_ensemble_beating_positive_is_confident_fail(monkeypatch, tmp_path):
+    import shorts_studio.visual_qa as vq
+    image=tmp_path/"frame.jpg"; image.write_bytes(b"x")
+    monkeypatch.setattr(vq, "_load_clip", lambda *a, **k: object())
+    monkeypatch.setattr(vq, "clip_zero_shot_scores", lambda bundle, image, labels: {
+        "expected one": .220, "expected two": .210,
+        "wrong one": .230, "wrong two": .225,
+    })
+    r=vq.ClipSemanticVisionProvider().evaluate(
+        image, ["expected subject visible"],
+        positive_labels=["expected one","expected two"],
+        negative_labels=["wrong one","wrong two"],
+    )
+    assert r["status"]=="FAIL"
+    assert r["margin"] <= 0
