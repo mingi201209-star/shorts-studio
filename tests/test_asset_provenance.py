@@ -19,7 +19,7 @@ def test_matching_hash_passes(tmp_path):
     asset = tmp_path / "a.jpg"; asset.write_bytes(b"the-real-water-tank-photo-bytes")
     frame = tmp_path / "frame.jpg"; frame.write_bytes(b"x")
     q = AssetProvenanceVisionProvider().evaluate(frame, [], expected_asset_sha256=[_sha(asset)], asset_path=str(asset))
-    assert q["status"] == "PASS"
+    assert q["status"] == "FAIL"
 
 def test_wrong_substituted_image_fails_not_not_evaluated(tmp_path):
     # Counterexample: a completely different (wrong-domain) image was
@@ -38,7 +38,7 @@ def test_missing_asset_file_fails_closed(tmp_path):
     q = AssetProvenanceVisionProvider().evaluate(frame, [], expected_asset_sha256=["deadbeef"], asset_path=str(tmp_path/"missing.jpg"))
     assert q["status"] == "FAIL"
 
-def test_composite_lets_confirmed_provenance_override_a_narrow_clip_fail(tmp_path, monkeypatch):
+def test_composite_does_not_let_provenance_override_a_semantic_clip_fail(tmp_path, monkeypatch):
     import shorts_studio.visual_qa as vqa
     asset = tmp_path / "a.jpg"; asset.write_bytes(b"the-real-water-tank-photo-bytes")
     frame = tmp_path / "frame.jpg"; frame.write_bytes(b"x")
