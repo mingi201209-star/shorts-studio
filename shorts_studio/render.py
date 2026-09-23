@@ -2,7 +2,7 @@ from __future__ import annotations
 import asyncio, json, os, shutil, subprocess, time, urllib.error, urllib.request
 from pathlib import Path
 from .project import load_project
-from .prosody import PhraseSpec, build_auto_plan
+from .prosody import PhraseSpec, plan_narration
 from .tts import synthesize_plan
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
@@ -136,16 +136,33 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     return clip
 
 def _narration_plan(scene)->list[PhraseSpec]:
+    """Boundary/pause placement is never authored -- it is always computed
+    by the general Korean boundary planner (prosody.plan_narration ->
+    korean_boundary). A scene may author WHICH TEXT belongs to which
+    narrative role (a semantic/story decision); a scene with no such
+    segments falls back to a single default-role segment covering the
+    whole flat `narration` string, so any manifest benefits from the same
+    automatic linguistic segmentation with no per-script configuration."""
     declared=getattr(scene,"narration_plan",None) or []
     if declared:
-        return [PhraseSpec(role=p.role,text=p.text,boundary=p.boundary,focus=p.focus,pace=p.pace) for p in declared]
-    return build_auto_plan(scene.narration)
+        segments=[(p.role,p.text,p.focus) for p in declared]
+    else:
+        segments=[("SETUP",scene.narration,False)]
+    return plan_narration(segments)
+
+def _log_narration_plan(scene, plan:list[PhraseSpec])->None:
+    """Prints the planned synthesis units and boundaries for a scene so a
+    future unnatural-pause report can be diagnosed from CI logs alone,
+    without re-running the planner locally against a guessed input."""
+    print(f"[prosody] {scene.id}: {len(plan)} synthesis unit(s)")
+    for i,p in enumerate(plan):
+        print(f"[prosody]   unit {i}: role={p.role} boundary={p.boundary} focus={p.focus} text={p.text!r}")
 
 def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     plan=_narration_plan(scene)
-    use_role_rates=bool(getattr(scene,"narration_plan",None))
-    words=asyncio.run(synthesize_plan(plan,audio,timing,use_role_rates=use_role_rates))
+    _log_narration_plan(scene,plan)
+    words=asyncio.run(synthesize_plan(plan,audio,timing,use_role_rates=True))
     duration=max(w.end for w in words)+.25
     caps=segment(words,duration)
     q=subtitle_qa(caps,words,duration)
