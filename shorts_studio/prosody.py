@@ -30,30 +30,42 @@ class PhraseSpec:
 # Pause AFTER a phrase, keyed by (role, boundary). Deliberately varied --
 # never the same fixed silence for every phrase. Falls back to
 # DEFAULT_PAUSE_BY_BOUNDARY when a role has no specific override.
+# Calibrated from the human-read Korean Shorts reference supplied on 2026-09-23.
+# ffmpeg silencedetect (-35 dB, >=0.18 s) found 17 internal pauses:
+# median 0.528 s, IQR 0.356-0.582 s, with deliberate long boundaries 0.70-0.83 s.
+# These are reference DISTRIBUTION anchors, not a command to insert 0.53 s
+# everywhere. Continuations stay continuous; boundary strength selects a
+# progressively larger pause. This preserves context sensitivity and avoids
+# copying the speaker's voice or exact performance.
+REFERENCE_PAUSE_MEDIAN = 0.528
+REFERENCE_PAUSE_IQR = (0.356, 0.582)
+REFERENCE_LONG_PAUSE_RANGE = (0.70, 0.83)
+
 PAUSE_SECONDS: dict[tuple[str, str], float] = {
-    ("HOOK", "weak"): 0.10,
-    ("HOOK", "medium"): 0.16,
-    ("HOOK", "terminal"): 0.20,
-    ("SETUP", "medium"): 0.22,
-    ("SETUP", "terminal"): 0.26,
-    ("CRISIS", "weak"): 0.10,
-    ("CRISIS", "medium"): 0.16,
-    ("CRISIS", "strong"): 0.32,       # right before the crisis's own result clause
-    ("CRISIS", "terminal"): 0.26,
+    ("HOOK", "weak"): 0.30,
+    ("HOOK", "medium"): 0.42,
+    ("HOOK", "terminal"): 0.50,
+    ("SETUP", "medium"): 0.45,
+    ("SETUP", "terminal"): 0.52,
+    ("CRISIS", "weak"): 0.30,
+    ("CRISIS", "medium"): 0.44,
+    ("CRISIS", "strong"): 0.68,
+    ("CRISIS", "terminal"): 0.52,
     ("INVESTIGATION", "continuation"): 0.0,
-    ("INVESTIGATION", "weak"): 0.12,
-    ("INVESTIGATION", "medium"): 0.18,
-    ("INVESTIGATION", "terminal"): 0.24,
-    ("REVEAL", "anticipatory"): 0.55,  # the deliberate pre-result beat
-    ("REVEAL", "medium"): 0.20,
-    ("REVEAL", "terminal"): 0.30,
-    ("EXPLANATION", "medium"): 0.26,
-    ("EXPLANATION", "terminal"): 0.30,
-    ("PAYOFF", "medium"): 0.22,
-    ("PAYOFF", "terminal"): 0.34,      # settle, don't clip like an ad button
+    ("INVESTIGATION", "weak"): 0.30,
+    ("INVESTIGATION", "medium"): 0.44,
+    ("INVESTIGATION", "terminal"): 0.50,
+    ("REVEAL", "anticipatory"): 0.78,
+    ("REVEAL", "medium"): 0.46,
+    ("REVEAL", "terminal"): 0.56,
+    ("EXPLANATION", "medium"): 0.46,
+    ("EXPLANATION", "terminal"): 0.52,
+    ("PAYOFF", "medium"): 0.46,
+    ("PAYOFF", "terminal"): 0.58,
 }
 DEFAULT_PAUSE_BY_BOUNDARY: dict[str, float] = {
-    "continuation": 0.0, "weak": 0.12, "medium": 0.22, "strong": 0.32, "anticipatory": 0.5, "terminal": 0.28,
+    "continuation": 0.0, "weak": 0.30, "medium": 0.45, "strong": 0.68,
+    "anticipatory": 0.78, "terminal": 0.52,
 }
 
 def pause_after(phrase: PhraseSpec) -> float:
