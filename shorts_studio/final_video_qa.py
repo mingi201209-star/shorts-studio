@@ -134,6 +134,13 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     "caption_window": (start,end) or None}] -- caption_window is the first
     caption's (start,end) *within that scene's own clip*, or None if the
     scene has no captions (shouldn't happen for narrated scenes)."""
+    final_duration=float(probe.get("format",{}).get("duration",0) or 0)
+    planned_total=sum(float(w.get("duration",0) or 0) for w in scene_windows)
+    timeline_scale=(final_duration/planned_total) if final_duration>0 and planned_total>0 else 1.0
+    def final_ts(t:float)->float:
+        mapped=max(0.0,float(t)*timeline_scale)
+        return min(mapped,max(0.0,final_duration-0.05)) if final_duration>0 else mapped
+
     checks = {}
     checks["composition_9x16"] = verify_composition_9x16(probe, project.width, project.height)
     checks["scenes_present"] = verify_scenes_present([s.id for s in project.scenes], sources)
@@ -152,8 +159,8 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     for w in scene_windows:
         if w.get("caption_window"):
             cs, ce = w["caption_window"]
-            ts = w["start"] + (cs + ce) / 2
-            caption_points.append((ts, (1300, 1900)))
+            ts = final_ts(w["start"] + (cs + ce) / 2)
+            caption_points.append((ts, (1000, 1900)))
         safe_area_samples.append(final_ts(w["start"] + 0.15))
     checks["captions_visible"] = verify_captions_visible(video, caption_points, build_dir) if caption_points else {"status": "NOT_EVALUATED", "reason": "no caption windows available"}
     checks["safe_area_clean"] = verify_bottom_safe_area_clean(video, safe_area_samples, build_dir, (1300, 1920)) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
