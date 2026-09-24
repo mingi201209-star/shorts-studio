@@ -85,7 +85,9 @@ def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
     )
     return (
         f"{picture},pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,"
-        f"fps={fps},format=yuv420p,split=2[base][cap];"\n        f"[cap]subtitles={srt.as_posix()}:force_style='{style}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];"\n        f"[base][capg]overlay=0:{CAPTION_MASK_TOP}"
+        f"fps={fps},format=yuv420p,split=2[base][cap];"
+        f"[cap]subtitles={srt.as_posix()}:force_style='{style}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];"
+        f"[base][capg]overlay=0:{CAPTION_MASK_TOP}"
         f"{_title_clause(title_srt)}"
     )
 
