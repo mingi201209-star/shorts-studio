@@ -218,8 +218,7 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         if w.get("caption_window"):
             cs,_=w["caption_window"]
             if cs > GUTTER_SAMPLE_LEAD_SECONDS:
-                gutter_samples.append(cursor + min(GUTTER_SAMPLE_LEAD_SECONDS, cs / 2))
-        cursor += float(w.get("duration", 0.0))
+                gutter_samples.append(final_ts(w["start"] + min(GUTTER_SAMPLE_LEAD_SECONDS, cs / 2)))
     checks["picture_caption_gutter"] = verify_picture_caption_gutter(video, gutter_samples, build_dir) if gutter_samples else {"status": "NOT_EVALUATED", "reason": "no pre-caption gutter samples available"}
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
