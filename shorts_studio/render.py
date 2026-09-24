@@ -99,20 +99,59 @@ def _rotation_segments(assets:list[Path], duration:float, seg_seconds:float|None
         t+=length; i+=1
     return segments
 
+# Slow, centered zoom-in used ONLY for the single-image fallback (see
+# _rotation_filter_complex): "moving viewpoint" for a scene that has no
+# additional image to cut to, rather than a frozen frame. It is bounded
+# entirely inside the fixed-size foreground box (via zoompan's own `s=`),
+# so it can NEVER grow the foreground outside the caption-safe band --
+# unlike the old whole-frame zoompan this replaced, which zoomed the
+# composited frame itself and had no such structural guarantee.
+_KEN_BURNS_ZOOM_EXPR="min(zoom+0.0007,1.15)"
+
+def _fg_filter(fg_w:int, fg_h:int, fps:int, motion:bool)->str:
+    """The per-image foreground filter placed into the fixed box. `motion`
+    selects between:
+      - False (2+ images declared -- see _rotation_segments): a plain
+        contain-fit scale. The picture is visually still for as long as
+        it's on screen; the cuts between images are what supplies visual
+        change, so no extra motion is added on top.
+      - True (only one image available for the whole scene): a bounded
+        Ken Burns zoom-in. The image is first cover-cropped to the box's
+        exact aspect ratio (so zoompan has no letterbox bars to zoom into),
+        upscaled for headroom, then zoompan'd back down to EXACTLY fg_w x
+        fg_h -- the rendered box's size and position never change, only
+        the framing of the image inside it does."""
+    if not motion:
+        return f"scale={fg_w}:{fg_h}:force_original_aspect_ratio=decrease"
+    # Contain-fit + pad (NOT cover-crop) before zooming in: this keeps the
+    # "preserve the complete source image" guarantee at zoom=1 (the start
+    # of the clip) -- a cover-crop would immediately discard whatever
+    # doesn't fit the box's aspect ratio, which is exactly the content-loss
+    # problem the contain-fit approach was originally chosen to avoid. The
+    # padding is black, matching the surrounding background, so it reads as
+    # part of the backdrop rather than a visible letterbox bar; zooming in
+    # over time mostly eats into that padding first.
+    return (
+        f"scale={fg_w}:{fg_h}:force_original_aspect_ratio=decrease,"
+        f"pad={fg_w}:{fg_h}:(ow-iw)/2:(oh-ih)/2:color=black,"
+        f"scale={fg_w*2}:{fg_h*2},"
+        f"zoompan=z='{_KEN_BURNS_ZOOM_EXPR}':x='(iw-iw/zoom)/2':y='(ih-ih/zoom)/2':d=1:s={fg_w}x{fg_h}:fps={fps}"
+    )
+
 def _rotation_filter_complex(lengths:list[float], srt:Path, fps:int, title_srt:Path|None=None)->str:
     """Filter graph for input 0 = the black background (spanning the whole
     clip) and inputs 1..len(lengths) = each rotation image, already trimmed
     (via -t) to its own segment length and time-shifted (via -itsoffset in
     the caller) to occupy its window on input 0's shared timeline. Each
-    image is placed FIXED and centered in the caption-safe band -- no pan/
-    zoom motion, so the picture stays visually still for as long as it's on
-    screen -- and is only composited during its own window via `enable`.
-    A single segment (the common, QA-gated case) needs no `enable` at all:
-    one image, visible for the whole clip, exactly as before."""
+    image is placed centered in the caption-safe band and only composited
+    during its own window via `enable`. A single segment (no additional
+    image was available) gets the bounded Ken Burns fallback (see
+    _fg_filter); 2+ segments each stay visually still -- switching between
+    real images is already the visual change."""
     fg_h=SAFE_BOTTOM_Y-SAFE_TOP_Y
-    fg_scale=f"scale={_FG_BAND_WIDTH}:{fg_h}:force_original_aspect_ratio=decrease"
     style="Alignment=2,MarginV=48,FontSize=18,Outline=2,Shadow=0,Bold=1"
     n=len(lengths)
+    fg_scale=_fg_filter(_FG_BAND_WIDTH,fg_h,fps,motion=(n==1))
     starts=[0.0]
     for length in lengths[:-1]:
         starts.append(starts[-1]+length)
@@ -155,12 +194,16 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
 
 def _composite_scene_clip(scene, asset, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     """`asset` is either a single Path|None (the historical, still-supported
-    call shape: no image, or one fixed image for the whole clip) or a
-    list[Path] (a QA-exempt scene's rotation pool -- see
-    _render_scene_rotation). Either way the background is solid black (never
-    a blurred copy of the image) and the foreground is placed FIXED and
-    centered in the caption-safe band -- no pan/zoom motion is ever applied,
-    so the picture stays visually still for as long as it's on screen."""
+    call shape: no image, or one image for the whole clip) or a list[Path]
+    (a QA-exempt scene's rotation pool -- see _render_scene_rotation).
+    Either way the background is solid black (never a blurred copy of the
+    image) and the foreground is placed centered in the caption-safe band,
+    at a fixed position and size that can never grow into the caption zone.
+    With 2+ images, each is shown visually still for its own window (the
+    cuts between them supply the visual change); with exactly one image
+    (no additional image was available), it instead gets a bounded Ken
+    Burns zoom -- a "moving viewpoint" rather than a frozen frame -- see
+    _fg_filter."""
     assets=asset if isinstance(asset,list) else ([asset] if asset else [])
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None

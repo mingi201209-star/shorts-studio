@@ -1,12 +1,19 @@
-"""Real, pixel-level regression for three requirements: (1) a scene's
-picture is shown FIXED and centered -- no pan/zoom motion is ever applied
-to it; (2) the background outside the foreground image is solid black, not
-a blurred copy of the image; (3) a scene with more than one declared asset
-(primary + recovery_candidates) and no semantic QA to protect rotates
-through them across its duration instead of showing one image the whole
-time. A QA-gated scene (declares visual_qa_requirements) always keeps the
-single fixed image it had before -- rotation only applies where nothing
-can fail against it.
+"""Real, pixel-level regression for four requirements: (1) the background
+outside the foreground image is solid black, not a blurred copy of the
+image; (2) a scene with more than one declared asset (primary +
+recovery_candidates) and no semantic QA to protect rotates through them
+across its duration instead of showing one image the whole time, with each
+image visually STILL for its own window (switching images already supplies
+the visual change); (3) a scene that ends up with only ONE image (no
+additional image was available) instead gets a bounded "moving viewpoint"
+Ken Burns zoom, rather than a frozen frame -- but the zoom is bounded
+entirely inside the fixed foreground box, so the rendered image can never
+grow into the caption-safe area no matter how it's currently framed; (4)
+that caption-safe-area guarantee holds in both the still and the zooming
+case. A QA-gated scene (declares visual_qa_requirements) always keeps its
+single, semantically-verified image -- rotation only applies where nothing
+can fail against a substituted image -- but still gets the Ken Burns
+fallback instead of sitting frozen.
 """
 import subprocess
 from pathlib import Path
@@ -54,45 +61,108 @@ def _corner_bgr(frame_path: Path):
     return img[20, 20].tolist()  # top-left corner, well outside the fg band
 
 
-# --- no motion: the ffmpeg command itself never contains a pan/zoom node ---
+# --- zoompan is present exactly when there is one image, never when there
+# --- are 2+ (switching images already supplies the visual change) ---------
 
-@requires_ffmpeg
-def test_composite_command_never_contains_zoompan(tmp_path, monkeypatch):
-    build = tmp_path / "build"; build.mkdir()
+def _run_composite_and_capture_cmds(build, asset, audio, srt, duration, monkeypatch):
     seen_cmds = []
     real_run = subprocess.run
     def spy_run(cmd, *a, **k):
         seen_cmds.append(cmd)
         return real_run(cmd, *a, **k)
     monkeypatch.setattr(R.subprocess, "run", spy_run)
-    audio = _silence(build, 2.0)
-    asset = _solid_image(build / "a.png", (10, 20, 30))
-    srt = build / "s.srt"; srt.write_text("1\n00:00:00,000 --> 00:00:01,000\ncaption\n\n", encoding="utf-8")
     scene = SimpleNamespace(id="x")
-    R._composite_scene_clip(scene, asset, audio, srt, 2.0, 30, build, 0)
-    ffmpeg_cmds = [c for c in seen_cmds if c[0] == "ffmpeg"]
-    assert ffmpeg_cmds, "expected at least one real ffmpeg invocation"
-    for cmd in ffmpeg_cmds:
-        joined = " ".join(cmd)
-        assert "zoompan" not in joined, f"found a pan/zoom filter in a supposedly fixed-image composite: {joined}"
+    R._composite_scene_clip(scene, asset, audio, srt, duration, 30, build, 0)
+    return [c for c in seen_cmds if c[0] == "ffmpeg"]
 
 
 @requires_ffmpeg
-def test_single_image_position_is_identical_at_two_different_times(tmp_path):
-    """If the old zoompan motion were still applied, the foreground's scale
-    (and therefore the exact pixel color at a fixed sample point near its
-    edge) would drift slightly between two well-separated timestamps. A
-    truly fixed image must sample IDENTICALLY."""
+def test_single_image_fallback_uses_bounded_zoompan(tmp_path, monkeypatch):
+    build = tmp_path / "build"; build.mkdir()
+    audio = _silence(build, 2.0)
+    asset = _solid_image(build / "a.png", (10, 20, 30))
+    srt = build / "s.srt"; srt.write_text("1\n00:00:00,000 --> 00:00:01,000\ncaption\n\n", encoding="utf-8")
+    cmds = _run_composite_and_capture_cmds(build, asset, audio, srt, 2.0, monkeypatch)
+    assert cmds, "expected at least one real ffmpeg invocation"
+    assert any("zoompan" in " ".join(c) for c in cmds), "expected the single-image Ken Burns fallback to use zoompan"
+
+
+@requires_ffmpeg
+def test_multi_image_rotation_never_contains_zoompan(tmp_path, monkeypatch):
+    # Duration must exceed one rotation interval, or _rotation_segments
+    # correctly collapses back to a single segment (see the docstring on
+    # _rotation_segments) -- there'd be nothing to "switch between" within
+    # a too-short clip, so it falls back to the Ken Burns motion instead.
+    build = tmp_path / "build"; build.mkdir()
+    duration = 6.0
+    audio = _silence(build, duration)
+    a = _solid_image(build / "a.png", (10, 20, 30))
+    b = _solid_image(build / "b.png", (30, 20, 10))
+    srt = build / "s.srt"; srt.write_text("1\n00:00:00,000 --> 00:00:01,000\ncaption\n\n", encoding="utf-8")
+    cmds = _run_composite_and_capture_cmds(build, [a, b], audio, srt, duration, monkeypatch)
+    assert cmds, "expected at least one real ffmpeg invocation"
+    for cmd in cmds:
+        joined = " ".join(cmd)
+        assert "zoompan" not in joined, f"a scene switching between real images should not also add motion: {joined}"
+
+
+@requires_ffmpeg
+def test_single_image_fallback_visibly_changes_framing_over_time(tmp_path):
+    """With only one image available, the Ken Burns fallback must actually
+    move the viewpoint -- a uniform solid-color image can't show this (any
+    crop/zoom of a solid color looks identical), so this uses a striped
+    image where zooming in measurably shifts which stripe sits at a fixed
+    sample point."""
     build = tmp_path / "build"; build.mkdir()
     audio = _silence(build, 4.0)
-    asset = _solid_image(build / "a.png", (200, 60, 10))
+    path = build / "stripes.png"
+    w, h = 800, 1200
+    img = np.zeros((h, w, 3), dtype=np.uint8)
+    stripe_h = h // 20
+    for i in range(20):
+        img[i * stripe_h:(i + 1) * stripe_h, :] = [i * 12, 255 - i * 12, (i * 37) % 255]
+    Image.fromarray(img).save(path)
     srt = build / "s.srt"; srt.write_text("1\n00:00:00,000 --> 00:00:01,000\ncaption\n\n", encoding="utf-8")
     scene = SimpleNamespace(id="x")
-    clip = R._composite_scene_clip(scene, asset, audio, srt, 4.0, 30, build, 0)
+    clip = R._composite_scene_clip(scene, path, audio, srt, 4.0, 30, build, 0)
     early = build / "early.jpg"; late = build / "late.jpg"
-    subprocess.run(["ffmpeg", "-y", "-ss", "0.2", "-i", str(clip), "-frames:v", "1", str(early)], check=True, capture_output=True)
-    subprocess.run(["ffmpeg", "-y", "-ss", "3.7", "-i", str(clip), "-frames:v", "1", str(late)], check=True, capture_output=True)
-    assert _fg_center_bgr(early) == _fg_center_bgr(late)
+    subprocess.run(["ffmpeg", "-y", "-ss", "0.1", "-i", str(clip), "-frames:v", "1", str(early)], check=True, capture_output=True)
+    subprocess.run(["ffmpeg", "-y", "-ss", "3.8", "-i", str(clip), "-frames:v", "1", str(late)], check=True, capture_output=True)
+    import cv2
+    early_col = cv2.imread(str(early))[:, 540, :]
+    late_col = cv2.imread(str(late))[:, 540, :]
+    diff = np.abs(early_col.astype(int) - late_col.astype(int)).sum()
+    assert diff > 5000, f"expected the Ken Burns fallback to visibly change framing over time, diff={diff}"
+
+
+@requires_ffmpeg
+def test_single_image_fallback_never_crosses_the_safe_boundary(tmp_path):
+    """The Ken Burns fallback's zoom must stay bounded inside the fixed
+    foreground box at every point in time -- reusing the full-bleed marker
+    technique from test_safe_area_regression.py, sampled at both the start
+    and near the end of the zoom."""
+    build = tmp_path / "build"; build.mkdir()
+    audio = _silence(build, 4.0)
+    w, h = 1200, 2000
+    img = np.full((h, w, 3), 255, dtype=np.uint8)
+    img[int(h * 0.95):, :] = [255, 0, 255]  # magenta marker touching the source's own bottom edge
+    path = build / "marker.png"; Image.fromarray(img).save(path)
+    srt = build / "s.srt"; srt.write_text("1\n00:00:00,000 --> 00:00:01,000\ncaption\n\n", encoding="utf-8")
+    scene = SimpleNamespace(id="x")
+    clip = R._composite_scene_clip(scene, path, audio, srt, 4.0, 30, build, 0)
+    for ts in (0.2, 3.8):
+        frame = build / f"f{ts}.jpg"
+        subprocess.run(["ffmpeg", "-y", "-ss", str(ts), "-i", str(clip), "-frames:v", "1", str(frame)], check=True, capture_output=True)
+        import cv2
+        fimg = cv2.imread(str(frame))
+        b, g, r = fimg[:, 540, 0].astype(int), fimg[:, 540, 1].astype(int), fimg[:, 540, 2].astype(int)
+        score = r + b - 2 * g
+        rows_above = np.where(score > score.max() / 2)[0]
+        if len(rows_above):
+            assert rows_above.min() <= R.SAFE_BOTTOM_Y, (
+                f"at t={ts}, Ken Burns zoom pushed content to row {rows_above.min()}, "
+                f"past the safe boundary SAFE_BOTTOM_Y={R.SAFE_BOTTOM_Y}"
+            )
 
 
 # --- solid black background, not a blurred copy of the image ---------------
@@ -146,8 +216,9 @@ def test_qa_exempt_scene_with_multiple_candidates_rotates_images(tmp_path, monke
 
 @requires_ffmpeg
 def test_qa_exempt_scene_with_a_single_asset_does_not_rotate(tmp_path):
-    """No recovery_candidates declared: the historical single-image-for-the-
-    whole-clip behavior is unchanged."""
+    """No recovery_candidates declared: still only ever this one image's
+    content on screen (it may now use the Ken Burns fallback framing-wise,
+    but never cuts to a different image)."""
     build = tmp_path / "build"; build.mkdir()
     duration = 4.0
     audio = _silence(build, duration)
