@@ -19,17 +19,17 @@
           "text": "1950년대의 코멧이었습니다"
         }
       ],
-      "visual_description": "1950년대 코멧",
+      "visual_description": "온전한 1950년대 de Havilland Comet에서 실제 사고 잔해로 전환",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
       "attribution": "Wikimedia Commons, public domain",
       "motion": {
         "type": "push_in"
       },
       "visual_qa_requirements": [
-        "첫 컷은 실제 코멧 사고기 잔해이고, 다음 컷은 멀쩡한 코멧 여객기로 정체가 드러나야 함"
+        "첫 화면은 온전한 코멧 여객기로 정체를 즉시 보여주고, '공중에서 찢어졌다'는 훅 뒤 실제 사고기 잔해로 전환해야 함"
       ],
       "visual_qa_labels": [
-        "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+        "a complete de Havilland DH-106 Comet passenger airliner"
       ],
       "visual_qa_negative_labels": [
         "an indoor room with no aircraft",
@@ -43,27 +43,6 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
-          ],
-          "visual_qa_labels": [
-            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
-          ],
-          "visual_qa_negative_labels": [
-            "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
-          "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
-          ]
-        },
-        {
-          "start": 1,
           "attribution": "Wikimedia Commons, public domain",
           "motion": {
             "type": "static"
@@ -84,25 +63,28 @@
           ]
         },
         {
-          "start": 4,
-          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "start": 3,
+          "attribution": "Wikimedia Commons, public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
+            "온전한 de Havilland Comet 여객기가 보여야 함"
           ],
           "visual_qa_labels": [
-            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
+            "a complete de Havilland DH-106 Comet passenger airliner"
           ],
           "visual_qa_negative_labels": [
-            "sharp square-cornered passenger windows",
-            "a modern airplane interior"
+            "torn aircraft wreckage",
+            "an aircraft fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+          "visual_qa_expected_sha256": [
+            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+          ]
         },
         {
-          "start": 7,
+          "start": 6,
           "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
           "motion": {
             "type": "static"
@@ -138,8 +120,8 @@
           "focus": true
         }
       ],
-      "visual_description": "둥근 모서리가 보이는 초기 코멧 객실 창문",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
+      "visual_description": "반복된 코멧 사고를 보여주는 실제 G-ALYP 회수 잔해와 코멧 기체",
+      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
       "attribution": "Wikimedia Commons, CC BY-SA 4.0",
       "motion": {
         "type": "pan_right"
@@ -147,24 +129,6 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
-          ],
-          "visual_qa_labels": [
-            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
-          ],
-          "visual_qa_negative_labels": [
-            "sharp square-cornered passenger windows",
-            "a modern airplane interior"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
-        },
-        {
-          "start": 3,
           "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
           "motion": {
             "type": "static"
@@ -185,26 +149,50 @@
           ]
         },
         {
-          "start": 6,
-          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "start": 3,
+          "attribution": "Wikimedia Commons, public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
+            "온전한 de Havilland Comet 여객기가 보여야 함"
           ],
           "visual_qa_labels": [
-            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
+            "a complete de Havilland DH-106 Comet passenger airliner"
           ],
           "visual_qa_negative_labels": [
-            "sharp square-cornered passenger windows",
-            "a modern airplane interior"
+            "torn aircraft wreckage",
+            "an aircraft fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+          "visual_qa_expected_sha256": [
+            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+          ]
+        },
+        {
+          "start": 6,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
         }
       ],
       "visual_qa_requirements": [
-        "scene_02의 각 컷이 해당 장면의 내레이션과 일치해야 함"
+        "반복 사고와 원인 미상의 위기를 전달해야 하며 객실 창문 클로즈업을 아직 보여주지 않아야 함"
       ]
     },
     {
