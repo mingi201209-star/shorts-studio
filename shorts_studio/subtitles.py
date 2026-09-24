@@ -7,7 +7,7 @@ class Caption:
     start: float
     end: float
 
-_KO_BREAK_AFTER = ("지만", "는데", "면서", "했고", "넣고", "했습니다.", "됐습니다.", "겁니다.", "였습니다.", "이었습니다.")  # render-smoke retrigger
+_KO_BREAK_AFTER = ("지만", "는데", "면서", "했고", "넣고", "했습니다.", "됐습니다.", "겁니다.", "였습니다.", "이었습니다.")
 
 def _semantic_break(word: str) -> bool:
     token = word.strip()
@@ -24,7 +24,9 @@ def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, tar
             groups.append(cur); cur=[]
         cur.append(w)
         span=cur[-1].end-cur[0].start
-        if len(cur)>=max_words or span>=target:
+        if _semantic_break(w.text):
+            groups.append(cur); cur=[]
+        elif len(cur)>=max_words or span>=target:
             groups.append(cur); cur=[]
     if cur: groups.append(cur)
     out=[]
