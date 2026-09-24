@@ -45,12 +45,18 @@ def merge_scene_srt_files(
     previous_start = -1.0
     previous_window_end = 0.0
 
+    # Validate the complete timeline before touching subtitle files so callers
+    # get deterministic window errors even when a later scene file is absent.
     for window in scene_windows:
         scene_start = float(window["start"])
         scene_duration = float(window["duration"])
         if scene_start < previous_window_end - 0.01 or scene_duration <= 0:
             raise ValueError(f"invalid or overlapping scene window: {window}")
         previous_window_end = scene_start + scene_duration
+
+    for window in scene_windows:
+        scene_start = float(window["start"])
+        scene_duration = float(window["duration"])
         source = build_dir / f"{window['scene']}.srt"
         if not source.is_file():
             raise FileNotFoundError(f"missing scene subtitle file: {source}")
