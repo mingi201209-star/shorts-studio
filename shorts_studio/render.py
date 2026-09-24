@@ -126,10 +126,10 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     if asset:
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
         vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Bold=1'{_title_clause(title_srt)}"
-        cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)
+        cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
     except subprocess.CalledProcessError as e:
@@ -178,7 +178,7 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Shadow=0,Bold=1'{_title_clause(title_srt)}"
-    subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac","-shortest",str(clip)],check=True,capture_output=True,text=True)
+    subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips]
 
 def _representative_visual_asset(assets:list[Path],durations:list[float],clip_duration:float)->Path:
