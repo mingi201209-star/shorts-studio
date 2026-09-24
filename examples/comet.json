@@ -134,15 +134,17 @@
         "온전한 여객기 사진으로 대체되면 FAIL"
       ],
       "visual_qa_labels": [
-        "a historical Cohen Inquiry report photograph showing the Comet G-ALYU fuselage rupture during water pressure fatigue testing beside the forward escape hatch",
-        "a 1955 accident investigation figure of a de Havilland Comet test fuselage torn open after repeated pressure cycles"
+        "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
+        "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
       ],
       "visual_qa_negative_labels": [
-        "an intact passenger airplane flying in an open sky",
-        "a complete undamaged passenger airplane parked at an airport"
+        "a complete modern passenger airliner flying in a blue sky"
       ],
       "factual_notes": [
         "1955 Court of Inquiry report: G-ALYU burst after 3,057 pressure cycles (1,221 actual and 1,836 simulated), with the test rupture at the forward escape hatch (Fig. 7; pp. 24-27). The in-service G-ALYP crack origin was a rivet hole at the rear ADF window cut-out. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf"
+      ],
+      "visual_qa_expected_sha256": [
+        "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
       ]
     },
     {
