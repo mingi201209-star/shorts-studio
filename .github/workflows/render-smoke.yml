@@ -93,6 +93,21 @@ jobs:
           print("qa_report OK:", json.dumps(report["semantic_visual_qa"], ensure_ascii=False, indent=2))
           print("final_video_qa OK:", json.dumps(fv, ensure_ascii=False, indent=2))
           PY
+      - name: Verify combined upload caption track
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          captions = Path("dist/captions.srt")
+          report = json.loads(Path("dist/qa_report.json").read_text(encoding="utf-8"))
+          assert captions.is_file() and captions.stat().st_size > 0
+          text = captions.read_text(encoding="utf-8").strip()
+          blocks = [block for block in text.split("\\n\\n") if block.strip()]
+          assert blocks and all(len(block.splitlines()) >= 3 for block in blocks)
+          assert report["captions"]["status"] == "PASS"
+          assert report["captions"]["cues"] == len(blocks)
+          print("combined SRT ready:", len(blocks), "cues")
+          PY
       - name: Extract representative frames for manual visual review
         run: |
           python - <<'PY'

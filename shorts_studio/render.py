@@ -8,6 +8,7 @@ from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
 from .final_video_qa import run_final_video_qa
+from .captions import merge_scene_srt_files
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -308,6 +309,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     final=dist/"final.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True)
     probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True).stdout)
+    caption_result=merge_scene_srt_files(scene_windows,build,float(probe["format"]["duration"]),dist/"captions.srt")
     visual=asset_visual_gate(p,sources)
     if any(r["status"]=="FAIL" for r in semantic_results): semantic_status="FAIL"
     elif semantic_results and all(r["status"]=="PASS" for r in semantic_results): semantic_status="PASS"
@@ -317,7 +319,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     semantic_ok=production_semantic_ok(semantic["status"],require_semantic)
     final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build)
     overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) and final_video["status"]=="PASS" else "FAIL"
-    report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"output":str(final)}
+    report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"captions":caption_result,"output":str(final)}
     write_report(dist/"qa_report.json",report)
     if overall!="PASS":
         raise RuntimeError(f"QA failed: {report}")

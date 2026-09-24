@@ -84,8 +84,8 @@ and then silently clipped out of coverage. `tests/test_tts_timing.py` and
 
 ## Render pipeline
 
-`shorts_studio render` produces `dist/final.mp4` (1080x1920, ≥30fps, H.264/AAC) and
-`dist/qa_report.json`, which records per scene: the subtitle QA result, asset provenance
+`shorts_studio render` produces `dist/final.mp4` (1080x1920, ≥30fps, H.264/AAC), a
+`dist/captions.srt` sidecar merged onto the final video timeline, and `dist/qa_report.json`, which records per scene: the subtitle QA result, asset provenance
 (including which recovery candidate index was used), the semantic visual QA result and the
 requirements it was checked against, and the recovery attempt count — plus the overall PASS/FAIL.
 
