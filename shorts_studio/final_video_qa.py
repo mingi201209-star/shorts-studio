@@ -104,6 +104,9 @@ def verify_bottom_safe_area_clean(video: Path, sample_timestamps: list[float], b
 IMAGE_TOP_Y=230
 IMAGE_BOTTOM_Y=1230
 CAPTION_GUTTER=(1238,1308)
+# Sample gutter integrity before the first authored speech caption appears; later
+# samples may legitimately contain burned-in caption glyphs in this band.
+GUTTER_SAMPLE_LEAD_SECONDS=0.08
 MAX_BLACK_GUTTER_MEAN=10.0
 MAX_BLACK_GUTTER_P99=24
 
@@ -209,7 +212,15 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         safe_area_samples.append(final_ts(w["start"] + 0.15))
     checks["captions_visible"] = verify_captions_visible(video, caption_points, build_dir) if caption_points else {"status": "NOT_EVALUATED", "reason": "no caption windows available"}
     checks["safe_area_clean"] = verify_bottom_safe_area_clean(video, safe_area_samples, build_dir, (IMAGE_BOTTOM_Y, 1920)) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
-    checks["picture_caption_gutter"] = verify_picture_caption_gutter(video, safe_area_samples, build_dir) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
+    gutter_samples=[]
+    cursor=0.0
+    for w in scene_windows:
+        if w.get("caption_window"):
+            cs,_=w["caption_window"]
+            if cs > GUTTER_SAMPLE_LEAD_SECONDS:
+                gutter_samples.append(cursor + min(GUTTER_SAMPLE_LEAD_SECONDS, cs / 2))
+        cursor += float(w.get("duration", 0.0))
+    checks["picture_caption_gutter"] = verify_picture_caption_gutter(video, gutter_samples, build_dir) if gutter_samples else {"status": "NOT_EVALUATED", "reason": "no pre-caption gutter samples available"}
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
     return {"status": overall, "checks": checks}
