@@ -13,7 +13,7 @@ DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 # grouped, role-aware synthesis units, each followed by a pause that VARIES
 # by (narrative role, boundary strength) instead of one fixed silence
 # everywhere. See synthesize_plan below.
-DEFAULT_KO_RATE = "+8%"
+DEFAULT_KO_RATE = "+12%"
 DEFAULT_KO_PITCH = "+0Hz"
 DEFAULT_KO_VOLUME = "+0%"
 
