@@ -128,8 +128,7 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
     candidate = out_path.with_name(out_path.stem + "_candidate" + out_path.suffix)
     proc = subprocess.run([
         "ffmpeg", "-y", "-i", str(path),
-        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB:"
-               "stop_periods=1:stop_duration=0.02:stop_threshold=-45dB",
+        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB",
         str(candidate),
     ], capture_output=True)
     valid = proc.returncode == 0 and candidate.exists() and candidate.stat().st_size > 0
@@ -155,7 +154,11 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
 def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     list_file = out_path.with_suffix(".concat.txt")
     list_file.write_text("\n".join(f"file '{p.resolve()}'" for p in parts), encoding="utf-8")
-    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c", "copy", str(out_path)], check=True, capture_output=True)
+    # Decode and encode the joined timeline once. Stream-copying MP3 packets
+    # preserves each TTS call's encoder delay/padding at every join, which can
+    # sound like tiny dropouts; one continuous encode avoids repeated codec
+    # resets. Keep the terminal audio tail intact in _trim_tts_edge_silence too.
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c:a", "libmp3lame", "-q:a", "4", str(out_path)], check=True, capture_output=True)
     return out_path
 
 async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True) -> list[WordTiming]:
