@@ -54,16 +54,42 @@ SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 
 # Shorts-style speech captions live in the black gutter directly below the picture.
 # Keep them visually connected to the content while preserving the hard no-overlap contract.
-CAPTION_FONT_SIZE=30
-CAPTION_MARGIN_V=48
+#
+# PlayResX/PlayResY MUST be set explicitly to the real frame size. A plain SRT
+# carries no script-resolution metadata, and when force_style sets FontSize/
+# MarginV with no PlayRes declared, libass falls back to an internal default
+# reference resolution (well short of 1920 tall) and scales those values up by
+# roughly 6-7x to fill the actual frame. That silent scale-up is what caused a
+# real production bug: at nominal FontSize=30, captions actually rendered at
+# roughly 200px-tall glyphs, wrapping almost every single word onto its own
+# line; a caption needing more lines than fit in CAPTION_MASK_HEIGHT had its
+# OWN FIRST LINE silently cropped off by the mask below (Alignment=2 grows
+# additional lines upward from the bottom anchor, so the earliest line is the
+# one pushed above the crop window) -- real, spoken words vanished from the
+# screen, confirmed with a real ffmpeg render of the actual narration text.
+# With PlayRes pinned to the true 1080x1920 frame, FontSize is a real pixel
+# size with no hidden multiplier, so the chosen values below are deliberately
+# picked large (bold, legible Shorts captions) while verified against the
+# longest real narration groups in examples/comet.json to stay within one or
+# two lines with wide safety margin against CAPTION_MASK_HEIGHT.
+CAPTION_FONT_SIZE=72
+# Real pixel distance from the true bottom edge now that PlayRes is pinned
+# (previously 48, which relied on the same accidental ~6-7x scale-up to read
+# as a real ~320px gap -- at 1:1 scale a literal 48px sat far too close to
+# the screen's bottom edge, where mobile Shorts UI chrome overlays anyway).
+CAPTION_MARGIN_V=120
 CAPTION_OUTLINE=2
-CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0"
+_PLAY_RES="PlayResX=1080,PlayResY=1920"
+CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0,{_PLAY_RES}"
 CAPTION_MASK_TOP=SAFE_BOTTOM_Y
 CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 
 # ASS/libass alignment codes rendered by this ffmpeg build follow the legacy
 # SSA numbering (5/6/7 = top row) -- Alignment=6 is the top-center value.
-_TITLE_STYLE="Alignment=6,MarginV=18,FontSize=16,Outline=2,Shadow=0,Bold=1"
+# Same PlayRes fix as CAPTION_STYLE above; FontSize recalibrated to a real
+# pixel size that reproduces the original bold top-title look now that the
+# hidden ~6-7x scale-up is gone.
+_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=54,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
 
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:
