@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-_TIME_RE = re.compile(r"^(\\d{2,}):(\\d{2}):(\\d{2}),(\\d{3})$")
+_TIME_RE = re.compile(r"^(\d{2,}):(\d{2}):(\d{2}),(\d{3})$")
 
 
 def _parse_time(value: str) -> float:
@@ -55,7 +55,7 @@ def merge_scene_srt_files(
         if not source.is_file():
             raise FileNotFoundError(f"missing scene subtitle file: {source}")
 
-        blocks = [block for block in source.read_text(encoding="utf-8").strip().split("\\n\\n") if block.strip()]
+        blocks = [block for block in source.read_text(encoding="utf-8").strip().split("\n\n") if block.strip()]
         for block in blocks:
             lines = block.splitlines()
             if len(lines) < 3 or not lines[0].strip().isdigit():
@@ -71,7 +71,7 @@ def merge_scene_srt_files(
             if start < previous_start - 0.001 or end <= start:
                 raise ValueError(f"non-monotonic or empty final caption cue: {lines[1]!r}")
             previous_start = start
-            text = "\\n".join(lines[2:]).strip()
+            text = "\n".join(lines[2:]).strip()
             if not text:
                 raise ValueError(f"empty SRT cue in {source}")
             cues.append((start, end, text))
@@ -80,8 +80,8 @@ def merge_scene_srt_files(
         raise ValueError("no caption cues found")
     output_path.parent.mkdir(parents=True, exist_ok=True)
     blocks = [
-        f"{index}\\n{_format_time(start)} --> {_format_time(end)}\\n{text}"
+        f"{index}\n{_format_time(start)} --> {_format_time(end)}\n{text}"
         for index, (start, end, text) in enumerate(cues, 1)
     ]
-    output_path.write_text("\\n\\n".join(blocks) + "\\n", encoding="utf-8")
+    output_path.write_text("\n\n".join(blocks) + "\n", encoding="utf-8")
     return {"status": "PASS", "cues": len(cues), "time_scale": scale, "path": str(output_path)}
