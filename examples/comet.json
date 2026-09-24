@@ -1,5 +1,5 @@
 {
-  "title": "왜 비행기 창문은 둥글게 바뀌었을까?",
+  "title": "최초 제트 여객기 코멧은 왜 추락했을까?",
   "width": 1080,
   "height": 1920,
   "fps": 30,
@@ -49,7 +49,7 @@
           }
         },
         {
-          "start": 1.0,
+          "start": 1,
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "attribution": "Wikimedia Commons, public domain",
           "motion": {
@@ -71,7 +71,7 @@
           "text": "원인은 오랫동안 밝혀지지 않았습니다"
         }
       ],
-      "visual_description": "초기 코멧의 각진 창",
+      "visual_description": "둥근 모서리가 보이는 초기 코멧 객실 창문",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
       "attribution": "Wikimedia Commons, CC BY-SA 4.0",
       "motion": {
@@ -123,62 +123,70 @@
           "focus": true
         }
       ],
-      "visual_description": "압력 반복 시험에서 실제로 파손된 코멧 G-ALYU 동체 패널과 창 모서리 균열",
+      "visual_description": "압력 반복 시험으로 균열이 난 코멧 G-ALYU 동체 패널의 ADF 개구부",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Fuselage_panel_from_Comet_1_-G-ALYU-_%2846426204684%29.jpg",
       "attribution": "Alan Wilson / Wikimedia Commons, CC BY-SA 2.0",
       "motion": {
         "type": "pan_left"
       },
       "visual_qa_requirements": [
-        "수조 시험 중 파손된 동체여야 하며, 일반 항공기 장면으로 대체되면 FAIL"
+        "압력 반복 시험 중 실제로 균열이 난 동체 패널이어야 함",
+        "일반 항공기 장면으로 대체되면 FAIL"
       ],
       "visual_qa_labels": [
-        "a museum photograph of a large damaged de Havilland Comet fuselage test panel with a long visible crack through the window area",
-        "a close view of an aircraft fuselage fatigue test specimen showing a long structural tear and window openings"
+        "a museum photograph of a damaged Comet fuselage test panel with a fatigue crack near an antenna cutout",
+        "a close view of a de Havilland Comet fuselage test specimen showing a structural fatigue crack"
       ],
       "visual_qa_negative_labels": [
         "a complete undamaged passenger airplane flying in an open sky",
         "a pristine complete passenger airplane parked outdoors"
+      ],
+      "factual_notes": [
+        "1955 Court of Inquiry report: the test fuselage burst after 3,057 pressure cycles (1,221 actual and 1,836 simulated), pp. 24-27. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf"
       ]
     },
     {
       "id": "scene_05",
-      "narration": "찢어진 자리는 각진 모서리였고, 힘이 한 점에 몰리면서 균열이 자란 것입니다.",
+      "narration": "균열은 승객 창문이 아니라, 상부 동체의 자동 방향 탐지 안테나 개구부에서 시작됐습니다.",
       "narration_plan": [
         {
           "role": "EXPLANATION",
-          "text": "찢어진 자리는 각진 모서리였고"
+          "text": "균열은 승객 창문이 아니라"
         },
         {
           "role": "EXPLANATION",
-          "text": "힘이 한 점에 몰리면서 균열이 자란 것입니다"
+          "text": "상부 동체의 자동 방향 탐지 안테나 개구부에서 시작됐습니다",
+          "focus": true
         }
       ],
-      "visual_description": "네모난 창과 둥근 창의 명확한 비교",
+      "visual_description": "사고의 시작점인 상부 동체 ADF 안테나 개구부와 객실 창문 구분",
       "asset": "assets/window_compare.svg",
       "attribution": "shorts-studio explanatory graphic",
       "motion": {
         "type": "push_in"
       },
       "visual_qa_requirements": [
-        "왼쪽은 네 개의 90도 모서리",
-        "오른쪽은 크게 둥근 모서리",
+        "왼쪽은 각진 ADF 안테나 개구부 모식도",
+        "오른쪽은 둥근 모서리의 객실 창문",
         "두 형태가 즉시 구별되어야 함"
       ],
       "visual_qa_expected_sha256": [
-        "3f9fc0eecd5f4682a6f83cc393d3faaf1b7fd172093507a11e30f3532d035692"
+        "c94501fdc37dc41a0721ee7c9065f07012fa5023f86e582ce8d4f92f4e126c6f"
+      ],
+      "factual_notes": [
+        "1955 Court of Inquiry report: fatigue crack growth initiated at a rivet hole at the rear ADF window cut-out. Science Museum Group records the recovered upper-fuselage section as showing fatigue cracks around ADF hatches. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf ; https://collection.sciencemuseumgroup.org.uk/search/places/hatfield"
       ]
     },
     {
       "id": "scene_06",
-      "narration": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다.",
+      "narration": "회수한 사고기 잔해에서도 ADF 개구부 주변에서 시작된 피로 균열 흔적이 확인됐습니다.",
       "narration_plan": [
         {
           "role": "EXPLANATION",
-          "text": "실제 사고기 잔해에서도 같은 흔적이 확인됐습니다"
+          "text": "회수한 사고기 잔해에서도 ADF 개구부 주변에서 시작된 피로 균열 흔적이 확인됐습니다"
         }
       ],
-      "visual_description": "지중해에서 회수된 실제 코멧 G-ALYP 동체 파편과 ADF 창 주변 파손 흔적",
+      "visual_description": "지중해에서 회수된 코멧 G-ALYP 동체 파편과 피로 파손 흔적",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
       "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
       "motion": {
@@ -198,25 +206,26 @@
     },
     {
       "id": "scene_07",
-      "narration": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고, 지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다.",
+      "narration": "그러니 '네모난 객실 창문 탓'은 정확한 설명이 아닙니다. 핵심은 개구부 주변의 응력 집중과 반복 가압에 따른 금속 피로였습니다.",
       "narration_plan": [
         {
           "role": "PAYOFF",
-          "text": "이후 창문은 힘이 몰리지 않도록 둥근 모양으로 바뀌었고"
+          "text": "'네모난 객실 창문 탓'은 정확한 설명이 아닙니다"
         },
         {
           "role": "PAYOFF",
-          "text": "지금 우리가 보는 둥근 창문에는 그 교훈이 담겨 있습니다"
+          "text": "핵심은 개구부 주변의 응력 집중과 반복 가압에 따른 금속 피로였습니다",
+          "focus": true
         }
       ],
-      "visual_description": "현대 여객기 둥근 창",
+      "visual_description": "현대 여객기 객실 창문은 둥근 모서리이며, 코멧 사고의 균열 시작점은 별도의 ADF 개구부였음",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
       "attribution": "Wikimedia Commons, CC BY 2.0",
       "motion": {
         "type": "pull_out"
       },
       "visual_qa_requirements": [
-        "현대식 둥근 모서리가 명확히 보여야 함"
+        "현대 여객기의 둥근 모서리 객실 창문이 명확히 보여야 함"
       ],
       "visual_qa_labels": [
         "a modern passenger airplane window with large smoothly rounded corners"
@@ -226,6 +235,9 @@
       ],
       "visual_qa_expected_sha256": [
         "7fe50c818c173699354f4d593bffcd5dc29cdc9aa03f4d06a35b9db697c1c46d"
+      ],
+      "factual_notes": [
+        "Do not attribute the Comet accidents to square passenger windows. The 1955 Court of Inquiry identified fatigue cracking at an ADF antenna cut-out. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf"
       ]
     }
   ],
