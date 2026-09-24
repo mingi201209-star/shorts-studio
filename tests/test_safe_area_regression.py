@@ -99,7 +99,6 @@ def test_pre_fix_composition_would_have_failed_this_regression(tmp_path):
     assert top_row > R.SAFE_BOTTOM_Y, "expected the old unbounded composition to violate the safe area"
 
 
-@requires_ffmpeg
 def test_picture_is_centered_static_black_surrounded_and_caption_cannot_overlap(tmp_path):
     import cv2
     import numpy as np
