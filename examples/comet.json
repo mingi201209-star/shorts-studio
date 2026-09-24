@@ -302,11 +302,11 @@
     },
     {
       "id": "scene_04",
-      "narration": "실제 비행 1,221회에 물탱크 시험 1,836회. 결국 기체가 찢어졌습니다.",
+      "narration": "실제 운항에서 1,221번의 압력 사이클, 물탱크에서 1,836번을 더 반복했습니다. 결국 기체가 찢어졌습니다.",
       "narration_plan": [
         {
           "role": "REVEAL",
-          "text": "실제 비행 1,221회에 물탱크 시험 1,836회"
+          "text": "실제 운항에서 1,221번의 압력 사이클, 물탱크에서 1,836번을 더 반복했습니다"
         },
         {
           "role": "REVEAL",
@@ -396,27 +396,6 @@
             "a passenger airplane parked normally on an airport runway"
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
-        },
-        {
-          "start": 8.4,
-          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
-          ],
-          "visual_qa_labels": [
-            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
-            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
-          ],
-          "visual_qa_negative_labels": [
-            "a complete modern passenger airliner flying in a blue sky"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
-          "visual_qa_expected_sha256": [
-            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
-          ]
         }
       ]
     },
