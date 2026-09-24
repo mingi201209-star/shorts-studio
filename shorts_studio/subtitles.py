@@ -7,7 +7,13 @@ class Caption:
     start: float
     end: float
 
-def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.35, max_duration: float=2.0, max_words: int=4, max_gap: float=.6) -> list[Caption]:
+_KO_BREAK_AFTER = ("지만", "는데", "면서", "했고", "했고,", "했고.", "했습니다.", "됐습니다.", "겁니다.", "였습니다.", "이었습니다.")
+
+def _semantic_break(word: str) -> bool:
+    token = word.strip()
+    return token.endswith(_KO_BREAK_AFTER) or token.endswith((".", "?", "!"))
+
+def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.35, max_duration: float=2.0, max_words: int=5, max_gap: float=.6) -> list[Caption]:
     if not words: return []
     groups=[]; cur=[]
     for w in words:
