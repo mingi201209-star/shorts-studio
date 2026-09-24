@@ -84,22 +84,29 @@ def test_pass_on_first_try_needs_no_recovery(tmp_path,monkeypatch):
 
 
 def test_visual_beat_provenance_uses_asset_at_sampled_clip_midpoint(tmp_path,monkeypatch):
-    scene=make_scene("s1",["unused.jpg"],["subject visible"])
-    scene.visual_beats=[object(),object()]
+    scene=make_scene("s1",["unused.jpg"],["scene must pass"])
+    scene.visual_beats=[
+        SimpleNamespace(start=0,visual_qa_requirements=["opening wreckage"],visual_qa_labels=["wreckage"],visual_qa_negative_labels=[],visual_qa_expected_sha256=["opening-sha"],motion=SimpleNamespace(type="push_in")),
+        SimpleNamespace(start=2.2,visual_qa_requirements=["intact reveal"],visual_qa_labels=["intact aircraft"],visual_qa_negative_labels=[],visual_qa_expected_sha256=["reveal-sha"],motion=SimpleNamespace(type="pull_out")),
+    ]
     beat_assets=[tmp_path/"opening.jpg",tmp_path/"reveal.jpg"]
+    beat_clips=[tmp_path/"opening.mp4",tmp_path/"reveal.mp4"]
     clip=tmp_path/"s1.mp4"
-    monkeypatch.setattr(render_mod,"_composite_visual_beats",lambda *a,**k:(clip,beat_assets,[2.2,3.8]))
+    monkeypatch.setattr(render_mod,"_composite_visual_beats",lambda *a,**k:(clip,beat_assets,[2.2,3.8],beat_clips))
     monkeypatch.setattr(render_mod,"_media_duration_seconds",lambda path:6.0)
-    seen={}
+    seen=[]
     def fake_evaluate(scene,clip,provider,frame,**kwargs):
-        seen.update(kwargs)
-        return {"scene":"s1","status":"PASS"}
+        seen.append((scene,clip,kwargs))
+        return {"scene":scene.id,"status":"PASS"}
     monkeypatch.setattr(render_mod,"evaluate_scene_semantics",fake_evaluate)
 
     outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",6.0,tmp_path/"a.srt",30,tmp_path,max_attempts=0,provider=None)
 
     assert outcome["semantic"]["status"]=="PASS"
-    assert seen["asset_path"]==beat_assets[1]
+    assert outcome["source"]["asset"]==str(beat_assets[1])
+    assert [item[0].id for item in seen]==["s1_beat_00","s1_beat_01"]
+    assert [item[1] for item in seen]==beat_clips
+    assert [item[2]["asset_path"] for item in seen]==beat_assets
 
 
 def test_visual_beat_asset_selection_fails_closed_on_mismatched_metadata():
