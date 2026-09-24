@@ -56,6 +56,7 @@ def _corner_bgr(frame_path: Path):
 
 # --- no motion: the ffmpeg command itself never contains a pan/zoom node ---
 
+@requires_ffmpeg
 def test_composite_command_never_contains_zoompan(tmp_path, monkeypatch):
     build = tmp_path / "build"; build.mkdir()
     seen_cmds = []
