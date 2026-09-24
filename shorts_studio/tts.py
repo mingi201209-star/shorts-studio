@@ -108,6 +108,16 @@ def _silence_clip(path: Path, seconds: float) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(seconds), "-q:a", "9", str(path)], check=True, capture_output=True)
     return path
 
+def _pad_audio_to_duration(path: Path, seconds: float) -> Path:
+    """Keep unit audio at least as long as its final provider word boundary."""
+    padded = path.with_name(path.stem + "_padded" + path.suffix)
+    subprocess.run([
+        "ffmpeg", "-y", "-i", str(path), "-af", f"apad=whole_dur={seconds}",
+        "-t", str(seconds), "-c:a", "libmp3lame", "-q:a", "4", str(padded),
+    ], check=True, capture_output=True)
+    padded.replace(path)
+    return path
+
 def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
     """Trim only leading/trailing TTS padding when real speech is present.
 
@@ -189,13 +199,20 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         tmp_dir = audio_path.parent
         part_paths = []
         leading_trims = []
+        real_durations = []
         for i, audio_bytes in enumerate(unit_audio):
             part = tmp_dir / f"{audio_path.stem}_part{i}.mp3"
             part.write_bytes(audio_bytes)
             trimmed = tmp_dir / f"{audio_path.stem}_part{i}_trimmed.mp3"
             _, leading_trim = _trim_tts_edge_silence(part, trimmed)
+            audio_duration = _ffmpeg_duration_seconds(trimmed)
+            boundary_duration = max((max(0.0, w.end - leading_trim) for w in unit_words[i]), default=0.0)
+            if boundary_duration > audio_duration + 0.02:
+                _pad_audio_to_duration(trimmed, boundary_duration)
+                audio_duration = _ffmpeg_duration_seconds(trimmed)
             part_paths.append(trimmed)
             leading_trims.append(leading_trim)
+            real_durations.append(max(audio_duration, boundary_duration))
         concat_parts = [part_paths[0]]
         for i in range(1, len(part_paths)):
             gap_seconds = gaps[i - 1]
@@ -211,7 +228,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
             offset = cursor
             trim = leading_trims[i]
             words.extend(WordTiming(w.text, max(0.0, w.start - trim) + offset, max(0.0, w.end - trim) + offset) for w in uw)
-            real_duration = _ffmpeg_duration_seconds(part_paths[i])
+            real_duration = real_durations[i]
             gap = gaps[i] if i < len(gaps) else 0.0
             cursor = offset + real_duration + gap
 
