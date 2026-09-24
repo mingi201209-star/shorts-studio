@@ -1,6 +1,10 @@
 from pydantic import BaseModel, Field, model_validator
 
 class Motion(BaseModel):
+    """Historical pan/zoom hint. The renderer intentionally no longer applies
+    any pan/zoom animation (images are shown fixed and centered), so this
+    field is currently inert -- kept only so existing manifests that declare
+    it don't need to be edited."""
     type: str = "push_in"
 
 class AssetCandidate(BaseModel):
