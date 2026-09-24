@@ -59,7 +59,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
           ]
         },
         {
@@ -558,7 +558,7 @@
           ]
         },
         {
-          "start": 3.8,
+          "start": 3,
           "attribution": "HM Stationery Office, Cohen Inquiry accident report / Completeaerogeek, CC BY-SA 4.0",
           "motion": {
             "type": "static"
