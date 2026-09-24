@@ -55,7 +55,7 @@ SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 # Shorts-style speech captions live in the black gutter directly below the picture.
 # Keep them visually connected to the content while preserving the hard no-overlap contract.
 CAPTION_FONT_SIZE=30
-CAPTION_MARGIN_V=120
+CAPTION_MARGIN_V=72
 CAPTION_OUTLINE=2
 CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0"
 
