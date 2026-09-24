@@ -11,7 +11,7 @@ import shorts_studio.render as R
 from shorts_studio.final_video_qa import (
     verify_bottom_safe_area_clean, verify_captions_visible,
     verify_composition_9x16, verify_no_semantic_skip, verify_scenes_present,
-    verify_title_visible,
+    verify_title_visible, verify_picture_caption_gutter, verify_visual_cut_cadence,
 )
 
 requires_ffmpeg = pytest.mark.skipif(not __import__("shutil").which("ffmpeg"), reason="requires a real ffmpeg binary")
@@ -122,3 +122,20 @@ def test_verify_no_semantic_skip_is_always_strict_regardless_of_env_flag():
     results = [{"scene": "s1", "status": "PASS"}, {"scene": "s2", "status": "NOT_EVALUATED"}]
     assert verify_no_semantic_skip(results)["status"] == "FAIL"
     assert verify_no_semantic_skip([{"scene": "s1", "status": "PASS"}])["status"] == "PASS"
+
+
+@requires_ffmpeg
+def test_picture_caption_gutter_is_black_on_real_render(tmp_path):
+    build = tmp_path / "build"; build.mkdir(exist_ok=True)
+    audio = build / "a.mp3"
+    subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "2", "-q:a", "9", str(audio)], check=True, capture_output=True)
+    srt = build / "s.srt"; srt.write_text("1\\n00:00:00,000 --> 00:00:01,500\\n자막\\n\\n", encoding="utf-8")
+    clip, _ = _clip_with_title(tmp_path, "코멧")
+    result = verify_picture_caption_gutter(clip, [0.2, 1.0], build)
+    assert result["status"] == "PASS", result
+
+
+def test_visual_cut_cadence_rejects_long_static_holds():
+    scenes = [SimpleNamespace(id="s1", visual_beats=[SimpleNamespace(start=0), SimpleNamespace(start=3)])]
+    assert verify_visual_cut_cadence([{"scene":"s1","duration":6.2}], scenes)["status"] == "PASS"
+    assert verify_visual_cut_cadence([{"scene":"s1","duration":7.0}], scenes)["status"] == "FAIL"

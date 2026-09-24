@@ -42,13 +42,12 @@
       "visual_beats": [
         {
           "start": 0,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
-            "첫 장면에 실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
           ],
           "visual_qa_labels": [
             "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
@@ -57,19 +56,19 @@
             "an intact de Havilland Comet passenger airliner",
             "an airplane flying in a clear sky"
           ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
             "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
           ]
         },
         {
           "start": 1,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "attribution": "Wikimedia Commons, public domain",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
-            "잔해 컷 다음에 온전한 de Havilland Comet 여객기가 보여야 함"
+            "온전한 de Havilland Comet 여객기가 보여야 함"
           ],
           "visual_qa_labels": [
             "a complete de Havilland DH-106 Comet passenger airliner"
@@ -78,8 +77,48 @@
             "torn aircraft wreckage",
             "an aircraft fuselage inside a water tank"
           ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
             "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+          ]
+        },
+        {
+          "start": 4,
+          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
+          ],
+          "visual_qa_labels": [
+            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
+          ],
+          "visual_qa_negative_labels": [
+            "sharp square-cornered passenger windows",
+            "a modern airplane interior"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
+        },
+        {
+          "start": 7,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
           ]
         }
       ]
@@ -102,7 +141,51 @@
       "attribution": "Wikimedia Commons, CC BY-SA 4.0",
       "motion": {
         "type": "pan_right"
-      }
+      },
+      "visual_beats": [
+        {
+          "start": 0,
+          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
+          ],
+          "visual_qa_labels": [
+            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
+          ],
+          "visual_qa_negative_labels": [
+            "sharp square-cornered passenger windows",
+            "a modern airplane interior"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
+        },
+        {
+          "start": 3,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
+        }
+      ],
+      "visual_qa_requirements": [
+        "scene_02의 각 컷이 해당 장면의 내레이션과 일치해야 함"
+      ]
     },
     {
       "id": "scene_03",
@@ -133,6 +216,48 @@
       "visual_qa_negative_labels": [
         "a complete passenger airplane flying in an open sky",
         "a passenger airplane parked normally on an airport runway"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "attribution": "FAA / Wikimedia Commons, public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+          ],
+          "visual_qa_labels": [
+            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
+            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete passenger airplane flying in an open sky",
+            "a passenger airplane parked normally on an airport runway"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+        },
+        {
+          "start": 3,
+          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
+          ],
+          "visual_qa_labels": [
+            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
+            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete modern passenger airliner flying in a blue sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
+          "visual_qa_expected_sha256": [
+            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+          ]
+        }
       ]
     },
     {
@@ -171,6 +296,88 @@
       ],
       "visual_qa_expected_sha256": [
         "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "attribution": "FAA / Wikimedia Commons, public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+          ],
+          "visual_qa_labels": [
+            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
+            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete passenger airplane flying in an open sky",
+            "a passenger airplane parked normally on an airport runway"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+        },
+        {
+          "start": 2.8,
+          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
+          ],
+          "visual_qa_labels": [
+            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
+            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete modern passenger airliner flying in a blue sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
+          "visual_qa_expected_sha256": [
+            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+          ]
+        },
+        {
+          "start": 5.6,
+          "attribution": "FAA / Wikimedia Commons, public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+          ],
+          "visual_qa_labels": [
+            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
+            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete passenger airplane flying in an open sky",
+            "a passenger airplane parked normally on an airport runway"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+        },
+        {
+          "start": 8.4,
+          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
+          ],
+          "visual_qa_labels": [
+            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
+            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete modern passenger airliner flying in a blue sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
+          "visual_qa_expected_sha256": [
+            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+          ]
+        }
       ]
     },
     {
@@ -203,6 +410,68 @@
       ],
       "factual_notes": [
         "1955 Court of Inquiry report: fatigue crack growth initiated at a rivet hole at the rear ADF window cut-out. Science Museum Group records the recovered upper-fuselage section as showing fatigue cracks around ADF hatches. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf ; https://collection.sciencemuseumgroup.org.uk/search/places/hatfield"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "attribution": "shorts-studio explanatory graphic",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "ADF 안테나 개구부와 객실 창문의 차이가 한눈에 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "an explanatory comparison graphic of an angular ADF antenna opening and a rounded passenger window"
+          ],
+          "visual_qa_negative_labels": [
+            "a modern passenger cabin photograph",
+            "a complete airplane in flight"
+          ],
+          "asset": "assets/window_compare.svg",
+          "visual_qa_expected_sha256": [
+            "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
+          ]
+        },
+        {
+          "start": 2.8,
+          "attribution": "HM Stationery Office, Cohen Inquiry accident report / Completeaerogeek, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1955년 사고 조사 보고서에 실린 코멧의 ADF 안테나 개구부가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a black and white 1955 accident report photograph of roof mounted ADF window cutouts on the de Havilland Comet G-ALYP above the cockpit"
+          ],
+          "visual_qa_negative_labels": [
+            "a passenger cabin window",
+            "a modern passenger airplane interior"
+          ],
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png"
+        },
+        {
+          "start": 5.6,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
+        }
       ]
     },
     {
@@ -230,6 +499,68 @@
       "visual_qa_negative_labels": [
         "a complete undamaged passenger airplane flying in an open sky",
         "a diagram or illustration of a complete airplane"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
+        },
+        {
+          "start": 3,
+          "attribution": "HM Stationery Office, Cohen Inquiry accident report / Completeaerogeek, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1955년 사고 조사 보고서에 실린 코멧의 ADF 안테나 개구부가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a black and white 1955 accident report photograph of roof mounted ADF window cutouts on the de Havilland Comet G-ALYP above the cockpit"
+          ],
+          "visual_qa_negative_labels": [
+            "a passenger cabin window",
+            "a modern passenger airplane interior"
+          ],
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png"
+        },
+        {
+          "start": 5.8,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
+        }
       ]
     },
     {
@@ -266,6 +597,87 @@
       ],
       "factual_notes": [
         "Do not attribute the Comet accidents to square passenger windows. The 1955 Court of Inquiry identified fatigue cracking at an ADF antenna cut-out. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "attribution": "Wikimedia Commons, CC BY 2.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "현대 여객기의 둥근 객실 창문이 명확히 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a modern passenger airplane window with large smoothly rounded corners"
+          ],
+          "visual_qa_negative_labels": [
+            "a sharp square-cornered vintage 1950s airplane window"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
+          "visual_qa_expected_sha256": [
+            "7fe50c818c173699354f4d593bffcd5dc29cdc9aa03f4d06a35b9db697c1c46d"
+          ]
+        },
+        {
+          "start": 2.8,
+          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
+          ],
+          "visual_qa_labels": [
+            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
+          ],
+          "visual_qa_negative_labels": [
+            "sharp square-cornered passenger windows",
+            "a modern airplane interior"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
+        },
+        {
+          "start": 5.6,
+          "attribution": "shorts-studio explanatory graphic",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "ADF 안테나 개구부와 객실 창문의 차이가 한눈에 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "an explanatory comparison graphic of an angular ADF antenna opening and a rounded passenger window"
+          ],
+          "visual_qa_negative_labels": [
+            "a modern passenger cabin photograph",
+            "a complete airplane in flight"
+          ],
+          "asset": "assets/window_compare.svg",
+          "visual_qa_expected_sha256": [
+            "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
+          ]
+        },
+        {
+          "start": 8.4,
+          "attribution": "Wikimedia Commons, CC BY 2.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "현대 여객기의 둥근 객실 창문이 명확히 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a modern passenger airplane window with large smoothly rounded corners"
+          ],
+          "visual_qa_negative_labels": [
+            "a sharp square-cornered vintage 1950s airplane window"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
+          "visual_qa_expected_sha256": [
+            "7fe50c818c173699354f4d593bffcd5dc29cdc9aa03f4d06a35b9db697c1c46d"
+          ]
+        }
       ]
     }
   ],

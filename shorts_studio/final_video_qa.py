@@ -100,6 +100,50 @@ def verify_bottom_safe_area_clean(video: Path, sample_timestamps: list[float], b
             return {"status": "FAIL", "reason": f"bottom safe area looks obstructed by sharp foreground content at t={ts} (edge_density={density:.4f} > {MAX_SAFE_AREA_EDGE_DENSITY})", "evidence": evidence}
     return {"status": "PASS", "evidence": evidence}
 
+
+IMAGE_TOP_Y=230
+IMAGE_BOTTOM_Y=1230
+CAPTION_GUTTER=(1238,1308)
+MAX_BLACK_GUTTER_MEAN=10.0
+MAX_BLACK_GUTTER_P99=24
+
+def verify_picture_caption_gutter(video: Path, sample_timestamps: list[float], build_dir: Path) -> dict:
+    """Check the reserved band between the fixed picture box and captions is black."""
+    import cv2, numpy as np
+    evidence=[]
+    for i,ts in enumerate(sample_timestamps):
+        frame=_extract_frame(video,ts,build_dir/f"_layoutqa_{i}.jpg")
+        img=cv2.imread(str(frame))
+        if img is None:
+            return {"status":"FAIL","reason":f"could not read frame at t={ts}"}
+        band=cv2.cvtColor(img[CAPTION_GUTTER[0]:CAPTION_GUTTER[1],:],cv2.COLOR_BGR2GRAY)
+        mean=float(band.mean()); p99=float(np.percentile(band,99))
+        evidence.append({"t":ts,"black_gutter_mean":mean,"black_gutter_p99":p99})
+        if mean>MAX_BLACK_GUTTER_MEAN or p99>MAX_BLACK_GUTTER_P99:
+            return {"status":"FAIL","reason":f"picture or caption entered the reserved black gutter at t={ts}","evidence":evidence}
+    return {"status":"PASS","evidence":evidence}
+
+def verify_visual_cut_cadence(scene_windows: list[dict], scenes: list, max_hold: float=3.5) -> dict:
+    """Fail if any picture stays on screen past the authored visual-cut cadence."""
+    by_id={scene.id:scene for scene in scenes}
+    failures=[]
+    for window in scene_windows:
+        scene=by_id.get(window.get("scene"))
+        duration=float(window.get("duration",0) or 0)
+        beats=list(getattr(scene,"visual_beats",[]) or [])
+        starts=[float(b.start) for b in beats]
+        if not starts or starts[0]!=0:
+            failures.append({"scene":window.get("scene"),"reason":"visual beats must start at zero"})
+            continue
+        edges=starts+[duration]
+        holds=[b-a for a,b in zip(edges,edges[1:])]
+        longest=max(holds,default=duration)
+        if longest>max_hold+0.05:
+            failures.append({"scene":window.get("scene"),"longest_hold":longest,"limit":max_hold})
+    if failures:
+        return {"status":"FAIL","reason":"picture hold exceeds the visual cut limit","failures":failures}
+    return {"status":"PASS","max_hold_seconds":max_hold}
+
 def verify_composition_9x16(probe: dict, expected_width: int = 1080, expected_height: int = 1920) -> dict:
     streams = probe.get("streams", [])
     video_streams = [s for s in streams if s.get("codec_type") == "video" or ("width" in s and "height" in s)]
@@ -144,6 +188,7 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     checks = {}
     checks["composition_9x16"] = verify_composition_9x16(probe, project.width, project.height)
     checks["scenes_present"] = verify_scenes_present([s.id for s in project.scenes], sources)
+    checks["visual_cut_cadence"] = verify_visual_cut_cadence(scene_windows, project.scenes)
     checks["no_semantic_skip"] = verify_no_semantic_skip(semantic_results)
 
     title_samples = []
@@ -163,7 +208,8 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
             caption_points.append((ts, (1000, 1900)))
         safe_area_samples.append(final_ts(w["start"] + 0.15))
     checks["captions_visible"] = verify_captions_visible(video, caption_points, build_dir) if caption_points else {"status": "NOT_EVALUATED", "reason": "no caption windows available"}
-    checks["safe_area_clean"] = verify_bottom_safe_area_clean(video, safe_area_samples, build_dir, (1300, 1920)) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
+    checks["safe_area_clean"] = verify_bottom_safe_area_clean(video, safe_area_samples, build_dir, (IMAGE_BOTTOM_Y, 1920)) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
+    checks["picture_caption_gutter"] = verify_picture_caption_gutter(video, safe_area_samples, build_dir) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
     return {"status": overall, "checks": checks}

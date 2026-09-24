@@ -44,22 +44,16 @@ def _download(url:str,path:Path,max_attempts:int=4)->Path:
         time.sleep(2**(attempt+1))
     raise last_error  # pragma: no cover - loop always returns or raises above
 
-# Bottom rows [SAFE_BOTTOM_Y, 1920) must ALWAYS stay pure blurred background --
-# never sharp foreground -- because the burned-in caption safe area lives
-# there (see _visual_filter's caption style, measured empirically: at
-# MarginV=48 captions occupy rows ~1499-1585, so 1300 leaves >=199px of
-# headroom even for a 2-line caption). This is a generic invariant enforced
-# for every scene via the fg box's height, not a per-scene crop/position hack.
-SAFE_BOTTOM_Y=1300
-# Top rows [0, SAFE_TOP_Y) are reserved for the persistent top title so the
-# foreground image doesn't visually crowd it.
+# The picture has a fixed centered box; its pixels never enter the title or subtitle regions.
+# All pixels outside the picture box stay black.
 SAFE_TOP_Y=190
-_FG_BAND_WIDTH=1000
+IMAGE_TOP_Y=230
+IMAGE_BOX_WIDTH=980
+IMAGE_BOX_HEIGHT=1000
+SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 
 # ASS/libass alignment codes rendered by this ffmpeg build follow the legacy
-# SSA numbering (5/6/7 = top row), NOT the ASS numpad convention (7/8/9 = top
-# row) -- verified empirically: Alignment=8 rendered mid-screen, not near the
-# top. Alignment=6 is the top-center value that actually works here.
+# SSA numbering (5/6/7 = top row) -- Alignment=6 is the top-center value.
 _TITLE_STYLE="Alignment=6,MarginV=18,FontSize=16,Outline=2,Shadow=0,Bold=1"
 
 def _title_clause(title_srt:Path|None)->str:
@@ -68,37 +62,21 @@ def _title_clause(title_srt:Path|None)->str:
     return f",subtitles={title_srt.as_posix()}:force_style='{_TITLE_STYLE}'"
 
 def _write_title_srt(path:Path, title:str, duration:float)->Path:
-    path.write_text(f"1\n{_srt_time(0.0)} --> {_srt_time(duration)}\n{title}\n\n",encoding="utf-8")
+    path.write_text(f"1\\n{_srt_time(0.0)} --> {_srt_time(duration)}\\n{title}\\n\\n",encoding="utf-8")
     return path
 
 def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
-    motion=scene.motion.type
-    if motion=="pan_right":
-        move="zoompan=z='1.10':x='(iw-iw/zoom)*on/180':y='(ih-ih/zoom)/2':d=1"
-    elif motion=="pan_left":
-        move="zoompan=z='1.10':x='(iw-iw/zoom)*(1-on/180)':y='(ih-ih/zoom)/2':d=1"
-    elif motion=="pull_out":
-        move="zoompan=z='max(1.0,1.12-on*0.0007)':d=1"
-    else:
-        move="zoompan=z='min(zoom+0.0007,1.12)':d=1"
     style="Alignment=2,MarginV=70,FontSize=20,Outline=2,Shadow=0,Bold=1"
-    # Preserve the complete source image.  The old fill+crop path could discard
-    # most of a landscape archival photo/document when forcing it into 9:16.
-    # Build a full-frame blurred backdrop, then place a sharp contain-fit copy
-    # over it, but cap the contain-fit box to the band between SAFE_TOP_Y and
-    # SAFE_BOTTOM_Y -- so no matter how the source image is framed (even a
-    # full-bleed photo with content touching its own edges), the composited
-    # foreground can never extend into the bottom caption safe area. This
-    # applies to every scene generically; there is no per-scene special case.
-    fg_h=SAFE_BOTTOM_Y-SAFE_TOP_Y
-    bg="scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=20:8"
-    fg=f"scale={_FG_BAND_WIDTH}:{fg_h}:force_original_aspect_ratio=decrease"
+    # Contain the complete photo in the same centered box for every scene.
+    # The final canvas is black, so subtitles can only appear in the separate
+    # lower region; still-image motion is intentionally disabled.
+    picture=(
+        f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
+        f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1"
+    )
     return (
-        f"split=2[bgsrc][fgsrc];"
-        f"[bgsrc]{bg}[bg];"
-        f"[fgsrc]{fg}[fg];"
-        f"[bg][fg]overlay=(W-w)/2:{SAFE_TOP_Y}+({fg_h}-h)/2,{move}:s=1080x1920:fps={fps},"
-        f"subtitles={srt.as_posix()}:force_style='{style}'"
+        f"{picture},pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,"
+        f"fps={fps},format=yuv420p,subtitles={srt.as_posix()}:force_style='{style}'"
         f"{_title_clause(title_srt)}"
     )
 
@@ -130,7 +108,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
         vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Bold=1'{_title_clause(title_srt)}"
-        cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=0x20242b:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
+        cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
     except subprocess.CalledProcessError as e:

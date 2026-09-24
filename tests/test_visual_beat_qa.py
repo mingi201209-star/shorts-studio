@@ -98,3 +98,17 @@ def test_visual_beat_contracts_are_populated_in_comet_example():
     assert opening.visual_beats[1].visual_qa_expected_sha256 == [
         "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
     ]
+
+
+def test_comet_visual_beats_change_no_later_than_every_three_and_a_half_seconds():
+    import json
+    from pathlib import Path
+    project=json.loads(Path("examples/comet.json").read_text(encoding="utf-8"))
+    assert len(project["scenes"]) == 7
+    for scene in project["scenes"]:
+        beats=scene["visual_beats"]
+        starts=[beat["start"] for beat in beats]
+        assert starts[0] == 0
+        assert len({(beat.get("asset"),beat.get("asset_url")) for beat in beats}) >= 2
+        assert all(right-left <= 3.5 for left,right in zip(starts,starts[1:])), (scene["id"],starts)
+        assert all(beat["visual_qa_requirements"] and beat["visual_qa_labels"] for beat in beats)
