@@ -48,9 +48,7 @@ def _extract(clip, ts, out):
 
 @requires_ffmpeg
 def test_current_style_burns_in_caption_during_active_window(tmp_path):
-    style_match = re.search(r"MarginV=(\d+)", Path("shorts_studio/render.py").read_text())
-    assert style_match, "could not find MarginV in render.py's subtitle style"
-    current_margin = int(style_match.group(1))
+    current_margin = R.CAPTION_MARGIN_V
     clip = _render_caption_only_clip(tmp_path / "current", current_margin)
     active = _extract(clip, 1.5, tmp_path / "active.jpg")
     inactive = _extract(clip, 2.9, tmp_path / "inactive.jpg")
@@ -61,8 +59,7 @@ def test_current_style_burns_in_caption_during_active_window(tmp_path):
 
 @requires_ffmpeg
 def test_current_style_caption_not_clipped_off_screen(tmp_path):
-    style_match = re.search(r"MarginV=(\d+)", Path("shorts_studio/render.py").read_text())
-    current_margin = int(style_match.group(1))
+    current_margin = R.CAPTION_MARGIN_V
     clip = _render_caption_only_clip(tmp_path / "clip", current_margin)
     active = _extract(clip, 1.5, tmp_path / "active.jpg")
     row_min, row_max = _bright_row_span(active)
@@ -71,20 +68,18 @@ def test_current_style_caption_not_clipped_off_screen(tmp_path):
     assert row_min > 0
 
 @requires_ffmpeg
-def test_current_style_is_lower_on_screen_than_the_old_margin_260(tmp_path):
-    """Regression for 'move captions lower' -- must not be silently reverted
-    toward the old, less-visible position (a HIGHER MarginV value renders
-    the caption CLOSER TO THE TOP for bottom-aligned ASS text, since
-    MarginV is measured from the bottom edge)."""
-    style_match = re.search(r"MarginV=(\d+)", Path("shorts_studio/render.py").read_text())
-    current_margin = int(style_match.group(1))
-    assert current_margin < 260, "current MarginV must stay below the old, less-visible 260 value"
-    old_clip = _render_caption_only_clip(tmp_path / "old", 260)
-    new_clip = _render_caption_only_clip(tmp_path / "new", current_margin)
-    old_span = _bright_row_span(_extract(old_clip, 1.5, tmp_path / "old_active.jpg"))
-    new_span = _bright_row_span(_extract(new_clip, 1.5, tmp_path / "new_active.jpg"))
-    assert old_span is not None and new_span is not None
-    assert new_span[0] > old_span[0], f"current caption (rows {new_span}) is not lower on screen than the old MarginV=260 style (rows {old_span})"
+def test_current_style_sits_in_the_gutter_close_to_the_picture(tmp_path):
+    """Speech captions belong in the black gutter just below the fixed picture."""
+    current_margin = R.CAPTION_MARGIN_V
+    clip = _render_caption_only_clip(tmp_path / "new", current_margin)
+    span = _bright_row_span(_extract(clip, 1.5, tmp_path / "gutter_active.jpg"))
+    assert span is not None
+    assert span[0] > R.SAFE_BOTTOM_Y, (
+        f"caption rows {span} overlap the picture ending at {R.SAFE_BOTTOM_Y}"
+    )
+    assert span[0] < R.SAFE_BOTTOM_Y + 220, (
+        f"caption rows {span} are visually detached from the picture"
+    )
 
 @requires_ffmpeg
 def test_render_module_composite_scene_clip_matches_direct_ffmpeg_style(tmp_path):
