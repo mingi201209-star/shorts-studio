@@ -166,7 +166,11 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
         beat_scene=SimpleNamespace(motion=beat.motion)
-        vf=_visual_filter(beat_scene,build/f"{scene.id}.empty.srt",fps,None).split(",subtitles=",1)[0]
+        vf=(
+            f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
+            f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
+            f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
+        )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
