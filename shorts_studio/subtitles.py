@@ -7,7 +7,7 @@ class Caption:
     start: float
     end: float
 
-def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.5, max_duration: float=2.2, max_words: int=5, max_gap: float=.6) -> list[Caption]:
+def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.35, max_duration: float=2.0, max_words: int=4, max_gap: float=.6) -> list[Caption]:
     if not words: return []
     groups=[]; cur=[]
     for w in words:
