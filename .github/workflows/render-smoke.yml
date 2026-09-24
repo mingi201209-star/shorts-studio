@@ -105,6 +105,17 @@ jobs:
               subprocess.run(["ffmpeg","-y","-ss",str(ts),"-i","dist/final.mp4","-frames:v","1",f"dist/frame_{name}.jpg"],check=True,capture_output=True)
           print("extracted representative frames at fractions:", samples, "of duration", duration)
           PY
+      - name: Prepare upload description with image credits
+        run: |
+          cp examples/comet_upload_description.txt dist/upload-description.txt
+          python - <<'PY'
+          from pathlib import Path
+          text = Path("dist/upload-description.txt").read_text(encoding="utf-8")
+          required = ["CC BY-SA 3.0", "CC BY-SA 4.0", "CC BY-SA 2.0", "CC BY 2.0", "ADF antenna cut-out"]
+          missing = [item for item in required if item not in text]
+          assert not missing, f"upload description missing required credits/context: {missing}"
+          print("upload description and third-party image credits OK")
+          PY
       - uses: actions/upload-artifact@v4
         if: always()
         with:
