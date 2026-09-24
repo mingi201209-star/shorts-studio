@@ -143,6 +143,21 @@ def verify_visual_cut_cadence(scene_windows: list[dict], scenes: list, max_hold:
         longest=max(holds,default=duration)
         if longest>max_hold+0.05:
             failures.append({"scene":window.get("scene"),"longest_hold":longest,"limit":max_hold})
+    # A scene boundary is not a visual cut when the outgoing and incoming
+    # beats declare the same source image.
+    for prev, curr in zip(scene_windows, scene_windows[1:]):
+        left = list(getattr(by_id.get(prev.get("scene")), "visual_beats", []) or [])
+        right = list(getattr(by_id.get(curr.get("scene")), "visual_beats", []) or [])
+        if not left or not right:
+            continue
+        def source(beat):
+            return getattr(beat, "asset", None) or getattr(beat, "asset_url", None)
+        if source(left[-1]) and source(left[-1]) == source(right[0]):
+            trailing = float(prev.get("duration", 0) or 0) - float(left[-1].start)
+            leading = float(right[1].start) if len(right) > 1 else float(curr.get("duration", 0) or 0)
+            if trailing + leading > max_hold + 0.05:
+                failures.append({"scene_boundary": [prev["scene"], curr["scene"]],
+                                 "longest_hold": trailing + leading, "limit": max_hold})
     if failures:
         return {"status":"FAIL","reason":"picture hold exceeds the visual cut limit","failures":failures}
     return {"status":"PASS","max_hold_seconds":max_hold}

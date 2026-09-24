@@ -150,27 +150,6 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
-          ],
-          "visual_qa_labels": [
-            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
-          ],
-          "visual_qa_negative_labels": [
-            "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
-          "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
-          ]
-        },
-        {
-          "start": 3.5,
           "attribution": "Wikimedia Commons, public domain",
           "motion": {
             "type": "static"
@@ -188,6 +167,27 @@
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
             "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+          ]
+        },
+        {
+          "start": 3.5,
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
           ]
         }
       ],
@@ -328,46 +328,27 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "FAA / Wikimedia Commons, public domain",
+          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
           ],
           "visual_qa_labels": [
-            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
-            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
+            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
           ],
           "visual_qa_negative_labels": [
-            "a complete passenger airplane flying in an open sky",
-            "a passenger airplane parked normally on an airport runway"
+            "a complete modern passenger airliner flying in a blue sky"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
+          "visual_qa_expected_sha256": [
+            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+          ]
         },
         {
           "start": 2.8,
-          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
-          ],
-          "visual_qa_labels": [
-            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
-            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
-          ],
-          "visual_qa_negative_labels": [
-            "a complete modern passenger airliner flying in a blue sky"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
-          "visual_qa_expected_sha256": [
-            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
-          ]
-        },
-        {
-          "start": 5.6,
           "attribution": "FAA / Wikimedia Commons, public domain",
           "motion": {
             "type": "static"
@@ -386,7 +367,7 @@
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
         },
         {
-          "start": 8.4,
+          "start": 5.6,
           "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
           "motion": {
             "type": "static"
@@ -405,6 +386,25 @@
           "visual_qa_expected_sha256": [
             "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
           ]
+        },
+        {
+          "start": 8.4,
+          "attribution": "FAA / Wikimedia Commons, public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+          ],
+          "visual_qa_labels": [
+            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
+            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete passenger airplane flying in an open sky",
+            "a passenger airplane parked normally on an airport runway"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
         }
       ]
     },

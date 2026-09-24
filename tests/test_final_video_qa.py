@@ -166,3 +166,15 @@ def test_narration_continuity_rejects_dropped_speech_gap(tmp_path):
     wave_with_pause(good, 0.4)
     assert verify_narration_continuity(broken)["status"] == "FAIL"
     assert verify_narration_continuity(good)["status"] == "PASS"
+
+
+def test_visual_cut_cadence_includes_unbroken_hold_across_scene_boundary():
+    beats1 = [SimpleNamespace(start=0, asset_url="plane"), SimpleNamespace(start=3, asset_url="wreck")]
+    beats2 = [SimpleNamespace(start=0, asset_url="wreck"), SimpleNamespace(start=3, asset_url="tank")]
+    scenes = [SimpleNamespace(id="s1", visual_beats=beats1), SimpleNamespace(id="s2", visual_beats=beats2)]
+    windows = [{"scene": "s1", "duration": 6.2}, {"scene": "s2", "duration": 6.2}]
+    result = verify_visual_cut_cadence(windows, scenes)
+    assert result["status"] == "FAIL"
+    assert result["failures"][0]["scene_boundary"] == ["s1", "s2"]
+    beats2[0].asset_url = "plane"
+    assert verify_visual_cut_cadence(windows, scenes)["status"] == "PASS"
