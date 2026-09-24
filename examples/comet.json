@@ -58,7 +58,7 @@
             "an airplane flying in a clear sky"
           ],
           "visual_qa_expected_sha256": [
-            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
           ]
         },
         {
@@ -79,7 +79,7 @@
             "an aircraft fuselage inside a water tank"
           ],
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
           ]
         }
       ]

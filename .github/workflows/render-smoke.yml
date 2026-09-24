@@ -131,14 +131,27 @@ jobs:
           assert not missing, f"upload description missing required credits/context: {missing}"
           print("upload description and third-party image credits OK")
           PY
+      # A rendered MP4 is a release artifact only after every QA step passes.
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: shorts-studio-comet
           path: |
             dist/
             build/*.srt
             build/*.timing.json
+            build/*_qa.jpg
+            build/_titleqa_*.jpg
+            build/_capqa_*.jpg
+            build/_safeqa_*.jpg
+            render-result.json
+      # Preserve evidence from failed runs without exposing their MP4 as a deliverable.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: shorts-studio-comet-diagnostics
+          path: |
+            dist/qa_report.json
             build/*_qa.jpg
             build/_titleqa_*.jpg
             build/_capqa_*.jpg
