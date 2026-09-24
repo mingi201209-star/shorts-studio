@@ -66,7 +66,7 @@ def _write_title_srt(path:Path, title:str, duration:float)->Path:
     return path
 
 def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
-    style="Alignment=2,MarginV=0,FontSize=20,Outline=2,Shadow=0,Bold=1"
+    style="Alignment=2,MarginV=48,FontSize=20,Outline=2,Shadow=0,Bold=1"
     # Contain the complete photo in the same centered box for every scene.
     # The final canvas is black, so subtitles can only appear in the separate
     # lower region; still-image motion is intentionally disabled.
@@ -118,7 +118,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
     if asset:
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
-        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=0,FontSize=20,Outline=2,Bold=1'{_title_clause(title_srt)}"
+        vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=20,Outline=2,Bold=1'{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True)
@@ -169,7 +169,7 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True)
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
-    vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=0,FontSize=20,Outline=2,Shadow=0,Bold=1'{_title_clause(title_srt)}"
+    vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=48,FontSize=20,Outline=2,Shadow=0,Bold=1'{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips
 
