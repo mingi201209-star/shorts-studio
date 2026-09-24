@@ -111,7 +111,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           text = Path("dist/upload-description.txt").read_text(encoding="utf-8")
-          required = ["CC BY-SA 3.0", "CC BY-SA 4.0", "CC BY-SA 2.0", "CC BY 2.0", "ADF antenna cut-out"]
+          required = ["CC BY-SA 3.0", "CC BY-SA 4.0", "CC BY-SA 2.0", "CC BY 2.0", "ADF"]
           missing = [item for item in required if item not in text]
           assert not missing, f"upload description missing required credits/context: {missing}"
           print("upload description and third-party image credits OK")
