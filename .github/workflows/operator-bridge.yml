@@ -1,0 +1,22 @@
+name: Operator Bridge
+
+'on':
+  issue_comment:
+    types:
+      - created
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  issues: read
+
+jobs:
+  dispatch-render:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.issue.pull_request == null && github.event.comment.user.login == github.repository_owner && startsWith(github.event.comment.body, '/render')) }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch render-smoke on main
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run render-smoke.yml --repo "${{ github.repository }}" --ref main

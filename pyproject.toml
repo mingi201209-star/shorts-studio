@@ -1,0 +1,26 @@
+[build-system]
+requires=["setuptools>=68","wheel"]
+build-backend="setuptools.build_meta"
+
+[project]
+name="shorts-studio"
+version="0.1.0"
+requires-python=">=3.11"
+dependencies=["pydantic>=2.7","edge-tts>=7.0","opencv-python-headless>=4.9","pillow>=10.0","numpy>=1.26"]
+
+[project.optional-dependencies]
+dev=["pytest>=8.0","ruff>=0.6"]
+# Real local zero-shot semantic vision QA (no API key, no payment, runs on-device).
+# Not installed by default: torch is heavy. Without it, ClipSemanticVisionProvider
+# reports NOT_EVALUATED (fail-closed in production) instead of ever faking a PASS.
+vision=["open-clip-torch>=2.24","torch>=2.2"]
+
+[tool.pytest.ini_options]
+testpaths=["tests"]
+
+[tool.ruff]
+line-length=100
+
+[tool.setuptools.packages.find]
+include=["shorts_studio*"]
+exclude=["assets*","examples*","tests*"]
