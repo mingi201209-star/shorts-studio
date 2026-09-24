@@ -128,7 +128,9 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
     candidate = out_path.with_name(out_path.stem + "_candidate" + out_path.suffix)
     proc = subprocess.run([
         "ffmpeg", "-y", "-i", str(path),
-        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB:stop_periods=1:stop_duration=0.06:stop_threshold=-45dB",
+        # Trim from both edges: stop_periods=1 on forward audio cuts at the first internal pause.
+        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB,"
+        "areverse,silenceremove=start_periods=1:start_duration=0.06:start_threshold=-45dB,areverse",
         str(candidate),
     ], capture_output=True)
     valid = proc.returncode == 0 and candidate.exists() and candidate.stat().st_size > 0
@@ -210,6 +212,8 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
             _, leading_trim = _trim_tts_edge_silence(part, trimmed)
             audio_duration = _ffmpeg_duration_seconds(trimmed)
             boundary_duration = max((max(0.0, w.end - leading_trim) for w in unit_words[i]), default=0.0)
+            if boundary_duration > audio_duration + 0.4:
+                raise RuntimeError(f"TTS audio was truncated before the last spoken word in unit {i+1}: audio={audio_duration:.2f}s boundary={boundary_duration:.2f}s")
             if boundary_duration > audio_duration + 0.02:
                 _pad_audio_to_duration(trimmed, boundary_duration)
                 audio_duration = _ffmpeg_duration_seconds(trimmed)
