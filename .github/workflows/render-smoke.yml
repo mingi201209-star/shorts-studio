@@ -102,7 +102,7 @@ jobs:
           report = json.loads(Path("dist/qa_report.json").read_text(encoding="utf-8"))
           assert captions.is_file() and captions.stat().st_size > 0
           text = captions.read_text(encoding="utf-8").strip()
-          blocks = [block for block in text.split("\\n\\n") if block.strip()]
+          blocks = [block for block in text.split("\n\n") if block.strip()]
           assert blocks and all(len(block.splitlines()) >= 3 for block in blocks)
           assert report["captions"]["status"] == "PASS"
           assert report["captions"]["cues"] == len(blocks)
