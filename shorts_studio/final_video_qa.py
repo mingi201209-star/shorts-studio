@@ -103,7 +103,7 @@ def verify_bottom_safe_area_clean(video: Path, sample_timestamps: list[float], b
 
 IMAGE_TOP_Y=230
 IMAGE_BOTTOM_Y=1230
-CAPTION_GUTTER=(1238,1308)
+CAPTION_GUTTER=(1238,1360)
 MAX_BLACK_GUTTER_MEAN=10.0
 MAX_BLACK_GUTTER_P99=24
 
