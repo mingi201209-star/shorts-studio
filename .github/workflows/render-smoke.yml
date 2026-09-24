@@ -1,4 +1,5 @@
 name: render-smoke
+# Revalidate current Comet scene-04 evidence fix.
 on:
   push:
   pull_request:
