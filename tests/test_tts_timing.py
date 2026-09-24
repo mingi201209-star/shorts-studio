@@ -218,3 +218,34 @@ def test_edge_trim_shifts_provider_word_boundaries_to_trimmed_waveform(tmp_path,
     ]
     words = asyncio.run(synthesize_plan(plan, tmp_path / "trim.mp3", tmp_path / "trim.json"))
     assert words[0].start < 0.08, f"leading trim must be removed from boundary timing, got {words[0].start}"
+
+
+@requires_ffmpeg
+def test_edge_trim_preserves_speech_after_an_internal_pause(tmp_path):
+    import math
+    import struct
+    import subprocess
+    import wave
+    from shorts_studio.tts import _ffmpeg_duration_seconds, _trim_tts_edge_silence
+
+    rate = 24000
+    sample = tmp_path / "phrase.wav"
+    with wave.open(str(sample), "wb") as output:
+        output.setnchannels(1)
+        output.setsampwidth(2)
+        output.setframerate(rate)
+        output.writeframes(b"".join(
+            struct.pack("<h", int(9000 * math.sin(2 * math.pi * 440 * n / rate))
+                        if 0.05 < n / rate < 0.50 or 0.73 < n / rate < 1.22 else 0)
+            for n in range(int(1.65 * rate))
+        ))
+
+    original = tmp_path / "phrase.mp3"
+    trimmed = tmp_path / "trimmed.mp3"
+    subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(sample), str(original)],
+                   check=True)
+    _trim_tts_edge_silence(original, trimmed)
+    duration = _ffmpeg_duration_seconds(trimmed)
+    # Two spoken segments surround a natural 230 ms pause. Cutting at that
+    # pause produces about 0.58 s and silently drops the second segment.
+    assert 1.05 < duration < 1.35
