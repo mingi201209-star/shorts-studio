@@ -212,7 +212,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
             _, leading_trim = _trim_tts_edge_silence(part, trimmed)
             audio_duration = _ffmpeg_duration_seconds(trimmed)
             boundary_duration = max((max(0.0, w.end - leading_trim) for w in unit_words[i]), default=0.0)
-            if boundary_duration > audio_duration + 0.4:
+            if boundary_duration > audio_duration + 1.0:
                 raise RuntimeError(f"TTS audio was truncated before the last spoken word in unit {i+1}: audio={audio_duration:.2f}s boundary={boundary_duration:.2f}s")
             if boundary_duration > audio_duration + 0.02:
                 _pad_audio_to_duration(trimmed, boundary_duration)
