@@ -125,6 +125,11 @@ def test_picture_is_centered_static_black_surrounded_and_caption_cannot_overlap(
     fb,fg,fr=[channel.astype(int) for channel in cv2.split(frames[1])]
     white=(fb>230)&(fg>230)&(fr>230)
     assert not white[R.IMAGE_TOP_Y:R.SAFE_BOTTOM_Y,:].any()
-    # Surround and the dedicated gutter remain black.
+    # Side surround stays black; the lower gutter is reserved for captions.
     assert np.max(cv2.cvtColor(frames[1][R.IMAGE_TOP_Y:R.SAFE_BOTTOM_Y,:50],cv2.COLOR_BGR2GRAY))<12
-    assert np.max(cv2.cvtColor(frames[1][R.SAFE_BOTTOM_Y+8:1308,:],cv2.COLOR_BGR2GRAY))<12
+    # Caption pixels must start below the picture and remain near it, never inside it.
+    gray=cv2.cvtColor(frames[1],cv2.COLOR_BGR2GRAY)
+    ys=np.where((gray>200).any(axis=1))[0]
+    caption_rows=ys[ys>=R.SAFE_BOTTOM_Y]
+    assert len(caption_rows)>0
+    assert int(caption_rows.min())<R.SAFE_BOTTOM_Y+220
