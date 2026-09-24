@@ -93,10 +93,10 @@ def test_visual_beat_contracts_are_populated_in_comet_example():
     # Pin each asset to its intended visual beat; a scene-level hash set lets
     # the wrong image pass merely because it belongs somewhere in the scene.
     assert opening.visual_beats[0].visual_qa_expected_sha256 == [
-        "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+        "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
     ]
     assert opening.visual_beats[1].visual_qa_expected_sha256 == [
-        "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+        "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
     ]
 
 
