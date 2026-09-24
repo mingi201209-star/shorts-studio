@@ -56,16 +56,28 @@ def _band_bright_width(gray, band) -> int:
 
 @requires_ffmpeg
 def test_two_line_caption_stacks_top_line_first(tmp_path):
-    # A much longer first line than second line -- if stacking were reversed,
-    # the WIDER bright band would appear on the BOTTOM instead of the top.
-    long_line = "가나다라마바사아자차카타파하가나다라마바사아자차카타파하"
+    # A longer first line than second line -- if stacking were reversed, the
+    # WIDER bright band would appear on the BOTTOM instead of the top. Kept
+    # short enough to stay on ONE physical line under libass's own
+    # auto-wrapping: test_subtitle_visual_regression.py already renders a
+    # 9-character (incl. space) Korean line on one line at this exact
+    # style/FontSize in CI. An earlier, much longer (28-char) line here
+    # wrapped into 3 sub-lines under CI's font metrics -- a real, deterministic
+    # environment difference from this sandbox, not a flake -- which isn't
+    # what this test is meant to check.
+    long_line = "가나다라"
     short_line = "가"
     clip = _render_two_line_caption(tmp_path / "build", long_line, short_line)
     frame = tmp_path / "frame.jpg"
     subprocess.run(["ffmpeg", "-y", "-ss", "1.0", "-i", str(clip), "-frames:v", "1", str(frame)], check=True, capture_output=True)
     bands, gray = _row_bands(frame)
-    assert len(bands) == 2, f"expected exactly 2 caption line bands, found {len(bands)}: {bands}"
-    top_band, bottom_band = sorted(bands, key=lambda b: b[0])
+    assert len(bands) >= 2, f"expected at least 2 caption line bands, found {len(bands)}: {bands}"
+    # Topmost and bottommost bands rather than requiring exactly 2: if a
+    # line ever wraps into extra sub-lines under a different font's metrics,
+    # the ordering claim (first authored line above the second) still holds
+    # for the overall top vs. bottom bands regardless of internal wrap count.
+    bands_sorted = sorted(bands, key=lambda b: b[0])
+    top_band, bottom_band = bands_sorted[0], bands_sorted[-1]
     top_width = _band_bright_width(gray, top_band)
     bottom_width = _band_bright_width(gray, bottom_band)
     assert top_width > bottom_width, (
