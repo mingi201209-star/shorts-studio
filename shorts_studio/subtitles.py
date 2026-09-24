@@ -7,7 +7,7 @@ class Caption:
     start: float
     end: float
 
-_KO_BREAK_AFTER = ("지만", "는데", "면서", "했고", "했고,", "했고.", "했습니다.", "됐습니다.", "겁니다.", "였습니다.", "이었습니다.")
+_KO_BREAK_AFTER = ("지만", "는데", "면서", "했고", "넣고", "했습니다.", "됐습니다.", "겁니다.", "였습니다.", "이었습니다.")
 
 def _semantic_break(word: str) -> bool:
     token = word.strip()
