@@ -138,3 +138,31 @@ def test_visual_cut_cadence_rejects_long_static_holds():
     scenes = [SimpleNamespace(id="s1", visual_beats=[SimpleNamespace(start=0), SimpleNamespace(start=3)])]
     assert verify_visual_cut_cadence([{"scene":"s1","duration":6.2}], scenes)["status"] == "PASS"
     assert verify_visual_cut_cadence([{"scene":"s1","duration":7.0}], scenes)["status"] == "FAIL"
+
+
+@requires_ffmpeg
+def test_narration_continuity_rejects_dropped_speech_gap(tmp_path):
+    import math
+    import struct
+    import wave
+    from shorts_studio.final_video_qa import verify_narration_continuity
+
+    def wave_with_pause(path, pause):
+        rate = 24000
+        duration = 0.3 + pause + 0.3
+        with wave.open(str(path), "wb") as output:
+            output.setnchannels(1)
+            output.setsampwidth(2)
+            output.setframerate(rate)
+            output.writeframes(b"".join(
+                struct.pack("<h", int(9000 * math.sin(2 * math.pi * 440 * n / rate))
+                            if n / rate < 0.3 or n / rate > 0.3 + pause else 0)
+                for n in range(int(duration * rate))
+            ))
+
+    broken = tmp_path / "broken.wav"
+    good = tmp_path / "good.wav"
+    wave_with_pause(broken, 1.8)
+    wave_with_pause(good, 0.4)
+    assert verify_narration_continuity(broken)["status"] == "FAIL"
+    assert verify_narration_continuity(good)["status"] == "PASS"
