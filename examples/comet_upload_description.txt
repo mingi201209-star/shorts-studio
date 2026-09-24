@@ -1,5 +1,5 @@
 TITLE
-최초 제트 여객기 코멧은 왜 추락했을까?
+코멧 여객기 추락의 진짜 원인: 네모 창문이 아니었다
 
 DESCRIPTION
 1954년 드 해빌랜드 코멧 사고의 원인을 살펴봅니다. 흔히 '네모난 객실 창문 탓'으로 알려져 있지만, 공식 조사에서 피로 균열의 시작점으로 확인된 곳은 상부 동체의 ADF 안테나 개구부였습니다. 반복 가압 시험에서 금속 피로가 어떻게 드러났는지 정리했습니다.
@@ -27,9 +27,9 @@ https://creativecommons.org/licenses/by-sa/4.0/
 Comet G-ALYU in the water tank for pressure tests.jpg — Federal Aviation Administration — U.S. federal government work, public domain in the United States
 https://commons.wikimedia.org/wiki/File:Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg
 
-Fuselage panel from Comet 1 -G-ALYU- (46426204684).jpg — Alan Wilson — CC BY-SA 2.0
-https://commons.wikimedia.org/wiki/File:Fuselage_panel_from_Comet_1_-G-ALYU-_(46426204684).jpg
-https://creativecommons.org/licenses/by-sa/2.0/
+Comet G-ALYU escape hatch failure.png — HM Stationery Office, Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek — CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:Comet_G-ALYU_escape_hatch_failure.png
+https://creativecommons.org/licenses/by-sa/4.0/
 
 Window comparison graphic — original work for shorts-studio.
 
