@@ -16,6 +16,10 @@ class VisualBeat(BaseModel):
     asset_url: str | None = None
     attribution: str | None = None
     motion: Motion = Motion()
+    visual_qa_requirements: list[str] = Field(default_factory=list)
+    visual_qa_labels: list[str] = Field(default_factory=list)
+    visual_qa_negative_labels: list[str] = Field(default_factory=list)
+    visual_qa_expected_sha256: list[str] = Field(default_factory=list)
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -57,6 +61,12 @@ class Scene(BaseModel):
                 raise ValueError("visual_beats starts must be strictly increasing")
             if any(not (b.asset or b.asset_url) for b in self.visual_beats):
                 raise ValueError("each visual beat must declare asset or asset_url")
+            if self.visual_qa_requirements:
+                for index, beat in enumerate(self.visual_beats):
+                    if not beat.visual_qa_requirements:
+                        raise ValueError(f"visually required scene beat {index} must declare visual_qa_requirements")
+                    if not (beat.visual_qa_labels or beat.visual_qa_expected_sha256):
+                        raise ValueError(f"visually required scene beat {index} must declare visual_qa_labels or visual_qa_expected_sha256")
         return self
     # Human-readable (any language) QA requirements shown in reports.
     visual_qa_requirements: list[str] = []

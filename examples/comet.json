@@ -46,7 +46,20 @@
           "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
           "motion": {
             "type": "push_in"
-          }
+          },
+          "visual_qa_requirements": [
+            "첫 장면에 실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+          ],
+          "visual_qa_negative_labels": [
+            "an intact de Havilland Comet passenger airliner",
+            "an airplane flying in a clear sky"
+          ],
+          "visual_qa_expected_sha256": [
+            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+          ]
         },
         {
           "start": 1,
@@ -54,7 +67,20 @@
           "attribution": "Wikimedia Commons, public domain",
           "motion": {
             "type": "pull_out"
-          }
+          },
+          "visual_qa_requirements": [
+            "잔해 컷 다음에 온전한 de Havilland Comet 여객기가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "a complete de Havilland DH-106 Comet passenger airliner"
+          ],
+          "visual_qa_negative_labels": [
+            "torn aircraft wreckage",
+            "an aircraft fuselage inside a water tank"
+          ],
+          "visual_qa_expected_sha256": [
+            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
         }
       ]
     },

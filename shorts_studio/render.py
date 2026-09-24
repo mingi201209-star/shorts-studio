@@ -1,6 +1,7 @@
 from __future__ import annotations
 import asyncio, json, os, shutil, subprocess, time, urllib.error, urllib.request
 from pathlib import Path
+from types import SimpleNamespace
 from .project import load_project
 from .prosody import PhraseSpec, plan_narration
 from .tts import synthesize_plan
@@ -149,7 +150,7 @@ def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
             windows.append((beat,length))
     return windows
 
-def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->tuple[Path,list[Path],list[float]]:
+def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
     if not windows:
@@ -163,7 +164,8 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         assets.append(asset)
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
-        vf=_visual_filter(scene,build/f"{scene.id}.empty.srt",fps,None).split(",subtitles=",1)[0]
+        beat_scene=SimpleNamespace(motion=beat.motion)
+        vf=_visual_filter(beat_scene,build/f"{scene.id}.empty.srt",fps,None).split(",subtitles=",1)[0]
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
@@ -179,7 +181,30 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     vf=f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV=70,FontSize=20,Outline=2,Shadow=0,Bold=1'{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True)
-    return clip,assets,[_media_duration_seconds(path) for path in visual_clips]
+    return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips
+
+def _evaluate_visual_beats(scene, beat_clips:list[Path], beat_assets:list[Path], provider, build:Path)->dict:
+    """Evaluate every visual beat independently; a scene-level midpoint cannot
+    prove that required earlier/later beats are present in the final sequence."""
+    beats=list(getattr(scene,"visual_beats",None) or [])
+    if not beats or len(beats)!=len(beat_clips) or len(beats)!=len(beat_assets):
+        return {"scene":scene.id,"status":"FAIL","reason":"visual beat QA evidence count does not match manifest"}
+    results=[]
+    for index,(beat,clip,asset) in enumerate(zip(beats,beat_clips,beat_assets)):
+        beat_scene=SimpleNamespace(
+            id=f"{scene.id}_beat_{index:02d}",
+            narration=getattr(scene,"narration",""),
+            visual_qa_requirements=list(getattr(beat,"visual_qa_requirements",[]) or []),
+            visual_qa_labels=list(getattr(beat,"visual_qa_labels",[]) or []),
+            visual_qa_negative_labels=list(getattr(beat,"visual_qa_negative_labels",[]) or []),
+            visual_qa_expected_sha256=list(getattr(beat,"visual_qa_expected_sha256",[]) or []),
+        )
+        frame=build/f"{beat_scene.id}_qa.jpg"
+        results.append(evaluate_scene_semantics(beat_scene,clip,provider,frame,asset_path=asset))
+    status="FAIL" if any(x.get("status")=="FAIL" for x in results) else (
+        "PASS" if results and all(x.get("status")=="PASS" for x in results) else "NOT_EVALUATED"
+    )
+    return {"scene":scene.id,"status":status,"requirements":list(scene.visual_qa_requirements),"beat_results":results}
 
 def _representative_visual_asset(assets:list[Path],durations:list[float],clip_duration:float)->Path:
     """Return the source image visible at the midpoint QA actually samples."""
@@ -258,7 +283,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             if getattr(scene,"visual_beats",None):
-                clip,beat_assets,beat_durations=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title)
+                clip,beat_assets,beat_durations,beat_clips=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title)
                 asset=_representative_visual_asset(beat_assets,beat_durations,_media_duration_seconds(clip))
             else:
                 asset=_resolve_asset(candidates[index],build,scene.id,index)
@@ -271,8 +296,11 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         if not scene.visual_qa_requirements:
             result={"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
             break
-        frame=build/f"{scene.id}_qa.jpg"
-        result=evaluate_scene_semantics(scene,clip,provider,frame,asset_path=asset)
+        if getattr(scene,"visual_beats",None):
+            result=_evaluate_visual_beats(scene,beat_clips,beat_assets,provider,build)
+        else:
+            frame=build/f"{scene.id}_qa.jpg"
+            result=evaluate_scene_semantics(scene,clip,provider,frame,asset_path=asset)
         if result["status"]!="FAIL":
             break
         last_error=result.get("reason")
