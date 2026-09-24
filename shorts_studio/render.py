@@ -62,7 +62,7 @@ def _title_clause(title_srt:Path|None)->str:
     return f",subtitles={title_srt.as_posix()}:force_style='{_TITLE_STYLE}'"
 
 def _write_title_srt(path:Path, title:str, duration:float)->Path:
-    path.write_text(f"1\\n{_srt_time(0.0)} --> {_srt_time(duration)}\\n{title}\\n\\n",encoding="utf-8")
+    path.write_text(f"1\n{_srt_time(0.0)} --> {_srt_time(duration)}\n{title}\n\n",encoding="utf-8")
     return path
 
 def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
