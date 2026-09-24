@@ -87,7 +87,7 @@ def test_visual_beat_contracts_are_populated_in_comet_example():
 
     project = load_project("examples/comet.json")
     opening = project.scenes[0]
-    assert len(opening.visual_beats) == 2
+    assert len(opening.visual_beats) == 4
     assert all(beat.visual_qa_requirements for beat in opening.visual_beats)
     assert all(beat.visual_qa_labels or beat.visual_qa_expected_sha256 for beat in opening.visual_beats)
     # Pin each asset to its intended visual beat; a scene-level hash set lets
