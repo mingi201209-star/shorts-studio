@@ -7,8 +7,8 @@ from shorts_studio.timing import WordTiming
 from shorts_studio.prosody import pause_after, PhraseSpec
 from shorts_studio.tts import (
     DEFAULT_KO_RATE,
-    _map_boundaries_to_script, _prepare_korean_speech, _split_sentences,
-    edge_tts_with_boundaries,
+    _map_boundaries_to_script, _prepare_korean_speech, _restore_numeral_captions, _split_sentences,
+    edge_tts_with_boundaries, synthesize_plan,
 )
 
 # The auto-fallback path (build_auto_plan) tags every phrase role="SETUP",
@@ -85,6 +85,65 @@ def test_normal_sentence_comma_still_gets_spacing():
 def test_sentence_terminators_still_get_spacing():
     out = _prepare_korean_speech("정말입니다.놀랍죠?")
     assert out == "정말입니다. 놀랍죠 ?" or out == "정말입니다. 놀랍죠?"
+
+# --- captions show the real numeral, not the spelled-out spoken form ------
+# Edge must HEAR "천이백이십일번의" (spelled_out_numbers is correct and
+# necessary for correct pronunciation), but a burned-in caption showing
+# spelled-out numeral words instead of "1,221번의" looks wrong and doesn't
+# match the production's fact-checked figures -- captions must show what a
+# viewer expects to READ while the TIMING still comes from what Edge
+# actually spoke.
+
+def test_restore_numeral_captions_swaps_text_keeps_timing():
+    spoken = "실제 운항에서 천이백이십일번의 압력 사이클,"
+    mapped = [
+        WordTiming("실제", 0.0, 0.4), WordTiming("운항에서", 0.5, 0.9),
+        WordTiming("천이백이십일번의", 1.0, 1.4), WordTiming("압력", 1.5, 1.9),
+        WordTiming("사이클,", 2.0, 2.4),
+    ]
+    original_unit = [PhraseSpec(role="REVEAL", text="실제 운항에서 1,221번의 압력 사이클,")]
+    restored = _restore_numeral_captions(spoken, original_unit, mapped)
+    assert [w.text for w in restored] == ["실제", "운항에서", "1,221번의", "압력", "사이클,"]
+    assert [(w.start, w.end) for w in restored] == [(w.start, w.end) for w in mapped]
+
+def test_restore_numeral_captions_falls_back_when_token_counts_differ():
+    spoken = "천이백이십일 번 더"  # pretend spelling introduced an extra token
+    mapped = [WordTiming("천이백이십일", 0.0, 0.4), WordTiming("번", 0.5, 0.6), WordTiming("더", 0.7, 0.9)]
+    original_unit = [PhraseSpec(role="REVEAL", text="1,221번 더")]  # only 2 original tokens
+    restored = _restore_numeral_captions(spoken, original_unit, mapped)
+    assert restored is mapped  # safe fallback: never mispair text with timing
+
+@requires_ffmpeg
+def test_synthesize_plan_captions_show_numerals_not_spelled_out_words(tmp_path):
+    import subprocess
+    fake_edge_tts = types.ModuleType("edge_tts")
+    class FakeCommunicate:
+        def __init__(self, text, voice, **k):
+            self.text = text
+        async def stream(self):
+            clip = tmp_path / f"_gen_{abs(hash(self.text))}.mp3"
+            subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "2.5", "-q:a", "9", str(clip)], check=True, capture_output=True)
+            yield {"type": "audio", "data": clip.read_bytes()}
+            words = self.text.split()
+            step = 2.5 / len(words)
+            for i, w in enumerate(words):
+                yield {"type": "WordBoundary", "text": w, "offset": int(i * step * 10_000_000), "duration": int(step * 10_000_000)}
+    fake_edge_tts.Communicate = FakeCommunicate
+    monkeypatch_modules = sys.modules.get("edge_tts")
+    sys.modules["edge_tts"] = fake_edge_tts
+    try:
+        phrases = [PhraseSpec(role="REVEAL", text="실제 운항에서 1,221번의 압력 사이클, 물탱크에서 1,836번을 더 반복했습니다")]
+        words = asyncio.run(synthesize_plan(phrases, tmp_path / "out.mp3", tmp_path / "out.json"))
+    finally:
+        if monkeypatch_modules is None:
+            del sys.modules["edge_tts"]
+        else:
+            sys.modules["edge_tts"] = monkeypatch_modules
+    caption_text = " ".join(w.text for w in words)
+    assert "1,221번의" in caption_text, caption_text
+    assert "1,836번을" in caption_text, caption_text
+    assert "천이백이십일" not in caption_text, caption_text
+    assert "천팔백삼십육" not in caption_text, caption_text
 
 # --- sentence splitting ---------------------------------------------------
 

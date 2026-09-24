@@ -75,9 +75,11 @@ SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 CAPTION_FONT_SIZE=72
 # Real pixel distance from the true bottom edge now that PlayRes is pinned
 # (previously 48, which relied on the same accidental ~6-7x scale-up to read
-# as a real ~320px gap -- at 1:1 scale a literal 48px sat far too close to
-# the screen's bottom edge, where mobile Shorts UI chrome overlays anyway).
-CAPTION_MARGIN_V=120
+# as a real ~320px gap). 250 keeps the caption clear of the like/comment/
+# share icon column and progress bar a real YouTube Shorts player overlays
+# along the bottom ~200px -- raised from an initial 120 (only ~130px of
+# clearance) after reviewing an actual rendered frame.
+CAPTION_MARGIN_V=250
 CAPTION_OUTLINE=2
 _PLAY_RES="PlayResX=1080,PlayResY=1920"
 CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0,{_PLAY_RES}"

@@ -71,6 +71,26 @@ def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordT
         out.append(WordTiming(t,cursor,nxt)); cursor=nxt
     return out
 
+def _restore_numeral_captions(spoken_text: str, original_unit: list[PhraseSpec], mapped: list[WordTiming]) -> list[WordTiming]:
+    """`mapped` is timed against `spoken_text`, the Sino-Korean-spelled-out
+    form Edge actually pronounces (e.g. "천이백이십일번의") -- exactly what a
+    viewer needs to HEAR, but not what a viewer expects to READ: a burned-in
+    caption showing spelled-out numeral words instead of "1,221번의" looks
+    wrong and doesn't match the real production's fact-checked figures.
+    `spell_out_numbers` only ever replaces a digits+counter span inside one
+    whitespace token with another single token (never inserts or removes a
+    token boundary), so the original (pre-spelling) unit's tokens are in
+    exact 1:1 correspondence with `mapped` in the common case -- swap the
+    DISPLAY text back to the original numeral form while keeping the real
+    TTS-timed start/end untouched. Falls back to the spoken (spelled-out)
+    text if that correspondence doesn't hold, rather than risk a wrong
+    caption-to-timing pairing."""
+    original_text = _prepare_korean_speech(" ".join(p.text for p in original_unit))
+    original_tokens = _tokenize(original_text)
+    if len(original_tokens) != len(mapped):
+        return mapped
+    return [WordTiming(orig, w.start, w.end) for orig, w in zip(original_tokens, mapped)]
+
 async def _synthesize_sentence(text: str, voice: str, rate: str, pitch: str, volume: str) -> tuple[bytes, list[WordTiming]]:
     """One real Edge TTS call per sentence, requesting WordBoundary events --
     the engine's own real per-word timestamps, not a client-side guess. This
@@ -180,6 +200,11 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         raise RuntimeError("no narration phrases to synthesize")
     prepared = [replace(p, text=_prepare_korean_speech(spell_out_numbers(p.text))) for p in phrases]
     units = group_into_units(prepared)
+    # Grouping depends only on each phrase's `.boundary`, never `.text`, so
+    # grouping the ORIGINAL (pre-spelling) phrases the same way yields units
+    # in exact 1:1 correspondence with `units` above -- used below to show
+    # "1,221" in captions while Edge still hears "천이백이십일" spoken aloud.
+    original_units = group_into_units(list(phrases))
 
     unit_audio = []; unit_words = []; unit_raw = []; unit_meta = []
     for idx, unit in enumerate(units):
@@ -191,7 +216,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         if not boundaries:
             raise RuntimeError(f"TTS returned no timing boundary events for unit {idx+1}/{len(units)} (role={unit[0].role!r}): {unit_text!r}; do not guess from scene duration")
         unit_audio.append(audio_bytes)
-        unit_words.append(_map_boundaries_to_script(unit_text, boundaries))
+        unit_words.append(_restore_numeral_captions(unit_text, original_units[idx], _map_boundaries_to_script(unit_text, boundaries)))
         unit_raw.append([w.__dict__ for w in boundaries])
         unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "base_unit_rate": base_unit_rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit), "speech_features": speech_features.__dict__})
 
