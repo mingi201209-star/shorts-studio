@@ -56,8 +56,8 @@ SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 # Keep them visually connected to the content while preserving the hard no-overlap contract.
 CAPTION_FONT_SIZE=30
 CAPTION_MARGIN_V=48
-CAPTION_OUTLINE=3
-CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=1"
+CAPTION_OUTLINE=2
+CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0"
 
 # ASS/libass alignment codes rendered by this ffmpeg build follow the legacy
 # SSA numbering (5/6/7 = top row) -- Alignment=6 is the top-center value.
