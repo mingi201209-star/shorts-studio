@@ -128,7 +128,7 @@ def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
     candidate = out_path.with_name(out_path.stem + "_candidate" + out_path.suffix)
     proc = subprocess.run([
         "ffmpeg", "-y", "-i", str(path),
-        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB",
+        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB:stop_periods=1:stop_duration=0.06:stop_threshold=-45dB",
         str(candidate),
     ], capture_output=True)
     valid = proc.returncode == 0 and candidate.exists() and candidate.stat().st_size > 0
