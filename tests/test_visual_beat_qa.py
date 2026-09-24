@@ -112,3 +112,22 @@ def test_comet_visual_beats_change_no_later_than_every_three_and_a_half_seconds(
         assert len({(beat.get("asset"),beat.get("asset_url")) for beat in beats}) >= 2
         assert all(right-left <= 3.5 for left,right in zip(starts,starts[1:])), (scene["id"],starts)
         assert all(beat["visual_qa_requirements"] and beat["visual_qa_labels"] for beat in beats)
+
+
+def test_repeated_visual_beat_asset_is_resolved_only_once(monkeypatch, tmp_path):
+    candidate={"asset":None,"asset_url":"https://example.test/shared.jpg"}
+    resolved=tmp_path/"shared.jpg"
+    resolved.write_bytes(b"image")
+    calls=[]
+
+    def resolve(candidate, build, scene_id, index):
+        calls.append((scene_id,index))
+        return resolved
+
+    monkeypatch.setattr(R,"_resolve_asset",resolve)
+    cache={}
+    first=R._resolve_cached_asset(candidate,tmp_path,"scene_01_beat0",0,cache)
+    second=R._resolve_cached_asset(candidate,tmp_path,"scene_02_beat1",0,cache)
+
+    assert first==second==resolved
+    assert calls==[("scene_01_beat0",0)]

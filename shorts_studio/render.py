@@ -101,6 +101,17 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
     return path
 
+def _resolve_cached_asset(candidate:dict, build:Path, scene_id:str, index:int, asset_cache:dict)->Path|None:
+    """Resolve each source asset once per production and reuse the local file."""
+    key=(candidate.get("asset"),candidate.get("asset_url"))
+    cached=asset_cache.get(key)
+    if cached is not None and Path(cached).exists():
+        return Path(cached)
+    asset=_resolve_asset(candidate,build,scene_id,index)
+    if asset is not None:
+        asset_cache[key]=asset
+    return asset
+
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
@@ -128,15 +139,16 @@ def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
             windows.append((beat,length))
     return windows
 
-def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
+def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None, asset_cache:dict|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
     if not windows:
         raise ValueError("visual beat renderer requires at least one positive-duration beat")
     visual_clips=[]; assets=[]
+    asset_cache=asset_cache if asset_cache is not None else {}
     for beat_index,(beat,beat_duration) in enumerate(windows):
         candidate={"asset":beat.asset,"asset_url":beat.asset_url,"attribution":beat.attribution}
-        asset=_resolve_asset(candidate,build,f"{scene.id}_beat{beat_index}",index)
+        asset=_resolve_cached_asset(candidate,build,f"{scene.id}_beat{beat_index}",index,asset_cache)
         if asset is None:
             raise RuntimeError(f"{scene.id}: visual beat {beat_index} asset could not be resolved")
         assets.append(asset)
@@ -250,7 +262,7 @@ def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
     return [primary]+[c.model_dump() for c in scene.recovery_candidates]
 
-def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None)->dict:
+def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps:int, build:Path, max_attempts:int, provider, title:str|None=None, asset_cache:dict|None=None)->dict:
     """Render a scene's visual clip, running semantic visual QA and, on FAIL,
     swapping to the next declared fallback asset and re-rendering ONLY this
     scene's clip (never the whole production) until it passes or the bounded
@@ -261,7 +273,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
         last_index_tried=index
         try:
             if getattr(scene,"visual_beats",None):
-                clip,beat_assets,beat_durations,beat_clips=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title)
+                clip,beat_assets,beat_durations,beat_clips=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title,asset_cache=asset_cache)
                 asset=_representative_visual_asset(beat_assets,beat_durations,_media_duration_seconds(clip))
             else:
                 asset=_resolve_asset(candidates[index],build,scene.id,index)
@@ -296,12 +308,13 @@ def render(manifest:str,dry_run:bool=False)->dict:
     build=Path("build"); dist=Path("dist"); build.mkdir(exist_ok=True); dist.mkdir(exist_ok=True)
     provider=default_vision_provider()
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
+    asset_cache={}
     for scene in p.scenes:
         audio,duration,srt,q,caps=_synthesize_scene_audio(scene,build)
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
         title=scene.overlay_title or p.overlay_title
-        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,title=title)
+        outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,title=title,asset_cache=asset_cache)
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
         concat.append(outcome["clip"])
