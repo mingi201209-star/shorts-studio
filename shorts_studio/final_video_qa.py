@@ -176,6 +176,24 @@ def verify_no_semantic_skip(semantic_results: list[dict]) -> dict:
         return {"status": "FAIL", "reason": f"required scenes were not actually semantically evaluated: {skipped}"}
     return {"status": "PASS"}
 
+
+def verify_narration_continuity(video: Path, max_silence_seconds: float = 1.5) -> dict:
+    """Reject long silent holes in the actual output audio, including dropped TTS words."""
+    import re
+    proc = subprocess.run([
+        "ffmpeg", "-hide_banner", "-nostats", "-i", str(video),
+        "-map", "0:a:0",
+        "-af", f"silencedetect=noise=-55dB:d={max_silence_seconds}",
+        "-f", "null", "-",
+    ], capture_output=True, text=True)
+    if proc.returncode != 0:
+        return {"status": "FAIL", "reason": "cannot decode final narration audio"}
+    starts = [float(x) for x in re.findall(r"silence_start:\s*([0-9.]+)", proc.stderr)]
+    if starts:
+        return {"status": "FAIL", "reason": "long silence in final narration",
+                "silence_starts": starts, "max_silence_seconds": max_silence_seconds}
+    return {"status": "PASS", "max_silence_seconds": max_silence_seconds}
+
 def run_final_video_qa(video: Path, project, sources: list[dict], semantic_results: list[dict], probe: dict, scene_windows: list[dict], build_dir: Path) -> dict:
     """scene_windows: [{"scene": id, "start": cumulative_start_in_final_video,
     "caption_window": (start,end) or None}] -- caption_window is the first
@@ -193,6 +211,7 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     checks["scenes_present"] = verify_scenes_present([s.id for s in project.scenes], sources)
     checks["visual_cut_cadence"] = verify_visual_cut_cadence(scene_windows, project.scenes)
     checks["no_semantic_skip"] = verify_no_semantic_skip(semantic_results)
+    checks["narration_continuity"] = verify_narration_continuity(video)
 
     title_samples = []
     if scene_windows:
