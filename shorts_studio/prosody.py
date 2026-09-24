@@ -67,18 +67,18 @@ REFERENCE_LONG_PAUSE_RANGE = (0.70, 0.83)
 # sentence break, and within the reference long-pause range for the REVEAL's
 # anticipatory beat -- deliberately varied per role, never one fixed silence.
 PAUSE_SECONDS: dict[tuple[str, str], float] = {
-    ("HOOK", STRONG_BOUNDARY): 0.24,
-    ("SETUP", STRONG_BOUNDARY): 0.28,
-    ("CRISIS", STRONG_BOUNDARY): 0.30,
-    ("INVESTIGATION", STRONG_BOUNDARY): 0.28,
-    ("REVEAL", ANTICIPATORY): 0.42,   # human-calibrated: reserve long silence for exceptional discourse breaks
-    ("REVEAL", STRONG_BOUNDARY): 0.30,
-    ("EXPLANATION", STRONG_BOUNDARY): 0.30,
-    ("PAYOFF", STRONG_BOUNDARY): 0.34,  # settle, don't clip like an ad button
+    ("HOOK", STRONG_BOUNDARY): 0.40,
+    ("SETUP", STRONG_BOUNDARY): 0.48,
+    ("CRISIS", STRONG_BOUNDARY): 0.52,
+    ("INVESTIGATION", STRONG_BOUNDARY): 0.46,
+    ("REVEAL", ANTICIPATORY): 0.68,   # human-calibrated: reserve long silence for exceptional discourse breaks
+    ("REVEAL", STRONG_BOUNDARY): 0.50,
+    ("EXPLANATION", STRONG_BOUNDARY): 0.50,
+    ("PAYOFF", STRONG_BOUNDARY): 0.56,  # settle, don't clip like an ad button
 }
 DEFAULT_PAUSE_BY_BOUNDARY: dict[str, float] = {
     "continue": 0.0, "weak_boundary": 0.0, PHRASE_BOUNDARY: 0.0,
-    STRONG_BOUNDARY: 0.30, ANTICIPATORY: 0.42,
+    STRONG_BOUNDARY: REFERENCE_PAUSE_MEDIAN, ANTICIPATORY: 0.68,
 }
 
 def pause_after(phrase: PhraseSpec) -> float:
