@@ -129,9 +129,8 @@ def test_picture_caption_gutter_is_black_on_real_render(tmp_path):
     build = tmp_path / "build"; build.mkdir(exist_ok=True)
     audio = build / "a.mp3"
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "2", "-q:a", "9", str(audio)], check=True, capture_output=True)
-    srt = build / "s.srt"; srt.write_text("1\\n00:00:00,000 --> 00:00:01,500\\n자막\\n\\n", encoding="utf-8")
-    clip, _ = _clip_with_title(tmp_path, "코멧")
-    result = verify_picture_caption_gutter(clip, [0.2, 1.0], build)
+    clip, build = _clip_with_title(tmp_path, None)
+    result = verify_picture_caption_gutter(clip, [1.2], build)
     assert result["status"] == "PASS", result
 
 

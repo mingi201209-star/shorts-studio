@@ -112,7 +112,7 @@ def verify_picture_caption_gutter(video: Path, sample_timestamps: list[float], b
     import cv2, numpy as np
     evidence=[]
     for i,ts in enumerate(sample_timestamps):
-        frame=_extract_frame(video,ts,build_dir/f"_layoutqa_{i}.jpg")
+        frame=_extract_frame(video,ts,build_dir/f"_layout_{i}_qa.jpg")
         img=cv2.imread(str(frame))
         if img is None:
             return {"status":"FAIL","reason":f"could not read frame at t={ts}"}
