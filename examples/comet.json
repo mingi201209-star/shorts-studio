@@ -183,6 +183,24 @@
           "visual_qa_expected_sha256": [
             "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
           ]
+        },
+        {
+          "start": 6,
+          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "초기 코멧 객실 창문이 보이고 모서리가 둥글어야 함"
+          ],
+          "visual_qa_labels": [
+            "a surviving de Havilland Comet 1 with rectangular passenger windows whose corners are visibly rounded"
+          ],
+          "visual_qa_negative_labels": [
+            "sharp square-cornered passenger windows",
+            "a modern airplane interior"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
         }
       ],
       "visual_qa_requirements": [
@@ -260,6 +278,25 @@
           "visual_qa_expected_sha256": [
             "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
           ]
+        },
+        {
+          "start": 6,
+          "attribution": "FAA / Wikimedia Commons, public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+          ],
+          "visual_qa_labels": [
+            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
+            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete passenger airplane flying in an open sky",
+            "a passenger airplane parked normally on an airport runway"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
         }
       ]
     },
@@ -473,6 +510,27 @@
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
             "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+          ]
+        },
+        {
+          "start": 8.4,
+          "attribution": "shorts-studio explanatory graphic",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "ADF 안테나 개구부와 객실 창문의 차이가 한눈에 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "an explanatory comparison graphic of an angular ADF antenna opening and a rounded passenger window"
+          ],
+          "visual_qa_negative_labels": [
+            "a modern passenger cabin photograph",
+            "a complete airplane in flight"
+          ],
+          "asset": "assets/window_compare.svg",
+          "visual_qa_expected_sha256": [
+            "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
           ]
         }
       ]
