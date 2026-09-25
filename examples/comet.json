@@ -59,7 +59,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
-            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+            "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
           ]
         },
         {
@@ -80,7 +80,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
           ]
         },
         {
@@ -101,7 +101,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
-            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+            "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
           ]
         },
         {
@@ -122,7 +122,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
           ]
         }
       ]
@@ -166,7 +166,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
-            "dcb7d279331d7d370d2dd36cfd287f98923b453b529f793018ed6dd95900e40e"
+            "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
           ]
         },
         {
@@ -187,7 +187,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
           ]
         }
       ],
@@ -264,7 +264,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
           "visual_qa_expected_sha256": [
-            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+            "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
           ]
         },
         {
@@ -344,7 +344,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
           "visual_qa_expected_sha256": [
-            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+            "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
           ]
         },
         {
@@ -384,7 +384,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
           "visual_qa_expected_sha256": [
-            "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
+            "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
           ]
         },
         {
@@ -497,7 +497,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
           ]
         },
         {
@@ -573,7 +573,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
           ]
         },
         {
@@ -612,7 +612,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
-            "be7dfb47e75292d104b4a3e88477e4b6b1bac720fae709c52d6ff97f8c750694"
+            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
           ]
         }
       ]
@@ -670,7 +670,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
           "visual_qa_expected_sha256": [
-            "7fe50c818c173699354f4d593bffcd5dc29cdc9aa03f4d06a35b9db697c1c46d"
+            "9a681641bab64a9fd322f057f50353fed937a49827d313b8c528619b62e01ebb"
           ]
         },
         {
@@ -729,7 +729,7 @@
           ],
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
           "visual_qa_expected_sha256": [
-            "7fe50c818c173699354f4d593bffcd5dc29cdc9aa03f4d06a35b9db697c1c46d"
+            "9a681641bab64a9fd322f057f50353fed937a49827d313b8c528619b62e01ebb"
           ]
         }
       ]
