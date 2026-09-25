@@ -41,14 +41,19 @@ jobs:
       - name: Render Radium Girls with required semantic QA
         env:
           SHORTS_REQUIRE_SEMANTIC_QA: "1"
-        # The prior plain `> render-result.json` redirect sent every one of
-        # render()'s own progress prints (per-scene prosody/TTS/asset logging)
-        # into that file, invisible in the CI log -- when this step hung for
-        # 20 minutes and was killed by the job timeout, the log showed nothing
-        # after the CLIP model load and gave no way to tell which scene it
-        # died on. `tee` mirrors the same combined output live into the log
-        # AND into render-result.json; `pipefail` keeps this step's exit code
-        # as python's own (not tee's), matching the original redirect's intent.
+          # The previous tee fix alone didn't work: CPython only line-buffers
+          # stdout when it's attached to a real terminal. Piped into `tee`
+          # (as it is here), stdout is fully block-buffered, so every one of
+          # render()'s per-scene progress prints sat in that buffer and never
+          # reached the log or render-result.json before the 20-minute
+          # timeout killed the process -- the run that added `tee` still
+          # showed zero output between the CLIP model load and the timeout.
+          # PYTHONUNBUFFERED forces unbuffered stdout/stderr so prints show
+          # up immediately, live, regardless of the pipe.
+          PYTHONUNBUFFERED: "1"
+        # `tee` mirrors the same combined output live into the log AND into
+        # render-result.json; `pipefail` keeps this step's exit code as
+        # python's own (not tee's), matching the original redirect's intent.
         run: |
           set -o pipefail
           python -m shorts_studio render examples/radium_girls.json 2>&1 | tee render-result.json
