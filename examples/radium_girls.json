@@ -59,16 +59,16 @@
         },
         {
           "start": 2.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
@@ -153,21 +153,23 @@
         },
         {
           "start": 0.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical radium dial painters seated at factory work tables"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "modern smartwatch",
+            "jaw necrosis",
             "graphic injury",
-            "corpse"
+            "corpse",
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -210,21 +212,23 @@
         },
         {
           "start": 8.1,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical radium dial painters seated at factory work tables"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "modern smartwatch",
+            "jaw necrosis",
             "graphic injury",
-            "corpse"
+            "corpse",
+            "medical gore",
+            "modern factory"
           ]
         }
       ]
@@ -280,22 +284,23 @@
         },
         {
           "start": 0.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "여성 라듐 문자판 노동자의 실제 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical radium dial painters at work"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "jaw injury",
-            "blood",
-            "medical photograph",
-            "corpse"
+            "jaw necrosis",
+            "graphic injury",
+            "corpse",
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -320,22 +325,23 @@
         },
         {
           "start": 6.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "여성 라듐 문자판 노동자의 실제 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical radium dial painters at work"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "jaw injury",
-            "blood",
-            "medical photograph",
-            "corpse"
+            "jaw necrosis",
+            "graphic injury",
+            "corpse",
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -411,20 +417,23 @@
         },
         {
           "start": 0.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1922년 라듐 공장 노동자들이 보호장비 없이 작업하는 역사적 현장이 보여야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "1922 United States Radium Corporation women workers without protective equipment"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "modern radiation suit",
-            "graphic medical injury"
+            "jaw necrosis",
+            "graphic injury",
+            "corpse",
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -447,20 +456,23 @@
         },
         {
           "start": 6.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1922년 라듐 공장 노동자들이 보호장비 없이 작업하는 역사적 현장이 보여야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "1922 United States Radium Corporation women workers without protective equipment"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "modern radiation suit",
-            "graphic medical injury"
+            "jaw necrosis",
+            "graphic injury",
+            "corpse",
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -540,23 +552,23 @@
         },
         {
           "start": 0.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "라듐 문자판 여성 노동자들의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of Radium Girls factory workers"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "necrotic jaw",
-            "teeth injury",
+            "jaw necrosis",
+            "graphic injury",
             "corpse",
-            "autopsy",
-            "blood"
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -582,23 +594,23 @@
         },
         {
           "start": 6.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "라듐 문자판 여성 노동자들의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of Radium Girls factory workers"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "necrotic jaw",
-            "teeth injury",
+            "jaw necrosis",
+            "graphic injury",
             "corpse",
-            "autopsy",
-            "blood"
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -677,20 +689,20 @@
         },
         {
           "start": 3.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
-          "attribution": "Bert Coursey / NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/pml/general/curie/electroscope_1.jpg",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "초기 20세기 Lind electroscope 방사능 측정 장비가 분명하게 보여야 함"
+            "초기 20세기 방사능 측정용 금박 검전기(electroscope) 장비가 보여야 함"
           ],
           "visual_qa_labels": [
-            "early twentieth century Lind electroscope radiation measurement instrument"
+            "early 20th-century gold-leaf electroscope radioactivity measuring instrument"
           ],
           "visual_qa_negative_labels": [
-            "modern Geiger counter",
-            "medical gore",
+            "modern equipment",
+            "graphic medical injury",
             "corpse"
           ]
         },
@@ -715,20 +727,20 @@
         },
         {
           "start": 7.2,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
-          "attribution": "Bert Coursey / NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/20/electroscope%20that%20Torrey%20would%20have%20used%20from%201928%20-1949%20.JPG",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "초기 20세기 Lind electroscope 방사능 측정 장비가 분명하게 보여야 함"
+            "1920~40년대 방사능 측정에 사용된 실제 검전기(electroscope) 장비가 보여야 함"
           ],
           "visual_qa_labels": [
-            "early twentieth century Lind electroscope radiation measurement instrument"
+            "vintage electroscope radioactivity measuring instrument from the 1920s-1940s"
           ],
           "visual_qa_negative_labels": [
-            "modern Geiger counter",
-            "medical gore",
+            "modern equipment",
+            "graphic medical injury",
             "corpse"
           ]
         }
@@ -808,42 +820,40 @@
         },
         {
           "start": 3.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
-          "attribution": "Bert Coursey / NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/20/electroscope%20that%20Torrey%20would%20have%20used%20from%201928%20-1949%20.JPG",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "역사적 Lind electroscope가 화면 중심에 있어야 함"
+            "1920~40년대 방사능 측정에 사용된 실제 검전기(electroscope) 장비가 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Lind electroscope used for radon measurement"
+            "vintage electroscope radioactivity measuring instrument from the 1920s-1940s"
           ],
           "visual_qa_negative_labels": [
-            "modern hospital",
-            "graphic illness",
-            "corpse",
-            "blood"
+            "modern equipment",
+            "graphic medical injury",
+            "corpse"
           ]
         },
         {
           "start": 6.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
-          "attribution": "Bert Coursey / NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/20/Constance%20Torrey%20in%20her%20lab%20at%20NBS%20in%201925.%20.jpg",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "역사적 Lind electroscope가 화면 중심에 있어야 함"
+            "1920년대 실험실에서 방사능을 측정하는 과학자의 실제 모습이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Lind electroscope used for radon measurement"
+            "historical photograph of a scientist working in an early 20th-century laboratory"
           ],
           "visual_qa_negative_labels": [
-            "modern hospital",
-            "graphic illness",
-            "corpse",
-            "blood"
+            "modern person",
+            "graphic medical injury",
+            "corpse"
           ]
         },
         {
@@ -868,22 +878,21 @@
         },
         {
           "start": 12.4,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
-          "attribution": "Bert Coursey / NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Mary%20Bower.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "역사적 Lind electroscope가 화면 중심에 있어야 함"
+            "1920년대 실험실에서 일하는 과학자의 실제 인물 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Lind electroscope used for radon measurement"
+            "historical portrait photograph of a scientist from the early 20th century"
           ],
           "visual_qa_negative_labels": [
-            "modern hospital",
-            "graphic illness",
-            "corpse",
-            "blood"
+            "modern person",
+            "graphic medical injury",
+            "corpse"
           ]
         }
       ]
@@ -949,23 +958,23 @@
         },
         {
           "start": 3.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Radium Girls factory workers documentary photograph"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
+            "graphic injury",
             "corpse",
-            "autopsy",
-            "blood",
-            "graphic medical image"
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -991,23 +1000,23 @@
         },
         {
           "start": 9.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Radium Girls factory workers documentary photograph"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
+            "graphic injury",
             "corpse",
-            "autopsy",
-            "blood",
-            "graphic medical image"
+            "medical gore",
+            "modern factory"
           ]
         },
         {
@@ -1033,23 +1042,23 @@
         },
         {
           "start": 15.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"
+            "라듐 문자판을 칠하는 여성 노동자들의 또 다른 실제 역사 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Radium Girls factory workers documentary photograph"
+            "historical photograph of women radium dial painters at work in the 1920s"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
+            "graphic injury",
             "corpse",
-            "autopsy",
-            "blood",
-            "graphic medical image"
+            "medical gore",
+            "modern factory"
           ]
         }
       ]

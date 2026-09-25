@@ -73,10 +73,15 @@ def _download(url:str,path:Path,max_attempts:int=4)->Path:
 
 # The picture has a fixed centered box; its pixels never enter the title or subtitle regions.
 # All pixels outside the picture box stay black.
+# IMAGE_TOP_Y was pushed down (230->280) and IMAGE_BOX_HEIGHT shrunk to match
+# (1000->950) so SAFE_BOTTOM_Y stays exactly 1230 -- the picture gives up
+# headroom to make way for a bigger 2-line title (see _TITLE_STYLE below)
+# without moving the caption/gutter/mask positions that derive from
+# SAFE_BOTTOM_Y at all.
 SAFE_TOP_Y=190
-IMAGE_TOP_Y=230
+IMAGE_TOP_Y=280
 IMAGE_BOX_WIDTH=980
-IMAGE_BOX_HEIGHT=1000
+IMAGE_BOX_HEIGHT=950
 SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 
 # Shorts-style speech captions live in the black gutter directly below the picture.
@@ -123,13 +128,15 @@ CAPTION_STYLE=f"Alignment=6,MarginV={CAPTION_MARGIN_TOP},MarginL=72,MarginR=72,F
 CAPTION_MASK_TOP=SAFE_BOTTOM_Y
 CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 
-# Same PlayRes fix as CAPTION_STYLE above. FontSize raised from 54 to a much
-# larger, near-full-width single-line size per direct user feedback on a
-# real rendered frame ("as big as this circle" against an on-screen
-# reference) -- verified via a real render that a typical overlay_title
-# still fits on one line edge-to-edge and its glyphs end well above
-# SAFE_TOP_Y=190 (the picture's own top edge starts at IMAGE_TOP_Y=230).
-_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=110,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
+# Same PlayRes fix as CAPTION_STYLE above. FontSize raised from 54 to 110
+# (single line) per one round of direct user feedback, then to 130 per a
+# second round asking for it even bigger. 110 was empirically the largest
+# size that still fits examples/radium_girls.json's real overlay_title on
+# ONE line at this PlayRes; 130 wraps it to two lines -- verified via a real
+# render (rows ~44-274) to be well-balanced and to end comfortably above
+# IMAGE_TOP_Y=280, which was pushed down from 230 specifically to make room
+# for this taller two-line title.
+_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=130,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
 
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:

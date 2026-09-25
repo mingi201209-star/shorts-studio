@@ -20,7 +20,7 @@ def _extract_frame(video: Path, ts: float, out: Path) -> Path:
 # rendered frames: a blurred/plain region measures well under 5, a crisp
 # bordered title/caption measures in the hundreds to low thousands.
 MIN_TEXT_EDGE_VAR = 50.0
-TITLE_ROW_BAND = (10, 175)          # matches _TITLE_STYLE's MarginV=15/FontSize=20
+TITLE_ROW_BAND = (10, 290)          # covers _TITLE_STYLE's real 2-line extent at FontSize=130 (measured rows ~44-274)
 # Heuristic tripwire, NOT the primary guard -- the primary guard is the
 # deterministic magenta-marker regression in test_safe_area_regression.py,
 # which proves via the actual ffmpeg filter graph that the fg band can never
@@ -101,7 +101,7 @@ def verify_bottom_safe_area_clean(video: Path, sample_timestamps: list[float], b
     return {"status": "PASS", "evidence": evidence}
 
 
-IMAGE_TOP_Y=230
+IMAGE_TOP_Y=280
 IMAGE_BOTTOM_Y=1230
 # Captions are now top-anchored right under the picture (render.py's
 # CAPTION_MARGIN_TOP = IMAGE_BOTTOM_Y + a small real gap), by direct user
