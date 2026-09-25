@@ -446,7 +446,16 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         if w.get("caption_window"):
             cs, ce = w["caption_window"]
             ts = final_ts(w["start"] + (cs + ce) / 2)
-            caption_points.append((ts, (1000, 1900)))
+            # The caption search band's lower bound must never dip above
+            # IMAGE_BOTTOM_Y: the caption overlay is hard-cropped to start
+            # exactly there (CAPTION_MASK_TOP in render.py), so no real
+            # caption pixel can ever appear higher than that. A stale wider
+            # band (this used to start at row 1000, from before captions
+            # moved to sit right under the picture) let a photo's own bright
+            # content masquerade as "caption evidence" -- harmless for the
+            # old "some bright pixel exists" check, but a real false
+            # positive for the newer literal subtitle/media overlap check.
+            caption_points.append((ts, (IMAGE_BOTTOM_Y, 1900)))
         safe_area_samples.append(final_ts(w["start"] + 0.15))
     checks["captions_visible"] = verify_captions_visible(video, caption_points, build_dir) if caption_points else {"status": "NOT_EVALUATED", "reason": "no caption windows available"}
     checks["safe_area_clean"] = verify_bottom_safe_area_clean(video, safe_area_samples, build_dir, (IMAGE_BOTTOM_Y, 1920)) if safe_area_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}

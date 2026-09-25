@@ -18,7 +18,7 @@ import shorts_studio.render as R
 from shorts_studio.final_video_qa import (
     measure_visual_activity, verify_visual_activity, verify_no_black_opening,
     compute_source_reuse, verify_source_reuse, _source_family, _same_source_family,
-    _captions_overlap_media_box, IMAGE_TOP_Y, IMAGE_BOTTOM_Y,
+    _captions_overlap_media_box, verify_captions_visible, IMAGE_TOP_Y, IMAGE_BOTTOM_Y,
 )
 from shorts_studio.subtitles import segment
 from shorts_studio.timing import WordTiming
@@ -200,6 +200,36 @@ def test_caption_rows_below_media_box_are_not_flagged():
 def test_caption_rows_missing_or_empty_evidence_is_not_flagged():
     assert _captions_overlap_media_box([], (IMAGE_TOP_Y, IMAGE_BOTTOM_Y)) is False
     assert _captions_overlap_media_box([{"t": 1.0, "rows_in_band": None}], (IMAGE_TOP_Y, IMAGE_BOTTOM_Y)) is False
+
+
+@requires_ffmpeg
+def test_bright_picture_content_near_the_media_boundary_is_not_mistaken_for_a_caption(tmp_path):
+    """Real regression: a photo with genuinely bright content in its own
+    lowest rows (just above IMAGE_BOTTOM_Y) must never register as caption
+    evidence -- the caption search band's lower bound must sit at/after
+    IMAGE_BOTTOM_Y, never inside the media box itself."""
+    build = tmp_path / "build"; build.mkdir(exist_ok=True)
+    bright = np.zeros((1000, 1000, 3), dtype=np.uint8)
+    bright[-40:, :] = 255  # bright strip at the very bottom of the source photo
+    photo = build / "bright_bottom.jpg"
+    Image.fromarray(bright).save(photo)
+    audio = build / "a.mp3"
+    subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "3", "-q:a", "9", str(audio)], check=True, capture_output=True)
+    srt = build / "s.srt"; srt.write_text("1\n00:00:00,500 --> 00:00:02,500\n실제 자막\n\n", encoding="utf-8")
+    scene = SimpleNamespace(id="brightbottom", motion=SimpleNamespace(type="push_in"))
+    clip = R._composite_scene_clip(scene, photo, audio, srt, 3.0, 30, build, 0)
+    # Old stale band: (1000, 1900) would have picked up the photo's own
+    # bright strip (which lands well inside the media box, above
+    # IMAGE_BOTTOM_Y) as if it were caption evidence.
+    stale = verify_captions_visible(clip, [(1.5, (1000, 1900))], build)
+    stale_row_min, _ = stale["evidence"][0]["rows_in_band"]
+    assert stale_row_min < IMAGE_BOTTOM_Y, "test setup didn't actually reproduce the old band's contamination"
+    correct = verify_captions_visible(clip, [(1.5, (IMAGE_BOTTOM_Y, 1900))], build)
+    assert correct["status"] == "PASS"
+    assert not _captions_overlap_media_box(correct["evidence"], (IMAGE_TOP_Y, IMAGE_BOTTOM_Y))
+    # The real caption band must start after the picture, not inside it.
+    row_min, _ = correct["evidence"][0]["rows_in_band"]
+    assert row_min >= IMAGE_BOTTOM_Y
 
 
 # --- 7. Korean subtitle line-break sanity --------------------------------
