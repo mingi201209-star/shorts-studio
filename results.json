@@ -1,0 +1,31 @@
+{
+  "search_results": {
+    "Comet reconstruction Farnborough": [],
+    "de Havilland Comet wreckage reassembled": [],
+    "Comet G-ALYP reconstruction": [],
+    "de Havilland Comet ADF aerial": [
+      "File:Comet 1 G-ALYP - wreckage recovered png.png"
+    ],
+    "de Havilland Comet fatigue crack": [
+      "File:Investigation of strain distribution around fatigue cracks in aluminum sheets. (IA investigationofs00tuck).pdf"
+    ]
+  },
+  "candidates": [
+    {
+      "title": "File:Comet 1 G-ALYP - wreckage recovered png.png",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png/960px-Comet_1_G-ALYP_-_wreckage_recovered_png.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "image/png",
+      "width": 1100,
+      "height": 770
+    },
+    {
+      "title": "File:Investigation of strain distribution around fatigue cracks in aluminum sheets. (IA investigationofs00tuck).pdf",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a9/Investigation_of_strain_distribution_around_fatigue_cracks_in_aluminum_sheets._%28IA_investigationofs00tuck%29.pdf?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a9/Investigation_of_strain_distribution_around_fatigue_cracks_in_aluminum_sheets._%28IA_investigationofs00tuck%29.pdf/page1-960px-Investigation_of_strain_distribution_around_fatigue_cracks_in_aluminum_sheets._%28IA_investigationofs00tuck%29.pdf.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+      "mime": "application/pdf",
+      "width": 1216,
+      "height": 1635
+    }
+  ]
+}
