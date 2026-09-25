@@ -7,6 +7,15 @@ on:
 jobs:
   render:
     runs-on: ubuntu-latest
+    # Six consecutive pushes to this branch each hung silently for hours with
+    # zero progress after "Full pytest suite"/"Validate manifest" completed in
+    # under 2 minutes -- the render step (TTS network calls + a one-time CLIP
+    # model download for semantic QA) has no bounded timeout of its own, so a
+    # single stalled network call burns the runner for up to GitHub's 6-hour
+    # default with no diagnostic output. Fail fast instead so a real stall
+    # surfaces as a clear timeout with partial logs/diagnostics uploaded,
+    # rather than silently consuming Actions minutes forever.
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
