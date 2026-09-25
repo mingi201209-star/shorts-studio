@@ -182,15 +182,29 @@ def _log_asset_diagnostics(scene_id:str, asset:Path)->None:
     """Print the resolved asset's real file size before ffmpeg ever touches
     it. A real production hang left a live ffmpeg process stuck for 17+
     minutes on one scene's asset with zero error and zero further log
-    output -- an oversized source image (e.g. a raw, print-resolution
-    archival scan rather than a web-sized one) is a real, plausible cause,
-    and this is otherwise invisible: the recovery loop and QA never touch
-    the raw source image's dimensions."""
+    output; a follow-up run confirmed with a bounded ffmpeg timeout that
+    the file itself wasn't huge (2.4MB), so ffmpeg was genuinely stuck, not
+    just slow -- pixel dimensions and pixel format (e.g. a very large
+    canvas, or an unusual/alpha format the filter chain handles badly) are
+    the next real suspects, and file size alone can't distinguish them.
+    This is otherwise invisible: the recovery loop and QA never touch the
+    raw source image's dimensions. ffprobe reads only headers, so this is
+    fast even for a file whose full ffmpeg decode later hangs."""
     try:
         size=asset.stat().st_size
     except OSError:
         size=-1
-    print(f"[asset] {scene_id}: {asset} ({size} bytes)")
+    dims="unknown"
+    try:
+        probe=subprocess.run(
+            ["ffprobe","-v","error","-select_streams","v:0","-show_entries","stream=width,height,pix_fmt,codec_name","-of","json",str(asset)],
+            capture_output=True,text=True,timeout=30,
+        )
+        info=json.loads(probe.stdout)["streams"][0]
+        dims=f"{info.get('width')}x{info.get('height')} {info.get('pix_fmt')} {info.get('codec_name')}"
+    except Exception as e:
+        dims=f"ffprobe failed: {e}"
+    print(f"[asset] {scene_id}: {asset} ({size} bytes, {dims})")
 
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
