@@ -9,116 +9,97 @@
       "id": "scene_01",
       "narration": "1920년대, 이 여성들은 매일 방사성 물질을 입에 댔습니다.",
       "narration_plan": [{"role":"HOOK","text":"1920년대, 이 여성들은 매일 방사성 물질을 입에 댔습니다","focus":true}],
-      "visual_description": "1922년 미국 라듐 시계 문자판 공장에서 일하는 여성 노동자들. 비고어 역사 아카이브 사진.",
-      "asset_url": "https://www.nist.gov/sites/default/files/images/2018/03/07/radiumgirls.jpg",
-      "attribution": "National Institute of Standards and Technology (NIST), historical archive",
+      "visual_description": "1922년 United States Radium Corporation에서 일하는 여성 노동자들의 실제 비고어 아카이브 사진.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
       "motion": {"type":"push_in"},
-      "visual_qa_requirements": ["1920년대 여성 시계 문자판 노동자 또는 라듐 문자판 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"],
-      "visual_qa_labels": ["historical photograph of women working at a radium watch dial factory"],
-      "visual_qa_negative_labels": ["jaw necrosis", "graphic injury", "corpse", "medical gore", "modern factory"]
+      "visual_qa_requirements": ["1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"],
+      "visual_qa_labels": ["historical photograph of women working at the United States Radium Corporation in 1922"],
+      "visual_qa_negative_labels": ["jaw necrosis","graphic injury","corpse","medical gore","modern factory"]
     },
     {
       "id": "scene_02",
       "narration": "이들이 만들던 건 어둠에서 빛나는 시계였습니다. 작은 숫자를 정확하게 칠하려면 붓끝이 아주 가늘어야 했습니다.",
-      "narration_plan": [
-        {"role":"SETUP","text":"이들이 만들던 건 어둠에서 빛나는 시계였습니다"},
-        {"role":"EXPLAIN","text":"작은 숫자를 정확하게 칠하려면 붓끝이 아주 가늘어야 했습니다"}
-      ],
-      "visual_description": "20세기 초 라듐 야광 시계 문자판과 작은 숫자를 칠하는 세밀한 작업을 보여주는 비고어 자료.",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Radium_dial.jpg/800px-Radium_dial.jpg",
-      "attribution": "Wikimedia Commons historical radium dial image",
+      "narration_plan": [{"role":"SETUP","text":"이들이 만들던 건 어둠에서 빛나는 시계였습니다"},{"role":"EXPLAIN","text":"작은 숫자를 정확하게 칠하려면 붓끝이 아주 가늘어야 했습니다"}],
+      "visual_description": "실제 1922년 라듐 문자판 공장 작업대와 여성 노동자들.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
       "motion": {"type":"push_in"},
-      "visual_qa_requirements": ["빈티지 야광 시계 또는 라듐 도색 문자판이 화면의 주 피사체여야 함"],
-      "visual_qa_labels": ["vintage luminous radium watch dial with painted numerals"],
-      "visual_qa_negative_labels": ["modern smartwatch", "graphic injury", "corpse"]
+      "visual_qa_requirements": ["1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"],
+      "visual_qa_labels": ["historical radium dial painters seated at factory work tables"],
+      "visual_qa_negative_labels": ["modern smartwatch","graphic injury","corpse"]
     },
     {
       "id": "scene_03",
       "narration": "그래서 노동자들은 붓을 입술로 뾰족하게 만든 뒤, 라듐 페인트에 찍어 다시 숫자를 그렸습니다.",
       "narration_plan": [{"role":"CAUSE","text":"그래서 노동자들은 붓을 입술로 뾰족하게 만든 뒤, 라듐 페인트에 찍어 다시 숫자를 그렸습니다","focus":true}],
-      "visual_description": "라듐 문자판 노동자의 lip-pointing 작업을 역사적이고 비자극적으로 설명하는 장면.",
-      "asset_url": "https://www.nist.gov/sites/default/files/images/2018/03/07/radiumgirls.jpg",
-      "attribution": "NIST historical archive",
+      "visual_description": "실제 라듐 문자판 노동자 작업 현장. lip-pointing은 대사로 설명하고 신체 손상은 보여주지 않음.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
       "motion": {"type":"static"},
-      "visual_qa_requirements": ["여성 문자판 노동자의 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"],
+      "visual_qa_requirements": ["여성 라듐 문자판 노동자의 실제 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"],
       "visual_qa_labels": ["historical radium dial painters at work"],
-      "visual_qa_negative_labels": ["jaw injury", "blood", "medical photograph", "corpse"]
+      "visual_qa_negative_labels": ["jaw injury","blood","medical photograph","corpse"]
     },
     {
       "id": "scene_04",
       "narration": "위험하지 않냐고 묻는 노동자도 있었습니다. 하지만 회사는 이 작업이 안전하다고 했습니다.",
-      "narration_plan": [
-        {"role":"TENSION","text":"위험하지 않냐고 묻는 노동자도 있었습니다"},
-        {"role":"REVEAL","text":"하지만 회사는 이 작업이 안전하다고 했습니다","focus":true}
-      ],
-      "visual_description": "당시 라듐의 안전성과 효능을 낙관적으로 홍보하던 시대 분위기를 보여주는 광고 또는 문서.",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Radium_advertisement_1920s.jpg",
-      "attribution": "Wikimedia Commons historical advertisement",
+      "narration_plan": [{"role":"TENSION","text":"위험하지 않냐고 묻는 노동자도 있었습니다"},{"role":"REVEAL","text":"하지만 회사는 이 작업이 안전하다고 했습니다","focus":true}],
+      "visual_description": "보호장비 없이 일하던 1922년 US Radium Corporation 노동자들의 실제 사진.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
       "motion": {"type":"push_in"},
-      "visual_qa_requirements": ["1920년대 라듐 관련 광고, 문서 또는 시대 자료가 보여야 함"],
-      "visual_qa_labels": ["1920s historical radium advertisement or document"],
-      "visual_qa_negative_labels": ["modern radiation warning sign", "graphic medical injury"]
+      "visual_qa_requirements": ["1922년 라듐 공장 노동자들이 보호장비 없이 작업하는 역사적 현장이 보여야 함"],
+      "visual_qa_labels": ["1922 United States Radium Corporation women workers without protective equipment"],
+      "visual_qa_negative_labels": ["modern radiation suit","graphic medical injury"]
     },
     {
       "id": "scene_05",
       "narration": "그런데 몇 년 뒤, 노동자들에게 심각한 건강 이상이 나타나기 시작했습니다. 결국 다섯 명의 여성은 회사를 상대로 소송을 냈습니다.",
-      "narration_plan": [
-        {"role":"CRISIS","text":"그런데 몇 년 뒤, 노동자들에게 심각한 건강 이상이 나타나기 시작했습니다"},
-        {"role":"ACTION","text":"결국 다섯 명의 여성은 회사를 상대로 소송을 냈습니다","focus":true}
-      ],
-      "visual_description": "라듐 걸스 관련 신문, 소송 기록, 여성 노동자 단체사진. 질병은 문서와 표정으로만 암시하고 병변은 보여주지 않음.",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/2/2d/Radium_Girls_-_Argonne.jpg",
-      "attribution": "Wikimedia Commons historical archive",
-      "motion": {"type":"push_in"},
-      "visual_qa_requirements": ["라듐 걸스 또는 관련 소송의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"],
-      "visual_qa_labels": ["historical photograph or newspaper about the Radium Girls lawsuit"],
-      "visual_qa_negative_labels": ["necrotic jaw", "teeth injury", "corpse", "autopsy", "blood"]
+      "narration_plan": [{"role":"CRISIS","text":"그런데 몇 년 뒤, 노동자들에게 심각한 건강 이상이 나타나기 시작했습니다"},{"role":"ACTION","text":"결국 다섯 명의 여성은 회사를 상대로 소송을 냈습니다","focus":true}],
+      "visual_description": "라듐 걸스 노동자들의 실제 작업사진을 유지하며 피해는 대사로만 전달. 병변 사진 금지.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "motion": {"type":"pull_out"},
+      "visual_qa_requirements": ["라듐 문자판 여성 노동자들의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"],
+      "visual_qa_labels": ["historical photograph of Radium Girls factory workers"],
+      "visual_qa_negative_labels": ["necrotic jaw","teeth injury","corpse","autopsy","blood"]
     },
     {
       "id": "scene_06",
       "narration": "문제는 증명이었습니다. 라듐이 정말 이들의 몸속에 들어갔다는 걸 어떻게 증명할 수 있었을까요?",
-      "narration_plan": [
-        {"role":"TURN","text":"문제는 증명이었습니다","focus":true},
-        {"role":"QUESTION","text":"라듐이 정말 이들의 몸속에 들어갔다는 걸 어떻게 증명할 수 있었을까요"}
-      ],
-      "visual_description": "1920년대 방사능 측정 연구, 연구자와 실험 장비의 역사 사진.",
-      "asset_url": "https://www.nist.gov/sites/default/files/images/2018/03/07/lind-electroscope.jpg",
-      "attribution": "NIST Museum, Lind electroscope historical instrument",
+      "narration_plan": [{"role":"TURN","text":"문제는 증명이었습니다","focus":true},{"role":"QUESTION","text":"라듐이 정말 이들의 몸속에 들어갔다는 걸 어떻게 증명할 수 있었을까요"}],
+      "visual_description": "NIST가 보존 중인 초기 20세기 Lind electroscope 실물.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
+      "attribution": "Bert Coursey / NIST",
       "motion": {"type":"push_in"},
-      "visual_qa_requirements": ["초기 20세기 전기검출기 또는 방사능 측정 장비가 분명하게 보여야 함"],
+      "visual_qa_requirements": ["초기 20세기 Lind electroscope 방사능 측정 장비가 분명하게 보여야 함"],
       "visual_qa_labels": ["early twentieth century Lind electroscope radiation measurement instrument"],
-      "visual_qa_negative_labels": ["modern Geiger counter", "medical gore", "corpse"]
+      "visual_qa_negative_labels": ["modern Geiger counter","medical gore","corpse"]
     },
     {
       "id": "scene_07",
       "narration": "과학자 엘리자베스 휴스는 다섯 여성의 날숨을 모아 전기검출기로 검사했습니다. 다섯 명 모두에게서 대조군보다 훨씬 강한 방사능 신호가 나타났습니다.",
-      "narration_plan": [
-        {"role":"INVESTIGATION","text":"과학자 엘리자베스 휴스는 다섯 여성의 날숨을 모아 전기검출기로 검사했습니다"},
-        {"role":"CLIMAX","text":"다섯 명 모두에게서 대조군보다 훨씬 강한 방사능 신호가 나타났습니다","focus":true}
-      ],
-      "visual_description": "Lind electroscope와 당시 과학적 측정을 중심으로 한 비고어 조사 장면.",
-      "asset_url": "https://www.nist.gov/sites/default/files/images/2018/03/07/lind-electroscope.jpg",
-      "attribution": "NIST Museum, Lind electroscope historical instrument",
+      "narration_plan": [{"role":"INVESTIGATION","text":"과학자 엘리자베스 휴스는 다섯 여성의 날숨을 모아 전기검출기로 검사했습니다"},{"role":"CLIMAX","text":"다섯 명 모두에게서 대조군보다 훨씬 강한 방사능 신호가 나타났습니다","focus":true}],
+      "visual_description": "Hughes가 날숨 속 라돈 측정에 사용한 것과 같은 계열이며 NIST가 보존하는 Lind electroscope.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
+      "attribution": "Bert Coursey / NIST",
       "motion": {"type":"push_in"},
-      "visual_qa_requirements": ["역사적 전기검출기 또는 방사능 측정 장비가 화면 중심에 있어야 함"],
-      "visual_qa_labels": ["historical Lind electroscope used for radiation measurement"],
-      "visual_qa_negative_labels": ["modern hospital", "graphic illness", "corpse", "blood"]
+      "visual_qa_requirements": ["역사적 Lind electroscope가 화면 중심에 있어야 함"],
+      "visual_qa_labels": ["historical Lind electroscope used for radon measurement"],
+      "visual_qa_negative_labels": ["modern hospital","graphic illness","corpse","blood"]
     },
     {
       "id": "scene_08",
       "narration": "몸속 라듐에서 만들어진 라돈이 숨을 통해 나오고 있었던 겁니다. 1928년 이 측정은 법정에서 증거로 제시됐고, 사건은 합의로 마무리됐습니다. 라듐 걸스의 싸움은 이후 방사선 작업 안전기준을 바꾸는 중요한 계기가 됐습니다.",
-      "narration_plan": [
-        {"role":"REVEAL","text":"몸속 라듐에서 만들어진 라돈이 숨을 통해 나오고 있었던 겁니다","focus":true},
-        {"role":"RESOLUTION","text":"1928년 이 측정은 법정에서 증거로 제시됐고, 사건은 합의로 마무리됐습니다"},
-        {"role":"LEGACY","text":"라듐 걸스의 싸움은 이후 방사선 작업 안전기준을 바꾸는 중요한 계기가 됐습니다"}
-      ],
-      "visual_description": "1928년 라듐 걸스 소송 자료와 이후 방사선 안전 작업을 상징하는 역사 자료. 비고어.",
-      "asset_url": "https://www.nist.gov/sites/default/files/images/2018/03/07/radiumgirls.jpg",
-      "attribution": "NIST historical archive",
+      "narration_plan": [{"role":"REVEAL","text":"몸속 라듐에서 만들어진 라돈이 숨을 통해 나오고 있었던 겁니다","focus":true},{"role":"RESOLUTION","text":"1928년 이 측정은 법정에서 증거로 제시됐고, 사건은 합의로 마무리됐습니다"},{"role":"LEGACY","text":"라듐 걸스의 싸움은 이후 방사선 작업 안전기준을 바꾸는 중요한 계기가 됐습니다"}],
+      "visual_description": "1922년 실제 라듐 문자판 여성 노동자 사진으로 돌아가 인물 중심으로 마무리.",
+      "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
       "motion": {"type":"pull_out"},
-      "visual_qa_requirements": ["라듐 걸스 역사 자료 또는 당시 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"],
+      "visual_qa_requirements": ["실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"],
       "visual_qa_labels": ["historical Radium Girls factory workers documentary photograph"],
-      "visual_qa_negative_labels": ["jaw necrosis", "corpse", "autopsy", "blood", "graphic medical image"]
+      "visual_qa_negative_labels": ["jaw necrosis","corpse","autopsy","blood","graphic medical image"]
     }
   ]
 }
