@@ -1,0 +1,58 @@
+name: Verify real current hashes of comet.json's pinned assets (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/verify-comet-hashes.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install deps
+        run: pip install -e .
+      - name: Download + normalize each pinned asset exactly like production, report the real hash
+        run: |
+          mkdir -p out
+          python3 - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          import shorts_studio.render as R
+
+          urls = [
+              "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+              "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+              "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
+              "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
+          ]
+          build = Path("out")
+          results = []
+          for i, url in enumerate(urls):
+              candidate = {"asset": None, "asset_url": url, "attribution": None}
+              try:
+                  path = R._resolve_asset(candidate, build, "verify", i)
+                  digest = hashlib.sha256(Path(path).read_bytes()).hexdigest()
+                  results.append({"url": url, "normalized_path": str(path), "real_sha256": digest})
+                  print("OK", url, digest)
+              except Exception as e:
+                  results.append({"url": url, "error": str(e)})
+                  print("FAIL", url, e)
+          json.dump(results, open("out/hash_results.json", "w"), indent=2)
+          PY
+          ls -la out/
+      - name: Publish results + thumbnails to a throwaway orphan branch
+        run: |
+          git config user.name "hash-verify-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan verify/comet-hashes
+          git reset --hard
+          git add out
+          git commit -m "Throwaway: real current hashes + normalized previews of comet.json's pinned assets"
+          git push -f origin HEAD:refs/heads/verify/comet-hashes
