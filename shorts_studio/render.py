@@ -21,6 +21,13 @@ def write_srt(path:Path,caps):
 
 _TRANSIENT_HTTP_CODES={429,500,502,503,504}
 _DOWNLOAD_DEADLINE_SECONDS=60
+# A real production hang left an ffmpeg composite call running for 17+
+# minutes with the whole CI job's 20-minute timeout as the only thing that
+# ever stopped it, and no error or diagnostic of any kind along the way.
+# Bound every ffmpeg invocation so a stuck encode fails fast with a clear
+# message instead of hanging the pipeline (and the recovery loop, which
+# exists precisely to move on from one bad asset, never even gets to run).
+_FFMPEG_TIMEOUT_SECONDS=180
 
 def _copy_with_deadline(src, dst, deadline_seconds:float, chunk_size:int=65536)->None:
     """`urlopen(..., timeout=N)` only bounds each individual socket read, not
@@ -145,7 +152,7 @@ def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path
     # ffmpeg ever sees them.
     if not shutil.which("rsvg-convert"):
         raise RuntimeError("rsvg-convert (apt package librsvg2-bin) is required to rasterize SVG assets")
-    subprocess.run(["rsvg-convert","-w",str(width),"-h",str(height),str(svg),"-o",str(output)],check=True,capture_output=True)
+    subprocess.run(["rsvg-convert","-w",str(width),"-h",str(height),str(svg),"-o",str(output)],check=True,capture_output=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return output
 
 def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|None:
@@ -171,18 +178,35 @@ def _resolve_cached_asset(candidate:dict, build:Path, scene_id:str, index:int, a
         asset_cache[key]=asset
     return asset
 
+def _log_asset_diagnostics(scene_id:str, asset:Path)->None:
+    """Print the resolved asset's real file size before ffmpeg ever touches
+    it. A real production hang left a live ffmpeg process stuck for 17+
+    minutes on one scene's asset with zero error and zero further log
+    output -- an oversized source image (e.g. a raw, print-resolution
+    archival scan rather than a web-sized one) is a real, plausible cause,
+    and this is otherwise invisible: the recovery loop and QA never touch
+    the raw source image's dimensions."""
+    try:
+        size=asset.stat().st_size
+    except OSError:
+        size=-1
+    print(f"[asset] {scene_id}: {asset} ({size} bytes)")
+
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     if asset:
+        _log_asset_diagnostics(scene.id,asset)
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
         vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
     try:
-        subprocess.run(cmd,check=True,capture_output=True,text=True)
+        subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     except subprocess.CalledProcessError as e:
         raise RuntimeError(f"ffmpeg failed compositing {scene.id}: {e.stderr[-2000:] if e.stderr else e}") from e
+    except subprocess.TimeoutExpired as e:
+        raise RuntimeError(f"ffmpeg timed out after {_FFMPEG_TIMEOUT_SECONDS}s compositing {scene.id} (asset={asset})") from e
     return clip
 
 def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
@@ -211,6 +235,7 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         if asset is None:
             raise RuntimeError(f"{scene.id}: visual beat {beat_index} asset could not be resolved")
         assets.append(asset)
+        _log_asset_diagnostics(f"{scene.id}_beat{beat_index}",asset)
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
         beat_scene=SimpleNamespace(motion=beat.motion)
@@ -222,18 +247,20 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
-            subprocess.run(cmd,check=True,capture_output=True,text=True)
+            subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"ffmpeg failed visual beat {scene.id}/{beat_index}: {e.stderr[-2000:] if e.stderr else e}") from e
+        except subprocess.TimeoutExpired as e:
+            raise RuntimeError(f"ffmpeg timed out after {_FFMPEG_TIMEOUT_SECONDS}s on visual beat {scene.id}/{beat_index} (asset={asset})") from e
         visual_clips.append(beat_clip)
     lst=build/f"{scene.id}_beats.txt"
     lst.write_text("\n".join(f"file '{x.resolve()}'" for x in visual_clips),encoding="utf-8")
     joined=build/f"{scene.id}_beats_joined.mp4"
-    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True)
+    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
-    subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True)
+    subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips
 
 def _evaluate_visual_beats(scene, beat_clips:list[Path], beat_assets:list[Path], provider, build:Path)->dict:
@@ -306,7 +333,7 @@ def _media_duration_seconds(path:Path)->float:
     """
     data=json.loads(subprocess.run(
         ["ffprobe","-v","error","-show_entries","format=duration","-of","json",str(path)],
-        capture_output=True,text=True,check=True,
+        capture_output=True,text=True,check=True,timeout=_FFMPEG_TIMEOUT_SECONDS,
     ).stdout)
     return float(data["format"]["duration"])
 
@@ -389,8 +416,8 @@ def render(manifest:str,dry_run:bool=False)->dict:
         cumulative+=clip_duration
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"
-    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True)
-    probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True).stdout)
+    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+    probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True,timeout=_FFMPEG_TIMEOUT_SECONDS).stdout)
     caption_result=merge_scene_srt_files(scene_windows,build,float(probe["format"]["duration"]),dist/"captions.srt")
     visual=asset_visual_gate(p,sources)
     if any(r["status"]=="FAIL" for r in semantic_results): semantic_status="FAIL"
