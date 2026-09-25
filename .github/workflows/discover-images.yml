@@ -1,0 +1,37 @@
+name: discover-images
+on:
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch candidate NIST pages and extract real image URLs
+        run: |
+          python3 - <<'PY'
+          import re, urllib.request
+
+          pages = [
+              "https://www.nist.gov/image/radium-girls-work",
+              "https://www.nist.gov/image-23777",
+              "https://www.nist.gov/nist-museum/forgotten-radium-scientists",
+              "https://www.nist.gov/image/lind-electroscope-circa-early-20th-century",
+          ]
+          for url in pages:
+              print(f"=== {url} ===")
+              try:
+                  req = urllib.request.Request(url, headers={"User-Agent": "shorts-studio/0.1"})
+                  html = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
+              except Exception as e:
+                  print(f"FETCH FAILED: {e}")
+                  continue
+              found = sorted(set(re.findall(r'https://www\.nist\.gov/sites/default/files/images/[^\s"\'<>]+', html)))
+              if not found:
+                  found = sorted(set(re.findall(r'/sites/default/files/images/[^\s"\'<>]+', html)))
+              for f in found:
+                  print(f)
+              m = re.search(r'<title[^>]*>([^<]+)</title>', html)
+              if m:
+                  print("title:", m.group(1).strip())
+              print()
+          PY
