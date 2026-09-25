@@ -389,6 +389,7 @@ def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]
     _log_narration_plan(scene,plan)
     words=asyncio.run(synthesize_plan(plan,audio,timing,use_role_rates=True))
     duration=max(w.end for w in words)+.08
+    print(f"[duration] {scene.id}: {duration:.3f}s")
     caps=segment(words,duration)
     q=subtitle_qa(caps,words,duration)
     srt=build/f"{scene.id}.srt"; write_srt(srt,caps)
