@@ -8,8 +8,12 @@ here extracts a real frame (or measures real timing data) from the actual
 production artifacts and fails closed if the evidence isn't there.
 """
 from __future__ import annotations
+import re
 import subprocess
+import urllib.parse
 from pathlib import Path
+
+_QA_FFMPEG_TIMEOUT_SECONDS = 180
 
 def _extract_frame(video: Path, ts: float, out: Path) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -171,6 +175,184 @@ def verify_visual_cut_cadence(scene_windows: list[dict], scenes: list, max_hold:
         return {"status":"FAIL","reason":"picture hold exceeds the visual cut limit","failures":failures}
     return {"status":"PASS","max_hold_seconds":max_hold}
 
+
+def _sample_media_box_frames(video: Path, media_box: tuple[int, int], build_dir: Path, fps: float = 2.0) -> list[Path]:
+    """Extract a real, evenly-spaced sequence of frames from the actual
+    rendered video -- not the authored manifest -- cropped to the media box
+    only, so a title or caption changing never registers as a 'visual
+    change' here. This is what lets visual-cadence QA measure real picture
+    variety in the output, independent of whether the manifest's own
+    visual_beats metadata is honest about it."""
+    out_dir = build_dir / "_activity_frames"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for stale in out_dir.glob("f_*.jpg"):
+        stale.unlink()
+    top, bottom = media_box
+    pattern = out_dir / "f_%05d.jpg"
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", str(video), "-vf", f"fps={fps},crop=1080:{bottom-top}:0:{top}", str(pattern)],
+        check=True, capture_output=True, timeout=_QA_FFMPEG_TIMEOUT_SECONDS,
+    )
+    return sorted(out_dir.glob("f_*.jpg"))
+
+# Mean absolute per-pixel difference (0-255 scale) between two consecutive
+# sampled frames of the SAME still picture is dominated by h264 compression
+# noise, empirically well under 5; a genuine cut to a different photo (even
+# a similarly-toned one) clears 20+ by a wide margin (see
+# tests/test_visual_activity_qa.py). Set with a comfortable margin above the
+# noise floor so this never flags a static frame as "changed".
+VISUAL_CHANGE_THRESHOLD = 12.0
+
+def measure_visual_activity(video: Path, media_box: tuple[int, int], build_dir: Path, fps: float = 2.0, change_threshold: float = VISUAL_CHANGE_THRESHOLD) -> dict:
+    """Real, pixel-level measurement of how often the picture actually
+    changes in the rendered output. This is ground truth: it does not trust
+    the manifest's visual_beats timestamps at all, so an author who claims a
+    cut but doesn't actually deliver a different picture (e.g. only a
+    crop/zoom of the same source composited to look "new") is still caught."""
+    import cv2
+    import numpy as np
+    frames = _sample_media_box_frames(video, media_box, build_dir, fps=fps)
+    if len(frames) < 2:
+        return {"cut_timestamps": [0.0], "average_visual_beat_seconds": 0.0,
+                "max_static_visual_seconds": 0.0, "first_5s_visual_changes": 0, "sample_fps": fps}
+    interval = 1.0 / fps
+    cuts = [0.0]
+    prev = cv2.imread(str(frames[0]))
+    for i, fp in enumerate(frames[1:], start=1):
+        cur = cv2.imread(str(fp))
+        if prev is not None and cur is not None and prev.shape == cur.shape:
+            diff = float(np.abs(cur.astype(int) - prev.astype(int)).mean())
+            if diff >= change_threshold:
+                cuts.append(i * interval)
+        prev = cur
+    total_duration = len(frames) * interval
+    edges = cuts + [total_duration]
+    holds = [b - a for a, b in zip(edges, edges[1:])]
+    first_5s_changes = sum(1 for t in cuts if 0.0 < t < 5.0)
+    return {
+        "cut_timestamps": cuts,
+        "average_visual_beat_seconds": (sum(holds) / len(holds)) if holds else 0.0,
+        "max_static_visual_seconds": max(holds) if holds else 0.0,
+        "first_5s_visual_changes": first_5s_changes,
+        "sample_fps": fps,
+    }
+
+def verify_visual_activity(activity: dict, max_static_seconds: float = 5.0, min_first_5s_changes: int = 1) -> dict:
+    """FAIL if the real rendered picture ever sits static for too long, or
+    the opening 5 seconds never actually change -- see measure_visual_activity."""
+    if activity["max_static_visual_seconds"] > max_static_seconds + 0.05:
+        return {"status": "FAIL", "reason": f"picture held static for {activity['max_static_visual_seconds']:.1f}s (> {max_static_seconds}s) with no real pixel change", "evidence": activity}
+    if activity["first_5s_visual_changes"] < min_first_5s_changes:
+        return {"status": "FAIL", "reason": f"only {activity['first_5s_visual_changes']} real visual change(s) in the first 5s (need >= {min_first_5s_changes})", "evidence": activity}
+    return {"status": "PASS", "evidence": activity}
+
+def verify_no_black_opening(video: Path, media_box: tuple[int, int], build_dir: Path, black_threshold: float = 12.0, caption_bright_threshold: int = 200) -> dict:
+    """A Short must not open on an empty black media area with only a
+    caption floating on it -- the first frame needs to actually show
+    something. FAIL only when BOTH the media box reads as black AND there is
+    visible bright (caption) text somewhere in the frame; a black media box
+    with no text yet is not this failure mode."""
+    import cv2
+    frame = _extract_frame(video, 0.05, build_dir / "_openqa_0.jpg")
+    img = cv2.imread(str(frame))
+    if img is None:
+        return {"status": "FAIL", "reason": "could not read the opening frame"}
+    top, bottom = media_box
+    media_band = cv2.cvtColor(img[top:bottom, :], cv2.COLOR_BGR2GRAY)
+    media_mean = float(media_band.mean())
+    media_is_black = media_mean < black_threshold
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    has_bright_text = bool((gray > caption_bright_threshold).any())
+    evidence = {"media_mean": media_mean, "media_is_black": media_is_black, "has_bright_text": has_bright_text}
+    if media_is_black and has_bright_text:
+        return {"status": "FAIL", "reason": "opening frame is a black media area with only text visible", "evidence": evidence}
+    return {"status": "PASS", "evidence": evidence}
+
+
+def _source_family(identifier: str | None) -> str:
+    """Normalize an asset path/URL to a family key so a crop/resize/rescan
+    of the SAME underlying photograph is recognized as one real source, not
+    counted as a fresh, distinct picture just because its filename or query
+    string differs."""
+    if not identifier:
+        return ""
+    name = identifier.rsplit("/", 1)[-1].split("?", 1)[0]
+    try:
+        name = urllib.parse.unquote(name)
+    except Exception:
+        pass
+    name = name.rsplit(".", 1)[0].lower()
+    name = re.sub(r"\(cropped\)|\bcropped\b|_norm\b|-norm\b|150dpi|\d{3,4}x\d{3,4}", "", name)
+    name = re.sub(r"[^a-z0-9가-힣]+", "", name)
+    return name
+
+def _same_source_family(a: str, b: str) -> bool:
+    """Two family keys are the same real source if they're identical, or one
+    is fully contained in the other (a crop's filename is typically a
+    truncated or extended form of the original's, e.g. an uncropped
+    establishing-shot filename embedded inside its own cropped variant's
+    filename)."""
+    if not a or not b:
+        return False
+    if a == b:
+        return True
+    shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
+    return len(shorter) >= 8 and shorter in longer
+
+def compute_source_reuse(project) -> dict:
+    """Walk every scene's visual_beats in real timeline order and measure how
+    often the same underlying source repeats -- including back-to-back
+    across a scene cut, which is exactly what makes a Short read as cycling
+    through the same handful of pictures rather than showing real variety."""
+    sequence = []
+    for scene in project.scenes:
+        beats = getattr(scene, "visual_beats", None) or []
+        for beat in beats:
+            ident = getattr(beat, "asset", None) or getattr(beat, "asset_url", None) or ""
+            sequence.append(_source_family(ident))
+    total = len(sequence)
+    families: list[str] = []
+    family_of: list[int] = []
+    for key in sequence:
+        if not key:
+            family_of.append(-1)
+            continue
+        matched = next((fi for fi, rep in enumerate(families) if _same_source_family(key, rep)), None)
+        if matched is None:
+            families.append(key)
+            matched = len(families) - 1
+        family_of.append(matched)
+    unique = len(families)
+    max_consecutive = 1
+    run = 1
+    for i in range(1, total):
+        if family_of[i] != -1 and family_of[i] == family_of[i - 1]:
+            run += 1
+            max_consecutive = max(max_consecutive, run)
+        else:
+            run = 1
+    reuse_ratio = (1 - unique / total) if total else 0.0
+    return {"total_beats": total, "unique_sources": unique, "source_reuse_ratio": reuse_ratio, "max_consecutive_same_source": max_consecutive}
+
+def verify_source_reuse(metrics: dict, max_consecutive: int = 1) -> dict:
+    """FAIL if the same real source (by family, not just exact URL) ever
+    appears in two adjacent beats -- including across a scene cut."""
+    if metrics["max_consecutive_same_source"] > max_consecutive:
+        return {"status": "FAIL", "reason": f"the same source repeats {metrics['max_consecutive_same_source']} times in a row (limit {max_consecutive})", "evidence": metrics}
+    return {"status": "PASS", "evidence": metrics}
+
+
+def _captions_overlap_media_box(caption_evidence: list[dict], media_box: tuple[int, int]) -> bool:
+    """A caption's bright-row band (from verify_captions_visible's own
+    evidence) intersecting the media box's row range is a direct, literal
+    subtitle/media overlap -- independent of the gutter/safe-area
+    heuristics, which only look at pixel busyness, not geometry."""
+    for sample in caption_evidence:
+        rows = sample.get("rows_in_band")
+        if rows and rows[0] <= media_box[1] and rows[1] >= media_box[0]:
+            return True
+    return False
+
 def verify_composition_9x16(probe: dict, expected_width: int = 1080, expected_height: int = 1920) -> dict:
     streams = probe.get("streams", [])
     video_streams = [s for s in streams if s.get("codec_type") == "video" or ("width" in s and "height" in s)]
@@ -230,12 +412,25 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         mapped=max(0.0,float(t)*timeline_scale)
         return min(mapped,max(0.0,final_duration-0.05)) if final_duration>0 else mapped
 
+    media_box = (IMAGE_TOP_Y, IMAGE_BOTTOM_Y)
+
     checks = {}
     checks["composition_9x16"] = verify_composition_9x16(probe, project.width, project.height)
     checks["scenes_present"] = verify_scenes_present([s.id for s in project.scenes], sources)
     checks["visual_cut_cadence"] = verify_visual_cut_cadence(scene_windows, project.scenes)
     checks["no_semantic_skip"] = verify_no_semantic_skip(semantic_results)
     checks["narration_continuity"] = verify_narration_continuity(video)
+
+    # Real, pixel-level ground truth on the actual rendered file -- does not
+    # trust the manifest's visual_beats timestamps at all, so a beat that
+    # claims a cut but doesn't actually deliver a different picture is still
+    # caught, and a >5s real static hold or a dead opening 5 seconds fails
+    # closed regardless of what the authored cadence looks like on paper.
+    visual_activity = measure_visual_activity(video, media_box, build_dir)
+    checks["visual_activity_real"] = verify_visual_activity(visual_activity)
+    checks["no_black_opening"] = verify_no_black_opening(video, media_box, build_dir)
+    source_reuse = compute_source_reuse(project)
+    checks["source_reuse"] = verify_source_reuse(source_reuse)
 
     title_samples = []
     if scene_windows:
@@ -262,7 +457,29 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
             cs,_=w["caption_window"]
             if cs > GUTTER_SAMPLE_LEAD_SECONDS:
                 gutter_samples.append(final_ts(w["start"] + min(GUTTER_SAMPLE_LEAD_SECONDS, cs / 2)))
-    # The fixed picture boundary is already enforced by safe_area_clean. When speech starts at scene zero there is no clean pre-caption frame to sample without confusing legitimate caption glyphs for picture bleed.\n    checks["picture_caption_gutter"] = verify_picture_caption_gutter(video, gutter_samples, build_dir) if gutter_samples else {"status": "PASS", "evidence": [], "reason": "no pre-caption frame; fixed picture boundary covered by safe_area_clean"}
+    # The fixed picture boundary is already enforced by safe_area_clean. When
+    # speech starts at scene zero there is no clean pre-caption frame to
+    # sample without confusing legitimate caption glyphs for picture bleed.
+    checks["picture_caption_gutter"] = verify_picture_caption_gutter(video, gutter_samples, build_dir) if gutter_samples else {"status": "PASS", "evidence": [], "reason": "no pre-caption frame; fixed picture boundary covered by safe_area_clean"}
+
+    # A caption's bright-row band (already sampled for captions_visible)
+    # overlapping the media box's own row range is a direct, literal
+    # subtitle/media overlap -- independent of the gutter/safe-area
+    # heuristics above, which only look at pixel busyness, not geometry.
+    subtitle_media_overlap = _captions_overlap_media_box(checks["captions_visible"].get("evidence", []), media_box)
+    if subtitle_media_overlap:
+        checks["captions_visible"] = {**checks["captions_visible"], "status": "FAIL",
+                                       "reason": "a caption's bright pixels overlap the media box row range"}
+
+    metrics = {
+        "average_visual_beat_seconds": visual_activity["average_visual_beat_seconds"],
+        "max_static_visual_seconds": visual_activity["max_static_visual_seconds"],
+        "source_reuse_ratio": source_reuse["source_reuse_ratio"],
+        "first_5s_visual_changes": visual_activity["first_5s_visual_changes"],
+        "subtitle_media_overlap": subtitle_media_overlap,
+        "title_safe_area_pass": checks["title_visible"]["status"] == "PASS",
+        "subtitle_safe_area_pass": checks["captions_visible"]["status"] == "PASS" and checks["safe_area_clean"]["status"] == "PASS",
+    }
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
-    return {"status": overall, "checks": checks}
+    return {"status": overall, "checks": checks, "metrics": metrics}
