@@ -36,7 +36,16 @@ def _render_caption_only_clip(build, margin_v, duration=3.0, caption_window=(0.5
     srt = build / "s.srt"
     start, end = caption_window
     srt.write_text(f"1\n00:00:{start:06.3f}".replace(".", ",") + f" --> 00:00:{end:06.3f}".replace(".", ",") + "\n테스트 자막입니다\n\n", encoding="utf-8")
-    vf = f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV={margin_v},FontSize=18,Outline=2,Bold=1'"
+    # PlayResX/PlayResY must be pinned to the real frame size for the same
+    # reason CAPTION_STYLE/_TITLE_STYLE in render.py do (see that file): a
+    # plain SRT carries no script-resolution metadata, and force_style'd
+    # MarginV/FontSize with no PlayRes declared let libass fall back to a
+    # small internal default resolution and scale those values up ~6-7x.
+    # Without this, raising CAPTION_MARGIN_V (e.g. 250 -> 430) silently
+    # pushes this test's synthetic caption completely off the top of the
+    # frame -- a false failure in the test's own style string, not a real
+    # production regression (the real CAPTION_STYLE always pins PlayRes).
+    vf = f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV={margin_v},FontSize=18,Outline=2,Bold=1,PlayResX=1080,PlayResY=1920'"
     clip = build / "clip.mp4"
     cmd = ["ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=0x20242b:s=1080x1920:r=30:d=" + str(duration), "-i", str(audio), "-vf", vf, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", str(clip)]
     subprocess.run(cmd, check=True, capture_output=True)
