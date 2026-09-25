@@ -1,5 +1,8 @@
 name: discover-images
 on:
+  push:
+    branches: [content/radium-girls]
+    paths: [.github/workflows/discover-images.yml]
   workflow_dispatch:
 
 jobs:
