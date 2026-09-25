@@ -1,0 +1,76 @@
+name: Scout more distinct radium sources (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/scout-more-radium.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Look for numbered Argonne variants + small thumbnails of the HAER building photos
+        run: |
+          set -o pipefail
+          pip install requests >/dev/null
+          python3 - <<'PY'
+          import json, requests
+
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          COMMONS = "https://commons.wikimedia.org/w/api.php"
+
+          # 1. Any other numbered USRadiumGirls-Argonne* variant beyond the two
+          # already used (Argonne.jpg, Argonne1,ca1922-23-150dpi.jpg).
+          r = requests.get(COMMONS, params={
+              "action": "query", "list": "search", "srsearch": "intitle:USRadiumGirls-Argonne",
+              "srnamespace": "6", "srlimit": "50", "format": "json",
+          }, headers=HEADERS, timeout=20)
+          hits = [h["title"] for h in r.json().get("query", {}).get("search", [])]
+          print("USRadiumGirls-Argonne variants:", hits)
+
+          # 2. Resolve small (800px) thumbnail URLs for the two HAER building
+          # photos, instead of their 20MB+ originals.
+          haer_titles = [
+              "File:GENERAL VIEW TO SOUTH OF PAINT APPLICATION BUILDING (CENTER LEFT) AND CRYSTALLIZATION LABORATORY (RIGHT) - United States Radium Corporation, 422-432 Alden Street, Orange, Essex HAER NJ,7-ORA,3-1.tif",
+              "File:VIEW TO SOUTHWEST OF ALDEN STREET FACADE OF ORIGINAL BUILDING (RIGHT) AND c1944-1950 POST-U.S. RADIUM ADDITION (LEFT) - United States Radium Corporation, Paint Application Building, HAER NJ,7-ORA,3A-1.tif",
+          ]
+          r = requests.get(COMMONS, params={
+              "action": "query", "titles": "|".join(haer_titles), "prop": "imageinfo",
+              "iiprop": "url", "iiurlwidth": "800", "format": "json",
+          }, headers=HEADERS, timeout=20)
+          out = []
+          for p in r.json().get("query", {}).get("pages", {}).values():
+              info = p.get("imageinfo")
+              if info:
+                  out.append({"title": p.get("title"), "thumburl": info[0].get("thumburl"), "url": info[0].get("url")})
+                  print(p.get("title"), "->", info[0].get("thumburl"))
+          json.dump({"argonne_variants": hits, "haer_thumbs": out}, open("results.json", "w"), indent=2)
+          PY
+      - name: Download the HAER thumbnails for visual review
+        run: |
+          python3 - <<'PY'
+          import json, requests
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          data = json.load(open("results.json"))
+          for i, t in enumerate(data["haer_thumbs"]):
+              url = t.get("thumburl")
+              if not url:
+                  continue
+              r = requests.get(url, headers=HEADERS, timeout=20)
+              open(f"haer_thumb_{i}.jpg", "wb").write(r.content)
+              print("saved", f"haer_thumb_{i}.jpg", len(r.content), "bytes")
+          PY
+          ls -la
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "radium-scout-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan scout/radium-more-sources
+          git reset --hard
+          git add results.json haer_thumb_*.jpg 2>/dev/null || git add results.json
+          git commit -m "Throwaway: more candidate sources for review"
+          git push -f origin HEAD:refs/heads/scout/radium-more-sources
