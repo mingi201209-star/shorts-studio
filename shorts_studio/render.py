@@ -20,6 +20,26 @@ def write_srt(path:Path,caps):
     path.write_text("\n\n".join(blocks)+"\n",encoding="utf-8")
 
 _TRANSIENT_HTTP_CODES={429,500,502,503,504}
+_DOWNLOAD_DEADLINE_SECONDS=60
+
+def _copy_with_deadline(src, dst, deadline_seconds:float, chunk_size:int=65536)->None:
+    """`urlopen(..., timeout=N)` only bounds each individual socket read, not
+    the whole transfer -- a server that trickles bytes slowly enough to
+    always beat that per-read timeout can stall a "download" indefinitely.
+    This is a real production bug, not a hypothesis: a Radium Girls render
+    hung for 18+ minutes on a scene's first (uncached) asset download, far
+    past the 4-attempt/60s-each budget _download appears to promise, with
+    the process still alive and no error the whole time. Enforce a real
+    wall-clock cap on the whole copy so a slow-drip response times out and
+    retries/fails like any other transient error, instead of hanging."""
+    start=time.monotonic()
+    while True:
+        if time.monotonic()-start>deadline_seconds:
+            raise TimeoutError(f"download exceeded {deadline_seconds}s wall-clock deadline")
+        chunk=src.read(chunk_size)
+        if not chunk:
+            return
+        dst.write(chunk)
 
 def _download(url:str,path:Path,max_attempts:int=4)->Path:
     """Download with bounded retry+backoff for transient server-side errors
@@ -31,7 +51,7 @@ def _download(url:str,path:Path,max_attempts:int=4)->Path:
     for attempt in range(max_attempts):
         try:
             with urllib.request.urlopen(req,timeout=60) as src, path.open("wb") as dst:
-                shutil.copyfileobj(src,dst)
+                _copy_with_deadline(src,dst,_DOWNLOAD_DEADLINE_SECONDS)
             return path
         except urllib.error.HTTPError as e:
             last_error=e
