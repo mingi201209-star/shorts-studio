@@ -155,16 +155,48 @@ def _rasterize_svg(svg:Path, output:Path, width:int=1080, height:int=1920)->Path
     subprocess.run(["rsvg-convert","-w",str(width),"-h",str(height),str(svg),"-o",str(output)],check=True,capture_output=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return output
 
+def _normalize_raster_asset(path:Path, build:Path, scene_id:str, index:int)->Path:
+    """Normalize a freshly-downloaded raster asset to a flat, alpha-free
+    baseline JPEG via Pillow before ffmpeg ever sees it. A real production
+    hang -- ffmpeg stuck for 17+ minutes on one scene, confirmed not a size
+    problem (a modest 2.4MB, 1399x1795) -- was traced to an RGBA PNG. Every
+    other scene's already-baseline JPEG composited in ~5-6s; that PNG's
+    combination of an alpha channel with ffmpeg's own decoder and a filter
+    graph chaining loop/scale/pad/subtitles/overlay is exactly the kind of
+    narrow combination where format-specific ffmpeg bugs live, and it isn't
+    reproducible with a synthetic same-size/same-mode PNG, so it's specific
+    to this file's real internal structure, not just "has alpha" or "this
+    size". Pillow is a fully independent decoder: normalizing every
+    downloaded asset to a plain RGB JPEG here removes that whole class of
+    source-format surprises (alpha, 16-bit depth, interlacing, ICC
+    profiles, CMYK) before ffmpeg ever has a chance to choke on one.
+    Local `asset` paths a scene author provides directly are left
+    untouched -- only assets this function itself just downloaded."""
+    from PIL import Image
+    with Image.open(path) as img:
+        if img.mode in ("RGBA","LA") or (img.mode=="P" and "transparency" in img.info):
+            rgba=img.convert("RGBA")
+            flattened=Image.new("RGB",img.size,(0,0,0))
+            flattened.paste(rgba,mask=rgba.split()[-1])
+        else:
+            flattened=img.convert("RGB")
+        out=build/f"{scene_id}_asset_{index}_norm.jpg"
+        flattened.save(out,"JPEG",quality=92)
+    return out
+
 def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|None:
     asset=candidate.get("asset"); asset_url=candidate.get("asset_url")
-    path=None
+    path=None; downloaded=False
     if asset and Path(asset).exists():
         path=Path(asset)
     elif asset_url:
         suffix=Path(asset_url.split('?')[0]).suffix or '.jpg'
         path=_download(asset_url, build/f"{scene_id}_asset_{index}{suffix}")
+        downloaded=True
     if path and path.suffix.lower()==".svg":
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
+    elif path and downloaded:
+        path=_normalize_raster_asset(path, build, scene_id, index)
     return path
 
 def _resolve_cached_asset(candidate:dict, build:Path, scene_id:str, index:int, asset_cache:dict)->Path|None:
