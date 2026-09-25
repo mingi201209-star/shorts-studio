@@ -1,0 +1,52 @@
+name: Verify hash of new Comet wreckage diagram (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/verify-comet-wreckage-hash.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install pillow requests
+      - name: Download and normalize through the real production path
+        run: |
+          python3 - <<'PY'
+          import sys, hashlib
+          sys.path.insert(0, ".")
+          from pathlib import Path
+          from shorts_studio.render import _resolve_asset
+
+          build = Path("build_tmp")
+          build.mkdir(exist_ok=True)
+          candidate = {
+              "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
+          }
+          path = _resolve_asset(candidate, build, "verify", 0)
+          data = path.read_bytes()
+          digest = hashlib.sha256(data).hexdigest()
+          print("normalized path:", path)
+          print("sha256:", digest)
+          Path("hash_result.txt").write_text(digest)
+          import shutil
+          shutil.copy(path, "preview.jpg")
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "comet-hash-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan verify/comet-wreckage-hash
+          git reset --hard
+          git add hash_result.txt preview.jpg
+          git commit -m "Throwaway: real post-normalization hash for the new Comet wreckage diagram"
+          git push -f origin HEAD:refs/heads/verify/comet-wreckage-hash
