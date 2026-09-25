@@ -79,7 +79,7 @@ CAPTION_FONT_SIZE=72
 # share icon column and progress bar a real YouTube Shorts player overlays
 # along the bottom ~200px -- raised from an initial 120 (only ~130px of
 # clearance) after reviewing an actual rendered frame.
-CAPTION_MARGIN_V=250
+CAPTION_MARGIN_V=430
 CAPTION_OUTLINE=2
 _PLAY_RES="PlayResX=1080,PlayResY=1920"
 CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0,{_PLAY_RES}"
@@ -91,7 +91,7 @@ CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 # Same PlayRes fix as CAPTION_STYLE above; FontSize recalibrated to a real
 # pixel size that reproduces the original bold top-title look now that the
 # hidden ~6-7x scale-up is gone.
-_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=54,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
+_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=68,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
 
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:
