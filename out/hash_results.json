@@ -1,0 +1,22 @@
+[
+  {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+    "normalized_path": "out/verify_asset_0_norm.jpg",
+    "real_sha256": "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
+  },
+  {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+    "normalized_path": "out/verify_asset_1_norm.jpg",
+    "real_sha256": "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
+  },
+  {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
+    "normalized_path": "out/verify_asset_2_norm.jpg",
+    "real_sha256": "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
+  },
+  {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
+    "normalized_path": "out/verify_asset_3_norm.jpg",
+    "real_sha256": "9a681641bab64a9fd322f057f50353fed937a49827d313b8c528619b62e01ebb"
+  }
+]
