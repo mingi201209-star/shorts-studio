@@ -1,0 +1,113 @@
+name: Scout more real Radium Girls images (throwaway)
+on:
+  push:
+    branches: [content/radium-girls]
+    paths: [.github/workflows/scout-images.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Discover real candidate images from Wikipedia/Commons + resolve thumbnail URLs
+        run: |
+          set -o pipefail
+          pip install requests >/dev/null
+          python3 - <<'PY'
+          import json, re, urllib.parse
+          import requests
+
+          out = []
+
+          def add(title, url, source):
+              out.append({"title": title, "url": url, "source": source})
+
+          # 1. Images actually embedded in the English Wikipedia "Radium Girls" article.
+          r = requests.get("https://en.wikipedia.org/w/api.php", params={
+              "action": "query", "titles": "Radium Girls", "prop": "images",
+              "imlimit": "100", "format": "json",
+          }, timeout=20)
+          r.raise_for_status()
+          pages = r.json()["query"]["pages"]
+          file_titles = []
+          for p in pages.values():
+              for im in p.get("images", []):
+                  t = im["title"]
+                  if t.lower().endswith((".jpg", ".jpeg", ".png")):
+                      file_titles.append(t)
+          print("wikipedia article images:", file_titles)
+
+          # 2. Members of the Commons category, if it exists.
+          for cat in ["Category:Radium Girls", "Category:United States Radium Corporation"]:
+              r = requests.get("https://commons.wikimedia.org/w/api.php", params={
+                  "action": "query", "list": "categorymembers", "cmtitle": cat,
+                  "cmlimit": "100", "cmtype": "file", "format": "json",
+              }, timeout=20)
+              if r.status_code == 200:
+                  members = r.json().get("query", {}).get("categorymembers", [])
+                  titles = [m["title"] for m in members]
+                  print(cat, "->", titles)
+                  file_titles.extend(titles)
+
+          file_titles = sorted(set(file_titles))
+
+          # Resolve each File: title to a real direct image URL via imageinfo.
+          for i in range(0, len(file_titles), 40):
+              batch = file_titles[i:i+40]
+              r = requests.get("https://commons.wikimedia.org/w/api.php", params={
+                  "action": "query", "titles": "|".join(batch), "prop": "imageinfo",
+                  "iiprop": "url|size|mime", "format": "json",
+              }, timeout=20)
+              if r.status_code != 200:
+                  continue
+              pages = r.json().get("query", {}).get("pages", {})
+              for p in pages.values():
+                  title = p.get("title")
+                  info = p.get("imageinfo")
+                  if not info:
+                      continue
+                  add(title, info[0]["url"], "commons")
+
+          with open("candidates.json", "w", encoding="utf-8") as f:
+              json.dump(out, f, ensure_ascii=False, indent=2)
+          print(f"resolved {len(out)} candidates")
+          PY
+          cat candidates.json
+      - name: Download a small thumbnail of every candidate for visual review
+        run: |
+          python3 - <<'PY'
+          import json, os, re, requests
+          cands = json.load(open("candidates.json", encoding="utf-8"))
+          os.makedirs("thumbs", exist_ok=True)
+          manifest = []
+          for i, c in enumerate(cands):
+              url = c["url"]
+              # Request a small rendition where possible by inserting a /widthpx-
+              # thumb path (Wikimedia's standard thumbnail convention); fall back
+              # to the original if that fails.
+              try:
+                  r = requests.get(url, timeout=20, headers={"User-Agent": "shorts-studio-scout/1.0"})
+                  r.raise_for_status()
+                  ext = os.path.splitext(url)[1].split("?")[0] or ".jpg"
+                  fname = f"thumbs/{i:03d}{ext}"
+                  with open(fname, "wb") as f:
+                      f.write(r.content)
+                  manifest.append({"file": fname, **c, "bytes": len(r.content)})
+                  print("OK", fname, c["title"], len(r.content))
+              except Exception as e:
+                  print("FAIL", c["title"], e)
+          json.dump(manifest, open("thumbs/manifest.json", "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+          PY
+      - name: Publish candidates + thumbnails to a throwaway orphan branch
+        run: |
+          git config user.name "radium-scout-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan scout/radium-girls-candidates
+          git reset --hard
+          git add thumbs candidates.json
+          git commit -m "Throwaway: candidate real images for visual review"
+          git push -f origin HEAD:refs/heads/scout/radium-girls-candidates
