@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: Install deps
-        run: pip install pillow requests
+        run: pip install -e '.[dev]'
       - name: Download and normalize through the real production path
         run: |
           python3 - <<'PY'
