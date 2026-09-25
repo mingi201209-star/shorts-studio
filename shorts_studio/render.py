@@ -100,25 +100,36 @@ SAFE_BOTTOM_Y=IMAGE_TOP_Y+IMAGE_BOX_HEIGHT
 # longest real narration groups in examples/comet.json to stay within one or
 # two lines with wide safety margin against CAPTION_MASK_HEIGHT.
 CAPTION_FONT_SIZE=72
-# Real pixel distance from the true bottom edge now that PlayRes is pinned
-# (previously 48, which relied on the same accidental ~6-7x scale-up to read
-# as a real ~320px gap). 250 keeps the caption clear of the like/comment/
-# share icon column and progress bar a real YouTube Shorts player overlays
-# along the bottom ~200px -- raised from an initial 120 (only ~130px of
-# clearance) after reviewing an actual rendered frame.
-CAPTION_MARGIN_V=250
 CAPTION_OUTLINE=2
 _PLAY_RES="PlayResX=1080,PlayResY=1920"
-CAPTION_STYLE=f"Alignment=2,MarginV={CAPTION_MARGIN_V},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0,{_PLAY_RES}"
+# Captions sit directly under the picture, top-anchored (ASS/libass alignment
+# codes in this ffmpeg build follow the legacy SSA numbering -- 6 is
+# top-center) instead of bottom-anchored: a viewer's eye is already on the
+# photo, so the caption should read as "the picture's own subtitle," not a
+# separate element parked near the Shorts UI. This also flips which line a
+# caption needing more lines than fit would lose -- top-anchor grows
+# additional lines DOWNWARD, away from the picture, so an overflow crops the
+# LAST line into the safely-empty lower gutter instead of the FIRST line
+# into the picture (the reverse, bottom-anchored case was the real word-loss
+# bug fixed earlier: growing upward pushed an early line above the mask).
+# CAPTION_GAP_BELOW_IMAGE is real pixels of black gutter between the
+# picture's own bottom edge and the first caption line, verified via a real
+# ffmpeg render + pixel measurement to land just under the photo while
+# leaving the mask's remaining ~640px of room for multi-line wraps, still
+# comfortably clear of a real YouTube Shorts player's bottom UI overlay.
+CAPTION_GAP_BELOW_IMAGE=20
+CAPTION_MARGIN_TOP=SAFE_BOTTOM_Y+CAPTION_GAP_BELOW_IMAGE
+CAPTION_STYLE=f"Alignment=6,MarginV={CAPTION_MARGIN_TOP},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0,{_PLAY_RES}"
 CAPTION_MASK_TOP=SAFE_BOTTOM_Y
 CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 
-# ASS/libass alignment codes rendered by this ffmpeg build follow the legacy
-# SSA numbering (5/6/7 = top row) -- Alignment=6 is the top-center value.
-# Same PlayRes fix as CAPTION_STYLE above; FontSize recalibrated to a real
-# pixel size that reproduces the original bold top-title look now that the
-# hidden ~6-7x scale-up is gone.
-_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=54,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
+# Same PlayRes fix as CAPTION_STYLE above. FontSize raised from 54 to a much
+# larger, near-full-width single-line size per direct user feedback on a
+# real rendered frame ("as big as this circle" against an on-screen
+# reference) -- verified via a real render that a typical overlay_title
+# still fits on one line edge-to-edge and its glyphs end well above
+# SAFE_TOP_Y=190 (the picture's own top edge starts at IMAGE_TOP_Y=230).
+_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=110,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
 
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:
@@ -268,6 +279,39 @@ def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
             windows.append((beat,length))
     return windows
 
+# Bounded, non-animated (no zoompan) framing per beat's declared motion, so
+# consecutive cuts of the SAME real photo still look visibly different --
+# reusing only the scale/crop/pad primitives already proven safe elsewhere
+# in this file. zoompan-style continuous animation was deliberately not
+# used here: an unusual real archival image already caused a genuine,
+# hard-to-diagnose ffmpeg hang once in this exact production (see
+# _copy_with_deadline/_normalize_raster_asset above), and a static framing
+# choice carries none of that per-frame-animation risk.
+# - static: the existing full contain-fit (complete photo, letterboxed).
+# - push_in: cover-fit at 1.15x then center-crop back to the box -- fills
+#   the box edge-to-edge with a tighter, "closer" framing (crops some of
+#   the photo's own margin, standard practice for a push-in cut).
+# - pull_out: contain-fit at 0.82x of the box, still letterboxed -- shows
+#   the complete photo noticeably smaller with a visible black margin
+#   around it, a "pulled back" look.
+def _beat_picture_filter(motion_type:str)->str:
+    if motion_type=="push_in":
+        zoom=1.15
+        return (
+            f"scale=w='{IMAGE_BOX_WIDTH}*{zoom}':h='{IMAGE_BOX_HEIGHT}*{zoom}':force_original_aspect_ratio=increase:flags=lanczos,"
+            f"crop={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT},setsar=1"
+        )
+    if motion_type=="pull_out":
+        shrink=0.82
+        return (
+            f"scale=w='{IMAGE_BOX_WIDTH}*{shrink}':h='{IMAGE_BOX_HEIGHT}*{shrink}':force_original_aspect_ratio=decrease:flags=lanczos,"
+            f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1"
+        )
+    return (
+        f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
+        f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1"
+    )
+
 def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None, asset_cache:dict|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
@@ -284,10 +328,8 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         _log_asset_diagnostics(f"{scene.id}_beat{beat_index}",asset)
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
-        beat_scene=SimpleNamespace(motion=beat.motion)
         vf=(
-            f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
-            f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
+            f"{_beat_picture_filter(beat.motion.type)},"
             f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
         )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"

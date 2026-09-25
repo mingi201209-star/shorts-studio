@@ -125,6 +125,9 @@ def test_picture_is_centered_static_black_surrounded_and_caption_cannot_overlap(
     fb,fg,fr=[channel.astype(int) for channel in cv2.split(frames[1])]
     white=(fb>230)&(fg>230)&(fr>230)
     assert not white[R.IMAGE_TOP_Y:R.SAFE_BOTTOM_Y,:].any()
-    # Surround and the dedicated gutter remain black.
+    # Surround and the thin real gap right below the picture remain black.
+    # Captions are now top-anchored right under the picture (a real, small
+    # gap = CAPTION_GAP_BELOW_IMAGE, not the old wide bottom-anchored gutter),
+    # so this only covers that gap itself, not the caption's own row range.
     assert np.max(cv2.cvtColor(frames[1][R.IMAGE_TOP_Y:R.SAFE_BOTTOM_Y,:50],cv2.COLOR_BGR2GRAY))<12
-    assert np.max(cv2.cvtColor(frames[1][R.SAFE_BOTTOM_Y+8:1308,:],cv2.COLOR_BGR2GRAY))<12
+    assert np.max(cv2.cvtColor(frames[1][R.SAFE_BOTTOM_Y+8:R.CAPTION_MARGIN_TOP-2,:],cv2.COLOR_BGR2GRAY))<12

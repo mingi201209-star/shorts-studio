@@ -103,7 +103,16 @@ def verify_bottom_safe_area_clean(video: Path, sample_timestamps: list[float], b
 
 IMAGE_TOP_Y=230
 IMAGE_BOTTOM_Y=1230
-CAPTION_GUTTER=(1238,1308)
+# Captions are now top-anchored right under the picture (render.py's
+# CAPTION_MARGIN_TOP = IMAGE_BOTTOM_Y + a small real gap), by direct user
+# request -- there is deliberately no longer a wide black gap between the
+# picture and the caption. This band is now a thin buffer strip covering
+# only the real gap itself (narrower than render.py's CAPTION_GAP_BELOW_IMAGE
+# to leave headroom for font-ascent variance), which must ALWAYS stay black:
+# a genuine "the picture and the caption text never visually touch" check,
+# not "there is a wide empty region below the picture" (that assumption no
+# longer holds under the new tight layout).
+CAPTION_GUTTER=(1230,1245)
 # Sample gutter integrity before the first authored speech caption appears; later
 # samples may legitimately contain burned-in caption glyphs in this band.
 GUTTER_SAMPLE_LEAD_SECONDS=0.08

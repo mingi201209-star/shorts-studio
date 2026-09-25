@@ -4,12 +4,14 @@ QA passed. Subtitle timing can be perfectly correct while the caption is
 invisible (wrong color, clipped off-screen, wrong track) or in the wrong
 place; this renders real frames and inspects real pixels to catch that.
 
-Also a direct regression for the "move captions lower for Shorts
-visibility" fix: renders both the current style and the old (MarginV=260)
-style through the real compositing pipeline and asserts the current one is
-positioned lower on screen, not silently reverted.
+Also a direct regression for "captions sit right under the picture": per
+direct user feedback on a real rendered frame, captions moved from a
+bottom-anchored position (parked in the lower gutter, close to the Shorts
+UI) to top-anchored right under the picture's own bottom edge
+(CAPTION_MASK_TOP). These tests exercise the real production CAPTION_STYLE
+directly (via R.CAPTION_STYLE) rather than a hand-rolled parallel style, so
+they can never silently drift from what render.py actually burns in.
 """
-import re
 import shutil
 import subprocess
 from pathlib import Path
@@ -29,23 +31,17 @@ def _bright_row_span(frame_path, threshold=200):
     rows = np.where((gray > threshold).any(axis=1))[0]
     return (int(rows.min()), int(rows.max())) if len(rows) else None
 
-def _render_caption_only_clip(build, margin_v, duration=3.0, caption_window=(0.5, 2.5)):
+def _render_caption_only_clip(build, duration=3.0, caption_window=(0.5, 2.5)):
+    """Renders using the REAL production R.CAPTION_STYLE (not a hand-rolled
+    parallel style) so this test can never silently drift from what
+    render.py actually burns into a video."""
     build.mkdir(parents=True, exist_ok=True)
     audio = build / "silence.mp3"
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(duration), "-q:a", "9", str(audio)], check=True, capture_output=True)
     srt = build / "s.srt"
     start, end = caption_window
     srt.write_text(f"1\n00:00:{start:06.3f}".replace(".", ",") + f" --> 00:00:{end:06.3f}".replace(".", ",") + "\n테스트 자막입니다\n\n", encoding="utf-8")
-    # PlayResX/PlayResY must be pinned to the real frame size for the same
-    # reason CAPTION_STYLE/_TITLE_STYLE in render.py do (see that file): a
-    # plain SRT carries no script-resolution metadata, and force_style'd
-    # MarginV/FontSize with no PlayRes declared let libass fall back to a
-    # small internal default resolution and scale those values up ~6-7x.
-    # Without this, raising CAPTION_MARGIN_V (e.g. 250 -> 430) silently
-    # pushes this test's synthetic caption completely off the top of the
-    # frame -- a false failure in the test's own style string, not a real
-    # production regression (the real CAPTION_STYLE always pins PlayRes).
-    vf = f"subtitles={srt.as_posix()}:force_style='Alignment=2,MarginV={margin_v},FontSize=18,Outline=2,Bold=1,PlayResX=1080,PlayResY=1920'"
+    vf = f"subtitles={srt.as_posix()}:force_style='{R.CAPTION_STYLE}'"
     clip = build / "clip.mp4"
     cmd = ["ffmpeg", "-y", "-f", "lavfi", "-i", "color=c=0x20242b:s=1080x1920:r=30:d=" + str(duration), "-i", str(audio), "-vf", vf, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-shortest", str(clip)]
     subprocess.run(cmd, check=True, capture_output=True)
@@ -57,8 +53,7 @@ def _extract(clip, ts, out):
 
 @requires_ffmpeg
 def test_current_style_burns_in_caption_during_active_window(tmp_path):
-    current_margin = R.CAPTION_MARGIN_V
-    clip = _render_caption_only_clip(tmp_path / "current", current_margin)
+    clip = _render_caption_only_clip(tmp_path / "current")
     active = _extract(clip, 1.5, tmp_path / "active.jpg")
     inactive = _extract(clip, 2.9, tmp_path / "inactive.jpg")
     span_active = _bright_row_span(active)
@@ -67,14 +62,20 @@ def test_current_style_burns_in_caption_during_active_window(tmp_path):
     assert span_inactive is None, "caption pixels found outside its timing window (ghosting / stuck caption)"
 
 @requires_ffmpeg
-def test_current_style_caption_not_clipped_off_screen(tmp_path):
-    current_margin = R.CAPTION_MARGIN_V
-    clip = _render_caption_only_clip(tmp_path / "clip", current_margin)
+def test_current_style_caption_sits_right_under_the_picture(tmp_path):
+    """Top-anchored: the caption's first line must start close to the
+    picture's own bottom edge (CAPTION_MASK_TOP), not parked deep in the
+    lower gutter near the Shorts UI."""
+    clip = _render_caption_only_clip(tmp_path / "clip")
     active = _extract(clip, 1.5, tmp_path / "active.jpg")
     row_min, row_max = _bright_row_span(active)
     height = cv2.imread(str(active)).shape[0]
     assert row_max < height * 0.95, f"caption row {row_max} is too close to the bottom edge (height={height}), risk of being cut off"
-    assert row_min > 0
+    assert row_min > R.CAPTION_MASK_TOP, "caption starts above the picture's own bottom edge -- overlapping the picture"
+    assert row_min < R.CAPTION_MASK_TOP + 100, (
+        f"caption's first line (row {row_min}) sits far below the picture's bottom edge "
+        f"({R.CAPTION_MASK_TOP}) -- expected it right underneath, not parked in the lower gutter"
+    )
 
 def _text_row_bands(frame_path, threshold=200, gap=5):
     gray = cv2.cvtColor(cv2.imread(str(frame_path)), cv2.COLOR_BGR2GRAY)
@@ -92,25 +93,19 @@ def _text_row_bands(frame_path, threshold=200, gap=5):
     return bands
 
 @requires_ffmpeg
-def test_multiline_caption_does_not_lose_its_first_line(tmp_path):
-    """Real production bug: a plain SRT carries no PlayResX/PlayResY, and
-    force_style'd FontSize/MarginV with no PlayRes declared let libass fall
-    back to an internal default reference resolution and silently scale
-    those values up ~6-7x to fill the real 1920-tall frame. At the OLD
-    (buggy) FontSize=30 with no PlayRes, that turned into ~200px-tall
-    glyphs, wrapping almost every word onto its own line; a caption needing
-    more lines than fit in CAPTION_MASK_HEIGHT had its own FIRST line
-    (Alignment=2 grows additional lines upward from the bottom anchor, so
-    the earliest line sits highest) pushed above the crop window and
-    silently cropped away -- real spoken words vanished from the video.
-    This renders the ACTUAL narration text that exhibited the bug (scene_01's
-    HOOK phrase) through the real production compositor and OCR-free but
-    position-based: every one of the ORIGINAL WORDS must still be
-    detectable as its own bright band group, and the topmost band must not
-    sit at the very top edge of the caption mask window (which would mean
-    an even-earlier line got cropped above it)."""
+def test_multiline_caption_does_not_lose_its_last_line(tmp_path):
+    """Top-anchored captions grow additional wrapped lines DOWNWARD, away
+    from the picture -- the mirror image of the real word-loss bug this
+    test originally caught under the old bottom-anchored design (where
+    lines grew upward and an overflow silently cropped the FIRST line
+    against the mask's top edge). Under top-anchor the analogous risk is
+    the LAST line overflowing past the bottom of the frame/mask instead.
+    This renders the ACTUAL longest real narration group in this
+    manifest's lineage (scene_08's 3-unit caption) through the real
+    production compositor and checks every line's band is fully visible,
+    with the bottommost line comfortably clear of the frame's bottom edge."""
     build = tmp_path / "build"; build.mkdir()
-    text = "세계 최초의 제트 여객기가 비행"  # the real scene_01 HOOK caption group (5 words, at segment()'s max_words cap)
+    text = "라듐 걸스의 싸움은 이후 방사선 작업 안전기준을 바꾸는 중요한 계기가 됐습니다"
     audio = build / "silence.mp3"
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "3", "-q:a", "9", str(audio)], check=True, capture_output=True)
     srt = build / "s.srt"; srt.write_text(f"1\n00:00:00,500 --> 00:00:02,500\n{text}\n\n", encoding="utf-8")
@@ -119,15 +114,11 @@ def test_multiline_caption_does_not_lose_its_first_line(tmp_path):
     frame = _extract(clip, 1.5, build / "active.jpg")
     bands = _text_row_bands(frame)
     assert bands, "no caption pixels found during the active speech window"
-    # A cropped-off first line always means the topmost surviving line sits
-    # flush against (or above) the mask's own top edge -- a real word lost
-    # to the crop leaves no visible gap between the mask boundary and the
-    # first surviving line. Demand real headroom instead.
-    top_of_mask = R.CAPTION_MASK_TOP
-    assert bands[0][0] > top_of_mask + 20, (
-        f"topmost caption line (row {bands[0][0]}) sits right at the caption "
-        f"mask's top edge ({top_of_mask}) -- a real earlier line was likely "
-        f"cropped off, exactly like the '1950년대 세계 최...' word-loss bug"
+    height = cv2.imread(str(frame)).shape[0]
+    assert bands[0][0] > R.CAPTION_MASK_TOP, "topmost caption line overlaps the picture above the mask"
+    assert bands[-1][1] < height * 0.95, (
+        f"bottommost caption line (row {bands[-1][1]}) sits right at the frame's bottom edge "
+        f"-- a real later line was likely cropped off"
     )
 
 @requires_ffmpeg
