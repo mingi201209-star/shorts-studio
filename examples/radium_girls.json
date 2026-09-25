@@ -62,7 +62,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
@@ -83,7 +83,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
@@ -156,7 +156,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"
@@ -175,7 +175,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"
@@ -213,7 +213,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"
@@ -283,7 +283,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "여성 라듐 문자판 노동자의 실제 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"
@@ -303,7 +303,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "여성 라듐 문자판 노동자의 실제 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"
@@ -343,7 +343,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "여성 라듐 문자판 노동자의 실제 작업 환경을 보여주되 입이나 턱의 손상 장면은 없어야 함"
@@ -414,7 +414,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1922년 라듐 공장 노동자들이 보호장비 없이 작업하는 역사적 현장이 보여야 함"
@@ -432,7 +432,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1922년 라듐 공장 노동자들이 보호장비 없이 작업하는 역사적 현장이 보여야 함"
@@ -468,7 +468,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "1922년 라듐 공장 노동자들이 보호장비 없이 작업하는 역사적 현장이 보여야 함"
@@ -543,7 +543,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "라듐 문자판 여성 노동자들의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"
@@ -564,7 +564,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "라듐 문자판 여성 노동자들의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"
@@ -606,7 +606,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "라듐 문자판 여성 노동자들의 역사 자료가 보여야 하고 신체 병변은 보이지 않아야 함"
@@ -680,7 +680,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
           "attribution": "Bert Coursey / NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "초기 20세기 Lind electroscope 방사능 측정 장비가 분명하게 보여야 함"
@@ -699,7 +699,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
           "attribution": "Bert Coursey / NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "초기 20세기 Lind electroscope 방사능 측정 장비가 분명하게 보여야 함"
@@ -792,7 +792,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
           "attribution": "Bert Coursey / NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "역사적 Lind electroscope가 화면 중심에 있어야 함"
@@ -812,7 +812,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
           "attribution": "Bert Coursey / NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "역사적 Lind electroscope가 화면 중심에 있어야 함"
@@ -852,7 +852,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
           "attribution": "Bert Coursey / NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "역사적 Lind electroscope가 화면 중심에 있어야 함"
@@ -872,7 +872,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
           "attribution": "Bert Coursey / NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "역사적 Lind electroscope가 화면 중심에 있어야 함"
@@ -953,7 +953,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"
@@ -974,7 +974,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"
@@ -1016,7 +1016,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "push_in"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"
@@ -1037,7 +1037,7 @@
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
-            "type": "pull_out"
+            "type": "static"
           },
           "visual_qa_requirements": [
             "실제 라듐 문자판 여성 노동자들이 보여야 하며 결말은 존중하는 다큐멘터리 톤이어야 함"

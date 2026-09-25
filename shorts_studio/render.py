@@ -279,39 +279,6 @@ def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
             windows.append((beat,length))
     return windows
 
-# Bounded, non-animated (no zoompan) framing per beat's declared motion, so
-# consecutive cuts of the SAME real photo still look visibly different --
-# reusing only the scale/crop/pad primitives already proven safe elsewhere
-# in this file. zoompan-style continuous animation was deliberately not
-# used here: an unusual real archival image already caused a genuine,
-# hard-to-diagnose ffmpeg hang once in this exact production (see
-# _copy_with_deadline/_normalize_raster_asset above), and a static framing
-# choice carries none of that per-frame-animation risk.
-# - static: the existing full contain-fit (complete photo, letterboxed).
-# - push_in: cover-fit at 1.15x then center-crop back to the box -- fills
-#   the box edge-to-edge with a tighter, "closer" framing (crops some of
-#   the photo's own margin, standard practice for a push-in cut).
-# - pull_out: contain-fit at 0.82x of the box, still letterboxed -- shows
-#   the complete photo noticeably smaller with a visible black margin
-#   around it, a "pulled back" look.
-def _beat_picture_filter(motion_type:str)->str:
-    if motion_type=="push_in":
-        zoom=1.15
-        return (
-            f"scale=w='{IMAGE_BOX_WIDTH}*{zoom}':h='{IMAGE_BOX_HEIGHT}*{zoom}':force_original_aspect_ratio=increase:flags=lanczos,"
-            f"crop={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT},setsar=1"
-        )
-    if motion_type=="pull_out":
-        shrink=0.82
-        return (
-            f"scale=w='{IMAGE_BOX_WIDTH}*{shrink}':h='{IMAGE_BOX_HEIGHT}*{shrink}':force_original_aspect_ratio=decrease:flags=lanczos,"
-            f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1"
-        )
-    return (
-        f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
-        f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1"
-    )
-
 def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None, asset_cache:dict|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
@@ -328,8 +295,15 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         _log_asset_diagnostics(f"{scene.id}_beat{beat_index}",asset)
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
+        # Per-beat zoom/crop framing variation (push_in/pull_out) was tried and
+        # then explicitly reverted on direct user feedback: it read as
+        # disorienting ("정신없다") rather than as a real change of picture.
+        # What "그림을 더 자주 바꿔" actually meant was cutting to a genuinely
+        # DIFFERENT photo more often, not varying the crop of the same one --
+        # every beat renders with the same plain, calm contain-fit framing.
         vf=(
-            f"{_beat_picture_filter(beat.motion.type)},"
+            f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
+            f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
             f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
         )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
