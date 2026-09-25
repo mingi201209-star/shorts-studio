@@ -1,0 +1,33 @@
+name: Publish rendered preview via git (throwaway)
+on:
+  push:
+    branches: [content/radium-girls]
+    paths: [.github/workflows/publish-preview.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: shorts-studio-radium-girls
+          run-id: 36198940098
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit final.mp4 and qa_report.json to a throwaway orphan branch
+        run: |
+          ls -la dist/
+          git config user.name "radium-preview-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan preview/radium-girls-video-4
+          git reset --hard
+          mkdir -p out
+          cp dist/final.mp4 out/final.mp4
+          cp dist/qa_report.json out/qa_report.json
+          git add out/final.mp4 out/qa_report.json
+          git commit -m "Throwaway: publish rendered final.mp4 + qa_report.json for external retrieval"
+          git push -f origin HEAD:refs/heads/preview/radium-girls-video-4
