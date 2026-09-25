@@ -481,23 +481,24 @@
         },
         {
           "start": 5.6,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "attribution": "HM Stationery Office, Cohen Inquiry accident report",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+            "1955년 사고 조사 보고서의 코멧 잔해 회수 다이어그램에 Forward ADF aerial \"window\" 위치가 표시되어 있어야 함"
           ],
           "visual_qa_labels": [
-            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+            "a 1955 accident report diagram of the recovered de Havilland Comet G-ALYP wreckage with the forward ADF aerial window location labeled"
           ],
           "visual_qa_negative_labels": [
             "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky"
+            "an airplane flying in a clear sky",
+            "a passenger cabin window"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
           "visual_qa_expected_sha256": [
-            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
+            "4e00ba79934be0087c36372db8810cff7c16314634520c50564ad4e448628de7"
           ]
         },
         {
@@ -557,23 +558,24 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "attribution": "HM Stationery Office, Cohen Inquiry accident report",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+            "1955년 사고 조사 보고서의 코멧 잔해 회수 다이어그램에 Forward ADF aerial \"window\" 위치가 표시되어 있어야 함"
           ],
           "visual_qa_labels": [
-            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+            "a 1955 accident report diagram of the recovered de Havilland Comet G-ALYP wreckage with the forward ADF aerial window location labeled"
           ],
           "visual_qa_negative_labels": [
             "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky"
+            "an airplane flying in a clear sky",
+            "a passenger cabin window"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
           "visual_qa_expected_sha256": [
-            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
+            "4e00ba79934be0087c36372db8810cff7c16314634520c50564ad4e448628de7"
           ]
         },
         {
