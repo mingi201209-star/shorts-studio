@@ -172,20 +172,20 @@
         },
         {
           "start": 3.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Paint%20Advertisement.png",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 라듐 문자판 공장의 작업대와 여성 노동자들이 보여야 함"
+            "1920년대 라듐 야광 페인트 제품을 홍보하는 실제 인쇄 광고가 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical radium dial painters seated at factory work tables"
+            "1920s vintage print advertisement for glow-in-the-dark radium paint"
           ],
           "visual_qa_negative_labels": [
-            "modern smartwatch",
-            "graphic injury",
+            "modern advertisement",
+            "graphic medical injury",
             "corpse"
           ]
         },
@@ -789,22 +789,21 @@
         },
         {
           "start": 0.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
-          "attribution": "Bert Coursey / NIST",
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Damon.jpg",
+          "attribution": "NIST",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "역사적 Lind electroscope가 화면 중심에 있어야 함"
+            "라듐 걸스 사건에서 방사능을 측정해 증거를 제시한 과학자의 실제 인물 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical Lind electroscope used for radon measurement"
+            "historical portrait photograph of a woman scientist from the 1920s"
           ],
           "visual_qa_negative_labels": [
-            "modern hospital",
-            "graphic illness",
-            "corpse",
-            "blood"
+            "modern person",
+            "graphic medical injury",
+            "corpse"
           ]
         },
         {
