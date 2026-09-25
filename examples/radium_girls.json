@@ -59,23 +59,24 @@
         },
         {
           "start": 2.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Las_chicas_del_radio_pintando.jpg",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "여성 노동자가 시계 문자판에 가는 붓으로 라듐 페인트를 칠하는 실제 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
             "graphic injury",
             "corpse",
             "medical gore",
-            "modern factory"
+            "modern factory",
+            "modern watch"
           ]
         },
         {
@@ -196,23 +197,21 @@
         },
         {
           "start": 6.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Undark_%28Radium_Girls%29_advertisement%2C_1921%2C_retouched.png",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "1921년 실제 Undark 라듐 야광 도료 브랜드의 인쇄 광고가 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "1921 vintage print advertisement for Undark brand radium luminous paint"
           ],
           "visual_qa_negative_labels": [
-            "jaw necrosis",
-            "graphic injury",
-            "corpse",
-            "medical gore",
-            "modern factory"
+            "modern advertisement",
+            "graphic medical injury",
+            "corpse"
           ]
         },
         {
@@ -270,49 +269,28 @@
       "visual_beats": [
         {
           "start": 0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Las_chicas_del_radio_pintando.jpg",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "여성 노동자가 시계 문자판에 가는 붓으로 라듐 페인트를 칠하는 실제 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
             "graphic injury",
             "corpse",
             "medical gore",
-            "modern factory"
+            "modern factory",
+            "modern watch"
           ]
         },
         {
           "start": 0.5,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Las_chicas_del_radio_pintando.jpg",
-          "attribution": "Wikimedia Commons / public domain",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "여성 노동자가 시계 문자판에 가는 붓으로 라듐 페인트를 칠하는 실제 사진이 보여야 함"
-          ],
-          "visual_qa_labels": [
-            "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush"
-          ],
-          "visual_qa_negative_labels": [
-            "jaw necrosis",
-            "graphic injury",
-            "corpse",
-            "medical gore",
-            "modern factory",
-            "modern watch"
-          ]
-        },
-        {
-          "start": 3.5,
           "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
           "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
           "motion": {
@@ -333,7 +311,7 @@
           ]
         },
         {
-          "start": 6.5,
+          "start": 3.5,
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Las_chicas_del_radio_pintando.jpg",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
@@ -352,6 +330,25 @@
             "medical gore",
             "modern factory",
             "modern watch"
+          ]
+        },
+        {
+          "start": 6.5,
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Undark_luminous_paint.jpg",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제로 보존된 Undark 라듐 야광 도료 용기에 POISON(독극물) 라벨이 붙어 있는 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "close-up modern photograph of a preserved original Undark radium luminous paint vial labeled POISON"
+          ],
+          "visual_qa_negative_labels": [
+            "graphic medical injury",
+            "corpse",
+            "cartoon"
           ]
         },
         {
@@ -410,27 +407,47 @@
       "visual_beats": [
         {
           "start": 0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Las_chicas_del_radio_pintando.jpg",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "여성 노동자가 시계 문자판에 가는 붓으로 라듐 페인트를 칠하는 실제 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
             "graphic injury",
             "corpse",
             "medical gore",
-            "modern factory"
+            "modern factory",
+            "modern watch"
           ]
         },
         {
           "start": 0.5,
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Undark_luminous_paint.jpg",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제로 보존된 Undark 라듐 야광 도료 용기에 POISON(독극물) 라벨이 붙어 있는 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "close-up modern photograph of a preserved original Undark radium luminous paint vial labeled POISON"
+          ],
+          "visual_qa_negative_labels": [
+            "graphic medical injury",
+            "corpse",
+            "cartoon"
+          ]
+        },
+        {
+          "start": 3.5,
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/USRadiumGirls-Argonne1%2Cca1922-23-150dpi.jpg",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
@@ -441,27 +458,6 @@
           ],
           "visual_qa_labels": [
             "wide establishing shot of a 1920s radium dial-painting factory floor with rows of women working"
-          ],
-          "visual_qa_negative_labels": [
-            "jaw necrosis",
-            "graphic injury",
-            "corpse",
-            "medical gore",
-            "modern factory"
-          ]
-        },
-        {
-          "start": 3.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
-          ],
-          "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
@@ -473,23 +469,21 @@
         },
         {
           "start": 6.5,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/USRadiumGirls-Argonne1%2Cca1922-23-150dpi.jpg",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Undark_%28Radium_Girls%29_advertisement%2C_1921%2C_retouched.png",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 라듐 문자판 공장의 넓은 작업 현장 전경이 보여야 함"
+            "1921년 실제 Undark 라듐 야광 도료 브랜드의 인쇄 광고가 보여야 함"
           ],
           "visual_qa_labels": [
-            "wide establishing shot of a 1920s radium dial-painting factory floor with rows of women working"
+            "1921 vintage print advertisement for Undark brand radium luminous paint"
           ],
           "visual_qa_negative_labels": [
-            "jaw necrosis",
-            "graphic injury",
-            "corpse",
-            "medical gore",
-            "modern factory"
+            "modern advertisement",
+            "graphic medical injury",
+            "corpse"
           ]
         },
         {
@@ -572,16 +566,16 @@
         },
         {
           "start": 0.5,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/USRadiumGirls-Argonne1%2Cca1922-23-150dpi.jpg",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "1920년대 라듐 문자판 공장의 넓은 작업 현장 전경이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "wide establishing shot of a 1920s radium dial-painting factory floor with rows of women working"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
@@ -951,23 +945,24 @@
       "visual_beats": [
         {
           "start": 0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Las_chicas_del_radio_pintando.jpg",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "여성 노동자가 시계 문자판에 가는 붓으로 라듐 페인트를 칠하는 실제 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
             "graphic injury",
             "corpse",
             "medical gore",
-            "modern factory"
+            "modern factory",
+            "modern watch"
           ]
         },
         {
@@ -991,16 +986,16 @@
         },
         {
           "start": 6.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/USRadiumGirls-Argonne1%2Cca1922-23-150dpi.jpg",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "1920년대 라듐 문자판 공장의 넓은 작업 현장 전경이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "wide establishing shot of a 1920s radium dial-painting factory floor with rows of women working"
           ],
           "visual_qa_negative_labels": [
             "jaw necrosis",
@@ -1031,23 +1026,21 @@
         },
         {
           "start": 12.0,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/e/e3/USRadiumGirls-Argonne1%2Cca1922-23-150dpi.jpg",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/a/a3/Undark_luminous_paint.jpg",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 라듐 문자판 공장의 넓은 작업 현장 전경이 보여야 함"
+            "실제로 보존된 Undark 라듐 야광 도료 용기에 POISON(독극물) 라벨이 붙어 있는 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "wide establishing shot of a 1920s radium dial-painting factory floor with rows of women working"
+            "close-up modern photograph of a preserved original Undark radium luminous paint vial labeled POISON"
           ],
           "visual_qa_negative_labels": [
-            "jaw necrosis",
-            "graphic injury",
+            "graphic medical injury",
             "corpse",
-            "medical gore",
-            "modern factory"
+            "cartoon"
           ]
         },
         {
