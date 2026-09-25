@@ -8,7 +8,7 @@ from .tts import synthesize_plan
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
-from .final_video_qa import run_final_video_qa
+from .final_video_qa import run_final_video_qa, verify_source_budget
 from .captions import merge_scene_srt_files
 
 def _srt_time(x:float)->str:
@@ -462,6 +462,13 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
 
 def render(manifest:str,dry_run:bool=False)->dict:
     p=load_project(manifest)
+    # Fail before spending a full render on a manifest that doesn't have
+    # enough genuinely distinct source families to cover its own visual
+    # beats -- the fix is to source more real, distinct images, not to
+    # render anyway and let the same handful of pictures cycle.
+    budget=verify_source_budget(p)
+    if budget["status"]!="PASS":
+        raise RuntimeError(f"source budget check failed: {budget['reason']}")
     if dry_run: return {"status":"PASS","scenes":len(p.scenes),"mode":"dry-run"}
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         raise RuntimeError("FFmpeg/ffprobe required")

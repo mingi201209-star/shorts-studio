@@ -1,6 +1,7 @@
 import argparse, json
 from .project import load_project
 from .render import render
+from .final_video_qa import verify_source_budget
 
 def main():
     ap=argparse.ArgumentParser(prog="shorts_studio"); sub=ap.add_subparsers(dest="cmd",required=True)
@@ -9,7 +10,12 @@ def main():
     q=sub.add_parser("qa"); q.add_argument("video")
     a=ap.parse_args()
     if a.cmd=="validate":
-        p=load_project(a.manifest); print(json.dumps({"status":"PASS","scenes":len(p.scenes)},ensure_ascii=False))
+        p=load_project(a.manifest)
+        budget=verify_source_budget(p)
+        if budget["status"]!="PASS":
+            print(json.dumps({"status":"FAIL","reason":budget["reason"],"source_budget":budget["evidence"]},ensure_ascii=False))
+            raise SystemExit(1)
+        print(json.dumps({"status":"PASS","scenes":len(p.scenes)},ensure_ascii=False))
     elif a.cmd=="render": print(json.dumps(render(a.manifest,a.dry_run),ensure_ascii=False))
     else:
         from pathlib import Path

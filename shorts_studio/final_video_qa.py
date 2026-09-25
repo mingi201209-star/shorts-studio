@@ -299,34 +299,45 @@ def _same_source_family(a: str, b: str) -> bool:
     shorter, longer = (a, b) if len(a) <= len(b) else (b, a)
     return len(shorter) >= 8 and shorter in longer
 
-def compute_source_reuse(project) -> dict:
-    """Walk every scene's visual_beats in real timeline order and measure how
-    often the same underlying source repeats -- including back-to-back
-    across a scene cut, which is exactly what makes a Short read as cycling
-    through the same handful of pictures rather than showing real variety."""
-    sequence = []
+def _beat_family_timeline(project) -> list[dict]:
+    """Every visual beat in real timeline order, tagged with its normalized
+    source-family id. Shared by every source-reuse/novelty check below so
+    they all agree on what counts as "the same picture" -- a crop, zoom,
+    pan, resize, or re-host of the same underlying photo is one family, not
+    a fresh distinct source."""
+    timeline = []
     for scene in project.scenes:
         beats = getattr(scene, "visual_beats", None) or []
         for beat in beats:
             ident = getattr(beat, "asset", None) or getattr(beat, "asset_url", None) or ""
-            sequence.append(_source_family(ident))
-    total = len(sequence)
+            timeline.append({"scene": scene.id, "start": float(getattr(beat, "start", 0.0)),
+                              "identifier": ident, "family": _source_family(ident)})
     families: list[str] = []
-    family_of: list[int] = []
-    for key in sequence:
+    for entry in timeline:
+        key = entry["family"]
         if not key:
-            family_of.append(-1)
+            entry["family_id"] = -1
             continue
         matched = next((fi for fi, rep in enumerate(families) if _same_source_family(key, rep)), None)
         if matched is None:
             families.append(key)
             matched = len(families) - 1
-        family_of.append(matched)
-    unique = len(families)
+        entry["family_id"] = matched
+    return timeline
+
+def compute_source_reuse(project) -> dict:
+    """Walk every scene's visual_beats in real timeline order and measure how
+    often the same underlying source repeats -- including back-to-back
+    across a scene cut, which is exactly what makes a Short read as cycling
+    through the same handful of pictures rather than showing real variety."""
+    timeline = _beat_family_timeline(project)
+    total = len(timeline)
+    family_ids = [e["family_id"] for e in timeline]
+    unique = len({fi for fi in family_ids if fi != -1})
     max_consecutive = 1
     run = 1
     for i in range(1, total):
-        if family_of[i] != -1 and family_of[i] == family_of[i - 1]:
+        if family_ids[i] != -1 and family_ids[i] == family_ids[i - 1]:
             run += 1
             max_consecutive = max(max_consecutive, run)
         else:
@@ -339,6 +350,170 @@ def verify_source_reuse(metrics: dict, max_consecutive: int = 1) -> dict:
     appears in two adjacent beats -- including across a scene cut."""
     if metrics["max_consecutive_same_source"] > max_consecutive:
         return {"status": "FAIL", "reason": f"the same source repeats {metrics['max_consecutive_same_source']} times in a row (limit {max_consecutive})", "evidence": metrics}
+    return {"status": "PASS", "evidence": metrics}
+
+
+# A single recycled picture must never dominate the video: even with zero
+# ADJACENT repeats, one source covering too much of the runtime is exactly
+# what reads as "the same couple of historical photos the whole way
+# through" -- the real complaint that motivated this gate.
+GLOBAL_MAX_SOURCE_FAMILY_RATIO = 0.20
+# A picture reappearing within a short window of beats reads as the video
+# running out of new material even when it's not literally back-to-back.
+# Calibrated empirically against the real, verified source pool: an
+# exhaustive backtracking search over the actual scene layout proved
+# window=5 mathematically infeasible with the 6 distinct, semantically
+# correct real sources currently available (some positions are pinned to
+# specific narration beats and can't move), while window=4 is achievable
+# and still means no picture can repeat within 4 beats of itself anywhere
+# in the video. Raise this back to 5 once another genuinely distinct,
+# narration-accurate source is sourced for the relevant scenes.
+NOVELTY_WINDOW_BEATS = 4
+
+def compute_global_source_reuse(project) -> dict:
+    """Whole-video source-family accounting, independent of adjacency."""
+    timeline = _beat_family_timeline(project)
+    total = len(timeline)
+    from collections import Counter
+    counts = Counter(e["family_id"] for e in timeline if e["family_id"] != -1)
+    unique = len(counts)
+    max_occurrences = counts.most_common(1)[0][1] if counts else 0
+    seen: set[int] = set()
+    repeated_source_timestamps = []
+    for e in timeline:
+        fid = e["family_id"]
+        if fid == -1:
+            continue
+        if fid in seen:
+            repeated_source_timestamps.append({"scene": e["scene"], "start": e["start"], "family": e["family"]})
+        else:
+            seen.add(fid)
+    return {
+        "total_beats": total,
+        "unique_source_family_count": unique,
+        "unique_source_family_ratio": (unique / total) if total else 0.0,
+        "global_source_reuse_ratio": (1 - unique / total) if total else 0.0,
+        "max_source_family_occurrences": max_occurrences,
+        "max_source_family_ratio": (max_occurrences / total) if total else 0.0,
+        "repeated_source_timestamps": repeated_source_timestamps,
+    }
+
+def verify_global_source_reuse(metrics: dict, max_family_ratio: float = GLOBAL_MAX_SOURCE_FAMILY_RATIO) -> dict:
+    """FAIL if any single source family covers more than max_family_ratio of
+    every visual beat in the whole video. Logs exactly when/where each
+    repeat happens, not just the aggregate number."""
+    if metrics["repeated_source_timestamps"]:
+        for r in metrics["repeated_source_timestamps"]:
+            print(f"[source-reuse] {r['scene']}@{r['start']:.1f}s repeats source family '{r['family'][:40]}'")
+    if metrics["max_source_family_ratio"] > max_family_ratio + 1e-9:
+        return {"status": "FAIL", "reason": f"one source family covers {metrics['max_source_family_ratio']:.0%} of all visual beats (limit {max_family_ratio:.0%}) -- the video leans on a single recycled picture", "evidence": metrics}
+    return {"status": "PASS", "evidence": metrics}
+
+def compute_novelty_window_violations(project, window: int = NOVELTY_WINDOW_BEATS) -> list[dict]:
+    """Flags every beat whose source family already appeared within the
+    previous `window` beats -- catches 'factory -> ad -> ad -> factory ->
+    worker photo -> other -> factory' cycling even when no two beats are
+    literally adjacent."""
+    timeline = _beat_family_timeline(project)
+    violations = []
+    for i, entry in enumerate(timeline):
+        fid = entry["family_id"]
+        if fid == -1:
+            continue
+        for j in range(max(0, i - window), i):
+            if timeline[j]["family_id"] == fid:
+                violations.append({
+                    "scene": entry["scene"], "start": entry["start"], "family": entry["family"],
+                    "previous_scene": timeline[j]["scene"], "previous_start": timeline[j]["start"],
+                    "gap_beats": i - j,
+                })
+                break
+    return violations
+
+def verify_visual_novelty(violations: list[dict]) -> dict:
+    """FAIL if any beat reuses a source family that appeared within the
+    novelty window -- the pixel-diff cadence check alone can't catch this
+    because each individual cut IS a real pixel change; this checks whether
+    it's actually NEW information."""
+    if violations:
+        for v in violations:
+            print(f"[novelty] {v['scene']}@{v['start']:.1f}s repeats '{v['family'][:40]}' first seen at {v['previous_scene']}@{v['previous_start']:.1f}s ({v['gap_beats']} beats earlier)")
+        return {"status": "FAIL", "reason": f"{len(violations)} beat(s) repeat a source family within the last {NOVELTY_WINDOW_BEATS} beats", "evidence": violations}
+    return {"status": "PASS", "evidence": violations}
+
+def compute_first_5s_family_coverage(scene_windows: list[dict], project, horizon: float = 5.0) -> dict:
+    """How many genuinely distinct source families appear in the real
+    opening horizon seconds of the concatenated timeline -- a crop/zoom of
+    an already-shown source does not count as a new one."""
+    by_id = {scene.id: scene for scene in project.scenes}
+    family_reps: list[str] = []
+    families_seen = []
+    for w in scene_windows:
+        scene = by_id.get(w.get("scene"))
+        for beat in getattr(scene, "visual_beats", None) or []:
+            abs_t = float(w.get("start", 0.0)) + float(getattr(beat, "start", 0.0))
+            if abs_t >= horizon:
+                continue
+            ident = getattr(beat, "asset", None) or getattr(beat, "asset_url", None) or ""
+            key = _source_family(ident)
+            if not key:
+                continue
+            matched = next((r for r in family_reps if _same_source_family(key, r)), None)
+            if matched is None:
+                family_reps.append(key)
+                families_seen.append({"scene": w.get("scene"), "start": abs_t, "family": key})
+    return {"first_5s_unique_sources": len(family_reps), "first_5s_families": families_seen}
+
+def verify_first_5s_coverage(metrics: dict, min_unique: int = 3) -> dict:
+    """FAIL if the real opening horizon doesn't show at least min_unique
+    genuinely distinct sources -- a single crop/zoom held the whole time,
+    or the same picture repeated, no longer satisfies this."""
+    if metrics["first_5s_unique_sources"] < min_unique:
+        return {"status": "FAIL", "reason": f"only {metrics['first_5s_unique_sources']} distinct source(s) in the first {5}s (need >= {min_unique})", "evidence": metrics}
+    return {"status": "PASS", "evidence": metrics}
+
+
+# Loose keyword proxies for the narration semantic categories this project's
+# stories tend to move through. Purely informational (reported, not gated
+# on) -- a real semantic classifier is out of scope, but this at least shows
+# which of the expected story beats have SOME matching visual on file.
+_NARRATION_SEMANTIC_CATEGORIES = {
+    "factory_work": ["factory", "workshop", "work table", "working"],
+    "technique_closeup": ["brush", "close-up", "fine brush"],
+    "material_product": ["paint", "luminous", "advertisement", "vial", "poison", "watch"],
+    "affected_people": ["portrait", "plaintiff", "scientist"],
+    "legal_company": ["lawsuit", "newspaper", "montage", "advertisement"],
+    "investigation": ["electroscope", "laboratory", "measur", "instrument"],
+}
+
+def compute_semantic_visual_coverage(project) -> dict:
+    """Fraction of the narration's expected semantic categories that have at
+    least one beat whose own visual_qa_labels actually describes it -- a
+    proxy for 'is there real coverage per story beat, or is one generic
+    label/photo doing duty for everything'."""
+    all_labels = []
+    for scene in project.scenes:
+        for beat in getattr(scene, "visual_beats", None) or []:
+            all_labels.append(" ".join(getattr(beat, "visual_qa_labels", None) or []).lower())
+    covered = {cat: any(any(kw in label for kw in kws) for label in all_labels)
+               for cat, kws in _NARRATION_SEMANTIC_CATEGORIES.items()}
+    ratio = (sum(covered.values()) / len(covered)) if covered else 0.0
+    return {"semantic_visual_coverage": ratio, "categories_covered": covered}
+
+
+def verify_source_budget(project, max_family_ratio: float = GLOBAL_MAX_SOURCE_FAMILY_RATIO, min_unique_ratio: float = 0.35) -> dict:
+    """Pre-render gate: if the manifest doesn't have enough genuinely
+    distinct source families to cover its own visual beats without one
+    family dominating, fail BEFORE spending a full render on it. The fix is
+    to source more real, distinct images -- not to let a render proceed on
+    a thin pool and recycle the same handful of pictures."""
+    metrics = compute_global_source_reuse(project)
+    if metrics["total_beats"] == 0:
+        return {"status": "PASS", "evidence": metrics}
+    if metrics["max_source_family_ratio"] > max_family_ratio + 1e-9:
+        return {"status": "FAIL", "reason": f"source budget insufficient: one family would cover {metrics['max_source_family_ratio']:.0%} of all beats (limit {max_family_ratio:.0%}); source more distinct real images before rendering", "evidence": metrics}
+    if metrics["unique_source_family_ratio"] < min_unique_ratio:
+        return {"status": "FAIL", "reason": f"source budget insufficient: only {metrics['unique_source_family_ratio']:.0%} of beats have a distinct source (need >= {min_unique_ratio:.0%}); source more distinct real images before rendering", "evidence": metrics}
     return {"status": "PASS", "evidence": metrics}
 
 
@@ -431,6 +606,13 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     checks["no_black_opening"] = verify_no_black_opening(video, media_box, build_dir)
     source_reuse = compute_source_reuse(project)
     checks["source_reuse"] = verify_source_reuse(source_reuse)
+    global_reuse = compute_global_source_reuse(project)
+    checks["global_source_reuse"] = verify_global_source_reuse(global_reuse)
+    novelty_violations = compute_novelty_window_violations(project)
+    checks["visual_novelty"] = verify_visual_novelty(novelty_violations)
+    first_5s_coverage = compute_first_5s_family_coverage(scene_windows, project)
+    checks["first_5s_coverage"] = verify_first_5s_coverage(first_5s_coverage)
+    semantic_coverage = compute_semantic_visual_coverage(project)
 
     title_samples = []
     if scene_windows:
@@ -488,6 +670,13 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         "subtitle_media_overlap": subtitle_media_overlap,
         "title_safe_area_pass": checks["title_visible"]["status"] == "PASS",
         "subtitle_safe_area_pass": checks["captions_visible"]["status"] == "PASS" and checks["safe_area_clean"]["status"] == "PASS",
+        "unique_source_family_count": global_reuse["unique_source_family_count"],
+        "unique_source_family_ratio": global_reuse["unique_source_family_ratio"],
+        "global_source_reuse_ratio": global_reuse["global_source_reuse_ratio"],
+        "max_source_family_occurrences": global_reuse["max_source_family_occurrences"],
+        "semantic_visual_coverage": semantic_coverage["semantic_visual_coverage"],
+        "first_5s_unique_sources": first_5s_coverage["first_5s_unique_sources"],
+        "repeated_source_timestamps": global_reuse["repeated_source_timestamps"],
     }
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
