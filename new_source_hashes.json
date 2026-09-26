@@ -1,0 +1,44 @@
+{
+  "SHAFT": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%20propeller%20shaft%20installation.jpg?width=1280",
+    "sha256": "0d4fb923ebadbf7a632406c7c01618552b7af113167c227cdc331456c9d2706e",
+    "size": 513250,
+    "status": "ok"
+  },
+  "STERN": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20stern%20under%20construction.jpg?width=1280",
+    "sha256": "4b27edcb76a04cbe63c9a0677e7ea2444056bc1e561ab0983f5036d1bd72a04c",
+    "size": 842105,
+    "status": "ok"
+  },
+  "GANTRY433": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Construction%20of%20White%20Star%20Liner%20Number%20433.jpg?width=1280",
+    "sha256": "1423a193ce0689649b74cb5bd25e68fb5638192158f172ba60bb8fdeafa20d89",
+    "size": 671541,
+    "status": "ok"
+  },
+  "INQUIRY": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/London%20Scottish%20Drill%20Hall%20before%20the%20start%20of%20the%20British%20inquiry%20into%20the%20Titanic%20disaster.jpg?width=1280",
+    "sha256": "a9de67a0b312032f20feefd05b143ec392df2a14acd856e7ccc6de19a782a762",
+    "size": 140125,
+    "status": "ok"
+  },
+  "PROP": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Olympic%27s%20propellers.jpg?width=1280",
+    "sha256": "bdfe3e9694e0b2404cbb7e87fab5aa7a9141959cb3854e3b857bba98a3619944",
+    "size": 402483,
+    "status": "ok"
+  },
+  "WORKERS": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Knocking%20off%20at%20Harland%20%26%20Wolff%2C%20Belfast.jpg?width=1280",
+    "sha256": "18c20df66e74b7f4bbe1b4daed249147d087e0392654a132e3794b46007d4b71",
+    "size": 419874,
+    "status": "ok"
+  },
+  "LAUNCHCROWD": {
+    "url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Launching%20Belfast%20May%2031%201911.jpg?width=1280",
+    "sha256": "af2332ffed088b2f18a479ee462535e1078679fbe0fd01b9d3dcd9b732b5e01b",
+    "size": 164662,
+    "status": "ok"
+  }
+}
