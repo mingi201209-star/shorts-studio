@@ -1,0 +1,62 @@
+name: Scout a real 1928 trial/courtroom photo (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/scout-trial-photo.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Search for real courtroom/trial/settlement photos
+        run: |
+          set -o pipefail
+          pip install requests >/dev/null
+          python3 - <<'PY'
+          import json, requests
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          COMMONS = "https://commons.wikimedia.org/w/api.php"
+          queries = [
+              "Grace Fryer trial",
+              "radium girls courtroom",
+              "radium dial painters lawyer Raymond Berry",
+              "Grace Fryer Quinta McDonald Katherine Schaub Albina Larice Edna Hussman",
+              "radium girls plaintiffs 1928",
+              "New Jersey radium case witness stand",
+          ]
+          results = {}
+          for q in queries:
+              r = requests.get(COMMONS, params={
+                  "action": "query", "list": "search", "srsearch": q,
+                  "srnamespace": "6", "srlimit": "10", "format": "json",
+              }, headers=HEADERS, timeout=20)
+              hits = [h["title"] for h in r.json().get("query", {}).get("search", [])]
+              results[q] = hits
+              print(q, "->", hits)
+          titles = sorted({t for hits in results.values() for t in hits})
+          out = []
+          if titles:
+              r = requests.get(COMMONS, params={
+                  "action": "query", "titles": "|".join(titles[:40]), "prop": "imageinfo",
+                  "iiprop": "url|size|mime", "iiurlwidth": "800", "format": "json",
+              }, headers=HEADERS, timeout=20)
+              for p in r.json().get("query", {}).get("pages", {}).values():
+                  info = p.get("imageinfo")
+                  if info:
+                      out.append({"title": p.get("title"), "url": info[0].get("url"), "thumburl": info[0].get("thumburl"), "mime": info[0].get("mime")})
+          json.dump({"search_results": results, "candidates": out}, open("trial_results.json", "w"), indent=2)
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "trial-scout-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan scout/trial-photo
+          git reset --hard
+          git add trial_results.json
+          git commit -m "Throwaway: candidate real trial/courtroom photos"
+          git push -f origin HEAD:refs/heads/scout/trial-photo
