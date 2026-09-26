@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .retention_rules import HOOK_TYPES
+from .entertainment_rules import EVENT_TYPES, REQUIRES_GROUNDING
 
 # A manifest field the engine doesn't recognize -- a typo (hok_type), a
 # field name left over from a design that changed, or one borrowed from a
@@ -139,6 +140,95 @@ class Scene(BaseModel):
     # a single segment (shorts_studio.prosody.build_auto_plan).
     narration_plan: list[NarrationPhrase] = []
 
+class GroundedClaim(BaseModel):
+    """A factual premise a GAP or VIOLATION event is built on. Deliberately
+    separate from CognitiveEvent itself (see Phase 0.5's design correction):
+    a GAP is a QUESTION, not a fact, so it is the claim underneath a
+    GAP/VIOLATION that needs grounding, not the question's own phrasing.
+    source_ref is checked for reference integrity only (does it match a
+    real Scene.factual_notes entry somewhere in this project) -- whether the
+    claim is actually TRUE, or actually supports the event that cites it, is
+    a semantic judgment left to the SemanticJudge (entertainment_qa.py),
+    never approximated here."""
+    model_config = _FORBID_EXTRA
+    id: str
+    text: str = Field(min_length=1)
+    source_ref: str = Field(min_length=1)
+
+class CognitiveEvent(BaseModel):
+    """One node of the Declared Event Graph (Psychological Entertainment
+    Contract, Layer 2) -- author intent about the narrative/curiosity
+    structure of the video, analogous to how NarrationPhrase.role/hook_type
+    declare Layer-1 retention structure. On its own this is exactly as
+    trustable as Layer 1's role/hook_type/info_role fields (i.e. not very --
+    see their docstrings): a CognitiveEvent proves nothing about the real
+    video until entertainment_qa.build_observed_evidence finds a real
+    narration_unit/visual_beat backing it up AND (for GAP-closing types) a
+    SemanticJudge confirms it against real quoted text. A declared event
+    with no corresponding Observed Event Evidence counts for nothing.
+
+    References existing manifest structure (scene_id / narration_unit_index
+    / visual_beat_index) rather than duplicating narration/visual text, so
+    there is exactly one place authored text lives and no way for a
+    CognitiveEvent's own copy of the text to silently drift from the real
+    script."""
+    model_config = _FORBID_EXTRA
+    id: str
+    type: str  # one of entertainment_rules.EVENT_TYPES
+    critical: bool = True  # only meaningful for type=="GAP" -- see verify_unresolved_critical_gaps
+    scene_id: str
+    narration_unit_index: int | None = None
+    visual_beat_index: int | None = None
+    text: str = Field(min_length=1)
+    resolves: str | None = None  # for CLUE/REVEAL/RESOLUTION: the id of the GAP this addresses
+    grounded_claim_refs: list[str] = Field(default_factory=list)
+    info_role: str | None = None
+
+    @model_validator(mode="after")
+    def valid_type(self):
+        if self.type not in EVENT_TYPES:
+            raise ValueError(f"CognitiveEvent.type must be one of {EVENT_TYPES}, got {self.type!r}")
+        return self
+
+    @model_validator(mode="after")
+    def grounded_types_must_cite_a_claim(self):
+        """Structural/deterministic only: does this event cite ANY claim at
+        all. Whether the cited claim's text actually supports this event is
+        a semantic question for the SemanticJudge (entertainment_qa.py),
+        never checked here. An invented VIOLATION/GAP with zero citations is
+        rejected at construction time, the same fail-closed way extra
+        fields and bad hook_type values already are."""
+        if self.type in REQUIRES_GROUNDING and not self.grounded_claim_refs:
+            raise ValueError(f"event {self.id!r}: type={self.type!r} requires at least one grounded_claim_refs entry")
+        return self
+
+class DeclaredEventGraph(BaseModel):
+    """Author-declared curiosity/narrative structure for a Project. Purely
+    structural at this level -- see entertainment_qa.py for the
+    deterministic reference-integrity checks (do resolves/grounded_claim_refs
+    point at real ids) and the semantic checks (does an event's real,
+    observed content actually do what it claims)."""
+    model_config = _FORBID_EXTRA
+    events: list[CognitiveEvent] = Field(default_factory=list)
+    grounded_claims: list[GroundedClaim] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def unique_ids_and_internal_references(self):
+        event_ids = [e.id for e in self.events]
+        if len(event_ids) != len(set(event_ids)):
+            raise ValueError("CognitiveEvent ids must be unique within a DeclaredEventGraph")
+        claim_ids = {c.id for c in self.grounded_claims}
+        if len(claim_ids) != len(self.grounded_claims):
+            raise ValueError("GroundedClaim ids must be unique within a DeclaredEventGraph")
+        event_id_set = set(event_ids)
+        for e in self.events:
+            if e.resolves is not None and e.resolves not in event_id_set:
+                raise ValueError(f"event {e.id!r}: resolves={e.resolves!r} does not match any declared event id")
+            for ref in e.grounded_claim_refs:
+                if ref not in claim_ids:
+                    raise ValueError(f"event {e.id!r}: grounded_claim_refs contains {ref!r}, not a declared GroundedClaim id")
+        return self
+
 class Project(BaseModel):
     model_config = _FORBID_EXTRA
     title: str
@@ -187,6 +277,28 @@ class Project(BaseModel):
     # as "fun verified" -- only real post-publish data, or a human review,
     # can establish that.
     strict_retention_contract: bool = False
+    # Psychological Entertainment Contract (Layer 2), Phase 1: minimal
+    # foundation only. A Project with no event_graph is completely
+    # unaffected by any of this -- comet.json, radium_girls.json,
+    # titanic_fourth_funnel.json, and train_wheels.json declare none, and
+    # this field changes nothing about how they validate or render.
+    #
+    # In Phase 1 this contract is REPORT-ONLY regardless of this flag's
+    # value: declaring an event_graph gets you a diagnostics report
+    # (entertainment_qa.run_entertainment_contract_report, surfaced under
+    # qa_report.json's top-level "entertainment_contract" key, deliberately
+    # OUTSIDE the checks dict that final_video_qa's overall PASS/FAIL is
+    # computed from) -- it never fails validate, never fails render, no
+    # matter what it finds. strict_entertainment_contract exists now so a
+    # manifest can record authorial INTENT to eventually be gated on this
+    # contract; a later phase decides what turning it on actually does.
+    # Never read a report under this key as "entertaining" or "fun
+    # verified" -- see entertainment_qa.py's module docstring for exactly
+    # what is and is not checked, and why declared metadata alone (a role
+    # label, a hook_type, an info_role, or now a CognitiveEvent) can never
+    # prove entertainment success on its own.
+    strict_entertainment_contract: bool = False
+    event_graph: DeclaredEventGraph | None = None
 
     @model_validator(mode="after")
     def vertical(self):
@@ -194,4 +306,28 @@ class Project(BaseModel):
             raise ValueError("V1 output must be 1080x1920")
         if self.fps < 30:
             raise ValueError("fps must be >=30")
+        return self
+
+    @model_validator(mode="after")
+    def event_graph_references_real_scenes_and_claims_are_grounded(self):
+        """Cross-references the DeclaredEventGraph against THIS project's
+        real scenes/factual_notes -- checks DeclaredEventGraph's own
+        validator cannot do in isolation, since it has no access to the
+        Scene list. Deterministic reference-integrity only: does scene_id
+        exist, does source_ref match a real declared fact. Whether the
+        claim is true, or the event's text actually earns its type, is a
+        SemanticJudge question (entertainment_qa.py), never checked here."""
+        if self.event_graph is None:
+            return self
+        scene_ids = {s.id for s in self.scenes}
+        for e in self.event_graph.events:
+            if e.scene_id not in scene_ids:
+                raise ValueError(f"event {e.id!r}: scene_id={e.scene_id!r} does not match any real Scene.id")
+        all_facts = {note for s in self.scenes for note in s.factual_notes}
+        for c in self.event_graph.grounded_claims:
+            if c.source_ref not in all_facts:
+                raise ValueError(
+                    f"GroundedClaim {c.id!r}: source_ref={c.source_ref!r} does not match any "
+                    "Scene.factual_notes entry declared anywhere in this project"
+                )
         return self
