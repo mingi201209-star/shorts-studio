@@ -1,0 +1,35 @@
+name: Publish radium-render result via git (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/publish-radium-render-result.yml]
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the real radium-render.yml artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 36205999457 -n shorts-studio-radium-girls -R ${{ github.repository }} -D artifact_out
+          ls -la artifact_out
+          ls -la artifact_out/dist
+      - name: Publish dist/ to a throwaway orphan branch
+        run: |
+          git config user.name "radium-render-publish-bot"
+          git config user.email "actions@github.com"
+          mkdir -p publish_out
+          cp artifact_out/dist/final.mp4 publish_out/final.mp4
+          cp artifact_out/dist/qa_report.json publish_out/qa_report.json
+          git checkout --orphan publish/radium-render-result
+          git reset --hard
+          git add publish_out/final.mp4 publish_out/qa_report.json
+          git commit -m "Throwaway: real radium-render.yml output for local verification"
+          git push -f origin HEAD:refs/heads/publish/radium-render-result
