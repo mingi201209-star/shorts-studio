@@ -1,16 +1,34 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
+
+from .retention_rules import HOOK_TYPES
+
+# A manifest field the engine doesn't recognize -- a typo (hok_type), a
+# field name left over from a design that changed, or one borrowed from a
+# different branch's schema -- must fail loudly, not vanish silently. This
+# is not a hypothetical: examples/train_wheels.json (PR #24) shipped with a
+# real hook_type declaration that a pre-retention-engine build of these
+# models silently dropped (pydantic's own default is extra="ignore"),
+# reporting `validate` PASS the entire time. Verified before enabling this
+# repo-wide (Phase 0 of the retention-foundation integration): every field
+# actually present in comet.json, radium_girls.json, titanic_fourth_funnel.json,
+# and train_wheels.json is modeled below -- forbidding extra fields does not
+# reject any of them (see tests/test_unknown_field_fail_closed.py).
+_FORBID_EXTRA = ConfigDict(extra="forbid")
 
 class Motion(BaseModel):
+    model_config = _FORBID_EXTRA
     type: str = "push_in"
 
 class AssetCandidate(BaseModel):
     """A fallback asset the visual-QA recovery loop may swap in for a scene."""
+    model_config = _FORBID_EXTRA
     asset: str | None = None
     asset_url: str | None = None
     attribution: str | None = None
 
 class VisualBeat(BaseModel):
     """An optional timed visual cut inside one narration scene."""
+    model_config = _FORBID_EXTRA
     start: float = Field(ge=0)
     asset: str | None = None
     asset_url: str | None = None
@@ -20,6 +38,14 @@ class VisualBeat(BaseModel):
     visual_qa_labels: list[str] = Field(default_factory=list)
     visual_qa_negative_labels: list[str] = Field(default_factory=list)
     visual_qa_expected_sha256: list[str] = Field(default_factory=list)
+    # Optional, free-text label for what NEW information this beat delivers
+    # (e.g. "storage_tank_scale", "rupture_point", "trial_outcome"). Purely
+    # authorial -- the engine does not interpret its meaning, only whether
+    # the exact same label appears more than once (see
+    # final_video_qa.compute_information_progression). A beat with no
+    # info_role is simply not checked; this keeps every manifest that
+    # predates the Information Change Contract unaffected.
+    info_role: str | None = None
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -31,12 +57,37 @@ class NarrationPhrase(BaseModel):
     so the same text always segments the same way regardless of which
     script it appears in. `pace` is a narrow escape hatch for an explicit
     rate override; there is deliberately no boundary/pause field here."""
+    model_config = _FORBID_EXTRA
     role: str  # HOOK|SETUP|CRISIS|INVESTIGATION|REVEAL|EXPLANATION|PAYOFF
     text: str = Field(min_length=1)
     focus: bool = False  # the emphasis/result target, e.g. a REVEAL's delivered payload
     pace: str | None = None  # optional explicit Edge TTS rate override, e.g. "+2%"
+    # Which retention mechanism a HOOK-role phrase is CLAIMING to use (see
+    # retention_rules.HOOK_TYPES). This is author-declared structural
+    # metadata, not a semantic verification: valid_hook_type below only
+    # checks the value is one of the known HOOK_TYPES enum members, and
+    # final_video_qa.verify_hook_opener only checks that the value is set
+    # AND that the phrase's text contains SOME tension marker (any of them,
+    # from retention_rules.has_tension_marker) -- it never confirms the
+    # declared type is the marker that actually fired. A phrase can declare
+    # hook_type="contradiction" while its text contains only a danger word
+    # and no contradiction at all, and this passes today (demonstrated with
+    # a real adversarial fixture in the Phase 0 report). Fixing this
+    # requires reading comprehension a regex/enum check cannot provide;
+    # it is an explicit known limitation of this deterministic layer, left
+    # to the planned Psychological Entertainment Contract's semantic
+    # Observed-Evidence layer, not something to approximate here with more
+    # keyword lists.
+    hook_type: str | None = None
+
+    @model_validator(mode="after")
+    def valid_hook_type(self):
+        if self.hook_type is not None and self.hook_type not in HOOK_TYPES:
+            raise ValueError(f"hook_type must be one of {HOOK_TYPES}, got {self.hook_type!r}")
+        return self
 
 class Scene(BaseModel):
+    model_config = _FORBID_EXTRA
     id: str
     narration: str = Field(min_length=1)
     visual_description: str = Field(min_length=1)
@@ -89,6 +140,7 @@ class Scene(BaseModel):
     narration_plan: list[NarrationPhrase] = []
 
 class Project(BaseModel):
+    model_config = _FORBID_EXTRA
     title: str
     width: int = 1080
     height: int = 1920
@@ -107,6 +159,34 @@ class Project(BaseModel):
     # across narratively adjacent beats. Projects that do have the material
     # (and the narrative complaint these gates were built for) turn this on.
     strict_source_diversity: bool = False
+    # Opt-in retention-engine contract: First-Second Hook, Information
+    # Change, Story Progression, Ending Payoff, First-10s Retention, and
+    # Runtime Discipline (see shorts_studio/final_video_qa.py and
+    # shorts_studio/idea_gate.py). Off by default so every manifest written
+    # before this contract existed (comet.json, radium_girls.json,
+    # titanic_fourth_funnel.json) keeps passing QA exactly as before -- this
+    # is a stricter bar a NEW production opts into, not a retroactive
+    # requirement.
+    #
+    # "Runtime Discipline" is the category name; what it actually checks
+    # today (final_video_qa.verify_no_redundant_narration, reported under
+    # the "no_redundant_narration" key) is near-duplicate-sentence
+    # detection ONLY -- there is no total-video-length gate anywhere in this
+    # engine under this name or any other. Do not read "Runtime Discipline
+    # PASS" as "this video is an appropriate length."
+    #
+    # strict_retention_contract PASS is a structural/deterministic filter,
+    # not a human-interest or entertainment-value verification: every check
+    # in this contract trusts author-declared metadata (a role label, a
+    # hook_type, an info_role string) rather than confirming it against the
+    # real narration/visual content. See shorts_studio/final_video_qa.py's
+    # retention-engine module docstring and the Phase 0 report for
+    # concretely demonstrated cases where this contract PASSes content a
+    # human would call boring or mislabeled. Never report a
+    # strict_retention_contract PASS as proof a video is entertaining, or
+    # as "fun verified" -- only real post-publish data, or a human review,
+    # can establish that.
+    strict_retention_contract: bool = False
 
     @model_validator(mode="after")
     def vertical(self):
