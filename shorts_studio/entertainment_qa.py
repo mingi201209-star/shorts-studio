@@ -762,6 +762,35 @@ def compute_entertainment_diagnostics(graph, loops: list[CuriosityLoop]) -> dict
     }
 
 
+def compute_processing_fluency_diagnostics(evidence_by_id: dict[str, ObservedEventEvidence]) -> dict:
+    """Soft, report-only diagnostics on how demanding the REAL (observed)
+    narration text is to parse -- character length and comma-delimited
+    clause count per observed unit. This is deliberately NOT a "readability
+    score", is never a gate, and never feeds into any PASS/FAIL: cognitive
+    fluency research suggests very easy-to-parse text aids comprehension,
+    but this module has no way to know whether a given script SHOULD be
+    simple (a quick fact) or complex (a deliberately dense reveal), so it
+    only reports raw numbers a human can interpret in context -- the same
+    "diagnostic, not verdict" stance as compute_entertainment_diagnostics."""
+    lengths = []
+    clause_counts = []
+    for ev in evidence_by_id.values():
+        if not (ev.observed and ev.real_narration_text):
+            continue
+        text = ev.real_narration_text
+        lengths.append(len(text))
+        clause_counts.append(text.count(",") + text.count("、") + 1)
+    if not lengths:
+        return {"observed_unit_count": 0, "average_length_chars": None,
+                "max_length_chars": None, "average_clause_count": None}
+    return {
+        "observed_unit_count": len(lengths),
+        "average_length_chars": sum(lengths) / len(lengths),
+        "max_length_chars": max(lengths),
+        "average_clause_count": sum(clause_counts) / len(clause_counts),
+    }
+
+
 def _assertions_by_type(graph, evidence_by_id: dict[str, ObservedEventEvidence], overclaim_result: dict) -> dict:
     """Groups every judged event by which of the six Phase 2 assertion
     types it was evaluated under -- the explicit per-assertion breakdown
@@ -822,6 +851,7 @@ def run_entertainment_contract_report(project, scene_windows: list[dict], judge:
     loops = compute_curiosity_loops(graph, evidence)
     gap_check = verify_unresolved_critical_gaps(loops)
     diagnostics = compute_entertainment_diagnostics(graph, loops)
+    processing_fluency = compute_processing_fluency_diagnostics(evidence)
     overclaim_result = evaluate_overclaim(project, graph, evidence, judge)
     return {
         "mode": "report-only",
@@ -835,4 +865,5 @@ def run_entertainment_contract_report(project, scene_windows: list[dict], judge:
         "assertions": _assertions_by_type(graph, evidence, overclaim_result),
         "overclaim": overclaim_result,
         "diagnostics": diagnostics,
+        "processing_fluency": processing_fluency,
     }

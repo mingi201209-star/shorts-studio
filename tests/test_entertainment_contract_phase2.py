@@ -19,8 +19,8 @@ from shorts_studio.entertainment_rules import (
 )
 from shorts_studio.entertainment_qa import (
     AnthropicJudge, JudgeVerdict, NullJudge, _call_judge_safely, _dispatch,
-    build_observed_evidence, compute_curiosity_loops, evaluate_overclaim,
-    verify_unresolved_critical_gaps,
+    build_observed_evidence, compute_curiosity_loops, compute_processing_fluency_diagnostics,
+    evaluate_overclaim, verify_unresolved_critical_gaps,
 )
 import shorts_studio.entertainment_qa as eqa
 
@@ -386,3 +386,46 @@ def test_overclaim_not_evaluated_when_no_delivered_evidence_yet():
     evidence = build_observed_evidence(graph, windows, NullJudge())
     result = evaluate_overclaim(project, graph, evidence, NullJudge())
     assert result["status"] == JUDGE_NOT_EVALUATED
+
+
+# ===========================================================================
+# real_start/real_end regression: real_end must reflect the narration
+# unit's actual end time, never duplicate real_start (found and fixed while
+# running the Train Wheels V2 pilot).
+# ===========================================================================
+def test_real_end_is_not_a_duplicate_of_real_start():
+    e = _event("e1", "CLAIM", "s1", "설명입니다", unit_index=0)
+    graph = DeclaredEventGraph(events=[e], grounded_claims=[])
+    windows = [_window("s1", 10.0, [("EXPLANATION", e.text, 2.0, 5.5)])]
+    evidence = build_observed_evidence(graph, windows, NullJudge())
+    ev = evidence["e1"]
+    assert ev.real_start == 12.0
+    assert ev.real_end == 15.5
+    assert ev.real_end != ev.real_start
+
+
+# ===========================================================================
+# Processing-fluency diagnostics: report-only, never a gate, purely
+# descriptive of the REAL (observed) text -- see Phase 2 section 8.
+# ===========================================================================
+def test_processing_fluency_diagnostics_are_purely_descriptive():
+    gap = _gap("gap1", "s1", "질문입니다", unit_index=0)
+    res = _event("res1", "RESOLUTION", "s2", "짧은 답, 그리고 조금 더 긴 설명이 이어집니다", resolves="gap1", unit_index=0)
+    graph = DeclaredEventGraph(events=[gap, res], grounded_claims=[GAP_CLAIM])
+    windows = [_window("s1", 0.0, [("GAP", gap.text, 0.0, 1.0)]), _window("s2", 5.0, [("RESOLUTION", res.text, 0.0, 2.0)])]
+    evidence = build_observed_evidence(graph, windows, NullJudge())
+    diag = compute_processing_fluency_diagnostics(evidence)
+    assert diag["observed_unit_count"] == 2
+    assert diag["average_length_chars"] > 0
+    assert diag["max_length_chars"] == max(len(gap.text), len(res.text))
+    assert diag["average_clause_count"] >= 1
+
+
+def test_processing_fluency_diagnostics_empty_when_nothing_observed():
+    e = _event("e1", "CLAIM", "s1", "설명입니다", unit_index=5)  # out of range -> not observed
+    graph = DeclaredEventGraph(events=[e], grounded_claims=[])
+    windows = [_window("s1", 0.0, [("EXPLANATION", "x", 0.0, 1.0)])]
+    evidence = build_observed_evidence(graph, windows, NullJudge())
+    diag = compute_processing_fluency_diagnostics(evidence)
+    assert diag["observed_unit_count"] == 0
+    assert diag["average_length_chars"] is None
