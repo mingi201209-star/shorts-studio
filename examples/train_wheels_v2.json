@@ -1,0 +1,370 @@
+{
+  "title": "기차는 커브에서 왜 바퀴를 꺾지 않을까?",
+  "scenes": [
+    {
+      "id": "s_hook",
+      "narration": "기차는 커브를 돌 때 자동차처럼 바퀴를 꺾지 않습니다. 그런데도 방향을 잃지 않고 선로를 따라갑니다.",
+      "visual_description": "커브를 도는 기차의 바퀴 클로즈업",
+      "narration_plan": [
+        {
+          "role": "HOOK",
+          "text": "기차는 커브를 돌 때 자동차처럼 바퀴를 꺾지 않습니다. 그런데도 방향을 잃지 않고 선로를 따라갑니다.",
+          "focus": true,
+          "hook_type": "intuition_reversal"
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+    },
+    {
+      "id": "s_constraint",
+      "narration": "두 바퀴는 하나의 차축에 단단히 고정되어 있어서, 왼쪽과 오른쪽 바퀴가 항상 같은 속도로 회전합니다.",
+      "visual_description": "차축에 고정된 두 바퀴 다이어그램",
+      "narration_plan": [
+        {
+          "role": "SETUP",
+          "text": "두 바퀴는 하나의 차축에 단단히 고정되어 있어서, 왼쪽과 오른쪽 바퀴가 항상 같은 속도로 회전합니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [
+        "두 바퀴는 하나의 차축에 고정되어 함께 회전한다"
+      ],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+    },
+    {
+      "id": "s_violation1",
+      "narration": "그런데 커브를 돌 때는 바깥쪽 바퀴가 안쪽 바퀴보다 더 먼 거리를 가야 합니다.",
+      "visual_description": "커브 구간 선로 위에서 바깥쪽과 안쪽 궤적 길이 차이를 보여주는 다이어그램",
+      "narration_plan": [
+        {
+          "role": "CRISIS",
+          "text": "그런데 커브를 돌 때는 바깥쪽 바퀴가 안쪽 바퀴보다 더 먼 거리를 가야 합니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": []
+    },
+    {
+      "id": "s_gap1",
+      "narration": "같은 속도로 도는데, 어떻게 두 바퀴가 서로 다른 거리를 갈 수 있을까요?",
+      "visual_description": "물음표가 떠오르는 바퀴축 클로즈업",
+      "narration_plan": [
+        {
+          "role": "INVESTIGATION",
+          "text": "같은 속도로 도는데, 어떻게 두 바퀴가 서로 다른 거리를 갈 수 있을까요?",
+          "focus": false
+        }
+      ],
+      "factual_notes": []
+    },
+    {
+      "id": "s_clue1",
+      "narration": "사실 기차 바퀴의 굴러가는 면은 완전히 평평한 원기둥이 아니라, 완만하게 좁아지는 형태로 깎여 있습니다.",
+      "visual_description": "바퀴 답면의 완만한 경사를 보여주는 단면도",
+      "narration_plan": [
+        {
+          "role": "INVESTIGATION",
+          "text": "사실 기차 바퀴의 굴러가는 면은 완전히 평평한 원기둥이 아니라, 완만하게 좁아지는 형태로 깎여 있습니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+    },
+    {
+      "id": "s_clue2",
+      "narration": "그리고 커브에서는 바퀴 축 전체가 살짝 바깥쪽으로 밀리면서, 두 바퀴가 레일에 닿는 위치도 함께 달라집니다.",
+      "visual_description": "커브에서 축 전체가 바깥쪽으로 이동하는 애니메이션",
+      "narration_plan": [
+        {
+          "role": "INVESTIGATION",
+          "text": "그리고 커브에서는 바퀴 축 전체가 살짝 바깥쪽으로 밀리면서, 두 바퀴가 레일에 닿는 위치도 함께 달라집니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+    },
+    {
+      "id": "s_reveal",
+      "narration": "그 결과 바깥쪽 바퀴는 더 굵은 부분으로, 안쪽 바퀴는 더 가는 부분으로 레일에 닿게 되어, 두 바퀴의 실제 굴림 반지름이 서로 달라집니다.",
+      "visual_description": "바깥쪽/안쪽 바퀴의 접촉 반지름 차이를 보여주는 확대도",
+      "narration_plan": [
+        {
+          "role": "REVEAL",
+          "text": "그 결과 바깥쪽 바퀴는 더 굵은 부분으로, 안쪽 바퀴는 더 가는 부분으로 레일에 닿게 되어, 두 바퀴의 실제 굴림 반지름이 서로 달라집니다.",
+          "focus": true
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+    },
+    {
+      "id": "s_resolution1_seed",
+      "narration": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다. 그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
+      "visual_description": "커브를 도는 바퀴 전체 샷, 플랜지가 화면 한쪽에 자연스럽게 보임",
+      "narration_plan": [
+        {
+          "role": "EXPLANATION",
+          "text": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다.",
+          "focus": false
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [
+        "플랜지는 바퀴 안쪽에 튀어나온 테두리 형태로 존재한다"
+      ],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
+      "visual_beats": [
+        {
+          "start": 0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 2.5,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
+          "info_role": "flange_seed_visual"
+        }
+      ]
+    },
+    {
+      "id": "s_relay_gap2",
+      "narration": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요? 그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
+      "visual_description": "플랜지 부분 클로즈업, 레일과의 간격을 보여줌",
+      "narration_plan": [
+        {
+          "role": "INVESTIGATION",
+          "text": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요?",
+          "focus": false
+        },
+        {
+          "role": "INVESTIGATION",
+          "text": "그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
+          "focus": false
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+    },
+    {
+      "id": "s_violation2",
+      "narration": "하지만 사실 평상시 정상적인 주행에서는, 방향을 잡아주는 주된 원리는 이 돌출부가 아니라 방금 설명한 반지름 차이입니다.",
+      "visual_description": "정상 주행 중 플랜지와 레일 사이의 간격을 보여주는 단면도",
+      "narration_plan": [
+        {
+          "role": "CRISIS",
+          "text": "하지만 사실 평상시 정상적인 주행에서는, 방향을 잡아주는 주된 원리는 이 돌출부가 아니라 방금 설명한 반지름 차이입니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [
+        "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
+      ],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+    },
+    {
+      "id": "s_resolution2",
+      "narration": "이 돌출부, 즉 플랜지는 눈, 비, 마모 같은 특수한 상황에서 바퀴가 궤도를 크게 벗어나려 할 때만 레일에 닿아 보조적으로 방향을 잡아주는 안전장치입니다.",
+      "visual_description": "플랜지가 레일 옆면에 살짝 닿는 한계 상황 다이어그램",
+      "narration_plan": [
+        {
+          "role": "EXPLANATION",
+          "text": "이 돌출부, 즉 플랜지는 눈, 비, 마모 같은 특수한 상황에서 바퀴가 궤도를 크게 벗어나려 할 때만 레일에 닿아 보조적으로 방향을 잡아주는 안전장치입니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+    },
+    {
+      "id": "s_payoff",
+      "narration": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다. 물론 실제 주행에는 크리프나 서스펜션 같은 다른 요소도 함께 작용하지만, 오늘 다룬 반지름 차이가 그 핵심 원리 중 하나입니다.",
+      "visual_description": "커브를 부드럽게 통과하는 기차 전체 샷",
+      "narration_plan": [
+        {
+          "role": "PAYOFF",
+          "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다.",
+          "focus": true
+        },
+        {
+          "role": "PAYOFF",
+          "text": "물론 실제 주행에는 크리프나 서스펜션 같은 다른 요소도 함께 작용하지만, 오늘 다룬 반지름 차이가 그 핵심 원리 중 하나입니다.",
+          "focus": false
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+    }
+  ],
+  "strict_retention_contract": false,
+  "strict_entertainment_contract": false,
+  "event_graph": {
+    "events": [
+      {
+        "id": "hook1",
+        "type": "CLAIM",
+        "critical": true,
+        "scene_id": "s_hook",
+        "narration_unit_index": 0,
+        "text": "기차는 커브를 돌 때 자동차처럼 바퀴를 꺾지 않습니다. 그런데도 방향을 잃지 않고 선로를 따라갑니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "constraint1",
+        "type": "CLAIM",
+        "critical": true,
+        "scene_id": "s_constraint",
+        "narration_unit_index": 0,
+        "text": "두 바퀴는 하나의 차축에 단단히 고정되어 있어서, 왼쪽과 오른쪽 바퀴가 항상 같은 속도로 회전합니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "violation1",
+        "type": "VIOLATION",
+        "critical": true,
+        "scene_id": "s_violation1",
+        "narration_unit_index": 0,
+        "text": "그런데 커브를 돌 때는 바깥쪽 바퀴가 안쪽 바퀴보다 더 먼 거리를 가야 합니다.",
+        "grounded_claim_refs": [
+          "claim_axle"
+        ]
+      },
+      {
+        "id": "gap1",
+        "type": "GAP",
+        "critical": true,
+        "scene_id": "s_gap1",
+        "narration_unit_index": 0,
+        "text": "같은 속도로 도는데, 어떻게 두 바퀴가 서로 다른 거리를 갈 수 있을까요?",
+        "grounded_claim_refs": [
+          "claim_axle"
+        ]
+      },
+      {
+        "id": "clue1",
+        "type": "CLUE",
+        "critical": true,
+        "scene_id": "s_clue1",
+        "narration_unit_index": 0,
+        "resolves": "gap1",
+        "info_role": "wheel_profile_not_flat",
+        "text": "사실 기차 바퀴의 굴러가는 면은 완전히 평평한 원기둥이 아니라, 완만하게 좁아지는 형태로 깎여 있습니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "clue2",
+        "type": "CLUE",
+        "critical": true,
+        "scene_id": "s_clue2",
+        "narration_unit_index": 0,
+        "resolves": "gap1",
+        "info_role": "axle_shifts_in_curve",
+        "text": "그리고 커브에서는 바퀴 축 전체가 살짝 바깥쪽으로 밀리면서, 두 바퀴가 레일에 닿는 위치도 함께 달라집니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "reveal1",
+        "type": "REVEAL",
+        "critical": true,
+        "scene_id": "s_reveal",
+        "narration_unit_index": 0,
+        "resolves": "gap1",
+        "text": "그 결과 바깥쪽 바퀴는 더 굵은 부분으로, 안쪽 바퀴는 더 가는 부분으로 레일에 닿게 되어, 두 바퀴의 실제 굴림 반지름이 서로 달라집니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "resolution1",
+        "type": "RESOLUTION",
+        "critical": true,
+        "scene_id": "s_resolution1_seed",
+        "narration_unit_index": 0,
+        "resolves": "gap1",
+        "visual_beat_index": 0,
+        "text": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "seed_flange",
+        "type": "CLAIM",
+        "critical": true,
+        "scene_id": "s_resolution1_seed",
+        "narration_unit_index": 1,
+        "visual_beat_index": 1,
+        "text": "그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "relay1",
+        "type": "RELAY",
+        "critical": false,
+        "scene_id": "s_relay_gap2",
+        "narration_unit_index": 0,
+        "text": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요?",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "gap2",
+        "type": "GAP",
+        "critical": true,
+        "scene_id": "s_relay_gap2",
+        "narration_unit_index": 1,
+        "text": "그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
+        "grounded_claim_refs": [
+          "claim_flange_visible"
+        ]
+      },
+      {
+        "id": "violation2",
+        "type": "VIOLATION",
+        "critical": true,
+        "scene_id": "s_violation2",
+        "narration_unit_index": 0,
+        "text": "하지만 사실 평상시 정상적인 주행에서는, 방향을 잡아주는 주된 원리는 이 돌출부가 아니라 방금 설명한 반지름 차이입니다.",
+        "grounded_claim_refs": [
+          "claim_flange_role"
+        ]
+      },
+      {
+        "id": "resolution2",
+        "type": "RESOLUTION",
+        "critical": true,
+        "scene_id": "s_resolution2",
+        "narration_unit_index": 0,
+        "resolves": "gap2",
+        "text": "이 돌출부, 즉 플랜지는 눈, 비, 마모 같은 특수한 상황에서 바퀴가 궤도를 크게 벗어나려 할 때만 레일에 닿아 보조적으로 방향을 잡아주는 안전장치입니다.",
+        "grounded_claim_refs": []
+      },
+      {
+        "id": "payoff1",
+        "type": "PAYOFF",
+        "critical": true,
+        "scene_id": "s_payoff",
+        "narration_unit_index": 0,
+        "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다.",
+        "grounded_claim_refs": []
+      }
+    ],
+    "grounded_claims": [
+      {
+        "id": "claim_axle",
+        "text": "두 바퀴는 하나의 차축에 고정되어 함께 회전한다",
+        "source_ref": "두 바퀴는 하나의 차축에 고정되어 함께 회전한다"
+      },
+      {
+        "id": "claim_flange_visible",
+        "text": "플랜지는 바퀴 안쪽에 튀어나온 테두리 형태로 존재한다",
+        "source_ref": "플랜지는 바퀴 안쪽에 튀어나온 테두리 형태로 존재한다"
+      },
+      {
+        "id": "claim_flange_role",
+        "text": "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다",
+        "source_ref": "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
+      }
+    ]
+  }
+}
