@@ -1,0 +1,55 @@
+name: Fetch full NIST Forgotten Radium Scientists article (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/fetch-nist-full-article.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch full article text and every image regardless of host
+        run: |
+          set -o pipefail
+          pip install requests beautifulsoup4 >/dev/null
+          python3 - <<'PY'
+          import json, requests
+          from bs4 import BeautifulSoup
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          url = "https://www.nist.gov/nist-museum/forgotten-radium-scientists"
+          r = requests.get(url, headers=HEADERS, timeout=25)
+          soup = BeautifulSoup(r.text, "html.parser")
+          # Every image on the page, any host, with the caption text right after it.
+          imgs = []
+          for img in soup.find_all("img"):
+              src = img.get("src", "")
+              alt = img.get("alt", "")
+              caption = ""
+              fig = img.find_parent("figure") or img.find_parent(class_="field--type-image")
+              if fig:
+                  cap = fig.find("figcaption") or fig.find(class_="caption") or fig.find(class_="credit")
+                  if cap:
+                      caption = cap.get_text(" ", strip=True)
+              imgs.append({"src": src, "alt": alt, "caption": caption})
+          body = soup.find("div", class_="field--name-body") or soup.find("main") or soup
+          text = body.get_text("\n", strip=True)
+          json.dump({"images": imgs, "full_text": text}, open("full_article.json", "w"), indent=2, ensure_ascii=False)
+          print("images found:", len(imgs))
+          for i in imgs:
+              print(" -", i["src"], "|", i["alt"], "|", i["caption"])
+          print("---TEXT LEN---", len(text))
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "nist-full-article-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan scout/nist-full-article
+          git reset --hard
+          git add full_article.json
+          git commit -m "Throwaway: full Forgotten Radium Scientists article text + images"
+          git push -f origin HEAD:refs/heads/scout/nist-full-article
