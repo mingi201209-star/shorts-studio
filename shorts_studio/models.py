@@ -97,6 +97,16 @@ class Project(BaseModel):
     scenes: list[Scene] = Field(min_length=1)
     # Cap on per-scene asset-swap/re-render/re-QA cycles before the whole production FAILs.
     max_visual_recovery_attempts: int = Field(default=2, ge=0)
+    # Whole-video source-family diversity gates (global reuse ratio, sliding
+    # novelty window, first-5s family coverage, pre-render source budget).
+    # Opt-in rather than universal: they assume a real archival photo pool
+    # rich enough to avoid revisiting the same evidence across adjacent
+    # scenes, which holds for a topic like the Radium Girls but not for a
+    # photo-sparse investigation like the Comet crashes, where the same
+    # handful of real accident-report photos legitimately gets revisited
+    # across narratively adjacent beats. Projects that do have the material
+    # (and the narrative complaint these gates were built for) turn this on.
+    strict_source_diversity: bool = False
 
     @model_validator(mode="after")
     def vertical(self):

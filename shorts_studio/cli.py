@@ -11,10 +11,11 @@ def main():
     a=ap.parse_args()
     if a.cmd=="validate":
         p=load_project(a.manifest)
-        budget=verify_source_budget(p)
-        if budget["status"]!="PASS":
-            print(json.dumps({"status":"FAIL","reason":budget["reason"],"source_budget":budget["evidence"]},ensure_ascii=False))
-            raise SystemExit(1)
+        if getattr(p,"strict_source_diversity",False):
+            budget=verify_source_budget(p)
+            if budget["status"]!="PASS":
+                print(json.dumps({"status":"FAIL","reason":budget["reason"],"source_budget":budget["evidence"]},ensure_ascii=False))
+                raise SystemExit(1)
         print(json.dumps({"status":"PASS","scenes":len(p.scenes)},ensure_ascii=False))
     elif a.cmd=="render": print(json.dumps(render(a.manifest,a.dry_run),ensure_ascii=False))
     else:

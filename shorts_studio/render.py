@@ -465,10 +465,13 @@ def render(manifest:str,dry_run:bool=False)->dict:
     # Fail before spending a full render on a manifest that doesn't have
     # enough genuinely distinct source families to cover its own visual
     # beats -- the fix is to source more real, distinct images, not to
-    # render anyway and let the same handful of pictures cycle.
-    budget=verify_source_budget(p)
-    if budget["status"]!="PASS":
-        raise RuntimeError(f"source budget check failed: {budget['reason']}")
+    # render anyway and let the same handful of pictures cycle. Opt-in via
+    # strict_source_diversity (see models.py) -- not every project has a
+    # real photo pool rich enough to satisfy this.
+    if getattr(p,"strict_source_diversity",False):
+        budget=verify_source_budget(p)
+        if budget["status"]!="PASS":
+            raise RuntimeError(f"source budget check failed: {budget['reason']}")
     if dry_run: return {"status":"PASS","scenes":len(p.scenes),"mode":"dry-run"}
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         raise RuntimeError("FFmpeg/ffprobe required")

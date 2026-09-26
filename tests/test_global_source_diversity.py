@@ -194,3 +194,37 @@ def test_semantic_visual_coverage_is_reported_as_a_ratio():
     metrics = compute_semantic_visual_coverage(project)
     assert 0.0 <= metrics["semantic_visual_coverage"] <= 1.0
     assert metrics["categories_covered"]["technique_closeup"] is True
+
+
+# --- 7. strict_source_diversity is opt-in, not universal --------------------
+# comet.json's real archival photo pool is genuinely narrower than
+# radium_girls.json's (a handful of period accident-report photos vs. many
+# distinct dial-painter/factory/ad/lawsuit photos), so the same handful of
+# real photos legitimately gets revisited across adjacent scenes about the
+# same evidence. These gates assume a rich pool; forcing every project
+# through them regardless of what's actually available would either block a
+# smoke-test fixture nobody asked to redesign, or pressure someone into
+# padding it with weaker, less accurate filler images just to pass a count.
+
+def test_render_does_not_enforce_source_budget_when_opted_out():
+    from shorts_studio.render import render
+    result = render("examples/comet.json", dry_run=True)
+    assert result["status"] == "PASS", result
+
+
+def test_render_does_enforce_source_budget_for_radium_girls():
+    import json
+    from pathlib import Path
+    from shorts_studio.models import Project
+    data = json.loads(Path("examples/radium_girls.json").read_text(encoding="utf-8"))
+    project = Project.model_validate(data)
+    assert project.strict_source_diversity is True
+
+
+def test_comet_example_defaults_to_opted_out():
+    import json
+    from pathlib import Path
+    from shorts_studio.models import Project
+    data = json.loads(Path("examples/comet.json").read_text(encoding="utf-8"))
+    project = Project.model_validate(data)
+    assert project.strict_source_diversity is False

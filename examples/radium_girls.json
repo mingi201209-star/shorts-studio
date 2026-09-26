@@ -5,6 +5,7 @@
   "height": 1920,
   "fps": 30,
   "max_visual_recovery_attempts": 2,
+  "strict_source_diversity": true,
   "scenes": [
     {
       "id": "scene_01",

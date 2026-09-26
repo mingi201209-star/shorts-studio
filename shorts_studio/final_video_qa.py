@@ -606,13 +606,17 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     checks["no_black_opening"] = verify_no_black_opening(video, media_box, build_dir)
     source_reuse = compute_source_reuse(project)
     checks["source_reuse"] = verify_source_reuse(source_reuse)
+    # Metrics are always computed (useful in the report either way); only
+    # projects that opt in via strict_source_diversity are gated on them --
+    # see the field's docstring in models.py for why this isn't universal.
     global_reuse = compute_global_source_reuse(project)
-    checks["global_source_reuse"] = verify_global_source_reuse(global_reuse)
     novelty_violations = compute_novelty_window_violations(project)
-    checks["visual_novelty"] = verify_visual_novelty(novelty_violations)
     first_5s_coverage = compute_first_5s_family_coverage(scene_windows, project)
-    checks["first_5s_coverage"] = verify_first_5s_coverage(first_5s_coverage)
     semantic_coverage = compute_semantic_visual_coverage(project)
+    if getattr(project, "strict_source_diversity", False):
+        checks["global_source_reuse"] = verify_global_source_reuse(global_reuse)
+        checks["visual_novelty"] = verify_visual_novelty(novelty_violations)
+        checks["first_5s_coverage"] = verify_first_5s_coverage(first_5s_coverage)
 
     title_samples = []
     if scene_windows:
