@@ -1,0 +1,2584 @@
+{
+  "status": "PASS",
+  "subtitle_reports": [
+    {
+      "scene": "scene_01",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_02",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_03",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_04",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_05",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_06",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_07",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_08",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    }
+  ],
+  "visual_qa": {
+    "structural_status": "PASS",
+    "semantic_status": "NOT_EVALUATED",
+    "failures": [],
+    "requirements": {
+      "scene_01": [
+        "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+      ],
+      "scene_02": [
+        "1920\ub144\ub300 \ub77c\ub4d0 \ubb38\uc790\ud310 \uacf5\uc7a5\uc758 \uc791\uc5c5\ub300\uc640 \uc5ec\uc131 \ub178\ub3d9\uc790\ub4e4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_03": [
+        "\uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud658\uacbd\uc744 \ubcf4\uc5ec\uc8fc\ub418 \uc785\uc774\ub098 \ud131\uc758 \uc190\uc0c1 \uc7a5\uba74\uc740 \uc5c6\uc5b4\uc57c \ud568"
+      ],
+      "scene_04": [
+        "1922\ub144 \ub77c\ub4d0 \uacf5\uc7a5 \ub178\ub3d9\uc790\ub4e4\uc774 \ubcf4\ud638\uc7a5\ube44 \uc5c6\uc774 \uc791\uc5c5\ud558\ub294 \uc5ed\uc0ac\uc801 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_05": [
+        "\ub77c\ub4d0 \ubb38\uc790\ud310 \uc5ec\uc131 \ub178\ub3d9\uc790\ub4e4\uc758 \uc5ed\uc0ac \uc790\ub8cc\uac00 \ubcf4\uc5ec\uc57c \ud558\uace0 \uc2e0\uccb4 \ubcd1\ubcc0\uc740 \ubcf4\uc774\uc9c0 \uc54a\uc544\uc57c \ud568"
+      ],
+      "scene_06": [
+        "\ucd08\uae30 20\uc138\uae30 Lind electroscope \ubc29\uc0ac\ub2a5 \uce21\uc815 \uc7a5\ube44\uac00 \ubd84\uba85\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_07": [
+        "\uc5ed\uc0ac\uc801 Lind electroscope\uac00 \ud654\uba74 \uc911\uc2ec\uc5d0 \uc788\uc5b4\uc57c \ud568"
+      ],
+      "scene_08": [
+        "\uc2e4\uc81c \ub77c\ub4d0 \ubb38\uc790\ud310 \uc5ec\uc131 \ub178\ub3d9\uc790\ub4e4\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uacb0\ub9d0\uc740 \uc874\uc911\ud558\ub294 \ub2e4\ud050\uba58\ud130\ub9ac \ud1a4\uc774\uc5b4\uc57c \ud568"
+      ]
+    }
+  },
+  "semantic_visual_qa": {
+    "status": "PASS",
+    "results": [
+      {
+        "scene": "scene_01",
+        "status": "PASS",
+        "requirements": [
+          "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_01_beat_00",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ubcf4\uc874\ub41c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \uc6a9\uae30\uc5d0 POISON(\ub3c5\uadf9\ubb3c) \ub77c\ubca8\uc774 \ubd99\uc5b4 \uc788\ub294 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 176.0226630015432,
+                "contrast": 59.06543912172342,
+                "mean": 36.22065731095679
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up modern photograph of a preserved original Undark radium luminous paint vial labeled POISON": 0.291531503200531,
+                  "graphic medical injury": 0.21770638227462769,
+                  "corpse": 0.2065371721982956,
+                  "cartoon": 0.18298998475074768
+                },
+                "mean_pos": 0.291531503200531,
+                "mean_neg": 0.20241117974122366,
+                "margin": 0.08912032345930734
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_01",
+            "requirements": [
+              "1920\ub144\ub300 \ub77c\ub4d0 \uc57c\uad11 \ud398\uc778\ud2b8 \uc81c\ud488\uc744 \ud64d\ubcf4\ud558\ub294 \uc2e4\uc81c \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 159.864090470679,
+                "contrast": 69.14109670637768,
+                "mean": 28.993515142746915
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s vintage print advertisement for glow-in-the-dark radium paint": 0.3122889995574951,
+                  "modern advertisement": 0.23899304866790771,
+                  "graphic medical injury": 0.20230011641979218,
+                  "corpse": 0.19415806233882904
+                },
+                "mean_pos": 0.3122889995574951,
+                "mean_neg": 0.211817075808843,
+                "margin": 0.10047192374865213
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_02",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ub0a8\uc544\uc788\ub294 (\ud604\uc7ac\ub294 \ubc84\ub824\uc9c4) \ub77c\ub4d0 \uacf5\uc7a5 \uac74\ubb3c\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 554.6955748456791,
+                "contrast": 88.88645170920822,
+                "mean": 61.124461805555555
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "a modern documentary photograph of the former, now-abandoned historic radium factory building": 0.2868765592575073,
+                  "1920s photograph": 0.2511337995529175,
+                  "people": 0.2047993540763855,
+                  "graphic medical injury": 0.1901172697544098,
+                  "corpse": 0.20163513720035553
+                },
+                "mean_pos": 0.2868765592575073,
+                "mean_neg": 0.21192139014601707,
+                "margin": 0.07495516911149025
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_03",
+            "requirements": [
+              "\uc5ec\uc131 \ub178\ub3d9\uc790\uac00 \uc2dc\uacc4 \ubb38\uc790\ud310\uc5d0 \uac00\ub294 \ubd93\uc73c\ub85c \ub77c\ub4d0 \ud398\uc778\ud2b8\ub97c \uce60\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 210.55170042438272,
+                "contrast": 70.14968726393234,
+                "mean": 32.80206886574074
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush": 0.32473528385162354,
+                  "jaw necrosis": 0.20822416245937347,
+                  "graphic injury": 0.1846701204776764,
+                  "corpse": 0.19119277596473694,
+                  "medical gore": 0.1868123710155487,
+                  "modern factory": 0.2124001383781433,
+                  "modern watch": 0.21272951364517212
+                },
+                "mean_pos": 0.32473528385162354,
+                "mean_neg": 0.19933818032344183,
+                "margin": 0.1253971035281817
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_02",
+        "status": "PASS",
+        "requirements": [
+          "1920\ub144\ub300 \ub77c\ub4d0 \ubb38\uc790\ud310 \uacf5\uc7a5\uc758 \uc791\uc5c5\ub300\uc640 \uc5ec\uc131 \ub178\ub3d9\uc790\ub4e4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_02_beat_00",
+            "requirements": [
+              "1921\ub144 \uc2e4\uc81c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \ube0c\ub79c\ub4dc\uc758 \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 2458.730346257716,
+                "contrast": 92.0060534396514,
+                "mean": 47.740312017746916
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1921 vintage print advertisement for Undark brand radium luminous paint": 0.3033595681190491,
+                  "modern advertisement": 0.25445282459259033,
+                  "graphic medical injury": 0.1947677731513977,
+                  "corpse": 0.1999056190252304
+                },
+                "mean_pos": 0.3033595681190491,
+                "mean_neg": 0.21637540558973947,
+                "margin": 0.0869841625293096
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_01",
+            "requirements": [
+              "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 135.11539641203703,
+                "contrast": 73.85288050301699,
+                "mean": 43.946073977623456
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of women working at the United States Radium Corporation in 1922": 0.3319621682167053,
+                  "jaw necrosis": 0.2034044712781906,
+                  "graphic injury": 0.17952655255794525,
+                  "corpse": 0.19968518614768982,
+                  "medical gore": 0.193400040268898,
+                  "modern factory": 0.27651652693748474
+                },
+                "mean_pos": 0.3319621682167053,
+                "mean_neg": 0.2105065554380417,
+                "margin": 0.12145561277866362
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_02",
+            "requirements": [
+              "1920\ub144\ub300 \ub77c\ub4d0 \uc57c\uad11 \ud398\uc778\ud2b8 \uc81c\ud488\uc744 \ud64d\ubcf4\ud558\ub294 \uc2e4\uc81c \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 159.864090470679,
+                "contrast": 69.14109670637768,
+                "mean": 28.993515142746915
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s vintage print advertisement for glow-in-the-dark radium paint": 0.3122889995574951,
+                  "modern advertisement": 0.23899304866790771,
+                  "graphic medical injury": 0.20230011641979218,
+                  "corpse": 0.19415806233882904
+                },
+                "mean_pos": 0.3122889995574951,
+                "mean_neg": 0.211817075808843,
+                "margin": 0.10047192374865213
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_03",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ub0a8\uc544\uc788\ub294 (\ud604\uc7ac\ub294 \ubc84\ub824\uc9c4) \ub77c\ub4d0 \uacf5\uc7a5 \uac74\ubb3c\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 554.710591242284,
+                "contrast": 88.8861944937368,
+                "mean": 61.124215856481484
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "a modern documentary photograph of the former, now-abandoned historic radium factory building": 0.28604134917259216,
+                  "1920s photograph": 0.25068485736846924,
+                  "people": 0.20451292395591736,
+                  "graphic medical injury": 0.18988996744155884,
+                  "corpse": 0.20138493180274963
+                },
+                "mean_pos": 0.28604134917259216,
+                "mean_neg": 0.21161817014217377,
+                "margin": 0.0744231790304184
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_04",
+            "requirements": [
+              "\uc5ec\uc131 \ub178\ub3d9\uc790\uac00 \uc2dc\uacc4 \ubb38\uc790\ud310\uc5d0 \uac00\ub294 \ubd93\uc73c\ub85c \ub77c\ub4d0 \ud398\uc778\ud2b8\ub97c \uce60\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 210.41634837962962,
+                "contrast": 70.14357644496376,
+                "mean": 32.79862413194444
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush": 0.32484737038612366,
+                  "jaw necrosis": 0.2075265347957611,
+                  "graphic injury": 0.18464136123657227,
+                  "corpse": 0.19101743400096893,
+                  "medical gore": 0.1864393800497055,
+                  "modern factory": 0.21248272061347961,
+                  "modern watch": 0.21200375258922577
+                },
+                "mean_pos": 0.32484737038612366,
+                "mean_neg": 0.19901853054761887,
+                "margin": 0.1258288398385048
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_03",
+        "status": "PASS",
+        "requirements": [
+          "\uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud658\uacbd\uc744 \ubcf4\uc5ec\uc8fc\ub418 \uc785\uc774\ub098 \ud131\uc758 \uc190\uc0c1 \uc7a5\uba74\uc740 \uc5c6\uc5b4\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_03_beat_00",
+            "requirements": [
+              "1921\ub144 \uc2e4\uc81c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \ube0c\ub79c\ub4dc\uc758 \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 2458.730346257716,
+                "contrast": 92.0060534396514,
+                "mean": 47.740312017746916
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1921 vintage print advertisement for Undark brand radium luminous paint": 0.3033595681190491,
+                  "modern advertisement": 0.25445282459259033,
+                  "graphic medical injury": 0.1947677731513977,
+                  "corpse": 0.1999056190252304
+                },
+                "mean_pos": 0.3033595681190491,
+                "mean_neg": 0.21637540558973947,
+                "margin": 0.0869841625293096
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_01",
+            "requirements": [
+              "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 135.11539641203703,
+                "contrast": 73.85288050301699,
+                "mean": 43.946073977623456
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of women working at the United States Radium Corporation in 1922": 0.3319621682167053,
+                  "jaw necrosis": 0.2034044712781906,
+                  "graphic injury": 0.17952655255794525,
+                  "corpse": 0.19968518614768982,
+                  "medical gore": 0.193400040268898,
+                  "modern factory": 0.27651652693748474
+                },
+                "mean_pos": 0.3319621682167053,
+                "mean_neg": 0.2105065554380417,
+                "margin": 0.12145561277866362
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_02",
+            "requirements": [
+              "1920\ub144\ub300 \ub77c\ub4d0 \uc57c\uad11 \ud398\uc778\ud2b8 \uc81c\ud488\uc744 \ud64d\ubcf4\ud558\ub294 \uc2e4\uc81c \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 159.864090470679,
+                "contrast": 69.14109670637768,
+                "mean": 28.993515142746915
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s vintage print advertisement for glow-in-the-dark radium paint": 0.3122889995574951,
+                  "modern advertisement": 0.23899304866790771,
+                  "graphic medical injury": 0.20230011641979218,
+                  "corpse": 0.19415806233882904
+                },
+                "mean_pos": 0.3122889995574951,
+                "mean_neg": 0.211817075808843,
+                "margin": 0.10047192374865213
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_03",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ubcf4\uc874\ub41c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \uc6a9\uae30\uc5d0 POISON(\ub3c5\uadf9\ubb3c) \ub77c\ubca8\uc774 \ubd99\uc5b4 \uc788\ub294 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 175.32095389660495,
+                "contrast": 59.06251300352345,
+                "mean": 36.22091724537037
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up modern photograph of a preserved original Undark radium luminous paint vial labeled POISON": 0.29024380445480347,
+                  "graphic medical injury": 0.21549668908119202,
+                  "corpse": 0.20508705079555511,
+                  "cartoon": 0.18120871484279633
+                },
+                "mean_pos": 0.29024380445480347,
+                "mean_neg": 0.2005974849065145,
+                "margin": 0.08964631954828897
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_04",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ub0a8\uc544\uc788\ub294 (\ud604\uc7ac\ub294 \ubc84\ub824\uc9c4) \ub77c\ub4d0 \uacf5\uc7a5 \uac74\ubb3c\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 549.7199266975308,
+                "contrast": 88.8930804810666,
+                "mean": 61.12699797453703
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "a modern documentary photograph of the former, now-abandoned historic radium factory building": 0.2859218716621399,
+                  "1920s photograph": 0.2493336796760559,
+                  "people": 0.20314931869506836,
+                  "graphic medical injury": 0.18970519304275513,
+                  "corpse": 0.20058989524841309
+                },
+                "mean_pos": 0.2859218716621399,
+                "mean_neg": 0.21069452166557312,
+                "margin": 0.07522734999656677
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_04",
+        "status": "PASS",
+        "requirements": [
+          "1922\ub144 \ub77c\ub4d0 \uacf5\uc7a5 \ub178\ub3d9\uc790\ub4e4\uc774 \ubcf4\ud638\uc7a5\ube44 \uc5c6\uc774 \uc791\uc5c5\ud558\ub294 \uc5ed\uc0ac\uc801 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_04_beat_00",
+            "requirements": [
+              "\uc5ec\uc131 \ub178\ub3d9\uc790\uac00 \uc2dc\uacc4 \ubb38\uc790\ud310\uc5d0 \uac00\ub294 \ubd93\uc73c\ub85c \ub77c\ub4d0 \ud398\uc778\ud2b8\ub97c \uce60\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 210.55170042438272,
+                "contrast": 70.14968726393234,
+                "mean": 32.80206886574074
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush": 0.32473528385162354,
+                  "jaw necrosis": 0.20822416245937347,
+                  "graphic injury": 0.1846701204776764,
+                  "corpse": 0.19119277596473694,
+                  "medical gore": 0.1868123710155487,
+                  "modern factory": 0.2124001383781433,
+                  "modern watch": 0.21272951364517212
+                },
+                "mean_pos": 0.32473528385162354,
+                "mean_neg": 0.19933818032344183,
+                "margin": 0.1253971035281817
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_01",
+            "requirements": [
+              "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 135.11539641203703,
+                "contrast": 73.85288050301699,
+                "mean": 43.946073977623456
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of women working at the United States Radium Corporation in 1922": 0.3319621682167053,
+                  "jaw necrosis": 0.2034044712781906,
+                  "graphic injury": 0.17952655255794525,
+                  "corpse": 0.19968518614768982,
+                  "medical gore": 0.193400040268898,
+                  "modern factory": 0.27651652693748474
+                },
+                "mean_pos": 0.3319621682167053,
+                "mean_neg": 0.2105065554380417,
+                "margin": 0.12145561277866362
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_02",
+            "requirements": [
+              "1920\ub144\ub300 \ub77c\ub4d0 \uc57c\uad11 \ud398\uc778\ud2b8 \uc81c\ud488\uc744 \ud64d\ubcf4\ud558\ub294 \uc2e4\uc81c \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 159.864090470679,
+                "contrast": 69.14109670637768,
+                "mean": 28.993515142746915
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s vintage print advertisement for glow-in-the-dark radium paint": 0.3122889995574951,
+                  "modern advertisement": 0.23899304866790771,
+                  "graphic medical injury": 0.20230011641979218,
+                  "corpse": 0.19415806233882904
+                },
+                "mean_pos": 0.3122889995574951,
+                "mean_neg": 0.211817075808843,
+                "margin": 0.10047192374865213
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_03",
+            "requirements": [
+              "1921\ub144 \uc2e4\uc81c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \ube0c\ub79c\ub4dc\uc758 \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 2457.8848804012346,
+                "contrast": 92.02042702187062,
+                "mean": 47.742210648148145
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1921 vintage print advertisement for Undark brand radium luminous paint": 0.30512377619743347,
+                  "modern advertisement": 0.2546810805797577,
+                  "graphic medical injury": 0.19496607780456543,
+                  "corpse": 0.199822336435318
+                },
+                "mean_pos": 0.30512377619743347,
+                "mean_neg": 0.21648983160654703,
+                "margin": 0.08863394459088644
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_04",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ubcf4\uc874\ub41c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \uc6a9\uae30\uc5d0 POISON(\ub3c5\uadf9\ubb3c) \ub77c\ubca8\uc774 \ubd99\uc5b4 \uc788\ub294 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 175.3004581404321,
+                "contrast": 59.06778449799448,
+                "mean": 36.222840952932096
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up modern photograph of a preserved original Undark radium luminous paint vial labeled POISON": 0.2901691198348999,
+                  "graphic medical injury": 0.21665409207344055,
+                  "corpse": 0.20692139863967896,
+                  "cartoon": 0.18211466073989868
+                },
+                "mean_pos": 0.2901691198348999,
+                "mean_neg": 0.20189671715100607,
+                "margin": 0.08827240268389383
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_05",
+        "status": "PASS",
+        "requirements": [
+          "\ub77c\ub4d0 \ubb38\uc790\ud310 \uc5ec\uc131 \ub178\ub3d9\uc790\ub4e4\uc758 \uc5ed\uc0ac \uc790\ub8cc\uac00 \ubcf4\uc5ec\uc57c \ud558\uace0 \uc2e0\uccb4 \ubcd1\ubcc0\uc740 \ubcf4\uc774\uc9c0 \uc54a\uc544\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_05_beat_00",
+            "requirements": [
+              "\uc5ec\uc131 \ub178\ub3d9\uc790\uac00 \uc2dc\uacc4 \ubb38\uc790\ud310\uc5d0 \uac00\ub294 \ubd93\uc73c\ub85c \ub77c\ub4d0 \ud398\uc778\ud2b8\ub97c \uce60\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 210.55170042438272,
+                "contrast": 70.14968726393234,
+                "mean": 32.80206886574074
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close-up historical photograph of a woman dial painter applying radium paint to a watch dial with a fine brush": 0.32473528385162354,
+                  "jaw necrosis": 0.20822416245937347,
+                  "graphic injury": 0.1846701204776764,
+                  "corpse": 0.19119277596473694,
+                  "medical gore": 0.1868123710155487,
+                  "modern factory": 0.2124001383781433,
+                  "modern watch": 0.21272951364517212
+                },
+                "mean_pos": 0.32473528385162354,
+                "mean_neg": 0.19933818032344183,
+                "margin": 0.1253971035281817
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_01",
+            "requirements": [
+              "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 135.11539641203703,
+                "contrast": 73.85288050301699,
+                "mean": 43.946073977623456
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of women working at the United States Radium Corporation in 1922": 0.3319621682167053,
+                  "jaw necrosis": 0.2034044712781906,
+                  "graphic injury": 0.17952655255794525,
+                  "corpse": 0.19968518614768982,
+                  "medical gore": 0.193400040268898,
+                  "modern factory": 0.27651652693748474
+                },
+                "mean_pos": 0.3319621682167053,
+                "mean_neg": 0.2105065554380417,
+                "margin": 0.12145561277866362
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_02",
+            "requirements": [
+              "\ub77c\ub4d0 \uac78\uc2a4 \uc18c\uc1a1\uc758 \uc2e4\uc81c \uc6d0\uace0 \uc911 \ud55c \uba85\uc778 \uc5ec\uc131\uc758 \uc5ed\uc0ac\uc801 \uc778\ubb3c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 120.39580729166667,
+                "contrast": 68.74921919453534,
+                "mean": 39.132864101080244
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical portrait photograph of a young woman from the 1920s, one of the real Radium Girls lawsuit plaintiffs": 0.2865588665008545,
+                  "modern person": 0.212211012840271,
+                  "graphic medical injury": 0.16491568088531494,
+                  "corpse": 0.18791183829307556
+                },
+                "mean_pos": 0.2865588665008545,
+                "mean_neg": 0.18834617733955383,
+                "margin": 0.09821268916130066
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_03",
+            "requirements": [
+              "\ub77c\ub4d0 \uac78\uc2a4 \uc18c\uc1a1\uc744 \ub2e4\ub8ec \uc2e4\uc81c 1920\ub144\ub300 \uc2e0\ubb38 \ubabd\ud0c0\uc8fc \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc6d0\uace0\ub4e4\uc758 \ucd08\uc0c1\uc774 \ud3ec\ud568\ub418\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 181.41238715277777,
+                "contrast": 80.91506184365085,
+                "mean": 57.479501350308645
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s newspaper montage covering the Radium Girls lawsuit, with portraits of the plaintiffs": 0.3195769190788269,
+                  "modern newspaper": 0.24470146000385284,
+                  "graphic medical injury": 0.2084544152021408,
+                  "corpse": 0.21207141876220703
+                },
+                "mean_pos": 0.3195769190788269,
+                "mean_neg": 0.22174243132273355,
+                "margin": 0.09783448775609335
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_04",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ub0a8\uc544\uc788\ub294 (\ud604\uc7ac\ub294 \ubc84\ub824\uc9c4) \ub77c\ub4d0 \uacf5\uc7a5 \uac74\ubb3c\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 550.8393441358024,
+                "contrast": 88.87065591005405,
+                "mean": 61.11410879629629
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "a modern documentary photograph of the former, now-abandoned historic radium factory building": 0.28662025928497314,
+                  "1920s photograph": 0.2503039240837097,
+                  "people": 0.20308265089988708,
+                  "graphic medical injury": 0.18945187330245972,
+                  "corpse": 0.2004299759864807
+                },
+                "mean_pos": 0.28662025928497314,
+                "mean_neg": 0.2108171060681343,
+                "margin": 0.07580315321683884
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_06",
+        "status": "PASS",
+        "requirements": [
+          "\ucd08\uae30 20\uc138\uae30 Lind electroscope \ubc29\uc0ac\ub2a5 \uce21\uc815 \uc7a5\ube44\uac00 \ubd84\uba85\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_06_beat_00",
+            "requirements": [
+              "\ucd08\uae30 20\uc138\uae30 Lind electroscope \ubc29\uc0ac\ub2a5 \uce21\uc815 \uc7a5\ube44\uac00 \ubd84\uba85\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 103.15505883487654,
+                "contrast": 38.62186009014415,
+                "mean": 13.986607831790124
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "early twentieth century Lind electroscope radiation measurement instrument": 0.29467320442199707,
+                  "modern Geiger counter": 0.25537389516830444,
+                  "medical gore": 0.20860540866851807,
+                  "corpse": 0.205216646194458
+                },
+                "mean_pos": 0.29467320442199707,
+                "mean_neg": 0.2230653166770935,
+                "margin": 0.07160788774490356
+              }
+            ]
+          },
+          {
+            "scene": "scene_06_beat_01",
+            "requirements": [
+              "\ucd08\uae30 20\uc138\uae30 \ubc29\uc0ac\ub2a5 \uce21\uc815\uc6a9 \uae08\ubc15 \uac80\uc804\uae30(electroscope) \uc7a5\ube44\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 126.70883680555555,
+                "contrast": 79.65128284423895,
+                "mean": 61.85389949845679
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "early 20th-century gold-leaf electroscope radioactivity measuring instrument": 0.27045947313308716,
+                  "modern equipment": 0.24945640563964844,
+                  "graphic medical injury": 0.20811456441879272,
+                  "corpse": 0.19839602708816528
+                },
+                "mean_pos": 0.27045947313308716,
+                "mean_neg": 0.2186556657155355,
+                "margin": 0.05180380741755167
+              }
+            ]
+          },
+          {
+            "scene": "scene_06_beat_02",
+            "requirements": [
+              "1920~40\ub144\ub300 \ubc29\uc0ac\ub2a5 \uce21\uc815\uc5d0 \uc0ac\uc6a9\ub41c \uc2e4\uc81c \uac80\uc804\uae30(electroscope) \uc7a5\ube44\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 169.79753472222222,
+                "contrast": 79.30119946239974,
+                "mean": 42.094063946759256
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "vintage electroscope radioactivity measuring instrument from the 1920s-1940s": 0.29393988847732544,
+                  "modern equipment": 0.2543724775314331,
+                  "graphic medical injury": 0.19836126267910004,
+                  "corpse": 0.19673210382461548
+                },
+                "mean_pos": 0.29393988847732544,
+                "mean_neg": 0.21648861467838287,
+                "margin": 0.07745127379894257
+              }
+            ]
+          },
+          {
+            "scene": "scene_06_beat_03",
+            "requirements": [
+              "1920\ub144\ub300 \uc2e4\ud5d8\uc2e4\uc5d0\uc11c \ubc29\uc0ac\ub2a5\uc744 \uce21\uc815\ud558\ub294 \uacfc\ud559\uc790\uc758 \uc2e4\uc81c \ubaa8\uc2b5\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 70.88353587962963,
+                "contrast": 52.48108713895722,
+                "mean": 31.130776427469137
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of a scientist working in an early 20th-century laboratory": 0.3121111989021301,
+                  "modern person": 0.2105119824409485,
+                  "graphic medical injury": 0.18933582305908203,
+                  "corpse": 0.1863807588815689
+                },
+                "mean_pos": 0.3121111989021301,
+                "mean_neg": 0.19540952146053314,
+                "margin": 0.11670167744159698
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_07",
+        "status": "PASS",
+        "requirements": [
+          "\uc5ed\uc0ac\uc801 Lind electroscope\uac00 \ud654\uba74 \uc911\uc2ec\uc5d0 \uc788\uc5b4\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_07_beat_00",
+            "requirements": [
+              "\ub77c\ub4d0 \uac78\uc2a4 \uc0ac\uac74\uc5d0\uc11c \ubc29\uc0ac\ub2a5\uc744 \uce21\uc815\ud574 \uc99d\uac70\ub97c \uc81c\uc2dc\ud55c \uacfc\ud559\uc790\uc758 \uc2e4\uc81c \uc778\ubb3c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 195.32464988425926,
+                "contrast": 78.25276935343418,
+                "mean": 55.53747395833334
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical portrait photograph of a woman scientist from the 1920s": 0.2517821788787842,
+                  "modern person": 0.22219125926494598,
+                  "graphic medical injury": 0.18377454578876495,
+                  "corpse": 0.19347359240055084
+                },
+                "mean_pos": 0.2517821788787842,
+                "mean_neg": 0.19981313248475394,
+                "margin": 0.051969046394030244
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_01",
+            "requirements": [
+              "1920\ub144\ub300 \uc2e4\ud5d8\uc2e4\uc5d0\uc11c \uc77c\ud558\ub294 \uacfc\ud559\uc790\uc758 \uc2e4\uc81c \uc778\ubb3c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 233.57271026234568,
+                "contrast": 86.35236292444154,
+                "mean": 55.6681958912037
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical portrait photograph of a scientist from the early 20th century": 0.2759992778301239,
+                  "modern person": 0.22569531202316284,
+                  "graphic medical injury": 0.20090119540691376,
+                  "corpse": 0.19148270785808563
+                },
+                "mean_pos": 0.2759992778301239,
+                "mean_neg": 0.20602640509605408,
+                "margin": 0.06997287273406982
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_02",
+            "requirements": [
+              "\uc5ed\uc0ac\uc801 Lind electroscope\uac00 \ud654\uba74 \uc911\uc2ec\uc5d0 \uc788\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 103.15505883487654,
+                "contrast": 38.62186009014415,
+                "mean": 13.986607831790124
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical Lind electroscope used for radon measurement": 0.2914189100265503,
+                  "modern hospital": 0.201693594455719,
+                  "graphic illness": 0.17851866781711578,
+                  "corpse": 0.205216646194458,
+                  "blood": 0.18305619060993195
+                },
+                "mean_pos": 0.2914189100265503,
+                "mean_neg": 0.19212127476930618,
+                "margin": 0.09929763525724411
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_03",
+            "requirements": [
+              "\ucd08\uae30 20\uc138\uae30 \ubc29\uc0ac\ub2a5 \uce21\uc815\uc6a9 \uae08\ubc15 \uac80\uc804\uae30(electroscope) \uc7a5\ube44\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 126.70883680555555,
+                "contrast": 79.65128284423895,
+                "mean": 61.85389949845679
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "early 20th-century gold-leaf electroscope radioactivity measuring instrument": 0.27045947313308716,
+                  "modern equipment": 0.24945640563964844,
+                  "graphic medical injury": 0.20811456441879272,
+                  "corpse": 0.19839602708816528
+                },
+                "mean_pos": 0.27045947313308716,
+                "mean_neg": 0.2186556657155355,
+                "margin": 0.05180380741755167
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_04",
+            "requirements": [
+              "1920~40\ub144\ub300 \ubc29\uc0ac\ub2a5 \uce21\uc815\uc5d0 \uc0ac\uc6a9\ub41c \uc2e4\uc81c \uac80\uc804\uae30(electroscope) \uc7a5\ube44\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 171.1114737654321,
+                "contrast": 79.31182603297506,
+                "mean": 42.0970597029321
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "vintage electroscope radioactivity measuring instrument from the 1920s-1940s": 0.29272711277008057,
+                  "modern equipment": 0.2549118995666504,
+                  "graphic medical injury": 0.19875575602054596,
+                  "corpse": 0.19665038585662842
+                },
+                "mean_pos": 0.29272711277008057,
+                "mean_neg": 0.21677268048127493,
+                "margin": 0.07595443228880563
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_05",
+            "requirements": [
+              "1920\ub144\ub300 \uc2e4\ud5d8\uc2e4\uc5d0\uc11c \ubc29\uc0ac\ub2a5\uc744 \uce21\uc815\ud558\ub294 \uacfc\ud559\uc790\uc758 \uc2e4\uc81c \ubaa8\uc2b5\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 71.20238040123456,
+                "contrast": 52.4783383358186,
+                "mean": 31.131572627314814
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of a scientist working in an early 20th-century laboratory": 0.31075769662857056,
+                  "modern person": 0.20962819457054138,
+                  "graphic medical injury": 0.18851327896118164,
+                  "corpse": 0.18602445721626282
+                },
+                "mean_pos": 0.31075769662857056,
+                "mean_neg": 0.19472197691599527,
+                "margin": 0.11603571971257529
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_08",
+        "status": "PASS",
+        "requirements": [
+          "\uc2e4\uc81c \ub77c\ub4d0 \ubb38\uc790\ud310 \uc5ec\uc131 \ub178\ub3d9\uc790\ub4e4\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uacb0\ub9d0\uc740 \uc874\uc911\ud558\ub294 \ub2e4\ud050\uba58\ud130\ub9ac \ud1a4\uc774\uc5b4\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_08_beat_00",
+            "requirements": [
+              "1920\ub144\ub300 \ub77c\ub4d0 \uc57c\uad11 \ud398\uc778\ud2b8 \uc81c\ud488\uc744 \ud64d\ubcf4\ud558\ub294 \uc2e4\uc81c \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 159.864090470679,
+                "contrast": 69.14109670637768,
+                "mean": 28.993515142746915
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s vintage print advertisement for glow-in-the-dark radium paint": 0.3122889995574951,
+                  "modern advertisement": 0.23899304866790771,
+                  "graphic medical injury": 0.20230011641979218,
+                  "corpse": 0.19415806233882904
+                },
+                "mean_pos": 0.3122889995574951,
+                "mean_neg": 0.211817075808843,
+                "margin": 0.10047192374865213
+              }
+            ]
+          },
+          {
+            "scene": "scene_08_beat_01",
+            "requirements": [
+              "\ub77c\ub4d0 \uac78\uc2a4 \uc18c\uc1a1\uc744 \ub2e4\ub8ec \uc2e4\uc81c 1920\ub144\ub300 \uc2e0\ubb38 \ubabd\ud0c0\uc8fc \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc6d0\uace0\ub4e4\uc758 \ucd08\uc0c1\uc774 \ud3ec\ud568\ub418\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 181.41238715277777,
+                "contrast": 80.91506184365085,
+                "mean": 57.479501350308645
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1920s newspaper montage covering the Radium Girls lawsuit, with portraits of the plaintiffs": 0.3195769190788269,
+                  "modern newspaper": 0.24470146000385284,
+                  "graphic medical injury": 0.2084544152021408,
+                  "corpse": 0.21207141876220703
+                },
+                "mean_pos": 0.3195769190788269,
+                "mean_neg": 0.22174243132273355,
+                "margin": 0.09783448775609335
+              }
+            ]
+          },
+          {
+            "scene": "scene_08_beat_02",
+            "requirements": [
+              "1921\ub144 \uc2e4\uc81c Undark \ub77c\ub4d0 \uc57c\uad11 \ub3c4\ub8cc \ube0c\ub79c\ub4dc\uc758 \uc778\uc1c4 \uad11\uace0\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 2459.1777208719136,
+                "contrast": 92.01879713501047,
+                "mean": 47.73792534722222
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "1921 vintage print advertisement for Undark brand radium luminous paint": 0.3041161000728607,
+                  "modern advertisement": 0.25443845987319946,
+                  "graphic medical injury": 0.194652259349823,
+                  "corpse": 0.1995384693145752
+                },
+                "mean_pos": 0.3041161000728607,
+                "mean_neg": 0.21620972951253256,
+                "margin": 0.08790637056032816
+              }
+            ]
+          },
+          {
+            "scene": "scene_08_beat_03",
+            "requirements": [
+              "\ub77c\ub4d0 \uac78\uc2a4 \uc18c\uc1a1\uc758 \uc2e4\uc81c \uc6d0\uace0 \uc911 \ud55c \uba85\uc778 \uc5ec\uc131\uc758 \uc5ed\uc0ac\uc801 \uc778\ubb3c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 120.39580729166667,
+                "contrast": 68.74921919453534,
+                "mean": 39.132864101080244
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical portrait photograph of a young woman from the 1920s, one of the real Radium Girls lawsuit plaintiffs": 0.2865588665008545,
+                  "modern person": 0.212211012840271,
+                  "graphic medical injury": 0.16491568088531494,
+                  "corpse": 0.18791183829307556
+                },
+                "mean_pos": 0.2865588665008545,
+                "mean_neg": 0.18834617733955383,
+                "margin": 0.09821268916130066
+              }
+            ]
+          },
+          {
+            "scene": "scene_08_beat_04",
+            "requirements": [
+              "\uc2e4\uc81c\ub85c \ub0a8\uc544\uc788\ub294 (\ud604\uc7ac\ub294 \ubc84\ub824\uc9c4) \ub77c\ub4d0 \uacf5\uc7a5 \uac74\ubb3c\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 554.7221990740741,
+                "contrast": 88.88644846531231,
+                "mean": 61.12456211419753
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "a modern documentary photograph of the former, now-abandoned historic radium factory building": 0.2856295704841614,
+                  "1920s photograph": 0.2506908178329468,
+                  "people": 0.20416422188282013,
+                  "graphic medical injury": 0.18937022984027863,
+                  "corpse": 0.20085874199867249
+                },
+                "mean_pos": 0.2856295704841614,
+                "mean_neg": 0.2112710028886795,
+                "margin": 0.07435856759548187
+              }
+            ]
+          },
+          {
+            "scene": "scene_08_beat_05",
+            "requirements": [
+              "1920\ub144\ub300 \uc5ec\uc131 \ub77c\ub4d0 \ubb38\uc790\ud310 \ub178\ub3d9\uc790\ub4e4\uc758 \uc2e4\uc81c \uc791\uc5c5 \ud604\uc7a5\uc774 \ubcf4\uc5ec\uc57c \ud558\uba70 \uc2e0\uccb4 \uc190\uc0c1\uc774\ub098 \uc758\ub8cc \uace0\uc5b4\uac00 \uc5c6\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 135.11539641203703,
+                "contrast": 73.85288050301699,
+                "mean": 43.946073977623456
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of women working at the United States Radium Corporation in 1922": 0.3319621682167053,
+                  "jaw necrosis": 0.2034044712781906,
+                  "graphic injury": 0.17952655255794525,
+                  "corpse": 0.19968518614768982,
+                  "medical gore": 0.193400040268898,
+                  "modern factory": 0.27651652693748474
+                },
+                "mean_pos": 0.3319621682167053,
+                "mean_neg": 0.2105065554380417,
+                "margin": 0.12145561277866362
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      }
+    ]
+  },
+  "semantic_required": true,
+  "final_video_qa": {
+    "status": "PASS",
+    "checks": {
+      "composition_9x16": {
+        "status": "PASS"
+      },
+      "scenes_present": {
+        "status": "PASS"
+      },
+      "visual_cut_cadence": {
+        "status": "PASS",
+        "max_hold_seconds": 3.5
+      },
+      "no_semantic_skip": {
+        "status": "PASS"
+      },
+      "narration_continuity": {
+        "status": "PASS",
+        "max_silence_seconds": 1.5
+      },
+      "visual_activity_real": {
+        "status": "PASS",
+        "evidence": {
+          "cut_timestamps": [
+            0.0,
+            1.5,
+            3.5,
+            5.0,
+            5.5,
+            6.0,
+            9.0,
+            12.0,
+            13.5,
+            14.0,
+            14.5,
+            17.5,
+            20.5,
+            21.5,
+            22.0,
+            22.5,
+            25.5,
+            28.5,
+            29.5,
+            30.0,
+            30.5,
+            33.5,
+            36.5,
+            39.5,
+            40.5,
+            43.5,
+            46.5,
+            47.5,
+            48.0,
+            48.5,
+            51.5,
+            54.5,
+            57.5,
+            60.5,
+            61.0,
+            64.0,
+            67.0,
+            70.0,
+            73.0,
+            76.0
+          ],
+          "average_visual_beat_seconds": 1.975,
+          "max_static_visual_seconds": 3.0,
+          "first_5s_visual_changes": 2,
+          "sample_fps": 2.0
+        }
+      },
+      "no_black_opening": {
+        "status": "PASS",
+        "evidence": {
+          "media_mean": 73.20800292397661,
+          "media_is_black": false,
+          "has_bright_text": true
+        }
+      },
+      "source_reuse": {
+        "status": "PASS",
+        "evidence": {
+          "total_beats": 40,
+          "unique_sources": 14,
+          "source_reuse_ratio": 0.65,
+          "max_consecutive_same_source": 1
+        }
+      },
+      "global_source_reuse": {
+        "status": "PASS",
+        "evidence": {
+          "total_beats": 40,
+          "unique_source_family_count": 14,
+          "unique_source_family_ratio": 0.35,
+          "global_source_reuse_ratio": 0.65,
+          "max_source_family_occurrences": 5,
+          "max_source_family_ratio": 0.125,
+          "repeated_source_timestamps": [
+            {
+              "scene": "scene_02",
+              "start": 3.5,
+              "family": "radiumpaintadvertisement"
+            },
+            {
+              "scene": "scene_02",
+              "start": 6.5,
+              "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+            },
+            {
+              "scene": "scene_02",
+              "start": 8.1,
+              "family": "laschicasdelradiopintando"
+            },
+            {
+              "scene": "scene_03",
+              "start": 0.0,
+              "family": "undarkradiumgirlsadvertisement1921retouched"
+            },
+            {
+              "scene": "scene_03",
+              "start": 0.5,
+              "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+            },
+            {
+              "scene": "scene_03",
+              "start": 3.5,
+              "family": "radiumpaintadvertisement"
+            },
+            {
+              "scene": "scene_03",
+              "start": 6.5,
+              "family": "undarkluminouspaint"
+            },
+            {
+              "scene": "scene_03",
+              "start": 7.3,
+              "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+            },
+            {
+              "scene": "scene_04",
+              "start": 0.0,
+              "family": "laschicasdelradiopintando"
+            },
+            {
+              "scene": "scene_04",
+              "start": 0.5,
+              "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+            },
+            {
+              "scene": "scene_04",
+              "start": 3.5,
+              "family": "radiumpaintadvertisement"
+            },
+            {
+              "scene": "scene_04",
+              "start": 6.5,
+              "family": "undarkradiumgirlsadvertisement1921retouched"
+            },
+            {
+              "scene": "scene_04",
+              "start": 7.4,
+              "family": "undarkluminouspaint"
+            },
+            {
+              "scene": "scene_05",
+              "start": 0.0,
+              "family": "laschicasdelradiopintando"
+            },
+            {
+              "scene": "scene_05",
+              "start": 0.5,
+              "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+            },
+            {
+              "scene": "scene_05",
+              "start": 9.5,
+              "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+            },
+            {
+              "scene": "scene_07",
+              "start": 3.5,
+              "family": "lindelectroscope0721210"
+            },
+            {
+              "scene": "scene_07",
+              "start": 6.5,
+              "family": "electroscope1"
+            },
+            {
+              "scene": "scene_07",
+              "start": 9.5,
+              "family": "electroscopethattorreywouldhaveusedfrom19281949"
+            },
+            {
+              "scene": "scene_07",
+              "start": 12.4,
+              "family": "constancetorreyinherlabatnbsin1925"
+            },
+            {
+              "scene": "scene_08",
+              "start": 0.0,
+              "family": "radiumpaintadvertisement"
+            },
+            {
+              "scene": "scene_08",
+              "start": 3.0,
+              "family": "radiumdialpainters"
+            },
+            {
+              "scene": "scene_08",
+              "start": 6.0,
+              "family": "undarkradiumgirlsadvertisement1921retouched"
+            },
+            {
+              "scene": "scene_08",
+              "start": 9.0,
+              "family": "gracefryer"
+            },
+            {
+              "scene": "scene_08",
+              "start": 12.0,
+              "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+            },
+            {
+              "scene": "scene_08",
+              "start": 15.0,
+              "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+            }
+          ]
+        }
+      },
+      "visual_novelty": {
+        "status": "PASS",
+        "evidence": []
+      },
+      "first_5s_coverage": {
+        "status": "PASS",
+        "evidence": {
+          "first_5s_unique_sources": 3,
+          "first_5s_families": [
+            {
+              "scene": "scene_01",
+              "start": 0.0,
+              "family": "undarkluminouspaint"
+            },
+            {
+              "scene": "scene_01",
+              "start": 1.5,
+              "family": "radiumpaintadvertisement"
+            },
+            {
+              "scene": "scene_01",
+              "start": 3.3,
+              "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+            }
+          ]
+        }
+      },
+      "title_visible": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 0.3001593848819908,
+            "title_band_edge_var": 1487.5896844501485
+          },
+          {
+            "t": 30.23238642223133,
+            "title_band_edge_var": 1391.2478637566137
+          },
+          {
+            "t": 61.39593429196255,
+            "title_band_edge_var": 1582.016927379859
+          }
+        ]
+      },
+      "captions_visible": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 1.2820552724115617,
+            "rows_in_band": [
+              1264,
+              1311
+            ]
+          },
+          {
+            "t": 6.687279951193077,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          },
+          {
+            "t": 15.358488370045748,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          },
+          {
+            "t": 23.507002237658764,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          },
+          {
+            "t": 31.245361813002866,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          },
+          {
+            "t": 41.552250779581186,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          },
+          {
+            "t": 49.40710921591697,
+            "rows_in_band": [
+              1267,
+              1315
+            ]
+          },
+          {
+            "t": 62.24867859989637,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          }
+        ]
+      },
+      "safe_area_clean": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 0.1500796924409954,
+            "safe_area_edge_density": 0.004193505099302201
+          },
+          {
+            "t": 5.653001748610827,
+            "safe_area_edge_density": 0.005783682232957595
+          },
+          {
+            "t": 14.2909214911488,
+            "safe_area_edge_density": 0.005614600107353731
+          },
+          {
+            "t": 22.131084624266396,
+            "safe_area_edge_density": 0.007190016103059581
+          },
+          {
+            "t": 30.082306729790332,
+            "safe_area_edge_density": 0.006239935587761675
+          },
+          {
+            "t": 40.590886794508826,
+            "safe_area_edge_density": 0.004185453569511541
+          },
+          {
+            "t": 48.33900104959595,
+            "safe_area_edge_density": 0.005128824476650563
+          },
+          {
+            "t": 61.24585459952155,
+            "safe_area_edge_density": 0.0065002683843263555
+          }
+        ]
+      },
+      "picture_caption_gutter": {
+        "status": "PASS",
+        "evidence": [],
+        "reason": "no pre-caption frame; fixed picture boundary covered by safe_area_clean"
+      }
+    },
+    "metrics": {
+      "average_visual_beat_seconds": 1.975,
+      "max_static_visual_seconds": 3.0,
+      "source_reuse_ratio": 0.65,
+      "first_5s_visual_changes": 2,
+      "subtitle_media_overlap": false,
+      "title_safe_area_pass": true,
+      "subtitle_safe_area_pass": true,
+      "unique_source_family_count": 14,
+      "unique_source_family_ratio": 0.35,
+      "global_source_reuse_ratio": 0.65,
+      "max_source_family_occurrences": 5,
+      "semantic_visual_coverage": 1.0,
+      "first_5s_unique_sources": 3,
+      "repeated_source_timestamps": [
+        {
+          "scene": "scene_02",
+          "start": 3.5,
+          "family": "radiumpaintadvertisement"
+        },
+        {
+          "scene": "scene_02",
+          "start": 6.5,
+          "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+        },
+        {
+          "scene": "scene_02",
+          "start": 8.1,
+          "family": "laschicasdelradiopintando"
+        },
+        {
+          "scene": "scene_03",
+          "start": 0.0,
+          "family": "undarkradiumgirlsadvertisement1921retouched"
+        },
+        {
+          "scene": "scene_03",
+          "start": 0.5,
+          "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+        },
+        {
+          "scene": "scene_03",
+          "start": 3.5,
+          "family": "radiumpaintadvertisement"
+        },
+        {
+          "scene": "scene_03",
+          "start": 6.5,
+          "family": "undarkluminouspaint"
+        },
+        {
+          "scene": "scene_03",
+          "start": 7.3,
+          "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+        },
+        {
+          "scene": "scene_04",
+          "start": 0.0,
+          "family": "laschicasdelradiopintando"
+        },
+        {
+          "scene": "scene_04",
+          "start": 0.5,
+          "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+        },
+        {
+          "scene": "scene_04",
+          "start": 3.5,
+          "family": "radiumpaintadvertisement"
+        },
+        {
+          "scene": "scene_04",
+          "start": 6.5,
+          "family": "undarkradiumgirlsadvertisement1921retouched"
+        },
+        {
+          "scene": "scene_04",
+          "start": 7.4,
+          "family": "undarkluminouspaint"
+        },
+        {
+          "scene": "scene_05",
+          "start": 0.0,
+          "family": "laschicasdelradiopintando"
+        },
+        {
+          "scene": "scene_05",
+          "start": 0.5,
+          "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+        },
+        {
+          "scene": "scene_05",
+          "start": 9.5,
+          "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+        },
+        {
+          "scene": "scene_07",
+          "start": 3.5,
+          "family": "lindelectroscope0721210"
+        },
+        {
+          "scene": "scene_07",
+          "start": 6.5,
+          "family": "electroscope1"
+        },
+        {
+          "scene": "scene_07",
+          "start": 9.5,
+          "family": "electroscopethattorreywouldhaveusedfrom19281949"
+        },
+        {
+          "scene": "scene_07",
+          "start": 12.4,
+          "family": "constancetorreyinherlabatnbsin1925"
+        },
+        {
+          "scene": "scene_08",
+          "start": 0.0,
+          "family": "radiumpaintadvertisement"
+        },
+        {
+          "scene": "scene_08",
+          "start": 3.0,
+          "family": "radiumdialpainters"
+        },
+        {
+          "scene": "scene_08",
+          "start": 6.0,
+          "family": "undarkradiumgirlsadvertisement1921retouched"
+        },
+        {
+          "scene": "scene_08",
+          "start": 9.0,
+          "family": "gracefryer"
+        },
+        {
+          "scene": "scene_08",
+          "start": 12.0,
+          "family": "generalviewtosouthofpaintapplicationbuildingcenterleftandcrystallizationlaboratoryrightunitedstatesradiumcorporation422432aldenstreetorangeessexhaernj7ora31"
+        },
+        {
+          "scene": "scene_08",
+          "start": 15.0,
+          "family": "allwomenorgirlsusingradiumpaintwithnoprotectionorwarningsin1922fromusradiumgirlsargonne1ca192223"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "scene": "scene_01",
+      "asset": "build/scene_01_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_02",
+      "asset": "build/scene_01_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_03",
+      "asset": "build/scene_01_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_04",
+      "asset": "build/scene_01_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_05",
+      "asset": "build/scene_05_beat2_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_06",
+      "asset": "build/scene_06_beat1_asset_0_norm.jpg",
+      "attribution": "Bert Coursey / NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_07",
+      "asset": "build/scene_06_beat0_asset_0_norm.jpg",
+      "attribution": "Bert Coursey / NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_08",
+      "asset": "build/scene_05_beat2_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    }
+  ],
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "30/1"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "79.105338"
+    }
+  },
+  "captions": {
+    "status": "PASS",
+    "cues": 32,
+    "time_scale": 1.0005312829399693,
+    "path": "dist/captions.srt"
+  },
+  "output": "dist/final.mp4"
+}
