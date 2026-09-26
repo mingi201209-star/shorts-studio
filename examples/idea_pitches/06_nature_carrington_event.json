@@ -1,0 +1,21 @@
+{
+  "topic_id": "nature-carrington-event",
+  "domain": "nature",
+  "hook_sentence": "1859년, 전원이 꺼진 전신기가 저절로 불꽃을 튀기며 메시지를 찍어냈습니다.",
+  "first_second_visual": "당시 관측된 거대한 흑점과 오로라를 그린 실제 기록 스케치",
+  "familiar_subject": "밤하늘의 오로라",
+  "unexpected_fact": "오로라가 적도 부근 쿠바와 하와이에서까지 보일 정도로 강력한 태양폭풍이 있었다",
+  "conflict_or_problem": "전신 기사들은 전선에서 튀는 불꽃에 감전되고 종이가 타는 사고를 겪었다",
+  "mid_change": "일부 전신기사는 아예 배터리를 끊고도 유도 전류만으로 계속 통신을 주고받았다",
+  "ending_payoff": "오늘날 같은 규모의 태양폭풍이 온다면 위성과 전력망 마비로 수조 원대 피해가 예상된다는 것이 현재의 결론이다",
+  "visual_evidence": [
+    "리처드 캐링턴의 흑점 관측 스케치 원본",
+    "당시 오로라를 그린 신문 삽화",
+    "1859년 전신 사무소 사진",
+    "빅토리아 시대 전신기 장비 사진",
+    "현대 인공위성 사진(피해 가능성 설명용)",
+    "현대 태양 흑점 관측 사진(NASA/SOHO)"
+  ],
+  "estimated_beats_needed": 14,
+  "notes": "Pre-photography era: the two strongest primary sources are Carrington's own sunspot sketch and contemporary newspaper illustrations, not photographs. Real and verifiable, but visual variety leans on illustrations/diagrams more than the other candidates."
+}

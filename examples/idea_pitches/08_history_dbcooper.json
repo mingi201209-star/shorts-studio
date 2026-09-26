@@ -1,0 +1,23 @@
+{
+  "topic_id": "history-db-cooper",
+  "domain": "history",
+  "hook_sentence": "1971년, 한 남성이 여객기에서 20만 달러를 챙기고 하늘 위에서 뛰어내린 뒤 영원히 사라졌습니다.",
+  "first_second_visual": "당시 보잉 727 여객기와 낙하산이 함께 찍힌 FBI 자료 사진",
+  "familiar_subject": "평범한 국내선 비행기 탑승객",
+  "unexpected_fact": "그 승객은 폭탄을 위협 수단으로 몸값을 받아내고 비행 중인 비행기에서 뛰어내려 사라졌다",
+  "conflict_or_problem": "FBI는 대규모 수색에도 시신도 낙하산도 찾지 못했다",
+  "mid_change": "1980년, 한 소년이 강둑에서 썩은 지폐 뭉치를 발견하며 사건이 다시 주목받았다",
+  "ending_payoff": "지폐의 일련번호는 몸값과 일치했지만 정작 쿠퍼가 누구인지는 지금도 밝혀지지 않은 채 미국에서 유일하게 미제로 남은 항공기 납치 사건이다",
+  "visual_evidence": [
+    "FBI가 공개한 몽타주/스케치",
+    "사건 당시 보잉 727 기종 사진",
+    "낙하산 및 회수 증거품 사진",
+    "1980년 발견된 지폐 뭉치 사진",
+    "지폐 일련번호 대조 문서 사진",
+    "수색 작업 당시 사진",
+    "사건 관련 신문 1면 사진",
+    "FBI 수사 파일 표지 사진"
+  ],
+  "estimated_beats_needed": 16,
+  "notes": "Distinct from the disaster/history topics already produced (Titanic, Radium Girls, Comet) -- a criminal mystery rather than an industrial accident, with genuine FBI-released archival material and a real, still-unresolved payoff."
+}

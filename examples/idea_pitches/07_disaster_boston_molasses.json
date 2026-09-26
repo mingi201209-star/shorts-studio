@@ -1,0 +1,25 @@
+{
+  "topic_id": "disaster-boston-molasses-flood",
+  "domain": "disaster",
+  "hook_sentence": "1919년, 초당 14미터로 밀려온 당밀 파도가 보스턴 도심을 덮쳐 21명이 죽었습니다.",
+  "first_second_visual": "무너진 거대한 당밀 저장탱크와 거리로 쏟아지는 갈색 파도의 실제 사진",
+  "familiar_subject": "달콤한 시럽, 당밀",
+  "unexpected_fact": "시속 56km 파도가 되어 건물을 부수고 사람과 말을 익사시킨 산업 재해였다",
+  "conflict_or_problem": "탱크는 완공 직후부터 이음새가 새고 삐걱거렸지만 회사는 경고를 무시한 채 계속 가동했다",
+  "mid_change": "1919년 1월 15일, 기온이 급등한 오후에 탱크가 폭발하듯 붕괴하며 거리 전체가 당밀에 잠겼다",
+  "ending_payoff": "유가족의 소송 승소가 미국 최초로 기술 도면에 전문 엔지니어의 서명 날인을 의무화하는 규정으로 이어졌고, 그 규정은 지금도 쓰인다",
+  "visual_evidence": [
+    "붕괴 직후 탱크 잔해 실제 사진",
+    "당밀에 잠긴 거리 실제 사진",
+    "구조 작업 중인 사람들 사진",
+    "무너진 고가철도 지지대 사진",
+    "당시 신문 1면 사진",
+    "재판 관련 법원 기록 문서 사진",
+    "탱크 건설 당시 사진",
+    "사고 이후 청소 작업 사진",
+    "탱크 위치를 표시한 보스턴 노스엔드 지도/현재 표지판 사진",
+    "사고 희생자 관련 기록 사진"
+  ],
+  "estimated_beats_needed": 18,
+  "notes": "Matches the goal-3 worked example (storage tank -> scale -> rupture point -> chain collapse -> street location -> damage record -> period newspaper -> trial outcome) almost beat for beat. Extensive, well-documented real Wikimedia Commons photo coverage of every stage: before, during, and the legal aftermath."
+}

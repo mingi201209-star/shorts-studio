@@ -1,0 +1,20 @@
+{
+  "topic_id": "science-ice-floats",
+  "domain": "science",
+  "hook_sentence": "물이 얼면 부피가 9% 더 커집니다 -- 거의 모든 물질과 정반대입니다.",
+  "first_second_visual": "물이 담긴 유리병이 얼면서 갈라져 터지는 실제 실험 영상 장면",
+  "familiar_subject": "얼음 큐브, 겨울 호수",
+  "unexpected_fact": "고체가 액체보다 밀도가 낮은 물질은 자연계에서 매우 드물다",
+  "conflict_or_problem": "물이 다른 액체처럼 얼수록 밀도가 계속 높아졌다면 얼음은 바닥에 가라앉는다",
+  "mid_change": "실제로는 수소결합이 육각형 격자를 만들며 얼음이 오히려 물보다 성겨진다",
+  "ending_payoff": "이 성질 덕분에 호수는 표면부터 얼어 바닥의 물고기가 겨울을 나고, 지구 생명체 역사도 달라졌다",
+  "visual_evidence": [
+    "물이 언 병이 갈라지는 실제 실험 사진",
+    "빙산이 물 위에 떠 있는 실제 사진",
+    "얼어붙은 호수 표면과 그 아래 물이 보이는 사진",
+    "얼음의 육각형 결정 구조를 보여주는 현미경 사진",
+    "겨울 호수 얼음 낚시 실제 사진"
+  ],
+  "estimated_beats_needed": 12,
+  "notes": "Real visual evidence pool is thin -- mostly generic ice/lake photography plus one microscopy shot. Diagram-heavy topics risk feeling like a slideshow of stock photos rather than archival evidence with a story."
+}

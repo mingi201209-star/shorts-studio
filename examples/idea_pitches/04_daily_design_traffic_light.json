@@ -1,0 +1,19 @@
+{
+  "topic_id": "daily-design-traffic-light",
+  "domain": "daily-design",
+  "hook_sentence": "신호등이 왜 빨강-노랑-초록 순서인지 설명해 드리겠습니다.",
+  "first_second_visual": "일반적인 도심 사거리 신호등 전경",
+  "familiar_subject": "매일 보는 신호등",
+  "unexpected_fact": "원래는 철도 신호에서 따온 색이다",
+  "conflict_or_problem": "초기 자동차 시대에는 교차로 사고가 잦았다",
+  "mid_change": "신호등이 도입되며 사고가 줄었다",
+  "ending_payoff": "지금도 전 세계가 같은 색 체계를 쓴다",
+  "visual_evidence": [
+    "신호등 사진",
+    "옛날 신호등 사진",
+    "교차로 사진",
+    "철도 신호기 사진"
+  ],
+  "estimated_beats_needed": 14,
+  "notes": "Intentionally weak candidate: the hook sentence itself is a banned 'I will explain X' opener, and the ending payoff is a flat restatement of the setup with no real reversal. Included specifically to confirm the Idea Gate's hook-opener check fires even inside a full pitch object, not just in isolated unit tests."
+}

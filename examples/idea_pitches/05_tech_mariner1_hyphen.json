@@ -1,0 +1,23 @@
+{
+  "topic_id": "tech-mariner1-hyphen",
+  "domain": "tech",
+  "hook_sentence": "1962년, 나사는 발사 293초 만에 자기 로켓을 스스로 폭파시켰습니다 -- 원인은 코드 속 하이픈 하나였습니다.",
+  "first_second_visual": "매리너 1호 로켓이 발사 직후 폭발하는 실제 사진/영상 프레임",
+  "familiar_subject": "우주로 향하는 로켓 발사",
+  "unexpected_fact": "1800만 달러짜리 로켓이 손으로 옮겨 적은 수식의 하이픈 하나 때문에 폭파됐다",
+  "conflict_or_problem": "발사 직후 로켓이 정해진 경로를 벗어나기 시작했고 지상관제는 손쓸 새 없이 상황을 지켜봐야 했다",
+  "mid_change": "관제소는 충돌 위험을 막기 위해 로켓에 자폭 명령을 보냈다",
+  "ending_payoff": "사후 조사에서 유도 프로그램 손코딩 과정의 하이픈 누락이 밝혀졌고, 이는 이후 소프트웨어 검증 절차를 엄격하게 바꾼 계기가 됐다",
+  "visual_evidence": [
+    "매리너 1호 발사 직전 발사대 사진",
+    "매리너 1호 발사 및 폭발 순간 사진",
+    "잔해가 대서양에 낙하하는 관련 보도 사진",
+    "매리너 계획 관제실 사진",
+    "매리너 2호(대체 발사체) 발사 사진",
+    "당시 신문 보도 사진",
+    "유도 방정식/코드 관련 나사 문서 사진",
+    "아틀라스-아제나 로켓 구조 사진"
+  ],
+  "estimated_beats_needed": 16,
+  "notes": "Strong hook and real NASA archival photo coverage; the payoff (software review culture) is a genuine, still-relevant institutional change."
+}

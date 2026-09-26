@@ -1,0 +1,18 @@
+{
+  "topic_id": "daily-design-umbrella",
+  "domain": "daily-design",
+  "hook_sentence": "우산은 원래 접히지 않았습니다.",
+  "first_second_visual": "우산을 펼치는 사람의 평범한 사진",
+  "familiar_subject": "매일 쓰는 접이식 우산",
+  "unexpected_fact": "접이식 우산은 20세기에야 발명된 비교적 최근 물건이다",
+  "conflict_or_problem": "옛날 우산은 크고 무거워서 들고 다니기 불편했다",
+  "mid_change": "한스 하우프트가 스프링 매커니즘을 넣어 접이식 우산을 만들었다",
+  "ending_payoff": "지금은 전 세계 우산의 대부분이 그 접이식 구조를 쓴다",
+  "visual_evidence": [
+    "옛날식 대형 우산 사진",
+    "접이식 우산 사진",
+    "우산 판매대 사진"
+  ],
+  "estimated_beats_needed": 14,
+  "notes": "Intentionally weak candidate: low-stakes conflict, no real reversal, and only 3 genuinely distinct real visual sources -- included to show the gate actually rejects a flat, low-drama pitch rather than passing anything remotely plausible."
+}

@@ -1,0 +1,22 @@
+{
+  "topic_id": "city-tokyo-gcans",
+  "domain": "city",
+  "hook_sentence": "도쿄 지하 22미터 아래에는 78미터짜리 기둥 59개가 떠받치는 '지하 신전'이 숨어 있습니다.",
+  "first_second_visual": "거대한 콘크리트 기둥들이 줄지어 선 지하 방수로 내부의 실제 사진",
+  "familiar_subject": "홍수를 막는 배수구, 하수도",
+  "unexpected_fact": "그 배수 시설이 대성당처럼 보이는 세계 최대급 지하 방수 시설이다",
+  "conflict_or_problem": "1990년대까지 도쿄 외곽은 태풍철마다 반복적으로 침수되어 집과 도로가 물에 잠겼다",
+  "mid_change": "일본 정부는 6.3km 터널과 5개의 거대한 수직 저류조를 연결한 지하 방수로를 완공했다",
+  "ending_payoff": "가동 이후 주변 지역 침수 피해가 90% 가까이 줄었고, 지금은 태풍이 와도 이 지하 신전이 조용히 도시를 지킨다",
+  "visual_evidence": [
+    "지하 기둥들이 늘어선 내부 실제 사진",
+    "거대한 수직 저류조(실린더 탱크) 내부 사진",
+    "펌프장 대형 터빈 설비 사진",
+    "건설 당시 터널 굴착 사진",
+    "가동 중 물이 저류조로 유입되는 실제 사진",
+    "1990년대 태풍 침수 피해 당시 사진",
+    "지상에서 본 시설 입구 사진"
+  ],
+  "estimated_beats_needed": 16,
+  "notes": "Well-photographed public infrastructure with strong before/after contrast (flood damage vs. cathedral-like relief tunnel)."
+}
