@@ -1,0 +1,2 @@
+Retry Titanic production render after transient Wikimedia HTTP 429.
+No engine, quality gate, layout, narration, or TTS changes.
