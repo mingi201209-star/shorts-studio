@@ -1,0 +1,52 @@
+name: Verify hash for Nina Alderton portrait (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/verify-alderton.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -e '.[dev]'
+      - name: Download, normalize, and hash through the real production path
+        run: |
+          python3 - <<'PY'
+          import sys, hashlib, json, shutil
+          sys.path.insert(0, ".")
+          from pathlib import Path
+          from shorts_studio.render import _resolve_asset
+
+          build = Path("build_tmp")
+          build.mkdir(exist_ok=True)
+          url = "https://www.nist.gov/sites/default/files/images/2022/04/21/Nina%20M.%20Alderton.jpg"
+          try:
+              path = _resolve_asset({"asset_url": url}, build, "verify", 0)
+              data = path.read_bytes()
+              digest = hashlib.sha256(data).hexdigest()
+              shutil.copy(path, "preview_alderton.jpg")
+              json.dump({"url": url, "sha256": digest, "size": len(data), "status": "ok"}, open("alderton_hash.json", "w"), indent=2)
+              print("OK", digest, len(data), "bytes")
+          except Exception as e:
+              json.dump({"url": url, "error": str(e), "status": "failed"}, open("alderton_hash.json", "w"), indent=2)
+              print("FAILED:", e)
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "alderton-verify-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan verify/alderton
+          git reset --hard
+          git add alderton_hash.json preview_alderton.jpg 2>/dev/null || git add alderton_hash.json
+          git commit -m "Throwaway: real hash + preview for Nina Alderton portrait"
+          git push -f origin HEAD:refs/heads/verify/alderton
