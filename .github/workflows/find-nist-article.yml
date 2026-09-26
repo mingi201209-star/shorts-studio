@@ -1,0 +1,93 @@
+name: Find the real NIST Radium Girls article URL (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/find-nist-article.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  find:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Search nist.gov for its Radium Girls article
+        run: |
+          set -o pipefail
+          pip install requests >/dev/null
+          python3 - <<'PY'
+          import json, re, requests
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          out = {}
+
+          # 1. NIST's own site search.
+          for q in ["radium girls", "radium dial painters"]:
+              try:
+                  r = requests.get("https://www.nist.gov/search", params={"s": q}, headers=HEADERS, timeout=20)
+                  links = sorted(set(re.findall(r'href="(/[a-z0-9\-/]+)"', r.text)))
+                  interesting = [l for l in links if "radium" in l.lower() or "dial" in l.lower()]
+                  out[f"site_search:{q}"] = {"status": r.status_code, "interesting_links": interesting, "all_links_sample": links[:40]}
+                  print(q, r.status_code, interesting)
+              except Exception as e:
+                  out[f"site_search:{q}"] = {"error": str(e)}
+                  print(q, "FAILED", e)
+
+          # 2. A general web search via DuckDuckGo's HTML endpoint (no API key needed).
+          try:
+              r = requests.get("https://html.duckduckgo.com/html/", params={"q": "site:nist.gov radium girls"}, headers=HEADERS, timeout=20)
+              links = sorted(set(re.findall(r'href="([^"]*nist\.gov[^"]*)"', r.text)))
+              out["duckduckgo"] = {"status": r.status_code, "links": links}
+              print("duckduckgo:", links)
+          except Exception as e:
+              out["duckduckgo"] = {"error": str(e)}
+              print("duckduckgo FAILED", e)
+
+          json.dump(out, open("nist_search.json", "w"), indent=2)
+          PY
+      - name: Search Commons for more specific real legacy figures/documents
+        run: |
+          python3 - <<'PY'
+          import json, requests
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          COMMONS = "https://commons.wikimedia.org/w/api.php"
+          queries = [
+              "Harrison Martland radium",
+              "Katherine Wiley Consumers League radium",
+              "Raymond Berry radium girls lawyer",
+              "radium jaw necrosis medical",
+              "American Standards Association radium tolerance",
+              "0.1 microgram radium body burden",
+          ]
+          results = {}
+          for q in queries:
+              r = requests.get(COMMONS, params={
+                  "action": "query", "list": "search", "srsearch": q,
+                  "srnamespace": "6", "srlimit": "10", "format": "json",
+              }, headers=HEADERS, timeout=20)
+              hits = [h["title"] for h in r.json().get("query", {}).get("search", [])]
+              results[q] = hits
+              print(q, "->", hits)
+          titles = sorted({t for hits in results.values() for t in hits})
+          out = []
+          if titles:
+              r = requests.get(COMMONS, params={
+                  "action": "query", "titles": "|".join(titles[:40]), "prop": "imageinfo",
+                  "iiprop": "url|size|mime", "iiurlwidth": "800", "format": "json",
+              }, headers=HEADERS, timeout=20)
+              for p in r.json().get("query", {}).get("pages", {}).values():
+                  info = p.get("imageinfo")
+                  if info:
+                      out.append({"title": p.get("title"), "url": info[0].get("url"), "thumburl": info[0].get("thumburl"), "mime": info[0].get("mime")})
+          json.dump({"search_results": results, "candidates": out}, open("commons_search_2.json", "w"), indent=2)
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "nist-search-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan scout/nist-article-search
+          git reset --hard
+          git add nist_search.json commons_search_2.json
+          git commit -m "Throwaway: find the real NIST Radium Girls article URL"
+          git push -f origin HEAD:refs/heads/scout/nist-article-search
