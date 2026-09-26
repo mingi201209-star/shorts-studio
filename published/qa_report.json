@@ -1,0 +1,1723 @@
+{
+  "status": "PASS",
+  "subtitle_reports": [
+    {
+      "scene": "scene_01",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_02",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_03",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_04",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_05",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    }
+  ],
+  "visual_qa": {
+    "structural_status": "PASS",
+    "semantic_status": "NOT_EVALUATED",
+    "failures": [],
+    "requirements": {
+      "scene_01": [
+        "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_02": [
+        "1919\ub144 \ud3ed\ubc1c \uc774\uc804, \ubcf4\uc2a4\ud134 \ub178\uc2a4\uc5d4\ub4dc\uc5d0 \uc11c \uc788\ub358 \uc2e4\uc81c \ub2f9\ubc00 \uc800\uc7a5\ud0f1\ud06c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_03": [
+        "\ub2f9\ubc00 \ud64d\uc218\ub85c \ud718\uc5b4\uc9c0\uace0 \ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \ucca0\uace8 \uad6c\uc870\ubb3c\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_04": [
+        "\ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \uad6c\uc870\ubb3c \uc544\ub798\uc5d0\uc11c \uc18c\ubc29\uad00\ub4e4\uc774 \uc794\ud574\ub97c \uc218\uc0c9\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_05": [
+        "\uace0\uac00\ucca0\ub3c4 \uc704\uc5d0\uc11c \uc544\ub798 \uc794\ud574 \ud604\uc7a5\uc744 \ub0b4\ub824\ub2e4\ubcf4\uba70 \uc870\uc0ac\ud558\ub294 \uc2e4\uc81c \uad00\uacc4\uc790\ub4e4\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ]
+    }
+  },
+  "semantic_visual_qa": {
+    "status": "PASS",
+    "results": [
+      {
+        "scene": "scene_01",
+        "status": "PASS",
+        "requirements": [
+          "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_01_beat_00",
+            "requirements": [
+              "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "b6f649681a15c67b352068981d041f81b4375d17263eabad4bdef291ff115183"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 659.1419791666667,
+                "contrast": 83.51613418616499,
+                "mean": 51.40154176311729
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "aerial archival photograph of the 1919 Boston Molasses Disaster aftermath showing widespread wreckage": 0.2975187301635742,
+                  "cartoon": 0.17838281393051147,
+                  "AI generated image": 0.2103993147611618,
+                  "modern stock photo": 0.18197937309741974,
+                  "movie still": 0.21558673679828644
+                },
+                "mean_pos": 0.2975187301635742,
+                "mean_neg": 0.19658705964684486,
+                "margin": 0.10093167051672935
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_01",
+            "requirements": [
+              "\ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \uad6c\uc870\ubb3c \uc544\ub798\uc5d0\uc11c \uc18c\ubc29\uad00\ub4e4\uc774 \uc794\ud574\ub97c \uc218\uc0c9\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1818.3727883873457,
+                "contrast": 69.16523773985887,
+                "mean": 36.476301601080245
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood": 0.34310662746429443,
+                  "cartoon": 0.17229124903678894,
+                  "AI generated image": 0.2065427303314209,
+                  "modern stock photo": 0.18530184030532837,
+                  "movie still": 0.23567861318588257
+                },
+                "mean_pos": 0.34310662746429443,
+                "mean_neg": 0.1999536082148552,
+                "margin": 0.14315301924943924
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_02",
+            "requirements": [
+              "\ub2f9\ubc00 \ud64d\uc218\ub85c \ud718\uc5b4\uc9c0\uace0 \ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \ucca0\uace8 \uad6c\uc870\ubb3c\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "de62d0f89eb14d306d4b2421c4333497f9b059ae2300b395a54633b40db2ed29"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 206.05209008487654,
+                "contrast": 58.94989300054047,
+                "mean": 33.275651523919755
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of a bent, damaged elevated railway steel structure after the 1919 Boston molasses flood": 0.29235613346099854,
+                  "cartoon": 0.1891409009695053,
+                  "AI generated image": 0.21404804289340973,
+                  "modern stock photo": 0.18483373522758484,
+                  "movie still": 0.22513338923454285
+                },
+                "mean_pos": 0.29235613346099854,
+                "mean_neg": 0.20328901708126068,
+                "margin": 0.08906711637973785
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_03",
+            "requirements": [
+              "\uace0\uac00\ucca0\ub3c4 \uc704\uc5d0\uc11c \uc544\ub798 \uc794\ud574 \ud604\uc7a5\uc744 \ub0b4\ub824\ub2e4\ubcf4\uba70 \uc870\uc0ac\ud558\ub294 \uc2e4\uc81c \uad00\uacc4\uc790\ub4e4\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "42ba807a5d8975e6dceecae966cf92fe81a5b64a8aa725ef8e30421fbecb7881"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 850.2144521604938,
+                "contrast": 75.69179344951635,
+                "mean": 45.21582899305555
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of officials investigating the wreckage from atop the elevated railway tracks after the 1919 disaster": 0.30071163177490234,
+                  "cartoon": 0.19229942560195923,
+                  "AI generated image": 0.2099090814590454,
+                  "modern stock photo": 0.20953553915023804,
+                  "movie still": 0.22787781059741974
+                },
+                "mean_pos": 0.30071163177490234,
+                "mean_neg": 0.2099054642021656,
+                "margin": 0.09080616757273674
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_02",
+        "status": "PASS",
+        "requirements": [
+          "1919\ub144 \ud3ed\ubc1c \uc774\uc804, \ubcf4\uc2a4\ud134 \ub178\uc2a4\uc5d4\ub4dc\uc5d0 \uc11c \uc788\ub358 \uc2e4\uc81c \ub2f9\ubc00 \uc800\uc7a5\ud0f1\ud06c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_02_beat_00",
+            "requirements": [
+              "1919\ub144 \ud3ed\ubc1c \uc774\uc804, \ubcf4\uc2a4\ud134 \ub178\uc2a4\uc5d4\ub4dc\uc5d0 \uc11c \uc788\ub358 \uc2e4\uc81c \ub2f9\ubc00 \uc800\uc7a5\ud0f1\ud06c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "18413d829874c81d4282e2fab0b58ecf5fa0c8c77c5a8953227a4cf928acf81c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 90.10862654320988,
+                "contrast": 80.93542670479431,
+                "mean": 47.47880353009259
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real historical photograph of the intact molasses storage tank in Boston's North End before it collapsed in 1919": 0.29317742586135864,
+                  "cartoon": 0.1804589331150055,
+                  "AI generated image": 0.1948266625404358,
+                  "modern stock photo": 0.1750003844499588,
+                  "movie still": 0.2307082861661911
+                },
+                "mean_pos": 0.29317742586135864,
+                "mean_neg": 0.1952485665678978,
+                "margin": 0.09792885929346085
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_01",
+            "requirements": [
+              "\uc2e4\uc81c \uc0ac\uace0 \ud604\uc7a5 \uc0ac\uc9c4 \uc704\uc5d0 \ud0f1\ud06c\uc758 \uc2e4\uc81c \uaddc\ubaa8(\ub192\uc774/\uc9c0\ub984)\ub97c \ud45c\uc2dc\ud55c \ub2e4\uc774\uc5b4\uadf8\ub7a8\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "d97c6ee3659858f8fefac3a441287d9aa15e04b47561c3a27b0df8f592bf439c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 836.1297231867284,
+                "contrast": 66.90788391385175,
+                "mean": 33.84032986111111
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "diagram overlaying the real scale (height and diameter) of the collapsed molasses tank onto the real disaster photo": 0.2982081472873688,
+                  "cartoon": 0.19586043059825897,
+                  "AI generated image": 0.22270774841308594,
+                  "modern stock photo": 0.18079417943954468,
+                  "movie still": 0.2244483381509781
+                },
+                "mean_pos": 0.2982081472873688,
+                "mean_neg": 0.20595267415046692,
+                "margin": 0.09225547313690186
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_02",
+            "requirements": [
+              "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "b6f649681a15c67b352068981d041f81b4375d17263eabad4bdef291ff115183"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 659.1419791666667,
+                "contrast": 83.51613418616499,
+                "mean": 51.40154176311729
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "aerial archival photograph of the 1919 Boston Molasses Disaster aftermath showing widespread wreckage": 0.2975187301635742,
+                  "cartoon": 0.17838281393051147,
+                  "AI generated image": 0.2103993147611618,
+                  "modern stock photo": 0.18197937309741974,
+                  "movie still": 0.21558673679828644
+                },
+                "mean_pos": 0.2975187301635742,
+                "mean_neg": 0.19658705964684486,
+                "margin": 0.10093167051672935
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_03",
+            "requirements": [
+              "\ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \uad6c\uc870\ubb3c \uc544\ub798\uc5d0\uc11c \uc18c\ubc29\uad00\ub4e4\uc774 \uc794\ud574\ub97c \uc218\uc0c9\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1818.3711381172839,
+                "contrast": 69.16517580863056,
+                "mean": 36.47629677854938
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood": 0.3429415822029114,
+                  "cartoon": 0.17217673361301422,
+                  "AI generated image": 0.20634785294532776,
+                  "modern stock photo": 0.18505802750587463,
+                  "movie still": 0.23559154570102692
+                },
+                "mean_pos": 0.3429415822029114,
+                "mean_neg": 0.19979353994131088,
+                "margin": 0.1431480422616005
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_03",
+        "status": "PASS",
+        "requirements": [
+          "\ub2f9\ubc00 \ud64d\uc218\ub85c \ud718\uc5b4\uc9c0\uace0 \ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \ucca0\uace8 \uad6c\uc870\ubb3c\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_03_beat_00",
+            "requirements": [
+              "\ub2f9\ubc00 \ud64d\uc218\ub85c \ud718\uc5b4\uc9c0\uace0 \ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \ucca0\uace8 \uad6c\uc870\ubb3c\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "de62d0f89eb14d306d4b2421c4333497f9b059ae2300b395a54633b40db2ed29"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 206.05209008487654,
+                "contrast": 58.94989300054047,
+                "mean": 33.275651523919755
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of a bent, damaged elevated railway steel structure after the 1919 Boston molasses flood": 0.29235613346099854,
+                  "cartoon": 0.1891409009695053,
+                  "AI generated image": 0.21404804289340973,
+                  "modern stock photo": 0.18483373522758484,
+                  "movie still": 0.22513338923454285
+                },
+                "mean_pos": 0.29235613346099854,
+                "mean_neg": 0.20328901708126068,
+                "margin": 0.08906711637973785
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_01",
+            "requirements": [
+              "1919\ub144 \ud3ed\ubc1c \uc774\uc804, \ubcf4\uc2a4\ud134 \ub178\uc2a4\uc5d4\ub4dc\uc5d0 \uc11c \uc788\ub358 \uc2e4\uc81c \ub2f9\ubc00 \uc800\uc7a5\ud0f1\ud06c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "18413d829874c81d4282e2fab0b58ecf5fa0c8c77c5a8953227a4cf928acf81c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 90.10862654320988,
+                "contrast": 80.93542670479431,
+                "mean": 47.47880353009259
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real historical photograph of the intact molasses storage tank in Boston's North End before it collapsed in 1919": 0.29317742586135864,
+                  "cartoon": 0.1804589331150055,
+                  "AI generated image": 0.1948266625404358,
+                  "modern stock photo": 0.1750003844499588,
+                  "movie still": 0.2307082861661911
+                },
+                "mean_pos": 0.29317742586135864,
+                "mean_neg": 0.1952485665678978,
+                "margin": 0.09792885929346085
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_02",
+            "requirements": [
+              "\uc2e4\uc81c \uc0ac\uace0 \ud604\uc7a5 \uc0ac\uc9c4 \uc704\uc5d0 \ud0f1\ud06c\uc758 \uc2e4\uc81c \uaddc\ubaa8(\ub192\uc774/\uc9c0\ub984)\ub97c \ud45c\uc2dc\ud55c \ub2e4\uc774\uc5b4\uadf8\ub7a8\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "d97c6ee3659858f8fefac3a441287d9aa15e04b47561c3a27b0df8f592bf439c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 836.1297231867284,
+                "contrast": 66.90788391385175,
+                "mean": 33.84032986111111
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "diagram overlaying the real scale (height and diameter) of the collapsed molasses tank onto the real disaster photo": 0.2982081472873688,
+                  "cartoon": 0.19586043059825897,
+                  "AI generated image": 0.22270774841308594,
+                  "modern stock photo": 0.18079417943954468,
+                  "movie still": 0.2244483381509781
+                },
+                "mean_pos": 0.2982081472873688,
+                "mean_neg": 0.20595267415046692,
+                "margin": 0.09225547313690186
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_03",
+            "requirements": [
+              "\uace0\uac00\ucca0\ub3c4 \uc704\uc5d0\uc11c \uc544\ub798 \uc794\ud574 \ud604\uc7a5\uc744 \ub0b4\ub824\ub2e4\ubcf4\uba70 \uc870\uc0ac\ud558\ub294 \uc2e4\uc81c \uad00\uacc4\uc790\ub4e4\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "42ba807a5d8975e6dceecae966cf92fe81a5b64a8aa725ef8e30421fbecb7881"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 850.2144521604938,
+                "contrast": 75.69179344951635,
+                "mean": 45.21582899305555
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of officials investigating the wreckage from atop the elevated railway tracks after the 1919 disaster": 0.30071163177490234,
+                  "cartoon": 0.19229942560195923,
+                  "AI generated image": 0.2099090814590454,
+                  "modern stock photo": 0.20953553915023804,
+                  "movie still": 0.22787781059741974
+                },
+                "mean_pos": 0.30071163177490234,
+                "mean_neg": 0.2099054642021656,
+                "margin": 0.09080616757273674
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_04",
+            "requirements": [
+              "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "b6f649681a15c67b352068981d041f81b4375d17263eabad4bdef291ff115183"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 659.1373302469136,
+                "contrast": 83.51613884730772,
+                "mean": 51.401537905092596
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "aerial archival photograph of the 1919 Boston Molasses Disaster aftermath showing widespread wreckage": 0.29751867055892944,
+                  "cartoon": 0.17838260531425476,
+                  "AI generated image": 0.21039676666259766,
+                  "modern stock photo": 0.18197858333587646,
+                  "movie still": 0.2155870646238327
+                },
+                "mean_pos": 0.29751867055892944,
+                "mean_neg": 0.1965862549841404,
+                "margin": 0.10093241557478905
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_04",
+        "status": "PASS",
+        "requirements": [
+          "\ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \uad6c\uc870\ubb3c \uc544\ub798\uc5d0\uc11c \uc18c\ubc29\uad00\ub4e4\uc774 \uc794\ud574\ub97c \uc218\uc0c9\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_04_beat_00",
+            "requirements": [
+              "\ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \uad6c\uc870\ubb3c \uc544\ub798\uc5d0\uc11c \uc18c\ubc29\uad00\ub4e4\uc774 \uc794\ud574\ub97c \uc218\uc0c9\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1818.3723707561728,
+                "contrast": 69.16520461509579,
+                "mean": 36.47630594135803
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood": 0.3430662751197815,
+                  "cartoon": 0.17225870490074158,
+                  "AI generated image": 0.20655737817287445,
+                  "modern stock photo": 0.18530327081680298,
+                  "movie still": 0.2356572449207306
+                },
+                "mean_pos": 0.3430662751197815,
+                "mean_neg": 0.1999441497027874,
+                "margin": 0.1431221254169941
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_01",
+            "requirements": [
+              "\ub2f9\ubc00 \ud64d\uc218\ub85c \ud718\uc5b4\uc9c0\uace0 \ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \ucca0\uace8 \uad6c\uc870\ubb3c\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "de62d0f89eb14d306d4b2421c4333497f9b059ae2300b395a54633b40db2ed29"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 206.05209008487654,
+                "contrast": 58.94989300054047,
+                "mean": 33.275651523919755
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of a bent, damaged elevated railway steel structure after the 1919 Boston molasses flood": 0.29235613346099854,
+                  "cartoon": 0.1891409009695053,
+                  "AI generated image": 0.21404804289340973,
+                  "modern stock photo": 0.18483373522758484,
+                  "movie still": 0.22513338923454285
+                },
+                "mean_pos": 0.29235613346099854,
+                "mean_neg": 0.20328901708126068,
+                "margin": 0.08906711637973785
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_02",
+            "requirements": [
+              "1919\ub144 \ud3ed\ubc1c \uc774\uc804, \ubcf4\uc2a4\ud134 \ub178\uc2a4\uc5d4\ub4dc\uc5d0 \uc11c \uc788\ub358 \uc2e4\uc81c \ub2f9\ubc00 \uc800\uc7a5\ud0f1\ud06c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "18413d829874c81d4282e2fab0b58ecf5fa0c8c77c5a8953227a4cf928acf81c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 90.10862654320988,
+                "contrast": 80.93542670479431,
+                "mean": 47.47880353009259
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real historical photograph of the intact molasses storage tank in Boston's North End before it collapsed in 1919": 0.29317742586135864,
+                  "cartoon": 0.1804589331150055,
+                  "AI generated image": 0.1948266625404358,
+                  "modern stock photo": 0.1750003844499588,
+                  "movie still": 0.2307082861661911
+                },
+                "mean_pos": 0.29317742586135864,
+                "mean_neg": 0.1952485665678978,
+                "margin": 0.09792885929346085
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_03",
+            "requirements": [
+              "\uc2e4\uc81c \uc0ac\uace0 \ud604\uc7a5 \uc0ac\uc9c4 \uc704\uc5d0 \ud0f1\ud06c\uc758 \uc2e4\uc81c \uaddc\ubaa8(\ub192\uc774/\uc9c0\ub984)\ub97c \ud45c\uc2dc\ud55c \ub2e4\uc774\uc5b4\uadf8\ub7a8\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "d97c6ee3659858f8fefac3a441287d9aa15e04b47561c3a27b0df8f592bf439c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 836.1297231867284,
+                "contrast": 66.90788391385175,
+                "mean": 33.84032986111111
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "diagram overlaying the real scale (height and diameter) of the collapsed molasses tank onto the real disaster photo": 0.2982081472873688,
+                  "cartoon": 0.19586043059825897,
+                  "AI generated image": 0.22270774841308594,
+                  "modern stock photo": 0.18079417943954468,
+                  "movie still": 0.2244483381509781
+                },
+                "mean_pos": 0.2982081472873688,
+                "mean_neg": 0.20595267415046692,
+                "margin": 0.09225547313690186
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_05",
+        "status": "PASS",
+        "requirements": [
+          "\uace0\uac00\ucca0\ub3c4 \uc704\uc5d0\uc11c \uc544\ub798 \uc794\ud574 \ud604\uc7a5\uc744 \ub0b4\ub824\ub2e4\ubcf4\uba70 \uc870\uc0ac\ud558\ub294 \uc2e4\uc81c \uad00\uacc4\uc790\ub4e4\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_05_beat_00",
+            "requirements": [
+              "\uace0\uac00\ucca0\ub3c4 \uc704\uc5d0\uc11c \uc544\ub798 \uc794\ud574 \ud604\uc7a5\uc744 \ub0b4\ub824\ub2e4\ubcf4\uba70 \uc870\uc0ac\ud558\ub294 \uc2e4\uc81c \uad00\uacc4\uc790\ub4e4\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "42ba807a5d8975e6dceecae966cf92fe81a5b64a8aa725ef8e30421fbecb7881"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 850.2144521604938,
+                "contrast": 75.69179344951635,
+                "mean": 45.21582899305555
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of officials investigating the wreckage from atop the elevated railway tracks after the 1919 disaster": 0.30071163177490234,
+                  "cartoon": 0.19229942560195923,
+                  "AI generated image": 0.2099090814590454,
+                  "modern stock photo": 0.20953553915023804,
+                  "movie still": 0.22787781059741974
+                },
+                "mean_pos": 0.30071163177490234,
+                "mean_neg": 0.2099054642021656,
+                "margin": 0.09080616757273674
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_01",
+            "requirements": [
+              "\ubb34\ub108\uc9c4 \uace0\uac00\ucca0\ub3c4 \uad6c\uc870\ubb3c \uc544\ub798\uc5d0\uc11c \uc18c\ubc29\uad00\ub4e4\uc774 \uc794\ud574\ub97c \uc218\uc0c9\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1818.3723707561728,
+                "contrast": 69.16520461509579,
+                "mean": 36.47630594135803
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood": 0.3430662751197815,
+                  "cartoon": 0.17225870490074158,
+                  "AI generated image": 0.20655737817287445,
+                  "modern stock photo": 0.18530327081680298,
+                  "movie still": 0.2356572449207306
+                },
+                "mean_pos": 0.3430662751197815,
+                "mean_neg": 0.1999441497027874,
+                "margin": 0.1431221254169941
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_02",
+            "requirements": [
+              "1919\ub144 1\uc6d4 16\uc77c \ubcf4\uc2a4\ud134 \ub370\uc77c\ub9ac \uae00\ub85c\ube0c 1\uba74 \uc2e0\ubb38 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "96f0360da2bc3717c1fd531317b0c8a43ba806bf9197823e271c20390b1c51d4"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 5461.785984760802,
+                "contrast": 91.11042661364834,
+                "mean": 48.21766541280864
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of the Boston Daily Globe newspaper front page from January 16, 1919 covering the molasses disaster": 0.3357543349266052,
+                  "cartoon": 0.16876250505447388,
+                  "AI generated image": 0.19281911849975586,
+                  "modern stock photo": 0.18846815824508667,
+                  "movie still": 0.20880895853042603
+                },
+                "mean_pos": 0.3357543349266052,
+                "mean_neg": 0.1897146850824356,
+                "margin": 0.14603964984416962
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_03",
+            "requirements": [
+              "\ubcf4\uc2a4\ud134 \ub178\uc2a4\uc5d4\ub4dc \uc9c0\uc5ed, \uc0ac\uace0 \ud604\uc7a5\uc758 \uc2e4\uc81c \uc704\uce58\ub97c \ud45c\uc2dc\ud55c \uc9c0\ub3c4\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "9ea882fd5d5572669a429c9aa0471a2edfb738d8016e814207a9d261c8ba715b"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 763.4728202160494,
+                "contrast": 100.51411685572134,
+                "mean": 73.22985339506172
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real map showing the exact location of the 1919 molasses disaster in Boston's North End neighborhood": 0.2638252377510071,
+                  "cartoon": 0.17804712057113647,
+                  "AI generated image": 0.17631128430366516,
+                  "modern stock photo": 0.15406110882759094,
+                  "movie still": 0.18045224249362946
+                },
+                "mean_pos": 0.2638252377510071,
+                "mean_neg": 0.1722179390490055,
+                "margin": 0.09160729870200157
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_04",
+            "requirements": [
+              "1919\ub144 1\uc6d4 16\uc77c \ubcf4\uc2a4\ud134 \ud3ec\uc2a4\ud2b8 1\uba74 \uc2e0\ubb38 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "06aeae7b9af8498bfe37f18c25627158a27552ee8254377d1eb7dfb0d23949f9"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1355.7741975308643,
+                "contrast": 81.57611708581192,
+                "mean": 54.90317660108025
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real photograph of the Boston Post newspaper front page from January 16, 1919 covering the molasses disaster": 0.3392871618270874,
+                  "cartoon": 0.162238210439682,
+                  "AI generated image": 0.18953299522399902,
+                  "modern stock photo": 0.19313323497772217,
+                  "movie still": 0.2110242247581482
+                },
+                "mean_pos": 0.3392871618270874,
+                "mean_neg": 0.18898216634988785,
+                "margin": 0.15030499547719955
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_05",
+            "requirements": [
+              "\ubcf4\uc2a4\ud1a0\ub2c8\uc548 \uc18c\uc0ac\uc774\uc5b4\ud2f0\uac00 \uc138\uc6b4 \uc2e4\uc81c \ud604\ub300 \uc5ed\uc0ac \ud45c\uc9c0\ud310 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "c2c214021966214822d8e55cef2a5fa6c2586c897bab80f7ade500733cd237ca"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 827.3955497685185,
+                "contrast": 62.69344184138186,
+                "mean": 45.47169656635803
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "real modern photograph of the historical marker plaque commemorating the 1919 Boston Molasses Flood": 0.3618975877761841,
+                  "cartoon": 0.16384334862232208,
+                  "AI generated image": 0.17450103163719177,
+                  "modern stock photo": 0.2082555592060089,
+                  "movie still": 0.19736382365226746
+                },
+                "mean_pos": 0.3618975877761841,
+                "mean_neg": 0.18599094077944756,
+                "margin": 0.17590664699673653
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      }
+    ]
+  },
+  "semantic_required": true,
+  "final_video_qa": {
+    "status": "PASS",
+    "checks": {
+      "composition_9x16": {
+        "status": "PASS"
+      },
+      "scenes_present": {
+        "status": "PASS"
+      },
+      "visual_cut_cadence": {
+        "status": "PASS",
+        "max_hold_seconds": 3.5
+      },
+      "no_semantic_skip": {
+        "status": "PASS"
+      },
+      "narration_continuity": {
+        "status": "PASS",
+        "max_silence_seconds": 1.5
+      },
+      "visual_activity_real": {
+        "status": "PASS",
+        "evidence": {
+          "cut_timestamps": [
+            0.0,
+            2.0,
+            3.5,
+            5.5,
+            7.0,
+            9.5,
+            12.5,
+            15.0,
+            17.5,
+            20.5,
+            23.0,
+            26.0,
+            28.5,
+            31.5,
+            34.0,
+            37.0,
+            39.5,
+            42.5,
+            45.5,
+            48.5,
+            51.5,
+            54.5,
+            57.5
+          ],
+          "average_visual_beat_seconds": 2.630434782608696,
+          "max_static_visual_seconds": 3.0,
+          "first_5s_visual_changes": 2,
+          "sample_fps": 2.0
+        }
+      },
+      "no_black_opening": {
+        "status": "PASS",
+        "evidence": {
+          "media_mean": 103.89599707602339,
+          "media_is_black": false,
+          "has_bright_text": true
+        }
+      },
+      "source_reuse": {
+        "status": "PASS",
+        "evidence": {
+          "total_beats": 23,
+          "unique_sources": 10,
+          "source_reuse_ratio": 0.5652173913043479,
+          "max_consecutive_same_source": 1
+        }
+      },
+      "global_source_reuse": {
+        "status": "PASS",
+        "evidence": {
+          "total_beats": 23,
+          "unique_source_family_count": 10,
+          "unique_source_family_ratio": 0.43478260869565216,
+          "global_source_reuse_ratio": 0.5652173913043479,
+          "max_source_family_occurrences": 4,
+          "max_source_family_ratio": 0.17391304347826086,
+          "repeated_source_timestamps": [
+            {
+              "scene": "scene_02",
+              "start": 5.23,
+              "family": "bostonmassbostonmolassesexplosion14968a"
+            },
+            {
+              "scene": "scene_02",
+              "start": 7.84,
+              "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+            },
+            {
+              "scene": "scene_03",
+              "start": 0.0,
+              "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018023"
+            },
+            {
+              "scene": "scene_03",
+              "start": 2.79,
+              "family": "northendmolassestank"
+            },
+            {
+              "scene": "scene_03",
+              "start": 5.59,
+              "family": "bostonmolassesfloodaftermathoriginaltankscalesuperimposed"
+            },
+            {
+              "scene": "scene_03",
+              "start": 8.38,
+              "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018052"
+            },
+            {
+              "scene": "scene_03",
+              "start": 11.17,
+              "family": "bostonmassbostonmolassesexplosion14968a"
+            },
+            {
+              "scene": "scene_04",
+              "start": 0.0,
+              "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+            },
+            {
+              "scene": "scene_04",
+              "start": 2.71,
+              "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018023"
+            },
+            {
+              "scene": "scene_04",
+              "start": 5.41,
+              "family": "northendmolassestank"
+            },
+            {
+              "scene": "scene_04",
+              "start": 8.12,
+              "family": "bostonmolassesfloodaftermathoriginaltankscalesuperimposed"
+            },
+            {
+              "scene": "scene_05",
+              "start": 0.0,
+              "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018052"
+            },
+            {
+              "scene": "scene_05",
+              "start": 3.0,
+              "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+            }
+          ]
+        }
+      },
+      "visual_novelty": {
+        "status": "PASS",
+        "evidence": []
+      },
+      "first_5s_coverage": {
+        "status": "PASS",
+        "evidence": {
+          "first_5s_unique_sources": 3,
+          "first_5s_families": [
+            {
+              "scene": "scene_01",
+              "start": 0.0,
+              "family": "bostonmassbostonmolassesexplosion14968a"
+            },
+            {
+              "scene": "scene_01",
+              "start": 1.75,
+              "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+            },
+            {
+              "scene": "scene_01",
+              "start": 3.49,
+              "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018023"
+            }
+          ]
+        }
+      },
+      "ending_novelty": {
+        "status": "PASS",
+        "evidence": {
+          "ending_seconds": 18.0,
+          "final_window_seconds": 10.0,
+          "ending_cutoff": 42.332682,
+          "ending_beat_count": 5,
+          "ending_new_beat_count": 4,
+          "ending_new_ratio": 0.8,
+          "final_window_unique_new_count": 3,
+          "last_beat_family": "molassesfloodhistoricalmarker",
+          "last_beat_is_reused_generic": false,
+          "ending_beats_detail": [
+            {
+              "scene": "scene_05",
+              "start": 45.290667,
+              "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+            },
+            {
+              "scene": "scene_05",
+              "start": 48.290667,
+              "family": "thebostondailyglobefrontpage1919116"
+            },
+            {
+              "scene": "scene_05",
+              "start": 51.280667,
+              "family": "bostonmolassesdetailmap"
+            },
+            {
+              "scene": "scene_05",
+              "start": 54.280667,
+              "family": "bostonpostjanuary161919"
+            },
+            {
+              "scene": "scene_05",
+              "start": 57.280667,
+              "family": "molassesfloodhistoricalmarker"
+            }
+          ]
+        }
+      },
+      "retention_contract": {
+        "status": "PASS",
+        "checks": {
+          "hook_opener": {
+            "status": "PASS",
+            "evidence": {
+              "first_phrase": "\ub2f9\ubc00 \ud30c\ub3c4\uac00 \ubcf4\uc2a4\ud134\uc744 \ub36e\uccd0 21\uba85\uc774 \uc8fd\uc5c8\uc2b5\ub2c8\ub2e4",
+              "hook_type": "danger"
+            }
+          },
+          "first_beat_visual_grounding": {
+            "status": "PASS",
+            "evidence": {
+              "first_beat_text": "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            }
+          },
+          "hook_narration_visual_sync": {
+            "status": "PASS",
+            "evidence": {
+              "narration": "\ub2f9\ubc00 \ud30c\ub3c4\uac00 \ubcf4\uc2a4\ud134\uc744 \ub36e\uccd0 21\uba85\uc774 \uc8fd\uc5c8\uc2b5\ub2c8\ub2e4",
+              "requirement": "1919\ub144 \ubcf4\uc2a4\ud134 \ub2f9\ubc00 \ucc38\uc0ac \ud604\uc7a5\uc758 \uc2e4\uc81c \ud56d\uacf5 \uc0ac\uc9c4: \ubb34\ub108\uc9c4 \uac74\ubb3c\uacfc \uc794\ud574\ub85c \ub4a4\ub36e\uc778 \uac70\ub9ac\uac00 \ubcf4\uc5ec\uc57c \ud568",
+              "overlap": 0.16666666666666666
+            }
+          },
+          "story_progression": {
+            "status": "PASS",
+            "evidence": {
+              "roles": [
+                "HOOK",
+                "HOOK",
+                "SETUP",
+                "REVEAL",
+                "REVEAL",
+                "INVESTIGATION",
+                "INVESTIGATION",
+                "EXPLANATION",
+                "EXPLANATION",
+                "CRISIS",
+                "CRISIS",
+                "CRISIS",
+                "PAYOFF",
+                "PAYOFF",
+                "PAYOFF",
+                "PAYOFF"
+              ],
+              "distinct_roles": 7
+            }
+          },
+          "ending_payoff_role": {
+            "status": "PASS",
+            "evidence": {
+              "last_role": "PAYOFF"
+            }
+          },
+          "no_redundant_narration": {
+            "status": "PASS"
+          },
+          "information_progression": {
+            "status": "PASS",
+            "evidence": {
+              "total_beats": 23,
+              "declared_info_role_count": 23,
+              "declared_info_role_ratio": 1.0,
+              "duplicate_info_roles": []
+            }
+          }
+        }
+      },
+      "first_10s_retention": {
+        "status": "PASS",
+        "evidence": {
+          "narration_timeline_first_12s": [
+            {
+              "scene": "scene_01",
+              "role": "HOOK",
+              "text": "\ub2f9\ubc00 \ud30c\ub3c4\uac00 \ubcf4\uc2a4\ud134\uc744 \ub36e\uccd0 21\uba85\uc774 \uc8fd\uc5c8\uc2b5\ub2c8\ub2e4.",
+              "start": 0.0,
+              "end": 4.15
+            },
+            {
+              "scene": "scene_01",
+              "role": "HOOK",
+              "text": "\uace0\uac00\ucca0\ub3c4\uae4c\uc9c0 \ubb34\ub108\ub728\ub838\uc2b5\ub2c8\ub2e4.",
+              "start": 4.550000000000001,
+              "end": 6.970000000000001
+            },
+            {
+              "scene": "scene_02",
+              "role": "SETUP",
+              "text": "\uc774\ubbfc\uc790, \ub3d9\ub124\uc600\uc2b5\ub2c8\ub2e4.",
+              "start": 7.0,
+              "end": 9.3
+            },
+            {
+              "scene": "scene_02",
+              "role": "REVEAL",
+              "text": "\uc0ac\uc2e4 \uc774\uac74 \ud3c9\ubc94\ud55c \ub2f9\ubc00 \ud0f1\ud06c\uc600\uc2b5\ub2c8\ub2e4.",
+              "start": 9.78,
+              "end": 12.85
+            }
+          ],
+          "visual_proof_cuts": [
+            2.0
+          ],
+          "distinct_early_roles": 3
+        }
+      },
+      "title_visible": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 0.3002090622085836,
+            "title_band_edge_var": 1088.5976058201059
+          },
+          {
+            "t": 17.779048128807304,
+            "title_band_edge_var": 1088.5615343915345
+          },
+          {
+            "t": 42.620347329693566,
+            "title_band_edge_var": 1097.139900793651
+          }
+        ]
+      },
+      "captions_visible": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 1.452344396274568,
+            "rows_in_band": [
+              1264,
+              1311
+            ]
+          },
+          {
+            "t": 8.130182767679814,
+            "rows_in_band": [
+              1267,
+              1315
+            ]
+          },
+          {
+            "t": 18.926784399415055,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          },
+          {
+            "t": 32.981947256474676,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          },
+          {
+            "t": 43.67393503630209,
+            "rows_in_band": [
+              1264,
+              1311
+            ]
+          }
+        ]
+      },
+      "safe_area_clean": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 0.1501045311042918,
+            "safe_area_edge_density": 0.005901771336553945
+          },
+          {
+            "t": 7.154982649304578,
+            "safe_area_edge_density": 0.003652710681696189
+          },
+          {
+            "t": 17.62894359770301,
+            "safe_area_edge_density": 0.006890767579173377
+          },
+          {
+            "t": 31.63869983410358,
+            "safe_area_edge_density": 0.006760601180891036
+          },
+          {
+            "t": 42.470242798589275,
+            "safe_area_edge_density": 0.00559849704777241
+          }
+        ]
+      },
+      "picture_caption_gutter": {
+        "status": "PASS",
+        "evidence": [],
+        "reason": "no pre-caption frame; fixed picture boundary covered by safe_area_clean"
+      }
+    },
+    "metrics": {
+      "average_visual_beat_seconds": 2.630434782608696,
+      "max_static_visual_seconds": 3.0,
+      "source_reuse_ratio": 0.5652173913043479,
+      "first_5s_visual_changes": 2,
+      "subtitle_media_overlap": false,
+      "title_safe_area_pass": true,
+      "subtitle_safe_area_pass": true,
+      "unique_source_family_count": 10,
+      "unique_source_family_ratio": 0.43478260869565216,
+      "global_source_reuse_ratio": 0.5652173913043479,
+      "max_source_family_occurrences": 4,
+      "semantic_visual_coverage": 0.16666666666666666,
+      "first_5s_unique_sources": 3,
+      "repeated_source_timestamps": [
+        {
+          "scene": "scene_02",
+          "start": 5.23,
+          "family": "bostonmassbostonmolassesexplosion14968a"
+        },
+        {
+          "scene": "scene_02",
+          "start": 7.84,
+          "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+        },
+        {
+          "scene": "scene_03",
+          "start": 0.0,
+          "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018023"
+        },
+        {
+          "scene": "scene_03",
+          "start": 2.79,
+          "family": "northendmolassestank"
+        },
+        {
+          "scene": "scene_03",
+          "start": 5.59,
+          "family": "bostonmolassesfloodaftermathoriginaltankscalesuperimposed"
+        },
+        {
+          "scene": "scene_03",
+          "start": 8.38,
+          "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018052"
+        },
+        {
+          "scene": "scene_03",
+          "start": 11.17,
+          "family": "bostonmassbostonmolassesexplosion14968a"
+        },
+        {
+          "scene": "scene_04",
+          "start": 0.0,
+          "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+        },
+        {
+          "scene": "scene_04",
+          "start": 2.71,
+          "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018023"
+        },
+        {
+          "scene": "scene_04",
+          "start": 5.41,
+          "family": "northendmolassestank"
+        },
+        {
+          "scene": "scene_04",
+          "start": 8.12,
+          "family": "bostonmolassesfloodaftermathoriginaltankscalesuperimposed"
+        },
+        {
+          "scene": "scene_05",
+          "start": 0.0,
+          "family": "bostonelevatedrailwayafterthemolassesfloodjanuary1919fromthecityofbostonarchives9800018052"
+        },
+        {
+          "scene": "scene_05",
+          "start": 3.0,
+          "family": "greatmolassesflood1919wreckageundertheelevatedtracks"
+        }
+      ],
+      "ending_new_ratio": 0.8,
+      "ending_final_window_unique_new_count": 3,
+      "ending_last_beat_is_reused_generic": false,
+      "declared_info_role_ratio": 1.0,
+      "duplicate_info_role_count": 0,
+      "distinct_narrative_roles": 7,
+      "retention_contract_status": "PASS",
+      "first_10s_retention_status": "PASS"
+    }
+  },
+  "sources": [
+    {
+      "scene": "scene_01",
+      "asset": "build/scene_01_beat2_asset_0_norm.jpg",
+      "attribution": "Library of Congress / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_02",
+      "asset": "build/scene_01_beat0_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_03",
+      "asset": "build/scene_02_beat1_asset_0_norm.jpg",
+      "attribution": "City of Boston Archives / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_04",
+      "asset": "build/scene_02_beat0_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_05",
+      "asset": "build/scene_05_beat3_asset_0_norm.jpg",
+      "attribution": "City of Boston Archives / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    }
+  ],
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "30/1"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "60.332682"
+    }
+  },
+  "captions": {
+    "status": "PASS",
+    "cues": 23,
+    "time_scale": 1.0006968740286122,
+    "path": "dist/captions.srt"
+  },
+  "output": "dist/final.mp4"
+}
