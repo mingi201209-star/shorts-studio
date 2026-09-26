@@ -225,6 +225,7 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
     if len(units) == 1:
         audio_path.write_bytes(unit_audio[0])
         words = unit_words[0]
+        unit_spans = [(0.0, max((w.end for w in words), default=0.0))]
     else:
         tmp_dir = audio_path.parent
         part_paths = []
@@ -255,14 +256,24 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
             concat_parts.append(part_paths[i])
         _concat_audio(concat_parts, audio_path)
 
-        words = []; cursor = 0.0
+        words = []; cursor = 0.0; unit_spans = []
         for i, uw in enumerate(unit_words):
             offset = cursor
             trim = leading_trims[i]
             words.extend(WordTiming(w.text, max(0.0, w.start - trim) + offset, max(0.0, w.end - trim) + offset) for w in uw)
             real_duration = real_durations[i]
+            unit_spans.append((offset, offset + real_duration))
             gap = gaps[i] if i < len(gaps) else 0.0
             cursor = offset + real_duration + gap
+
+    # Real per-unit (narrative-role) start/end within this scene's own
+    # synthesized audio timeline -- lets downstream QA (e.g. the First-10s
+    # Retention Contract) know exactly WHEN each role's content lands,
+    # instead of approximating from character counts or nominal scene
+    # durations. Scene-relative; render() adds the scene's cumulative offset.
+    for meta, (start, end) in zip(unit_meta, unit_spans):
+        meta["start"] = start
+        meta["end"] = end
 
     timing_path.write_text(json.dumps({
         "source": "korean-speech-planner-v3", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
