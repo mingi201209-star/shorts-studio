@@ -952,21 +952,25 @@
       "visual_beats": [
         {
           "start": 0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/Radium%20Paint%20Advertisement.png",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "attribution": "NIST Archives (NIST Museum, \"The Forgotten Radium Scientists\" exhibit)",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 라듐 야광 페인트 제품을 홍보하는 실제 인쇄 광고가 보여야 함"
+            "NIST가 공개한 실제 라듐 측정 담당 여성 과학자 5인(Damon, Torrey, Brower, Yung-Kwai, Alderton)의 실제 신원 사진을 모은 공식 전시 배너가 보여야 함"
           ],
           "visual_qa_labels": [
-            "1920s vintage print advertisement for glow-in-the-dark radium paint"
+            "an official NIST museum exhibit banner combining five real archival identification-photo portraits of the women who measured radium samples at the National Bureau of Standards, labeled with their names"
           ],
           "visual_qa_negative_labels": [
-            "modern advertisement",
+            "a single portrait",
+            "a modern photograph",
             "graphic medical injury",
             "corpse"
+          ],
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/20/Exhibit%20Title%20Banner-01.png",
+          "visual_qa_expected_sha256": [
+            "5f236ad33cce1038212121d49182c43e4397220a4067ff85f180499a44016fcf"
           ]
         },
         {
@@ -990,21 +994,25 @@
         },
         {
           "start": 6.0,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c6/Undark_%28Radium_Girls%29_advertisement%2C_1921%2C_retouched.png",
-          "attribution": "Wikimedia Commons / public domain",
+          "attribution": "WPA Federal Art Project / Library of Congress, public domain (via NIST)",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1921년 실제 Undark 라듐 야광 도료 브랜드의 인쇄 광고가 보여야 함"
+            "1930년대 실제 WPA Federal Art Project의 X-ray/Radium/Surgery 암 치료 공중보건 포스터가 보여야 함"
           ],
           "visual_qa_labels": [
-            "1921 vintage print advertisement for Undark brand radium luminous paint"
+            "a 1930s WPA Federal Art Project public health poster reading X-RAY, RADIUM, SURGERY: The Three Recognized Treatments For Cancer, Consult Your Doctor Or Health Bureau"
           ],
           "visual_qa_negative_labels": [
-            "modern advertisement",
+            "a modern poster",
+            "a photograph of a person",
             "graphic medical injury",
             "corpse"
+          ],
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/service-pnp-cph-3f00000-3f05000-3f05300-3f05353v.jpg",
+          "visual_qa_expected_sha256": [
+            "d2cc2bfe68ccbce652f71882a8bbfac90bd67011c48308a45a751370120b947a"
           ]
         },
         {
@@ -1028,43 +1036,48 @@
         },
         {
           "start": 12.0,
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/8/89/GENERAL_VIEW_TO_SOUTH_OF_PAINT_APPLICATION_BUILDING_%28CENTER_LEFT%29_AND_CRYSTALLIZATION_LABORATORY_%28RIGHT%29_-_United_States_Radium_Corporation%2C_422-432_Alden_Street%2C_Orange%2C_Essex_HAER_NJ%2C7-ORA%2C3-1.tif",
-          "attribution": "Historic American Engineering Record / Library of Congress, public domain",
+          "attribution": "NIST Archives",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제로 남아있는 (현재는 버려진) 라듐 공장 건물의 사진이 보여야 함"
+            "1917년부터 NBS에서 방사선 차폐/보호 재료를 연구해 관련 품질 기준 개선에 기여한 실존 인물 Nina Alderton의 1918년 실제 신원 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "a modern documentary photograph of the former, now-abandoned historic radium factory building"
+            "a 1918 NBS employee identification photograph of Nina Alderton, who studied radiation protective materials at the National Bureau of Standards and whose team's work was credited with improving the quality of those protective materials"
           ],
           "visual_qa_negative_labels": [
-            "1920s photograph",
-            "people",
+            "a modern photograph",
+            "a group photo",
             "graphic medical injury",
             "corpse"
+          ],
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/21/Nina%20M.%20Alderton.jpg",
+          "visual_qa_expected_sha256": [
+            "fddd8452bc1df0b6d8f801dc0a8e0802f2acc7334b21de2b901f11372a2c2f50"
           ]
         },
         {
           "start": 15.0,
-          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/03/08/All_women_or_girls_using_radium_paint_with_no_protection_or_warnings_in_1922%2C_from-_USRadiumGirls-Argonne1%2Cca1922-23-150dpi_%28cropped%29.jpg",
-          "attribution": "Wikimedia Commons / public domain, surfaced by NIST",
+          "attribution": "NIST Archives",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1920년대 여성 라듐 문자판 노동자들의 실제 작업 현장이 보여야 하며 신체 손상이나 의료 고어가 없어야 함"
+            "NBS(현재 NIST) 라듐 연구팀을 이끌었고 라듐 작업 안전조치를 도입한 실존 인물 Noah E. Dorsey의 1918년 실제 신원 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "historical photograph of women working at the United States Radium Corporation in 1922"
+            "a 1918 NBS employee identification photograph of Noah E. Dorsey, the chief of the National Bureau of Standards radium research group who instituted safety measures for working with radium"
           ],
           "visual_qa_negative_labels": [
-            "jaw necrosis",
-            "graphic injury",
-            "corpse",
-            "medical gore",
-            "modern factory"
+            "a modern photograph",
+            "a group photo",
+            "graphic medical injury",
+            "corpse"
+          ],
+          "asset_url": "https://www.nist.gov/sites/default/files/images/2022/04/04/NoahE.Dorsey.png",
+          "visual_qa_expected_sha256": [
+            "0beb136c5bc005b4cff5261d82c9d90bba442095ac97d5ed5d71cc7ad557b390"
           ]
         }
       ]
