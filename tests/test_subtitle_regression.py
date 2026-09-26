@@ -21,7 +21,7 @@ def test_caption_spans_stay_in_shorts_range():
     duration = words[-1].end + .25
     caps = segment(words, duration)
     for c in caps:
-        assert 0 < (c.end - c.start) <= 2.2 + 1e-6
+        assert 0 < (c.end - c.start) <= 3.2 + 1e-6
 
 def test_no_negative_no_reversed_no_overrun_timestamps():
     words = _korean_words(15)

@@ -7,7 +7,20 @@ class Caption:
     start: float
     end: float
 
-def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=1.5, max_duration: float=2.2, max_words: int=5, max_gap: float=.6) -> list[Caption]:
+_KO_BREAK_AFTER = ("지만", "는데", "면서", "했고", "넣고", "했습니다.", "됐습니다.", "겁니다.", "였습니다.", "이었습니다.")
+
+def _semantic_break(word: str) -> bool:
+    token = word.strip()
+    return token.endswith(_KO_BREAK_AFTER) or token.endswith((".", "?", "!"))
+
+# target/max_duration/max_words widened per direct user feedback that
+# captions felt like they were "moving" -- with the old short groups
+# (target=1.35, max_duration=2.0, max_words=5) a top-anchored, horizontally
+# centered caption changes text (and therefore its centered width) every
+# ~1.3s, which reads as constant side-to-side jumping even though the
+# anchor point never moves. Fewer, longer-held groups cut that change
+# frequency without altering the fixed top-anchored position itself.
+def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=2.2, max_duration: float=3.2, max_words: int=9, max_gap: float=.6) -> list[Caption]:
     if not words: return []
     groups=[]; cur=[]
     for w in words:
@@ -18,7 +31,9 @@ def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, tar
             groups.append(cur); cur=[]
         cur.append(w)
         span=cur[-1].end-cur[0].start
-        if len(cur)>=max_words or span>=target:
+        if _semantic_break(w.text):
+            groups.append(cur); cur=[]
+        elif len(cur)>=max_words or span>=target:
             groups.append(cur); cur=[]
     if cur: groups.append(cur)
     out=[]

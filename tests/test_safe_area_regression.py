@@ -10,9 +10,9 @@ compositing function -- not scene_07 specifically.
 A pure color-presence check would be fooled by the always-present blurred
 full-frame backdrop (which legitimately paints the marker color, blurred,
 across the whole canvas by design). What actually distinguishes "the crisp
-foreground bled through" from "only the blurred backdrop is visible" is the
+foreground bled through" from "only the black surround is visible" is the
 row at which the marker's color first appears with a HARD (few-pixel-wide)
-transition -- the crisp fg layer draws directly over the backdrop, so it
+transition -- the crisp fg layer draws inside the fixed centered picture box, so it
 produces an abrupt edge; a bug that removes the safe-area cap makes that
 abrupt edge appear far lower on screen than the safe boundary allows.
 """
@@ -97,3 +97,37 @@ def test_pre_fix_composition_would_have_failed_this_regression(tmp_path):
     subprocess.run(["ffmpeg", "-y", "-ss", "0.2", "-i", str(old_clip), "-frames:v", "1", str(frame)], check=True, capture_output=True)
     top_row = _topmost_marker_row(frame)
     assert top_row > R.SAFE_BOTTOM_Y, "expected the old unbounded composition to violate the safe area"
+
+
+def test_picture_is_centered_static_black_surrounded_and_caption_cannot_overlap(tmp_path):
+    import cv2
+    import numpy as np
+    asset = tmp_path / "solid.png"
+    Image.fromarray(np.full((1000, 1000, 3), [255, 0, 255], dtype=np.uint8)).save(asset)
+    clip = _render_scene_clip(tmp_path, asset)
+    frames=[]
+    for index,ts in enumerate((0.2,1.0)):
+        frame=tmp_path/f"layout_{index}.png"
+        subprocess.run(["ffmpeg","-y","-ss",str(ts),"-i",str(clip),"-frames:v","1",str(frame)],check=True,capture_output=True)
+        frames.append(cv2.imread(str(frame)))
+    assert all(frame is not None for frame in frames)
+    # Solid marker pixels must be centered within the fixed image box.
+    b,g,r=[channel.astype(int) for channel in cv2.split(frames[0])]
+    mask=(r>180)&(b>180)&(g<60)
+    ys,xs=np.where(mask)
+    assert len(xs)>10000
+    assert abs(float(xs.mean())-540)<10
+    assert R.IMAGE_TOP_Y <= int(ys.min()) and int(ys.max()) < R.SAFE_BOTTOM_Y
+    # The still does not move while the same visual beat is on screen.
+    box=(slice(R.IMAGE_TOP_Y,R.SAFE_BOTTOM_Y),slice(0,1080))
+    assert np.abs(frames[0][box].astype(int)-frames[1][box].astype(int)).mean()<2.0
+    # Subtitle glyphs (white) are absent from the picture box.
+    fb,fg,fr=[channel.astype(int) for channel in cv2.split(frames[1])]
+    white=(fb>230)&(fg>230)&(fr>230)
+    assert not white[R.IMAGE_TOP_Y:R.SAFE_BOTTOM_Y,:].any()
+    # Surround and the thin real gap right below the picture remain black.
+    # Captions are now top-anchored right under the picture (a real, small
+    # gap = CAPTION_GAP_BELOW_IMAGE, not the old wide bottom-anchored gutter),
+    # so this only covers that gap itself, not the caption's own row range.
+    assert np.max(cv2.cvtColor(frames[1][R.IMAGE_TOP_Y:R.SAFE_BOTTOM_Y,:50],cv2.COLOR_BGR2GRAY))<12
+    assert np.max(cv2.cvtColor(frames[1][R.SAFE_BOTTOM_Y+8:R.CAPTION_MARGIN_TOP-2,:],cv2.COLOR_BGR2GRAY))<12

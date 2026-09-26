@@ -119,27 +119,57 @@ def _load_clip(model_name="ViT-B-32",pretrained="openai"):
     except ImportError:_CLIP_CACHE[key]=None;return None
     model,_,preprocess=open_clip.create_model_and_transforms(model_name,pretrained=pretrained); tokenizer=open_clip.get_tokenizer(model_name);model.eval()
     _CLIP_CACHE[key]=(torch,model,preprocess,tokenizer);return _CLIP_CACHE[key]
+def _semantic_subject_images(image_path):
+    """Return conservative crops of the sharp visual band for semantic QA.
+
+    One crop can accidentally exclude the evidence in a wide archival frame.
+    We therefore score the whole visual band plus overlapping center/left/right
+    crops.  The provider aggregates them conservatively instead of accepting a
+    single lucky crop, so wrong-domain frames still fail closed.
+    """
+    from PIL import Image
+    image=Image.open(image_path).convert("RGB")
+    w,h=image.size
+    if w<=0 or h<=0:
+        return [image]
+    top=max(0,min(h-1,round(h*(190/1920))))
+    bottom=max(top+1,min(h,round(h*(1300/1920))))
+    left=max(0,round(w*.035)); right=min(w,round(w*.965))
+    band=image.crop((left,top,right,bottom))
+    bw,bh=band.size
+    crop_w=max(1,round(bw*.72))
+    starts=(0,max(0,(bw-crop_w)//2),max(0,bw-crop_w))
+    crops=[band]
+    for x in starts:
+        crops.append(band.crop((x,0,min(bw,x+crop_w),bh)))
+    return crops
+
+def _semantic_subject_image(image_path):
+    """Backward-compatible primary crop used by focused unit tests."""
+    return _semantic_subject_images(image_path)[0]
+
 def clip_zero_shot_scores(bundle,image_path,labels):
     torch,model,preprocess,tokenizer=bundle
-    from PIL import Image
-    image=preprocess(Image.open(image_path).convert("RGB")).unsqueeze(0);text=tokenizer(labels)
+    images=torch.stack([preprocess(x) for x in _semantic_subject_images(image_path)]);text=tokenizer(labels)
     with torch.no_grad():
-        a=model.encode_image(image);b=model.encode_text(text);a=a/a.norm(dim=-1,keepdim=True);b=b/b.norm(dim=-1,keepdim=True);s=(a@b.T).squeeze(0)
-    return {label:float(s[i]) for i,label in enumerate(labels)}
+        a=model.encode_image(images);b=model.encode_text(text);a=a/a.norm(dim=-1,keepdim=True);b=b/b.norm(dim=-1,keepdim=True);s=(a@b.T)
+    # Average evidence across the full subject band and overlapping crops.
+    # This improves small archival-subject visibility without cherry-picking
+    # one crop that happens to score well.
+    mean=s.mean(dim=0)
+    return {label:float(mean[i]) for i,label in enumerate(labels)}
 
 class ClipSemanticVisionProvider:
-    """Local zero-shot CLIP check. Uses a multi-prompt ensemble rather than a
-    single label pair: the ABS floor uses the single best-matching positive
-    label (is there ANY evidence of the subject at all), while the wrong-
-    domain margin compares the MEAN of all positive-label scores against the
-    MEAN of all negative-label scores. Averaging over several paraphrases is
-    less sensitive to any one prompt's idiosyncratic wording than a
-    single best-vs-best comparison, but this is still a coarse similarity
-    judgment -- on specialist/archival imagery it can legitimately be
-    NOT_EVALUATED-worthy-but-not-quite (a narrow, low-confidence FAIL). That
-    is why CompositeVisionProvider treats a confirmed AssetProvenanceVisionProvider
-    PASS as authoritative over this provider's FAIL for the same scene,
-    instead of retuning label wording to force a pass."""
+    """Local zero-shot CLIP semantic check.
+
+    CLIP is used as a wrong-domain detector, not as a calibrated binary
+    classifier for specialist archival photography. A strong contradiction
+    (negative ensemble >= positive ensemble) is a confident FAIL. A small
+    positive lead below MIN_MARGIN is explicitly INCONCLUSIVE so another
+    independent semantic provider/evidence can arbitrate it; it must not be
+    mislabeled as wrong-domain. Production still fails closed on an overall
+    NOT_EVALUATED result.
+    """
     MIN_MARGIN=.03;MIN_ABS=.18
     def __init__(self,model_name="ViT-B-32",pretrained="openai"):self.model_name=model_name;self.pretrained=pretrained
     def evaluate(self,image,requirements,**context):
@@ -153,8 +183,11 @@ class ClipSemanticVisionProvider:
         best_pos=max(pos_scores);mean_pos=sum(pos_scores)/len(pos_scores)
         mean_neg=sum(neg_scores)/len(neg_scores) if neg_scores else -1.
         if best_pos<self.MIN_ABS:return {"status":"FAIL","reason":"no declared subject label matched the frame","scores":scores}
-        if neg_scores and mean_pos-mean_neg<self.MIN_MARGIN:return {"status":"FAIL","reason":"wrong-domain content scored too close to the expected subject (ensemble margin)","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg}
-        return {"status":"PASS","scores":scores}
+        if neg_scores:
+            margin=mean_pos-mean_neg
+            if margin<=0:return {"status":"FAIL","reason":"wrong-domain content matched at least as strongly as the expected subject","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg,"margin":margin}
+            if margin<self.MIN_MARGIN:return {"status":"NOT_EVALUATED","reason":"CLIP positive lead is too narrow for a confident archival-image verdict","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg,"margin":margin}
+        return {"status":"PASS","scores":scores,"mean_pos":mean_pos,"mean_neg":mean_neg,"margin":mean_pos-mean_neg if neg_scores else None}
 
 class AssetProvenanceVisionProvider:
     """Deterministic, non-ML evidence: verifies the resolved source asset's
@@ -179,27 +212,50 @@ class AssetProvenanceVisionProvider:
         return {"status":"PASS","sha256":digest}
 
 class CompositeVisionProvider:
-    """Combines independent real checks. Any confident FAIL fails the scene,
-    with one deliberate exception: when AssetProvenanceVisionProvider
-    confirms (via SHA-256) that the exact known-correct source image is in
-    use, a ClipSemanticVisionProvider FAIL on that same scene is not treated
-    as authoritative -- coarse CLIP margins are not reliable enough on
-    specialist/archival photography to override cryptographic proof of the
-    correct asset. The CLIP result stays visible in sub_results either way.
-    Everything else (Clarity, CornerGeometry, Sidecar, and CLIP when no
-    provenance pin is declared) still fails the scene normally."""
-    def __init__(self,providers=None):self.providers=providers if providers is not None else [SidecarVisionProvider(),AssetProvenanceVisionProvider(),ClarityVisionProvider(),CornerGeometryVisionProvider(),ClipSemanticVisionProvider()]
+    """Combine independent visual checks without letting provenance substitute
+    for semantic evidence.
+
+    AssetProvenanceVisionProvider answers only "is this the exact pinned
+    source asset?". It must never turn a semantic mismatch into PASS. A
+    confident FAIL from any applicable provider therefore fails the scene.
+    This keeps provenance useful for substitution/hijack detection while
+    preserving the separate scene-to-script semantic contract.
+    """
+    def __init__(self,providers=None):
+        self.providers=providers if providers is not None else [
+            SidecarVisionProvider(),
+            AssetProvenanceVisionProvider(),
+            ClarityVisionProvider(),
+            CornerGeometryVisionProvider(),
+            ClipSemanticVisionProvider(),
+        ]
+
     def evaluate(self,image,requirements,**context):
-        subs=[];app=[];provenance_confirmed=False
+        subs=[];app=[]
         for p in self.providers:
             r=p.evaluate(image,requirements,**context)
-            if r.get("status") not in {"PASS","FAIL","NOT_EVALUATED"}:r={**r,"status":"NOT_EVALUATED","reason":f"malformed provider status: {r.get('status')!r}"}
+            if r.get("status") not in {"PASS","FAIL","NOT_EVALUATED"}:
+                r={**r,"status":"NOT_EVALUATED","reason":f"malformed provider status: {r.get('status')!r}"}
             subs.append({"provider":type(p).__name__,**r})
-            if isinstance(p,AssetProvenanceVisionProvider) and r["status"]=="PASS":provenance_confirmed=True
-            if r["status"]!="NOT_EVALUATED":app.append((p,r))
-        if not app:return {"status":"NOT_EVALUATED","reason":"no vision provider could evaluate this scene","sub_results":subs}
-        fails=[r for p,r in app if r["status"]=="FAIL" and not(provenance_confirmed and isinstance(p,ClipSemanticVisionProvider))]
-        if fails:return {"status":"FAIL","reason":fails[0].get("reason","semantic visual QA failed"),"sub_results":subs}
+            if r["status"]!="NOT_EVALUATED":
+                app.append((p,r))
+        if not app:
+            return {"status":"NOT_EVALUATED","reason":"no vision provider could evaluate this scene","sub_results":subs}
+        fails=[r for _,r in app if r["status"]=="FAIL"]
+        if fails:
+            return {"status":"FAIL","reason":fails[0].get("reason","semantic visual QA failed"),"sub_results":subs}
+
+        # A sharp/clear frame or a matching source hash is useful evidence, but
+        # neither proves that the frame depicts the narration. Whenever a scene
+        # declares CLIP semantic labels, require an actual semantic PASS. If
+        # CLIP is inconclusive, keep the whole scene inconclusive so strict
+        # production QA fails closed instead of being promoted by Clarity or
+        # provenance.
+        if context.get("positive_labels"):
+            semantic=[(p,r) for p,r in app if isinstance(p,(SidecarVisionProvider,ClipSemanticVisionProvider))]
+            if not any(r["status"]=="PASS" for _,r in semantic):
+                return {"status":"NOT_EVALUATED","reason":"no semantic provider confidently verified the declared subject","sub_results":subs}
+
         return {"status":"PASS","sub_results":subs}
 def default_vision_provider():return CompositeVisionProvider()
 def _clip_duration(video):

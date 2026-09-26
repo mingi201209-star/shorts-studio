@@ -28,7 +28,10 @@ pytestmark = pytest.mark.skipif(not requires_ffmpeg, reason="requires a real ffm
 
 def _title_band_edge_var(frame_path: Path) -> float:
     img = cv2.imread(str(frame_path))
-    band = img[R.SAFE_TOP_Y - 150:R.SAFE_TOP_Y, :]  # comfortably covers the actual title style's rows
+    # Covers the whole region above the picture's own top edge, where the
+    # (now potentially 2-line, FontSize=130) title must fit entirely without
+    # ever overlapping the picture box that starts at IMAGE_TOP_Y.
+    band = img[10:R.IMAGE_TOP_Y - 10, :]
     gray = cv2.cvtColor(band, cv2.COLOR_BGR2GRAY)
     return float(cv2.Laplacian(gray, cv2.CV_64F).var())
 

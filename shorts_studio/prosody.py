@@ -71,14 +71,14 @@ PAUSE_SECONDS: dict[tuple[str, str], float] = {
     ("SETUP", STRONG_BOUNDARY): 0.48,
     ("CRISIS", STRONG_BOUNDARY): 0.52,
     ("INVESTIGATION", STRONG_BOUNDARY): 0.46,
-    ("REVEAL", ANTICIPATORY): 0.78,   # the deliberate pre-result beat
+    ("REVEAL", ANTICIPATORY): 0.68,   # human-calibrated: reserve long silence for exceptional discourse breaks
     ("REVEAL", STRONG_BOUNDARY): 0.50,
     ("EXPLANATION", STRONG_BOUNDARY): 0.50,
     ("PAYOFF", STRONG_BOUNDARY): 0.56,  # settle, don't clip like an ad button
 }
 DEFAULT_PAUSE_BY_BOUNDARY: dict[str, float] = {
     "continue": 0.0, "weak_boundary": 0.0, PHRASE_BOUNDARY: 0.0,
-    STRONG_BOUNDARY: REFERENCE_PAUSE_MEDIAN, ANTICIPATORY: REFERENCE_LONG_PAUSE_RANGE[0] + 0.08,
+    STRONG_BOUNDARY: REFERENCE_PAUSE_MEDIAN, ANTICIPATORY: 0.68,
 }
 
 def pause_after(phrase: PhraseSpec) -> float:

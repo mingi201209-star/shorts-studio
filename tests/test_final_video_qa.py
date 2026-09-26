@@ -11,7 +11,7 @@ import shorts_studio.render as R
 from shorts_studio.final_video_qa import (
     verify_bottom_safe_area_clean, verify_captions_visible,
     verify_composition_9x16, verify_no_semantic_skip, verify_scenes_present,
-    verify_title_visible,
+    verify_title_visible, verify_picture_caption_gutter, verify_visual_cut_cadence,
 )
 
 requires_ffmpeg = pytest.mark.skipif(not __import__("shutil").which("ffmpeg"), reason="requires a real ffmpeg binary")
@@ -122,3 +122,59 @@ def test_verify_no_semantic_skip_is_always_strict_regardless_of_env_flag():
     results = [{"scene": "s1", "status": "PASS"}, {"scene": "s2", "status": "NOT_EVALUATED"}]
     assert verify_no_semantic_skip(results)["status"] == "FAIL"
     assert verify_no_semantic_skip([{"scene": "s1", "status": "PASS"}])["status"] == "PASS"
+
+
+@requires_ffmpeg
+def test_picture_caption_gutter_is_black_on_real_render(tmp_path):
+    build = tmp_path / "build"; build.mkdir(exist_ok=True)
+    audio = build / "a.mp3"
+    subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "2", "-q:a", "9", str(audio)], check=True, capture_output=True)
+    clip, build = _clip_with_title(tmp_path, None)
+    result = verify_picture_caption_gutter(clip, [1.2], build)
+    assert result["status"] == "PASS", result
+
+
+def test_visual_cut_cadence_rejects_long_static_holds():
+    scenes = [SimpleNamespace(id="s1", visual_beats=[SimpleNamespace(start=0), SimpleNamespace(start=3)])]
+    assert verify_visual_cut_cadence([{"scene":"s1","duration":6.2}], scenes)["status"] == "PASS"
+    assert verify_visual_cut_cadence([{"scene":"s1","duration":7.0}], scenes)["status"] == "FAIL"
+
+
+@requires_ffmpeg
+def test_narration_continuity_rejects_dropped_speech_gap(tmp_path):
+    import math
+    import struct
+    import wave
+    from shorts_studio.final_video_qa import verify_narration_continuity
+
+    def wave_with_pause(path, pause):
+        rate = 24000
+        duration = 0.3 + pause + 0.3
+        with wave.open(str(path), "wb") as output:
+            output.setnchannels(1)
+            output.setsampwidth(2)
+            output.setframerate(rate)
+            output.writeframes(b"".join(
+                struct.pack("<h", int(9000 * math.sin(2 * math.pi * 440 * n / rate))
+                            if n / rate < 0.3 or n / rate > 0.3 + pause else 0)
+                for n in range(int(duration * rate))
+            ))
+
+    broken = tmp_path / "broken.wav"
+    good = tmp_path / "good.wav"
+    wave_with_pause(broken, 1.8)
+    wave_with_pause(good, 0.4)
+    assert verify_narration_continuity(broken)["status"] == "FAIL"
+    assert verify_narration_continuity(good)["status"] == "PASS"
+
+
+def test_visual_cut_cadence_includes_unbroken_hold_across_scene_boundary():
+    beats1 = [SimpleNamespace(start=0, asset_url="plane"), SimpleNamespace(start=3, asset_url="wreck")]
+    beats2 = [SimpleNamespace(start=0, asset_url="wreck"), SimpleNamespace(start=3, asset_url="tank")]
+    scenes = [SimpleNamespace(id="s1", visual_beats=beats1), SimpleNamespace(id="s2", visual_beats=beats2)]
+    windows = [{"scene": "s1", "duration": 6.2}, {"scene": "s2", "duration": 6.2}]
+    result = verify_visual_cut_cadence(windows, scenes)
+    assert result["status"] == "FAIL"
+    assert result["failures"][0]["scene_boundary"] == ["s1", "s2"]
+    beats2[0].asset_url = "plane"
+    assert verify_visual_cut_cadence(windows, scenes)["status"] == "PASS"

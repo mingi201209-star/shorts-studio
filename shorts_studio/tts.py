@@ -1,9 +1,10 @@
 from __future__ import annotations
-import json, re, subprocess
+import json, re, shutil, subprocess
 from dataclasses import replace
 from pathlib import Path
 from .timing import WordTiming
 from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers
+from .korean_speech_planner import adjust_rate, analyze_unit
 
 DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 # A flat rate/pitch is only a fallback for scenes with no authored
@@ -12,7 +13,7 @@ DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 # grouped, role-aware synthesis units, each followed by a pause that VARIES
 # by (narrative role, boundary strength) instead of one fixed silence
 # everywhere. See synthesize_plan below.
-DEFAULT_KO_RATE = "+8%"
+DEFAULT_KO_RATE = "+12%"
 DEFAULT_KO_PITCH = "+0Hz"
 DEFAULT_KO_VOLUME = "+0%"
 
@@ -70,6 +71,26 @@ def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordT
         out.append(WordTiming(t,cursor,nxt)); cursor=nxt
     return out
 
+def _restore_numeral_captions(spoken_text: str, original_unit: list[PhraseSpec], mapped: list[WordTiming]) -> list[WordTiming]:
+    """`mapped` is timed against `spoken_text`, the Sino-Korean-spelled-out
+    form Edge actually pronounces (e.g. "천이백이십일번의") -- exactly what a
+    viewer needs to HEAR, but not what a viewer expects to READ: a burned-in
+    caption showing spelled-out numeral words instead of "1,221번의" looks
+    wrong and doesn't match the real production's fact-checked figures.
+    `spell_out_numbers` only ever replaces a digits+counter span inside one
+    whitespace token with another single token (never inserts or removes a
+    token boundary), so the original (pre-spelling) unit's tokens are in
+    exact 1:1 correspondence with `mapped` in the common case -- swap the
+    DISPLAY text back to the original numeral form while keeping the real
+    TTS-timed start/end untouched. Falls back to the spoken (spelled-out)
+    text if that correspondence doesn't hold, rather than risk a wrong
+    caption-to-timing pairing."""
+    original_text = _prepare_korean_speech(" ".join(p.text for p in original_unit))
+    original_tokens = _tokenize(original_text)
+    if len(original_tokens) != len(mapped):
+        return mapped
+    return [WordTiming(orig, w.start, w.end) for orig, w in zip(original_tokens, mapped)]
+
 async def _synthesize_sentence(text: str, voice: str, rate: str, pitch: str, volume: str) -> tuple[bytes, list[WordTiming]]:
     """One real Edge TTS call per sentence, requesting WordBoundary events --
     the engine's own real per-word timestamps, not a client-side guess. This
@@ -107,10 +128,59 @@ def _silence_clip(path: Path, seconds: float) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", str(seconds), "-q:a", "9", str(path)], check=True, capture_output=True)
     return path
 
+def _pad_audio_to_duration(path: Path, seconds: float) -> Path:
+    """Keep unit audio at least as long as its final provider word boundary."""
+    padded = path.with_name(path.stem + "_padded" + path.suffix)
+    subprocess.run([
+        "ffmpeg", "-y", "-i", str(path), "-af", f"apad=whole_dur={seconds}",
+        "-t", str(seconds), "-c:a", "libmp3lame", "-q:a", "4", str(padded),
+    ], check=True, capture_output=True)
+    padded.replace(path)
+    return path
+
+def _trim_tts_edge_silence(path: Path, out_path: Path) -> tuple[Path, float]:
+    """Trim only leading/trailing TTS padding when real speech is present.
+
+    The trim is an optimisation, never a correctness requirement. If ffmpeg
+    cannot produce a valid non-empty trimmed MP3 (including all-silence test
+    fixtures), fall back to the original bytes so concat remains fail-safe.
+    """
+    candidate = out_path.with_name(out_path.stem + "_candidate" + out_path.suffix)
+    proc = subprocess.run([
+        "ffmpeg", "-y", "-i", str(path),
+        # Trim from both edges: stop_periods=1 on forward audio cuts at the first internal pause.
+        "-af", "silenceremove=start_periods=1:start_duration=0.02:start_threshold=-45dB,"
+        "areverse,silenceremove=start_periods=1:start_duration=0.06:start_threshold=-45dB,areverse",
+        str(candidate),
+    ], capture_output=True)
+    valid = proc.returncode == 0 and candidate.exists() and candidate.stat().st_size > 0
+    if valid:
+        probe = subprocess.run(["ffmpeg", "-v", "error", "-i", str(candidate), "-f", "null", "-"], capture_output=True)
+        valid = probe.returncode == 0
+    leading_trim = 0.0
+    if valid:
+        detect = subprocess.run([
+            "ffmpeg", "-v", "info", "-i", str(path),
+            "-af", "silencedetect=noise=-45dB:d=0.02", "-f", "null", "-"
+        ], capture_output=True, text=True)
+        starts = [float(x) for x in re.findall(r"silence_start:\s*([0-9.]+)", detect.stderr)]
+        ends = [float(x) for x in re.findall(r"silence_end:\s*([0-9.]+)", detect.stderr)]
+        if starts and ends and starts[0] <= 0.01:
+            leading_trim = ends[0]
+        candidate.replace(out_path)
+    else:
+        candidate.unlink(missing_ok=True)
+        shutil.copyfile(path, out_path)
+    return out_path, leading_trim
+
 def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     list_file = out_path.with_suffix(".concat.txt")
     list_file.write_text("\n".join(f"file '{p.resolve()}'" for p in parts), encoding="utf-8")
-    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c", "copy", str(out_path)], check=True, capture_output=True)
+    # Decode and encode the joined timeline once. Stream-copying MP3 packets
+    # preserves each TTS call's encoder delay/padding at every join, which can
+    # sound like tiny dropouts; one continuous encode avoids repeated codec
+    # resets. Keep the terminal audio tail intact in _trim_tts_edge_silence too.
+    subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c:a", "libmp3lame", "-q:a", "4", str(out_path)], check=True, capture_output=True)
     return out_path
 
 async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True) -> list[WordTiming]:
@@ -130,18 +200,25 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         raise RuntimeError("no narration phrases to synthesize")
     prepared = [replace(p, text=_prepare_korean_speech(spell_out_numbers(p.text))) for p in phrases]
     units = group_into_units(prepared)
+    # Grouping depends only on each phrase's `.boundary`, never `.text`, so
+    # grouping the ORIGINAL (pre-spelling) phrases the same way yields units
+    # in exact 1:1 correspondence with `units` above -- used below to show
+    # "1,221" in captions while Edge still hears "천이백이십일" spoken aloud.
+    original_units = group_into_units(list(phrases))
 
     unit_audio = []; unit_words = []; unit_raw = []; unit_meta = []
     for idx, unit in enumerate(units):
         unit_text = " ".join(p.text for p in unit)
-        rate = rate_for_unit(unit, base_rate) if use_role_rates else base_rate
+        base_unit_rate = rate_for_unit(unit, base_rate) if use_role_rates else base_rate
+        speech_features = analyze_unit(unit)
+        rate = adjust_rate(base_unit_rate, speech_features)
         audio_bytes, boundaries = await _synthesize_sentence(unit_text, voice, rate, base_pitch, volume)
         if not boundaries:
             raise RuntimeError(f"TTS returned no timing boundary events for unit {idx+1}/{len(units)} (role={unit[0].role!r}): {unit_text!r}; do not guess from scene duration")
         unit_audio.append(audio_bytes)
-        unit_words.append(_map_boundaries_to_script(unit_text, boundaries))
+        unit_words.append(_restore_numeral_captions(unit_text, original_units[idx], _map_boundaries_to_script(unit_text, boundaries)))
         unit_raw.append([w.__dict__ for w in boundaries])
-        unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit)})
+        unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "base_unit_rate": base_unit_rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit), "speech_features": speech_features.__dict__})
 
     gaps = [pause_after(unit[-1]) for unit in units[:-1]]  # gap AFTER unit i (i < last)
 
@@ -151,10 +228,23 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
     else:
         tmp_dir = audio_path.parent
         part_paths = []
+        leading_trims = []
+        real_durations = []
         for i, audio_bytes in enumerate(unit_audio):
             part = tmp_dir / f"{audio_path.stem}_part{i}.mp3"
             part.write_bytes(audio_bytes)
-            part_paths.append(part)
+            trimmed = tmp_dir / f"{audio_path.stem}_part{i}_trimmed.mp3"
+            _, leading_trim = _trim_tts_edge_silence(part, trimmed)
+            audio_duration = _ffmpeg_duration_seconds(trimmed)
+            boundary_duration = max((max(0.0, w.end - leading_trim) for w in unit_words[i]), default=0.0)
+            if boundary_duration > audio_duration + 1.0:
+                raise RuntimeError(f"TTS audio was truncated before the last spoken word in unit {i+1}: audio={audio_duration:.2f}s boundary={boundary_duration:.2f}s")
+            if boundary_duration > audio_duration + 0.02:
+                _pad_audio_to_duration(trimmed, boundary_duration)
+                audio_duration = _ffmpeg_duration_seconds(trimmed)
+            part_paths.append(trimmed)
+            leading_trims.append(leading_trim)
+            real_durations.append(max(audio_duration, boundary_duration))
         concat_parts = [part_paths[0]]
         for i in range(1, len(part_paths)):
             gap_seconds = gaps[i - 1]
@@ -168,13 +258,14 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         words = []; cursor = 0.0
         for i, uw in enumerate(unit_words):
             offset = cursor
-            words.extend(WordTiming(w.text, w.start + offset, w.end + offset) for w in uw)
-            real_duration = _ffmpeg_duration_seconds(part_paths[i])
+            trim = leading_trims[i]
+            words.extend(WordTiming(w.text, max(0.0, w.start - trim) + offset, max(0.0, w.end - trim) + offset) for w in uw)
+            real_duration = real_durations[i]
             gap = gaps[i] if i < len(gaps) else 0.0
             cursor = offset + real_duration + gap
 
     timing_path.write_text(json.dumps({
-        "source": "prosody-planner-v1", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
+        "source": "korean-speech-planner-v3", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
         "units": unit_meta, "gaps_seconds": gaps, "raw": unit_raw, "words": [w.__dict__ for w in words],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     if not words:

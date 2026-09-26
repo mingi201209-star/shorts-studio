@@ -1,7 +1,9 @@
 name: render-smoke
+# Revalidate current Comet scene-04 evidence fix.
 on:
   push:
   pull_request:
+    types: [opened, reopened, ready_for_review]
   workflow_dispatch:
 jobs:
   smoke:
@@ -24,23 +26,6 @@ jobs:
       - name: Full pytest suite
         run: pytest -q
       - run: python -m shorts_studio validate examples/comet.json
-      - name: Print resolved source-asset SHA-256 (provenance evidence)
-        run: |
-          python - <<'PY'
-          import hashlib, json
-          from pathlib import Path
-          from shorts_studio.project import load_project
-          from shorts_studio.render import _resolve_asset
-
-          build = Path("build"); build.mkdir(exist_ok=True)
-          p = load_project("examples/comet.json")
-          for scene in p.scenes:
-              if not scene.visual_qa_requirements:
-                  continue
-              path = _resolve_asset({"asset": scene.asset, "asset_url": scene.asset_url}, build, scene.id, 0)
-              digest = hashlib.sha256(Path(path).read_bytes()).hexdigest() if path else None
-              print(json.dumps({"scene": scene.id, "asset_url": scene.asset_url or scene.asset, "sha256": digest}))
-          PY
       - name: "Render full Comet short (production-required semantic QA: NOT_EVALUATED = FAIL)"
         env:
           SHORTS_REQUIRE_SEMANTIC_QA: "1"
@@ -92,6 +77,21 @@ jobs:
           print("qa_report OK:", json.dumps(report["semantic_visual_qa"], ensure_ascii=False, indent=2))
           print("final_video_qa OK:", json.dumps(fv, ensure_ascii=False, indent=2))
           PY
+      - name: Verify combined upload caption track
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          captions = Path("dist/captions.srt")
+          report = json.loads(Path("dist/qa_report.json").read_text(encoding="utf-8"))
+          assert captions.is_file() and captions.stat().st_size > 0
+          text = captions.read_text(encoding="utf-8").strip()
+          blocks = [block for block in text.split("\n\n") if block.strip()]
+          assert blocks and all(len(block.splitlines()) >= 3 for block in blocks)
+          assert report["captions"]["status"] == "PASS"
+          assert report["captions"]["cues"] == len(blocks)
+          print("combined SRT ready:", len(blocks), "cues")
+          PY
       - name: Extract representative frames for manual visual review
         run: |
           python - <<'PY'
@@ -104,14 +104,38 @@ jobs:
               subprocess.run(["ffmpeg","-y","-ss",str(ts),"-i","dist/final.mp4","-frames:v","1",f"dist/frame_{name}.jpg"],check=True,capture_output=True)
           print("extracted representative frames at fractions:", samples, "of duration", duration)
           PY
+      - name: Prepare upload description with image credits
+        run: |
+          cp examples/comet_upload_description.txt dist/upload-description.txt
+          python - <<'PY'
+          from pathlib import Path
+          text = Path("dist/upload-description.txt").read_text(encoding="utf-8")
+          required = ["CC BY-SA 3.0", "CC BY-SA 4.0", "CC BY 2.0", "ADF", "Cohen Inquiry Fig. 7"]
+          missing = [item for item in required if item not in text]
+          assert not missing, f"upload description missing required credits/context: {missing}"
+          print("upload description and third-party image credits OK")
+          PY
+      # A rendered MP4 is a release artifact only after every QA step passes.
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: success()
         with:
           name: shorts-studio-comet
           path: |
             dist/
             build/*.srt
             build/*.timing.json
+            build/*_qa.jpg
+            build/_titleqa_*.jpg
+            build/_capqa_*.jpg
+            build/_safeqa_*.jpg
+            render-result.json
+      # Preserve evidence from failed runs without exposing their MP4 as a deliverable.
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: shorts-studio-comet-diagnostics
+          path: |
+            dist/qa_report.json
             build/*_qa.jpg
             build/_titleqa_*.jpg
             build/_capqa_*.jpg

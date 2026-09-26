@@ -9,6 +9,18 @@ class AssetCandidate(BaseModel):
     asset_url: str | None = None
     attribution: str | None = None
 
+class VisualBeat(BaseModel):
+    """An optional timed visual cut inside one narration scene."""
+    start: float = Field(ge=0)
+    asset: str | None = None
+    asset_url: str | None = None
+    attribution: str | None = None
+    motion: Motion = Motion()
+    visual_qa_requirements: list[str] = Field(default_factory=list)
+    visual_qa_labels: list[str] = Field(default_factory=list)
+    visual_qa_negative_labels: list[str] = Field(default_factory=list)
+    visual_qa_expected_sha256: list[str] = Field(default_factory=list)
+
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
     (see shorts_studio/prosody.py and shorts_studio/korean_boundary.py).
@@ -34,7 +46,28 @@ class Scene(BaseModel):
     expected_duration: float | None = Field(default=None, gt=0)
     motion: Motion = Motion()
     transition: str = "cut"
+    # Optional visual-only cuts inside this scene. Empty preserves the original
+    # one-image-per-scene renderer exactly.
+    visual_beats: list[VisualBeat] = []
     factual_notes: list[str] = []
+
+    @model_validator(mode="after")
+    def valid_visual_beats(self):
+        if self.visual_beats:
+            starts=[b.start for b in self.visual_beats]
+            if starts[0] != 0:
+                raise ValueError("visual_beats must start at 0 seconds")
+            if starts != sorted(starts) or len(starts) != len(set(starts)):
+                raise ValueError("visual_beats starts must be strictly increasing")
+            if any(not (b.asset or b.asset_url) for b in self.visual_beats):
+                raise ValueError("each visual beat must declare asset or asset_url")
+            if self.visual_qa_requirements:
+                for index, beat in enumerate(self.visual_beats):
+                    if not beat.visual_qa_requirements:
+                        raise ValueError(f"visually required scene beat {index} must declare visual_qa_requirements")
+                    if not (beat.visual_qa_labels or beat.visual_qa_expected_sha256):
+                        raise ValueError(f"visually required scene beat {index} must declare visual_qa_labels or visual_qa_expected_sha256")
+        return self
     # Human-readable (any language) QA requirements shown in reports.
     visual_qa_requirements: list[str] = []
     # English zero-shot labels describing what MUST be visible for semantic QA.
@@ -64,6 +97,16 @@ class Project(BaseModel):
     scenes: list[Scene] = Field(min_length=1)
     # Cap on per-scene asset-swap/re-render/re-QA cycles before the whole production FAILs.
     max_visual_recovery_attempts: int = Field(default=2, ge=0)
+    # Whole-video source-family diversity gates (global reuse ratio, sliding
+    # novelty window, first-5s family coverage, pre-render source budget).
+    # Opt-in rather than universal: they assume a real archival photo pool
+    # rich enough to avoid revisiting the same evidence across adjacent
+    # scenes, which holds for a topic like the Radium Girls but not for a
+    # photo-sparse investigation like the Comet crashes, where the same
+    # handful of real accident-report photos legitimately gets revisited
+    # across narratively adjacent beats. Projects that do have the material
+    # (and the narrative complaint these gates were built for) turn this on.
+    strict_source_diversity: bool = False
 
     @model_validator(mode="after")
     def vertical(self):

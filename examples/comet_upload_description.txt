@@ -1,0 +1,46 @@
+TITLE
+최초 제트 여객기 코멧, 추락의 진짜 원인은? 네모 창문 탓일까
+
+DESCRIPTION
+1954년 드 해빌랜드 코멧 사고의 원인을 살펴봅니다. 흔히 '네모난 객실 창문 탓'으로 알려져 있지만, 공식 조사에서 피로 균열의 시작점으로 확인된 곳은 상부 동체의 ADF 안테나 개구부였습니다. 반복 가압 시험에서 금속 피로가 어떻게 드러났는지 정리했습니다.
+
+HISTORICAL SOURCES
+Civil Aircraft Accident: Report of the Court of Inquiry into the Accidents to Comet G-ALYP and G-ALYY (Ministry of Transport and Civil Aviation, 1955)
+https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf
+Science Museum Group collection: recovered upper-fuselage section showing fatigue cracks around ADF hatches
+https://collection.sciencemuseumgroup.org.uk/search/places/hatfield
+
+IMAGE CREDITS
+Images are reframed, scaled and composited for this vertical video.
+
+Comet G-ALYP ADF windows.png — HM Stationery Office (1955 accident report), uploaded by Completeaerogeek — CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:Comet_G-ALYP_ADF_windows.png
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Fuselage of de Havilland Comet Airliner G-ALYP.JPG — Krelnik — CC BY-SA 3.0
+https://commons.wikimedia.org/wiki/File:Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG
+https://creativecommons.org/licenses/by-sa/3.0/
+
+British Overseas Airways Corporation - de Havilland DH-106 Comet 1 G-ALYP.jpg — photographer unknown — public domain in the United States (published without a copyright notice)
+https://commons.wikimedia.org/wiki/File:British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg
+
+Comet 1 windows.png — Completeaerogeek — CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:Comet_1_windows.png
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Comet G-ALYU in the water tank for pressure tests.jpg — Federal Aviation Administration — U.S. federal government work, public domain in the United States
+https://commons.wikimedia.org/wiki/File:Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg
+
+Comet G-ALYU escape hatch failure.png — HM Stationery Office, Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek — CC BY-SA 4.0
+https://commons.wikimedia.org/wiki/File:Comet_G-ALYU_escape_hatch_failure.png
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Window comparison graphic — original work for shorts-studio.
+
+Aircraft window interior.jpg — Kuranosuke Oishi — CC BY 2.0
+https://commons.wikimedia.org/wiki/File:Aircraft_window_interior.jpg
+https://creativecommons.org/licenses/by/2.0/
+
+TAGS
+de Havilland Comet, aviation history, aircraft safety, metal fatigue, engineering
+#Shorts #AviationHistory #Engineering
