@@ -528,13 +528,20 @@ def render(manifest:str,dry_run:bool=False)->dict:
     final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build)
     overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) and final_video["status"]=="PASS" else "FAIL"
     report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"captions":caption_result,"output":str(final)}
-    # Psychological Entertainment Contract (Layer 2), Phase 1: report-only,
+    # Psychological Entertainment Contract (Layer 2): report-only,
     # deliberately a SIBLING key to final_video_qa, never folded into its
     # `checks` dict or the `overall` computation above -- see
     # entertainment_qa.run_entertainment_contract_report's docstring. None
     # (omitted entirely) when the project declares no event_graph, which is
-    # every existing production manifest today.
-    entertainment_contract=run_entertainment_contract_report(p,scene_windows)
+    # every existing production manifest today. visual_cut_timestamps and
+    # semantic_results are passed through so Observed Visual Evidence can
+    # confirm declared visual beats against the SAME real measurements
+    # final_video_qa already computed -- never a second, duplicate pass.
+    entertainment_contract=run_entertainment_contract_report(
+        p,scene_windows,
+        visual_cut_timestamps=final_video.get("metrics",{}).get("visual_cut_timestamps"),
+        semantic_visual_results=semantic_results,
+    )
     if entertainment_contract is not None:
         report["entertainment_contract"]=entertainment_contract
     write_report(dist/"qa_report.json",report)
