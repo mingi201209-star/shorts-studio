@@ -1,0 +1,31 @@
+name: fetch-molasses-v1
+on:
+  push:
+    branches: [feat/idea-gate-retention-engine]
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the v1 (19ffc3b) render artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 36228405609 -R ${{ github.repository }} -n shorts-studio-boston-molasses-flood -D artifact_out
+          ls -laR artifact_out
+      - name: Publish to an orphan branch
+        run: |
+          git config user.name "artifact-bot"
+          git config user.email "artifact-bot@example.com"
+          git checkout --orphan fetch/molasses-v1-2
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          mkdir -p published
+          cp artifact_out/dist/final.mp4 published/final.mp4
+          cp artifact_out/dist/qa_report.json published/qa_report.json
+          git add published
+          git commit -m "Publish molasses v1 (19ffc3b) final.mp4 + qa_report.json"
+          git push -f origin HEAD:fetch/molasses-v1-2
