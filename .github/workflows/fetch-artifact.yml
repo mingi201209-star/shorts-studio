@@ -1,0 +1,29 @@
+name: fetch-titanic-artifact
+on:
+  push:
+    branches: [fetch/titanic-final-1]
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the render artifact
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh run download 36218098602 -R ${{ github.repository }} -n shorts-studio-titanic-fourth-funnel -D artifact_out
+          ls -laR artifact_out
+      - name: Publish to this branch
+        run: |
+          git config user.name "artifact-bot"
+          git config user.email "artifact-bot@example.com"
+          mkdir -p published
+          cp artifact_out/dist/final.mp4 published/final.mp4
+          cp artifact_out/dist/qa_report.json published/qa_report.json
+          git add published
+          git commit -m "Publish titanic final.mp4 + qa_report.json"
+          git push origin HEAD:fetch/titanic-final-1
