@@ -1,0 +1,62 @@
+name: Verify hashes for new Titanic sources (throwaway)
+on:
+  push:
+    branches: [content/titanic-fourth-funnel]
+    paths: [.github/workflows/verify-titanic-new-sources.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -e '.[dev]'
+      - name: Download, normalize, and hash each new candidate through the real production path
+        run: |
+          python3 - <<'PY'
+          import sys, hashlib, json, shutil
+          sys.path.insert(0, ".")
+          from pathlib import Path
+          from shorts_studio.render import _resolve_asset
+
+          build = Path("build_tmp"); build.mkdir(exist_ok=True)
+          candidates = {
+              "SHAFT": "https://upload.wikimedia.org/wikipedia/commons/5/53/Titanic%27s_propeller_shaft_installation.jpg",
+              "STERN": "https://upload.wikimedia.org/wikipedia/commons/4/48/Titanic_stern_under_construction.jpg",
+              "GANTRY433": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Construction_of_White_Star_Liner_Number_433.jpg",
+              "INQUIRY": "https://upload.wikimedia.org/wikipedia/commons/2/26/London_Scottish_Drill_Hall_before_the_start_of_the_British_inquiry_into_the_Titanic_disaster.jpg",
+              "PROP": "https://upload.wikimedia.org/wikipedia/commons/0/05/RMS_Olympic%27s_propellers.jpg",
+              "WORKERS": "https://upload.wikimedia.org/wikipedia/commons/6/64/Knocking_off_at_Harland_%26_Wolff%2C_Belfast.jpg",
+              "LAUNCHCROWD": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Titanic_Launching_Belfast_May_31_1911.jpg",
+          }
+          out = {}
+          for i, (name, url) in enumerate(candidates.items()):
+              try:
+                  path = _resolve_asset({"asset_url": url}, build, "verify", i)
+                  data = path.read_bytes()
+                  digest = hashlib.sha256(data).hexdigest()
+                  shutil.copy(path, f"preview_{name}.jpg")
+                  out[name] = {"url": url, "sha256": digest, "size": len(data), "status": "ok"}
+                  print(name, "OK", digest, len(data), "bytes")
+              except Exception as e:
+                  out[name] = {"url": url, "error": str(e), "status": "failed"}
+                  print(name, "FAILED:", e)
+          json.dump(out, open("new_source_hashes.json", "w"), indent=2)
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "titanic-newsrc-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan verify/titanic-new-sources
+          git reset --hard
+          git add new_source_hashes.json preview_*.jpg 2>/dev/null || git add new_source_hashes.json
+          git commit -m "Throwaway: real hashes + previews for 7 new Titanic sources"
+          git push -f origin HEAD:refs/heads/verify/titanic-new-sources
