@@ -1,3 +1,4 @@
+import re
 from dataclasses import dataclass
 from .timing import WordTiming
 
@@ -13,6 +14,41 @@ def _semantic_break(word: str) -> bool:
     token = word.strip()
     return token.endswith(_KO_BREAK_AFTER) or token.endswith((".", "?", "!"))
 
+# A Korean numeral-determiner immediately followed by its counter word (e.g.
+# "네 개", "두 명", "세 번") is one reading unit -- splitting it across two
+# caption cards (observed for real on a published Short: "네" landed as its
+# own caption, "개 있었습니다" as the next) reads as a broken sentence even
+# though nothing about the underlying speech was wrong. Word-level TTS
+# boundary events have no concept of this pairing, so it must be enforced
+# here, independent of any particular gap/duration/word-count threshold that
+# might otherwise land a break exactly between the two.
+_NUMERAL_DETERMINERS = {"한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열",
+                         "스무", "몇", "한두", "두세", "서너"}
+_COUNTER_WORDS = {"개", "명", "번", "마리", "대", "권", "장", "그루", "켤레", "채", "척",
+                  "잔", "병", "살", "시간", "분", "초", "년", "월", "일", "번째", "가지",
+                  "군데", "차례", "달", "주", "층", "칸", "통", "톤", "미터", "킬로미터"}
+
+def _protected_pair_boundary(a_text: str, b_text: str) -> bool:
+    a = a_text.strip()
+    b = re.sub(r"[.,!?~]+$", "", b_text.strip())
+    return a in _NUMERAL_DETERMINERS and b in _COUNTER_WORDS
+
+def _merge_protected_pairs(words: list[WordTiming]) -> list[WordTiming]:
+    """Merge a numeral-determiner and its immediately following counter word
+    into one atomic WordTiming (real start of the first, real end of the
+    second) so no later break rule -- semantic, max_gap, max_words, or
+    max_duration -- can ever land between them."""
+    out: list[WordTiming] = []
+    i = 0
+    while i < len(words):
+        if i + 1 < len(words) and _protected_pair_boundary(words[i].text, words[i + 1].text):
+            out.append(WordTiming(f"{words[i].text} {words[i+1].text}", words[i].start, words[i + 1].end))
+            i += 2
+        else:
+            out.append(words[i])
+            i += 1
+    return out
+
 # target/max_duration/max_words widened per direct user feedback that
 # captions felt like they were "moving" -- with the old short groups
 # (target=1.35, max_duration=2.0, max_words=5) a top-anchored, horizontally
@@ -22,6 +58,7 @@ def _semantic_break(word: str) -> bool:
 # frequency without altering the fixed top-anchored position itself.
 def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, target: float=2.2, max_duration: float=3.2, max_words: int=9, max_gap: float=.6) -> list[Caption]:
     if not words: return []
+    words = _merge_protected_pairs(words)
     groups=[]; cur=[]
     for w in words:
         # A real pause (e.g. between sentences) must start a new group; otherwise a

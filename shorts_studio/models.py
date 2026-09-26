@@ -1,5 +1,7 @@
 from pydantic import BaseModel, Field, model_validator
 
+from .retention_rules import HOOK_TYPES
+
 class Motion(BaseModel):
     type: str = "push_in"
 
@@ -43,6 +45,18 @@ class NarrationPhrase(BaseModel):
     text: str = Field(min_length=1)
     focus: bool = False  # the emphasis/result target, e.g. a REVEAL's delivered payload
     pace: str | None = None  # optional explicit Edge TTS rate override, e.g. "+2%"
+    # Which retention mechanism a HOOK-role phrase is claiming to use (see
+    # retention_rules.HOOK_TYPES). Only meaningful on the first phrase; the
+    # First-Second Hook Contract (final_video_qa.verify_hook_opener) requires
+    # it be set AND requires the text itself carry real textual evidence for
+    # SOME tension marker -- declaring a type is not enough on its own.
+    hook_type: str | None = None
+
+    @model_validator(mode="after")
+    def valid_hook_type(self):
+        if self.hook_type is not None and self.hook_type not in HOOK_TYPES:
+            raise ValueError(f"hook_type must be one of {HOOK_TYPES}, got {self.hook_type!r}")
+        return self
 
 class Scene(BaseModel):
     id: str

@@ -35,16 +35,59 @@ GENERIC_ESTABLISHING_KEYWORDS = [
 ]
 
 
+# Real production feedback (published Titanic Short): "타이타닉에는 거대한
+# 굴뚝이 네 개 있었습니다" is not a banned greeting/topic-announcement
+# pattern, yet it is exactly the failure mode the Hook Contract exists to
+# reject -- a flat descriptive/background statement with no result,
+# contradiction, danger, question, or reversal for the viewer to react to
+# in the first second. HOOK_TYPES names the mechanisms a real hook can use;
+# TENSION_MARKERS is the textual evidence that at least one of them is
+# actually present, so a hook can't just claim a type without earning it.
+HOOK_TYPES = ("unexpected_result", "contradiction", "danger", "strong_question",
+              "visible_anomaly", "intuition_reversal")
+
+_DANGER_WORDS = ("위험", "죽", "폭발", "무너", "붕괴", "충돌", "재앙", "사망", "실종",
+                 "화재", "익사", "추락", "파괴", "폭파", "치명")
+# Short Korean stems (not full conjugated forms) so a marker matches
+# regardless of tense/ending -- e.g. "무너" alone matches 무너지다/무너졌다/
+# 무너지며. Chosen for common reversal/contrast/revelation phrasing in
+# Korean narrative hooks specifically (정반대, 숨어, 몰랐, 드러났, 밝혀졌,
+# 실은 등), not just literal English-hook-book translations.
+_CONTRAST_WORDS = ("하지만", "그런데", "사실은", "실은", "알고 보니", "알고보니",
+                    "생각과 달리", "놀랍", "믿기지", "충격", "반전", "가짜", "거짓",
+                    "속인", "속였", "숨겨", "숨어", "숨긴", "아니었", "아니라", "뜻밖",
+                    "예상과", "예상을", "예상 밖", "무려", "정반대", "반대로", "반대였",
+                    "몰랐", "드러났", "밝혀졌", "밝혀진")
+_ANOMALY_WORDS = ("이상한", "이상하게", "기이한", "설명할 수 없는", "정체불명", "미스터리",
+                   "사라졌", "수수께끼", "저절로", "홀로", "스스로")
+
+def has_tension_marker(text: str) -> bool:
+    """True if `text` contains at least one real textual signal of an
+    unexpected result / contradiction / danger / anomaly / reversal, or is
+    phrased as a genuine question. A flat declarative fact (a plain "X had N
+    of Y" sentence) has none of these and must not pass as a hook."""
+    t = text or ""
+    if t.rstrip().endswith("?") or t.rstrip().endswith("까요") or "까요?" in t:
+        return True
+    return any(w in t for w in _DANGER_WORDS + _CONTRAST_WORDS + _ANOMALY_WORDS)
+
+
 def hook_violation(text: str) -> str | None:
-    """Return a short reason string if `text` matches a banned hook opener,
-    else None. Only meant to be applied to the FIRST spoken phrase of a
-    script/pitch -- these patterns are legitimate later in a video."""
+    """Return a short reason string if `text` matches a banned hook opener
+    OR carries no real tension marker at all (a flat descriptive/background
+    sentence -- e.g. "there were four of X" -- which is the exact real
+    failure mode a published production surfaced: not a banned greeting, but
+    still nothing for the viewer to react to), else None. Only meant to be
+    applied to the FIRST spoken phrase of a script/pitch -- these patterns
+    are legitimate later in a video."""
     stripped = (text or "").strip()
     if not stripped:
         return "empty hook text"
     for pattern, reason in HOOK_BANNED_PATTERNS:
         if pattern.search(stripped):
             return reason
+    if not has_tension_marker(stripped):
+        return "no unexpected-result/contradiction/danger/question/anomaly signal (flat descriptive sentence)"
     return None
 
 

@@ -406,7 +406,7 @@ def _media_duration_seconds(path:Path)->float:
     ).stdout)
     return float(data["format"]["duration"])
 
-def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]:
+def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     plan=_narration_plan(scene)
     _log_narration_plan(scene,plan)
@@ -416,7 +416,15 @@ def _synthesize_scene_audio(scene, build:Path)->tuple[Path,float,Path,dict,list]
     caps=segment(words,duration)
     q=subtitle_qa(caps,words,duration)
     srt=build/f"{scene.id}.srt"; write_srt(srt,caps)
-    return audio,duration,srt,{"scene":scene.id,**q},caps
+    # Real per-unit (narrative-role) timing, scene-relative -- persisted by
+    # synthesize_plan into timing.json (see tts.py). Read back rather than
+    # threading a new return value through synthesize_plan's signature, so
+    # every existing caller/test of that function is unaffected.
+    try:
+        narration_units=json.loads(timing.read_text(encoding="utf-8")).get("units",[])
+    except (FileNotFoundError, json.JSONDecodeError):
+        narration_units=[]
+    return audio,duration,srt,{"scene":scene.id,**q},caps,narration_units
 
 def _asset_candidates(scene)->list[dict]:
     primary={"asset":scene.asset,"asset_url":scene.asset_url,"attribution":scene.attribution}
@@ -490,7 +498,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
     for scene in p.scenes:
-        audio,duration,srt,q,caps=_synthesize_scene_audio(scene,build)
+        audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
         title=scene.overlay_title or p.overlay_title
@@ -502,7 +510,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
         if scene.visual_qa_requirements:
             semantic_results.append(outcome["semantic"])
         clip_duration=_media_duration_seconds(outcome["clip"])
-        scene_windows.append({"scene":scene.id,"start":cumulative,"duration":clip_duration,"caption_window":(caps[0].start,caps[0].end) if caps else None})
+        scene_windows.append({"scene":scene.id,"start":cumulative,"duration":clip_duration,"caption_window":(caps[0].start,caps[0].end) if caps else None,"narration_units":narration_units})
         cumulative+=clip_duration
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"

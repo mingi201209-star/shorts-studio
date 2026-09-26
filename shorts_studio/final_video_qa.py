@@ -6,6 +6,20 @@ missing top title, a caption that's clipped off-screen, or a photo bleeding
 into the caption safe area -- so those defects shipped past CI. Every check
 here extracts a real frame (or measures real timing data) from the actual
 production artifacts and fails closed if the evidence isn't there.
+
+IMPORTANT -- QA PASS is a minimum quality bar, not proof of a successful
+video: real post-publish channel data on two videos that passed every check
+in this module (Titanic: 62s runtime, 43s average view duration, 69%
+average view rate, but only 23.3% "stayed to watch"; Comet: 63s runtime,
+38s AVD, 60.2% average view rate, ~55% 30s-retention, with the steepest
+real drop-off inside the first ~5-10 seconds) showed that a file can clear
+every gate here and still lose most of its real audience in the opening
+seconds. Never report "QA PASS" as "this video will perform" -- real
+success can only be verified against real acquisition/retention data after
+publishing, which is outside what any file-level check can see. What
+belongs here is real, checkable STRUCTURE the data points at (see the
+First-10s Retention Contract below) -- never a channel KPI number (e.g. a
+target "stayed to watch" percentage) hardcoded as a pass/fail threshold.
 """
 from __future__ import annotations
 import re
@@ -13,7 +27,7 @@ import subprocess
 import urllib.parse
 from pathlib import Path
 
-from .retention_rules import hook_violation, is_generic_establishing_text, token_overlap_ratio, is_near_duplicate_text
+from .retention_rules import hook_violation, is_generic_establishing_text, token_overlap_ratio, is_near_duplicate_text, has_tension_marker
 
 _QA_FFMPEG_TIMEOUT_SECONDS = 180
 
@@ -683,20 +697,31 @@ def _first_narration_phrase_text(scene) -> str:
 
 def verify_hook_opener(project) -> dict:
     """The very first spoken phrase of the whole video must not be a
-    greeting, a topic announcement, or 'today we'll look at X' framing --
-    see retention_rules.HOOK_BANNED_PATTERNS. If narration_plan is authored,
-    its first phrase's role must also be HOOK."""
+    greeting, a topic announcement, 'today we'll look at X' framing, OR a
+    flat descriptive/background sentence with no real tension marker (see
+    retention_rules.hook_violation / has_tension_marker) -- this last case
+    is a real one: a published production's actual opener ("타이타닉에는
+    거대한 굴뚝이 네 개 있었습니다") matched none of the banned patterns yet
+    was pure background exposition, exactly the acquisition bottleneck real
+    channel data (23.3% stayed-to-watch) pointed at. If narration_plan is
+    authored, its first phrase's role must be HOOK and must declare a
+    hook_type (retention_rules.HOOK_TYPES) -- an authorial commitment to
+    WHICH mechanism (result/contradiction/danger/question/anomaly/reversal)
+    the opener is using, not just that some banned phrase is absent."""
     if not project.scenes:
         return {"status": "FAIL", "reason": "no scenes"}
     first_scene = project.scenes[0]
     text = _first_narration_phrase_text(first_scene)
     reason = hook_violation(text)
     if reason:
-        return {"status": "FAIL", "reason": f"first spoken phrase matches a banned hook opener ({reason}): {text!r}"}
+        return {"status": "FAIL", "reason": f"first spoken phrase fails the hook contract ({reason}): {text!r}"}
     plan = getattr(first_scene, "narration_plan", None) or []
-    if plan and plan[0].role != "HOOK":
-        return {"status": "FAIL", "reason": f"first narration_plan phrase's role is '{plan[0].role}', must be HOOK"}
-    return {"status": "PASS", "evidence": {"first_phrase": text}}
+    if plan:
+        if plan[0].role != "HOOK":
+            return {"status": "FAIL", "reason": f"first narration_plan phrase's role is '{plan[0].role}', must be HOOK"}
+        if not getattr(plan[0], "hook_type", None):
+            return {"status": "FAIL", "reason": "first HOOK phrase does not declare a hook_type (retention_rules.HOOK_TYPES)"}
+    return {"status": "PASS", "evidence": {"first_phrase": text, "hook_type": getattr(plan[0], "hook_type", None) if plan else None}}
 
 def verify_first_beat_visual_grounding(project) -> dict:
     """The first visual beat of the first scene must commit to showing a
@@ -832,6 +857,99 @@ def verify_ending_payoff_role(project) -> dict:
     return {"status": "PASS", "evidence": {"last_role": last_role}}
 
 
+# ---------------------------------------------------------------------------
+# First-10s Retention Contract -- added in response to REAL post-publish
+# channel data, not a QA-report number: Titanic (62s, 43s AVD, 69% avg view
+# rate, but only 23.3% "stayed to watch") and Comet (63s, 38s AVD, 60.2% avg
+# view rate, ~55% 30s-retention) both show the steepest real drop-off inside
+# the first ~5-10 seconds, not in the middle or the ending -- both videos
+# already passed every existing QA gate. QA PASS is therefore a minimum
+# quality bar, not proof a video will actually hold acquisition; this
+# contract targets the specific bottleneck the data pointed at, using REAL
+# per-role timing recovered from the actual TTS synthesis (tts.py's
+# per-unit start/end, threaded through scene_windows[i]["narration_units"]
+# by render.py) -- not an approximation from character counts.
+#
+# Deliberately NOT a hardcoded channel-performance number (e.g. "40%
+# stayed-to-watch"): that is a real business goal to verify with real
+# post-publish data, not something a rendered video file alone can prove.
+# What IS checkable from the file is the STRUCTURE the data suggests such a
+# number needs: a real claim in second 1, a visual proof shortly after, a
+# new tension by mid-opening, and an early payoff before the 12s mark --
+# never a stretch of pure background exposition with nothing changing.
+# ---------------------------------------------------------------------------
+
+FIRST_10S_HOOK_WINDOW = (0.0, 1.0)
+FIRST_10S_VISUAL_PROOF_WINDOW = (0.2, 3.0)
+FIRST_10S_STATE_CHANGE_WINDOW = (3.0, 8.0)
+FIRST_10S_PAYOFF_WINDOW = (8.0, 12.0)
+MIN_DISTINCT_ROLES_IN_FIRST_10S = 3
+
+_STATE_CHANGE_ROLES = ("CRISIS", "INVESTIGATION")
+_EARLY_PAYOFF_ROLES = ("REVEAL", "PAYOFF")
+
+def compute_first_10s_narration_timeline(scene_windows: list[dict]) -> list[dict]:
+    """Every narration_plan unit (see tts.py/render.py), in absolute
+    final-video time, built from REAL per-unit synthesis timing -- not a
+    character-count approximation."""
+    timeline = []
+    for w in scene_windows:
+        base = float(w.get("start", 0.0) or 0.0)
+        for u in (w.get("narration_units") or []):
+            timeline.append({
+                "scene": w.get("scene"),
+                "role": u.get("role"),
+                "text": u.get("text"),
+                "start": base + float(u.get("start", 0.0) or 0.0),
+                "end": base + float(u.get("end", 0.0) or 0.0),
+            })
+    timeline.sort(key=lambda e: e["start"])
+    return timeline
+
+def verify_first_10s_retention(narration_timeline: list[dict], visual_cut_timestamps: list[float]) -> dict:
+    """Structural check on the real opening timeline: a HOOK claim in
+    [0,1s], a real visual cut following it by [0.2,3s] (the claim gets
+    immediate visual proof, not a static hold), a new
+    danger/question/state-change by [3,8s], and an early REVEAL/PAYOFF by
+    [8,12s] -- with at least MIN_DISTINCT_ROLES_IN_FIRST_10S distinct
+    narrative roles in the first 10s so the opening can never be one long
+    unbroken stretch of background exposition."""
+    if not narration_timeline:
+        return {"status": "FAIL", "reason": "no real narration timing data available -- cannot verify the First-10s Retention Contract"}
+    reasons = []
+
+    hook_units = [e for e in narration_timeline if e["role"] == "HOOK" and FIRST_10S_HOOK_WINDOW[0] <= e["start"] <= FIRST_10S_HOOK_WINDOW[1]]
+    if not hook_units:
+        reasons.append(f"no HOOK-role narration starts within {FIRST_10S_HOOK_WINDOW[0]}-{FIRST_10S_HOOK_WINDOW[1]}s")
+
+    proof_cuts = [t for t in visual_cut_timestamps if FIRST_10S_VISUAL_PROOF_WINDOW[0] < t <= FIRST_10S_VISUAL_PROOF_WINDOW[1]]
+    if not proof_cuts:
+        reasons.append(f"no real visual cut lands within {FIRST_10S_VISUAL_PROOF_WINDOW[0]}-{FIRST_10S_VISUAL_PROOF_WINDOW[1]}s to prove the opening claim (picture held static instead)")
+
+    state_change_units = [e for e in narration_timeline if FIRST_10S_STATE_CHANGE_WINDOW[0] < e["start"] <= FIRST_10S_STATE_CHANGE_WINDOW[1]
+                           and (e["role"] in _STATE_CHANGE_ROLES or has_tension_marker(e["text"] or ""))]
+    if not state_change_units:
+        reasons.append(f"no new danger/question/state-change narration starts within {FIRST_10S_STATE_CHANGE_WINDOW[0]}-{FIRST_10S_STATE_CHANGE_WINDOW[1]}s")
+
+    payoff_units = [e for e in narration_timeline if e["role"] in _EARLY_PAYOFF_ROLES and FIRST_10S_PAYOFF_WINDOW[0] < e["start"] <= FIRST_10S_PAYOFF_WINDOW[1]]
+    if not payoff_units:
+        reasons.append(f"no REVEAL/PAYOFF-role narration starts within {FIRST_10S_PAYOFF_WINDOW[0]}-{FIRST_10S_PAYOFF_WINDOW[1]}s (no early payoff)")
+
+    early = [e for e in narration_timeline if e["start"] < 10.0]
+    distinct_early_roles = len({e["role"] for e in early})
+    if distinct_early_roles < MIN_DISTINCT_ROLES_IN_FIRST_10S:
+        reasons.append(f"only {distinct_early_roles} distinct narrative role(s) in the first 10s -- reads as an unbroken stretch of background exposition (need >= {MIN_DISTINCT_ROLES_IN_FIRST_10S})")
+
+    evidence = {
+        "narration_timeline_first_12s": [e for e in narration_timeline if e["start"] < 12.0],
+        "visual_proof_cuts": proof_cuts,
+        "distinct_early_roles": distinct_early_roles,
+    }
+    if reasons:
+        return {"status": "FAIL", "reason": "; ".join(reasons), "evidence": evidence}
+    return {"status": "PASS", "evidence": evidence}
+
+
 def verify_no_redundant_narration(project) -> dict:
     """Runtime Discipline: fail if any two narration phrases (or whole-scene
     narration strings, for scenes with no narration_plan) are near-duplicate
@@ -925,9 +1043,17 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     # the whole retention picture in one place. Opt-in: see models.py.
     information_progression = compute_information_progression(project)
     retention_contract = None
+    first_10s_retention = None
     if getattr(project, "strict_retention_contract", False):
         retention_contract = verify_retention_contract(project)
         checks["retention_contract"] = retention_contract
+        # Real per-role timing + real visual cut ground truth (both already
+        # computed above) -- this is the ONE post-render check in the whole
+        # retention contract, because it needs the actual synthesized TTS
+        # timing and the actual rendered cuts, not the nominal manifest.
+        narration_timeline = compute_first_10s_narration_timeline(scene_windows)
+        first_10s_retention = verify_first_10s_retention(narration_timeline, visual_activity["cut_timestamps"])
+        checks["first_10s_retention"] = first_10s_retention
 
     title_samples = []
     if scene_windows:
@@ -999,6 +1125,7 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         "duplicate_info_role_count": len(information_progression["duplicate_info_roles"]),
         "distinct_narrative_roles": len(set(_all_narration_roles(project))),
         "retention_contract_status": retention_contract["status"] if retention_contract else "NOT_EVALUATED",
+        "first_10s_retention_status": first_10s_retention["status"] if first_10s_retention else "NOT_EVALUATED",
     }
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"

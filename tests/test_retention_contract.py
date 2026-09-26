@@ -16,8 +16,8 @@ from shorts_studio.final_video_qa import (
 )
 
 
-def _phrase(role, text):
-    return SimpleNamespace(role=role, text=text, focus=False, pace=None)
+def _phrase(role, text, hook_type=None):
+    return SimpleNamespace(role=role, text=text, focus=False, pace=None, hook_type=hook_type)
 
 
 def _beat(start, req=None, info_role=None, url="https://x/a.jpg"):
@@ -36,7 +36,7 @@ def _project(scenes):
 
 
 def _strong_project():
-    s1 = _scene("s1", "hook", narration_plan=[_phrase("HOOK", "거대한 탱크가 무너지며 당밀이 거리를 덮쳤습니다")],
+    s1 = _scene("s1", "hook", narration_plan=[_phrase("HOOK", "거대한 탱크가 무너지며 당밀이 거리를 덮쳤습니다", hook_type="danger")],
                 visual_beats=[_beat(0.0, req=["무너진 거대한 당밀 탱크와 거리로 쏟아지는 당밀 파도 사진"], info_role="tank_scale")])
     s2 = _scene("s2", "setup", narration_plan=[_phrase("SETUP", "탱크는 완공 직후부터 새고 있었습니다")],
                 visual_beats=[_beat(0.0, req=["초기 누수 흔적 사진"], info_role="leak_evidence")])
@@ -61,6 +61,25 @@ def test_hook_opener_fails_on_greeting():
     p.scenes[0].narration_plan = [_phrase("HOOK", "안녕하세요! 오늘은 당밀 홍수에 대해 알아보겠습니다.")]
     result = verify_hook_opener(p)
     assert result["status"] == "FAIL"
+
+
+def test_hook_opener_fails_on_flat_background_description_even_without_a_banned_pattern():
+    """The real published-video bug: not a greeting or topic announcement,
+    just pure background exposition with no result/danger/question/anomaly
+    for the viewer to react to in the first second."""
+    p = _strong_project()
+    p.scenes[0].narration_plan = [_phrase("HOOK", "타이타닉에는 거대한 굴뚝이 네 개 있었습니다", hook_type="visible_anomaly")]
+    result = verify_hook_opener(p)
+    assert result["status"] == "FAIL"
+    assert "tension" in result["reason"] or "signal" in result["reason"] or "flat" in result["reason"]
+
+
+def test_hook_opener_fails_when_hook_type_is_not_declared():
+    p = _strong_project()
+    p.scenes[0].narration_plan = [_phrase("HOOK", "거대한 탱크가 무너지며 당밀이 거리를 덮쳤습니다", hook_type=None)]
+    result = verify_hook_opener(p)
+    assert result["status"] == "FAIL"
+    assert "hook_type" in result["reason"]
 
 
 def test_hook_opener_fails_when_first_role_is_not_hook():
