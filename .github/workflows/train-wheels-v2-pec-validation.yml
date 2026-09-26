@@ -1,0 +1,61 @@
+name: train-wheels-v2-pec-validation
+# Temporary, one-off workflow for Phase 2.5's real-render validation of the
+# Train Wheels V2 PEC pilot. Lives ONLY on the throwaway integration branch
+# combining PR #27 (engine) + PR #28 (content) -- neither individual PR
+# branch carries this file. Deleted along with the branch once validation
+# is complete.
+on:
+  push:
+    branches: [integrate/phase25-pec-live-validation]
+  workflow_dispatch:
+
+jobs:
+  render_and_report:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk librsvg2-bin
+      - name: Warm the fontconfig cache
+        run: time fc-cache -f -v
+      - name: Install package
+        run: pip install -e '.[dev]'
+      - name: Full pytest suite
+        run: pytest -q
+      - name: Validate Train Wheels V2 manifest
+        run: python -m shorts_studio validate examples/train_wheels_v2.json
+      - name: Render Train Wheels V2 (report-only PEC, no production gate)
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          set -o pipefail
+          python -m shorts_studio render examples/train_wheels_v2.json 2>&1 | tee render-result.json
+      - name: Print qa_report.json entertainment_contract section
+        if: always()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('dist/qa_report.json')
+          if p.is_file():
+              report = json.loads(p.read_text(encoding='utf-8'))
+              print(json.dumps(report.get('entertainment_contract'), ensure_ascii=False, indent=2))
+          else:
+              print("dist/qa_report.json not found")
+          PY
+      - name: Upload full artifact (video + qa_report + build evidence)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: train-wheels-v2-pec-validation
+          retention-days: 14
+          path: |
+            dist/
+            build/*.srt
+            build/*.timing.json
+            build/*_qa.jpg
+            render-result.json
