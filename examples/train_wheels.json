@@ -1,0 +1,130 @@
+{
+  "title": "기차 바퀴는 왜 일부러 비뚤게 만들까?",
+  "overlay_title": "같은 축인데 어떻게 커브를 돌까?",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "max_visual_recovery_attempts": 2,
+  "strict_source_diversity": true,
+  "scenes": [
+    {
+      "id": "scene_01",
+      "narration": "기차 바퀴는 일부러 비뚤게 만들었습니다. 그래야 똑바로 달립니다.",
+      "narration_plan": [{"role":"HOOK","text":"기차 바퀴는 일부러 비뚤게 만들었습니다. 그래야 똑바로 달립니다.","focus":true,"hook_type":"contradiction"}],
+      "visual_description": "실제 철도 wheelset과 고정축 구조를 즉시 보여주고, 바퀴 굴림면이 완전한 원통이 아니라는 점을 단면 도해로 연결한다.",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Rail_vehicle_wheelset.png",
+      "attribution": "SCHolar44 / Wikimedia Commons / CC0",
+      "motion": {"type":"push_in"},
+      "visual_qa_requirements": ["두 철도 바퀴가 하나의 축에 단단히 연결된 wheelset 구조가 명확히 보여야 함"],
+      "visual_qa_labels": ["rail vehicle wheelset with two wheels rigidly mounted on one axle"],
+      "visual_qa_negative_labels": ["car wheel","rubber tire","generic train exterior"],
+      "visual_beats": [
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rail_vehicle_wheelset.png","attribution":"SCHolar44 / Wikimedia Commons / CC0","motion":{"type":"push_in"},"visual_qa_requirements":["wheelset 전체 구조가 즉시 보여야 함"],"visual_qa_labels":["rail vehicle wheelset rigid axle"],"visual_qa_negative_labels":["car wheel","rubber tire"]},
+        {"start":1.5,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset.svg","attribution":"Gordon Vigurs, Zerodamage / Wikimedia Commons","motion":{"type":"static"},"visual_qa_requirements":["두 바퀴가 독립 회전이 아니라 하나의 축으로 연결된 도해"],"visual_qa_labels":["schematic of railway wheelset fixed axle"],"visual_qa_negative_labels":["independent wheels"]},
+        {"start":3.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png","attribution":"Toshinori baba / Wikimedia Commons / CC BY-SA","motion":{"type":"push_in"},"visual_qa_requirements":["철도 바퀴 tread와 flange 및 레일 접촉 단면이 보여야 함"],"visual_qa_labels":["cross section railway wheel tread flange rail contact"],"visual_qa_negative_labels":["car tire"]},
+        {"start":5.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif","attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA","motion":{"type":"static"},"visual_qa_requirements":["중앙 주행 시 wheel rail 접촉 관계를 보여주는 도해"],"visual_qa_labels":["railway wheel and rail contact central running schematic"],"visual_qa_negative_labels":["road vehicle"]}
+      ]
+    },
+    {
+      "id":"scene_02",
+      "narration":"바퀴가 한쪽으로 밀리면 두 바퀴가 레일에 닿는 위치가 달라집니다. 한쪽은 더 큰 반지름으로, 반대쪽은 더 작은 반지름으로 굴러갑니다.",
+      "narration_plan":[{"role":"REVEAL","text":"바퀴가 한쪽으로 밀리면 두 바퀴가 레일에 닿는 위치가 달라집니다","focus":true},{"role":"EXPLAIN","text":"한쪽은 더 큰 반지름으로, 반대쪽은 더 작은 반지름으로 굴러갑니다"}],
+      "visual_description":"wheel/rail 접촉 단면과 tread 기울기를 이용해 횡이동에 따른 유효 굴림 반지름 차이를 설명한다.",
+      "asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif",
+      "attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA",
+      "motion":{"type":"static"},
+      "visual_qa_requirements":["wheel과 rail의 접촉 위치가 명확해야 함"],
+      "visual_qa_labels":["railway wheel rail contact schematic"],
+      "visual_qa_negative_labels":["generic locomotive"],
+      "visual_beats":[
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif","attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA","motion":{"type":"static"},"visual_qa_requirements":["중앙 접촉 상태가 보여야 함"],"visual_qa_labels":["central railway wheel rail contact"],"visual_qa_negative_labels":["car tire"]},
+        {"start":2.6,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png","attribution":"Toshinori baba / Wikimedia Commons / CC BY-SA","motion":{"type":"push_in"},"visual_qa_requirements":["tread 단면과 접촉면을 확대해 보여야 함"],"visual_qa_labels":["railway wheel tread profile cross section"],"visual_qa_negative_labels":["generic train"]},
+        {"start":5.2,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png","attribution":"ikaxer / Wikimedia Commons / GFDL","motion":{"type":"static"},"visual_qa_requirements":["철도 바퀴 tread의 기울어진 프로파일이 보여야 함"],"visual_qa_labels":["railway wheel tread inclination diagram"],"visual_qa_negative_labels":["rubber tire"]}
+      ]
+    },
+    {
+      "id":"scene_03",
+      "narration":"두 바퀴는 하나의 축에 붙어 똑같이 회전합니다. 그런데 반지름이 달라졌으니 한 바퀴를 도는 동안 이동하는 거리가 달라지고, 바퀴축은 다시 선로 가운데 쪽으로 향합니다.",
+      "narration_plan":[{"role":"CAUSE","text":"두 바퀴는 하나의 축에 붙어 똑같이 회전합니다"},{"role":"PAYOFF","text":"반지름이 달라졌으니 한 바퀴를 도는 동안 이동하는 거리가 달라지고, 바퀴축은 다시 선로 가운데 쪽으로 향합니다","focus":true}],
+      "visual_description":"고정축 wheelset 도해와 접촉 단면을 교차해 같은 회전수지만 다른 유효 반지름이라는 핵심을 시각화한다.",
+      "asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rail_vehicle_wheelset.png",
+      "attribution":"SCHolar44 / Wikimedia Commons / CC0",
+      "motion":{"type":"push_in"},
+      "visual_qa_requirements":["두 바퀴가 동일 축에 고정된 구조가 보여야 함"],
+      "visual_qa_labels":["rail wheelset two wheels rigid axle"],
+      "visual_qa_negative_labels":["independent wheels"],
+      "visual_beats":[
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Rail_vehicle_wheelset.png","attribution":"SCHolar44 / Wikimedia Commons / CC0","motion":{"type":"static"},"visual_qa_requirements":["고정축 wheelset"],"visual_qa_labels":["rigid railway wheelset axle"],"visual_qa_negative_labels":["car axle"]},
+        {"start":3.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset.svg","attribution":"Gordon Vigurs, Zerodamage / Wikimedia Commons","motion":{"type":"push_in"},"visual_qa_requirements":["wheelset 구조 도해"],"visual_qa_labels":["railway wheelset schematic"],"visual_qa_negative_labels":["independent wheels"]},
+        {"start":6.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif","attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA","motion":{"type":"static"},"visual_qa_requirements":["wheel rail 접촉 관계"],"visual_qa_labels":["wheel rail contact schematic"],"visual_qa_negative_labels":["road tire"]}
+      ]
+    },
+    {
+      "id":"scene_04",
+      "narration":"그런데 진짜 이상한 건 커브입니다. 자동차는 좌우 바퀴가 서로 다른 속도로 돌 수 있지만, 기차 바퀴는 같은 축에 고정돼 있습니다. 그럼 어떻게 커브를 돌까요?",
+      "narration_plan":[{"role":"SECOND_HOOK","text":"그런데 진짜 이상한 건 커브입니다","focus":true},{"role":"TENSION","text":"기차 바퀴는 같은 축에 고정돼 있습니다. 그럼 어떻게 커브를 돌까요?"}],
+      "visual_description":"곡선에서 고정 wheelset과 독립 바퀴의 기하학적 차이를 보여주는 도해로 두 번째 미스터리를 연다.",
+      "asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves.svg",
+      "attribution":"Wikimedia Commons / CC BY-SA 4.0",
+      "motion":{"type":"push_in"},
+      "visual_qa_requirements":["곡선 선로에서 wheelset과 독립 바퀴의 차이가 보여야 함"],
+      "visual_qa_labels":["rail wheelset versus independent wheels in curve diagram"],
+      "visual_qa_negative_labels":["straight track only"],
+      "visual_beats":[
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves.svg","attribution":"Wikimedia Commons / CC BY-SA 4.0","motion":{"type":"push_in"},"visual_qa_requirements":["곡선 기하 도해"],"visual_qa_labels":["rail wheelset curve geometry"],"visual_qa_negative_labels":["straight track"]},
+        {"start":3.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Bogie_in_yaw.gif","attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA 3.0","motion":{"type":"static"},"visual_qa_requirements":["곡선에서 bogie가 yaw된 상태"],"visual_qa_labels":["railway bogie running on curve with yaw schematic"],"visual_qa_negative_labels":["road vehicle"]},
+        {"start":6.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves%3B_single_wheels.svg","attribution":"Wikimedia Commons / CC BY-SA 4.0","motion":{"type":"static"},"visual_qa_requirements":["독립 바퀴의 곡선 기하 비교"],"visual_qa_labels":["independent rail wheels curve geometry diagram"],"visual_qa_negative_labels":["generic train photo"]}
+      ]
+    },
+    {
+      "id":"scene_05",
+      "narration":"커브에서 바퀴축이 바깥쪽으로 조금 이동하면 바깥 바퀴는 더 큰 반지름으로, 안쪽 바퀴는 더 작은 반지름으로 굴러갑니다. 같은 횟수를 돌아도 바깥쪽은 더 멀리 가는 겁니다.",
+      "narration_plan":[{"role":"REVEAL","text":"커브에서 바퀴축이 바깥쪽으로 조금 이동하면 바깥 바퀴는 더 큰 반지름으로, 안쪽 바퀴는 더 작은 반지름으로 굴러갑니다","focus":true},{"role":"PAYOFF","text":"같은 횟수를 돌아도 바깥쪽은 더 멀리 가는 겁니다"}],
+      "visual_description":"곡선 도해와 wheel tread 단면을 연결해 같은 회전수에서 바깥쪽이 더 긴 거리를 가는 원리를 보여준다.",
+      "asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves.svg",
+      "attribution":"Wikimedia Commons / CC BY-SA 4.0",
+      "motion":{"type":"push_in"},
+      "visual_qa_requirements":["곡선의 바깥쪽과 안쪽 경로 차이가 명확해야 함"],
+      "visual_qa_labels":["rail wheelset negotiating curve geometry"],
+      "visual_qa_negative_labels":["straight track"],
+      "visual_beats":[
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves.svg","attribution":"Wikimedia Commons / CC BY-SA 4.0","motion":{"type":"push_in"},"visual_qa_requirements":["바깥/안쪽 곡선 경로 차이"],"visual_qa_labels":["outer inner rail curve path diagram"],"visual_qa_negative_labels":["straight rail"]},
+        {"start":3.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png","attribution":"ikaxer / Wikimedia Commons / GFDL","motion":{"type":"push_in"},"visual_qa_requirements":["tread 기울기"],"visual_qa_labels":["rail wheel tread inclination"],"visual_qa_negative_labels":["rubber tire"]},
+        {"start":6.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Bogie_in_yaw.gif","attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA 3.0","motion":{"type":"static"},"visual_qa_requirements":["실제 곡선 상황을 설명하는 bogie 도해"],"visual_qa_labels":["bogie on curved railway track schematic"],"visual_qa_negative_labels":["road car"]}
+      ]
+    },
+    {
+      "id":"scene_06",
+      "narration":"그리고 옆에 튀어나온 플랜지가 평소 계속 레일을 밀어서 방향을 잡는 것도 아닙니다. 정상적인 주행에서는 바퀴의 프로파일과 굴림 반지름 차이가 조향에 중요한 역할을 합니다. 급한 곡선에서는 플랜지 접촉도 생길 수 있습니다.",
+      "narration_plan":[{"role":"MYTH_BREAK","text":"플랜지가 평소 계속 레일을 밀어서 방향을 잡는 것도 아닙니다","focus":true},{"role":"EXPLAIN","text":"정상적인 주행에서는 바퀴의 프로파일과 굴림 반지름 차이가 조향에 중요한 역할을 합니다. 급한 곡선에서는 플랜지 접촉도 생길 수 있습니다"}],
+      "visual_description":"wheel/rail 단면에서 flange와 tread를 명확히 구분하고 플랜지가 항상 접촉하는 것처럼 보이지 않게 한다.",
+      "asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
+      "attribution":"Toshinori baba / Wikimedia Commons / CC BY-SA",
+      "motion":{"type":"push_in"},
+      "visual_qa_requirements":["flange와 tread 및 rail의 상대 위치가 구분돼야 함"],
+      "visual_qa_labels":["railway wheel flange tread rail contact cross section"],
+      "visual_qa_negative_labels":["flange continuously grinding rail","car tire"],
+      "visual_beats":[
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png","attribution":"Toshinori baba / Wikimedia Commons / CC BY-SA","motion":{"type":"push_in"},"visual_qa_requirements":["flange 단면"],"visual_qa_labels":["rail wheel flange cross section"],"visual_qa_negative_labels":["rubber tire"]},
+        {"start":3.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif","attribution":"Afterbrunel / Wikimedia Commons / CC BY-SA","motion":{"type":"static"},"visual_qa_requirements":["정상 중앙 주행 접촉"],"visual_qa_labels":["central running wheel rail contact"],"visual_qa_negative_labels":["flange grinding"]},
+        {"start":6.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png","attribution":"Wikimedia Commons / licensed diagram","motion":{"type":"push_in"},"visual_qa_requirements":["실제 railway wheel과 rail의 복잡한 단면 프로파일"],"visual_qa_labels":["railway wheel and rail profile cross section drawing"],"visual_qa_negative_labels":["perfect cone"]}
+      ]
+    },
+    {
+      "id":"scene_07",
+      "narration":"결국 수백 톤짜리 열차가 선로를 따라가는 비밀 중 하나는 거대한 조향장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기입니다.",
+      "narration_plan":[{"role":"ENDING_PAYOFF","text":"수백 톤짜리 열차가 선로를 따라가는 비밀 중 하나는 거대한 조향장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기입니다","focus":true}],
+      "visual_description":"마지막에는 전체 wheelset에서 tread 단면으로 다시 좁혀 들어가며 핵심 구조를 새 이미지로 마무리한다.",
+      "asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Einfacher_Laufradsatz.svg",
+      "attribution":"DerRadsatz / Wikimedia Commons / CC BY-SA 4.0",
+      "motion":{"type":"push_in"},
+      "visual_qa_requirements":["철도 wheelset 전체와 실제적인 바퀴 형상이 명확해야 함"],
+      "visual_qa_labels":["railway wheelset technical illustration"],
+      "visual_qa_negative_labels":["car wheel","generic locomotive"],
+      "visual_beats":[
+        {"start":0.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Einfacher_Laufradsatz.svg","attribution":"DerRadsatz / Wikimedia Commons / CC BY-SA 4.0","motion":{"type":"push_in"},"visual_qa_requirements":["새로운 wheelset 기술 도해로 엔딩 시작"],"visual_qa_labels":["technical railway wheelset illustration"],"visual_qa_negative_labels":["car axle"]},
+        {"start":3.0,"asset_url":"https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_tramway_and_railway_wheel_and_rail_profiles.png","attribution":"Wikimedia Commons / licensed diagram","motion":{"type":"push_in"},"visual_qa_requirements":["철도 wheel/rail 단면 프로파일이 명확히 보여야 함"],"visual_qa_labels":["railway wheel rail cross sectional profiles"],"visual_qa_negative_labels":["perfect cone","rubber tire"]}
+      ]
+    }
+  ]
+}
