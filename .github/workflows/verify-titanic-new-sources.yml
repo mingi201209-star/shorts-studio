@@ -22,20 +22,24 @@ jobs:
       - name: Download, normalize, and hash each new candidate through the real production path
         run: |
           python3 - <<'PY'
-          import sys, hashlib, json, shutil
+          import sys, hashlib, json, shutil, time
           sys.path.insert(0, ".")
           from pathlib import Path
           from shorts_studio.render import _resolve_asset
 
           build = Path("build_tmp"); build.mkdir(exist_ok=True)
+          # Bounded Special:Redirect thumbnails, same pattern as the 6 existing
+          # sources -- direct upload.wikimedia.org originals just hit a 429
+          # (one of them was 6.6MB; Wikimedia's own error message asks for
+          # bounded thumbnail sizes instead).
           candidates = {
-              "SHAFT": "https://upload.wikimedia.org/wikipedia/commons/5/53/Titanic%27s_propeller_shaft_installation.jpg",
-              "STERN": "https://upload.wikimedia.org/wikipedia/commons/4/48/Titanic_stern_under_construction.jpg",
-              "GANTRY433": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Construction_of_White_Star_Liner_Number_433.jpg",
-              "INQUIRY": "https://upload.wikimedia.org/wikipedia/commons/2/26/London_Scottish_Drill_Hall_before_the_start_of_the_British_inquiry_into_the_Titanic_disaster.jpg",
-              "PROP": "https://upload.wikimedia.org/wikipedia/commons/0/05/RMS_Olympic%27s_propellers.jpg",
-              "WORKERS": "https://upload.wikimedia.org/wikipedia/commons/6/64/Knocking_off_at_Harland_%26_Wolff%2C_Belfast.jpg",
-              "LAUNCHCROWD": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Titanic_Launching_Belfast_May_31_1911.jpg",
+              "SHAFT": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%20propeller%20shaft%20installation.jpg?width=1280",
+              "STERN": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20stern%20under%20construction.jpg?width=1280",
+              "GANTRY433": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Construction%20of%20White%20Star%20Liner%20Number%20433.jpg?width=1280",
+              "INQUIRY": "https://commons.wikimedia.org/wiki/Special:Redirect/file/London%20Scottish%20Drill%20Hall%20before%20the%20start%20of%20the%20British%20inquiry%20into%20the%20Titanic%20disaster.jpg?width=1280",
+              "PROP": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Olympic%27s%20propellers.jpg?width=1280",
+              "WORKERS": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Knocking%20off%20at%20Harland%20%26%20Wolff%2C%20Belfast.jpg?width=1280",
+              "LAUNCHCROWD": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Launching%20Belfast%20May%2031%201911.jpg?width=1280",
           }
           out = {}
           for i, (name, url) in enumerate(candidates.items()):
@@ -49,14 +53,15 @@ jobs:
               except Exception as e:
                   out[name] = {"url": url, "error": str(e), "status": "failed"}
                   print(name, "FAILED:", e)
+              time.sleep(2)  # be gentle, avoid another 429
           json.dump(out, open("new_source_hashes.json", "w"), indent=2)
           PY
       - name: Publish to a throwaway orphan branch
         run: |
           git config user.name "titanic-newsrc-bot"
           git config user.email "actions@github.com"
-          git checkout --orphan verify/titanic-new-sources
+          git checkout --orphan verify/titanic-new-sources-2
           git reset --hard
           git add new_source_hashes.json preview_*.jpg 2>/dev/null || git add new_source_hashes.json
-          git commit -m "Throwaway: real hashes + previews for 7 new Titanic sources"
-          git push -f origin HEAD:refs/heads/verify/titanic-new-sources
+          git commit -m "Throwaway: real hashes + previews for 7 new Titanic sources (bounded thumbnails)"
+          git push -f origin HEAD:refs/heads/verify/titanic-new-sources-2
