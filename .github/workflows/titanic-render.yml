@@ -25,13 +25,34 @@ jobs:
         run: pytest -q
       - name: Validate Titanic manifest
         run: python -m shorts_studio validate examples/titanic_fourth_funnel.json
+      - name: Use bounded Wikimedia thumbnails
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          src = Path('examples/titanic_fourth_funnel.json')
+          data = json.loads(src.read_text(encoding='utf-8'))
+          prefix = 'https://commons.wikimedia.org/wiki/Special:Redirect/file/'
+          def bounded(value):
+              if isinstance(value, dict):
+                  return {k: bounded(v) for k, v in value.items()}
+              if isinstance(value, list):
+                  return [bounded(v) for v in value]
+              if isinstance(value, str) and value.startswith(prefix) and 'width=' not in value:
+                  return value + ('&' if '?' in value else '?') + 'width=1280'
+              return value
+          out = Path('build/titanic_fourth_funnel.ci.json')
+          out.parent.mkdir(exist_ok=True)
+          out.write_text(json.dumps(bounded(data), ensure_ascii=False, indent=2), encoding='utf-8')
+          print(f'Wrote {out} with bounded Wikimedia thumbnail requests')
+          PY
       - name: Render Titanic with required semantic QA
         env:
           SHORTS_REQUIRE_SEMANTIC_QA: "1"
           PYTHONUNBUFFERED: "1"
         run: |
           set -o pipefail
-          python -m shorts_studio render examples/titanic_fourth_funnel.json 2>&1 | tee render-result.json
+          python -m shorts_studio render build/titanic_fourth_funnel.ci.json 2>&1 | tee render-result.json
       - name: Verify final deliverable and QA
         run: |
           python - <<'PY'
