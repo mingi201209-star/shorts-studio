@@ -1,0 +1,32 @@
+name: fetch-trainwheel-final
+on:
+  push:
+    branches: [content/train-wheel-conicity]
+    paths: [.github/workflows/fetch-trainwheel-final.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the successful render's publishable artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: shorts-studio-train-wheels
+          run-id: 36244377225
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: final_artifact
+      - name: Publish to an orphan branch via git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          git checkout --orphan fetch/trainwheel-final
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name final_artifact ! -name .git -exec rm -rf {} +
+          git add final_artifact
+          git commit -m "Publish train wheel successful render artifact (throwaway)"
+          git push -f origin fetch/trainwheel-final
