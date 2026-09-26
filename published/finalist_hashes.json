@@ -1,0 +1,62 @@
+{
+  "TANK_BEFORE": {
+    "filename": "North End molasses tank.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/North%20End%20molasses%20tank.jpg?width=1280",
+    "sha256": "18413d829874c81d4282e2fab0b58ecf5fa0c8c77c5a8953227a4cf928acf81c",
+    "size": 33262
+  },
+  "TANK_SCALE_DIAGRAM": {
+    "filename": "Boston Molasses Flood Aftermath (original tank scale superimposed).png",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Molasses%20Flood%20Aftermath%20%28original%20tank%20scale%20superimposed%29.png?width=1280",
+    "sha256": "d97c6ee3659858f8fefac3a441287d9aa15e04b47561c3a27b0df8f592bf439c",
+    "size": 353304
+  },
+  "MAIN_PHOTO_C": {
+    "filename": "Boston, Mass. Boston molasses explosion 14968a.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%2C%20Mass.%20Boston%20molasses%20explosion%2014968a.jpg?width=1280",
+    "sha256": "b6f649681a15c67b352068981d041f81b4375d17263eabad4bdef291ff115183",
+    "size": 378787
+  },
+  "WRECKAGE_UNDER_TRACKS": {
+    "filename": "GreatMolassesFlood 1919-Wreckage under the elevated tracks.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/GreatMolassesFlood%201919-Wreckage%20under%20the%20elevated%20tracks.jpg?width=1280",
+    "sha256": "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b",
+    "size": 533874
+  },
+  "EL_RAILWAY_023": {
+    "filename": "Boston Elevated Railway after the Molasses Flood, January 1919, from the City of Boston Archives - 9800-018-023.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-023.jpg?width=1280",
+    "sha256": "de62d0f89eb14d306d4b2421c4333497f9b059ae2300b395a54633b40db2ed29",
+    "size": 302102
+  },
+  "EL_RAILWAY_052": {
+    "filename": "Boston Elevated Railway after the Molasses Flood, January 1919, from the City of Boston Archives - 9800-018-052.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-052.jpg?width=1280",
+    "sha256": "42ba807a5d8975e6dceecae966cf92fe81a5b64a8aa725ef8e30421fbecb7881",
+    "size": 405478
+  },
+  "GLOBE_JPG_BIG": {
+    "filename": "TheBostonDailyGlobe-frontpage-1919-1-16.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TheBostonDailyGlobe-frontpage-1919-1-16.jpg?width=1280",
+    "sha256": "96f0360da2bc3717c1fd531317b0c8a43ba806bf9197823e271c20390b1c51d4",
+    "size": 1448354
+  },
+  "POST_NEWSPAPER": {
+    "filename": "Boston post-January 16, 1919,.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20post-January%2016%2C%201919%2C.jpg?width=1280",
+    "sha256": "06aeae7b9af8498bfe37f18c25627158a27552ee8254377d1eb7dfb0d23949f9",
+    "size": 747363
+  },
+  "DETAIL_MAP": {
+    "filename": "Boston molasses detail map.png",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20molasses%20detail%20map.png?width=1280",
+    "sha256": "9ea882fd5d5572669a429c9aa0471a2edfb738d8016e814207a9d261c8ba715b",
+    "size": 153847
+  },
+  "HISTORICAL_MARKER": {
+    "filename": "Molasses Flood Historical Marker.jpg",
+    "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Molasses%20Flood%20Historical%20Marker.jpg?width=1280",
+    "sha256": "c2c214021966214822d8e55cef2a5fa6c2586c897bab80f7ade500733cd237ca",
+    "size": 386163
+  }
+}
