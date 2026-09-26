@@ -1,0 +1,33 @@
+name: fetch-trainwheel-diag
+on:
+  workflow_dispatch:
+  push:
+    branches: [content/train-wheel-conicity]
+    paths: [.github/workflows/fetch-trainwheel-diag.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download the failing render's diagnostics artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: shorts-studio-train-wheels-diagnostics
+          run-id: 36243076547
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path: diag
+      - name: Publish diagnostics to an orphan branch via git
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          git checkout --orphan diag/trainwheel-qa-frames
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          find . -mindepth 1 -maxdepth 1 ! -name diag ! -name .git -exec rm -rf {} +
+          git add diag
+          git commit -m "Publish train wheel failing-render QA diagnostics (throwaway)"
+          git push -f origin diag/trainwheel-qa-frames
