@@ -21,6 +21,19 @@ jobs:
               with urllib.request.urlopen(req, timeout=30) as r:
                   return json.load(r)
 
+          def api_retry(params, tries=5):
+              delay = 3.0
+              for attempt in range(tries):
+                  try:
+                      return api(params)
+                  except urllib.error.HTTPError as e:
+                      if e.code == 429 and attempt < tries - 1:
+                          print(f"429, backing off {delay}s...")
+                          time.sleep(delay)
+                          delay *= 2
+                          continue
+                      raise
+
           queries = [
               "Boston Molasses Flood",
               "Boston Molasses Disaster",
@@ -30,28 +43,34 @@ jobs:
           ]
           seen = {}
           for q in queries:
-              data = api({"action": "query", "list": "search", "srsearch": q, "srnamespace": "6", "srlimit": "30", "format": "json"})
+              data = api_retry({"action": "query", "list": "search", "srsearch": q, "srnamespace": "6", "srlimit": "30", "format": "json"})
               for hit in data.get("query", {}).get("search", []):
                   title = hit["title"]
                   seen[title] = seen.get(title, 0) + 1
-              time.sleep(1)
+              time.sleep(2)
 
           # Also pull the category directly -- more reliable than free-text search.
-          cat = api({"action": "query", "list": "categorymembers", "cmtitle": "Category:Boston Molasses Flood", "cmlimit": "200", "cmtype": "file", "format": "json"})
+          cat = api_retry({"action": "query", "list": "categorymembers", "cmtitle": "Category:Boston Molasses Flood", "cmlimit": "200", "cmtype": "file", "format": "json"})
           for m in cat.get("query", {}).get("categorymembers", []):
               seen[m["title"]] = seen.get(m["title"], 0) + 1
 
           titles = sorted(seen.keys())
           print(f"Found {len(titles)} candidate files")
           results = []
-          for title in titles:
-              time.sleep(0.5)
-              info = api({
-                  "action": "query", "titles": title, "prop": "imageinfo",
+
+          # Batch up to 50 titles per call (MediaWiki API max for most props)
+          # instead of one request per title -- avoids the rate limit hit by
+          # 114 sequential single-title requests.
+          BATCH = 50
+          for i in range(0, len(titles), BATCH):
+              chunk = titles[i:i + BATCH]
+              info = api_retry({
+                  "action": "query", "titles": "|".join(chunk), "prop": "imageinfo",
                   "iiprop": "url|size|mime|extmetadata", "format": "json",
               })
               pages = info.get("query", {}).get("pages", {})
               for _, page in pages.items():
+                  title = page.get("title", "")
                   ii = (page.get("imageinfo") or [{}])[0]
                   meta = ii.get("extmetadata", {})
                   results.append({
@@ -65,6 +84,7 @@ jobs:
                       "credit": (meta.get("Credit", {}) or {}).get("value", "")[:300],
                       "licenseshortname": (meta.get("LicenseShortName", {}) or {}).get("value", ""),
                   })
+              time.sleep(2)
 
           with open("molasses_candidates.json", "w", encoding="utf-8") as f:
               json.dump(results, f, ensure_ascii=False, indent=2)
