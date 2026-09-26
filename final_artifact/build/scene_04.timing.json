@@ -1,0 +1,202 @@
+{
+  "source": "korean-speech-planner-v3",
+  "voice": "ko-KR-HyunsuMultilingualNeural",
+  "base_rate": "+12%",
+  "base_pitch": "+0Hz",
+  "volume": "+0%",
+  "units": [
+    {
+      "role": "SECOND_HOOK",
+      "text": "그런데 진짜 이상한 건 커브입니다 기차 바퀴는 같은 축에 고정돼 있습니다.",
+      "rate": "-3%",
+      "base_unit_rate": "+1%",
+      "boundary": "strong_boundary",
+      "focus": true,
+      "speech_features": {
+        "syllables": 30,
+        "eojeol": 11,
+        "focus": true,
+        "phrase_final_lengthening": 1.1,
+        "rate_delta_pct": -4,
+        "f0_intent": "focus_prominence"
+      }
+    },
+    {
+      "role": "TENSION",
+      "text": "그럼 어떻게 커브를 돌까요.",
+      "rate": "+12%",
+      "base_unit_rate": "+12%",
+      "boundary": "strong_boundary",
+      "focus": false,
+      "speech_features": {
+        "syllables": 11,
+        "eojeol": 4,
+        "focus": false,
+        "phrase_final_lengthening": 1.04,
+        "rate_delta_pct": 0,
+        "f0_intent": "continuation_or_terminal"
+      }
+    }
+  ],
+  "gaps_seconds": [
+    0.528
+  ],
+  "raw": [
+    [
+      {
+        "text": "그런데",
+        "start": 0.05,
+        "end": 0.7458750000000001
+      },
+      {
+        "text": "진짜",
+        "start": 0.745875,
+        "end": 1.209791
+      },
+      {
+        "text": "이상한",
+        "start": 1.209791,
+        "end": 1.673707
+      },
+      {
+        "text": "건",
+        "start": 1.673708,
+        "end": 1.879874
+      },
+      {
+        "text": "커브입니다",
+        "start": 1.879916,
+        "end": 3.194332
+      },
+      {
+        "text": "기차",
+        "start": 3.194333,
+        "end": 4.070624
+      },
+      {
+        "text": "바퀴는",
+        "start": 4.070625,
+        "end": 4.676291
+      },
+      {
+        "text": "같은",
+        "start": 4.676291,
+        "end": 5.178874
+      },
+      {
+        "text": "축에",
+        "start": 5.178875,
+        "end": 5.488125
+      },
+      {
+        "text": "고정돼",
+        "start": 5.488125,
+        "end": 5.952041
+      },
+      {
+        "text": "있습니다",
+        "start": 5.952041,
+        "end": 6.905666
+      }
+    ],
+    [
+      {
+        "text": "그럼",
+        "start": 0.0486659,
+        "end": 0.47274889999999997
+      },
+      {
+        "text": "어떻게",
+        "start": 0.47275,
+        "end": 0.997291
+      },
+      {
+        "text": "커브를",
+        "start": 0.997333,
+        "end": 1.399124
+      },
+      {
+        "text": "돌까요",
+        "start": 1.399125,
+        "end": 2.124583
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "그런데",
+      "start": 0.0,
+      "end": 0.5050000000000001
+    },
+    {
+      "text": "진짜",
+      "start": 0.5049999999999999,
+      "end": 0.9689160000000001
+    },
+    {
+      "text": "이상한",
+      "start": 0.9689160000000001,
+      "end": 1.432832
+    },
+    {
+      "text": "건",
+      "start": 1.432833,
+      "end": 1.638999
+    },
+    {
+      "text": "커브입니다",
+      "start": 1.639041,
+      "end": 2.953457
+    },
+    {
+      "text": "기차",
+      "start": 2.953458,
+      "end": 3.8297489999999996
+    },
+    {
+      "text": "바퀴는",
+      "start": 3.8297499999999998,
+      "end": 4.435416
+    },
+    {
+      "text": "같은",
+      "start": 4.435416,
+      "end": 4.9379990000000005
+    },
+    {
+      "text": "축에",
+      "start": 4.938,
+      "end": 5.24725
+    },
+    {
+      "text": "고정돼",
+      "start": 5.24725,
+      "end": 5.711166
+    },
+    {
+      "text": "있습니다.",
+      "start": 5.711166,
+      "end": 6.664791
+    },
+    {
+      "text": "그럼",
+      "start": 7.247999999999999,
+      "end": 7.563498899999999
+    },
+    {
+      "text": "어떻게",
+      "start": 7.5634999999999994,
+      "end": 8.088040999999999
+    },
+    {
+      "text": "커브를",
+      "start": 8.088083,
+      "end": 8.489874
+    },
+    {
+      "text": "돌까요.",
+      "start": 8.489875,
+      "end": 9.215333
+    }
+  ]
+}
