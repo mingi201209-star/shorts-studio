@@ -1,0 +1,97 @@
+name: Scout real aftermath/legacy sources for Radium Girls ending (throwaway)
+on:
+  push:
+    branches: [claude/shorts-studio-production-5cvg1r]
+    paths: [.github/workflows/scout-legacy-sources.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  scout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Search for real aftermath/legacy material (safety standards, settlement, Robley Evans)
+        run: |
+          set -o pipefail
+          pip install requests >/dev/null
+          python3 - <<'PY'
+          import json, requests
+
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          COMMONS = "https://commons.wikimedia.org/w/api.php"
+
+          queries = [
+              "Robley Evans radium",
+              "Robley D. Evans physicist",
+              "maximum permissible amount radium",
+              "radium tolerance dose",
+              "National Bureau of Standards Handbook radium",
+              "radium dial painters settlement 1928",
+              "Radium Girls settlement newspaper",
+              "radiation protection standard history",
+          ]
+          results = {}
+          for q in queries:
+              r = requests.get(COMMONS, params={
+                  "action": "query", "list": "search", "srsearch": q,
+                  "srnamespace": "6", "srlimit": "10", "format": "json",
+              }, headers=HEADERS, timeout=20)
+              hits = [h["title"] for h in r.json().get("query", {}).get("search", [])]
+              results[q] = hits
+              print(q, "->", hits)
+
+          titles = sorted({t for hits in results.values() for t in hits})
+          out = []
+          if titles:
+              r = requests.get(COMMONS, params={
+                  "action": "query", "titles": "|".join(titles[:40]), "prop": "imageinfo",
+                  "iiprop": "url|size|mime", "iiurlwidth": "800", "format": "json",
+              }, headers=HEADERS, timeout=20)
+              for p in r.json().get("query", {}).get("pages", {}).values():
+                  info = p.get("imageinfo")
+                  if info:
+                      out.append({
+                          "title": p.get("title"), "url": info[0].get("url"),
+                          "thumburl": info[0].get("thumburl"), "mime": info[0].get("mime"),
+                          "width": info[0].get("width"), "height": info[0].get("height"),
+                      })
+          json.dump({"search_results": results, "candidates": out}, open("results.json", "w"), indent=2)
+          PY
+      - name: Also enumerate every image on NIST's Radium Girls feature page
+        run: |
+          python3 - <<'PY'
+          import json, re, requests
+          HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
+          candidates = [
+              "https://www.nist.gov/blogs/taking-measure/radium-girls",
+              "https://www.nist.gov/pml/owm/radium-girls",
+              "https://www.nist.gov/feature-stories/radium-girls",
+          ]
+          found = {}
+          for url in candidates:
+              try:
+                  r = requests.get(url, headers=HEADERS, timeout=20)
+                  found[url] = {"status": r.status_code}
+                  if r.status_code == 200:
+                      imgs = sorted(set(re.findall(r'src="([^"]+/sites/default/files/images/[^"]+)"', r.text)))
+                      found[url]["images"] = imgs
+                      print(url, "OK,", len(imgs), "images")
+                      for i in imgs:
+                          print("  ", i)
+              except Exception as e:
+                  found[url] = {"error": str(e)}
+                  print(url, "FAILED:", e)
+          json.dump(found, open("nist_pages.json", "w"), indent=2)
+          PY
+      - name: Publish to a throwaway orphan branch
+        run: |
+          git config user.name "legacy-scout-bot"
+          git config user.email "actions@github.com"
+          git checkout --orphan scout/legacy-sources
+          git reset --hard
+          git add results.json nist_pages.json
+          git commit -m "Throwaway: candidate real aftermath/legacy sources for review"
+          git push -f origin HEAD:refs/heads/scout/legacy-sources
