@@ -1,0 +1,80 @@
+{
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton%2C%20April%209th%20of%201912.jpg": {
+    "sha256": "8577ba037b1b04f3c83a1c12c18349b1dddc0ecc23a23509c1933b9065880cb3",
+    "size": 421371,
+    "preview": "existing_0.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg": {
+    "sha256": "fca7b5f7342f711ea574f04f0f8ed82efa27d33cf1f8d2ecbf19955a2d99ade9",
+    "size": 198763,
+    "preview": "existing_1.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png": {
+    "sha256": "2bab8656694f9a7c4e5ab3b6100f68671af5ee34dddc46af80ca31807e65e1ea",
+    "size": 571376,
+    "preview": "existing_2.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg": {
+    "sha256": "6d5d2dedf6b0601aff27cc469558f54cab9970901a5a1341e11d87418c17bfb4",
+    "size": 508497,
+    "preview": "existing_3.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20being%20fitted%20out%20at%20Harland%20and%20Wolff%20in%20Belfast%2C%20Ireland%2C%20with%20three%20funnels.jpg": {
+    "sha256": "becfd0f16f2d20b093981e209a76c90b6633e3194bae53cff3982407a4c9a495",
+    "size": 216962,
+    "preview": "existing_4.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20launched%20at%20Belfast.jpg": {
+    "sha256": "010d82241bb6ab71c29987de702896059f940bb8b516de78ba5452cd31746760",
+    "size": 265341,
+    "preview": "existing_5.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20and%20RMS%20Olympic%20under%20construction%20at%20Harland%20%26%20Wolff%20shipyards%2C%20Belfast%2C%20ca.%201910%20%283015565255%29.jpg": {
+    "sha256": "b4e0f5658d11a0f670d90ba32aeacfd38bb0946e9d3e12badd2357a31817b9f8",
+    "size": 498096,
+    "preview": "existing_6.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20sea%20trials%20April%202%2C%201912.jpg": {
+    "sha256": "428f3517c815706041abf60825817b25cfeae1b98b8d78b5895f314982a718c6",
+    "size": 277395,
+    "preview": "existing_7.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20in%20Southampton.jpg": {
+    "sha256": "576fb0a0dbc11d3eba514f5dbd7b6e170b0ce6dc20430a5dab18b6802e3060de",
+    "size": 268592,
+    "preview": "existing_8.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20passenger%20liner%20in%20Southampton.jpg": {
+    "sha256": "a3c6efa6508b508a6377a13b1b08d9a30fa11566c01aab5ead603d86091b06c6",
+    "size": 418234,
+    "preview": "existing_9.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Sea%20Trials%202%20April%201912.jpg": {
+    "sha256": "f354f61cec1e5102688be794183b573da4eb358f0f1db482d06ed65df5751aee",
+    "size": 292944,
+    "preview": "existing_10.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20leaving%2044%20port%20place%20in%20Southampton.png": {
+    "sha256": "81aa7c45f87d758c97ebe4614894766e0eb234f80f52e9219fd68405fdecde6e",
+    "size": 112838,
+    "preview": "existing_11.jpg",
+    "status": "ok"
+  },
+  "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton.png": {
+    "sha256": "301a08267e49b3abff2151c974c040fd509e749a9a6204e89d930be997230286",
+    "size": 281910,
+    "preview": "existing_12.jpg",
+    "status": "ok"
+  }
+}
