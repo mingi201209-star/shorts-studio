@@ -187,8 +187,8 @@ def test_no_event_claims_rolling_radius_is_the_sole_explanation():
     difference is the ONLY mechanism -- it must acknowledge other real
     factors (creep, suspension) exist, per Phase 2 section 7's guardrails."""
     project = _load_pilot_project()
-    payoff_scene = next(s for s in project.scenes if s.id == "s_payoff")
-    full_text = " ".join(p.text for p in payoff_scene.narration_plan)
+    payoff_scenes = [s for s in project.scenes if s.id in ("s_payoff1", "s_payoff2")]
+    full_text = " ".join(p.text for s in payoff_scenes for p in s.narration_plan)
     assert "크리프" in full_text or "서스펜션" in full_text
     assert "유일" not in full_text and "오직" not in full_text
 

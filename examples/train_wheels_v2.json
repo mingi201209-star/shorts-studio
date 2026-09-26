@@ -103,15 +103,24 @@
       "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
     },
     {
-      "id": "s_resolution1_seed",
-      "narration": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다. 그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
+      "id": "s_resolution1",
+      "narration": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다.",
       "visual_description": "커브를 도는 바퀴 전체 샷, 플랜지가 화면 한쪽에 자연스럽게 보임",
       "narration_plan": [
         {
           "role": "EXPLANATION",
           "text": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다.",
           "focus": false
-        },
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+    },
+    {
+      "id": "s_seed_flange",
+      "narration": "그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
+      "visual_description": "커브를 도는 바퀴 전체 샷, 플랜지가 화면 한쪽에 자연스럽게 보임",
+      "narration_plan": [
         {
           "role": "EXPLANATION",
           "text": "그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
@@ -121,29 +130,33 @@
       "factual_notes": [
         "플랜지는 바퀴 안쪽에 튀어나온 테두리 형태로 존재한다"
       ],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
       "visual_beats": [
         {
           "start": 0,
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
-        },
-        {
-          "start": 2.5,
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
-          "info_role": "flange_seed_visual"
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
         }
       ]
     },
     {
-      "id": "s_relay_gap2",
-      "narration": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요? 그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
+      "id": "s_relay",
+      "narration": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요?",
       "visual_description": "플랜지 부분 클로즈업, 레일과의 간격을 보여줌",
       "narration_plan": [
         {
           "role": "INVESTIGATION",
           "text": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요?",
           "focus": false
-        },
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+    },
+    {
+      "id": "s_gap2",
+      "narration": "그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
+      "visual_description": "플랜지 부분 클로즈업, 레일과의 간격을 보여줌",
+      "narration_plan": [
         {
           "role": "INVESTIGATION",
           "text": "그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
@@ -151,7 +164,7 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
     },
     {
       "id": "s_violation2",
@@ -167,7 +180,7 @@
       "factual_notes": [
         "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
       ],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
     },
     {
       "id": "s_resolution2",
@@ -184,15 +197,24 @@
       "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
     },
     {
-      "id": "s_payoff",
-      "narration": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다. 물론 실제 주행에는 크리프나 서스펜션 같은 다른 요소도 함께 작용하지만, 오늘 다룬 반지름 차이가 그 핵심 원리 중 하나입니다.",
+      "id": "s_payoff1",
+      "narration": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다.",
       "visual_description": "커브를 부드럽게 통과하는 기차 전체 샷",
       "narration_plan": [
         {
           "role": "PAYOFF",
           "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다.",
           "focus": true
-        },
+        }
+      ],
+      "factual_notes": [],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+    },
+    {
+      "id": "s_payoff2",
+      "narration": "물론 실제 주행에는 크리프나 서스펜션 같은 다른 요소도 함께 작용하지만, 오늘 다룬 반지름 차이가 그 핵심 원리 중 하나입니다.",
+      "visual_description": "커브를 부드럽게 통과하는 기차 전체 샷",
+      "narration_plan": [
         {
           "role": "PAYOFF",
           "text": "물론 실제 주행에는 크리프나 서스펜션 같은 다른 요소도 함께 작용하지만, 오늘 다룬 반지름 차이가 그 핵심 원리 중 하나입니다.",
@@ -200,7 +222,7 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
     }
   ],
   "strict_retention_contract": false,
@@ -283,10 +305,9 @@
         "id": "resolution1",
         "type": "RESOLUTION",
         "critical": true,
-        "scene_id": "s_resolution1_seed",
+        "scene_id": "s_resolution1",
         "narration_unit_index": 0,
         "resolves": "gap1",
-        "visual_beat_index": 0,
         "text": "그래서 같은 회전수를 돌아도 바깥쪽 바퀴가 더 큰 원을 그리며 더 먼 거리를 이동할 수 있는 겁니다.",
         "grounded_claim_refs": []
       },
@@ -294,9 +315,9 @@
         "id": "seed_flange",
         "type": "CLAIM",
         "critical": true,
-        "scene_id": "s_resolution1_seed",
-        "narration_unit_index": 1,
-        "visual_beat_index": 1,
+        "scene_id": "s_seed_flange",
+        "narration_unit_index": 0,
+        "visual_beat_index": 0,
         "text": "그런데 화면에 계속 보이는 이 튀어나온 부분은 사실 지금까지 설명에 등장하지 않았습니다.",
         "grounded_claim_refs": []
       },
@@ -304,7 +325,7 @@
         "id": "relay1",
         "type": "RELAY",
         "critical": false,
-        "scene_id": "s_relay_gap2",
+        "scene_id": "s_relay",
         "narration_unit_index": 0,
         "text": "혹시 이 돌출된 부분이 커브에서 방향을 잡아주는 걸까요?",
         "grounded_claim_refs": []
@@ -313,8 +334,8 @@
         "id": "gap2",
         "type": "GAP",
         "critical": true,
-        "scene_id": "s_relay_gap2",
-        "narration_unit_index": 1,
+        "scene_id": "s_gap2",
+        "narration_unit_index": 0,
         "text": "그렇다면 이 부분이 실제로 조향을 담당하는 부품일까요?",
         "grounded_claim_refs": [
           "claim_flange_visible"
@@ -345,7 +366,7 @@
         "id": "payoff1",
         "type": "PAYOFF",
         "critical": true,
-        "scene_id": "s_payoff",
+        "scene_id": "s_payoff1",
         "narration_unit_index": 0,
         "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 아주 작은 기울기 차이였습니다.",
         "grounded_claim_refs": []
