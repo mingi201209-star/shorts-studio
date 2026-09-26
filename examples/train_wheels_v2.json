@@ -14,7 +14,41 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        }
+      ]
     },
     {
       "id": "s_constraint",
@@ -30,7 +64,41 @@
       "factual_notes": [
         "두 바퀴는 하나의 차축에 고정되어 함께 회전한다"
       ],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        }
+      ]
     },
     {
       "id": "s_violation1",
@@ -44,7 +112,37 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        }
+      ]
     },
     {
       "id": "s_gap1",
@@ -58,7 +156,33 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        }
+      ]
     },
     {
       "id": "s_clue1",
@@ -72,7 +196,41 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        }
+      ]
     },
     {
       "id": "s_clue2",
@@ -86,7 +244,41 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        }
+      ]
     },
     {
       "id": "s_reveal",
@@ -100,7 +292,53 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 14.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 16.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 18.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        }
+      ]
     },
     {
       "id": "s_resolution1",
@@ -114,7 +352,41 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        }
+      ]
     },
     {
       "id": "s_seed_flange",
@@ -133,7 +405,31 @@
       "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
       "visual_beats": [
         {
-          "start": 0,
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 10.8,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
         }
       ]
@@ -150,7 +446,29 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        }
+      ]
     },
     {
       "id": "s_gap2",
@@ -164,7 +482,29 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        }
+      ]
     },
     {
       "id": "s_violation2",
@@ -180,7 +520,45 @@
       "factual_notes": [
         "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
       ],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 14.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        }
+      ]
     },
     {
       "id": "s_resolution2",
@@ -194,7 +572,53 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 14.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 16.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 18.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        }
+      ]
     },
     {
       "id": "s_payoff1",
@@ -208,7 +632,49 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 14.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 16.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        }
+      ]
     },
     {
       "id": "s_payoff2",
@@ -222,7 +688,49 @@
         }
       ],
       "factual_notes": [],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 1.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 3.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 5.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 7.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 9.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        },
+        {
+          "start": 10.8,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png"
+        },
+        {
+          "start": 12.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Railway_wheel_an_outline.png"
+        },
+        {
+          "start": 14.4,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Drawing_--_railway_wheel_and_rail_profiles.png"
+        },
+        {
+          "start": 16.2,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheel_and_rail_central_running.gif"
+        }
+      ]
     }
   ],
   "strict_retention_contract": false,
@@ -389,5 +897,6 @@
         "source_ref": "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
       }
     ]
-  }
+  },
+  "overlay_title": "기차 바퀴는 왜 안 꺾일까?"
 }
