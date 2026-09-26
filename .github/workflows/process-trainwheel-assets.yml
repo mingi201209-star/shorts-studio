@@ -1,0 +1,83 @@
+name: process-trainwheel-assets
+on:
+  workflow_dispatch:
+  push:
+    branches: [content/train-wheel-conicity]
+    paths: [.github/workflows/process-trainwheel-assets.yml]
+
+permissions:
+  contents: write
+
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install rsvg-convert and Pillow
+        run: |
+          sudo apt-get update && sudo apt-get install -y librsvg2-bin
+          pip install pillow
+      - name: Fetch and reprocess the sparse transparent diagrams onto white
+        run: |
+          set -e
+          mkdir -p assets/train_wheels
+          declare -A FILES=(
+            [rail_vehicle_wheelset]="https://commons.wikimedia.org/wiki/Special:Redirect/file/Rail_vehicle_wheelset.png"
+            [wheelset_schematic]="https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset.svg"
+            [curve_wheelset_vs_single]="https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves.svg"
+            [curve_single_wheels]="https://commons.wikimedia.org/wiki/Special:Redirect/file/Wheelset_vs_single_wheels_in_curves%3B_single_wheels.svg"
+            [einfacher_laufradsatz]="https://commons.wikimedia.org/wiki/Special:Redirect/file/Einfacher_Laufradsatz.svg"
+          )
+          for name in "${!FILES[@]}"; do
+            url="${FILES[$name]}"
+            ext="${url##*.}"
+            ext="${ext%%\%*}"
+            raw="raw_${name}.${ext}"
+            curl -sSL -A "shorts-studio/0.1 (asset reprocess)" "$url" -o "$raw"
+            echo "=== $name ($url) -> $raw ($(stat -c%s "$raw") bytes) ==="
+            if [ "$ext" = "svg" ]; then
+              rsvg-convert -w 1600 "$raw" -o "raster_${name}.png"
+            else
+              cp "$raw" "raster_${name}.png"
+            fi
+            python3 - "$name" "raster_${name}.png" "assets/train_wheels/${name}.png" <<'PY'
+          import sys
+          from PIL import Image
+          name, src, dst = sys.argv[1], sys.argv[2], sys.argv[3]
+          img = Image.open(src).convert("RGBA")
+          alpha = img.split()[-1]
+          # crop tight to the actual drawn content (non-transparent pixels),
+          # falling back to the full canvas if there's no alpha variation
+          bbox = alpha.getbbox()
+          if bbox:
+              pad = 20
+              l, t, r, b = bbox
+              l = max(0, l - pad); t = max(0, t - pad)
+              r = min(img.width, r + pad); b = min(img.height, b + pad)
+              img = img.crop((l, t, r, b))
+          flattened = Image.new("RGB", img.size, (255, 255, 255))
+          flattened.paste(img, mask=img.split()[-1])
+          flattened.save(dst, "PNG")
+          print(f"{name}: {dst} size={flattened.size}")
+          PY
+          done
+          ls -la assets/train_wheels/
+      - name: Commit reprocessed assets to the branch
+        run: |
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
+          git add assets/train_wheels/
+          git commit -m "Reprocess sparse-transparent train wheel diagrams onto white
+
+          These 5 Wikimedia SVG/PNG sources have mostly-transparent
+          backgrounds; the render pipeline correctly flattens transparency
+          to black per the outside-picture-stays-black rule, but these
+          particular diagrams are thin-line/sparse enough that flattening
+          to black leaves the whole frame under ClarityVisionProvider's
+          MIN_MEAN=8 floor (measured mean 2-8 on the real failing render).
+          Flattening the same real, correctly-attributed source content
+          onto white instead (matching how these diagrams normally look)
+          and cropping tight to the drawn bounding box fixes the exposure
+          floor without touching the render engine." || echo "nothing to commit"
+          git push origin content/train-wheel-conicity
