@@ -75,7 +75,7 @@
           "info_role": "immediate_rescue_scene"
         },
         {
-          "start": 3.5,
+          "start": 3.49,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-023.jpg?width=1280",
           "attribution": "City of Boston Archives / public domain",
           "motion": {
@@ -99,7 +99,7 @@
           "info_role": "elevated_structure_bent"
         },
         {
-          "start": 5.25,
+          "start": 5.24,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-052.jpg?width=1280",
           "attribution": "City of Boston Archives / public domain",
           "motion": {
@@ -185,7 +185,7 @@
           "info_role": "tank_looked_mundane"
         },
         {
-          "start": 2.42,
+          "start": 2.61,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Molasses%20Flood%20Aftermath%20%28original%20tank%20scale%20superimposed%29.png?width=1280",
           "attribution": "Wikimedia Commons, CC BY-SA 4.0",
           "motion": {
@@ -209,7 +209,7 @@
           "info_role": "tank_actual_scale_50x90ft"
         },
         {
-          "start": 4.85,
+          "start": 5.23,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%2C%20Mass.%20Boston%20molasses%20explosion%2014968a.jpg?width=1280",
           "attribution": "Library of Congress / public domain",
           "motion": {
@@ -233,7 +233,7 @@
           "info_role": "scale_of_ignored_risk"
         },
         {
-          "start": 7.27,
+          "start": 7.84,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/GreatMolassesFlood%201919-Wreckage%20under%20the%20elevated%20tracks.jpg?width=1280",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
@@ -324,7 +324,7 @@
           "info_role": "structural_damage_reassessed"
         },
         {
-          "start": 3.23,
+          "start": 2.79,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/North%20End%20molasses%20tank.jpg?width=1280",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
@@ -348,7 +348,7 @@
           "info_role": "leak_history_recalled"
         },
         {
-          "start": 6.45,
+          "start": 5.59,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Molasses%20Flood%20Aftermath%20%28original%20tank%20scale%20superimposed%29.png?width=1280",
           "attribution": "Wikimedia Commons, CC BY-SA 4.0",
           "motion": {
@@ -372,7 +372,7 @@
           "info_role": "damage_extent_confirmed"
         },
         {
-          "start": 9.68,
+          "start": 8.38,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-052.jpg?width=1280",
           "attribution": "City of Boston Archives / public domain",
           "motion": {
@@ -394,6 +394,30 @@
             "42ba807a5d8975e6dceecae966cf92fe81a5b64a8aa725ef8e30421fbecb7881"
           ],
           "info_role": "investigators_arrive"
+        },
+        {
+          "start": 11.17,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%2C%20Mass.%20Boston%20molasses%20explosion%2014968a.jpg?width=1280",
+          "attribution": "Library of Congress / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1919년 보스턴 당밀 참사 현장의 실제 항공 사진: 무너진 건물과 잔해로 뒤덮인 거리가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "aerial archival photograph of the 1919 Boston Molasses Disaster aftermath showing widespread wreckage"
+          ],
+          "visual_qa_negative_labels": [
+            "cartoon",
+            "AI generated image",
+            "modern stock photo",
+            "movie still"
+          ],
+          "visual_qa_expected_sha256": [
+            "b6f649681a15c67b352068981d041f81b4375d17263eabad4bdef291ff115183"
+          ],
+          "info_role": "full_scope_from_above"
         }
       ],
       "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-023.jpg?width=1280",
@@ -435,16 +459,16 @@
       "visual_beats": [
         {
           "start": 0.0,
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%2C%20Mass.%20Boston%20molasses%20explosion%2014968a.jpg?width=1280",
-          "attribution": "Library of Congress / public domain",
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/GreatMolassesFlood%201919-Wreckage%20under%20the%20elevated%20tracks.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1919년 보스턴 당밀 참사 현장의 실제 항공 사진: 무너진 건물과 잔해로 뒤덮인 거리가 보여야 함"
+            "무너진 고가철도 구조물 아래에서 소방관들이 잔해를 수색하는 실제 사진이 보여야 함"
           ],
           "visual_qa_labels": [
-            "aerial archival photograph of the 1919 Boston Molasses Disaster aftermath showing widespread wreckage"
+            "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood"
           ],
           "visual_qa_negative_labels": [
             "cartoon",
@@ -453,12 +477,12 @@
             "movie still"
           ],
           "visual_qa_expected_sha256": [
-            "b6f649681a15c67b352068981d041f81b4375d17263eabad4bdef291ff115183"
+            "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b"
           ],
-          "info_role": "full_scope_realized"
+          "info_role": "rescue_effort_recalled_as_cause_context"
         },
         {
-          "start": 2.73,
+          "start": 2.71,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Elevated%20Railway%20after%20the%20Molasses%20Flood%2C%20January%201919%2C%20from%20the%20City%20of%20Boston%20Archives%20-%209800-018-023.jpg?width=1280",
           "attribution": "City of Boston Archives / public domain",
           "motion": {
@@ -482,7 +506,7 @@
           "info_role": "structural_failure_point"
         },
         {
-          "start": 5.45,
+          "start": 5.41,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/North%20End%20molasses%20tank.jpg?width=1280",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
@@ -506,7 +530,7 @@
           "info_role": "tank_never_tested"
         },
         {
-          "start": 8.18,
+          "start": 8.12,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20Molasses%20Flood%20Aftermath%20%28original%20tank%20scale%20superimposed%29.png?width=1280",
           "attribution": "Wikimedia Commons, CC BY-SA 4.0",
           "motion": {
@@ -530,13 +554,13 @@
           "info_role": "warm_weather_pressure_spike"
         }
       ],
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%2C%20Mass.%20Boston%20molasses%20explosion%2014968a.jpg?width=1280",
-      "attribution": "Library of Congress / public domain",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/GreatMolassesFlood%201919-Wreckage%20under%20the%20elevated%20tracks.jpg?width=1280",
+      "attribution": "Wikimedia Commons / public domain",
       "visual_qa_requirements": [
-        "1919년 보스턴 당밀 참사 현장의 실제 항공 사진: 무너진 건물과 잔해로 뒤덮인 거리가 보여야 함"
+        "무너진 고가철도 구조물 아래에서 소방관들이 잔해를 수색하는 실제 사진이 보여야 함"
       ],
       "visual_qa_labels": [
-        "aerial archival photograph of the 1919 Boston Molasses Disaster aftermath showing widespread wreckage"
+        "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood"
       ],
       "visual_qa_negative_labels": [
         "cartoon",
@@ -597,7 +621,31 @@
           "info_role": "cause_officially_determined"
         },
         {
-          "start": 3.36,
+          "start": 3.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/GreatMolassesFlood%201919-Wreckage%20under%20the%20elevated%20tracks.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "무너진 고가철도 구조물 아래에서 소방관들이 잔해를 수색하는 실제 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "real photograph of firefighters searching wreckage beneath a collapsed elevated railway structure after the 1919 Boston molasses flood"
+          ],
+          "visual_qa_negative_labels": [
+            "cartoon",
+            "AI generated image",
+            "modern stock photo",
+            "movie still"
+          ],
+          "visual_qa_expected_sha256": [
+            "223b852734066843682c6a502fffb02465acd234c00c3f47e8af00a55cd48c8b"
+          ],
+          "info_role": "human_cost_recalled_before_verdict"
+        },
+        {
+          "start": 6.0,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/TheBostonDailyGlobe-frontpage-1919-1-16.jpg?width=1280",
           "attribution": "Boston Daily Globe / public domain",
           "motion": {
@@ -621,7 +669,7 @@
           "info_role": "press_reported_2_3_million_gallons"
         },
         {
-          "start": 6.72,
+          "start": 8.99,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20molasses%20detail%20map.png?width=1280",
           "attribution": "Wikimedia Commons / public domain",
           "motion": {
@@ -645,7 +693,7 @@
           "info_role": "commercial_street_north_end_location"
         },
         {
-          "start": 10.08,
+          "start": 11.99,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Boston%20post-January%2016%2C%201919%2C.jpg?width=1280",
           "attribution": "Boston Post / public domain",
           "motion": {
@@ -669,7 +717,7 @@
           "info_role": "lawsuit_company_held_responsible"
         },
         {
-          "start": 13.44,
+          "start": 14.99,
           "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Molasses%20Flood%20Historical%20Marker.jpg?width=1280",
           "attribution": "Wikimedia Commons, CC BY-SA 3.0",
           "motion": {
