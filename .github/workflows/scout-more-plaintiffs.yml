@@ -1,8 +1,8 @@
-name: Scout a real 1928 trial/courtroom photo (throwaway)
+name: Scout other named plaintiffs and Harrison Martland (throwaway)
 on:
   push:
     branches: [claude/shorts-studio-production-5cvg1r]
-    paths: [.github/workflows/scout-trial-photo.yml]
+    paths: [.github/workflows/scout-more-plaintiffs.yml]
 
 permissions:
   contents: write
@@ -13,7 +13,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Search for real courtroom/trial/settlement photos
+      - name: Search for other plaintiffs' portraits and Harrison Martland
         run: |
           set -o pipefail
           pip install requests >/dev/null
@@ -22,12 +22,12 @@ jobs:
           HEADERS = {"User-Agent": "shorts-studio-scout/1.0 (https://github.com/mingi201209-star/shorts-studio; one-off research script)"}
           COMMONS = "https://commons.wikimedia.org/w/api.php"
           queries = [
-              "Grace Fryer trial",
-              "radium girls courtroom",
-              "radium dial painters lawyer Raymond Berry",
-              "Grace Fryer Quinta McDonald Katherine Schaub Albina Larice Edna Hussman",
-              "radium girls plaintiffs 1928",
-              "New Jersey radium case witness stand",
+              "Katherine Schaub",
+              "Edna Hussman",
+              "Quinta McDonald",
+              "Albina Larice",
+              "Harrison Martland",
+              "Harrison Stanford Martland pathologist",
           ]
           results = {}
           for q in queries:
@@ -49,14 +49,14 @@ jobs:
                   info = p.get("imageinfo")
                   if info:
                       out.append({"title": p.get("title"), "url": info[0].get("url"), "thumburl": info[0].get("thumburl"), "mime": info[0].get("mime")})
-          json.dump({"search_results": results, "candidates": out}, open("trial_results.json", "w"), indent=2)
+          json.dump({"search_results": results, "candidates": out}, open("plaintiffs_results.json", "w"), indent=2)
           PY
       - name: Publish to a throwaway orphan branch
         run: |
-          git config user.name "trial-scout-bot"
+          git config user.name "plaintiffs-scout-bot"
           git config user.email "actions@github.com"
-          git checkout --orphan scout/trial-photo
+          git checkout --orphan scout/more-plaintiffs
           git reset --hard
-          git add trial_results.json
-          git commit -m "Throwaway: candidate real trial/courtroom photos"
-          git push -f origin HEAD:refs/heads/scout/trial-photo
+          git add plaintiffs_results.json
+          git commit -m "Throwaway: candidate portraits of other named plaintiffs / Martland"
+          git push -f origin HEAD:refs/heads/scout/more-plaintiffs
