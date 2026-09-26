@@ -681,12 +681,62 @@ def verify_narration_continuity(video: Path, max_silence_seconds: float = 1.5) -
 # ---------------------------------------------------------------------------
 # Retention-engine contracts (opt-in via Project.strict_retention_contract):
 # First-Second Hook, Information Change, Story Progression, Ending Payoff,
-# and Runtime Discipline. All of these are script-level -- they only look at
-# the manifest (`project`), never the rendered video -- so they can run
-# BEFORE spending a real render, exactly like verify_source_budget above,
-# and are re-reported in the final qa_report.json for the same reason the
-# source-diversity metrics are: a human reading the report should be able to
-# see the whole retention picture without re-deriving it.
+# and Runtime Discipline (the last of these currently means near-duplicate-
+# narration detection only -- see verify_no_redundant_narration and
+# Project.strict_retention_contract's docstring; there is no video-length
+# gate under this or any name). All of these are script-level -- they only
+# look at the manifest (`project`), never the rendered video -- so they can
+# run BEFORE spending a real render, exactly like verify_source_budget
+# above, and are re-reported in the final qa_report.json for the same
+# reason the source-diversity metrics are: a human reading the report
+# should be able to see the whole retention picture without re-deriving it.
+#
+# KNOWN LIMITATION (documented, not fixed here -- Phase 0 of the
+# retention-foundation integration audited this contract with real
+# adversarial fixtures run against these exact functions, not
+# hypothesized): every check below trusts author-DECLARED metadata --
+# a NarrationPhrase.role string, a hook_type enum value, a
+# VisualBeat.info_role label -- without verifying it against the real
+# narration/visual CONTENT. Demonstrated concretely:
+#   - a role="PAYOFF" phrase whose text is not actually a payoff PASSES
+#     verify_ending_payoff_role
+#   - two info_role labels that differ while the beats' actual described
+#     content is identical PASS verify_information_progression
+#   - hook_type="contradiction" declared on a sentence that contains only
+#     a danger word (no contradiction at all) PASSES verify_hook_opener,
+#     because the declared type is never cross-checked against which
+#     tension-marker category actually fired in the text
+#   - four relabeled-but-narratively-flat scenes PASS verify_story_progression
+#   - a well-paraphrased restatement with near-zero lexical overlap PASSES
+#     verify_no_redundant_narration (retention_rules.is_near_duplicate_text
+#     is a token-overlap heuristic, not a semantic-equivalence judge)
+# The one exception is the First-10s Retention Contract's visual-proof
+# check, which uses REAL synthesized narration timing and REAL measured
+# visual-cut timestamps rather than any author-declared value -- it has no
+# metadata surface to game the same way.
+#
+# This layer is kept anyway: it is a cheap, deterministic, zero-network,
+# zero-model-call early filter that catches a real class of defects (a
+# missing hook, an unlabeled ending, a flat undifferentiated script) before
+# a render is ever attempted. It is Layer 1 of a planned four-layer
+# architecture:
+#   Layer 1 -- this module's retention contracts (cheap, deterministic)
+#   Layer 2 -- Psychological Entertainment Contract (planned, not yet
+#              implemented): a Declared Event Graph (CLAIM/GAP/CLUE/REVEAL/
+#              RESOLUTION/PAYOFF) cross-checked against Observed Event
+#              Evidence (real narration timing, real visual cuts, an
+#              evidence-quoting semantic judge) -- this is what closes the
+#              gaps documented above, by verifying declarations against
+#              reality instead of trusting the label
+#   Layer 3 -- existing technical/visual/subtitle/final-video QA (this
+#              module's non-retention checks, visual_qa.py, qa.py)
+#   Layer 4 -- human review (see the Phase 0/PEC design report for what
+#              can never be automated: joke landing, visual "cheapness",
+#              TTS delivery quality, audience-fit, cultural misfires)
+# A PASS from strict_retention_contract is a Layer-1 result only. Never
+# report it as proof a video is entertaining, well-paced, or "fun verified"
+# -- see also the module-level warning above this section about real
+# post-publish channel data on videos that passed every check here.
 # ---------------------------------------------------------------------------
 
 def _first_narration_phrase_text(scene) -> str:
