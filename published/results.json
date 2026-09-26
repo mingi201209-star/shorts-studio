@@ -1,0 +1,171 @@
+{
+  "results": {
+    "TANK_BEFORE": {
+      "filename": "North End molasses tank.jpg",
+      "sha256": "18413d829874c81d4282e2fab0b58ecf5fa0c8c77c5a8953227a4cf928acf81c",
+      "dhash": "07c7e367bf67e785",
+      "size": 33262,
+      "wh": [
+        417,
+        327
+      ]
+    },
+    "TANK_SCALE_DIAGRAM": {
+      "filename": "Boston Molasses Flood Aftermath (original tank scale superimposed).png",
+      "sha256": "92926e0f8ebfbcac516464ef8fa7d63b94df703e402af42e0a20fa25ed38d52c",
+      "dhash": "00414c48403ca59f",
+      "size": 217481,
+      "wh": [
+        960,
+        538
+      ]
+    },
+    "MAIN_PHOTO_A": {
+      "filename": "BostonMolassesDisaster.jpg",
+      "sha256": "10a1cf13d66329a889a4a0e184070c3c3441d339c69495f314147112e11a31f4",
+      "dhash": "0109c870a197925b",
+      "size": 414855,
+      "wh": [
+        960,
+        764
+      ]
+    },
+    "MAIN_PHOTO_B": {
+      "filename": "MolassesDisaster.jpg",
+      "sha256": "59834982e805645001da02f42af6fa5283dcb8939b135d52279a7038b8f54923",
+      "dhash": "0109c870a197925b",
+      "size": 414871,
+      "wh": [
+        960,
+        764
+      ]
+    },
+    "MAIN_PHOTO_C": {
+      "filename": "Boston, Mass. Boston molasses explosion 14968a.jpg",
+      "sha256": "1731b5b6b4badcf4af690e6ab96994cf87baabc43191f4acee59b64ecfa9e503",
+      "dhash": "d8d9b115253262ee",
+      "size": 229165,
+      "wh": [
+        960,
+        694
+      ]
+    },
+    "WRECKAGE_UNDER_TRACKS": {
+      "filename": "GreatMolassesFlood 1919-Wreckage under the elevated tracks.jpg",
+      "sha256": "2df4c69735ac34e952565d2ecc2ee675e39437b57dfbd5b5a9c1506ea73d7451",
+      "dhash": "810f3b4e5b072f2f",
+      "size": 306377,
+      "wh": [
+        960,
+        597
+      ]
+    },
+    "EL_RAILWAY_023": {
+      "filename": "Boston Elevated Railway after the Molasses Flood, January 1919, from the City of Boston Archives - 9800-018-023.jpg",
+      "sha256": "fcab5c25eda0ced4d2f98f618ff3383c75df01cd8cdce6cf4b7005893a7b7da8",
+      "dhash": "6121252323334745",
+      "size": 182422,
+      "wh": [
+        960,
+        671
+      ]
+    },
+    "EL_RAILWAY_052": {
+      "filename": "Boston Elevated Railway after the Molasses Flood, January 1919, from the City of Boston Archives - 9800-018-052.jpg",
+      "sha256": "feca65ed3f5a49b61ba0e432f294846e093b129aed7289b086901fa9be3c2c6c",
+      "dhash": "da9e8e8c1c3edc56",
+      "size": 251972,
+      "wh": [
+        960,
+        773
+      ]
+    },
+    "GLOBE_PNG": {
+      "filename": "Boston Daily Globe Jan. 16, 1919.png",
+      "sha256": "592b0a7270be78481f1779de3a96b7e66a70b3a0128720e2135dce6102ba6481",
+      "dhash": "94832b3325777377",
+      "size": 172126,
+      "wh": [
+        850,
+        478
+      ]
+    },
+    "GLOBE_JPG_SMALL": {
+      "filename": "Thebostonglobe - Jan16 1919 newspaper.jpg",
+      "sha256": "a3a46dd51fd44075f2cb410fd3d07ff10c5918ef0ab14fe1e8234b29b6f20fe3",
+      "dhash": "91b1f676f8f0f0f0",
+      "size": 513942,
+      "wh": [
+        960,
+        1247
+      ]
+    },
+    "GLOBE_JPG_BIG": {
+      "filename": "TheBostonDailyGlobe-frontpage-1919-1-16.jpg",
+      "sha256": "0e092aec2968cd0c013f3e6fc13818fc5f15a562c87355693ecd18b25becbdfb",
+      "dhash": "a81a7b7b4c18e9f3",
+      "size": 877892,
+      "wh": [
+        960,
+        1440
+      ]
+    },
+    "POST_NEWSPAPER": {
+      "filename": "Boston post-January 16, 1919,.jpg",
+      "sha256": "9caf032ba66f07dc9ac0f05b1cb928ed1a559532f400d23fc7d0dd7c20a2075d",
+      "dhash": "b074969e9ca4cec0",
+      "size": 536576,
+      "wh": [
+        960,
+        1222
+      ]
+    },
+    "DETAIL_MAP": {
+      "filename": "Boston molasses detail map.png",
+      "sha256": "9ea882fd5d5572669a429c9aa0471a2edfb738d8016e814207a9d261c8ba715b",
+      "dhash": "b863732f37113433",
+      "size": 153847,
+      "wh": [
+        874,
+        742
+      ]
+    },
+    "AREA_MAP": {
+      "filename": "Boston molasses area map.png",
+      "sha256": "6bd3157508ece857210163f3ee88fbdfd487cd63b6db79b62ee3cfac5fa13a8a",
+      "dhash": "c34327273763c387",
+      "size": 201949,
+      "wh": [
+        534,
+        462
+      ]
+    },
+    "HISTORICAL_MARKER": {
+      "filename": "Molasses Flood Historical Marker.jpg",
+      "sha256": "f1dfaf3eb56b13bba8008b8024ce6bb4975150955f4eddc1003a9d896ecfbd7b",
+      "dhash": "2571514971515d39",
+      "size": 286201,
+      "wh": [
+        960,
+        859
+      ]
+    },
+    "NYT_ARTICLE": {
+      "filename": "Boston-molasses-disaster-nyt-article.jpg",
+      "sha256": "9438fcef26ecf631fdaeca610efa24dbdc1faa01d0d1f4aae7c999864d8717ff",
+      "dhash": "35158418b1da5e92",
+      "size": 184252,
+      "wh": [
+        295,
+        930
+      ]
+    }
+  },
+  "likely_duplicates": [
+    {
+      "a": "MAIN_PHOTO_A",
+      "b": "MAIN_PHOTO_B",
+      "hamming": 0
+    }
+  ]
+}
