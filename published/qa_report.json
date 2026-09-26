@@ -1,0 +1,1857 @@
+{
+  "status": "PASS",
+  "subtitle_reports": [
+    {
+      "scene": "scene_01",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_02",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_03",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_04",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_05",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_06",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    },
+    {
+      "scene": "scene_07",
+      "status": "PASS",
+      "invalid": 0,
+      "speech_gaps": 0,
+      "excessive_tail": 0
+    }
+  ],
+  "visual_qa": {
+    "structural_status": "PASS",
+    "semantic_status": "NOT_EVALUATED",
+    "failures": [],
+    "requirements": {
+      "scene_01": [
+        "\uc2e4\uc81c RMS Titanic\uc774 \ubd80\ub450\uc5d0 \uc815\ubc15\ud55c \ubaa8\uc2b5\uacfc \ub124 \uac1c \uad74\ub69d\uc774 \ub69c\ub837\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_02": [
+        "1912\ub144 \uc2e4\uc81c \uc601\uad6d \uc870\uc0ac(British Inquiry) \uc2dc\uc791 \uc804 \ud68c\uc758\uc7a5\uacfc \ud0c0\uc774\ud0c0\ub2c9 \ucd95\uc18c \ubaa8\ud615\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_03": [
+        "\uc9c4\uc218 \uc9c1\ud6c4 \uad74\ub69d\uc774 \uc544\uc9c1 \uc124\uce58\ub418\uc9c0 \uc54a\uc740 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_04": [
+        "Olympic\uae09 \uc120\ubc15\uc758 \uc2e4\uc81c \uc2dc\ub300 \ub2e8\uba74\ub3c4\uac00 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_05": [
+        "1912\ub144 \ud574\uc0c1 \uc2dc\ud5d8 \uc911 \uc120\uc218 \ubc29\ud5a5\uc5d0\uc11c \ucd2c\uc601\ub41c \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_06": [
+        "1911\ub144 5\uc6d4 31\uc77c \uc9c4\uc218 \ub2f9\uc77c \uad70\uc911\uacfc \uac20\ud2b8\ub9ac, \uba40\ub9ac \ubcf4\uc774\ub294 \uc120\uccb4\uac00 \uc2e4\uc81c \uc0ac\uc9c4\uc73c\ub85c \ubcf4\uc5ec\uc57c \ud568"
+      ],
+      "scene_07": [
+        "\ud0c0\uc774\ud0c0\ub2c9\uc758 \uc2e4\uc81c \uac74\uc870\ubc88\ud638 433\ubc88 \uc120\uccb4\uac00 \uc544\ub864 \uac20\ud2b8\ub9ac \uc544\ub798 \uac74\uc870\ub418\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+      ]
+    }
+  },
+  "semantic_visual_qa": {
+    "status": "PASS",
+    "results": [
+      {
+        "scene": "scene_01",
+        "status": "PASS",
+        "requirements": [
+          "\uc2e4\uc81c RMS Titanic\uc774 \ubd80\ub450\uc5d0 \uc815\ubc15\ud55c \ubaa8\uc2b5\uacfc \ub124 \uac1c \uad74\ub69d\uc774 \ub69c\ub837\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_01_beat_00",
+            "requirements": [
+              "\uc2e4\uc81c RMS Titanic\uc774 \ubd80\ub450\uc5d0 \uc815\ubc15\ud55c \ubaa8\uc2b5\uacfc \ub124 \uac1c \uad74\ub69d\uc774 \ub69c\ub837\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 507.40746238425925,
+                "contrast": 86.39800941975325,
+                "mean": 48.640940875771605
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of RMS Titanic docked in daylight showing all four funnels and dockside cranes": 0.31762605905532837,
+                  "modern cruise ship": 0.25422269105911255,
+                  "movie still": 0.24496342241764069,
+                  "AI generated ship": 0.2382930964231491
+                },
+                "mean_pos": 0.31762605905532837,
+                "mean_neg": 0.24582640329996744,
+                "margin": 0.07179965575536093
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_01",
+            "requirements": [
+              "\ud0c0\uc774\ud0c0\ub2c9\uc758 3\ubc88\uacfc 4\ubc88 \uad74\ub69d\uc774 \uac00\uae4c\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 252.66005883487654,
+                "contrast": 98.77295796597734,
+                "mean": 66.54945457175926
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close historical photograph of Titanic's third and fourth funnels on the boat deck": 0.29569852352142334,
+                  "modern cruise ship": 0.22719791531562805,
+                  "movie still": 0.22728922963142395,
+                  "AI generated ship": 0.226337730884552
+                },
+                "mean_pos": 0.29569852352142334,
+                "mean_neg": 0.22694162527720133,
+                "margin": 0.06875689824422201
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_02",
+            "requirements": [
+              "Harland and Wolff \uc870\uc120\uc18c\uc5d0\uc11c \uac74\uc870 \uc911\uc778 Titanic\uacfc Olympic\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1527.056926118827,
+                "contrast": 64.18594013991628,
+                "mean": 32.27932918595679
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic and Olympic under construction side by side at Harland & Wolff shipyard": 0.346882164478302,
+                  "modern shipyard": 0.2825372815132141,
+                  "AI generated image": 0.19378618896007538
+                },
+                "mean_pos": 0.346882164478302,
+                "mean_neg": 0.23816173523664474,
+                "margin": 0.10872042924165726
+              }
+            ]
+          },
+          {
+            "scene": "scene_01_beat_03",
+            "requirements": [
+              "Olympic\uae09\uc5d0 \uc0ac\uc6a9\ub41c \uc2e4\uc81c \ub300\ud615 \ud574\uc591 \ubcf4\uc77c\ub7ec \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1079.8646190200618,
+                "contrast": 61.193978804275716,
+                "mean": 36.353331886574075
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Olympic class marine boilers": 0.2756945490837097,
+                  "modern boiler": 0.2562611699104309,
+                  "AI generated image": 0.21699224412441254
+                },
+                "mean_pos": 0.2756945490837097,
+                "mean_neg": 0.23662670701742172,
+                "margin": 0.039067842066287994
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_02",
+        "status": "PASS",
+        "requirements": [
+          "1912\ub144 \uc2e4\uc81c \uc601\uad6d \uc870\uc0ac(British Inquiry) \uc2dc\uc791 \uc804 \ud68c\uc758\uc7a5\uacfc \ud0c0\uc774\ud0c0\ub2c9 \ucd95\uc18c \ubaa8\ud615\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_02_beat_00",
+            "requirements": [
+              "1912\ub144 \uc2e4\uc81c \uc601\uad6d \uc870\uc0ac(British Inquiry) \uc2dc\uc791 \uc804 \ud68c\uc758\uc7a5\uacfc \ud0c0\uc774\ud0c0\ub2c9 \ucd95\uc18c \ubaa8\ud615\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "a9de67a0b312032f20feefd05b143ec392df2a14acd856e7ccc6de19a782a762"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 225.75229841820988,
+                "contrast": 41.68489179114442,
+                "mean": 22.68655333719136
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of the London Scottish Drill Hall set up for the 1912 British inquiry into the Titanic disaster, with a large ship model on display": 0.2872256636619568,
+                  "modern courtroom": 0.22983239591121674,
+                  "AI generated image": 0.2007792890071869
+                },
+                "mean_pos": 0.2872256636619568,
+                "mean_neg": 0.2153058424592018,
+                "margin": 0.07191982120275497
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_01",
+            "requirements": [
+              "1912\ub144 \ud574\uc0c1 \uc2dc\ud5d8 \uc911 \uc608\uc778\uc120\uc5d0 \uc774\ub04c\ub9ac\ub294 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc804\uacbd\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 245.87140721450618,
+                "contrast": 84.22662973224418,
+                "mean": 54.3281640625
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "wide historical photograph of RMS Titanic under tow during sea trials with smoke from all four funnels": 0.3436104357242584,
+                  "modern ship": 0.24772799015045166,
+                  "AI generated image": 0.21487341821193695
+                },
+                "mean_pos": 0.3436104357242584,
+                "mean_neg": 0.2313007041811943,
+                "margin": 0.11230973154306412
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_02",
+            "requirements": [
+              "\uac74\uc870 \uc911 \uc138 \uac1c\uc758 \uad74\ub69d\ub9cc \uc124\uce58\ub41c \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 191.8261747685185,
+                "contrast": 101.53872359122,
+                "mean": 75.77418258101852
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic fitting out with only three funnels installed": 0.3384307324886322,
+                  "modern shipyard": 0.2727406919002533,
+                  "AI generated image": 0.217662051320076
+                },
+                "mean_pos": 0.3384307324886322,
+                "mean_neg": 0.24520137161016464,
+                "margin": 0.09322936087846756
+              }
+            ]
+          },
+          {
+            "scene": "scene_02_beat_03",
+            "requirements": [
+              "1912\ub144 \ud574\uc0c1 \uc2dc\ud5d8 \uc911 \uc120\uc218 \ubc29\ud5a5\uc5d0\uc11c \ucd2c\uc601\ub41c \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 428.7661689814815,
+                "contrast": 96.98696268875057,
+                "mean": 68.1945736882716
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical bow-on photograph of RMS Titanic during sea trials flanked by tugboats": 0.319749116897583,
+                  "modern ship": 0.2589891254901886,
+                  "AI generated image": 0.21264082193374634
+                },
+                "mean_pos": 0.319749116897583,
+                "mean_neg": 0.23581497371196747,
+                "margin": 0.08393414318561554
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_03",
+        "status": "PASS",
+        "requirements": [
+          "\uc9c4\uc218 \uc9c1\ud6c4 \uad74\ub69d\uc774 \uc544\uc9c1 \uc124\uce58\ub418\uc9c0 \uc54a\uc740 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_03_beat_00",
+            "requirements": [
+              "\uc9c4\uc218 \uc9c1\ud6c4 \uad74\ub69d\uc774 \uc544\uc9c1 \uc124\uce58\ub418\uc9c0 \uc54a\uc740 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 586.6331163194444,
+                "contrast": 91.87923966554453,
+                "mean": 52.62623312114197
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic just after launch at Belfast with no funnels or superstructure yet": 0.33172959089279175,
+                  "modern ship": 0.2577214241027832,
+                  "AI generated image": 0.20914822816848755
+                },
+                "mean_pos": 0.33172959089279175,
+                "mean_neg": 0.23343482613563538,
+                "margin": 0.09829476475715637
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_01",
+            "requirements": [
+              "1912\ub144 \uc2e4\uc81c \uc601\uad6d \uc870\uc0ac(British Inquiry) \uc2dc\uc791 \uc804 \ud68c\uc758\uc7a5\uacfc \ud0c0\uc774\ud0c0\ub2c9 \ucd95\uc18c \ubaa8\ud615\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "a9de67a0b312032f20feefd05b143ec392df2a14acd856e7ccc6de19a782a762"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 225.75229841820988,
+                "contrast": 41.68489179114442,
+                "mean": 22.68655333719136
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of the London Scottish Drill Hall set up for the 1912 British inquiry into the Titanic disaster, with a large ship model on display": 0.2872256636619568,
+                  "modern courtroom": 0.22983239591121674,
+                  "AI generated image": 0.2007792890071869
+                },
+                "mean_pos": 0.2872256636619568,
+                "mean_neg": 0.2153058424592018,
+                "margin": 0.07191982120275497
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_02",
+            "requirements": [
+              "\ud0c0\uc774\ud0c0\ub2c9\uc758 3\ubc88\uacfc 4\ubc88 \uad74\ub69d\uc774 \uac00\uae4c\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 252.65996141975307,
+                "contrast": 98.77311321648907,
+                "mean": 66.54955439814815
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "close historical photograph of Titanic's third and fourth funnels on the boat deck": 0.2956732213497162,
+                  "modern cruise ship": 0.22716104984283447,
+                  "movie still": 0.22725623846054077,
+                  "AI generated ship": 0.22632992267608643
+                },
+                "mean_pos": 0.2956732213497162,
+                "mean_neg": 0.2269157369931539,
+                "margin": 0.06875748435656229
+              }
+            ]
+          },
+          {
+            "scene": "scene_03_beat_03",
+            "requirements": [
+              "Olympic\uae09\uc5d0 \uc0ac\uc6a9\ub41c \uc2e4\uc81c \ub300\ud615 \ud574\uc591 \ubcf4\uc77c\ub7ec \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1079.8646190200618,
+                "contrast": 61.193978804275716,
+                "mean": 36.353331886574075
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Olympic class marine boilers": 0.2756945490837097,
+                  "modern boiler": 0.2562611699104309,
+                  "AI generated image": 0.21699224412441254
+                },
+                "mean_pos": 0.2756945490837097,
+                "mean_neg": 0.23662670701742172,
+                "margin": 0.039067842066287994
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_04",
+        "status": "PASS",
+        "requirements": [
+          "Olympic\uae09 \uc120\ubc15\uc758 \uc2e4\uc81c \uc2dc\ub300 \ub2e8\uba74\ub3c4\uac00 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_04_beat_00",
+            "requirements": [
+              "Olympic\uae09 \uc120\ubc15\uc758 \uc2e4\uc81c \uc2dc\ub300 \ub2e8\uba74\ub3c4\uac00 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 2723.624170524691,
+                "contrast": 104.33301379358309,
+                "mean": 60.87085792824074
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical Olympic and Titanic cutaway diagram showing internal machinery arrangement": 0.29901593923568726,
+                  "modern diagram": 0.25402504205703735,
+                  "AI generated illustration": 0.2225869596004486
+                },
+                "mean_pos": 0.29901593923568726,
+                "mean_neg": 0.23830600082874298,
+                "margin": 0.060709938406944275
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_01",
+            "requirements": [
+              "\uac74\uc870 \uc911 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9\uc758 \ud504\ub85c\ud3a0\ub7ec \uc0e4\ud504\ud2b8\ub97c \uc124\uce58\ud558\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "0d4fb923ebadbf7a632406c7c01618552b7af113167c227cdc331456c9d2706e"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1011.6638937114197,
+                "contrast": 66.51196505887567,
+                "mean": 42.89894483024691
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of workers installing Titanic's massive propeller shaft in dry dock": 0.31460437178611755,
+                  "modern shipyard": 0.2609316408634186,
+                  "AI generated image": 0.20831432938575745
+                },
+                "mean_pos": 0.31460437178611755,
+                "mean_neg": 0.234622985124588,
+                "margin": 0.07998138666152954
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_02",
+            "requirements": [
+              "\uc9c4\uc218 \uc9c1\ud6c4 \uad74\ub69d\uc774 \uc544\uc9c1 \uc124\uce58\ub418\uc9c0 \uc54a\uc740 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 586.6405198688271,
+                "contrast": 91.87884152278149,
+                "mean": 52.62604697145062
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic just after launch at Belfast with no funnels or superstructure yet": 0.3317320644855499,
+                  "modern ship": 0.2577223777770996,
+                  "AI generated image": 0.20914959907531738
+                },
+                "mean_pos": 0.3317320644855499,
+                "mean_neg": 0.2334359884262085,
+                "margin": 0.09829607605934143
+              }
+            ]
+          },
+          {
+            "scene": "scene_04_beat_03",
+            "requirements": [
+              "\uac74\uc870 \uc911 \uc138 \uac1c\uc758 \uad74\ub69d\ub9cc \uc124\uce58\ub41c \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 191.8261747685185,
+                "contrast": 101.53872359122,
+                "mean": 75.77418258101852
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic fitting out with only three funnels installed": 0.3384307324886322,
+                  "modern shipyard": 0.2727406919002533,
+                  "AI generated image": 0.217662051320076
+                },
+                "mean_pos": 0.3384307324886322,
+                "mean_neg": 0.24520137161016464,
+                "margin": 0.09322936087846756
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_05",
+        "status": "PASS",
+        "requirements": [
+          "1912\ub144 \ud574\uc0c1 \uc2dc\ud5d8 \uc911 \uc120\uc218 \ubc29\ud5a5\uc5d0\uc11c \ucd2c\uc601\ub41c \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_05_beat_00",
+            "requirements": [
+              "1912\ub144 \ud574\uc0c1 \uc2dc\ud5d8 \uc911 \uc120\uc218 \ubc29\ud5a5\uc5d0\uc11c \ucd2c\uc601\ub41c \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 428.77116994598765,
+                "contrast": 96.98687021204312,
+                "mean": 68.1945134066358
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical bow-on photograph of RMS Titanic during sea trials flanked by tugboats": 0.31972795724868774,
+                  "modern ship": 0.25896593928337097,
+                  "AI generated image": 0.2126338928937912
+                },
+                "mean_pos": 0.31972795724868774,
+                "mean_neg": 0.23579991608858109,
+                "margin": 0.08392804116010666
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_01",
+            "requirements": [
+              "Harland and Wolff \uc870\uc120\uc18c\uc5d0\uc11c \uac74\uc870 \uc911\uc778 Titanic\uacfc Olympic\uc758 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1527.056926118827,
+                "contrast": 64.18594013991628,
+                "mean": 32.27932918595679
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic and Olympic under construction side by side at Harland & Wolff shipyard": 0.346882164478302,
+                  "modern shipyard": 0.2825372815132141,
+                  "AI generated image": 0.19378618896007538
+                },
+                "mean_pos": 0.346882164478302,
+                "mean_neg": 0.23816173523664474,
+                "margin": 0.10872042924165726
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_02",
+            "requirements": [
+              "\uc2e4\uc81c RMS Titanic\uc774 \ubd80\ub450\uc5d0 \uc815\ubc15\ud55c \ubaa8\uc2b5\uacfc \ub124 \uac1c \uad74\ub69d\uc774 \ub69c\ub837\ud558\uac8c \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 507.40704764660495,
+                "contrast": 86.39800599491168,
+                "mean": 48.64093942901235
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of RMS Titanic docked in daylight showing all four funnels and dockside cranes": 0.3166266679763794,
+                  "modern cruise ship": 0.2529597580432892,
+                  "movie still": 0.24407926201820374,
+                  "AI generated ship": 0.2369450181722641
+                },
+                "mean_pos": 0.3166266679763794,
+                "mean_neg": 0.244661346077919,
+                "margin": 0.07196532189846039
+              }
+            ]
+          },
+          {
+            "scene": "scene_05_beat_03",
+            "requirements": [
+              "1912\ub144 \ud574\uc0c1 \uc2dc\ud5d8 \uc911 \uc608\uc778\uc120\uc5d0 \uc774\ub04c\ub9ac\ub294 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc804\uacbd\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 245.87021026234567,
+                "contrast": 84.22663792761136,
+                "mean": 54.328195891203706
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "wide historical photograph of RMS Titanic under tow during sea trials with smoke from all four funnels": 0.34359627962112427,
+                  "modern ship": 0.2477375566959381,
+                  "AI generated image": 0.2148735076189041
+                },
+                "mean_pos": 0.34359627962112427,
+                "mean_neg": 0.2313055321574211,
+                "margin": 0.11229074746370316
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_06",
+        "status": "PASS",
+        "requirements": [
+          "1911\ub144 5\uc6d4 31\uc77c \uc9c4\uc218 \ub2f9\uc77c \uad70\uc911\uacfc \uac20\ud2b8\ub9ac, \uba40\ub9ac \ubcf4\uc774\ub294 \uc120\uccb4\uac00 \uc2e4\uc81c \uc0ac\uc9c4\uc73c\ub85c \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_06_beat_00",
+            "requirements": [
+              "1911\ub144 5\uc6d4 31\uc77c \uc9c4\uc218 \ub2f9\uc77c \uad70\uc911\uacfc \uac20\ud2b8\ub9ac, \uba40\ub9ac \ubcf4\uc774\ub294 \uc120\uccb4\uac00 \uc2e4\uc81c \uc0ac\uc9c4\uc73c\ub85c \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "af2332ffed088b2f18a479ee462535e1078679fbe0fd01b9d3dcd9b732b5e01b"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 162.13199652777777,
+                "contrast": 59.38876902651625,
+                "mean": 31.110048707561727
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of the crowd watching Titanic's launch on 31 May 1911, with gantry towers and the hull visible in the distance": 0.3182505965232849,
+                  "modern crowd": 0.23230060935020447,
+                  "AI generated image": 0.2032547891139984
+                },
+                "mean_pos": 0.3182505965232849,
+                "mean_neg": 0.21777769923210144,
+                "margin": 0.10047289729118347
+              }
+            ]
+          },
+          {
+            "scene": "scene_06_beat_01",
+            "requirements": [
+              "Titanic\uc640 \ub3d9\uc77c \uc124\uacc4\uc778 Olympic\ud638\uc758 \uc2e4\uc81c \ud504\ub85c\ud3a0\ub7ec 3\uae30\uac00 \ub4dc\ub77c\uc774\ub3c5\uc5d0\uc11c \ubcf4\uc5ec\uc57c \ud558\uba70 \uc911\uc559\uc758 \ud130\ube48 \uad6c\ub3d9 \ud504\ub85c\ud3a0\ub7ec\uac00 \ud3ec\ud568\ub418\uc5b4\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "bdfe3e9694e0b2404cbb7e87fab5aa7a9141959cb3854e3b857bba98a3619944"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 638.0122829861111,
+                "contrast": 77.32144368144736,
+                "mean": 47.021051793981485
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of RMS Olympic's (Titanic's identical sister ship) three real propellers in dry dock including the center turbine-driven propeller, with workers for scale": 0.381838321685791,
+                  "modern ship": 0.27004474401474,
+                  "AI generated image": 0.22783324122428894
+                },
+                "mean_pos": 0.381838321685791,
+                "mean_neg": 0.24893899261951447,
+                "margin": 0.13289932906627655
+              }
+            ]
+          },
+          {
+            "scene": "scene_06_beat_02",
+            "requirements": [
+              "\ud0c0\uc774\ud0c0\ub2c9 \uc120\ubbf8\ubd80 \uac74\uc870 \ud604\uc7a5\uc758 \uc2e4\uc81c \ub300\ud615 \ube44\uacc4\uc640 \uace8\uc870 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "4b27edcb76a04cbe63c9a0677e7ea2444056bc1e561ab0983f5036d1bd72a04c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1841.6611554783951,
+                "contrast": 74.8001272908242,
+                "mean": 44.14306568287037
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic's stern under construction inside the shipyard gantry scaffolding": 0.32475942373275757,
+                  "modern construction site": 0.27903056144714355,
+                  "AI generated image": 0.21291816234588623
+                },
+                "mean_pos": 0.32475942373275757,
+                "mean_neg": 0.2459743618965149,
+                "margin": 0.07878506183624268
+              }
+            ]
+          },
+          {
+            "scene": "scene_06_beat_03",
+            "requirements": [
+              "Southampton 44\ubc88 \ubd80\ub450\ub97c \ub5a0\ub098\ub294 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 95.82362075617284,
+                "contrast": 69.72964874834828,
+                "mean": 37.88538773148148
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of RMS Titanic departing pier 44 at Southampton": 0.319993257522583,
+                  "modern ship": 0.2609596252441406,
+                  "AI generated image": 0.2190559059381485
+                },
+                "mean_pos": 0.319993257522583,
+                "mean_neg": 0.24000776559114456,
+                "margin": 0.07998549193143845
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      },
+      {
+        "scene": "scene_07",
+        "status": "PASS",
+        "requirements": [
+          "\ud0c0\uc774\ud0c0\ub2c9\uc758 \uc2e4\uc81c \uac74\uc870\ubc88\ud638 433\ubc88 \uc120\uccb4\uac00 \uc544\ub864 \uac20\ud2b8\ub9ac \uc544\ub798 \uac74\uc870\ub418\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+        ],
+        "beat_results": [
+          {
+            "scene": "scene_07_beat_00",
+            "requirements": [
+              "\ud0c0\uc774\ud0c0\ub2c9\uc758 \uc2e4\uc81c \uac74\uc870\ubc88\ud638 433\ubc88 \uc120\uccb4\uac00 \uc544\ub864 \uac20\ud2b8\ub9ac \uc544\ub798 \uac74\uc870\ub418\ub294 \uc2e4\uc81c \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "1423a193ce0689649b74cb5bd25e68fb5638192158f172ba60bb8fdeafa20d89"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 3957.997533757716,
+                "contrast": 77.57382845331608,
+                "mean": 45.28589699074074
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic (Yard No. 433) under construction beneath the Arrol Gantry with steel plates in the foreground": 0.3273145854473114,
+                  "modern shipyard": 0.2754440903663635,
+                  "AI generated image": 0.1904469132423401
+                },
+                "mean_pos": 0.3273145854473114,
+                "mean_neg": 0.2329455018043518,
+                "margin": 0.0943690836429596
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_01",
+            "requirements": [
+              "1912\ub144 Southampton \ubd80\ub450\uc5d0\uc11c \uad70\uc911\uacfc \uc608\uc778\uc120\uc5d0 \ub458\ub7ec\uc2f8\uc778 \uc2e4\uc81c \ud0c0\uc774\ud0c0\ub2c9 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no expected_asset_sha256 declared for this scene"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 718.6960243055555,
+                "contrast": 85.53020690384457,
+                "mean": 50.790452835648146
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of RMS Titanic docked at Southampton with a crowd, tugboat smoke, and a dockside crane": 0.33439794182777405,
+                  "modern cruise ship": 0.2440873384475708,
+                  "AI generated image": 0.21130095422267914
+                },
+                "mean_pos": 0.33439794182777405,
+                "mean_neg": 0.22769414633512497,
+                "margin": 0.10670379549264908
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_02",
+            "requirements": [
+              "Harland and Wolff \uc870\uc120\uc18c\uc5d0\uc11c \ud1f4\uadfc\ud558\ub294 \uc2e4\uc81c \ub178\ub3d9\uc790\ub4e4\uc758 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "18c20df66e74b7f4bbe1b4daed249147d087e0392654a132e3794b46007d4b71"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 711.3195939429012,
+                "contrast": 76.38667937543994,
+                "mean": 43.293377700617285
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of shipyard workers leaving Harland & Wolff at the end of a shift, with shipyard structures in the background": 0.3235040605068207,
+                  "modern crowd": 0.25271451473236084,
+                  "AI generated image": 0.2074238359928131
+                },
+                "mean_pos": 0.3235040605068207,
+                "mean_neg": 0.23006917536258698,
+                "margin": 0.0934348851442337
+              }
+            ]
+          },
+          {
+            "scene": "scene_07_beat_03",
+            "requirements": [
+              "\ud0c0\uc774\ud0c0\ub2c9 \uc120\ubbf8\ubd80 \uac74\uc870 \ud604\uc7a5\uc758 \uc2e4\uc81c \ub300\ud615 \ube44\uacc4\uc640 \uace8\uc870 \uc0ac\uc9c4\uc774 \ubcf4\uc5ec\uc57c \ud568"
+            ],
+            "status": "PASS",
+            "sub_results": [
+              {
+                "provider": "SidecarVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no semantic vision evidence"
+              },
+              {
+                "provider": "AssetProvenanceVisionProvider",
+                "status": "PASS",
+                "sha256": "4b27edcb76a04cbe63c9a0677e7ea2444056bc1e561ab0983f5036d1bd72a04c"
+              },
+              {
+                "provider": "ClarityVisionProvider",
+                "status": "PASS",
+                "sharpness": 1841.6611554783951,
+                "contrast": 74.8001272908242,
+                "mean": 44.14306568287037
+              },
+              {
+                "provider": "CornerGeometryVisionProvider",
+                "status": "NOT_EVALUATED",
+                "reason": "no corner-shape requirement declared"
+              },
+              {
+                "provider": "ClipSemanticVisionProvider",
+                "status": "PASS",
+                "scores": {
+                  "historical photograph of Titanic's stern under construction inside the shipyard gantry scaffolding": 0.32475942373275757,
+                  "modern construction site": 0.27903056144714355,
+                  "AI generated image": 0.21291816234588623
+                },
+                "mean_pos": 0.32475942373275757,
+                "mean_neg": 0.2459743618965149,
+                "margin": 0.07878506183624268
+              }
+            ]
+          }
+        ],
+        "recovery_attempts": 0,
+        "recovery_exhausted": false
+      }
+    ]
+  },
+  "semantic_required": true,
+  "final_video_qa": {
+    "status": "PASS",
+    "checks": {
+      "composition_9x16": {
+        "status": "PASS"
+      },
+      "scenes_present": {
+        "status": "PASS"
+      },
+      "visual_cut_cadence": {
+        "status": "PASS",
+        "max_hold_seconds": 3.5
+      },
+      "no_semantic_skip": {
+        "status": "PASS"
+      },
+      "narration_continuity": {
+        "status": "PASS",
+        "max_silence_seconds": 1.5
+      },
+      "visual_activity_real": {
+        "status": "PASS",
+        "evidence": {
+          "cut_timestamps": [
+            0.0,
+            2.5,
+            5.0,
+            7.0,
+            9.0,
+            11.0,
+            13.5,
+            15.5,
+            17.5,
+            19.5,
+            22.0,
+            24.0,
+            26.0,
+            28.0,
+            30.5,
+            32.5,
+            34.0,
+            36.5,
+            39.5,
+            42.0,
+            44.0,
+            46.5,
+            49.0,
+            51.0,
+            53.0,
+            55.5,
+            58.0,
+            60.5
+          ],
+          "average_visual_beat_seconds": 2.2142857142857144,
+          "max_static_visual_seconds": 3.0,
+          "first_5s_visual_changes": 1,
+          "sample_fps": 2.0
+        }
+      },
+      "no_black_opening": {
+        "status": "PASS",
+        "evidence": {
+          "media_mean": 98.31824074074073,
+          "media_is_black": false,
+          "has_bright_text": true
+        }
+      },
+      "source_reuse": {
+        "status": "PASS",
+        "evidence": {
+          "total_beats": 28,
+          "unique_sources": 17,
+          "source_reuse_ratio": 0.3928571428571429,
+          "max_consecutive_same_source": 1
+        }
+      },
+      "global_source_reuse": {
+        "status": "PASS",
+        "evidence": {
+          "total_beats": 28,
+          "unique_source_family_count": 17,
+          "unique_source_family_ratio": 0.6071428571428571,
+          "global_source_reuse_ratio": 0.3928571428571429,
+          "max_source_family_occurrences": 3,
+          "max_source_family_ratio": 0.10714285714285714,
+          "repeated_source_timestamps": [
+            {
+              "scene": "scene_03",
+              "start": 2.3,
+              "family": "londonscottishdrillhallbeforethestartofthebritishinquiryintothetitanicdisaster"
+            },
+            {
+              "scene": "scene_03",
+              "start": 4.6,
+              "family": "titanics3rdand4rdfunnels"
+            },
+            {
+              "scene": "scene_03",
+              "start": 6.81,
+              "family": "olympicsboilers"
+            },
+            {
+              "scene": "scene_04",
+              "start": 4.41,
+              "family": "titaniclaunchedatbelfast"
+            },
+            {
+              "scene": "scene_04",
+              "start": 6.54,
+              "family": "rmstitanicbeingfittedoutatharlandandwolffinbelfastirelandwiththreefunnels"
+            },
+            {
+              "scene": "scene_05",
+              "start": 0.0,
+              "family": "titanicseatrials2april1912"
+            },
+            {
+              "scene": "scene_05",
+              "start": 2.68,
+              "family": "rmstitanicandrmsolympicunderconstructionatharlandwolffshipyardsbelfastca19103015565255"
+            },
+            {
+              "scene": "scene_05",
+              "start": 5.36,
+              "family": "rmstitanicinsouthamptonapril9thof1912"
+            },
+            {
+              "scene": "scene_05",
+              "start": 7.94,
+              "family": "rmstitanicseatrialsapril21912"
+            },
+            {
+              "scene": "scene_07",
+              "start": 2.48,
+              "family": "rmstitanicinsouthampton"
+            },
+            {
+              "scene": "scene_07",
+              "start": 7.34,
+              "family": "titanicsternunderconstruction"
+            }
+          ]
+        }
+      },
+      "visual_novelty": {
+        "status": "PASS",
+        "evidence": []
+      },
+      "first_5s_coverage": {
+        "status": "PASS",
+        "evidence": {
+          "first_5s_unique_sources": 3,
+          "first_5s_families": [
+            {
+              "scene": "scene_01",
+              "start": 0.0,
+              "family": "rmstitanicinsouthamptonapril9thof1912"
+            },
+            {
+              "scene": "scene_01",
+              "start": 2.36,
+              "family": "titanics3rdand4rdfunnels"
+            },
+            {
+              "scene": "scene_01",
+              "start": 4.71,
+              "family": "rmstitanicandrmsolympicunderconstructionatharlandwolffshipyardsbelfastca19103015565255"
+            }
+          ]
+        }
+      },
+      "ending_novelty": {
+        "status": "PASS",
+        "evidence": {
+          "ending_seconds": 18.0,
+          "final_window_seconds": 10.0,
+          "ending_cutoff": 44.139667,
+          "ending_beat_count": 7,
+          "ending_new_beat_count": 6,
+          "ending_new_ratio": 0.8571428571428571,
+          "final_window_unique_new_count": 3,
+          "last_beat_family": "titanicsternunderconstruction",
+          "last_beat_is_reused_generic": false,
+          "ending_beats_detail": [
+            {
+              "scene": "scene_06",
+              "start": 46.363333,
+              "family": "rmsolympicspropellers"
+            },
+            {
+              "scene": "scene_06",
+              "start": 48.783333,
+              "family": "titanicsternunderconstruction"
+            },
+            {
+              "scene": "scene_06",
+              "start": 51.103333,
+              "family": "titanicleaving44portplaceinsouthampton"
+            },
+            {
+              "scene": "scene_07",
+              "start": 52.92,
+              "family": "constructionofwhitestarlinernumber433"
+            },
+            {
+              "scene": "scene_07",
+              "start": 55.4,
+              "family": "rmstitanicinsouthampton"
+            },
+            {
+              "scene": "scene_07",
+              "start": 57.88,
+              "family": "knockingoffatharlandwolffbelfast"
+            },
+            {
+              "scene": "scene_07",
+              "start": 60.260000000000005,
+              "family": "titanicsternunderconstruction"
+            }
+          ]
+        }
+      },
+      "title_visible": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 0.3002061307309532,
+            "title_band_edge_var": 1168.8949272486773
+          },
+          {
+            "t": 26.168300957519865,
+            "title_band_edge_var": 1452.2698973151298
+          },
+          {
+            "t": 53.2565675916711,
+            "title_band_edge_var": 1163.8693253968254
+          }
+        ]
+      },
+      "captions_visible": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 1.14897592208527,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          },
+          {
+            "t": 9.995862965894755,
+            "rows_in_band": [
+              1264,
+              1311
+            ]
+          },
+          {
+            "t": 18.666566536731512,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          },
+          {
+            "t": 27.27351833364624,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          },
+          {
+            "t": 35.23448407673636,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          },
+          {
+            "t": 45.20881175584312,
+            "rows_in_band": [
+              1268,
+              1311
+            ]
+          },
+          {
+            "t": 54.533673491726546,
+            "rows_in_band": [
+              1267,
+              1311
+            ]
+          }
+        ]
+      },
+      "safe_area_clean": {
+        "status": "PASS",
+        "evidence": [
+          {
+            "t": 0.1501030653654766,
+            "safe_area_edge_density": 0.005104669887278583
+          },
+          {
+            "t": 8.889436759748637,
+            "safe_area_edge_density": 0.004412238325281804
+          },
+          {
+            "t": 17.495345840702626,
+            "safe_area_edge_density": 0.006327160493827161
+          },
+          {
+            "t": 26.018197892154387,
+            "safe_area_edge_density": 0.006873322597960279
+          },
+          {
+            "t": 34.19881495457287,
+            "safe_area_edge_density": 0.005897745571658615
+          },
+          {
+            "t": 44.13363650756254,
+            "safe_area_edge_density": 0.005764895330112722
+          },
+          {
+            "t": 53.10646452630562,
+            "safe_area_edge_density": 0.006254696725711218
+          }
+        ]
+      },
+      "picture_caption_gutter": {
+        "status": "PASS",
+        "evidence": [],
+        "reason": "no pre-caption frame; fixed picture boundary covered by safe_area_clean"
+      }
+    },
+    "metrics": {
+      "average_visual_beat_seconds": 2.2142857142857144,
+      "max_static_visual_seconds": 3.0,
+      "source_reuse_ratio": 0.3928571428571429,
+      "first_5s_visual_changes": 1,
+      "subtitle_media_overlap": false,
+      "title_safe_area_pass": true,
+      "subtitle_safe_area_pass": true,
+      "unique_source_family_count": 17,
+      "unique_source_family_ratio": 0.6071428571428571,
+      "global_source_reuse_ratio": 0.3928571428571429,
+      "max_source_family_occurrences": 3,
+      "semantic_visual_coverage": 0.16666666666666666,
+      "first_5s_unique_sources": 3,
+      "repeated_source_timestamps": [
+        {
+          "scene": "scene_03",
+          "start": 2.3,
+          "family": "londonscottishdrillhallbeforethestartofthebritishinquiryintothetitanicdisaster"
+        },
+        {
+          "scene": "scene_03",
+          "start": 4.6,
+          "family": "titanics3rdand4rdfunnels"
+        },
+        {
+          "scene": "scene_03",
+          "start": 6.81,
+          "family": "olympicsboilers"
+        },
+        {
+          "scene": "scene_04",
+          "start": 4.41,
+          "family": "titaniclaunchedatbelfast"
+        },
+        {
+          "scene": "scene_04",
+          "start": 6.54,
+          "family": "rmstitanicbeingfittedoutatharlandandwolffinbelfastirelandwiththreefunnels"
+        },
+        {
+          "scene": "scene_05",
+          "start": 0.0,
+          "family": "titanicseatrials2april1912"
+        },
+        {
+          "scene": "scene_05",
+          "start": 2.68,
+          "family": "rmstitanicandrmsolympicunderconstructionatharlandwolffshipyardsbelfastca19103015565255"
+        },
+        {
+          "scene": "scene_05",
+          "start": 5.36,
+          "family": "rmstitanicinsouthamptonapril9thof1912"
+        },
+        {
+          "scene": "scene_05",
+          "start": 7.94,
+          "family": "rmstitanicseatrialsapril21912"
+        },
+        {
+          "scene": "scene_07",
+          "start": 2.48,
+          "family": "rmstitanicinsouthampton"
+        },
+        {
+          "scene": "scene_07",
+          "start": 7.34,
+          "family": "titanicsternunderconstruction"
+        }
+      ],
+      "ending_new_ratio": 0.8571428571428571,
+      "ending_final_window_unique_new_count": 3,
+      "ending_last_beat_is_reused_generic": false
+    }
+  },
+  "sources": [
+    {
+      "scene": "scene_01",
+      "asset": "build/scene_01_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_02",
+      "asset": "build/scene_02_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_03",
+      "asset": "build/scene_02_beat0_asset_0_norm.jpg",
+      "attribution": "Library of Congress / Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_04",
+      "asset": "build/scene_04_beat1_asset_0_norm.jpg",
+      "attribution": "White Star Line / Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_05",
+      "asset": "build/scene_01_beat2_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_06",
+      "asset": "build/scene_06_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    },
+    {
+      "scene": "scene_07",
+      "asset": "build/scene_07_beat1_asset_0_norm.jpg",
+      "attribution": "Wikimedia Commons / public domain",
+      "candidate_index": 0,
+      "recovery_attempts": 0
+    }
+  ],
+  "probe": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_type": "video",
+        "width": 1080,
+        "height": 1920,
+        "r_frame_rate": "30/1"
+      },
+      {
+        "codec_type": "audio",
+        "r_frame_rate": "0/0"
+      }
+    ],
+    "format": {
+      "duration": "62.139667"
+    }
+  },
+  "captions": {
+    "status": "PASS",
+    "cues": 26,
+    "time_scale": 1.0006871024365107,
+    "path": "dist/captions.srt"
+  },
+  "output": "dist/final.mp4"
+}
