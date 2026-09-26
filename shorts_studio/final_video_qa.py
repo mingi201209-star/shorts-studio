@@ -473,6 +473,93 @@ def verify_first_5s_coverage(metrics: dict, min_unique: int = 3) -> dict:
     return {"status": "PASS", "evidence": metrics}
 
 
+# A global reuse ratio under the cap can still hide a real, viewer-visible
+# problem: a couple of "generic" families each sitting right at the cap,
+# with the ending specifically leaning on material already shown earlier
+# instead of anything about the story's actual aftermath. This gate scores
+# the ending as its own segment rather than folding it into the whole-video
+# ratio, since a video can pass every whole-video check and still end on
+# "show the opening photo again and roll credits."
+ENDING_WINDOW_SECONDS = 18.0
+ENDING_FINAL_WINDOW_SECONDS = 10.0
+ENDING_MIN_NEW_RATIO = 0.6
+ENDING_MIN_FINAL_WINDOW_UNIQUE = 2
+
+def compute_ending_novelty(scene_windows: list[dict], project, total_duration: float,
+                            ending_seconds: float = ENDING_WINDOW_SECONDS,
+                            final_window_seconds: float = ENDING_FINAL_WINDOW_SECONDS) -> dict:
+    """Whether the video's real ending shows genuinely new material or just
+    revisits what's already been shown earlier. Family-based throughout (a
+    crop/zoom/new montage of an already-used source is not novel), and
+    scoped against the actual rendered duration, not the manifest's nominal
+    scene boundaries."""
+    by_id = {scene.id: scene for scene in project.scenes}
+    timeline = []
+    for w in scene_windows:
+        scene = by_id.get(w.get("scene"))
+        for beat in getattr(scene, "visual_beats", None) or []:
+            abs_t = float(w.get("start", 0.0)) + float(getattr(beat, "start", 0.0))
+            ident = getattr(beat, "asset", None) or getattr(beat, "asset_url", None) or ""
+            timeline.append({"scene": w.get("scene"), "start": abs_t, "family": _source_family(ident)})
+    timeline.sort(key=lambda e: e["start"])
+
+    def family_rep(key, reps):
+        return next((r for r in reps if key and _same_source_family(key, r)), None)
+
+    ending_cutoff = total_duration - ending_seconds
+    final_cutoff = total_duration - final_window_seconds
+
+    earlier_reps: list[str] = []
+    for e in timeline:
+        if e["start"] < ending_cutoff and e["family"] and family_rep(e["family"], earlier_reps) is None:
+            earlier_reps.append(e["family"])
+
+    ending_beats = [e for e in timeline if e["start"] >= ending_cutoff]
+    new_ending_beats = [e for e in ending_beats if e["family"] and family_rep(e["family"], earlier_reps) is None]
+    new_ratio = (len(new_ending_beats) / len(ending_beats)) if ending_beats else 1.0
+
+    final_window_new_reps: list[str] = []
+    for e in timeline:
+        if e["start"] >= final_cutoff and e["family"] and family_rep(e["family"], earlier_reps) is None:
+            if family_rep(e["family"], final_window_new_reps) is None:
+                final_window_new_reps.append(e["family"])
+
+    last_beat = timeline[-1] if timeline else None
+    last_beat_is_reused_generic = bool(last_beat and last_beat["family"] and family_rep(last_beat["family"], earlier_reps) is not None)
+
+    return {
+        "ending_seconds": ending_seconds,
+        "final_window_seconds": final_window_seconds,
+        "ending_cutoff": ending_cutoff,
+        "ending_beat_count": len(ending_beats),
+        "ending_new_beat_count": len(new_ending_beats),
+        "ending_new_ratio": new_ratio,
+        "final_window_unique_new_count": len(final_window_new_reps),
+        "last_beat_family": last_beat["family"] if last_beat else None,
+        "last_beat_is_reused_generic": last_beat_is_reused_generic,
+        "ending_beats_detail": ending_beats,
+    }
+
+def verify_ending_novelty(metrics: dict, min_new_ratio: float = ENDING_MIN_NEW_RATIO,
+                           min_final_window_unique: int = ENDING_MIN_FINAL_WINDOW_UNIQUE) -> dict:
+    """FAIL if the ending doesn't earn its own novelty: not enough of its
+    beats are genuinely new material, not enough distinct new sources show
+    up in the closing seconds, or the very last beat reuses an already-seen
+    generic family."""
+    for e in metrics["ending_beats_detail"]:
+        print(f"[ending] {e['scene']}@{e['start']:.1f}s family='{(e['family'] or '')[:40]}'")
+    reasons = []
+    if metrics["ending_new_ratio"] < min_new_ratio - 1e-9:
+        reasons.append(f"only {metrics['ending_new_ratio']:.0%} of the last {metrics['ending_seconds']:.0f}s beats are genuinely new material (need >= {min_new_ratio:.0%})")
+    if metrics["final_window_unique_new_count"] < min_final_window_unique:
+        reasons.append(f"only {metrics['final_window_unique_new_count']} new unique source(s) in the last {metrics['final_window_seconds']:.0f}s (need >= {min_final_window_unique})")
+    if metrics["last_beat_is_reused_generic"]:
+        reasons.append(f"the final visual beat reuses an already-shown source family ('{(metrics['last_beat_family'] or '')[:40]}')")
+    if reasons:
+        return {"status": "FAIL", "reason": "; ".join(reasons), "evidence": metrics}
+    return {"status": "PASS", "evidence": metrics}
+
+
 # Loose keyword proxies for the narration semantic categories this project's
 # stories tend to move through. Purely informational (reported, not gated
 # on) -- a real semantic classifier is out of scope, but this at least shows
@@ -613,10 +700,12 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     novelty_violations = compute_novelty_window_violations(project)
     first_5s_coverage = compute_first_5s_family_coverage(scene_windows, project)
     semantic_coverage = compute_semantic_visual_coverage(project)
+    ending_novelty = compute_ending_novelty(scene_windows, project, final_duration)
     if getattr(project, "strict_source_diversity", False):
         checks["global_source_reuse"] = verify_global_source_reuse(global_reuse)
         checks["visual_novelty"] = verify_visual_novelty(novelty_violations)
         checks["first_5s_coverage"] = verify_first_5s_coverage(first_5s_coverage)
+        checks["ending_novelty"] = verify_ending_novelty(ending_novelty)
 
     title_samples = []
     if scene_windows:
@@ -681,6 +770,9 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         "semantic_visual_coverage": semantic_coverage["semantic_visual_coverage"],
         "first_5s_unique_sources": first_5s_coverage["first_5s_unique_sources"],
         "repeated_source_timestamps": global_reuse["repeated_source_timestamps"],
+        "ending_new_ratio": ending_novelty["ending_new_ratio"],
+        "ending_final_window_unique_new_count": ending_novelty["final_window_unique_new_count"],
+        "ending_last_beat_is_reused_generic": ending_novelty["last_beat_is_reused_generic"],
     }
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
