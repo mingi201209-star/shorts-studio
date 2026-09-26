@@ -10,6 +10,7 @@ from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
 from .final_video_qa import run_final_video_qa, verify_source_budget, verify_retention_contract
 from .captions import merge_scene_srt_files
+from .entertainment_qa import run_entertainment_contract_report
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -527,6 +528,15 @@ def render(manifest:str,dry_run:bool=False)->dict:
     final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build)
     overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) and final_video["status"]=="PASS" else "FAIL"
     report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"captions":caption_result,"output":str(final)}
+    # Psychological Entertainment Contract (Layer 2), Phase 1: report-only,
+    # deliberately a SIBLING key to final_video_qa, never folded into its
+    # `checks` dict or the `overall` computation above -- see
+    # entertainment_qa.run_entertainment_contract_report's docstring. None
+    # (omitted entirely) when the project declares no event_graph, which is
+    # every existing production manifest today.
+    entertainment_contract=run_entertainment_contract_report(p,scene_windows)
+    if entertainment_contract is not None:
+        report["entertainment_contract"]=entertainment_contract
     write_report(dist/"qa_report.json",report)
     if overall!="PASS":
         raise RuntimeError(f"QA failed: {report}")
