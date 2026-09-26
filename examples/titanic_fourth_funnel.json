@@ -11,134 +11,768 @@
       "id": "scene_01",
       "narration": "타이타닉에는 거대한 굴뚝이 네 개 있었습니다. 그런데 네 번째 굴뚝은 보일러와 연결돼 있지 않았습니다.",
       "narration_plan": [
-        {"role": "HOOK", "text": "타이타닉에는 거대한 굴뚝이 네 개 있었습니다", "focus": true},
-        {"role": "HOOK", "text": "그런데 네 번째 굴뚝은 보일러와 연결돼 있지 않았습니다", "focus": true}
+        {
+          "role": "HOOK",
+          "text": "타이타닉에는 거대한 굴뚝이 네 개 있었습니다",
+          "focus": true
+        },
+        {
+          "role": "HOOK",
+          "text": "그런데 네 번째 굴뚝은 보일러와 연결돼 있지 않았습니다",
+          "focus": true
+        }
       ],
       "visual_description": "실제 타이타닉 전경에서 네 개 굴뚝을 보여준 뒤 3번과 4번 굴뚝의 실제 사진으로 전환",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton%2C%20April%209th%20of%201912.jpg",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton%2C%20April%209th%20of%201912.jpg?width=1280",
       "attribution": "Wikimedia Commons / public domain",
-      "motion": {"type": "push_in"},
-      "visual_qa_requirements": ["실제 RMS Titanic과 네 개 굴뚝이 명확하게 보여야 함"],
-      "visual_qa_labels": ["historical photograph of RMS Titanic showing four funnels"],
-      "visual_qa_negative_labels": ["modern cruise ship", "movie still", "AI generated ship"],
+      "motion": {
+        "type": "push_in"
+      },
+      "visual_qa_requirements": [
+        "실제 RMS Titanic이 부두에 정박한 모습과 네 개 굴뚝이 뚜렷하게 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical photograph of RMS Titanic docked in daylight showing all four funnels and dockside cranes"
+      ],
+      "visual_qa_negative_labels": [
+        "modern cruise ship",
+        "movie still",
+        "AI generated ship"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton%2C%20April%209th%20of%201912.jpg", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["타이타닉 전경과 네 개 굴뚝"], "visual_qa_labels": ["RMS Titanic with four funnels"]},
-        {"start": 1.7, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg", "attribution": "Kate Odell / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["타이타닉의 3번과 4번 굴뚝 실제 사진"], "visual_qa_labels": ["Titanic third and fourth funnels on boat deck"]},
-        {"start": 3.6, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png", "attribution": "White Star Line / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["Olympic급 선박의 실제 시대 단면도"], "visual_qa_labels": ["historical Olympic and Titanic cutaway diagram"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton%2C%20April%209th%20of%201912.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 RMS Titanic이 부두에 정박한 모습과 네 개 굴뚝이 뚜렷하게 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of RMS Titanic docked in daylight showing all four funnels and dockside cranes"
+          ],
+          "visual_qa_negative_labels": [
+            "modern cruise ship",
+            "movie still",
+            "AI generated ship"
+          ]
+        },
+        {
+          "start": 2.36,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg?width=1280",
+          "attribution": "Kate Odell / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "타이타닉의 3번과 4번 굴뚝이 가까이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "close historical photograph of Titanic's third and fourth funnels on the boat deck"
+          ],
+          "visual_qa_negative_labels": [
+            "modern cruise ship",
+            "movie still",
+            "AI generated ship"
+          ]
+        },
+        {
+          "start": 4.71,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20and%20RMS%20Olympic%20under%20construction%20at%20Harland%20%26%20Wolff%20shipyards%2C%20Belfast%2C%20ca.%201910%20%283015565255%29.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Harland and Wolff 조선소에서 건조 중인 Titanic과 Olympic의 실제 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic and Olympic under construction side by side at Harland & Wolff shipyard"
+          ],
+          "visual_qa_negative_labels": [
+            "modern shipyard",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 6.98,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg?width=1280",
+          "attribution": "Robert Welch / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Olympic급에 사용된 실제 대형 해양 보일러 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Olympic class marine boilers"
+          ],
+          "visual_qa_negative_labels": [
+            "modern boiler",
+            "AI generated image"
+          ]
+        }
       ]
     },
     {
       "id": "scene_02",
       "narration": "실제로 1912년 영국 조사 보고서는 앞의 세 굴뚝만 여섯 보일러실의 연기를 내보냈다고 기록했습니다.",
       "narration_plan": [
-        {"role": "EVIDENCE", "text": "실제로 1912년 영국 조사 보고서는", "focus": true},
-        {"role": "EXPLAIN", "text": "앞의 세 굴뚝만 여섯 보일러실의 연기를 내보냈다고 기록했습니다"}
+        {
+          "role": "EVIDENCE",
+          "text": "실제로 1912년 영국 조사 보고서는",
+          "focus": true
+        },
+        {
+          "role": "EXPLAIN",
+          "text": "앞의 세 굴뚝만 여섯 보일러실의 연기를 내보냈다고 기록했습니다"
+        }
       ],
       "visual_description": "Olympic급 보일러와 보일러실 구조, 굴뚝으로 이어지는 배기 구조",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg",
-      "attribution": "Robert Welch / Wikimedia Commons / public domain",
-      "motion": {"type": "pan_right"},
-      "visual_qa_requirements": ["Olympic급에 사용된 실제 대형 해양 보일러 사진"],
-      "visual_qa_labels": ["historical photograph of Olympic class marine boilers"],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/London%20Scottish%20Drill%20Hall%20before%20the%20start%20of%20the%20British%20inquiry%20into%20the%20Titanic%20disaster.jpg?width=1280",
+      "attribution": "Wikimedia Commons / public domain",
+      "motion": {
+        "type": "pan_right"
+      },
+      "visual_qa_requirements": [
+        "1912년 실제 영국 조사(British Inquiry) 시작 전 회의장과 타이타닉 축소 모형이 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical photograph of the London Scottish Drill Hall set up for the 1912 British inquiry into the Titanic disaster, with a large ship model on display"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg", "attribution": "Robert Welch / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["Olympic급 보일러"], "visual_qa_labels": ["Olympic class boilers"]},
-        {"start": 2.4, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png", "attribution": "White Star Line / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["선박 내부 기관 배치 단면도"], "visual_qa_labels": ["Titanic cutaway machinery diagram"]},
-        {"start": 4.8, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20being%20fitted%20out%20at%20Harland%20and%20Wolff%20in%20Belfast%2C%20Ireland%2C%20with%20three%20funnels.jpg", "attribution": "Robert John Welch / PRONI / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["건조 중 세 굴뚝이 설치된 타이타닉"], "visual_qa_labels": ["Titanic fitting out with three funnels installed"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/London%20Scottish%20Drill%20Hall%20before%20the%20start%20of%20the%20British%20inquiry%20into%20the%20Titanic%20disaster.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 실제 영국 조사(British Inquiry) 시작 전 회의장과 타이타닉 축소 모형이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of the London Scottish Drill Hall set up for the 1912 British inquiry into the Titanic disaster, with a large ship model on display"
+          ],
+          "visual_qa_negative_labels": [
+            "modern courtroom",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "a9de67a0b312032f20feefd05b143ec392df2a14acd856e7ccc6de19a782a762"
+          ]
+        },
+        {
+          "start": 2.32,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20sea%20trials%20April%202%2C%201912.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 해상 시험 중 예인선에 이끌리는 실제 타이타닉 전경이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "wide historical photograph of RMS Titanic under tow during sea trials with smoke from all four funnels"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 4.64,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20being%20fitted%20out%20at%20Harland%20and%20Wolff%20in%20Belfast%2C%20Ireland%2C%20with%20three%20funnels.jpg?width=1280",
+          "attribution": "Robert John Welch / PRONI / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "건조 중 세 개의 굴뚝만 설치된 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic fitting out with only three funnels installed"
+          ],
+          "visual_qa_negative_labels": [
+            "modern shipyard",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 6.88,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Sea%20Trials%202%20April%201912.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 해상 시험 중 선수 방향에서 촬영된 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical bow-on photograph of RMS Titanic during sea trials flanked by tugboats"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        }
+      ],
+      "visual_qa_negative_labels": [
+        "modern courtroom",
+        "AI generated image"
       ]
     },
     {
       "id": "scene_03",
       "narration": "그래서 네 번째는 흔히 가짜 굴뚝이라고 불립니다. 하지만 그냥 장식으로 세운 빈 통은 아니었습니다.",
       "narration_plan": [
-        {"role": "TURN", "text": "그래서 네 번째는 흔히 가짜 굴뚝이라고 불립니다"},
-        {"role": "TURN", "text": "하지만 그냥 장식으로 세운 빈 통은 아니었습니다", "focus": true}
+        {
+          "role": "TURN",
+          "text": "그래서 네 번째는 흔히 가짜 굴뚝이라고 불립니다"
+        },
+        {
+          "role": "TURN",
+          "text": "하지만 그냥 장식으로 세운 빈 통은 아니었습니다",
+          "focus": true
+        }
       ],
       "visual_description": "굴뚝이 없던 진수 직후 타이타닉, 건조 과정, 완성된 네 번째 굴뚝의 실제 모습",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20launched%20at%20Belfast.jpg",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20launched%20at%20Belfast.jpg?width=1280",
       "attribution": "Library of Congress / Wikimedia Commons / public domain",
-      "motion": {"type": "push_in"},
-      "visual_qa_requirements": ["진수 직후 아직 굴뚝이 설치되지 않은 실제 타이타닉"],
-      "visual_qa_labels": ["Titanic launched at Belfast without funnels"] ,
+      "motion": {
+        "type": "push_in"
+      },
+      "visual_qa_requirements": [
+        "진수 직후 굴뚝이 아직 설치되지 않은 실제 타이타닉 사진이 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical photograph of Titanic just after launch at Belfast with no funnels or superstructure yet"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20launched%20at%20Belfast.jpg", "attribution": "Library of Congress / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["굴뚝 설치 전 타이타닉"], "visual_qa_labels": ["Titanic launched without funnels"]},
-        {"start": 2.5, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20and%20RMS%20Olympic%20under%20construction%20at%20Harland%20%26%20Wolff%20shipyards%2C%20Belfast%2C%20ca.%201910%20%283015565255%29.jpg", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["Harland and Wolff에서 건조 중인 Olympic과 Titanic"], "visual_qa_labels": ["Olympic and Titanic under construction in Belfast"]},
-        {"start": 5.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg", "attribution": "Kate Odell / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["완성된 타이타닉의 3번과 4번 굴뚝"], "visual_qa_labels": ["Titanic third and fourth funnels"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20launched%20at%20Belfast.jpg?width=1280",
+          "attribution": "Library of Congress / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "진수 직후 굴뚝이 아직 설치되지 않은 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic just after launch at Belfast with no funnels or superstructure yet"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 2.3,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/London%20Scottish%20Drill%20Hall%20before%20the%20start%20of%20the%20British%20inquiry%20into%20the%20Titanic%20disaster.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 실제 영국 조사(British Inquiry) 시작 전 회의장과 타이타닉 축소 모형이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of the London Scottish Drill Hall set up for the 1912 British inquiry into the Titanic disaster, with a large ship model on display"
+          ],
+          "visual_qa_negative_labels": [
+            "modern courtroom",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "a9de67a0b312032f20feefd05b143ec392df2a14acd856e7ccc6de19a782a762"
+          ]
+        },
+        {
+          "start": 4.6,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg?width=1280",
+          "attribution": "Kate Odell / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "타이타닉의 3번과 4번 굴뚝이 가까이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "close historical photograph of Titanic's third and fourth funnels on the boat deck"
+          ],
+          "visual_qa_negative_labels": [
+            "modern cruise ship",
+            "movie still",
+            "AI generated ship"
+          ]
+        },
+        {
+          "start": 6.81,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg?width=1280",
+          "attribution": "Robert Welch / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Olympic급에 사용된 실제 대형 해양 보일러 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Olympic class marine boilers"
+          ],
+          "visual_qa_negative_labels": [
+            "modern boiler",
+            "AI generated image"
+          ]
+        }
+      ],
+      "visual_qa_negative_labels": [
+        "modern ship",
+        "AI generated image"
       ]
     },
     {
       "id": "scene_04",
       "narration": "네 번째 굴뚝은 터빈실 바로 위에 놓였고, 뜨거운 공기를 밖으로 빼내는 거대한 환기구 역할을 했습니다.",
       "narration_plan": [
-        {"role": "EXPLAIN", "text": "네 번째 굴뚝은 터빈실 바로 위에 놓였고"},
-        {"role": "REVEAL", "text": "뜨거운 공기를 밖으로 빼내는 거대한 환기구 역할을 했습니다", "focus": true}
+        {
+          "role": "EXPLAIN",
+          "text": "네 번째 굴뚝은 터빈실 바로 위에 놓였고"
+        },
+        {
+          "role": "REVEAL",
+          "text": "뜨거운 공기를 밖으로 빼내는 거대한 환기구 역할을 했습니다",
+          "focus": true
+        }
       ],
       "visual_description": "단면도에서 후방 터빈실과 네 번째 굴뚝 위치를 보여주고 실제 후방 굴뚝 사진으로 연결",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png?width=1280",
       "attribution": "White Star Line / Wikimedia Commons / public domain",
-      "motion": {"type": "pan_right"},
-      "visual_qa_requirements": ["Olympic급 선박 내부 구조를 보여주는 시대 단면도"],
-      "visual_qa_labels": ["Olympic Titanic cutaway diagram showing machinery spaces"],
+      "motion": {
+        "type": "pan_right"
+      },
+      "visual_qa_requirements": [
+        "Olympic급 선박의 실제 시대 단면도가 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical Olympic and Titanic cutaway diagram showing internal machinery arrangement"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png", "attribution": "White Star Line / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["후방 기관 구획을 포함한 단면도"], "visual_qa_labels": ["Titanic cutaway machinery arrangement"]},
-        {"start": 2.5, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg", "attribution": "Kate Odell / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["4번 굴뚝을 가까이 볼 수 있는 실제 사진"], "visual_qa_labels": ["close historical photograph of Titanic fourth funnel"]},
-        {"start": 5.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20sea%20trials%20April%202%2C%201912.jpg", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["해상 시험 중인 실제 타이타닉"], "visual_qa_labels": ["RMS Titanic during sea trials in 1912"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png?width=1280",
+          "attribution": "White Star Line / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Olympic급 선박의 실제 시대 단면도가 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical Olympic and Titanic cutaway diagram showing internal machinery arrangement"
+          ],
+          "visual_qa_negative_labels": [
+            "modern diagram",
+            "AI generated illustration"
+          ]
+        },
+        {
+          "start": 2.21,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%20propeller%20shaft%20installation.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "건조 중 실제 타이타닉의 프로펠러 샤프트를 설치하는 실제 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of workers installing Titanic's massive propeller shaft in dry dock"
+          ],
+          "visual_qa_negative_labels": [
+            "modern shipyard",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "0d4fb923ebadbf7a632406c7c01618552b7af113167c227cdc331456c9d2706e"
+          ]
+        },
+        {
+          "start": 4.41,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20launched%20at%20Belfast.jpg?width=1280",
+          "attribution": "Library of Congress / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "진수 직후 굴뚝이 아직 설치되지 않은 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic just after launch at Belfast with no funnels or superstructure yet"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 6.54,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20being%20fitted%20out%20at%20Harland%20and%20Wolff%20in%20Belfast%2C%20Ireland%2C%20with%20three%20funnels.jpg?width=1280",
+          "attribution": "Robert John Welch / PRONI / Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "건조 중 세 개의 굴뚝만 설치된 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic fitting out with only three funnels installed"
+          ],
+          "visual_qa_negative_labels": [
+            "modern shipyard",
+            "AI generated image"
+          ]
+        }
+      ],
+      "visual_qa_negative_labels": [
+        "modern diagram",
+        "AI generated illustration"
       ]
     },
     {
       "id": "scene_05",
       "narration": "여기에는 주방에서 나온 배기 통로도 연결됐습니다. 실제 승무원은 이 굴뚝 안에 환기용 팬 네 대가 있었다고 증언했습니다.",
       "narration_plan": [
-        {"role": "EVIDENCE", "text": "여기에는 주방에서 나온 배기 통로도 연결됐습니다"},
-        {"role": "EVIDENCE", "text": "실제 승무원은 이 굴뚝 안에 환기용 팬 네 대가 있었다고 증언했습니다", "focus": true}
+        {
+          "role": "EVIDENCE",
+          "text": "여기에는 주방에서 나온 배기 통로도 연결됐습니다"
+        },
+        {
+          "role": "EVIDENCE",
+          "text": "실제 승무원은 이 굴뚝 안에 환기용 팬 네 대가 있었다고 증언했습니다",
+          "focus": true
+        }
       ],
       "visual_description": "타이타닉 갑판과 네 번째 굴뚝, 시대 단면도와 실제 완성선 사진",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg",
-      "attribution": "Kate Odell / Wikimedia Commons / public domain",
-      "motion": {"type": "push_in"},
-      "visual_qa_requirements": ["타이타닉 후방 굴뚝의 실제 1912년 사진"],
-      "visual_qa_labels": ["Titanic fourth funnel historical photograph"],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Sea%20Trials%202%20April%201912.jpg?width=1280",
+      "attribution": "Wikimedia Commons / public domain",
+      "motion": {
+        "type": "push_in"
+      },
+      "visual_qa_requirements": [
+        "1912년 해상 시험 중 선수 방향에서 촬영된 실제 타이타닉 사진이 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical bow-on photograph of RMS Titanic during sea trials flanked by tugboats"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%27s%203rd%20and%204rd%20funnels.jpg", "attribution": "Kate Odell / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["3번과 4번 굴뚝"], "visual_qa_labels": ["Titanic third and fourth funnels"]},
-        {"start": 2.5, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%20%26%20Titanic%20cutaway%20diagram.png", "attribution": "White Star Line / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["내부 공간과 후방 기관실 구조"], "visual_qa_labels": ["Titanic cutaway diagram"]},
-        {"start": 5.2, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20in%20Southampton.jpg", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["1912년 Southampton의 실제 Titanic"], "visual_qa_labels": ["Titanic at Southampton in 1912"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Sea%20Trials%202%20April%201912.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 해상 시험 중 선수 방향에서 촬영된 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical bow-on photograph of RMS Titanic during sea trials flanked by tugboats"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 2.68,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20and%20RMS%20Olympic%20under%20construction%20at%20Harland%20%26%20Wolff%20shipyards%2C%20Belfast%2C%20ca.%201910%20%283015565255%29.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Harland and Wolff 조선소에서 건조 중인 Titanic과 Olympic의 실제 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic and Olympic under construction side by side at Harland & Wolff shipyard"
+          ],
+          "visual_qa_negative_labels": [
+            "modern shipyard",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 5.36,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton%2C%20April%209th%20of%201912.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "실제 RMS Titanic이 부두에 정박한 모습과 네 개 굴뚝이 뚜렷하게 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of RMS Titanic docked in daylight showing all four funnels and dockside cranes"
+          ],
+          "visual_qa_negative_labels": [
+            "modern cruise ship",
+            "movie still",
+            "AI generated ship"
+          ]
+        },
+        {
+          "start": 7.94,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20sea%20trials%20April%202%2C%201912.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 해상 시험 중 예인선에 이끌리는 실제 타이타닉 전경이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "wide historical photograph of RMS Titanic under tow during sea trials with smoke from all four funnels"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        }
+      ],
+      "visual_qa_negative_labels": [
+        "modern ship",
+        "AI generated image"
       ]
     },
     {
       "id": "scene_06",
       "narration": "그러니까 네 번째 굴뚝은 엔진을 움직이는 연기 굴뚝은 아니었지만, 배 안의 열과 배기를 처리하는 실제 설비였습니다.",
       "narration_plan": [
-        {"role": "PAYOFF", "text": "네 번째 굴뚝은 엔진을 움직이는 연기 굴뚝은 아니었지만"},
-        {"role": "PAYOFF", "text": "배 안의 열과 배기를 처리하는 실제 설비였습니다", "focus": true}
+        {
+          "role": "PAYOFF",
+          "text": "네 번째 굴뚝은 엔진을 움직이는 연기 굴뚝은 아니었지만"
+        },
+        {
+          "role": "PAYOFF",
+          "text": "배 안의 열과 배기를 처리하는 실제 설비였습니다",
+          "focus": true
+        }
       ],
       "visual_description": "보일러, 내부 단면, 완성된 네 번째 굴뚝을 차례로 보여주며 기능 차이를 정리",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg",
-      "attribution": "Robert Welch / Wikimedia Commons / public domain",
-      "motion": {"type": "pan_left"},
-      "visual_qa_requirements": ["실제 Olympic급 보일러와 Titanic 관련 구조 자료"],
-      "visual_qa_labels": ["Olympic class boilers and Titanic machinery context"],
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Launching%20Belfast%20May%2031%201911.jpg?width=1280",
+      "attribution": "Wikimedia Commons / public domain",
+      "motion": {
+        "type": "pan_left"
+      },
+      "visual_qa_requirements": [
+        "1911년 5월 31일 진수 당일 군중과 갠트리, 멀리 보이는 선체가 실제 사진으로 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical photograph of the crowd watching Titanic's launch on 31 May 1911, with gantry towers and the hull visible in the distance"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Olympic%27s%20boilers.jpg", "attribution": "Robert Welch / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["대형 해양 보일러"], "visual_qa_labels": ["Olympic class marine boilers"]},
-        {"start": 2.5, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20being%20fitted%20out%20at%20Harland%20and%20Wolff%20in%20Belfast%2C%20Ireland%2C%20with%20three%20funnels.jpg", "attribution": "Robert John Welch / PRONI / Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["굴뚝 설치 과정의 실제 Titanic"], "visual_qa_labels": ["Titanic fitting out in Belfast"]},
-        {"start": 5.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20passenger%20liner%20in%20Southampton.jpg", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["완성된 Titanic의 실제 전경"], "visual_qa_labels": ["completed RMS Titanic in Southampton"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Launching%20Belfast%20May%2031%201911.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1911년 5월 31일 진수 당일 군중과 갠트리, 멀리 보이는 선체가 실제 사진으로 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of the crowd watching Titanic's launch on 31 May 1911, with gantry towers and the hull visible in the distance"
+          ],
+          "visual_qa_negative_labels": [
+            "modern crowd",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "af2332ffed088b2f18a479ee462535e1078679fbe0fd01b9d3dcd9b732b5e01b"
+          ]
+        },
+        {
+          "start": 2.41,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Olympic%27s%20propellers.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Titanic와 동일 설계인 Olympic호의 실제 프로펠러 3기가 드라이독에서 보여야 하며 중앙의 터빈 구동 프로펠러가 포함되어야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of RMS Olympic's (Titanic's identical sister ship) three real propellers in dry dock including the center turbine-driven propeller, with workers for scale"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "bdfe3e9694e0b2404cbb7e87fab5aa7a9141959cb3854e3b857bba98a3619944"
+          ]
+        },
+        {
+          "start": 4.83,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20stern%20under%20construction.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "타이타닉 선미부 건조 현장의 실제 대형 비계와 골조 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic's stern under construction inside the shipyard gantry scaffolding"
+          ],
+          "visual_qa_negative_labels": [
+            "modern construction site",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "4b27edcb76a04cbe63c9a0677e7ea2444056bc1e561ab0983f5036d1bd72a04c"
+          ]
+        },
+        {
+          "start": 7.15,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20leaving%2044%20port%20place%20in%20Southampton.png?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Southampton 44번 부두를 떠나는 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of RMS Titanic departing pier 44 at Southampton"
+          ],
+          "visual_qa_negative_labels": [
+            "modern ship",
+            "AI generated image"
+          ]
+        }
+      ],
+      "visual_qa_negative_labels": [
+        "modern crowd",
+        "AI generated image"
       ]
     },
     {
       "id": "scene_07",
       "narration": "결국 가짜라는 말은 절반만 맞습니다. 타이타닉의 네 번째 굴뚝은 불필요한 장식이 아니라, 다른 일을 하던 굴뚝이었습니다.",
       "narration_plan": [
-        {"role": "CONCLUSION", "text": "결국 가짜라는 말은 절반만 맞습니다", "focus": true},
-        {"role": "CONCLUSION", "text": "타이타닉의 네 번째 굴뚝은 불필요한 장식이 아니라 다른 일을 하던 굴뚝이었습니다"}
+        {
+          "role": "CONCLUSION",
+          "text": "결국 가짜라는 말은 절반만 맞습니다",
+          "focus": true
+        },
+        {
+          "role": "CONCLUSION",
+          "text": "타이타닉의 네 번째 굴뚝은 불필요한 장식이 아니라 다른 일을 하던 굴뚝이었습니다"
+        }
       ],
       "visual_description": "결말은 앞에서 쓰지 않은 타이타닉 해상 시험 및 출항 자료를 중심으로 네 굴뚝의 완성된 실루엣을 보여줌",
-      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Sea%20Trials%202%20April%201912.jpg",
+      "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Construction%20of%20White%20Star%20Liner%20Number%20433.jpg?width=1280",
       "attribution": "Wikimedia Commons / public domain",
-      "motion": {"type": "push_in"},
-      "visual_qa_requirements": ["1912년 실제 Titanic의 네 굴뚝이 보이는 사진"],
-      "visual_qa_labels": ["RMS Titanic sea trials four funnels"],
+      "motion": {
+        "type": "push_in"
+      },
+      "visual_qa_requirements": [
+        "타이타닉의 실제 건조번호 433번 선체가 아롤 갠트리 아래 건조되는 실제 사진이 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "historical photograph of Titanic (Yard No. 433) under construction beneath the Arrol Gantry with steel plates in the foreground"
+      ],
       "visual_beats": [
-        {"start": 0.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20Sea%20Trials%202%20April%201912.jpg", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["해상 시험 중인 타이타닉"], "visual_qa_labels": ["Titanic sea trials 2 April 1912"]},
-        {"start": 2.5, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20leaving%2044%20port%20place%20in%20Southampton.png", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["Southampton을 떠나는 실제 Titanic"], "visual_qa_labels": ["Titanic leaving Southampton pier 44"]},
-        {"start": 5.0, "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton.png", "attribution": "Wikimedia Commons / public domain", "motion": {"type": "static"}, "visual_qa_requirements": ["네 개 굴뚝이 보이는 완성된 Titanic"], "visual_qa_labels": ["RMS Titanic in Southampton showing four funnels"]}
+        {
+          "start": 0.0,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Construction%20of%20White%20Star%20Liner%20Number%20433.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "타이타닉의 실제 건조번호 433번 선체가 아롤 갠트리 아래 건조되는 실제 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic (Yard No. 433) under construction beneath the Arrol Gantry with steel plates in the foreground"
+          ],
+          "visual_qa_negative_labels": [
+            "modern shipyard",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "1423a193ce0689649b74cb5bd25e68fb5638192158f172ba60bb8fdeafa20d89"
+          ]
+        },
+        {
+          "start": 2.48,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/RMS%20Titanic%20in%20Southampton.png?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "1912년 Southampton 부두에서 군중과 예인선에 둘러싸인 실제 타이타닉 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of RMS Titanic docked at Southampton with a crowd, tugboat smoke, and a dockside crane"
+          ],
+          "visual_qa_negative_labels": [
+            "modern cruise ship",
+            "AI generated image"
+          ]
+        },
+        {
+          "start": 4.96,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Knocking%20off%20at%20Harland%20%26%20Wolff%2C%20Belfast.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "Harland and Wolff 조선소에서 퇴근하는 실제 노동자들의 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of shipyard workers leaving Harland & Wolff at the end of a shift, with shipyard structures in the background"
+          ],
+          "visual_qa_negative_labels": [
+            "modern crowd",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "18c20df66e74b7f4bbe1b4daed249147d087e0392654a132e3794b46007d4b71"
+          ]
+        },
+        {
+          "start": 7.34,
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Titanic%20stern%20under%20construction.jpg?width=1280",
+          "attribution": "Wikimedia Commons / public domain",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "타이타닉 선미부 건조 현장의 실제 대형 비계와 골조 사진이 보여야 함"
+          ],
+          "visual_qa_labels": [
+            "historical photograph of Titanic's stern under construction inside the shipyard gantry scaffolding"
+          ],
+          "visual_qa_negative_labels": [
+            "modern construction site",
+            "AI generated image"
+          ],
+          "visual_qa_expected_sha256": [
+            "4b27edcb76a04cbe63c9a0677e7ea2444056bc1e561ab0983f5036d1bd72a04c"
+          ]
+        }
+      ],
+      "visual_qa_negative_labels": [
+        "modern shipyard",
+        "AI generated image"
       ]
     }
   ]
