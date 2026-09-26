@@ -1,0 +1,140 @@
+{
+  "images": [
+    {
+      "src": "/libraries/nist-component-library/dist/img/us_flag_small.png",
+      "alt": "U.S. flag",
+      "caption": ""
+    },
+    {
+      "src": "/libraries/nist-component-library/dist/img/icon-dot-gov.svg",
+      "alt": "",
+      "caption": ""
+    },
+    {
+      "src": "/libraries/nist-component-library/dist/img/icon-https.svg",
+      "alt": "",
+      "caption": ""
+    },
+    {
+      "src": "/libraries/nist-component-library/dist/img/logo/nist_logo_sidestack.svg",
+      "alt": "National Institute of Standards and Technology",
+      "caption": ""
+    },
+    {
+      "src": "/libraries/nist-component-library/dist/img/logo/logo.svg",
+      "alt": "National Institute of Standards and Technology",
+      "caption": ""
+    },
+    {
+      "src": "/libraries/nist-component-library/dist/img/usa-icons-bg/search--white.svg",
+      "alt": "Search",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/styles/1400_x_1400_limit/public/images/2022/04/20/Exhibit%20Title%20Banner-01.png.webp?itok=W-6QDqNY",
+      "alt": "The Forgotten Radium Scientists Exhibit Title Banner with portraits of Elizabeth Elmore Damon, Constance Torrey, Mary Brower, Elizabeth Yung-Kwai, and Nina Alderton",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/04/service-pnp-ds-14900-14942v.jpg.webp?itok=lXfC8Kjl",
+      "alt": "Don't Fear Cancer, Fight it! Poster, text: Further information may be secured from the United States Public Health Service, Washington, D.C. The American Society for the Control of Cancer, 1250 Sixth Avenue, New York, N.Y.",
+      "caption": "A federal public health poster from the 1930s. NBS radium measurements helped the medical community safely utilize recently developed treatments for cancer. Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/04/NoahE.Dorsey.png.webp?itok=QaGCIqFH",
+      "alt": "Portrait of Noah E. Dorsey",
+      "caption": "Chief of the NBS Radium group Noah E. Dorsey in an employee identification photo from 1918. Dorsey hired female laboratory staff and instituted safety measures for working with radium. Credit: NIST Archives"
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/14/Exhibit%20Line-01.png",
+      "alt": "Forgotten Scientists Green and Black Line",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/04/Damon.jpg",
+      "alt": "Newspaper Clipping of Elizabeth Damon: Text: Gram of Radium For New York State",
+      "caption": "“Elizabeth Damon of the Bureau of Standards handing a representative of the Radio Chemical corporation a tube containing one gram of radium for New York State, valued at $120,000. This is the first shipment tested by the Bureau. It will be used for social service purposes in the New York State Institute for Cancer Research.” Fulton County Tribune, August 13, 1920. Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/04/Lind%20Electroscope%20072121_0.png",
+      "alt": "Lind Electroscope, circa. early 20th century",
+      "caption": "An early 20thy century Lind Electroscope at NIST in 2021, likely the same one use by Elizabeth Damon to measure radon gas. She would use a similar instrument to help the radium dial painters seek justice for their injuries. For more information on Lind-type electroscopes, see the ORAU Museum of Radiation and Radioactivity . Credit: Bert Coursey, NIST"
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/04/Radium%20Paint%20Advertisement.png",
+      "alt": "Newspaper clipping of The \"Radio-Watech\", Text: The \"Radio-luminous watch\" is the latest novelty in timepieces. An English company is making 'em. The dials and hands are illuminated by a radium compound that makes it easy to tell the time in the dark. The above picture shows how the face of the radio-watch looks in the dark of the moon.",
+      "caption": "A 1912 newspaper advertisement for a radium painted watch dial. The Detroit Times, July 23, 1912. Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/04/Radium%20Dial%20Painters.png",
+      "alt": "Newspaper Clipping with the Headline \"Radium Disease Victims May See Industry Done Away With.\"",
+      "caption": "A 1929 newspaper headline about the radium dial painters. The Indianapolis Times , November 20, 1929. Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/14/Exhibit%20Line-01.png.webp?itok=AS6Y5pV2",
+      "alt": "Forgotten Scientists Green and Black Line",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/20/Constance%20Torrey%20in%20her%20lab%20at%20NBS%20in%201925.%20.jpg",
+      "alt": "Constance Torrey in her lab at NBS in 1925. ",
+      "caption": "Constance Torrey in her lab at NBS, 1925. Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/20/electroscope%20that%20Torrey%20would%20have%20used%20from%201928%20-1949%20.JPG",
+      "alt": "Electroscope that Constance Torrey would have used from 1928 -1949.",
+      "caption": "A circa 1928 gamma-ray electroscope, pictured at NIST in 2021, that had been used by Constance Torrey for radium measurements. Credit: Bert Coursey, NIST"
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/14/Exhibit%20Line-01.png.webp?itok=AS6Y5pV2",
+      "alt": "Forgotten Scientists Green and Black Line",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/04/Mary%20Bower.png",
+      "alt": "Mary Brower photograph",
+      "caption": "Mary Brower is shown here in a 1924 photograph from the Washington Evening Star newspaper with the caption “Miss Mary Brower of the Bureau of Standards, an expert who measured four million dollars of radium recently.” Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/14/Exhibit%20Line-01.png.webp?itok=AS6Y5pV2",
+      "alt": "Forgotten Scientists Green and Black Line",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/04/Elizabeth%20Yung-Kwai.png",
+      "alt": "Portrait of Elizabeth Yung-Kwai",
+      "caption": "Elizabeth Yung-Kwai in an NBS employee identification photo from 1918. Credit: NIST Archives"
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/14/Exhibit%20Line-01.png.webp?itok=AS6Y5pV2",
+      "alt": "Forgotten Scientists Green and Black Line",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/styles/480_x_480_limit/public/images/2022/04/21/Nina%20M.%20Alderton.jpg.webp?itok=9w97iFqv",
+      "alt": "Nina Alderton",
+      "caption": "Nina Alderton in an NBS employee identification photo from 1918. Credit: NIST Archives"
+    },
+    {
+      "src": "/sites/default/files/styles/220_x_220_limit/public/images/2022/04/04/service-pnp-cph-3f00000-3f05000-3f05300-3f05353v.jpg?itok=foC1bs1V",
+      "alt": "X-Ray Radium Surgery Federal Public Health Poster, circa 1930. Text: The three recognized treatments for cancer. Consult you doctor of health bureau.",
+      "caption": "A federal public health poster circa 1930s. The work of the NBS radium group helped protect both patients and health care workers from the negative effects of radium and x-rays. Credit: Library of Congress"
+    },
+    {
+      "src": "/sites/default/files/images/2022/04/14/Exhibit%20Line-01.png",
+      "alt": "Forgotten Scientists Green and Black Line",
+      "caption": ""
+    },
+    {
+      "src": "/sites/default/files/styles/220_x_220_limit/public/images/2022/04/04/RadiumChem.png?itok=UYLRW6qU",
+      "alt": "Radium Chemistry Graphic",
+      "caption": ""
+    },
+    {
+      "src": "/libraries/nist-component-library/dist/img/logo/NIST-Logo-Brand-White.svg",
+      "alt": "National Institute of Standards and Technology logo",
+      "caption": ""
+    }
+  ],
+  "full_text": "The Forgotten Radium Scientists | NIST\nSkip to main content\nAn official website of the United States government\nHere’s how you know\nHere’s how you know\nOfficial websites use .gov\nA\n.gov\nwebsite belongs to an official government organization in the United States.\nSecure .gov websites use HTTPS\nA\nlock\n(\nLock\nA locked padlock\n) or\nhttps://\nmeans you’ve safely connected to the .gov website. Share sensitive information only on official, secure websites.\nhttps://www.nist.gov/nist-museum/forgotten-radium-scientists\nSearch NIST\nMenu\nClose\nPublications\nWhat We Do\nAll Topics\nAdvanced communications\nArtificial intelligence\nBioscience\nBuildings and construction\nChemistry\nCybersecurity and Privacy\nElectronics\nEnergy\nEnvironment\nFire\nForensic science\nHealth\nInformation technology\nInfrastructure\nManufacturing\nMaterials\nMathematics and statistics\nMetrology\nNanotechnology\nNeutron research\nPerformance excellence\nPhysics\nPublic safety\nQuantum information science\nResilience\nStandards\nTransportation\nLabs & Major Programs\nLaboratories\nCommunications Technology Laboratory\nEngineering Laboratory\nInformation Technology Laboratory\nMaterial Measurement Laboratory\nPhysical Measurement Laboratory\nUser Facilities\nNIST Center for Neutron Research\nCNST NanoFab\nResearch Test Beds\nResearch Projects\nTools & Instruments\nMajor Programs\nCHIPS for America Initiative\nCongressionally Identified Project Program (CIPP)\nManufacturing Extension Partnership (MEP)\nManufacturing USA\nOffice of Advanced Manufacturing\nTechnology Partnerships Office\nServices & Resources\nMeasurements and Standards\nCalibration Services\nLaboratory Accreditation (NVLAP)\nQuality System\nStandard Reference Materials (SRMs)\nStandard Reference Instruments (SRIs)\nStandards.gov\nTime Services\nOffice of Weights and Measures\nSoftware\nData\nChemistry WebBook\nNational Vulnerability Database\nPhysical Reference Data\nStandard Reference Data (SRD)\nStorefront\nLicense & Patents\nComputer Security Resource Center (CSRC)\nNIST Research Library\nNews & Events\nNews\nEvents\nBlogs\nNIST In Focus\nFeature Stories\nAwards\nVideo Gallery\nImage Gallery\nMedia Contacts\nAbout NIST\nAbout Us\nLeadership\nOrganization Structure\nBudget & Planning\nContact Us\nVisit\nCareers\nStudent programs\nWork with NIST\nHistory\nNIST Digital Archives\nNIST Museum\nNIST and the Nobel\nEducational Resources\nNIST Museum & Archives\nWelcome\nMuseum\nOnline Exhibits\nNIST Digital Archives\nArchives\nNIST Research Library\nThe Forgotten Radium Scientists\nDuring and just after World War I the National Bureau of Standards (NBS) hired five women to work with one of the most valuable materials in the world at the time — Radium— worth the equivalent today of over $1 million per gram. Their measurements of this material would be used to save lives; if the radioactive radium didn’t injure or kill them first. But they received little credit for this dangerous and important work.\nRadium and Medicine\nA federal public health poster from the 1930s. NBS radium measurements helped the medical community safely utilize recently developed treatments for cancer.\nCredit:\nLibrary of Congress\nIn 1898 Marie Curie and her husband Pierre discovered the new radioactive element radium that would change the direction of science and medicine in the early 20th century. Marie Curie found that radium existed in minute quantities in uranium ores, and she was able to chemically separate less than a gram of radium from several tons of ore. These tiny amounts of radium were soon found to be promising for the treatment of cancer, and a new international industry was born to manufacture radium products for medical therapy. Accurate measurements and national standards were required to guarantee the radioactive strength of radium samples and enable commercial transactions of this rare and valuable material.\nNBS Radium Research Begins\nIn 1914 a radium research group was established at NBS and began recruiting staff. But soon after the world was upended by the outbreak of World War I. With a labor shortage caused by the war, NBS began hiring women for the first time into entry-level chemistry and physics positions. Between 1917 and 1921 five female researchers were brought on for radium work. Three would conduct radium radioactivity measurements (Elizabeth Damon, Constance Torrey and Mary Brower), one researched radium luminous materials (Elizabeth Yung-Kwai), and one worked on radiation protective materials (Nina Alderton). All five had attended leading colleges and universities, and all but one (Yung-Kwai) had earned baccalaureate degrees. “In the radium work it is desirable to employ [laboratory workers] of more than usual ability,” wrote the NBS radium group chief Noah E. Dorsey in a 1920 report.\nTechnical challenges in the use of radiation measuring equipment and the hazards associated with handling radium required these workers to be both skillful and reliable in following proper protocols.\nChief of the NBS Radium group Noah E. Dorsey in an employee identification photo from 1918. Dorsey hired female laboratory staff and instituted safety measures for working with radium.\nCredit:\nNIST Archives\nDespite a growing demand for their work, many of these researchers initially stayed at NBS for only a few years. That career choice was by design, due to the danger of working with radioactive material. The radium group chief Noah E. Dorsey himself suffered radiation burns while working with radium and encouraged his staff to seek other employment after gaining some work experience at NBS.\nThese five individuals made critical contributions to allow the safe and accurate use of radium. But apart from occasional newspaper articles about them, they did not receive the accolades they deserved for their service to the nation. “At least two of these women – Elizabeth Damon and Constance Torrey—if working in the present day, would have received Department of Commerce medals for their work on radium metrology,” stated radiation physics historian and retired NIST Ionizing Radiation Division chief Bert Coursey, “it is remarkable that - in spite of handling large quantities of radium in the early decades of the 20th century – these women lived into their eighties (except Constance Torrey who died suddenly at age 50.)”\nThe Five Forgotten Scientists\nElizabeth Elmore Damon\n(1898 – 1988, active at NBS 1919 - 1920 & 1931 - 1961)\n“Elizabeth Damon of the Bureau of Standards handing a representative of the Radio Chemical corporation a tube containing one gram of radium for New York State, valued at $120,000. This is the first shipment tested by the Bureau. It will be used for social service purposes in the New York State Institute for Cancer Research.” Fulton County Tribune, August 13, 1920.\nCredit:\nLibrary of Congress\nElizabeth Elmore Damon graduated from the University of Vermont in 1919 and joined NBS that same year. Damon arrived at the apex of the NBS radium work following World War I and was directly involved in two of the most important radium projects: standardization of radium sources for the medical community, and measurement of radon gas from uranium ores. The latter experience would prove very important seven years later.\nShe stayed at NBS for only one year before leaving to take positions in private industry. In 1927 Elizabeth (née Damon) Hughes became one of the\nleading scientists involved in the court case\nof the so-called “Radium Girls” or radium dial painters – young women in New Jersey hired to apply glow-in-the-dark radium paint onto watch dials. These workers’ supervisors instructed them to sharpen the point of their paint brushes by licking the tips, which the company insisted was safe, but caused the workers to ingest radioactive radium. Over time this caused devastating, and sometimes fatal, injuries. When five of these women sued their employer, the company denied wrongdoing and a lengthy court case ensued. A lawyer representing the women hired Elizabeth Hughes to measure the amount of radium in the workers bodies by an analysis of their exhaled breath. Hughes utilized the same techniques and similar equipment she had used in her research at NBS measuring radon gas. Her work on the case proved the workers had ingested so much radium that their breath was toxic, and Hughes testimony in court was important in winning the case for the dial painters. In 1931 Hughes returned to NBS to work on optics and physical chemistry, staying until her retirement in 1961. She died in Washington, DC in 1988 at age 90.\nAn early 20thy century Lind Electroscope at NIST in 2021, likely the same one use by Elizabeth Damon to measure radon gas. She would use a similar instrument to help the radium dial painters seek justice for their injuries. For more information on Lind-type electroscopes, see the\nORAU Museum of Radiation and Radioactivity\n.\nCredit:\nBert Coursey, NIST\nA 1912 newspaper advertisement for a radium painted watch dial. The Detroit Times, July 23, 1912.\nCredit:\nLibrary of Congress\nA 1929 newspaper headline about the radium dial painters.\nThe Indianapolis Times\n, November 20, 1929.\nCredit:\nLibrary of Congress\nConstance Torrey\n(1899 – 1949, active at NBS 1920 –\n1949)\nConstance Torrey in her lab at NBS, 1925.\nCredit:\nLibrary of Congress\nConstance Torrey received her bachelor’s degree in physics from Smith College in 1919 and joined NBS in August 1920. It seems that she replaced Elizabeth Damon who had left a month before. A 1934 newspaper feature about Torrey was titled “Radium Holds No Terror for Capitol’s Woman Expert”. She was credited as having tested ten times more radium than Marie Curie ever saw, an indication of radium’s increasing utilization. NBS claimed that she had tested 70 grams of radium, valued at five million dollars. She also developed improved methods for standardizing low-activity radium sources. Torrey died in Washington, DC in 1949 at the age of 50.\nA circa 1928 gamma-ray electroscope, pictured at NIST in 2021, that had been used by Constance Torrey for radium measurements.\nCredit:\nBert Coursey, NIST\nMary Brower\n(1885 – 1974, active at NBS 1921 – 1930 & 1943 – 1954)\nMary Brower is shown here in a 1924 photograph from the Washington Evening Star newspaper with the caption “Miss Mary Brower of the Bureau of Standards, an expert who measured four million dollars of radium recently.”\nCredit:\nLibrary of Congress\nMary Brower received her bachelor’s degree in physics from Goucher College and joined NBS in 1921. Brower worked alongside Constance Torrey measuring radium samples for medical use until 1930. They were both participants in a U.S. Public Health Service study of NBS staff during 1922-1923. The NBS workers were subjected to periodic physical examinations and blood sampling over an 18-month period. The study concluded:\n“All known precautions against radiation are employed, and for several years no indications of injury have been found in the blood of the employees, which is examined regularly every two months.”\nMary (née Brower) Harrington returned to NBS in 1943 and worked in radio research until 1954. She died in Maryland in 1974 at the age of 89.\nElizabeth Yung-Kwai\n(1898 – 1984, active at NBS 1917 – 1920)\nElizabeth Yung-Kwai in an NBS employee identification photo from 1918.\nCredit:\nNIST Archives\nOne of the earliest known Asian American women to work at NBS, Elizabeth Yung-Kwai was the daughter of a Chinese American diplomatic family. In 1917 the Wellesley College student began work at NBS investigating luminous radium materials. These materials were needed for the war effort to illuminate airplane dials, gun and bomb sights, and compasses and other navigation instruments. They were also used in civilian life for illuminating the dials of clocks and watches, and for marking push buttons, pull sockets, and emergency signage in dark places. Yung-Kwai researched and performed surface brightness measurements on these materials. She co-authored a paper, “Studies of Radium Luminous Materials,” that was presented at the April 1919 meeting of the American Physical Society. She left NBS in 1920 to marry and start a family, but she returned to government service during World War II as a member of the\nWomen's Army Corps\n. She died in 1984 in California at age 86.\nNina Alderton\n(1890 – 1973, active at NBS 1917 – 1919 & 1945 – 1954)\nNina Alderton in an NBS employee identification photo from 1918.\nCredit:\nNIST Archives\nNina Alderton (later Moore) earned undergraduate degrees in physics and mathematics from Mount Holyoke College. She then attended graduate courses at Yale and Columbia Universities and obtained her master’s degree in mathematics from Columbia University in 1915. She was hired by NBS in 1917 to study radiation protective materials. She shared an office with Elizabeth Yung-Kwai.\nA federal public health poster circa 1930s. The work of the NBS radium group helped protect both patients and health care workers from the negative effects of radium and x-rays.\nCredit:\nLibrary of Congress\nThe medical profession was well-aware of the need to protect hospital technicians from unwanted radiation exposures from both radium and x-rays. Thomas Edison, one of the pioneer inventors of x-ray systems, expressed great fear of x-rays after the death of his assistant following their early x-ray work. U.S. industry urged NBS to develop standards for radiation protective materials. Alderton worked with a small team to measure the protective properties of lead glass, lead impregnated rubber, and other protective materials. Her research was presented during the 1919 American Physical Society conference, and NBS would also report in that year that “the Bureau [NBS] has been markedly successful in securing an improvement in the quality of these [radiation protective] materials.”\nAlderton went on to earn a Ph. D. in mathematics from the University of California Berkeley in 1921, and taught at colleges in California, Arkansas, and West Virginia. She returned to NBS from 1945 to 1954, working on temperature measurements. She died in British Columbia in 1973 at age 83\nRadiation Metrology at NIST Today\nThe radiation metrology first undertaken at NBS by these five researchers has continued at NIST through the present day. NIST’s current\nRadioactivity Group\nnotes that its nuclear medicine program provides the National standards for radionuclides used in 13 million diagnostic procedures and 200,000 therapeutic nuclear medicine procedures performed annually in the United States.\n*This exhibit was partially adapted from “\nThe National Bureau of Standards and the Radium Dial Painters\n”, Bert M. Coursey,\nJournal of Research of the National Institute of Standards and Technology\n, Vol. 126, Article No. 126051. (2021).\nExample of how to reference this exhibit:\nNIST Museum. 2022.\nThe Forgotten Radium Scientists\n. Gaithersburg, MD: National Institute of Standards and Technology. Online.\nhttps://www.nist.gov/nist-museum/forgotten-radium-scientists\nAuthor. Year.\nExhibit Name\n. Place published: Publisher. Online. URL.\nContacts\nNIST Research Library & Museum\n[email protected]\n(301) 975-3052\nCreated April 4, 2022, Updated June 14, 2022\nWas this page helpful?\nHEADQUARTERS\n100 Bureau Drive\nGaithersburg, MD 20899\n301-975-2000\nWebmaster\n|\nContact Us\n|\nOur Other Offices\nX.com\nFacebook\nLinkedIn\nInstagram\nYouTube\nGiphy\nRSS Feed\nMailing List\nHow are we doing?\nFeedback\nSite Privacy\nAccessibility\nPrivacy Program\nCopyright & Disclaimers\nVulnerability Disclosure\nNo Fear Act Policy\nFOIA\nEnvironmental Policy\nScientific Integrity\nInformation Quality Standards\nCommerce.gov\nScience.gov\nUSA.gov\nVote.gov"
+}
