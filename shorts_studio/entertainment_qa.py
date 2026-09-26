@@ -535,6 +535,7 @@ def build_observed_evidence(graph, scene_windows: list[dict], judge: SemanticJud
     # of their merely-declared text.
     real_text_by_id: dict[str, str | None] = {}
     real_start_by_id: dict[str, float | None] = {}
+    real_end_by_id: dict[str, float | None] = {}
     observed_by_id: dict[str, bool] = {}
     for e in graph.events:
         window = windows_by_scene.get(e.scene_id)
@@ -552,6 +553,7 @@ def build_observed_evidence(graph, scene_windows: list[dict], judge: SemanticJud
                     end = base + float(end)
         real_text_by_id[e.id] = text
         real_start_by_id[e.id] = start
+        real_end_by_id[e.id] = end
         observed_by_id[e.id] = observed
 
     evidence: dict[str, ObservedEventEvidence] = {}
@@ -646,7 +648,7 @@ def build_observed_evidence(graph, scene_windows: list[dict], judge: SemanticJud
 
         evidence[e.id] = ObservedEventEvidence(
             event_id=e.id, observed=observed,
-            real_narration_text=text, real_start=start, real_end=real_start_by_id.get(e.id),
+            real_narration_text=text, real_start=start, real_end=real_end_by_id.get(e.id),
             real_visual_cut_nearby=cut_nearby,
             judge_verdict=verdict.status, judge_quote=verdict.quote,
             declared_status="DECLARED", observed_status=observed_status,
