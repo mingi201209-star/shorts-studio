@@ -8,7 +8,7 @@ from .tts import synthesize_plan
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
-from .final_video_qa import run_final_video_qa, verify_source_budget
+from .final_video_qa import run_final_video_qa, verify_source_budget, verify_retention_contract
 from .captions import merge_scene_srt_files
 
 def _srt_time(x:float)->str:
@@ -472,6 +472,16 @@ def render(manifest:str,dry_run:bool=False)->dict:
         budget=verify_source_budget(p)
         if budget["status"]!="PASS":
             raise RuntimeError(f"source budget check failed: {budget['reason']}")
+    # Retention-engine contract (Idea Gate era): script-level, so it's cheap
+    # to fail BEFORE a real render -- exactly like the source-budget gate
+    # above. Opt-in via strict_retention_contract (see models.py) so every
+    # manifest written before this contract existed keeps rendering exactly
+    # as before.
+    if getattr(p,"strict_retention_contract",False):
+        retention=verify_retention_contract(p)
+        if retention["status"]!="PASS":
+            failing={k:v for k,v in retention["checks"].items() if v["status"]=="FAIL"}
+            raise RuntimeError(f"retention contract check failed: {failing}")
     if dry_run: return {"status":"PASS","scenes":len(p.scenes),"mode":"dry-run"}
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         raise RuntimeError("FFmpeg/ffprobe required")

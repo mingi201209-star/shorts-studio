@@ -20,6 +20,14 @@ class VisualBeat(BaseModel):
     visual_qa_labels: list[str] = Field(default_factory=list)
     visual_qa_negative_labels: list[str] = Field(default_factory=list)
     visual_qa_expected_sha256: list[str] = Field(default_factory=list)
+    # Optional, free-text label for what NEW information this beat delivers
+    # (e.g. "storage_tank_scale", "rupture_point", "trial_outcome"). Purely
+    # authorial -- the engine does not interpret its meaning, only whether
+    # the exact same label appears more than once (see
+    # final_video_qa.compute_information_progression). A beat with no
+    # info_role is simply not checked; this keeps every manifest that
+    # predates the Information Change Contract unaffected.
+    info_role: str | None = None
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -107,6 +115,14 @@ class Project(BaseModel):
     # across narratively adjacent beats. Projects that do have the material
     # (and the narrative complaint these gates were built for) turn this on.
     strict_source_diversity: bool = False
+    # Opt-in retention-engine contract: First-Second Hook, Information
+    # Change, Story Progression, Ending Payoff, and Runtime Discipline (see
+    # shorts_studio/final_video_qa.py and shorts_studio/idea_gate.py). Off by
+    # default so every manifest written before this contract existed
+    # (comet.json, radium_girls.json, titanic_fourth_funnel.json) keeps
+    # passing QA exactly as before -- this is a stricter bar a NEW
+    # production opts into, not a retroactive requirement.
+    strict_retention_contract: bool = False
 
     @model_validator(mode="after")
     def vertical(self):

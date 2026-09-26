@@ -13,6 +13,8 @@ import subprocess
 import urllib.parse
 from pathlib import Path
 
+from .retention_rules import hook_violation, is_generic_establishing_text, token_overlap_ratio, is_near_duplicate_text
+
 _QA_FFMPEG_TIMEOUT_SECONDS = 180
 
 def _extract_frame(video: Path, ts: float, out: Path) -> Path:
@@ -662,6 +664,216 @@ def verify_narration_continuity(video: Path, max_silence_seconds: float = 1.5) -
                 "silence_starts": starts, "max_silence_seconds": max_silence_seconds}
     return {"status": "PASS", "max_silence_seconds": max_silence_seconds}
 
+# ---------------------------------------------------------------------------
+# Retention-engine contracts (opt-in via Project.strict_retention_contract):
+# First-Second Hook, Information Change, Story Progression, Ending Payoff,
+# and Runtime Discipline. All of these are script-level -- they only look at
+# the manifest (`project`), never the rendered video -- so they can run
+# BEFORE spending a real render, exactly like verify_source_budget above,
+# and are re-reported in the final qa_report.json for the same reason the
+# source-diversity metrics are: a human reading the report should be able to
+# see the whole retention picture without re-deriving it.
+# ---------------------------------------------------------------------------
+
+def _first_narration_phrase_text(scene) -> str:
+    plan = getattr(scene, "narration_plan", None) or []
+    if plan:
+        return plan[0].text
+    return getattr(scene, "narration", "") or ""
+
+def verify_hook_opener(project) -> dict:
+    """The very first spoken phrase of the whole video must not be a
+    greeting, a topic announcement, or 'today we'll look at X' framing --
+    see retention_rules.HOOK_BANNED_PATTERNS. If narration_plan is authored,
+    its first phrase's role must also be HOOK."""
+    if not project.scenes:
+        return {"status": "FAIL", "reason": "no scenes"}
+    first_scene = project.scenes[0]
+    text = _first_narration_phrase_text(first_scene)
+    reason = hook_violation(text)
+    if reason:
+        return {"status": "FAIL", "reason": f"first spoken phrase matches a banned hook opener ({reason}): {text!r}"}
+    plan = getattr(first_scene, "narration_plan", None) or []
+    if plan and plan[0].role != "HOOK":
+        return {"status": "FAIL", "reason": f"first narration_plan phrase's role is '{plan[0].role}', must be HOOK"}
+    return {"status": "PASS", "evidence": {"first_phrase": text}}
+
+def verify_first_beat_visual_grounding(project) -> dict:
+    """The first visual beat of the first scene must commit to showing a
+    concrete event/result, not a generic establishing shot."""
+    if not project.scenes:
+        return {"status": "FAIL", "reason": "no scenes"}
+    first_scene = project.scenes[0]
+    beats = getattr(first_scene, "visual_beats", None) or []
+    if beats:
+        reqs = beats[0].visual_qa_requirements or []
+        text = " ".join(reqs) if reqs else (getattr(first_scene, "visual_description", "") or "")
+    else:
+        text = getattr(first_scene, "visual_description", "") or ""
+    if not text.strip():
+        return {"status": "FAIL", "reason": "first visual beat declares no concrete visual requirement"}
+    if is_generic_establishing_text(text):
+        return {"status": "FAIL", "reason": f"first visual beat reads as a generic establishing shot: {text!r}"}
+    return {"status": "PASS", "evidence": {"first_beat_text": text}}
+
+def verify_first_beat_narration_visual_sync(project) -> dict:
+    """Not just 'a cut happened' -- the first spoken words and the first
+    visual requirement must actually be about the same thing. A zero-overlap
+    result means the opening narration and the opening picture may be
+    describing unrelated content."""
+    if not project.scenes:
+        return {"status": "FAIL", "reason": "no scenes"}
+    first_scene = project.scenes[0]
+    narration_text = _first_narration_phrase_text(first_scene)
+    beats = getattr(first_scene, "visual_beats", None) or []
+    if beats:
+        req_text = " ".join(beats[0].visual_qa_requirements or [])
+    else:
+        req_text = " ".join(getattr(first_scene, "visual_qa_requirements", None) or [])
+    if not req_text.strip():
+        return {"status": "NOT_EVALUATED", "reason": "no visual requirement text declared to compare against"}
+    overlap = token_overlap_ratio(narration_text, req_text)
+    if overlap <= 0.0:
+        return {"status": "FAIL", "reason": "first narration and first visual requirement share no common words",
+                "evidence": {"narration": narration_text, "requirement": req_text, "overlap": overlap}}
+    return {"status": "PASS", "evidence": {"narration": narration_text, "requirement": req_text, "overlap": overlap}}
+
+
+def compute_information_progression(project) -> dict:
+    """Every beat that declares an info_role (VisualBeat.info_role,
+    models.py), in timeline order, plus which ones repeat an already-used
+    label -- a beat with a duplicate info_role is, by the author's own
+    declaration, not delivering new information."""
+    entries = []
+    for scene in project.scenes:
+        for beat in getattr(scene, "visual_beats", None) or []:
+            role = getattr(beat, "info_role", None)
+            if role and role.strip():
+                entries.append({"scene": scene.id, "start": float(getattr(beat, "start", 0.0)), "info_role": role.strip()})
+    total_beats = sum(len(getattr(s, "visual_beats", None) or []) for s in project.scenes)
+    seen: dict[str, dict] = {}
+    duplicates = []
+    for e in entries:
+        key = e["info_role"].lower()
+        if key in seen:
+            duplicates.append({**e, "first_seen": seen[key]})
+        else:
+            seen[key] = {"scene": e["scene"], "start": e["start"]}
+    return {
+        "total_beats": total_beats,
+        "declared_info_role_count": len(entries),
+        "declared_info_role_ratio": (len(entries) / total_beats) if total_beats else 0.0,
+        "duplicate_info_roles": duplicates,
+    }
+
+MIN_DECLARED_INFO_ROLE_RATIO = 0.8
+
+def verify_information_progression(metrics: dict, min_declared_ratio: float = MIN_DECLARED_INFO_ROLE_RATIO) -> dict:
+    """FAIL if any beat repeats an already-declared info_role (no new
+    information despite a real picture change), or if too few beats bother
+    declaring their information role at all for a project that opted into
+    this contract."""
+    if metrics["duplicate_info_roles"]:
+        for d in metrics["duplicate_info_roles"]:
+            print(f"[info-progression] {d['scene']}@{d['start']:.1f}s repeats info_role '{d['info_role']}' first declared at {d['first_seen']['scene']}@{d['first_seen']['start']:.1f}s")
+        return {"status": "FAIL", "reason": f"{len(metrics['duplicate_info_roles'])} beat(s) declare an info_role already used earlier -- no new information", "evidence": metrics}
+    if metrics["total_beats"] and metrics["declared_info_role_ratio"] < min_declared_ratio - 1e-9:
+        return {"status": "FAIL", "reason": f"only {metrics['declared_info_role_ratio']:.0%} of beats declare an info_role (need >= {min_declared_ratio:.0%})", "evidence": metrics}
+    return {"status": "PASS", "evidence": metrics}
+
+
+MIN_DISTINCT_NARRATIVE_ROLES = 4
+
+def _all_narration_roles(project) -> list[str]:
+    roles = []
+    for scene in project.scenes:
+        for phrase in getattr(scene, "narration_plan", None) or []:
+            roles.append(phrase.role)
+    return roles
+
+def verify_story_progression(project) -> dict:
+    """Reject a flat 'A and B and C' script: requires an authored
+    narration_plan (role-tagged, see models.NarrationPhrase), the first
+    phrase's role to be HOOK, at least MIN_DISTINCT_NARRATIVE_ROLES distinct
+    roles used across the whole video, and every scene to introduce at least
+    one role not already covered by an earlier scene (a real state change,
+    not a scene that only repeats narrative functions already served)."""
+    roles = _all_narration_roles(project)
+    if not roles:
+        return {"status": "FAIL", "reason": "no narration_plan roles declared -- Story Progression requires an authored role-tagged script, not a flat narration string"}
+    if roles[0] != "HOOK":
+        return {"status": "FAIL", "reason": f"first narration phrase's role is '{roles[0]}', must be HOOK", "evidence": {"roles": roles}}
+    distinct = len(set(roles))
+    if distinct < MIN_DISTINCT_NARRATIVE_ROLES:
+        return {"status": "FAIL", "reason": f"only {distinct} distinct narrative role(s) used ({sorted(set(roles))}) -- reads as a flat script with no real state progression (need >= {MIN_DISTINCT_NARRATIVE_ROLES})", "evidence": {"roles": roles}}
+    seen_roles: set[str] = set()
+    stagnant = []
+    for scene in project.scenes:
+        roleset = {p.role for p in (getattr(scene, "narration_plan", None) or [])}
+        if roleset and roleset.issubset(seen_roles):
+            stagnant.append(scene.id)
+        seen_roles |= roleset
+    if stagnant:
+        return {"status": "FAIL", "reason": f"scene(s) {stagnant} introduce no narrative role beyond what earlier scenes already covered -- no state change in that scene", "evidence": {"roles": roles}}
+    return {"status": "PASS", "evidence": {"roles": roles, "distinct_roles": distinct}}
+
+def verify_ending_payoff_role(project) -> dict:
+    """The last spoken phrase of the video must be a PAYOFF or REVEAL, not
+    an EXPLANATION/SETUP tail -- the ending must not just summarize."""
+    if not project.scenes:
+        return {"status": "FAIL", "reason": "no scenes"}
+    last_scene = project.scenes[-1]
+    plan = getattr(last_scene, "narration_plan", None) or []
+    if not plan:
+        return {"status": "FAIL", "reason": f"last scene {last_scene.id} has no narration_plan -- cannot confirm a PAYOFF/REVEAL closes the video"}
+    last_role = plan[-1].role
+    if last_role not in ("PAYOFF", "REVEAL"):
+        return {"status": "FAIL", "reason": f"last narration phrase's role is '{last_role}', must be PAYOFF or REVEAL", "evidence": {"last_role": last_role}}
+    return {"status": "PASS", "evidence": {"last_role": last_role}}
+
+
+def verify_no_redundant_narration(project) -> dict:
+    """Runtime Discipline: fail if any two narration phrases (or whole-scene
+    narration strings, for scenes with no narration_plan) are near-duplicate
+    -- restated filler instead of new content in a 40-60s video wastes
+    exactly the seconds that should carry new information."""
+    texts = []
+    for scene in project.scenes:
+        plan = getattr(scene, "narration_plan", None) or []
+        if plan:
+            for p in plan:
+                texts.append((scene.id, p.text))
+        else:
+            texts.append((scene.id, getattr(scene, "narration", "") or ""))
+    violations = []
+    for i in range(len(texts)):
+        for j in range(i + 1, len(texts)):
+            if is_near_duplicate_text(texts[i][1], texts[j][1]):
+                violations.append({"a": {"scene": texts[i][0], "text": texts[i][1]}, "b": {"scene": texts[j][0], "text": texts[j][1]}})
+    if violations:
+        return {"status": "FAIL", "reason": f"{len(violations)} pair(s) of near-duplicate narration sentences found", "evidence": violations}
+    return {"status": "PASS"}
+
+
+def verify_retention_contract(project) -> dict:
+    """Aggregate pre-render gate for every opt-in retention check. Called
+    both from render() (fail before spending a render) and reported inside
+    run_final_video_qa's checks for the same project that already rendered,
+    so a human reading qa_report.json sees the whole retention picture."""
+    checks = {
+        "hook_opener": verify_hook_opener(project),
+        "first_beat_visual_grounding": verify_first_beat_visual_grounding(project),
+        "hook_narration_visual_sync": verify_first_beat_narration_visual_sync(project),
+        "story_progression": verify_story_progression(project),
+        "ending_payoff_role": verify_ending_payoff_role(project),
+        "no_redundant_narration": verify_no_redundant_narration(project),
+        "information_progression": verify_information_progression(compute_information_progression(project)),
+    }
+    blocking = {k: v for k, v in checks.items() if v["status"] == "FAIL"}
+    overall = "FAIL" if blocking else "PASS"
+    return {"status": overall, "checks": checks}
+
+
 def run_final_video_qa(video: Path, project, sources: list[dict], semantic_results: list[dict], probe: dict, scene_windows: list[dict], build_dir: Path) -> dict:
     """scene_windows: [{"scene": id, "start": cumulative_start_in_final_video,
     "caption_window": (start,end) or None}] -- caption_window is the first
@@ -706,6 +918,16 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         checks["visual_novelty"] = verify_visual_novelty(novelty_violations)
         checks["first_5s_coverage"] = verify_first_5s_coverage(first_5s_coverage)
         checks["ending_novelty"] = verify_ending_novelty(ending_novelty)
+
+    # Retention-engine contract (Idea-Gate era additions): script-level, so
+    # this is the same result render() already fail-closed on before
+    # spending the render -- reported again here so qa_report.json carries
+    # the whole retention picture in one place. Opt-in: see models.py.
+    information_progression = compute_information_progression(project)
+    retention_contract = None
+    if getattr(project, "strict_retention_contract", False):
+        retention_contract = verify_retention_contract(project)
+        checks["retention_contract"] = retention_contract
 
     title_samples = []
     if scene_windows:
@@ -773,6 +995,10 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         "ending_new_ratio": ending_novelty["ending_new_ratio"],
         "ending_final_window_unique_new_count": ending_novelty["final_window_unique_new_count"],
         "ending_last_beat_is_reused_generic": ending_novelty["last_beat_is_reused_generic"],
+        "declared_info_role_ratio": information_progression["declared_info_role_ratio"],
+        "duplicate_info_role_count": len(information_progression["duplicate_info_roles"]),
+        "distinct_narrative_roles": len(set(_all_narration_roles(project))),
+        "retention_contract_status": retention_contract["status"] if retention_contract else "NOT_EVALUATED",
     }
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
