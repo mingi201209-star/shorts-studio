@@ -1,0 +1,20 @@
+{
+  "dorsey": {
+    "url": "https://www.nist.gov/sites/default/files/images/2022/04/04/NoahE.Dorsey.png",
+    "sha256": "0beb136c5bc005b4cff5261d82c9d90bba442095ac97d5ed5d71cc7ad557b390",
+    "size": 13433,
+    "status": "ok"
+  },
+  "banner": {
+    "url": "https://www.nist.gov/sites/default/files/images/2022/04/20/Exhibit%20Title%20Banner-01.png",
+    "sha256": "5f236ad33cce1038212121d49182c43e4397220a4067ff85f180499a44016fcf",
+    "size": 446164,
+    "status": "ok"
+  },
+  "poster": {
+    "url": "https://www.nist.gov/sites/default/files/images/2022/04/04/service-pnp-cph-3f00000-3f05000-3f05300-3f05353v.jpg",
+    "sha256": "d2cc2bfe68ccbce652f71882a8bbfac90bd67011c48308a45a751370120b947a",
+    "size": 130191,
+    "status": "ok"
+  }
+}
