@@ -1,6 +1,9 @@
 name: check-trainwheel-asset
 on:
   workflow_dispatch:
+  push:
+    branches: [content/train-wheel-conicity]
+    paths: [.github/workflows/check-trainwheel-asset.yml]
 
 jobs:
   check:
