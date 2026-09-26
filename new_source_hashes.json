@@ -1,0 +1,41 @@
+{
+  "SHAFT": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/5/53/Titanic%27s_propeller_shaft_installation.jpg",
+    "sha256": "36d80ea73e8cf229c6c0ef4ca02321b8d922fcd2f1d7bcef578b6b403c0463ff",
+    "size": 2068197,
+    "status": "ok"
+  },
+  "STERN": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/4/48/Titanic_stern_under_construction.jpg",
+    "sha256": "c0d091a2794994e8d2217cc2f21b74aa9e1e9da215c5a0888512602cd55879e1",
+    "size": 2498379,
+    "status": "ok"
+  },
+  "GANTRY433": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/f/f1/Construction_of_White_Star_Liner_Number_433.jpg",
+    "sha256": "97580484dbf9ab5c11a12dd157206db19a182759ee1c19089f90a7377f9e8c79",
+    "size": 6671316,
+    "status": "ok"
+  },
+  "INQUIRY": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/2/26/London_Scottish_Drill_Hall_before_the_start_of_the_British_inquiry_into_the_Titanic_disaster.jpg",
+    "sha256": "a9de67a0b312032f20feefd05b143ec392df2a14acd856e7ccc6de19a782a762",
+    "size": 140125,
+    "status": "ok"
+  },
+  "PROP": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/0/05/RMS_Olympic%27s_propellers.jpg",
+    "error": "HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)",
+    "status": "failed"
+  },
+  "WORKERS": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Knocking_off_at_Harland_%26_Wolff%2C_Belfast.jpg",
+    "error": "HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)",
+    "status": "failed"
+  },
+  "LAUNCHCROWD": {
+    "url": "https://upload.wikimedia.org/wikipedia/commons/f/fc/Titanic_Launching_Belfast_May_31_1911.jpg",
+    "error": "HTTP Error 429: Too many requests - please contact noc@wikimedia.org to discuss a less disruptive approach or instead use thumbnail images in sizes listed on https://w.wiki/GHai. (0c640b1)",
+    "status": "failed"
+  }
+}
