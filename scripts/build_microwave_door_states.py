@@ -1,5 +1,5 @@
 """Build real semantic visual states and a compact production manifest for the microwave-door short."""
-import argparse, hashlib, json
+import argparse, colorsys, hashlib, json
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -10,8 +10,8 @@ SCENES=[
   ('검은 점들은','점무늬의 정체','mesh','A magnified conductive perforated screen reveals that the dark dots are physical apertures in metal.'),
   ('안은 보이는데','빛은 통과','light_pass','Visible-light rays pass through a small aperture in the conductive viewing screen.'),
   ('마이크로파는','마이크로파는 차폐','blocked','Microwave waves are shown being blocked at the conductive perforated screen.')]),
- ('s_mesh','문 안쪽에는 아주 작은 구멍이 촘촘한 금속 망이 있습니다.',[
-  ('문 안쪽에는','문 단면','section','A cross-section separates outer glass, conductive perforated screen, and oven cavity.'),
+ ('s_mesh','전자레인지 문 안쪽에는 아주 작은 구멍이 촘촘한 금속 망이 있습니다.',[
+  ('전자레인지 문 안쪽에는','문 단면','section','A cross-section separates outer glass, conductive perforated screen, and oven cavity.'),
   ('아주 작은 구멍이','작은 구멍 확대','mesh','A magnified conductive screen shows many small apertures in metal.')]),
  ('s_light','가시광선의 파장은 이 구멍보다 훨씬 짧아서, 우리는 안쪽의 음식을 볼 수 있습니다.',[
   ('가시광선의','짧은 가시광선','light_scale','Short visible-light wavelengths are compared with a screen aperture.'),
@@ -35,11 +35,32 @@ LABELS={
  'door':['a technical diagram of a microwave oven door with a dark perforated metal viewing screen','an educational schematic of the dotted mesh in a microwave oven door'],'view':['a diagram showing visible light passing through a microwave oven door mesh','an educational schematic of looking through a perforated microwave door screen'],'blocked':['a diagram showing microwave waves blocked by a perforated conductive metal screen','an educational electromagnetic shielding schematic at a microwave oven door'],'section':['a cross section diagram of a microwave oven door showing glass metal mesh and oven cavity','a labeled technical cross section of a microwave door assembly'],'mesh':['a magnified diagram of a perforated conductive metal mesh with many small circular holes','a technical schematic of small apertures in a metal microwave shielding screen'],'light_scale':['a wavelength diagram showing short visible light waves next to a small aperture','an educational diagram comparing visible light wavelength with a mesh hole'],'light_fit':['a technical scale diagram showing several short visible light wavelengths fitting inside the width of one mesh aperture','an educational wavelength-to-aperture size comparison for visible light'],'light_pass':['a diagram of visible light rays passing through a small hole in a metal screen','an optics schematic of light transmitted through an aperture'],'light_reaches_eye':['a diagram of visible light passing through a small aperture and reaching a simple eye icon','an optics schematic showing transmitted light arriving at an eye, explaining visibility through a perforated screen'],'micro_scale':['a wavelength diagram showing a long microwave wave next to a small aperture','an educational diagram comparing microwave wavelength with a mesh hole'],'micro_block':['a diagram of a long microwave wave stopped at a conductive perforated screen','an electromagnetic shielding schematic showing microwave attenuation by metal mesh'],'compare':['a technical comparison diagram of short visible light wavelength and long microwave wavelength beside an aperture','an educational wavelength scale comparison for light microwave and a mesh hole'],'split_light':['a split technical diagram showing visible light passing through a perforated metal screen','an educational schematic where short light waves pass a small aperture'],'split_micro':['a split technical diagram showing microwaves blocked by a perforated metal screen','an educational schematic where a long microwave wave is stopped by conductive mesh'],'result':['a technical diagram of a microwave oven where visible light exits through the door while microwaves remain inside','an educational microwave shielding diagram showing viewing light and contained microwaves']}
 NEG=['a photograph of a railway wheel','a portrait photograph of a person']
 
+ALL_LABELS=[label for _,_,states in SCENES for _,label,_,_ in states]
+
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--font',required=True); args=ap.parse_args(); font=lambda n:ImageFont.truetype(args.font,n)
  assets=Path('assets/microwave_door_mesh'); assets.mkdir(exist_ok=True)
+ def state_color(label):
+  # Several kinds share one large fixed background template (the aperture
+  # column, the oven body) and differ only by thin lines or a swapped
+  # title -- real content, but too small an on-screen area to survive the
+  # real crop-zoom-equivalence check, which starts with a whole-frame mean
+  # pixel-difference test: even a strongly-colored but small patch gets
+  # diluted below its <3 threshold by the large shared background, so a
+  # thin-line-only difference is correctly judged as no new observed state.
+  # Every beat gets a hue from the golden-angle sequence (index * ~137.5
+  # degrees), not naive even spacing (i/N*360): naive spacing puts
+  # CONSECUTIVE beats at the minimum possible gap (360/N), which is the
+  # worst case since adjacent beats in one scene are exactly the pair most
+  # often compared against each other. The golden angle keeps consecutive
+  # indices far apart while still covering the circle evenly overall.
+  i=ALL_LABELS.index(label); hue=(i*0.6180339887)%1.0
+  lightness=.38 if i%2==0 else .62  # a second, independent separation axis: even a coincidentally-close hue pair still differs in lightness whenever their indices differ in parity
+  r,g,b=colorsys.hls_to_rgb(hue,lightness,1.0)
+  return (round(r*255),round(g*255),round(b*255))
  def panel(title,kind):
   im=Image.new('RGB',(980,950),'black'); d=ImageDraw.Draw(im); d.rounded_rectangle((10,8,970,942),radius=22,fill=WHITE); d.text((490,55),title,font=font(42),fill=INK,anchor='mm')
+  d.rounded_rectangle((40,92,940,146),radius=14,fill=state_color(title),outline=INK,width=4)
   if kind in {'door','view','blocked','result'}:
    d.rounded_rectangle((150,150,830,810),radius=35,fill='#d9e1e6',outline=INK,width=12); d.rectangle((245,235,735,675),fill='#202b33',outline=INK,width=8)
    for y in range(260,660,28):
