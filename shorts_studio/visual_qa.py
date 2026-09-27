@@ -188,7 +188,11 @@ class ClipSemanticVisionProvider:
         if not positive:return {"status":"NOT_EVALUATED","reason":"no visual_qa_labels declared for scene"}
         bundle=_load_clip(self.model_name,self.pretrained)
         if bundle is None:return {"status":"NOT_EVALUATED","reason":"local CLIP model unavailable; install the 'vision' extra (open-clip-torch, torch)"}
-        try:scores=clip_zero_shot_scores(bundle,image,positive+negative,full_band=bool(context.get("media_box_applied")))
+        try:
+            if context.get("media_box_applied"):
+                scores=clip_zero_shot_scores(bundle,image,positive+negative,full_band=True)
+            else:
+                scores=clip_zero_shot_scores(bundle,image,positive+negative)
         except Exception as e:return {"status":"NOT_EVALUATED","reason":f"CLIP inference failed: {e}"}
         pos_scores=[scores[x] for x in positive];neg_scores=[scores[x] for x in negative]
         best_pos=max(pos_scores);mean_pos=sum(pos_scores)/len(pos_scores)
