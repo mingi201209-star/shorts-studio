@@ -24,7 +24,9 @@ jobs:
       - name: Full regression
         run: pytest -q
       - name: Generate microwave production manifest and assets
-        run: python scripts/build_microwave_door_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf
+        run: |
+          set -o pipefail
+          python scripts/build_microwave_door_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee microwave-generator.log
       - name: Validate production manifests
         run: |
           for manifest in examples/*.json; do
@@ -78,12 +80,15 @@ jobs:
             review_frames/
             build/*.srt
             build/*.timing.json
+            microwave-generator.log
             microwave-render.log
       - uses: actions/upload-artifact@v4
         if: failure() || cancelled()
         with:
           name: microwave-door-mesh-diagnostics
           retention-days: 7
+          if-no-files-found: warn
           path: |
             dist/
+            microwave-generator.log
             microwave-render.log
