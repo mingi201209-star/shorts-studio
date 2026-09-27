@@ -1,4 +1,5 @@
 import hashlib
+import shutil
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -8,6 +9,9 @@ import pytest
 
 from shorts_studio.models import Project, Scene, VisualBeat, VisualChange
 from shorts_studio.visual_change import audit_visual_changes, equivalent_framing, resolve_visual_cues
+
+
+requires_ffmpeg = pytest.mark.skipif(shutil.which('ffmpeg') is None, reason='requires ffmpeg')
 
 
 def beat(tmp_path, i, kind='state', concept='wheel', state=None, content=None):
@@ -119,6 +123,7 @@ def _observed_fixture(tmp_path,images,seconds):
     return p,video,[{'scene':'one','start':0,'duration':cursor}],verify_observed_changes
 
 
+@requires_ffmpeg
 def test_real_five_second_hold_with_narrated_arrow_addition_passes(tmp_path):
     a=_photo();b=a.copy();cv2.arrowedLine(b,(70,280),(410,280),(0,0,220),25)
     p,v,w,verify=_observed_fixture(tmp_path,[a,b],[2.5,2.5])
@@ -127,6 +132,7 @@ def test_real_five_second_hold_with_narrated_arrow_addition_passes(tmp_path):
     assert result['first_5s_meaningful_changes']==1
 
 
+@requires_ffmpeg
 def test_real_one_second_equivalent_crops_fail_as_churn(tmp_path):
     a=_photo();b=cv2.resize(a[30:450,30:450],(480,480));c=cv2.resize(a[45:435,45:435],(480,480))
     p,v,w,verify=_observed_fixture(tmp_path,[a,b,c],[1,1,1])
@@ -135,6 +141,7 @@ def test_real_one_second_equivalent_crops_fail_as_churn(tmp_path):
     assert any('equivalent crop' in f for f in result['failures'])
 
 
+@requires_ffmpeg
 def test_wrong_changing_frames_cannot_replace_declared_states(tmp_path):
     a=_photo();b=a.copy();cv2.rectangle(b,(120,200),(400,350),(0,150,0),-1)
     p,v,w,verify=_observed_fixture(tmp_path,[a,b],[2.5,2.5])
@@ -153,6 +160,7 @@ def test_simple_diagram_crop_does_not_gain_credit():
     assert equivalent_framing(a,b)
 
 
+@requires_ffmpeg
 def test_semantic_provider_receives_actual_media_box_without_gutters(tmp_path):
     from PIL import Image
     from shorts_studio.visual_qa import evaluate_scene_semantics
