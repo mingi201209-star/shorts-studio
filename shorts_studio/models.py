@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field, model_validator
+from typing import Literal
 
 from .retention_rules import HOOK_TYPES
 from .entertainment_rules import EVENT_TYPES, REQUIRES_GROUNDING
@@ -27,6 +28,16 @@ class AssetCandidate(BaseModel):
     asset_url: str | None = None
     attribution: str | None = None
 
+class VisualChange(BaseModel):
+    """Declared intent, never a semantic verdict. Exact assets are reviewed separately."""
+    model_config = _FORBID_EXTRA
+    kind: Literal["concept", "state", "framing"]
+    concept_id: str = Field(min_length=1)
+    state_id: str = Field(min_length=1)
+    narration_cue: str = Field(min_length=1)
+    added_information: str = Field(min_length=1)
+    source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
 class VisualBeat(BaseModel):
     """An optional timed visual cut inside one narration scene."""
     model_config = _FORBID_EXTRA
@@ -47,6 +58,7 @@ class VisualBeat(BaseModel):
     # info_role is simply not checked; this keeps every manifest that
     # predates the Information Change Contract unaffected.
     info_role: str | None = None
+    visual_change: VisualChange | None = None
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -249,6 +261,7 @@ class Project(BaseModel):
     # across narratively adjacent beats. Projects that do have the material
     # (and the narrative complaint these gates were built for) turn this on.
     strict_source_diversity: bool = False
+    strict_meaningful_visual_changes: bool = False
     # Opt-in retention-engine contract: First-Second Hook, Information
     # Change, Story Progression, Ending Payoff, First-10s Retention, and
     # Runtime Discipline (see shorts_studio/final_video_qa.py and
