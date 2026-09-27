@@ -54,7 +54,10 @@ jobs:
           print('Real render and all gates PASS; manual visual review still required.')
           PY
       - name: Dump final.mp4 as base64 into the job log (artifact retrieval fallback)
-        if: always()
+        # success() only: on failure this would bury the real error under
+        # megabytes of base64 at the tail of the log, making the actual
+        # traceback unreachable via any tail-based log read.
+        if: success()
         run: |
           if [ -f dist/final.mp4 ]; then
             echo "===BASE64_MP4_BEGIN==="
