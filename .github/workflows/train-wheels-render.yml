@@ -53,21 +53,69 @@ jobs:
           assert q.get('entertainment_contract'), 'PEC pilot must remain present'
           print('Real render and all gates PASS; manual visual review still required.')
           PY
-      - name: Dump final.mp4 as base64 into the job log (artifact retrieval fallback)
-        # success() only: on failure this would bury the real error under
-        # megabytes of base64 at the tail of the log, making the actual
-        # traceback unreachable via any tail-based log read.
+      - name: Dump QA summary and sampled review frames into the job log
+        # success() only (see above). The full video's base64 is too many
+        # lines for any tail-based log read to reach (it buries itself),
+        # so instead of dumping dist/final.mp4 whole, print a compact QA
+        # summary plus a small set of downscaled JPEG thumbnails -- both
+        # the already-extracted meaningful-change evidence frames in
+        # build/_meaningful/ and a few direct ffmpeg grabs (open/mid/near
+        # end) -- small enough in total to actually fit in a retrievable
+        # log tail, which is what a human visual review actually needs.
         if: success()
         run: |
-          if [ -f dist/final.mp4 ]; then
-            echo "===BASE64_MP4_BEGIN==="
-            base64 -w 200 dist/final.mp4
-            echo "===BASE64_MP4_END==="
-            echo "mp4 byte size: $(stat -c%s dist/final.mp4)"
-            echo "mp4 sha256: $(sha256sum dist/final.mp4)"
-          else
-            echo "dist/final.mp4 not produced"
-          fi
+          python - <<'PY'
+          import base64, json, subprocess
+          from pathlib import Path
+          from PIL import Image
+          import io
+
+          q = json.loads(Path('dist/qa_report.json').read_text())
+          m = q['final_video_qa']['checks']['meaningful_visual_changes']
+          summary = {
+              'status': q['status'],
+              'semantic_visual_qa': q['semantic_visual_qa']['status'],
+              'final_video_qa': q['final_video_qa']['status'],
+              'probe_duration': q.get('probe', {}).get('format', {}).get('duration'),
+              'first_5s_meaningful_changes': m['first_5s_meaningful_changes'],
+              'event_count': len(m['events']),
+              'events': [
+                  {'scene': e['scene'], 'beat': e['beat'], 'start': round(e['start'], 2),
+                   'kind': e['kind'], 'info': e['declared_information']}
+                  for e in m['events']
+              ],
+          }
+          print("===QA_SUMMARY_BEGIN===")
+          print(json.dumps(summary, ensure_ascii=False, indent=None))
+          print("===QA_SUMMARY_END===")
+
+          def dump_jpeg(label, img: Image.Image):
+              img = img.convert('RGB')
+              w = 420
+              h = round(img.height * w / img.width)
+              img = img.resize((w, h), Image.LANCZOS)
+              buf = io.BytesIO()
+              img.save(buf, format='JPEG', quality=60)
+              data = base64.b64encode(buf.getvalue()).decode()
+              print(f"===FRAME[{label}]_BEGIN===")
+              for i in range(0, len(data), 160):
+                  print(data[i:i+160])
+              print(f"===FRAME[{label}]_END===")
+
+          events = sorted(m['events'], key=lambda e: e['start'])
+          picked = events[::max(1, len(events)//10)][:10]
+          for e in picked:
+              p = Path(e['frame'])
+              if p.is_file():
+                  dump_jpeg(f"{e['scene']}_b{e['beat']}_t{e['start']:.1f}s", Image.open(p))
+
+          duration = summary['probe_duration'] or 60.0
+          for label, t in [('open_0.3s', 0.3), ('mid', float(duration)/2), ('near_end', max(0.0, float(duration)-0.6))]:
+              out = Path(f'/tmp/{label}.png')
+              subprocess.run(['ffmpeg', '-y', '-ss', str(t), '-i', 'dist/final.mp4', '-frames:v', '1', str(out)],
+                             check=True, capture_output=True)
+              dump_jpeg(label, Image.open(out))
+          PY
       - uses: actions/upload-artifact@v4
         if: success()
         with:
