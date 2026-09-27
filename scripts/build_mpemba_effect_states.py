@@ -1,0 +1,371 @@
+"""Build real semantic visual states and a compact production manifest for
+the Mpemba-effect short ("hot water can sometimes freeze before cold
+water"). This is the first production built through the Prompt V2 pipeline
+(shorts_studio.hook_studio): the opening hook line below was selected by a
+real generate_and_judge() run over a structured TopicBrief covering six
+distinct hook strategies (see the module docstring in hook_studio.py), not
+authored as a single unexamined first draft -- see this repo's PR
+description for the actual generation/judging run and its full candidate
+list. The narration_plan below is phrase-level and role-tagged (HOOK ->
+INVESTIGATION -> EXPLANATION -> CRISIS -> REVEAL -> PAYOFF), and the
+manifest opts into strict_retention_contract=True so every Layer-1
+retention gate (hook opener, first-beat visual grounding/sync, story
+progression, ending payoff role, no-redundant-narration, information
+progression) actually runs as a hard pre-render gate -- not just tested in
+isolation. verify_curiosity_maintained (Story Prompt V2, hook_studio.py) is
+also asserted below before the manifest is written.
+"""
+import argparse, colorsys, hashlib, json, math
+from pathlib import Path
+from PIL import Image, ImageDraw, ImageFont
+
+INK = '#182d40'; RED = '#c74432'; BLUE = '#1f6fb2'; GREEN = '#258368'; WHITE = '#f6f8fa'; GREY = '#687781'
+
+# (scene_id, role, hook_type_or_None, narration, [(cue, panel_label, kind, clip_info_en, requirement_ko), ...])
+SCENES = [
+    ('s_hook', 'HOOK', 'counterintuitive_fact',
+     '놀랍게도 더 뜨거운 물이, 냉동실에서 찬물보다 먼저 얼기도 합니다.', [
+        ('놀랍게도', '두 개의 물통', 'containers',
+         'A schematic diagram of a hot-water container and a cold-water container placed side by side in a freezer.',
+         '뜨거운 물 용기와 찬물 용기를 냉동실 안에 나란히 놓은 모습'),
+        ('냉동실에서', '뜨거운 쪽에 먼저 성에', 'frost_first',
+         'A close-up schematic showing frost forming on a hot-water container while an adjacent cold-water container remains unfrozen.',
+         '냉동실 안에서 뜨거운 물 용기 표면에 먼저 성에가 맺히는 모습'),
+     ]),
+    ('s_clue', 'INVESTIGATION', None,
+     '많은 사람들은 물이 뜨거울수록 얼리는 데 더 오래 걸린다고 생각합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 모습이 관찰됩니다.', [
+        ('많은 사람들은', '흔한 생각', 'assumption_claim',
+         'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
+         '온도가 높을수록 얼리는 시간이 더 길다는 흔한 생각을 모래시계로 표현한 모습'),
+        ('얼리는 데 더 오래 걸린다고', '틀린 통념', 'assumption_wrong',
+         'A schematic diagram with a large X crossed over the text "higher temperature always means a longer freezing time".',
+         '온도가 높을수록 얼리는 시간이 더 길다는 통념에 크게 X표시가 된 모습'),
+        ('하지만 같은 조건에서도', '같은 조건, 다른 결과', 'frost_compare',
+         'A schematic diagram comparing two identical containers in the same freezer, where only the hot-water container already shows frost.',
+         '같은 냉동실, 같은 크기의 용기인데 뜨거운 물 쪽에만 성에가 먼저 생긴 비교 모습'),
+        ('성에가 먼저 맺히는', '성에 확대', 'frost_zoom',
+         'A close-up macro schematic of ice-crystal frost patterns forming on a cold surface.',
+         '용기 표면에 맺힌 성에 결정을 크게 확대해서 보여주는 모습'),
+     ]),
+    ('s_explain', 'EXPLANATION', None,
+     '그 이유 중 하나는 증발입니다. 뜨거운 물은 증발로 양이 줄어들어서, 얼려야 할 물 자체가 더 적어집니다.', [
+        ('그 이유 중 하나는', '첫 번째 이유', 'evaporation_concept',
+         'A schematic diagram of a rising steam cloud icon alone, introducing the idea of evaporation.',
+         '김이 피어오르는 아이콘만으로 증발이라는 개념을 소개하는 모습'),
+        ('뜨거운 물은', '증발로 줄어드는 양', 'evaporation',
+         'A schematic diagram of a hot-water container with rising steam arrows and a dropping water-level line, illustrating evaporation.',
+         '뜨거운 물 용기에서 김이 피어오르며 물의 높이가 낮아지는 증발 모습'),
+        ('얼려야 할 물 자체가', '더 적어진 물의 양', 'volume_less',
+         'A schematic bar-chart diagram comparing a shorter remaining hot-water volume bar against a taller original cold-water volume bar.',
+         '증발로 줄어든 뜨거운 물의 남은 양을 찬물의 원래 양과 막대로 비교한 모습'),
+     ]),
+    ('s_crisis', 'CRISIS', None,
+     '하지만 증발만으로는 이 정도의 차이를 다 설명하지 못합니다. 그렇다면 다른 무언가가 함께 작용하고 있는 걸까요?', [
+        ('증발만으로는', '증발만으로는 부족', 'question_more',
+         'A schematic diagram showing a small evaporation cloud icon connected by an arrow to a much larger question mark, indicating an insufficient explanation.',
+         '증발 아이콘 옆에 커다란 물음표가 붙어, 설명이 충분하지 않음을 보여주는 모습'),
+        ('설명하지 못합니다', '설명되지 않는 부분', 'gap_remains',
+         'A schematic gauge diagram with a small "explained" segment and a much larger "unexplained" segment.',
+         '설명된 부분은 작고 설명되지 않은 부분은 훨씬 큰 게이지 모습'),
+        ('다른 무언가가', '새로운 흐름, 대류', 'convection',
+         'A schematic diagram of a water container with circular internal arrows showing convection currents inside the liquid.',
+         '물통 안에서 물이 둥글게 순환하는 대류 흐름 화살표가 새로 나타난 모습'),
+     ]),
+    ('s_reveal', 'REVEAL', None,
+     '빠른 대류로 뜨거운 물은 열을 더 빨리 잃고, 찬물은 얼기 전 온도가 더 내려가는 과냉각을 거치기도 합니다. 증발, 대류, 과냉각이 함께 작용해 이런 역전이 일어납니다.', [
+        ('빠른 대류로', '더 빠른 열 손실', 'convection_speed',
+         'A schematic diagram of convection arrows inside a container feeding into outward heat-loss arrows and a fast-dropping thermometer.',
+         '대류 흐름이 열을 바깥으로 더 빠르게 내보내 온도계가 빠르게 떨어지는 모습'),
+        ('찬물은 얼기 전', '아직 어는점에서', 'cold_delay',
+         'A schematic diagram of a single cold-water container sitting exactly at a freezing-point line, not yet turned to ice.',
+         '찬물 용기가 어는점 선에 딱 머물러 아직 얼지 않고 있는 모습'),
+        ('과냉각을 거치기도', '과냉각의 차이', 'supercool',
+         'A schematic line-graph diagram showing cold water\'s temperature dipping below the freezing point before turning to ice, next to hot water freezing right at the freezing line.',
+         '찬물의 온도 그래프가 어는점 아래로 내려갔다가 어는 과냉각 구간을 보여주는 모습'),
+        ('함께 작용해', '세 가지가 함께', 'synthesis',
+         'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- each connected by an arrow into one combined ice-cube result icon.',
+         '증발, 대류, 과냉각 세 아이콘이 화살표로 모여 하나의 얼음 결과로 합쳐지는 모습'),
+     ]),
+    ('s_end', 'PAYOFF', None,
+     '그래서 뜨거운 물이 찬물보다 먼저 어는 일이 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 그런지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때, 어떤 쪽이 먼저 얼지 직접 확인해보고 싶어질지도 모릅니다.', [
+        ('그래서 뜨거운 물이', '뜨거운 쪽이 먼저 얼음', 'final_result',
+         'A schematic diagram of a fully frozen hot-water container with a checkmark and finish flag, next to a still partly liquid cold-water container.',
+         '뜨거운 물 용기는 완전히 얼어 체크 표시가 있고, 찬물 용기는 아직 액체인 최종 비교 모습'),
+        ('정확히 언제', '언제, 어떤 조건에서', 'debate_question',
+         'A schematic diagram of a clock and calendar icon with a large question mark, asking exactly when and under what conditions.',
+         '시계와 달력 아이콘 옆에 커다란 물음표가 있어 정확한 시점과 조건을 묻는 모습'),
+        ('지금도 연구되고 있습니다', '아직 연구 중', 'debate',
+         'A schematic diagram of a magnifying glass over the text "results vary by condition", representing ongoing scientific study.',
+         '조건마다 결과가 다르다는 문구를 돋보기로 들여다보는, 아직 연구 중임을 보여주는 모습'),
+        ('다음에 얼음을 얼릴 때', '다음 실험', 'invite_setup',
+         'A schematic diagram of an ice-cube tray icon next to a small clock, suggesting trying this again next time.',
+         '얼음 트레이와 작은 시계 아이콘으로 다음에 다시 해보자는 뜻을 보여주는 모습'),
+        ('직접 확인해보고 싶어질지도', '직접 확인해보기', 'invite',
+         'A schematic diagram of two simple water containers with a question mark between them, inviting the viewer to try the experiment themselves.',
+         '두 개의 물통 사이에 물음표가 있어 직접 실험해보도록 초대하는 모습'),
+     ]),
+]
+
+NEG = ['a photograph of a cat', 'a landscape photograph of mountains']
+
+ALL_LABELS = [label for *_, states in SCENES for _, label, _, _, _ in states]
+
+
+def _build_state_colors(labels):
+    # Farthest-point sampling over a real (hue, lightness) candidate grid --
+    # see scripts/build_microwave_door_states.py's identical, previously
+    # validated function for why this (not a formula-only hue spacing) is
+    # used: it directly maximizes the minimum pairwise RGB distance among
+    # the N colors actually chosen, and stays robust to however many labels
+    # exist without any index-order fragility.
+    def dist(a, b):
+        return sum((x - y) ** 2 for x, y in zip(a, b)) ** 0.5
+    pool = []
+    for hue_i in range(72):
+        for light_i in range(5):
+            r, g, b = colorsys.hls_to_rgb(hue_i / 72, .3 + .1 * light_i, 1.0)
+            pool.append((r * 255, g * 255, b * 255))
+    chosen = [pool.pop(0)]
+    while len(chosen) < len(labels):
+        best = max(pool, key=lambda c: min(dist(c, ch) for ch in chosen))
+        chosen.append(best); pool.remove(best)
+    return {labels[i]: tuple(round(c) for c in chosen[i]) for i in range(len(labels))}
+
+
+STATE_COLORS = _build_state_colors(ALL_LABELS)
+
+
+def main():
+    ap = argparse.ArgumentParser(); ap.add_argument('--font', required=True); args = ap.parse_args()
+    font = lambda n: ImageFont.truetype(args.font, n)
+    assets = Path('assets/mpemba_effect'); assets.mkdir(exist_ok=True)
+
+    def container(d, cx, top, w, h, color, level_frac, frost=False, frozen=False, thermo=None):
+        bottom = top + h
+        d.rounded_rectangle((cx - w / 2, top, cx + w / 2, bottom), radius=18, outline=INK, width=8, fill='#dce6ec')
+        liquid_top = bottom - h * level_frac
+        fill = '#c9d6de' if frozen else color
+        d.rectangle((cx - w / 2 + 8, liquid_top, cx + w / 2 - 8, bottom - 8), fill=fill)
+        if frozen:
+            for fx, fy in [(-0.28, -0.62), (0.0, -0.4), (0.28, -0.62), (-0.12, -0.2), (0.15, -0.15)]:
+                px, py = cx + fx * w, liquid_top + fy * h * 0.6 + h * 0.3
+                d.line((px - 12, py, px + 12, py), fill=WHITE, width=6)
+                d.line((px, py - 12, px, py + 12), fill=WHITE, width=6)
+        if frost:
+            for i in range(6):
+                fx = cx - w / 2 + 10 + i * (w - 20) / 5
+                d.line((fx, top + 6, fx, top + 26), fill=WHITE, width=6)
+        if thermo:
+            tx = cx + w / 2 + 30
+            d.rounded_rectangle((tx - 10, top + 10, tx + 10, bottom - 40), radius=10, outline=INK, width=5, fill=WHITE)
+            d.ellipse((tx - 20, bottom - 55, tx + 20, bottom - 15), fill=thermo, outline=INK, width=5)
+            d.rectangle((tx - 6, top + 30, tx + 6, bottom - 40), fill=thermo)
+
+    def panel(title, kind):
+        im = Image.new('RGB', (980, 950), 'black'); d = ImageDraw.Draw(im)
+        d.rounded_rectangle((10, 8, 970, 942), radius=22, fill=WHITE)
+        d.text((490, 55), title, font=font(40), fill=INK, anchor='mm')
+        d.rounded_rectangle((40, 88, 940, 146), radius=14, fill=STATE_COLORS[title], outline=INK, width=4)
+
+        if kind == 'containers':
+            container(d, 300, 220, 260, 560, RED, 0.7, thermo=RED)
+            container(d, 680, 220, 260, 560, BLUE, 0.7, thermo=BLUE)
+            d.text((300, 810), '뜨거운 물', font=font(30), fill=RED, anchor='mm')
+            d.text((680, 810), '찬물', font=font(30), fill=BLUE, anchor='mm')
+        elif kind == 'frost_first':
+            container(d, 490, 190, 420, 620, RED, 0.65, frost=True, thermo=RED)
+            d.text((490, 855), '성에가 먼저', font=font(30), fill=RED, anchor='mm')
+        elif kind == 'assumption_claim':
+            cx, cy = 490, 400
+            d.polygon([(cx - 110, cy - 160), (cx + 110, cy - 160), (cx + 20, cy), (cx + 110, cy + 160), (cx - 110, cy + 160), (cx - 20, cy)],
+                      outline=INK, width=10, fill='#eef2f4')
+            d.polygon([(cx - 80, cy - 130), (cx + 80, cy - 130), (cx, cy - 20)], fill='#c8d3da')
+            d.polygon([(cx - 80, cy + 130), (cx + 80, cy + 130), (cx, cy + 20)], fill='#8ea0ab')
+            d.text((490, 620), '온도가 높을수록', font=font(34), fill=INK, anchor='mm')
+            d.text((490, 690), '얼리는 시간도 더 길다', font=font(34), fill=INK, anchor='mm')
+        elif kind == 'assumption_wrong':
+            d.rounded_rectangle((90, 220, 890, 620), radius=24, outline=INK, width=8, fill='#eef2f4')
+            d.line((130, 260, 850, 580), fill=RED, width=22)
+            d.line((130, 580, 850, 260), fill=RED, width=22)
+            d.text((490, 700), '온도가 높을수록', font=font(34), fill=INK, anchor='mm')
+            d.text((490, 770), '얼리는 시간도 더 길다', font=font(34), fill=INK, anchor='mm')
+        elif kind == 'frost_compare':
+            container(d, 300, 220, 260, 560, RED, 0.65, frost=True)
+            container(d, 680, 220, 260, 560, BLUE, 0.65, frost=False)
+            d.text((300, 810), '먼저 성에', font=font(28), fill=RED, anchor='mm')
+            d.text((680, 810), '아직 그대로', font=font(28), fill=BLUE, anchor='mm')
+        elif kind == 'frost_zoom':
+            for cx, cy, r in [(300, 300, 90), (620, 260, 70), (470, 480, 110), (720, 550, 75), (250, 620, 65), (600, 720, 85)]:
+                for ang in range(0, 360, 60):
+                    ex = cx + r * math.cos(math.radians(ang)); ey = cy + r * math.sin(math.radians(ang))
+                    d.line((cx, cy, ex, ey), fill='#8fb4cc', width=10)
+                d.ellipse((cx - 14, cy - 14, cx + 14, cy + 14), fill=WHITE, outline=INK, width=4)
+            d.text((490, 870), '성에 결정 확대', font=font(28), fill=INK, anchor='mm')
+        elif kind == 'evaporation_concept':
+            d.rounded_rectangle((110, 190, 870, 700), radius=30, fill='#e7a89c')
+            cx, cy = 490, 480
+            for i, sx in enumerate([-140, 0, 140]):
+                x = cx + sx
+                pts = [(x + 22 * ((y // 30) % 2 * 2 - 1), cy + 230 - y) for y in range(0, 460, 30)]
+                d.line(pts, fill=WHITE, width=22)
+            d.text((490, 780), '증발이라는 개념', font=font(30), fill=INK, anchor='mm')
+        elif kind == 'evaporation':
+            container(d, 490, 260, 320, 520, RED, 0.55, thermo=RED)
+            for i, sx in enumerate([-70, 0, 70]):
+                x = 490 + sx
+                pts = [(x + 10 * ((y // 20) % 2 * 2 - 1), 240 - y) for y in range(0, 150, 20)]
+                d.line(pts, fill=GREY, width=10)
+            d.line((330, 465, 650, 465), fill=INK, width=4)
+            d.text((490, 830), '물의 높이 낮아짐', font=font(26), fill=INK, anchor='mm')
+        elif kind == 'volume_less':
+            d.rectangle((260, 780 - 260, 420, 780), fill=RED, outline=INK, width=6)
+            d.rectangle((560, 780 - 430, 720, 780), fill=BLUE, outline=INK, width=6)
+            d.text((340, 830), '뜨거운 물(남은 양)', font=font(24), fill=RED, anchor='mm')
+            d.text((640, 830), '찬물(원래 양)', font=font(24), fill=BLUE, anchor='mm')
+        elif kind == 'question_more':
+            d.ellipse((250, 380, 470, 600), fill='#d9e1e6', outline=INK, width=8)
+            for i, sx in enumerate([-40, 20]):
+                x = 360 + sx
+                pts = [(x + 8 * ((y // 16) % 2 * 2 - 1), 400 - y) for y in range(0, 100, 16)]
+                d.line(pts, fill=GREY, width=8)
+            d.line((470, 490, 620, 490), fill=INK, width=10)
+            d.polygon([(620, 490), (590, 470), (590, 510)], fill=INK)
+            d.text((790, 490), '?', font=font(140), fill=RED, anchor='mm')
+        elif kind == 'gap_remains':
+            d.rounded_rectangle((100, 420, 880, 540), radius=24, outline=INK, width=8, fill='#eef2f4')
+            d.rectangle((108, 428, 260, 532), fill=GREEN)
+            d.text((184, 480), '설명됨', font=font(24), fill=WHITE, anchor='mm')
+            d.text((570, 480), '설명 안 됨', font=font(28), fill=INK, anchor='mm')
+            d.text((490, 640), '증발만으로는 이 차이의 일부만 설명', font=font(26), fill=INK, anchor='mm')
+        elif kind == 'convection':
+            d.rounded_rectangle((330, 180, 650, 800), radius=24, outline=INK, width=8, fill='#dce6ec')
+            cx, cy = 490, 490
+            d.arc((cx - 140, cy - 220, cx + 140, cy + 220), 30, 330, fill=RED, width=14)
+            d.polygon([(cx + 130, cy - 40), (cx + 100, cy - 70), (cx + 155, cy - 80)], fill=RED)
+            d.arc((cx - 140, cy - 220, cx + 140, cy + 220), 210, 150, fill=RED, width=14)
+            d.text((490, 855), '내부 순환(대류)', font=font(28), fill=RED, anchor='mm')
+        elif kind == 'convection_speed':
+            d.rounded_rectangle((160, 260, 480, 780), radius=24, outline=INK, width=8, fill='#dce6ec')
+            cx, cy = 320, 520
+            d.arc((cx - 110, cy - 170, cx + 110, cy + 170), 30, 330, fill=RED, width=12)
+            for i, ay in enumerate([380, 520, 660]):
+                d.line((480, ay, 650, ay), fill=RED, width=14)
+                d.polygon([(650, ay), (620, ay - 18), (620, ay + 18)], fill=RED)
+            d.rounded_rectangle((700, 300, 760, 760), radius=20, outline=INK, width=6, fill=WHITE)
+            d.ellipse((680, 720, 780, 800), fill=RED, outline=INK, width=6)
+            d.rectangle((715, 360, 745, 730), fill=RED)
+            d.text((730, 850), '빠른 열 손실', font=font(28), fill=RED, anchor='mm')
+        elif kind == 'cold_delay':
+            container(d, 490, 220, 320, 560, BLUE, 0.7, thermo=BLUE)
+            freeze_y = 220 + 560 * (1 - 0.7)
+            d.line((250, freeze_y, 730, freeze_y), fill=GREY, width=6)
+            d.text((250, freeze_y - 24), '어는점', font=font(24), fill=GREY, anchor='lm')
+            d.text((490, 850), '아직 얼지 않은 찬물', font=font(28), fill=BLUE, anchor='mm')
+        elif kind == 'supercool':
+            d.line((120, 780, 900, 780), fill=INK, width=6)
+            d.line((120, 780, 120, 220), fill=INK, width=6)
+            freeze_y = 460
+            d.line((120, freeze_y, 900, freeze_y), fill=GREY, width=4)
+            d.text((150, freeze_y - 25), '어는점', font=font(22), fill=GREY, anchor='lm')
+            hot_pts = [(150, 260), (420, 340), (560, freeze_y)]
+            d.line(hot_pts, fill=RED, width=10)
+            cold_pts = [(150, 300), (420, 420), (620, 600), (760, freeze_y + 10), (860, freeze_y - 10)]
+            d.line(cold_pts, fill=BLUE, width=10)
+            d.text((300, 250), '뜨거운 물', font=font(26), fill=RED, anchor='mm')
+            d.text((760, 660), '찬물(과냉각)', font=font(26), fill=BLUE, anchor='mm')
+        elif kind == 'synthesis':
+            icons = [('증발', GREY, 220), ('대류', RED, 490), ('과냉각', BLUE, 760)]
+            for label, color, x in icons:
+                d.ellipse((x - 70, 260, x + 70, 400), outline=color, width=10, fill='#eef2f4')
+                d.text((x, 330), label, font=font(26), fill=color, anchor='mm')
+                d.line((x, 400, 490, 600), fill=color, width=8)
+            d.ellipse((410, 600, 570, 760), fill='#d9e1e6', outline=INK, width=8)
+            for fx, fy in [(-25, -20), (10, 0), (30, -25)]:
+                px, py = 490 + fx, 680 + fy
+                d.line((px - 10, py, px + 10, py), fill=INK, width=5)
+                d.line((px, py - 10, px, py + 10), fill=INK, width=5)
+            d.text((490, 800), '얼음', font=font(28), fill=INK, anchor='mm')
+        elif kind == 'final_result':
+            container(d, 300, 220, 260, 560, RED, 0.65, frozen=True)
+            container(d, 680, 220, 260, 560, BLUE, 0.65)
+            d.ellipse((260, 130, 340, 210), fill=GREEN, outline=INK, width=6)
+            d.line((280, 170, 300, 190), fill=WHITE, width=8)
+            d.line((300, 190, 340, 150), fill=WHITE, width=8)
+            d.text((300, 810), '완전히 얼음', font=font(26), fill=GREEN, anchor='mm')
+            d.text((680, 810), '아직 액체', font=font(26), fill=BLUE, anchor='mm')
+        elif kind == 'debate_question':
+            cx, cy = 490, 420
+            d.rounded_rectangle((cx - 150, cy - 140, cx + 150, cy + 140), radius=20, outline=INK, width=10, fill='#eef2f4')
+            d.line((cx - 150, cy - 80, cx + 150, cy - 80), fill=INK, width=6)
+            for gx in (-90, 0, 90):
+                d.line((cx + gx, cy - 140, cx + gx, cy - 100), fill=INK, width=8)
+            d.ellipse((cx + 150 - 40, cy + 60, cx + 150 + 60, cy + 160), outline=INK, width=10)
+            d.line((cx + 150 + 50, cy + 150, cx + 150 + 110, cy + 210), fill=INK, width=12)
+            d.text((790, 300), '?', font=font(150), fill=RED, anchor='mm')
+            d.text((490, 700), '언제, 어떤 조건에서?', font=font(30), fill=INK, anchor='mm')
+        elif kind == 'debate':
+            d.rounded_rectangle((150, 300, 830, 560), radius=24, outline=INK, width=8, fill='#eef2f4')
+            d.text((490, 430), '조건마다 결과가 다름', font=font(32), fill=INK, anchor='mm')
+            d.ellipse((640, 560, 800, 720), outline=INK, width=14)
+            d.line((760, 700, 860, 800), fill=INK, width=16)
+        elif kind == 'invite_setup':
+            cx, cy = 400, 460
+            d.rounded_rectangle((cx - 160, cy - 140, cx + 160, cy + 140), radius=20, outline=INK, width=10, fill='#dce6ec')
+            for gx in range(-2, 3):
+                for gy in range(-1, 2):
+                    d.rectangle((cx + gx * 55 - 22, cy + gy * 70 - 22, cx + gx * 55 + 22, cy + gy * 70 + 22), outline=INK, width=4)
+            d.ellipse((cx + 220 - 90, cy - 90, cx + 220 + 90, cy + 90), outline=INK, width=10, fill='#eef2f4')
+            d.line((cx + 220, cy, cx + 220, cy - 55), fill=INK, width=8)
+            d.line((cx + 220, cy, cx + 260, cy + 20), fill=INK, width=8)
+            d.text((490, 780), '다음번 실험 준비', font=font(30), fill=INK, anchor='mm')
+        elif kind == 'invite':
+            container(d, 320, 260, 240, 460, RED, 0.6, thermo=RED)
+            container(d, 660, 260, 240, 460, BLUE, 0.6, thermo=BLUE)
+            d.text((490, 490), '?', font=font(120), fill=INK, anchor='mm')
+            d.text((490, 800), '먼저 얼 쪽은?', font=font(30), fill=INK, anchor='mm')
+        else:
+            raise ValueError(kind)
+
+        d.text((935, 915), '개념도 · 크기 비례 아님', font=font(19), fill=GREY, anchor='rm')
+        return im
+
+    scenes = []
+    for si, (sid, role, hook_type, narr, states) in enumerate(SCENES):
+        beats = []
+        for bi, (cue, label, kind, info_en, req_ko) in enumerate(states):
+            im = panel(label, kind)
+            path = assets / f'evidence_{si:02d}_{bi:02d}.png'; im.save(path)
+            beats.append({
+                'start': float(bi * 2), 'asset': str(path),
+                'visual_change': {
+                    'kind': 'concept' if bi == 0 else 'state', 'concept_id': sid,
+                    'state_id': f'{sid}:{kind}:{bi}', 'narration_cue': cue,
+                    'added_information': info_en, 'source_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
+                },
+                'visual_qa_requirements': [req_ko],
+                'visual_qa_labels': [info_en, f'an educational schematic diagram about {kind.replace("_", " ")}'],
+                'visual_qa_negative_labels': NEG,
+                'info_role': kind,
+            })
+        phrase = {'role': role, 'text': narr, 'focus': role in ('HOOK', 'REVEAL', 'PAYOFF')}
+        if hook_type:
+            phrase['hook_type'] = hook_type
+        scenes.append({
+            'id': sid, 'narration': narr, 'visual_description': states[0][1],
+            'narration_plan': [phrase],
+            'asset': beats[0]['asset'], 'visual_beats': beats,
+            'visual_qa_requirements': ['A schematic diagram about why hot water can sometimes freeze before cold water (the Mpemba effect), consistent with the narration.'],
+        })
+
+    manifest = {
+        'title': '뜨거운 물이 찬물보다 먼저 언다',
+        'overlay_title': '뜨거운 물의 반전',
+        'strict_meaningful_visual_changes': True,
+        'strict_retention_contract': True,
+        'scenes': scenes,
+    }
+    Path('examples/mpemba_effect.json').write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+
+
+if __name__ == '__main__':
+    main()
