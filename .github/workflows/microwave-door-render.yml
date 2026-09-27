@@ -23,6 +23,8 @@ jobs:
           pip install -e '.[dev,vision]'
       - name: Full regression
         run: pytest -q
+      - name: Generate microwave production manifest and assets
+        run: python scripts/build_microwave_door_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf
       - name: Validate production manifests
         run: |
           for manifest in examples/*.json; do
