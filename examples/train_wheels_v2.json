@@ -501,7 +501,7 @@
     {
       "id": "s_payoff2",
       "narration": "물론 실제로는 크리프나 서스펜션 같은 요소도 함께 작용하지만, 반지름 차이는 그 핵심 원리 중 하나입니다.",
-      "visual_description": "핵심 원리 종합 2",
+      "visual_description": "크리프·서스펜션·굴림 반지름 차이를 함께 보여주는 최종 개념 종합",
       "narration_plan": [
         {
           "role": "PAYOFF",
@@ -510,31 +510,31 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/resolution_wide.png",
+      "asset": "assets/train_wheels_v2/clue2_wide.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/resolution_wide.png"
+          "asset": "assets/train_wheels_v2/clue2_wide.png"
         },
         {
           "start": 1.8,
-          "asset": "assets/train_wheels_v2/resolution_close_a.png"
+          "asset": "assets/train_wheels_v2/flange_seed_close_a.png"
         },
         {
           "start": 3.6,
-          "asset": "assets/train_wheels_v2/resolution_close_b.png"
+          "asset": "assets/train_wheels_v2/reveal_wide.png"
         },
         {
           "start": 5.4,
-          "asset": "assets/train_wheels_v2/resolution_wide.png"
+          "asset": "assets/train_wheels_v2/clue1_close_b.png"
         },
         {
           "start": 7.2,
-          "asset": "assets/train_wheels_v2/resolution_close_a.png"
+          "asset": "assets/train_wheels_v2/flange_question_wide.png"
         },
         {
           "start": 9.0,
-          "asset": "assets/train_wheels_v2/resolution_close_b.png"
+          "asset": "assets/train_wheels_v2/reveal_close_b.png"
         }
       ]
     }
