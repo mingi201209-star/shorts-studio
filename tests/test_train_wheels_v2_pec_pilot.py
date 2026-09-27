@@ -1,32 +1,32 @@
 """Train Wheels V2 -- Psychological Entertainment Contract report-only pilot.
 
-This is the FIRST real content to exercise the Declared Event Graph
-end-to-end (examples/train_wheels_v2.json). It is deliberately separate
-from PR #24 (content/train-wheel-conicity, the original Train Wheels
-production) -- that content and manifest are untouched.
+Phase 2.6 revision: content-quality recovery after Phase 2.5's real-render
+manual review found real defects (a Japanese-labeled recycled asset, weak
+visual-narrative correspondence, a false "this has been on screen the whole
+time" SEED claim, redundant flange-subplot phrasing, and an inflated
+runtime). This manifest replaces every recycled generic diagram with 11
+purpose-built local illustrations (examples/../assets/train_wheels_v2/),
+merges the RELAY event into GAP2 (both were voicing the same question back
+to back), rewrites the SEED line to introduce the flange honestly instead
+of claiming false continuity, and compresses narration throughout --
+187 fewer characters than the Phase 2.5 script, purely from cutting filler
+and repetition (see the Phase 2.6 report for the full before/after).
+
+Still separate from PR #24 (content/train-wheel-conicity) and, per
+instruction, still self-contained against Phase 1's entertainment_qa as
+already merged on main -- this test does not require PR #27 to run.
 
 IMPORTANT SCOPE NOTE: this test does not render anything and does not call
 real TTS. scene_windows below is built by _simulate_scene_windows(), which
-estimates each narration_plan phrase's duration from a fixed Korean
-reading-rate constant -- NOT a real, measured narration_unit timing from
-tts.py. This is a deliberate, explicit simplification for a report-only
-pilot (per instruction: no render yet), and it is why this test's "real
-narration text" is identical to the manifest's declared text: in an actual
-render, tts.py's real synthesis could split/reword a phrase and this
-identity would no longer hold, which is exactly the scenario Phase 2's
-TEXT_DIVERGES_FROM_ACTUAL_NARRATION mismatch check exists to catch. This
-test demonstrates the CONTRACT MECHANISM working end-to-end on a real,
-carefully-written script; it is not itself proof the mechanism catches a
-production divergence (test_entertainment_contract_phase2.py's fixtures
-already prove that, on synthetic data).
+estimates each narration_plan phrase's duration from a Korean reading-rate
+CALIBRATED against Phase 2.5's real render (7.17 chars/sec, measured
+directly from that render's per-unit timing.json files) -- still an
+estimate, not a real measurement, but a materially better-grounded one
+than Phase 2.5's first-guess rate.
 
-The judge used here (_HonestDemoJudge) is a test double whose verdicts are
-hand-authored to reflect what a careful human reviewer would say about
-THIS specific script -- it is not a real model call (see PR #27's
-AnthropicJudge for that; wiring a real judge into this specific pilot is
-Phase 2 section 8's "PEC report-only" step, expected to happen once PR #27
-is merged and a real ANTHROPIC_API_KEY is configured, not part of this
-content-only PR).
+The judge used here (_HonestDemoJudge) is a hand-authored test double
+reflecting a careful human read of THIS specific script -- not a real
+model call (see PR #27's AnthropicJudge for that).
 """
 from pathlib import Path
 
@@ -40,10 +40,9 @@ from shorts_studio.entertainment_qa import (
 
 MANIFEST_PATH = "examples/train_wheels_v2.json"
 
-# Korean reading-rate estimate ONLY -- see module docstring. Roughly matches
-# this engine's own edge-tts pacing at a neutral rate, but is NOT a
-# measurement.
-_ESTIMATED_CHARS_PER_SECOND = 6.5
+# Calibrated directly from Phase 2.5's real render (845 real chars / 117.85s
+# of real per-unit audio across all 15 scenes) -- see module docstring.
+_ESTIMATED_CHARS_PER_SECOND = 7.17
 _INTER_PHRASE_PAUSE_SECONDS = 0.35
 
 
@@ -79,7 +78,7 @@ class _HonestDemoJudge:
     def judge_violation(self, claim_text: str, violation_text: str) -> JudgeVerdict:
         if "바깥쪽 바퀴가 안쪽 바퀴보다 더 먼 거리" in violation_text:
             return JudgeVerdict(status=JUDGE_PASS, quote=violation_text)
-        if "방향을 잡아주는 주된 원리는 이 돌출부가 아니라" in violation_text:
+        if "방향을 잡아주는 주된 원리는 플랜지가 아니라" in violation_text:
             return JudgeVerdict(status=JUDGE_PASS, quote=violation_text)
         return JudgeVerdict(status=JUDGE_NOT_EVALUATED)
 
@@ -89,9 +88,9 @@ class _HonestDemoJudge:
         return JudgeVerdict(status=JUDGE_FAIL, quote=new_text)
 
     def judge_resolution(self, gap_text: str, candidate_text: str) -> JudgeVerdict:
-        if "더 큰 원을 그리며 더 먼 거리를 이동" in candidate_text:
+        if "더 큰 원을 그려 더 먼 거리를 이동" in candidate_text:
             return JudgeVerdict(status=JUDGE_PASS, quote=candidate_text)
-        if "특수한 상황에서" in candidate_text and "안전장치" in candidate_text:
+        if "궤도를 크게 벗어나려 할 때만" in candidate_text and "안전장치" in candidate_text:
             return JudgeVerdict(status=JUDGE_PASS, quote=candidate_text)
         return JudgeVerdict(status=JUDGE_NOT_EVALUATED)
 
@@ -110,8 +109,12 @@ def test_manifest_validates_and_declares_an_event_graph():
     assert project.strict_entertainment_contract is False
     assert project.strict_retention_contract is False
     assert project.event_graph is not None
-    assert len(project.event_graph.events) == 14
+    assert len(project.scenes) == 14
+    # RELAY was merged into GAP2 (Phase 2.6 section 6: they were voicing the
+    # same "does the flange steer?" question back to back) -- 13 events, not 14.
+    assert len(project.event_graph.events) == 13
     assert len(project.event_graph.grounded_claims) == 3
+    assert not any(e.type == "RELAY" for e in project.event_graph.events)
 
 
 def test_pec_report_only_pilot_end_to_end():
@@ -132,16 +135,15 @@ def test_pec_report_only_pilot_end_to_end():
 
     loops = {l["gap_id"]: l for l in report["curiosity_loops"]}
     assert loops["gap1"]["fulfilled"] is True
-    # clue1, not resolution1, is the fulfilling event: it is the first
-    # GAP_CLOSING_TYPES event in declaration order that the judge confirms
-    # PASS (a genuinely novel clue), and compute_curiosity_loops stops at
-    # the first confirmed closer -- this is the intended, approved Phase
-    # 0.5 semantics (correction 1: curiosity can be satisfied progressively
-    # by ANY of CLUE/REVEAL/RESOLUTION, not only by a single designated
-    # RESOLUTION), not an accident of this script.
+    # clue1, not resolution1, is the fulfilling event -- same intended,
+    # approved Phase 0.5 semantics as Phase 2.5's pilot (curiosity can be
+    # satisfied progressively by ANY of CLUE/REVEAL/RESOLUTION).
     assert loops["gap1"]["fulfilling_event_id"] == "clue1"
     assert loops["gap2"]["fulfilled"] is True
+    # gap2 now has exactly one possible closing event (resolution2) -- RELAY
+    # is gone and there is no separate CLUE for this sub-loop.
     assert loops["gap2"]["fulfilling_event_id"] == "resolution2"
+    assert loops["gap2"]["clue_ids"] == ["resolution2"]
 
     # Every declared event resolved to real (simulated) narration -- i.e.
     # no event silently fell back to declared-only (see Phase 0's
@@ -160,26 +162,36 @@ def test_pec_report_only_pilot_end_to_end():
     assert evidence["payoff1"]["judge_verdict"] == JUDGE_PASS
 
     diagnostics = report["diagnostics"]
-    assert diagnostics["event_count"] == 14
+    assert diagnostics["event_count"] == 13
     assert diagnostics["critical_gap_count"] == 2
     assert diagnostics["fulfilled_gap_count"] == 2
 
 
-def test_seed_and_relay_are_declared_but_not_gap_closing():
-    """SEED (a CLAIM planting the flange visually/narratively) and RELAY
-    (the natural pivot back to it) are deliberately NOT GAP_CLOSING_TYPES --
-    they exist to make gap2 feel earned rather than dropped in as padding
-    (the Phase 0 critique of "바퀴가 따로 도는 걸까요?"), but they do not
-    themselves resolve anything, and are not required to for the contract
-    to pass."""
+def test_seed_flange_does_not_claim_prior_visibility():
+    """Phase 2.5's manual review found the old SEED line ("이 튀어나온
+    부분은 계속 화면에 보였습니다") false: no earlier diagram actually,
+    consistently showed a recognizable flange. Fixed per Phase 2.6 section
+    4's option B: rewritten as an honest, fresh introduction -- no earlier
+    diagram was retrofitted with a contrived flange cameo just to make the
+    old claim technically true."""
+    project = _load_pilot_project()
+    seed = next(s for s in project.scenes if s.id == "s_seed_flange")
+    text = seed.narration_plan[0].text
+    assert "계속" not in text and "지금까지" not in text and "등장하지 않았습니다" not in text
+    assert "튀어나온 부분" in text
+
+
+def test_flange_relay_and_gap_are_a_single_non_redundant_question():
+    """The old RELAY ("혹시...방향을 잡아주는 걸까요?") and GAP2 ("그렇다면
+    ...조향을 담당하는 부품일까요?") asked the same question twice in a
+    row. Merged into gap2 alone."""
     project = _load_pilot_project()
     graph = project.event_graph
-    seed = next(e for e in graph.events if e.id == "seed_flange")
-    relay = next(e for e in graph.events if e.id == "relay1")
-    assert seed.type == "CLAIM"
-    assert relay.type == "RELAY"
-    assert seed.resolves is None
-    assert relay.resolves is None
+    assert not any(e.id == "relay1" for e in graph.events)
+    gap2 = next(e for e in graph.events if e.id == "gap2")
+    assert gap2.type == "GAP"
+    scene = next(s for s in project.scenes if s.id == gap2.scene_id)
+    assert len(scene.narration_plan) == 1
 
 
 def test_no_event_claims_rolling_radius_is_the_sole_explanation():
@@ -200,3 +212,39 @@ def test_no_event_claims_a_perfect_cone():
             assert "완벽한 원뿔" not in phrase.text
     clue1 = next(s for s in project.scenes if s.id == "s_clue1")
     assert "완만하게" in clue1.narration_plan[0].text
+
+
+def test_flange_contact_is_stated_as_conditional_not_default():
+    """Fact guardrail: resolution2 must frame flange-rail contact as a
+    limit-case/conditional event, never as normal-running behavior."""
+    project = _load_pilot_project()
+    res2 = next(s for s in project.scenes if s.id == "s_resolution2")
+    text = res2.narration_plan[0].text
+    assert "할 때만" in text or "만 레일에 닿" in text
+
+
+def test_no_recycled_japanese_labeled_asset_referenced():
+    """The Phase 2.5 defect: one recycled asset ("%E8%B8%8F%E9%9D%A2%E5%8B%BE%E9%85%8D.png",
+    Japanese-labeled) must not appear anywhere in the manifest -- every
+    asset is now a local, purpose-built diagram under assets/train_wheels_v2/."""
+    project = _load_pilot_project()
+    for scene in project.scenes:
+        assert scene.asset_url is None, f"{scene.id} still references a remote asset_url"
+        for beat in scene.visual_beats:
+            assert beat.asset is not None and beat.asset.startswith("assets/train_wheels_v2/")
+            assert "%E8%B8%8F" not in (beat.asset_url or "")
+
+
+def test_every_scene_has_visual_beats_with_no_adjacent_duplicate_asset():
+    """verify_visual_cut_cadence (final_video_qa.py) fails closed on any
+    scene with zero visual_beats, and Phase 2.5's real render proved
+    adjacent identical assets (within OR across scene boundaries) produce
+    real measured static holds -- both must hold for every scene now."""
+    project = _load_pilot_project()
+    prev_asset = None
+    for scene in project.scenes:
+        assert scene.visual_beats, f"{scene.id} has no visual_beats"
+        assert scene.visual_beats[0].start == 0
+        for beat in scene.visual_beats:
+            assert beat.asset != prev_asset
+            prev_asset = beat.asset
