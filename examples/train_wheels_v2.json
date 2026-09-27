@@ -28,13 +28,13 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_hook",
-            "state_id": "s_hook:axle",
+            "state_id": "s_hook:train",
             "narration_cue": "기차는",
-            "added_information": "Two rail wheels are connected by an axle.",
-            "source_sha256": "075047abaf87ebbbad27e79c93a800ea3e27aab6ecd26b759a13afa8f2881e42"
+            "added_information": "A train follows a curved pair of rails before the steering question.",
+            "source_sha256": "14ba5679b6a8d29d4e8328b711ef1dc1689b1ea966a47e63039dc440816cca04"
           },
           "visual_qa_requirements": [
-            "Two rail wheels are connected by an axle."
+            "A train follows a curved pair of rails before the steering question."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -54,7 +54,7 @@
             "state_id": "s_hook:steering",
             "narration_cue": "자동차처럼",
             "added_information": "A car steering angle is contrasted with the fixed wheelset.",
-            "source_sha256": "ea3bca5d7588b35b04e43d0e633f8ce09d56f06739a36444df1fcc7a197413e4"
+            "source_sha256": "3b6094ed8a6c2cc3147f3b4e27e1d47f19d32cdd45e866e09e56f0919b33924a"
           },
           "visual_qa_requirements": [
             "A car steering angle is contrasted with the fixed wheelset."
@@ -77,7 +77,7 @@
             "state_id": "s_hook:curve",
             "narration_cue": "그런데도",
             "added_information": "The wheelset follows a curved pair of rails.",
-            "source_sha256": "38f7bfbbf7a268005d6c6162e6824683474f2dad6debcdcdf91ebf907637556f"
+            "source_sha256": "21e9d803fd914af12eaea97e9e9eab2f2c21c36efca6bcaed6892edc9f793b4f"
           },
           "visual_qa_requirements": [
             "The wheelset follows a curved pair of rails."
@@ -118,10 +118,10 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_constraint",
-            "state_id": "s_constraint:axle",
+            "state_id": "s_constraint:axle_section",
             "narration_cue": "두 바퀴는",
             "added_information": "A common axle joins both rail wheels.",
-            "source_sha256": "7b2997d7911ea5dd2bb20dc83ded4ffb757cab9db3a0984f799986c8b04dc082"
+            "source_sha256": "94d40826ca870c7a952235bc8538f94930fff27117228ff01d8fe1e32156e02e"
           },
           "visual_qa_requirements": [
             "A common axle joins both rail wheels."
@@ -144,7 +144,7 @@
             "state_id": "s_constraint:locked",
             "narration_cue": "고정되어",
             "added_information": "The rigid connection is highlighted at both hubs.",
-            "source_sha256": "150d1b34b224340706a505ce06e8d53b4e718cd0ede03a41ef73a0c3a202cd60"
+            "source_sha256": "8f19b11fc4fd4c681817086a546be2bd8ad0f728b69b6b185d2a9e5798e1d0ef"
           },
           "visual_qa_requirements": [
             "The rigid connection is highlighted at both hubs."
@@ -167,7 +167,7 @@
             "state_id": "s_constraint:rotation",
             "narration_cue": "항상",
             "added_information": "Equal rotation arrows appear on both wheels.",
-            "source_sha256": "0ccbb0b0582fbeada559807a04df20f0695fb6c763a651f2369a59bc5f1e1493"
+            "source_sha256": "354e784005867a91a08b3eaf05945c4a6aa1989f193808821950733076d02be1"
           },
           "visual_qa_requirements": [
             "Equal rotation arrows appear on both wheels."
@@ -294,10 +294,10 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_gap1",
-            "state_id": "s_gap1:rotation",
+            "state_id": "s_gap1:paradox",
             "narration_cue": "같은 속도로",
             "added_information": "Both wheels share one rotation count.",
-            "source_sha256": "0d58e46f3ec8999173d66f012f2381ab9143efb07e24426cc284777b3c864c0e"
+            "source_sha256": "c960f5ac718cf230f9c1f39b452b8eedced924bf6ba4f780c5f2519de25bf82f"
           },
           "visual_qa_requirements": [
             "Both wheels share one rotation count."
@@ -317,36 +317,13 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_gap1",
-            "state_id": "s_gap1:curve",
+            "state_id": "s_gap1:unknown_radius",
             "narration_cue": "어떻게",
-            "added_information": "The outer and inner routes are contrasted.",
-            "source_sha256": "d81d76e820d9cfdd50a5f6da27c130fb0e6c5a0f6fe91f111e54bb16cab688da"
+            "added_information": "The missing wheel-to-distance relationship is posed as a question.",
+            "source_sha256": "6c8bd42c7f7cd59c4d21a895b1472588bd9d4493b71701de2f1fc56a1d0e9075"
           },
           "visual_qa_requirements": [
-            "The outer and inner routes are contrasted."
-          ],
-          "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
-          ],
-          "visual_qa_negative_labels": [
-            "a photograph of an airplane in the sky",
-            "a portrait photograph of a person"
-          ]
-        },
-        {
-          "start": 4.0,
-          "asset": "assets/train_wheels_v2/evidence_03_02.png",
-          "visual_change": {
-            "kind": "state",
-            "concept_id": "s_gap1",
-            "state_id": "s_gap1:distance_question",
-            "narration_cue": "서로 다른",
-            "added_information": "Unequal travel distances are shown as the unresolved question.",
-            "source_sha256": "e4ac45f4173c20f8a2e2b31bd3029aa1736f6beb093e570172ab008cb571de08"
-          },
-          "visual_qa_requirements": [
-            "Unequal travel distances are shown as the unresolved question."
+            "The missing wheel-to-distance relationship is posed as a question."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -473,7 +450,7 @@
             "state_id": "s_clue2:contacts",
             "narration_cue": "커브에서는",
             "added_information": "Two tread-to-rail contact points are marked.",
-            "source_sha256": "4582c32be00e8bc8aa3022baa807ad550ab8a32e3c7caa8d609ed6381523567a"
+            "source_sha256": "c091fdf7d714bfd5e9be47061a5786c5f1e0ec56c41da4ecba307358e4ea1803"
           },
           "visual_qa_requirements": [
             "Two tread-to-rail contact points are marked."
@@ -496,7 +473,7 @@
             "state_id": "s_clue2:shift",
             "narration_cue": "바깥쪽으로",
             "added_information": "A sideways displacement arrow appears on the wheelset.",
-            "source_sha256": "36a693fa7f755fba566f4fe11b9a1a832713debdf6086ec2791ce75f1518a5ff"
+            "source_sha256": "db580822cc673ac5e0a1e607e53bc019b6852a581de6f91cc3b6d8fc027690df"
           },
           "visual_qa_requirements": [
             "A sideways displacement arrow appears on the wheelset."
@@ -519,7 +496,7 @@
             "state_id": "s_clue2:shift_contacts",
             "narration_cue": "레일에 닿는",
             "added_information": "Changed contact positions on the tapered profiles are shown.",
-            "source_sha256": "49874c8b391fd7145653d4cb7d32efb468f3a0eacd997fc63b259adfe4af0dd2"
+            "source_sha256": "94917d8a51ff11ef10a885ae53ed97bd553010d7f05538207ac99602f96b7553"
           },
           "visual_qa_requirements": [
             "Changed contact positions on the tapered profiles are shown."
@@ -558,13 +535,13 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_reveal",
-            "state_id": "s_reveal:shift_contacts",
+            "state_id": "s_reveal:radius_outer",
             "narration_cue": "그 결과",
-            "added_information": "The two displaced tread contacts remain visible.",
-            "source_sha256": "1253ee863431141d98a8166fdc545ec55cfa455bde54530d627614d208d113f6"
+            "added_information": "The larger outer rolling radius is drawn from axle to contact.",
+            "source_sha256": "2fb55ab77cf9bfe54c68f9f6eaf02332d0135e4913c9b065a4737f8f7cec3f20"
           },
           "visual_qa_requirements": [
-            "The two displaced tread contacts remain visible."
+            "The larger outer rolling radius is drawn from axle to contact."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -581,13 +558,13 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_reveal",
-            "state_id": "s_reveal:radius_outer",
-            "narration_cue": "더 굵은",
-            "added_information": "A larger rolling radius is drawn from axle to outer contact.",
-            "source_sha256": "5f4d7fcf08babda2e0c2f8509649f6bd3b2a150b1137e1281f5e2a6bf7e50343"
+            "state_id": "s_reveal:radius_inner",
+            "narration_cue": "안쪽은",
+            "added_information": "The smaller inner rolling radius is marked.",
+            "source_sha256": "6be9f81db6ec03b25e28b6d0bb8334cc70de69afc2eb48e16a2dc992253515ee"
           },
           "visual_qa_requirements": [
-            "A larger rolling radius is drawn from axle to outer contact."
+            "The smaller inner rolling radius is marked."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -604,33 +581,10 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_reveal",
-            "state_id": "s_reveal:radius_inner",
-            "narration_cue": "안쪽은",
-            "added_information": "The smaller inner rolling radius is marked.",
-            "source_sha256": "df9d560f3a3678946d0996f5e41859f44dc847fd4422e3452b5e00217fddc8cd"
-          },
-          "visual_qa_requirements": [
-            "The smaller inner rolling radius is marked."
-          ],
-          "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
-          ],
-          "visual_qa_negative_labels": [
-            "a photograph of an airplane in the sky",
-            "a portrait photograph of a person"
-          ]
-        },
-        {
-          "start": 6.0,
-          "asset": "assets/train_wheels_v2/evidence_06_03.png",
-          "visual_change": {
-            "kind": "state",
-            "concept_id": "s_reveal",
             "state_id": "s_reveal:radii",
             "narration_cue": "굴림 반지름이",
             "added_information": "Both radii are compared side by side.",
-            "source_sha256": "751d658cff42a1f8728baad0c3a06ac319ec3d9bd31538cc574732456480a063"
+            "source_sha256": "802bc9716f4274b7b2c53ab80be41ba563d217eecaf1892fcaa83e597ec38385"
           },
           "visual_qa_requirements": [
             "Both radii are compared side by side."
@@ -759,13 +713,13 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_seed_flange",
-            "state_id": "s_seed_flange:profile",
+            "state_id": "s_seed_flange:flange_view",
             "narration_cue": "그런데",
-            "added_information": "The tread and its inner raised edge are visible.",
-            "source_sha256": "10a7129ba0d8e5a191b34c9f3bb1ae3202ab96e39b6dd1e88eaa75a1cadf2d34"
+            "added_information": "The raised inner rim is introduced in a wheel-face schematic.",
+            "source_sha256": "8538d18553825a8c7aad1fcc02125804cf932acc155a64fe33e323fb73a4a93a"
           },
           "visual_qa_requirements": [
-            "The tread and its inner raised edge are visible."
+            "The raised inner rim is introduced in a wheel-face schematic."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -782,33 +736,10 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_seed_flange",
-            "state_id": "s_seed_flange:inside",
-            "narration_cue": "안쪽을 보면",
-            "added_information": "The inner side of the wheel profile is identified.",
-            "source_sha256": "5b3f43f637b86edae315687dc1d320c4f015888dc1baa5f8dbba36bc0bc955b3"
-          },
-          "visual_qa_requirements": [
-            "The inner side of the wheel profile is identified."
-          ],
-          "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
-          ],
-          "visual_qa_negative_labels": [
-            "a photograph of an airplane in the sky",
-            "a portrait photograph of a person"
-          ]
-        },
-        {
-          "start": 4.0,
-          "asset": "assets/train_wheels_v2/evidence_08_02.png",
-          "visual_change": {
-            "kind": "state",
-            "concept_id": "s_seed_flange",
             "state_id": "s_seed_flange:flange",
             "narration_cue": "튀어나온",
             "added_information": "An arrow identifies the raised flange, separate from the tread.",
-            "source_sha256": "e862a814626bfe9359c49547531f2e99e49f2d38797a91197e95e1c9094138de"
+            "source_sha256": "3658f3a331056e6b1f3008521892888eb5c50d84a77e7c8ebdc3d2369f2068cf"
           },
           "visual_qa_requirements": [
             "An arrow identifies the raised flange, separate from the tread."
@@ -847,13 +778,13 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_flange_question",
-            "state_id": "s_flange_question:flange",
+            "state_id": "s_flange_question:flange_question",
             "narration_cue": "혹시",
-            "added_information": "The raised flange is named.",
-            "source_sha256": "beeafa5dab01cce0d7e66fdada43e9f8792763a67ac23fe9c35060c0b9c53a06"
+            "added_information": "A question arrow relates the flange to guidance.",
+            "source_sha256": "03954b00c63697eede9e0d0e69c64f1a98619b0eac089121bef72fef5438e3e1"
           },
           "visual_qa_requirements": [
-            "The raised flange is named."
+            "A question arrow relates the flange to guidance."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -870,36 +801,13 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_flange_question",
-            "state_id": "s_flange_question:clearance",
+            "state_id": "s_flange_question:side_question",
             "narration_cue": "커브에서",
-            "added_information": "A cross-section distinguishes rail side and tread contact.",
-            "source_sha256": "5df2cafc41b5680321fd935c0d234f09a52fec8c0205c7b759002d5e23595421"
+            "added_information": "The rail side contact is posed as a separate question.",
+            "source_sha256": "0613dfbf33824ef20fe27239b71b5d6bd08fb52e99cb1eee674f2e67f58ec4cb"
           },
           "visual_qa_requirements": [
-            "A cross-section distinguishes rail side and tread contact."
-          ],
-          "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
-          ],
-          "visual_qa_negative_labels": [
-            "a photograph of an airplane in the sky",
-            "a portrait photograph of a person"
-          ]
-        },
-        {
-          "start": 4.0,
-          "asset": "assets/train_wheels_v2/evidence_09_02.png",
-          "visual_change": {
-            "kind": "state",
-            "concept_id": "s_flange_question",
-            "state_id": "s_flange_question:flange_question",
-            "narration_cue": "방향을",
-            "added_information": "A question arrow points to the possible side contact.",
-            "source_sha256": "3503b084ab72c17ba51f9b01fffd83689f1373d508f5063c70a7655facb85811"
-          },
-          "visual_qa_requirements": [
-            "A question arrow points to the possible side contact."
+            "The rail side contact is posed as a separate question."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -937,10 +845,10 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_violation2",
-            "state_id": "s_violation2:clearance",
+            "state_id": "s_violation2:normal_run",
             "narration_cue": "하지만",
             "added_information": "Clearance at the flange is contrasted with tread contact.",
-            "source_sha256": "b156a5e47875a2013187a029d5cc1e990087ce73cbbb05ef621d9c6861f53611"
+            "source_sha256": "2e323aa0032fb32e21dbb9ad604990534f961f1ab1e469c9c77675fa66a523a4"
           },
           "visual_qa_requirements": [
             "Clearance at the flange is contrasted with tread contact."
@@ -960,13 +868,13 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_violation2",
-            "state_id": "s_violation2:contacts",
+            "state_id": "s_violation2:flange_vs_tread",
             "narration_cue": "방향을 잡아주는",
-            "added_information": "Tread-to-rail contacts are emphasized.",
-            "source_sha256": "a13f684b7fbf1edc243850e7fc968c408698f18173aadfa2df8931692cbf4ad1"
+            "added_information": "The active tread is distinguished from the flange.",
+            "source_sha256": "101c20c90269f31706069f3948e8194e3c538f41cd14c11c777af31398688fb4"
           },
           "visual_qa_requirements": [
-            "Tread-to-rail contacts are emphasized."
+            "The active tread is distinguished from the flange."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -983,33 +891,10 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_violation2",
-            "state_id": "s_violation2:flange_vs_tread",
-            "narration_cue": "플랜지가 아니라",
-            "added_information": "The flange and active rolling tread are separately marked.",
-            "source_sha256": "2a39af2a3890c23fbff75bb9b024dc59bb2f36d02acc2f428ae875c25e4f4d62"
-          },
-          "visual_qa_requirements": [
-            "The flange and active rolling tread are separately marked."
-          ],
-          "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
-          ],
-          "visual_qa_negative_labels": [
-            "a photograph of an airplane in the sky",
-            "a portrait photograph of a person"
-          ]
-        },
-        {
-          "start": 6.0,
-          "asset": "assets/train_wheels_v2/evidence_10_03.png",
-          "visual_change": {
-            "kind": "state",
-            "concept_id": "s_violation2",
             "state_id": "s_violation2:radii",
             "narration_cue": "반지름 차이",
             "added_information": "Unequal rolling radii identify the stated main mechanism.",
-            "source_sha256": "17b1783eb90473edb9416595a3c8d992551485f08ce5ad08ab53c47cd754889e"
+            "source_sha256": "afa0a69d4a391d60c71470176a274a0457ae4ea76e11708030bc1d24e5c0d324"
           },
           "visual_qa_requirements": [
             "Unequal rolling radii identify the stated main mechanism."
@@ -1048,10 +933,10 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_resolution2",
-            "state_id": "s_resolution2:clearance",
+            "state_id": "s_resolution2:clearance_limits",
             "narration_cue": "플랜지는",
             "added_information": "Flange and rail side are shown with clearance.",
-            "source_sha256": "f41c503f3c34d9e4dc1f6d3ae33f74101c89feb3307164463eb7f5c8f110fbbb"
+            "source_sha256": "98d9c3c382402c4ecdf8cbe7f534e6aa88e95f0bf89e4bea55a7d2a3481db599"
           },
           "visual_qa_requirements": [
             "Flange and rail side are shown with clearance."
@@ -1072,9 +957,9 @@
             "kind": "state",
             "concept_id": "s_resolution2",
             "state_id": "s_resolution2:conditions",
-            "narration_cue": "눈, 비, 마모",
+            "narration_cue": "상황에서",
             "added_information": "Rain and wear symbols indicate changing operating conditions.",
-            "source_sha256": "a9ee59f8c0c1d44969b2290f269cadbe800140b62d0117b0e261fde5f08ddb26"
+            "source_sha256": "d94caec8093f5c928dc060bb8f261c01851afc376cde398dcecad93a3a1d38da"
           },
           "visual_qa_requirements": [
             "Rain and wear symbols indicate changing operating conditions."
@@ -1095,9 +980,9 @@
             "kind": "state",
             "concept_id": "s_resolution2",
             "state_id": "s_resolution2:flange_contact",
-            "narration_cue": "크게 벗어나려",
+            "narration_cue": "궤도를",
             "added_information": "The flange is shown reaching the rail side at lateral displacement.",
-            "source_sha256": "ae8a114d8bdc39490b768dc9a747031cd0ec43d4ca5c4ba299a318c69e039e69"
+            "source_sha256": "c13128103e72f631ef594e1da12a44320fbf28769bcd0a1c6c56b7a29ce1875a"
           },
           "visual_qa_requirements": [
             "The flange is shown reaching the rail side at lateral displacement."
@@ -1120,7 +1005,7 @@
             "state_id": "s_resolution2:limit",
             "narration_cue": "안전장치",
             "added_information": "A side-contact stop arrow explains the limiting role.",
-            "source_sha256": "62944f80a697d0254e7ae3008cd954259b54ebc7e73e6ed30ef25300dc8d2331"
+            "source_sha256": "dffcb9b0379f6cbe0344eae8ffcfd974f521a6cd02ac69e67b6b7f3ceee95e98"
           },
           "visual_qa_requirements": [
             "A side-contact stop arrow explains the limiting role."
@@ -1141,12 +1026,12 @@
     },
     {
       "id": "s_payoff1",
-      "narration": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
+      "narration": "결국 기차의 비밀은 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
       "visual_description": "핵심 원리 종합",
       "narration_plan": [
         {
           "role": "PAYOFF",
-          "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
+          "text": "결국 기차의 비밀은 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
           "focus": true
         }
       ],
@@ -1159,10 +1044,10 @@
           "visual_change": {
             "kind": "concept",
             "concept_id": "s_payoff1",
-            "state_id": "s_payoff1:train",
+            "state_id": "s_payoff1:loaded_train",
             "narration_cue": "결국",
             "added_information": "A train is shown over the curved track.",
-            "source_sha256": "c087151fbfca90401459b585daf58ddefef763754c46d55acaef50b1747cf530"
+            "source_sha256": "a029d195be49816a0c582d2763e90cb212b4596e21649642b2781101e8bcca58"
           },
           "visual_qa_requirements": [
             "A train is shown over the curved track."
@@ -1182,13 +1067,13 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_payoff1",
-            "state_id": "s_payoff1:curve",
-            "narration_cue": "커브를 안전하게",
-            "added_information": "The track bend brings the wheel geometry into focus.",
-            "source_sha256": "13113f713df92b54bc3fa076fe69a55113b5f2d91b1ce7f5788dd7b70c693fe8"
+            "state_id": "s_payoff1:steering",
+            "narration_cue": "조향 장치가 아니라",
+            "added_information": "The absent automotive steering action is recalled in the closing explanation.",
+            "source_sha256": "4f72366941f507573f4c8702d72359b66c5a893a761a04628734277d12941017"
           },
           "visual_qa_requirements": [
-            "The track bend brings the wheel geometry into focus."
+            "The absent automotive steering action is recalled in the closing explanation."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -1206,12 +1091,12 @@
             "kind": "state",
             "concept_id": "s_payoff1",
             "state_id": "s_payoff1:taper",
-            "narration_cue": "거대한 조향 장치가 아니라",
-            "added_information": "The tread profile is highlighted instead of a steering mechanism.",
-            "source_sha256": "bc112f482caf278aa0a96fb235865137bb05da2c222a7d345d20326d42135396"
+            "narration_cue": "바퀴 굴림면에",
+            "added_information": "The tread profile connects the train-scale result to the wheel geometry.",
+            "source_sha256": "1edb9f3b64a51186927e7c45f50bacf24972f8fdfe80d458318ca82807abc08c"
           },
           "visual_qa_requirements": [
-            "The tread profile is highlighted instead of a steering mechanism."
+            "The tread profile connects the train-scale result to the wheel geometry."
           ],
           "visual_qa_labels": [
             "an educational mechanical engineering diagram of railway wheels and rails",
@@ -1231,7 +1116,7 @@
             "state_id": "s_payoff1:radii",
             "narration_cue": "작은 기울기",
             "added_information": "The taper is connected to differing rolling radii.",
-            "source_sha256": "cb6d23f5c64d837bf236c16359011db57fd60971aaccd373efe8acfe2746ba1b"
+            "source_sha256": "4298ee448df942531f20a6cb16b4af30f8972698bd28a35391bba15b0b76eecd"
           },
           "visual_qa_requirements": [
             "The taper is connected to differing rolling radii."
@@ -1273,7 +1158,7 @@
             "state_id": "s_payoff2:creep",
             "narration_cue": "물론",
             "added_information": "Small relative motion at the wheel/rail contact is illustrated.",
-            "source_sha256": "9ea667d6ecedfa4a67fe9f1371a913ec3dfa92ab023314ebf302ae427d338344"
+            "source_sha256": "a7fdbae67ff976825f82afce5f06c17645552a1ed36905b08515946ef11df502"
           },
           "visual_qa_requirements": [
             "Small relative motion at the wheel/rail contact is illustrated."
@@ -1296,7 +1181,7 @@
             "state_id": "s_payoff2:spring",
             "narration_cue": "서스펜션",
             "added_information": "A spring links wheelset dynamics to suspension.",
-            "source_sha256": "71dc810bf3be26d5397f33f3d5b133482d452a12f352dc6964abb8c73bfe533b"
+            "source_sha256": "7b13b0a74ce8552bf44d428f624e77203401e052f030cbf97c5993e2c22cc438"
           },
           "visual_qa_requirements": [
             "A spring links wheelset dynamics to suspension."
@@ -1316,10 +1201,33 @@
           "visual_change": {
             "kind": "state",
             "concept_id": "s_payoff2",
+            "state_id": "s_payoff2:combined",
+            "narration_cue": "함께",
+            "added_information": "Contact mechanics and suspension are connected in one system.",
+            "source_sha256": "a4e0901f40aa1a13e43cd207d43b36ca4920a586ecc54a87b8062f5ad4d48537"
+          },
+          "visual_qa_requirements": [
+            "Contact mechanics and suspension are connected in one system."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
+        },
+        {
+          "start": 6.0,
+          "asset": "assets/train_wheels_v2/evidence_13_03.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff2",
             "state_id": "s_payoff2:radii",
             "narration_cue": "반지름 차이는",
             "added_information": "Rolling-radius difference is presented alongside the other factors.",
-            "source_sha256": "e9c4290774aadefc98617233542abc8f2824bfc8e3e3c182e16c1da822fda132"
+            "source_sha256": "c987dc93eab80d56b92368d2def641baaecfffb502d48e51257c42262ec0757a"
           },
           "visual_qa_requirements": [
             "Rolling-radius difference is presented alongside the other factors."
@@ -1473,7 +1381,7 @@
         "critical": true,
         "scene_id": "s_payoff1",
         "narration_unit_index": 0,
-        "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
+        "text": "결국 기차의 비밀은 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
         "grounded_claim_refs": []
       }
     ],

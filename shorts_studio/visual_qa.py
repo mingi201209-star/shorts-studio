@@ -271,9 +271,15 @@ def asset_visual_gate(project,sources):
         if (s.asset or s.asset_url) and s.id not in by:fail.append({"scene":s.id,"reason":"declared asset was not used"})
         if s.visual_qa_requirements and not(s.asset or s.asset_url):fail.append({"scene":s.id,"reason":"visual QA requirements exist without an asset"})
     return {"structural_status":"PASS" if not fail else "FAIL","semantic_status":"NOT_EVALUATED","failures":fail,"requirements":{s.id:s.visual_qa_requirements for s in project.scenes if s.visual_qa_requirements}}
-def evaluate_scene_semantics(scene,clip,provider,frame_path,asset_path=None):
+def evaluate_scene_semantics(scene,clip,provider,frame_path,asset_path=None,media_box=None):
     if not scene.visual_qa_requirements:return {"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
     extract_representative_frame(clip,frame_path)
+    if media_box is not None:
+        # Inspect the actual picture, excluding unrelated title/caption/black
+        # gutters. No provider, label or confidence threshold is bypassed.
+        from PIL import Image
+        with Image.open(frame_path) as image:
+            image.crop((0,media_box[0],image.width,media_box[1])).save(frame_path)
     r=provider.evaluate(frame_path,scene.visual_qa_requirements,
         narration=getattr(scene,"narration",""),
         positive_labels=list(getattr(scene,"visual_qa_labels",[]) or []),

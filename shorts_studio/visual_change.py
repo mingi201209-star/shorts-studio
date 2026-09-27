@@ -85,8 +85,14 @@ def equivalent_framing(before, after):
     """
     import cv2
     import numpy as np
-    a = cv2.resize(before, (480, 480))
-    b = cv2.resize(after, (480, 480))
+    def picture(image):
+        # Contain-fit letterboxing stays still during an embedded crop/zoom;
+        # it must not create a false registration residual at the border.
+        ys, xs = np.where(image.max(axis=2) > 12)
+        if len(xs):
+            image = image[ys.min():ys.max()+1, xs.min():xs.max()+1]
+        return cv2.resize(image, (480, 480))
+    a, b = picture(before), picture(after)
     if float(np.abs(a.astype(float) - b.astype(float)).mean()) < 3:
         return True
     sift = cv2.SIFT_create(nfeatures=1200)
@@ -146,6 +152,8 @@ def verify_observed_changes(project, windows, video, build_dir, media_box):
                 continue
             change = beat.visual_change
             meaningful = change is not None and change.kind != "framing"
+            if not meaningful:
+                failures.append(f"{scene.id}/{i}: missing meaningful declaration")
             # Compare the rendered media box against the pinned source, not
             # merely against the previous frame. A wrong but changing image
             # cannot stand in for a declared explanatory state.

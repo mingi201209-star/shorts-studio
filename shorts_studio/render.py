@@ -351,7 +351,8 @@ def _evaluate_visual_beats(scene, beat_clips:list[Path], beat_assets:list[Path],
             visual_qa_expected_sha256=list(getattr(beat,"visual_qa_expected_sha256",[]) or []),
         )
         frame=build/f"{beat_scene.id}_qa.jpg"
-        results.append(evaluate_scene_semantics(beat_scene,clip,provider,frame,asset_path=asset))
+        evidence_options={"media_box":(IMAGE_TOP_Y,SAFE_BOTTOM_Y)} if getattr(beat,"visual_change",None) else {}
+        results.append(evaluate_scene_semantics(beat_scene,clip,provider,frame,asset_path=asset,**evidence_options))
     status="FAIL" if any(x.get("status")=="FAIL" for x in results) else (
         "PASS" if results and all(x.get("status")=="PASS" for x in results) else "NOT_EVALUATED"
     )

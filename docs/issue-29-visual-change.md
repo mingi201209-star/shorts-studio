@@ -25,7 +25,7 @@ negative checks passed. The report requires manual review against narration,
 independent of the existing CLIP semantic QA, which remains required in the
 pilot workflow. No claim of automated understanding or entertainment success.
 
-Train Wheels keeps all 14 scenes, narration, factual guardrails and PEC graph.
+Train Wheels keeps all 14 scenes, factual guardrails and PEC graph; the payoff removes a redundant lead-in and its PEC text is updated to match.
 Purpose-built staged schematics replace crop loops: the established view
 stays fixed while new explanatory geometry is revealed. The drawings are
 schematic, with exaggerated geometry and no invented numeric measurements.
@@ -35,3 +35,5 @@ Review the actual MP4 and every state, especially the opening, rolling-radius
 explanation and flange-contact condition. Reject duplicate information even
 when the geometry detector misses it. Preserve the last green main until the
 candidate has passed regression, all CI and actual visual review.
+
+Actual first-render findings: reject the first candidate (96.8s, FAIL). Replace repeated flange/axle cards with distinct relational evidence, remove sub-second intermediate states, and use real measured cue times. Per-beat semantic QA now inspects the full rendered media box rather than letting CLIP center-crop mostly black gutters; providers, labels and all thresholds remain identical. Added real-MP4 adversarial tests caught and fixed letterbox interference in crop registration.
