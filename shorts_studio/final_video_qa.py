@@ -1070,6 +1070,10 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     # closed regardless of what the authored cadence looks like on paper.
     visual_activity = measure_visual_activity(video, media_box, build_dir)
     checks["visual_activity_real"] = verify_visual_activity(visual_activity)
+    if getattr(project, "strict_meaningful_visual_changes", False):
+        from .visual_change import verify_observed_changes
+        checks["meaningful_visual_changes"] = verify_observed_changes(
+            project, scene_windows, video, build_dir, media_box)
     checks["no_black_opening"] = verify_no_black_opening(video, media_box, build_dir)
     source_reuse = compute_source_reuse(project)
     checks["source_reuse"] = verify_source_reuse(source_reuse)

@@ -18,6 +18,12 @@ def main():
         raise SystemExit(0 if result.status=="PASS" else 1)
     elif a.cmd=="validate":
         p=load_project(a.manifest)
+        if p.strict_meaningful_visual_changes:
+            from .visual_change import audit_visual_changes
+            audit=audit_visual_changes(p)
+            if audit["status"] != "PASS":
+                print(json.dumps(audit,ensure_ascii=False))
+                raise SystemExit(1)
         if getattr(p,"strict_source_diversity",False):
             budget=verify_source_budget(p)
             if budget["status"]!="PASS":

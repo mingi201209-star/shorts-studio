@@ -20,32 +20,80 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/violation_wide.png",
+      "asset": "assets/train_wheels_v2/evidence_00_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/violation_wide.png"
+          "asset": "assets/train_wheels_v2/evidence_00_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_hook",
+            "state_id": "s_hook:train",
+            "narration_cue": "기차는",
+            "added_information": "A train follows a curved pair of rails before the steering question.",
+            "source_sha256": "14ba5679b6a8d29d4e8328b711ef1dc1689b1ea966a47e63039dc440816cca04"
+          },
+          "visual_qa_requirements": [
+            "A train follows a curved pair of rails before the steering question."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/violation_close_a.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_00_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_hook",
+            "state_id": "s_hook:steering",
+            "narration_cue": "자동차처럼",
+            "added_information": "A car steering angle is contrasted with the fixed wheelset.",
+            "source_sha256": "3b6094ed8a6c2cc3147f3b4e27e1d47f19d32cdd45e866e09e56f0919b33924a"
+          },
+          "visual_qa_requirements": [
+            "A car steering angle is contrasted with the fixed wheelset."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/violation_close_b.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/violation_wide.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/violation_close_a.png"
-        },
-        {
-          "start": 9.0,
-          "asset": "assets/train_wheels_v2/violation_close_b.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_00_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_hook",
+            "state_id": "s_hook:curve",
+            "narration_cue": "그런데도",
+            "added_information": "The wheelset follows a curved pair of rails.",
+            "source_sha256": "21e9d803fd914af12eaea97e9e9eab2f2c21c36efca6bcaed6892edc9f793b4f"
+          },
+          "visual_qa_requirements": [
+            "The wheelset follows a curved pair of rails."
+          ],
+          "visual_qa_labels": [
+            "a schematic diagram of a curved railway track showing inner and outer rail paths",
+            "a top-down technical diagram of a train track bend with two rail lines"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -62,28 +110,80 @@
       "factual_notes": [
         "두 바퀴는 하나의 차축에 고정되어 함께 회전한다"
       ],
-      "asset": "assets/train_wheels_v2/constraint_wide.png",
+      "asset": "assets/train_wheels_v2/evidence_01_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/constraint_wide.png"
+          "asset": "assets/train_wheels_v2/evidence_01_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_constraint",
+            "state_id": "s_constraint:axle_section",
+            "narration_cue": "두 바퀴는",
+            "added_information": "A common axle joins both rail wheels.",
+            "source_sha256": "94d40826ca870c7a952235bc8538f94930fff27117228ff01d8fe1e32156e02e"
+          },
+          "visual_qa_requirements": [
+            "A common axle joins both rail wheels."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/constraint_close_a.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_01_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_constraint",
+            "state_id": "s_constraint:locked",
+            "narration_cue": "고정되어",
+            "added_information": "The rigid connection is highlighted at both hubs.",
+            "source_sha256": "8f19b11fc4fd4c681817086a546be2bd8ad0f728b69b6b185d2a9e5798e1d0ef"
+          },
+          "visual_qa_requirements": [
+            "The rigid connection is highlighted at both hubs."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/constraint_close_b.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/constraint_wide.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/constraint_close_a.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_01_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_constraint",
+            "state_id": "s_constraint:rotation",
+            "narration_cue": "항상",
+            "added_information": "Equal rotation arrows appear on both wheels.",
+            "source_sha256": "354e784005867a91a08b3eaf05945c4a6aa1989f193808821950733076d02be1"
+          },
+          "visual_qa_requirements": [
+            "Equal rotation arrows appear on both wheels."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -98,28 +198,80 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/violation_close_b.png",
+      "asset": "assets/train_wheels_v2/evidence_02_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/violation_close_b.png"
+          "asset": "assets/train_wheels_v2/evidence_02_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_violation1",
+            "state_id": "s_violation1:curve",
+            "narration_cue": "그런데",
+            "added_information": "Inner and outer rails traverse the same bend.",
+            "source_sha256": "db8ae4c8f6c2ff6c0af100343aa003eea10cd09be41486a6133be632e517d1f5"
+          },
+          "visual_qa_requirements": [
+            "Inner and outer rails traverse the same bend."
+          ],
+          "visual_qa_labels": [
+            "a schematic diagram of a curved railway track showing inner and outer rail paths",
+            "a top-down technical diagram of a train track bend with two rail lines"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/violation_wide.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_02_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_violation1",
+            "state_id": "s_violation1:outer",
+            "narration_cue": "바깥쪽 바퀴가",
+            "added_information": "The outer arc is traced in blue.",
+            "source_sha256": "6f1f6a9f83115965c1045504cebf3e6485efad070f0803d56dd9cc962892acf8"
+          },
+          "visual_qa_requirements": [
+            "The outer arc is traced in blue."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/violation_close_a.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/violation_close_b.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/violation_wide.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_02_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_violation1",
+            "state_id": "s_violation1:distance",
+            "narration_cue": "더 먼",
+            "added_information": "Unrolled path lengths compare the two routes.",
+            "source_sha256": "e7899f952dccd8530741b7ceaad861458d6d6b470451817bd2c8ab4b2004d22b"
+          },
+          "visual_qa_requirements": [
+            "Unrolled path lengths compare the two routes."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -134,28 +286,57 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/gap_close_a.png",
+      "asset": "assets/train_wheels_v2/evidence_03_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/gap_close_a.png"
+          "asset": "assets/train_wheels_v2/evidence_03_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_gap1",
+            "state_id": "s_gap1:paradox",
+            "narration_cue": "같은 속도로",
+            "added_information": "Both wheels share one rotation count.",
+            "source_sha256": "c960f5ac718cf230f9c1f39b452b8eedced924bf6ba4f780c5f2519de25bf82f"
+          },
+          "visual_qa_requirements": [
+            "Both wheels share one rotation count."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/gap_close_b.png"
-        },
-        {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/gap_wide.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/gap_close_a.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/gap_close_b.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_03_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_gap1",
+            "state_id": "s_gap1:unknown_radius",
+            "narration_cue": "어떻게",
+            "added_information": "The missing wheel-to-distance relationship is posed as a question.",
+            "source_sha256": "6c8bd42c7f7cd59c4d21a895b1472588bd9d4493b71701de2f1fc56a1d0e9075"
+          },
+          "visual_qa_requirements": [
+            "The missing wheel-to-distance relationship is posed as a question."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -170,28 +351,80 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/clue1_wide.png",
+      "asset": "assets/train_wheels_v2/evidence_04_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/clue1_wide.png"
+          "asset": "assets/train_wheels_v2/evidence_04_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_clue1",
+            "state_id": "s_clue1:profile",
+            "narration_cue": "기차 바퀴의",
+            "added_information": "A rail wheel profile and rail contact are introduced.",
+            "source_sha256": "de505c1ffbaa2ccf019300a6b7c3addc71b03c0c57b3578634766a977da82e83"
+          },
+          "visual_qa_requirements": [
+            "A rail wheel profile and rail contact are introduced."
+          ],
+          "visual_qa_labels": [
+            "a schematic cross-section diagram of a railway wheel tread profile touching a rail",
+            "a technical diagram of a train wheel rolling surface in contact with a rail"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/clue1_close_a.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_04_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_clue1",
+            "state_id": "s_clue1:cylinder",
+            "narration_cue": "평평한",
+            "added_information": "A cylindrical tread is contrasted with a tapered tread.",
+            "source_sha256": "db545cc880754f9a8b00f2326f6b8a0da6cfeb02b698f8ea7e6f97dce72939db"
+          },
+          "visual_qa_requirements": [
+            "A cylindrical tread is contrasted with a tapered tread."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/clue1_close_b.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/clue1_wide.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/clue1_close_a.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_04_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_clue1",
+            "state_id": "s_clue1:taper",
+            "narration_cue": "완만하게",
+            "added_information": "A sloped tread cross-section is highlighted; slope is exaggerated.",
+            "source_sha256": "3a143fd2f861fbfea6218afbf9848e03567fa016fcfdce144dee629e57a6c5a9"
+          },
+          "visual_qa_requirements": [
+            "A sloped tread cross-section is highlighted; slope is exaggerated."
+          ],
+          "visual_qa_labels": [
+            "a schematic cross-section diagram of a railway wheel tread with an exaggerated sloped taper touching a rail",
+            "a technical diagram highlighting the sloped angle of a train wheel rolling surface"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -206,28 +439,80 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/clue2_close_b.png",
+      "asset": "assets/train_wheels_v2/evidence_05_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/clue2_close_b.png"
+          "asset": "assets/train_wheels_v2/evidence_05_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_clue2",
+            "state_id": "s_clue2:contacts",
+            "narration_cue": "커브에서는",
+            "added_information": "Two tread-to-rail contact points are marked.",
+            "source_sha256": "c091fdf7d714bfd5e9be47061a5786c5f1e0ec56c41da4ecba307358e4ea1803"
+          },
+          "visual_qa_requirements": [
+            "Two tread-to-rail contact points are marked."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/clue2_wide.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_05_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_clue2",
+            "state_id": "s_clue2:shift",
+            "narration_cue": "바깥쪽으로",
+            "added_information": "A sideways displacement arrow appears on the wheelset.",
+            "source_sha256": "db580822cc673ac5e0a1e607e53bc019b6852a581de6f91cc3b6d8fc027690df"
+          },
+          "visual_qa_requirements": [
+            "A sideways displacement arrow appears on the wheelset."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/clue2_close_a.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/clue2_close_b.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/clue2_wide.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_05_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_clue2",
+            "state_id": "s_clue2:shift_contacts",
+            "narration_cue": "레일에 닿는",
+            "added_information": "Changed contact positions on the tapered profiles are shown.",
+            "source_sha256": "94917d8a51ff11ef10a885ae53ed97bd553010d7f05538207ac99602f96b7553"
+          },
+          "visual_qa_requirements": [
+            "Changed contact positions on the tapered profiles are shown."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -242,32 +527,80 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/reveal_close_a.png",
+      "asset": "assets/train_wheels_v2/evidence_06_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/reveal_close_a.png"
+          "asset": "assets/train_wheels_v2/evidence_06_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_reveal",
+            "state_id": "s_reveal:radius_outer",
+            "narration_cue": "그 결과",
+            "added_information": "The larger outer rolling radius is drawn from axle to contact.",
+            "source_sha256": "2fb55ab77cf9bfe54c68f9f6eaf02332d0135e4913c9b065a4737f8f7cec3f20"
+          },
+          "visual_qa_requirements": [
+            "The larger outer rolling radius is drawn from axle to contact."
+          ],
+          "visual_qa_labels": [
+            "a schematic diagram of a circle with a radius line representing a train wheel rolling radius",
+            "a technical diagram showing a rolling radius measured from an axle center to a rail contact point"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/reveal_close_b.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_06_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_reveal",
+            "state_id": "s_reveal:radius_inner",
+            "narration_cue": "안쪽은",
+            "added_information": "The smaller inner rolling radius is marked.",
+            "source_sha256": "6be9f81db6ec03b25e28b6d0bb8334cc70de69afc2eb48e16a2dc992253515ee"
+          },
+          "visual_qa_requirements": [
+            "The smaller inner rolling radius is marked."
+          ],
+          "visual_qa_labels": [
+            "a schematic diagram of a circle with a radius line representing a train wheel rolling radius",
+            "a technical diagram showing a rolling radius measured from an axle center to a rail contact point"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/reveal_wide.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/reveal_close_a.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/reveal_close_b.png"
-        },
-        {
-          "start": 9.0,
-          "asset": "assets/train_wheels_v2/reveal_wide.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_06_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_reveal",
+            "state_id": "s_reveal:radii",
+            "narration_cue": "굴림 반지름이",
+            "added_information": "Both radii are compared side by side.",
+            "source_sha256": "802bc9716f4274b7b2c53ab80be41ba563d217eecaf1892fcaa83e597ec38385"
+          },
+          "visual_qa_requirements": [
+            "Both radii are compared side by side."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -282,28 +615,80 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/resolution_close_a.png",
+      "asset": "assets/train_wheels_v2/evidence_07_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/resolution_close_a.png"
+          "asset": "assets/train_wheels_v2/evidence_07_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_resolution1",
+            "state_id": "s_resolution1:rolling",
+            "narration_cue": "그래서",
+            "added_information": "Both wheels make one turn together.",
+            "source_sha256": "7c3b7c2144d4156b923e85b84f8c372edd1ef743c5e087e982155269571aaa10"
+          },
+          "visual_qa_requirements": [
+            "Both wheels make one turn together."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/resolution_close_b.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_07_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_resolution1",
+            "state_id": "s_resolution1:circle",
+            "narration_cue": "바깥쪽 바퀴는",
+            "added_information": "The outer rolling circle is larger.",
+            "source_sha256": "5324fa0c6c120525264deefeeea7b0d82c8658747fae794237d45e7c2ac687b1"
+          },
+          "visual_qa_requirements": [
+            "The outer rolling circle is larger."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/resolution_wide.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/resolution_close_a.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/resolution_close_b.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_07_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_resolution1",
+            "state_id": "s_resolution1:unroll",
+            "narration_cue": "더 먼",
+            "added_information": "The larger circumference is unrolled into a longer travel distance.",
+            "source_sha256": "737687d4522584ee24a3f4fd09ca6eb0b527f12c34850189a2117c1474ff8655"
+          },
+          "visual_qa_requirements": [
+            "The larger circumference is unrolled into a longer travel distance."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -320,24 +705,57 @@
       "factual_notes": [
         "플랜지는 바퀴 안쪽에 튀어나온 테두리 형태로 존재한다"
       ],
-      "asset": "assets/train_wheels_v2/flange_seed_wide.png",
+      "asset": "assets/train_wheels_v2/evidence_08_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/flange_seed_wide.png"
+          "asset": "assets/train_wheels_v2/evidence_08_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_seed_flange",
+            "state_id": "s_seed_flange:flange_view",
+            "narration_cue": "그런데",
+            "added_information": "The raised inner rim is introduced in a wheel-face schematic.",
+            "source_sha256": "8538d18553825a8c7aad1fcc02125804cf932acc155a64fe33e323fb73a4a93a"
+          },
+          "visual_qa_requirements": [
+            "The raised inner rim is introduced in a wheel-face schematic."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/flange_seed_close_a.png"
-        },
-        {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/flange_seed_close_b.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/flange_seed_wide.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_08_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_seed_flange",
+            "state_id": "s_seed_flange:flange",
+            "narration_cue": "튀어나온",
+            "added_information": "An arrow identifies the raised flange, separate from the tread.",
+            "source_sha256": "3658f3a331056e6b1f3008521892888eb5c50d84a77e7c8ebdc3d2369f2068cf"
+          },
+          "visual_qa_requirements": [
+            "An arrow identifies the raised flange, separate from the tread."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -352,24 +770,57 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/flange_question_close_a.png",
+      "asset": "assets/train_wheels_v2/evidence_09_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/flange_question_close_a.png"
+          "asset": "assets/train_wheels_v2/evidence_09_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_flange_question",
+            "state_id": "s_flange_question:flange_question",
+            "narration_cue": "혹시",
+            "added_information": "A question arrow relates the flange to guidance.",
+            "source_sha256": "03954b00c63697eede9e0d0e69c64f1a98619b0eac089121bef72fef5438e3e1"
+          },
+          "visual_qa_requirements": [
+            "A question arrow relates the flange to guidance."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/flange_question_close_b.png"
-        },
-        {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/flange_question_wide.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/flange_question_close_a.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_09_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_flange_question",
+            "state_id": "s_flange_question:side_question",
+            "narration_cue": "커브에서",
+            "added_information": "The rail side contact is posed as a separate question.",
+            "source_sha256": "0613dfbf33824ef20fe27239b71b5d6bd08fb52e99cb1eee674f2e67f58ec4cb"
+          },
+          "visual_qa_requirements": [
+            "The rail side contact is posed as a separate question."
+          ],
+          "visual_qa_labels": [
+            "a schematic cross-section diagram of a railway wheel and rail with a highlighted contact point marked by a question mark",
+            "a technical diagram posing a question about where a train wheel touches the rail"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -386,32 +837,80 @@
       "factual_notes": [
         "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
       ],
-      "asset": "assets/train_wheels_v2/flange_seed_close_b.png",
+      "asset": "assets/train_wheels_v2/evidence_10_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/flange_seed_close_b.png"
+          "asset": "assets/train_wheels_v2/evidence_10_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_violation2",
+            "state_id": "s_violation2:normal_run",
+            "narration_cue": "하지만",
+            "added_information": "Clearance at the flange is contrasted with tread contact.",
+            "source_sha256": "2e323aa0032fb32e21dbb9ad604990534f961f1ab1e469c9c77675fa66a523a4"
+          },
+          "visual_qa_requirements": [
+            "Clearance at the flange is contrasted with tread contact."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/flange_seed_wide.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_10_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_violation2",
+            "state_id": "s_violation2:flange_vs_tread",
+            "narration_cue": "방향을 잡아주는",
+            "added_information": "The active tread is distinguished from the flange.",
+            "source_sha256": "101c20c90269f31706069f3948e8194e3c538f41cd14c11c777af31398688fb4"
+          },
+          "visual_qa_requirements": [
+            "The active tread is distinguished from the flange."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/flange_seed_close_a.png"
-        },
-        {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/flange_seed_close_b.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/flange_seed_wide.png"
-        },
-        {
-          "start": 9.0,
-          "asset": "assets/train_wheels_v2/flange_seed_close_a.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_10_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_violation2",
+            "state_id": "s_violation2:radii",
+            "narration_cue": "반지름 차이",
+            "added_information": "Unequal rolling radii identify the stated main mechanism.",
+            "source_sha256": "afa0a69d4a391d60c71470176a274a0457ae4ea76e11708030bc1d24e5c0d324"
+          },
+          "visual_qa_requirements": [
+            "Unequal rolling radii identify the stated main mechanism."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -426,76 +925,214 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/myth_break_close_b.png",
+      "asset": "assets/train_wheels_v2/evidence_11_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/myth_break_close_b.png"
+          "asset": "assets/train_wheels_v2/evidence_11_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_resolution2",
+            "state_id": "s_resolution2:clearance_limits",
+            "narration_cue": "플랜지는",
+            "added_information": "Flange and rail side are shown with clearance.",
+            "source_sha256": "98d9c3c382402c4ecdf8cbe7f534e6aa88e95f0bf89e4bea55a7d2a3481db599"
+          },
+          "visual_qa_requirements": [
+            "Flange and rail side are shown with clearance."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/myth_break_wide.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_11_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_resolution2",
+            "state_id": "s_resolution2:conditions",
+            "narration_cue": "상황에서",
+            "added_information": "Rain and wear symbols indicate changing operating conditions.",
+            "source_sha256": "d94caec8093f5c928dc060bb8f261c01851afc376cde398dcecad93a3a1d38da"
+          },
+          "visual_qa_requirements": [
+            "Rain and wear symbols indicate changing operating conditions."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/myth_break_close_a.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_11_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_resolution2",
+            "state_id": "s_resolution2:flange_contact",
+            "narration_cue": "궤도를",
+            "added_information": "The flange is shown reaching the rail side at lateral displacement.",
+            "source_sha256": "c13128103e72f631ef594e1da12a44320fbf28769bcd0a1c6c56b7a29ce1875a"
+          },
+          "visual_qa_requirements": [
+            "The flange is shown reaching the rail side at lateral displacement."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/myth_break_close_b.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/myth_break_wide.png"
-        },
-        {
-          "start": 9.0,
-          "asset": "assets/train_wheels_v2/myth_break_close_a.png"
+          "start": 6.0,
+          "asset": "assets/train_wheels_v2/evidence_11_03.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_resolution2",
+            "state_id": "s_resolution2:limit",
+            "narration_cue": "안전장치",
+            "added_information": "A side-contact stop arrow explains the limiting role.",
+            "source_sha256": "dffcb9b0379f6cbe0344eae8ffcfd974f521a6cd02ac69e67b6b7f3ceee95e98"
+          },
+          "visual_qa_requirements": [
+            "A side-contact stop arrow explains the limiting role."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
       "id": "s_payoff1",
-      "narration": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
+      "narration": "결국 기차의 비밀은 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
       "visual_description": "핵심 원리 종합",
       "narration_plan": [
         {
           "role": "PAYOFF",
-          "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
+          "text": "결국 기차의 비밀은 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
           "focus": true
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/payoff_close_b.png",
+      "asset": "assets/train_wheels_v2/evidence_12_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/payoff_close_b.png"
+          "asset": "assets/train_wheels_v2/evidence_12_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_payoff1",
+            "state_id": "s_payoff1:loaded_train",
+            "narration_cue": "결국",
+            "added_information": "A train is shown over the curved track.",
+            "source_sha256": "a029d195be49816a0c582d2763e90cb212b4596e21649642b2781101e8bcca58"
+          },
+          "visual_qa_requirements": [
+            "A train is shown over the curved track."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/payoff_wide.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_12_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff1",
+            "state_id": "s_payoff1:steering",
+            "narration_cue": "조향 장치가 아니라",
+            "added_information": "The absent automotive steering action is recalled in the closing explanation.",
+            "source_sha256": "4f72366941f507573f4c8702d72359b66c5a893a761a04628734277d12941017"
+          },
+          "visual_qa_requirements": [
+            "The absent automotive steering action is recalled in the closing explanation."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/payoff_close_a.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_12_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff1",
+            "state_id": "s_payoff1:taper",
+            "narration_cue": "바퀴 굴림면에",
+            "added_information": "The tread profile connects the train-scale result to the wheel geometry.",
+            "source_sha256": "1edb9f3b64a51186927e7c45f50bacf24972f8fdfe80d458318ca82807abc08c"
+          },
+          "visual_qa_requirements": [
+            "The tread profile connects the train-scale result to the wheel geometry."
+          ],
+          "visual_qa_labels": [
+            "a schematic cross-section diagram of a railway wheel tread with an exaggerated sloped taper touching a rail",
+            "a technical diagram highlighting the sloped angle of a train wheel rolling surface"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/payoff_close_b.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/payoff_wide.png"
-        },
-        {
-          "start": 9.0,
-          "asset": "assets/train_wheels_v2/payoff_close_a.png"
-        },
-        {
-          "start": 10.8,
-          "asset": "assets/train_wheels_v2/payoff_close_b.png"
+          "start": 6.0,
+          "asset": "assets/train_wheels_v2/evidence_12_03.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff1",
+            "state_id": "s_payoff1:radii",
+            "narration_cue": "작은 기울기",
+            "added_information": "The taper is connected to differing rolling radii.",
+            "source_sha256": "4298ee448df942531f20a6cb16b4af30f8972698bd28a35391bba15b0b76eecd"
+          },
+          "visual_qa_requirements": [
+            "The taper is connected to differing rolling radii."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     },
     {
@@ -510,32 +1147,103 @@
         }
       ],
       "factual_notes": [],
-      "asset": "assets/train_wheels_v2/payoff2_wide.png",
+      "asset": "assets/train_wheels_v2/evidence_13_00.png",
       "visual_beats": [
         {
           "start": 0.0,
-          "asset": "assets/train_wheels_v2/payoff2_wide.png"
+          "asset": "assets/train_wheels_v2/evidence_13_00.png",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "s_payoff2",
+            "state_id": "s_payoff2:creep",
+            "narration_cue": "물론",
+            "added_information": "Small relative motion at the wheel/rail contact is illustrated.",
+            "source_sha256": "a7fdbae67ff976825f82afce5f06c17645552a1ed36905b08515946ef11df502"
+          },
+          "visual_qa_requirements": [
+            "Small relative motion at the wheel/rail contact is illustrated."
+          ],
+          "visual_qa_labels": [
+            "a schematic diagram of a wheel and rail contact point with an arrow indicating a small relative sliding motion",
+            "a technical diagram illustrating minute slip between a train wheel and rail surface"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 1.8,
-          "asset": "assets/train_wheels_v2/payoff2_close_a.png"
+          "start": 2.0,
+          "asset": "assets/train_wheels_v2/evidence_13_01.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff2",
+            "state_id": "s_payoff2:spring",
+            "narration_cue": "서스펜션",
+            "added_information": "A spring links wheelset dynamics to suspension.",
+            "source_sha256": "7b13b0a74ce8552bf44d428f624e77203401e052f030cbf97c5993e2c22cc438"
+          },
+          "visual_qa_requirements": [
+            "A spring links wheelset dynamics to suspension."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 3.6,
-          "asset": "assets/train_wheels_v2/payoff2_close_b.png"
+          "start": 4.0,
+          "asset": "assets/train_wheels_v2/evidence_13_02.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff2",
+            "state_id": "s_payoff2:combined",
+            "narration_cue": "함께",
+            "added_information": "Contact mechanics and suspension are connected in one system.",
+            "source_sha256": "a4e0901f40aa1a13e43cd207d43b36ca4920a586ecc54a87b8062f5ad4d48537"
+          },
+          "visual_qa_requirements": [
+            "Contact mechanics and suspension are connected in one system."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         },
         {
-          "start": 5.4,
-          "asset": "assets/train_wheels_v2/payoff2_wide.png"
-        },
-        {
-          "start": 7.2,
-          "asset": "assets/train_wheels_v2/payoff2_close_a.png"
-        },
-        {
-          "start": 9.0,
-          "asset": "assets/train_wheels_v2/payoff2_close_b.png"
+          "start": 6.0,
+          "asset": "assets/train_wheels_v2/evidence_13_03.png",
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "s_payoff2",
+            "state_id": "s_payoff2:radii",
+            "narration_cue": "반지름 차이는",
+            "added_information": "Rolling-radius difference is presented alongside the other factors.",
+            "source_sha256": "c987dc93eab80d56b92368d2def641baaecfffb502d48e51257c42262ec0757a"
+          },
+          "visual_qa_requirements": [
+            "Rolling-radius difference is presented alongside the other factors."
+          ],
+          "visual_qa_labels": [
+            "an educational mechanical engineering diagram of railway wheels and rails",
+            "a labeled technical schematic of a train wheelset mechanism"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of an airplane in the sky",
+            "a portrait photograph of a person"
+          ]
         }
+      ],
+      "visual_qa_requirements": [
+        "Railway wheel and track mechanism schematic, consistent with the narration."
       ]
     }
   ],
@@ -673,7 +1381,7 @@
         "critical": true,
         "scene_id": "s_payoff1",
         "narration_unit_index": 0,
-        "text": "결국 수백 톤짜리 기차가 커브를 안전하게 도는 비밀은 거대한 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
+        "text": "결국 기차의 비밀은 조향 장치가 아니라, 바퀴 굴림면에 숨겨진 작은 기울기 차이였습니다.",
         "grounded_claim_refs": []
       }
     ],
@@ -694,5 +1402,6 @@
         "source_ref": "플랜지는 정상 주행 중에는 레일 옆면에 거의 닿지 않도록 설계된다"
       }
     ]
-  }
+  },
+  "strict_meaningful_visual_changes": true
 }

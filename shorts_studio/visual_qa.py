@@ -119,21 +119,32 @@ def _load_clip(model_name="ViT-B-32",pretrained="openai"):
     except ImportError:_CLIP_CACHE[key]=None;return None
     model,_,preprocess=open_clip.create_model_and_transforms(model_name,pretrained=pretrained); tokenizer=open_clip.get_tokenizer(model_name);model.eval()
     _CLIP_CACHE[key]=(torch,model,preprocess,tokenizer);return _CLIP_CACHE[key]
-def _semantic_subject_images(image_path):
+def _semantic_subject_images(image_path,full_band=False):
     """Return conservative crops of the sharp visual band for semantic QA.
 
     One crop can accidentally exclude the evidence in a wide archival frame.
     We therefore score the whole visual band plus overlapping center/left/right
     crops.  The provider aggregates them conservatively instead of accepting a
     single lucky crop, so wrong-domain frames still fail closed.
+
+    ``full_band``: when the caller already isolated the real media box (and
+    excluded the title/caption/black gutters) before this function ever sees
+    the frame, the hardcoded 190/1300-of-1920 vertical crop below would cut
+    a *second* time into an already-correct, already-smaller frame and
+    silently discard real content near its bottom edge. Callers that pass an
+    already-cropped media-box frame set ``full_band=True`` to use the frame's
+    full height instead of re-deriving a band from the old fixed-frame ratio.
     """
     from PIL import Image
     image=Image.open(image_path).convert("RGB")
     w,h=image.size
     if w<=0 or h<=0:
         return [image]
-    top=max(0,min(h-1,round(h*(190/1920))))
-    bottom=max(top+1,min(h,round(h*(1300/1920))))
+    if full_band:
+        top,bottom=0,h
+    else:
+        top=max(0,min(h-1,round(h*(190/1920))))
+        bottom=max(top+1,min(h,round(h*(1300/1920))))
     left=max(0,round(w*.035)); right=min(w,round(w*.965))
     band=image.crop((left,top,right,bottom))
     bw,bh=band.size
@@ -148,9 +159,9 @@ def _semantic_subject_image(image_path):
     """Backward-compatible primary crop used by focused unit tests."""
     return _semantic_subject_images(image_path)[0]
 
-def clip_zero_shot_scores(bundle,image_path,labels):
+def clip_zero_shot_scores(bundle,image_path,labels,full_band=False):
     torch,model,preprocess,tokenizer=bundle
-    images=torch.stack([preprocess(x) for x in _semantic_subject_images(image_path)]);text=tokenizer(labels)
+    images=torch.stack([preprocess(x) for x in _semantic_subject_images(image_path,full_band=full_band)]);text=tokenizer(labels)
     with torch.no_grad():
         a=model.encode_image(images);b=model.encode_text(text);a=a/a.norm(dim=-1,keepdim=True);b=b/b.norm(dim=-1,keepdim=True);s=(a@b.T)
     # Average evidence across the full subject band and overlapping crops.
@@ -177,7 +188,11 @@ class ClipSemanticVisionProvider:
         if not positive:return {"status":"NOT_EVALUATED","reason":"no visual_qa_labels declared for scene"}
         bundle=_load_clip(self.model_name,self.pretrained)
         if bundle is None:return {"status":"NOT_EVALUATED","reason":"local CLIP model unavailable; install the 'vision' extra (open-clip-torch, torch)"}
-        try:scores=clip_zero_shot_scores(bundle,image,positive+negative)
+        try:
+            if context.get("media_box_applied"):
+                scores=clip_zero_shot_scores(bundle,image,positive+negative,full_band=True)
+            else:
+                scores=clip_zero_shot_scores(bundle,image,positive+negative)
         except Exception as e:return {"status":"NOT_EVALUATED","reason":f"CLIP inference failed: {e}"}
         pos_scores=[scores[x] for x in positive];neg_scores=[scores[x] for x in negative]
         best_pos=max(pos_scores);mean_pos=sum(pos_scores)/len(pos_scores)
@@ -271,15 +286,22 @@ def asset_visual_gate(project,sources):
         if (s.asset or s.asset_url) and s.id not in by:fail.append({"scene":s.id,"reason":"declared asset was not used"})
         if s.visual_qa_requirements and not(s.asset or s.asset_url):fail.append({"scene":s.id,"reason":"visual QA requirements exist without an asset"})
     return {"structural_status":"PASS" if not fail else "FAIL","semantic_status":"NOT_EVALUATED","failures":fail,"requirements":{s.id:s.visual_qa_requirements for s in project.scenes if s.visual_qa_requirements}}
-def evaluate_scene_semantics(scene,clip,provider,frame_path,asset_path=None):
+def evaluate_scene_semantics(scene,clip,provider,frame_path,asset_path=None,media_box=None):
     if not scene.visual_qa_requirements:return {"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
     extract_representative_frame(clip,frame_path)
+    if media_box is not None:
+        # Inspect the actual picture, excluding unrelated title/caption/black
+        # gutters. No provider, label or confidence threshold is bypassed.
+        from PIL import Image
+        with Image.open(frame_path) as image:
+            image.crop((0,media_box[0],image.width,media_box[1])).save(frame_path)
     r=provider.evaluate(frame_path,scene.visual_qa_requirements,
         narration=getattr(scene,"narration",""),
         positive_labels=list(getattr(scene,"visual_qa_labels",[]) or []),
         negative_labels=list(getattr(scene,"visual_qa_negative_labels",[]) or []),
         expected_asset_sha256=list(getattr(scene,"visual_qa_expected_sha256",[]) or []),
-        asset_path=asset_path)
+        asset_path=asset_path,
+        media_box_applied=media_box is not None)
     return {"scene":scene.id,"requirements":scene.visual_qa_requirements,**r}
 def production_semantic_ok(status,require_semantic):return status=="PASS" if require_semantic else status!="FAIL"
 def semantic_visual_gate(project,scene_clips,provider=None,build_dir=Path("build")):

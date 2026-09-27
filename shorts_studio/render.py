@@ -11,6 +11,7 @@ from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scen
 from .final_video_qa import run_final_video_qa, verify_source_budget, verify_retention_contract
 from .captions import merge_scene_srt_files
 from .entertainment_qa import run_entertainment_contract_report
+from .visual_change import audit_visual_changes, resolve_visual_cues
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -350,7 +351,8 @@ def _evaluate_visual_beats(scene, beat_clips:list[Path], beat_assets:list[Path],
             visual_qa_expected_sha256=list(getattr(beat,"visual_qa_expected_sha256",[]) or []),
         )
         frame=build/f"{beat_scene.id}_qa.jpg"
-        results.append(evaluate_scene_semantics(beat_scene,clip,provider,frame,asset_path=asset))
+        evidence_options={"media_box":(IMAGE_TOP_Y,SAFE_BOTTOM_Y)} if getattr(beat,"visual_change",None) else {}
+        results.append(evaluate_scene_semantics(beat_scene,clip,provider,frame,asset_path=asset,**evidence_options))
     status="FAIL" if any(x.get("status")=="FAIL" for x in results) else (
         "PASS" if results and all(x.get("status")=="PASS" for x in results) else "NOT_EVALUATED"
     )
@@ -491,6 +493,10 @@ def render(manifest:str,dry_run:bool=False)->dict:
         if retention["status"]!="PASS":
             failing={k:v for k,v in retention["checks"].items() if v["status"]=="FAIL"}
             raise RuntimeError(f"retention contract check failed: {failing}")
+    if p.strict_meaningful_visual_changes:
+        audit=audit_visual_changes(p)
+        if audit["status"] != "PASS":
+            raise RuntimeError(f"meaningful visual change audit failed: {audit}")
     if dry_run: return {"status":"PASS","scenes":len(p.scenes),"mode":"dry-run"}
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         raise RuntimeError("FFmpeg/ffprobe required")
@@ -500,6 +506,12 @@ def render(manifest:str,dry_run:bool=False)->dict:
     asset_cache={}
     for scene in p.scenes:
         audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
+        if p.strict_meaningful_visual_changes:
+            timing=json.loads((build/f"{scene.id}.timing.json").read_text(encoding="utf-8"))
+            resolved=resolve_visual_cues(scene,timing["words"],duration)
+            # The project used by every final/PEC check must describe the
+            # same measured timeline that is actually rendered.
+            scene.visual_beats=resolved.visual_beats
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
         title=scene.overlay_title or p.overlay_title

@@ -1,0 +1,138 @@
+name: train-wheels-render
+on:
+  push:
+    branches: [fix/meaningful-visual-change-29]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pilot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install rendering and semantic QA dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk fonts-nanum librsvg2-bin
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -e '.[dev,vision]'
+      - name: Regenerate Train Wheels V2 states with corrected semantic labels
+        run: python scripts/build_train_wheel_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf
+      - name: Full regression
+        run: pytest -q
+      - name: Validate every checked-in production manifest
+        run: |
+          for manifest in examples/*.json; do
+            python -m shorts_studio validate "$manifest"
+          done
+      - name: Real Train Wheels V2 TTS and render
+        env:
+          SHORTS_REQUIRE_SEMANTIC_QA: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -o pipefail
+          python -m shorts_studio render examples/train_wheels_v2.json 2>&1 | tee train-render.log
+      - name: Verify full QA and meaningful events
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          assert q['status']=='PASS', q
+          assert q['semantic_required'] is True
+          assert q['semantic_visual_qa']['status']=='PASS'
+          fv=q['final_video_qa']
+          assert fv['status']=='PASS'
+          assert all(c['status']=='PASS' for c in fv['checks'].values())
+          m=fv['checks']['meaningful_visual_changes']
+          assert m['first_5s_meaningful_changes']>=1
+          assert m['events'] and all(e['meaningful_delivery'] for e in m['events'])
+          assert q.get('entertainment_contract'), 'PEC pilot must remain present'
+          print('Real render and all gates PASS; manual visual review still required.')
+          PY
+      - name: Dump QA summary and sampled review frames into the job log
+        # success() only (see above). The full video's base64 is too many
+        # lines for any tail-based log read to reach (it buries itself),
+        # so instead of dumping dist/final.mp4 whole, print a compact QA
+        # summary plus a small set of downscaled JPEG thumbnails -- both
+        # the already-extracted meaningful-change evidence frames in
+        # build/_meaningful/ and a few direct ffmpeg grabs (open/mid/near
+        # end) -- small enough in total to actually fit in a retrievable
+        # log tail, which is what a human visual review actually needs.
+        if: success()
+        run: |
+          python - <<'PY'
+          import base64, json, subprocess
+          from pathlib import Path
+          from PIL import Image
+          import io
+
+          q = json.loads(Path('dist/qa_report.json').read_text())
+          m = q['final_video_qa']['checks']['meaningful_visual_changes']
+          summary = {
+              'status': q['status'],
+              'semantic_visual_qa': q['semantic_visual_qa']['status'],
+              'final_video_qa': q['final_video_qa']['status'],
+              'probe_duration': q.get('probe', {}).get('format', {}).get('duration'),
+              'first_5s_meaningful_changes': m['first_5s_meaningful_changes'],
+              'event_count': len(m['events']),
+              'events': [
+                  {'scene': e['scene'], 'beat': e['beat'], 'start': round(e['start'], 2),
+                   'kind': e['kind'], 'info': e['declared_information']}
+                  for e in m['events']
+              ],
+          }
+          print("===QA_SUMMARY_BEGIN===")
+          print(json.dumps(summary, ensure_ascii=False, indent=None))
+          print("===QA_SUMMARY_END===")
+
+          def dump_jpeg(label, img: Image.Image):
+              img = img.convert('RGB')
+              w = 420
+              h = round(img.height * w / img.width)
+              img = img.resize((w, h), Image.LANCZOS)
+              buf = io.BytesIO()
+              img.save(buf, format='JPEG', quality=60)
+              data = base64.b64encode(buf.getvalue()).decode()
+              print(f"===FRAME[{label}]_BEGIN===")
+              for i in range(0, len(data), 160):
+                  print(data[i:i+160])
+              print(f"===FRAME[{label}]_END===")
+
+          events = sorted(m['events'], key=lambda e: e['start'])
+          picked = events[::max(1, len(events)//10)][:10]
+          for e in picked:
+              p = Path(e['frame'])
+              if p.is_file():
+                  dump_jpeg(f"{e['scene']}_b{e['beat']}_t{e['start']:.1f}s", Image.open(p))
+
+          duration = summary['probe_duration'] or 60.0
+          for label, t in [('open_0.3s', 0.3), ('mid', float(duration)/2), ('near_end', max(0.0, float(duration)-0.6))]:
+              out = Path(f'/tmp/{label}.png')
+              subprocess.run(['ffmpeg', '-y', '-ss', str(t), '-i', 'dist/final.mp4', '-frames:v', '1', str(out)],
+                             check=True, capture_output=True)
+              dump_jpeg(label, Image.open(out))
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: train-wheels-v2-meaningful
+          path: |
+            dist/
+            build/*.timing.json
+            build/*.srt
+            build/_meaningful/
+            train-render.log
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: train-wheels-v2-diagnostics-not-publishable
+          path: |
+            dist/
+            build/*.timing.json
+            build/*.srt
+            build/_meaningful/
+            train-render.log
