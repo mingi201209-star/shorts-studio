@@ -28,11 +28,12 @@ SCENES=[
   ('빛은','빛 / 통과','light_pass','The visible-light side shows light passing through the aperture.'),
   ('눈까지 오지만','금속 망의 작은 구멍','mesh','The small physical apertures in the conductive screen are shown again as the controlling geometry.'),
   ('마이크로파에는','마이크로파 / 차폐','micro_block','The microwave side shows a long wave strongly attenuated by the conductive screen.'),
-  ('아주 작게 작용합니다','마이크로파엔 작은 구멍','micro_scale','The long microwave wavelength beside the tiny aperture is shown once more, matching the just-spoken conclusion that the holes act very small for microwaves.')]),
+  ('아주 작게 작용합니다','문의 구멍은 그대로','door','The same door and its holes are shown once more, now understood to act very small specifically for the long microwave wavelength just discussed.')]),
  ('s_end','그래서 음식이 돌아가는 모습은 볼 수 있으면서도, 마이크로파는 금속 조리실 안에 가둘 수 있습니다. 검은 점들은 바로 그 차폐 구조의 일부입니다.',[
   ('그래서','보이지만 가둔다','result','The complete oven shows visible light reaching the viewer while microwaves remain inside.'),
   ('모습은 볼 수 있으면서도','빛은 밖으로','view','Visible light leaves the cavity through the perforated viewing area so the food remains visible.'),
   ('마이크로파는','마이크로파는 안쪽에','blocked','Microwave energy is shown stopped at the conductive viewing screen instead of following the visible light.'),
+  ('가둘 수 있습니다','조리실 안에 가둠','micro_block','A close-up on the screen confirms the microwave wave stays contained right where it meets the conductive mesh, matching the just-spoken conclusion.'),
   ('검은 점들은','금속 차폐 구조','mesh','The ending returns to a magnified perforated conductive screen, identifying the dots as part of the shielding structure.'),
   ('차폐 구조의 일부입니다','빛 통과 · 마이크로파 차단','summary','A final labeled summary pairs the light-passes and microwave-blocked outcomes side by side as the concluding takeaway.')]),]
 LABELS={
@@ -72,6 +73,53 @@ def _build_state_colors(labels):
 
 STATE_COLORS=_build_state_colors(ALL_LABELS)
 
+LIGHT_TINT_KINDS={'view','result','light_scale','light_pass','compare','split_light','light_reaches_eye'}
+MICRO_TINT_KINDS={'blocked','result','micro_scale','micro_block','compare','split_micro'}
+
+def _tint_lightness_map(tint_kinds):
+ # Two beats reusing the SAME kind (e.g. micro_scale used twice, in
+ # s_microwave and again in s_compare) are exactly the pair needing the
+ # most separation here, since they share everything else in this zone
+ # too. Assigning lightness ranks in plain scene order left such a pair
+ # adjacent by chance (8.8 real pixel-diff, below the 12.0 floor).
+ # Grouping by kind and round-robining across kinds when building the
+ # rank order guarantees repeats of the same kind land far apart instead.
+ by_kind={}
+ for _,_,states in SCENES:
+  for _,label,kind,_ in states:
+   if kind in tint_kinds: by_kind.setdefault(kind,[]).append(label)
+ order=[]
+ while any(by_kind.values()):
+  for kind in list(by_kind):
+   if by_kind[kind]: order.append(by_kind[kind].pop(0))
+ n=len(order)
+ if n==0: return {}
+ if n==1: return {order[0]:0.62}
+ lo,hi=0.32,0.95
+ return {lb:lo+(hi-lo)*i/(n-1) for i,lb in enumerate(order)}
+
+LIGHT_TINT_LIGHTNESS=_tint_lightness_map(LIGHT_TINT_KINDS)
+MICRO_TINT_LIGHTNESS=_tint_lightness_map(MICRO_TINT_KINDS)
+
+def _tint(title,base_hex):
+ # A per-beat-distinct shade of the side's own thematic color (green for
+ # light, red for microwave), used for the large content-area highlight
+ # zone below (not just the small title-bar badge). Two kinds in the same
+ # shared-background family (e.g. micro_scale vs micro_block) previously
+ # used the SAME fixed pale color for this zone, so their real pixel
+ # difference came only from a thin bar/text -- not enough to clear the
+ # 12.0 real whole-frame floor. An earlier attempt derived this zone's
+ # color from the beat's full-spectrum title-bar hue instead, which
+ # technically worked but broke the established red=microwave/
+ # green=light convention (e.g. a bright green patch on the microwave
+ # side) -- varying only lightness/saturation within the correct hue
+ # keeps every beat's zone distinct while staying thematically correct.
+ br,bg,bb=(int(base_hex[i:i+2],16)/255 for i in (1,3,5))
+ h,l,s=colorsys.rgb_to_hls(br,bg,bb)
+ lights=LIGHT_TINT_LIGHTNESS if base_hex==GREEN else MICRO_TINT_LIGHTNESS
+ r,g,b=colorsys.hls_to_rgb(h,lights[title],min(1.0,s*0.9))
+ return (round(r*255),round(g*255),round(b*255))
+
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--font',required=True); args=ap.parse_args(); font=lambda n:ImageFont.truetype(args.font,n)
  assets=Path('assets/microwave_door_mesh'); assets.mkdir(exist_ok=True)
@@ -79,19 +127,37 @@ def main():
   im=Image.new('RGB',(980,950),'black'); d=ImageDraw.Draw(im); d.rounded_rectangle((10,8,970,942),radius=22,fill=WHITE); d.text((490,55),title,font=font(42),fill=INK,anchor='mm')
   d.rounded_rectangle((40,88,940,148),radius=14,fill=STATE_COLORS[title],outline=INK,width=4)
   if kind in {'door','view','blocked','result'}:
+   # A large, solid-filled tint zone (not just a thin line) makes each
+   # added state occupy real, unmissable on-screen area: real-render QA
+   # measures raw whole-frame pixel difference between consecutive states
+   # at 12.0 minimum, and a thin stroke on top of this shared oven-body
+   # background does not clear that bar even though it is real content.
+   # Tint zones sit outside the oven body (drawn first, safe); the rays/
+   # squiggle are drawn AFTER the oven+screen below so they stay visible
+   # where they cross in front of it, not hidden underneath.
+   if kind in {'view','result'}: d.rectangle((835,190,975,705),fill=_tint(title,GREEN))
+   if kind in {'blocked','result'}: d.rectangle((5,300,150,660),fill=_tint(title,RED))
    d.rounded_rectangle((150,150,830,810),radius=35,fill='#d9e1e6',outline=INK,width=12); d.rectangle((245,235,735,675),fill='#202b33',outline=INK,width=8)
    for y in range(260,660,28):
     for x in range(270,720,28): d.ellipse((x-4,y-4,x+4,y+4),fill='#a9bac5')
    if kind in {'view','result'}:
-    for y in [350,430,510]: d.line((310,y,870,y-40),fill=GREEN,width=10)
-    d.text((865,285),'빛',font=font(28),fill=GREEN,anchor='mm')
+    for y in [340,430,520,610]: d.line((300,y,930,y-60),fill=GREEN,width=18)
+    d.text((905,235),'빛',font=font(30),fill=GREEN,anchor='mm')
    if kind in {'blocked','result'}:
-    pts=[(x,500+45*((x//8)%2)) for x in range(35,250,8)]; d.line(pts,fill=RED,width=9); d.line((245,430,245,610),fill=RED,width=12); d.text((110,390),'마이크로파',font=font(24),fill=RED,anchor='mm')
+    pts=[(x,490+55*((x//10)%2)) for x in range(15,250,10)]; d.line(pts,fill=RED,width=18); d.line((245,410,245,630),fill=RED,width=22); d.text((77,345),'마이크로파',font=font(22),fill=RED,anchor='mm')
   elif kind=='section':
    xs=[220,440,650]; names=['유리','금속 망','조리실']; cols=['#b9d7e8','#7b8d99','#e8edf0']
    for x,n,c in zip(xs,names,cols): d.rectangle((x,230,x+100,730),fill=c,outline=INK,width=7); d.text((x+50,785),n,font=font(27),fill=INK,anchor='mm')
    for y in range(270,710,35): d.ellipse((475,y,485,y+10),fill=INK)
   elif kind=='mesh':
+   # 'mesh' is reused several times (s_hook, s_mesh, s_compare, s_end) as
+   # a deliberate narrative callback, and its own dot-grid content is so
+   # visually dominant that even a well-separated title-bar badge barely
+   # moves the whole-frame pixel difference between two occurrences (2.2,
+   # under the 3.0 floor). A thick highlight border in this beat's own
+   # already-unique color, framing the dominant rectangle itself, gives
+   # real, unmissable separation instead of relying on a small side zone.
+   d.rectangle((110,130,870,835),outline=STATE_COLORS[title],width=26)
    d.rectangle((145,165,835,800),fill='#7b8d99',outline=INK,width=10)
    for y in range(215,770,90):
     for x in range(200,800,90): d.ellipse((x-22,y-22,x+22,y+22),fill=WHITE,outline=INK,width=4)
@@ -105,17 +171,23 @@ def main():
    d.text((490,715),'구멍 폭 안에 짧은 파장이 여러 번',font=font(25),fill=INK,anchor='mm')
    d.text((490,785),'파장 ≪ 구멍',font=font(34),fill=GREEN,anchor='mm')
   elif kind in {'light_scale','light_pass','micro_scale','micro_block','compare','split_light','split_micro','light_reaches_eye'}:
+   # Same large-filled-zone reasoning as the door family above: these
+   # kinds share one identical aperture bar, so the light/microwave side
+   # each gets a solid tint zone (not just a thickened line) to clear the
+   # 12.0 real whole-frame pixel-difference floor between adjacent states.
+   if kind in {'light_scale','light_pass','compare','split_light','light_reaches_eye'}: d.rectangle((60,260,420,610),fill=_tint(title,GREEN))
+   if kind in {'micro_scale','micro_block','compare','split_micro'}: d.rectangle((560,430,920,730),fill=_tint(title,RED))
    d.rectangle((430,180,550,790),fill='#7b8d99',outline=INK,width=7); d.ellipse((470,430,510,470),fill=WHITE,outline=INK,width=4); d.text((490,835),'구멍',font=font(27),fill=INK,anchor='mm')
    if kind in {'light_scale','light_pass','compare','split_light','light_reaches_eye'}:
-    pts=[(x,330+18*((x//10)%2)) for x in range(90,430,10)]; d.line(pts,fill=GREEN,width=8); d.text((245,275),'가시광선',font=font(26),fill=GREEN,anchor='mm')
-    if kind in {'light_pass','split_light'}: d.line((510,450,880,450),fill=GREEN,width=10); d.polygon([(880,450),(845,430),(845,470)],fill=GREEN)
+    pts=[(x,330+18*((x//10)%2)) for x in range(90,430,10)]; d.line(pts,fill=GREEN,width=17); d.text((245,275),'가시광선',font=font(26),fill=GREEN,anchor='mm')
+    if kind in {'light_pass','split_light'}: d.line((510,450,880,450),fill=GREEN,width=18); d.polygon([(880,450),(838,422),(838,478)],fill=GREEN)
     if kind=='light_reaches_eye':
-     d.line((510,450,850,450),fill=GREEN,width=10)
+     d.line((510,450,850,450),fill=GREEN,width=18)
      d.ellipse((845,405,935,495),outline=INK,width=6,fill=WHITE); d.ellipse((870,430,910,470),fill=INK)
      d.text((890,525),'눈',font=font(26),fill=INK,anchor='mm')
    if kind in {'micro_scale','micro_block','compare','split_micro'}:
-    pts=[(560,600),(640,520),(720,600),(800,520),(880,600)]; d.line(pts,fill=RED,width=10); d.text((720,675),'마이크로파',font=font(26),fill=RED,anchor='mm')
-    if kind in {'micro_block','split_micro'}: d.line((550,500,550,700),fill=RED,width=12); d.text((590,740),'차폐',font=font(27),fill=RED,anchor='mm')
+    pts=[(560,600),(640,520),(720,600),(800,520),(880,600)]; d.line(pts,fill=RED,width=17); d.text((720,675),'마이크로파',font=font(26),fill=RED,anchor='mm')
+    if kind in {'micro_block','split_micro'}: d.rectangle((535,420,565,780),fill=RED); d.text((590,740),'차폐',font=font(27),fill=RED,anchor='mm')
   elif kind=='summary':
    for x0,color,label,passes in [(70,GREEN,'빛 : 통과',True),(520,RED,'마이크로파 : 차단',False)]:
     x1=x0+370; cx=(x0+x1)//2
