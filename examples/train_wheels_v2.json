@@ -414,8 +414,8 @@
             "A sloped tread cross-section is highlighted; slope is exaggerated."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic cross-section diagram of a railway wheel tread with an exaggerated sloped taper touching a rail",
+            "a technical diagram highlighting the sloped angle of a train wheel rolling surface"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -810,8 +810,8 @@
             "The rail side contact is posed as a separate question."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic cross-section diagram of a railway wheel and rail with a highlighted contact point marked by a question mark",
+            "a technical diagram posing a question about where a train wheel touches the rail"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -1099,8 +1099,8 @@
             "The tread profile connects the train-scale result to the wheel geometry."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic cross-section diagram of a railway wheel tread with an exaggerated sloped taper touching a rail",
+            "a technical diagram highlighting the sloped angle of a train wheel rolling surface"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -1164,8 +1164,8 @@
             "Small relative motion at the wheel/rail contact is illustrated."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic diagram of a wheel and rail contact point with an arrow indicating a small relative sliding motion",
+            "a technical diagram illustrating minute slip between a train wheel and rail surface"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",

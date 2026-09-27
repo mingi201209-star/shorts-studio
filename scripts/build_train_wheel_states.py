@@ -43,6 +43,9 @@ KIND_LABELS={
 'profile':['a schematic cross-section diagram of a railway wheel tread profile touching a rail','a technical diagram of a train wheel rolling surface in contact with a rail'],
 'radius_outer':['a schematic diagram of a circle with a radius line representing a train wheel rolling radius','a technical diagram showing a rolling radius measured from an axle center to a rail contact point'],
 'radius_inner':['a schematic diagram of a circle with a radius line representing a train wheel rolling radius','a technical diagram showing a rolling radius measured from an axle center to a rail contact point'],
+'taper':['a schematic cross-section diagram of a railway wheel tread with an exaggerated sloped taper touching a rail','a technical diagram highlighting the sloped angle of a train wheel rolling surface'],
+'side_question':['a schematic cross-section diagram of a railway wheel and rail with a highlighted contact point marked by a question mark','a technical diagram posing a question about where a train wheel touches the rail'],
+'creep':['a schematic diagram of a wheel and rail contact point with an arrow indicating a small relative sliding motion','a technical diagram illustrating minute slip between a train wheel and rail surface'],
 }
 GENERIC_LABELS=['an educational mechanical engineering diagram of railway wheels and rails','a labeled technical schematic of a train wheelset mechanism']
 GENERIC_NEGATIVE_LABELS=['a photograph of an airplane in the sky','a portrait photograph of a person']
