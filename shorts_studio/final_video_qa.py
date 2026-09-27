@@ -1156,6 +1156,12 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     metrics = {
         "average_visual_beat_seconds": visual_activity["average_visual_beat_seconds"],
         "max_static_visual_seconds": visual_activity["max_static_visual_seconds"],
+        # Real, pixel-diff-measured cut times for the whole video -- exposed
+        # here (rather than recomputed) so the Psychological Entertainment
+        # Contract's Observed Visual Evidence (entertainment_qa.py) can
+        # confirm a declared visual_beat_index produced an actual cut,
+        # without a second, duplicate measure_visual_activity() pass.
+        "visual_cut_timestamps": visual_activity["cut_timestamps"],
         "source_reuse_ratio": source_reuse["source_reuse_ratio"],
         "first_5s_visual_changes": visual_activity["first_5s_visual_changes"],
         "subtitle_media_overlap": subtitle_media_overlap,
