@@ -9,7 +9,8 @@ SCENES=[
   ('전자레인지 문에','전자레인지 문','door','A microwave oven door is shown with its dark perforated viewing area.'),
   ('검은 점들은','점무늬의 정체','mesh','A magnified conductive perforated screen reveals that the dark dots are physical apertures in metal.'),
   ('안은 보이는데','빛은 통과','light_pass','Visible-light rays pass through a small aperture in the conductive viewing screen.'),
-  ('마이크로파는','마이크로파는 차폐','blocked','Microwave waves are shown being blocked at the conductive perforated screen.')]),
+  ('마이크로파는','마이크로파는 차폐','blocked','Microwave waves are shown being blocked at the conductive perforated screen.'),
+  ('빠져나오지 못합니다','마이크로파 차단 확대','micro_block','A closer view confirms the microwave wave is stopped exactly at the conductive screen, matching the just-spoken conclusion.')]),
  ('s_mesh','전자레인지 문 안쪽에는 아주 작은 구멍이 촘촘한 금속 망이 있습니다.',[
   ('전자레인지 문 안쪽에는','문 단면','section','A cross-section separates outer glass, conductive perforated screen, and oven cavity.'),
   ('아주 작은 구멍이','작은 구멍 확대','mesh','A magnified conductive screen shows many small apertures in metal.')]),
@@ -20,47 +21,63 @@ SCENES=[
  ('s_microwave','하지만 전자레인지가 쓰는 마이크로파의 파장은 훨씬 깁니다. 그래서 이 촘촘한 금속 구조는 마이크로파 누설을 크게 줄입니다.',[
   ('하지만','긴 마이크로파','micro_scale','A much longer microwave wavelength is compared with the same small aperture.'),
   ('파장은 훨씬 깁니다','빛과 파장 비교','compare','Visible-light and microwave wavelength scales are compared beside one aperture.'),
-  ('그래서','금속 망에서 차폐','micro_block','Long microwave waves meet the conductive perforated screen and are strongly attenuated.')]),
+  ('그래서','금속 망에서 차폐','micro_block','Long microwave waves meet the conductive perforated screen and are strongly attenuated.'),
+  ('크게 줄입니다','문에서 누설 차단','blocked','The full oven door view reinforces that this leakage reduction happens right at the perforated screen.')]),
  ('s_compare','핵심은 크기 차이입니다. 빛은 작은 구멍을 지나 눈까지 오지만, 마이크로파에는 그 구멍들이 아주 작게 작용합니다.',[
   ('핵심은','파장 크기 비교','compare','Visible-light and microwave wavelength scales are compared beside one aperture.'),
   ('빛은','빛 / 통과','light_pass','The visible-light side shows light passing through the aperture.'),
   ('눈까지 오지만','금속 망의 작은 구멍','mesh','The small physical apertures in the conductive screen are shown again as the controlling geometry.'),
-  ('마이크로파에는','마이크로파 / 차폐','micro_block','The microwave side shows a long wave strongly attenuated by the conductive screen.')]),
+  ('마이크로파에는','마이크로파 / 차폐','micro_block','The microwave side shows a long wave strongly attenuated by the conductive screen.'),
+  ('아주 작게 작용합니다','마이크로파엔 작은 구멍','micro_scale','The long microwave wavelength beside the tiny aperture is shown once more, matching the just-spoken conclusion that the holes act very small for microwaves.')]),
  ('s_end','그래서 음식이 돌아가는 모습은 볼 수 있으면서도, 마이크로파는 금속 조리실 안에 가둘 수 있습니다. 검은 점들은 바로 그 차폐 구조의 일부입니다.',[
   ('그래서','보이지만 가둔다','result','The complete oven shows visible light reaching the viewer while microwaves remain inside.'),
   ('모습은 볼 수 있으면서도','빛은 밖으로','view','Visible light leaves the cavity through the perforated viewing area so the food remains visible.'),
   ('마이크로파는','마이크로파는 안쪽에','blocked','Microwave energy is shown stopped at the conductive viewing screen instead of following the visible light.'),
-  ('검은 점들은','금속 차폐 구조','mesh','The ending returns to a magnified perforated conductive screen, identifying the dots as part of the shielding structure.')]),]
+  ('검은 점들은','금속 차폐 구조','mesh','The ending returns to a magnified perforated conductive screen, identifying the dots as part of the shielding structure.'),
+  ('차폐 구조의 일부입니다','빛 통과 · 마이크로파 차단','summary','A final labeled summary pairs the light-passes and microwave-blocked outcomes side by side as the concluding takeaway.')]),]
 LABELS={
- 'door':['a technical diagram of a microwave oven door with a dark perforated metal viewing screen','an educational schematic of the dotted mesh in a microwave oven door'],'view':['a diagram showing visible light passing through a microwave oven door mesh','an educational schematic of looking through a perforated microwave door screen'],'blocked':['a diagram showing microwave waves blocked by a perforated conductive metal screen','an educational electromagnetic shielding schematic at a microwave oven door'],'section':['a cross section diagram of a microwave oven door showing glass metal mesh and oven cavity','a labeled technical cross section of a microwave door assembly'],'mesh':['a magnified diagram of a perforated conductive metal mesh with many small circular holes','a technical schematic of small apertures in a metal microwave shielding screen'],'light_scale':['a wavelength diagram showing short visible light waves next to a small aperture','an educational diagram comparing visible light wavelength with a mesh hole'],'light_fit':['a technical scale diagram showing several short visible light wavelengths fitting inside the width of one mesh aperture','an educational wavelength-to-aperture size comparison for visible light'],'light_pass':['a diagram of visible light rays passing through a small hole in a metal screen','an optics schematic of light transmitted through an aperture'],'light_reaches_eye':['a diagram of visible light passing through a small aperture and reaching a simple eye icon','an optics schematic showing transmitted light arriving at an eye, explaining visibility through a perforated screen'],'micro_scale':['a wavelength diagram showing a long microwave wave next to a small aperture','an educational diagram comparing microwave wavelength with a mesh hole'],'micro_block':['a diagram of a long microwave wave stopped at a conductive perforated screen','an electromagnetic shielding schematic showing microwave attenuation by metal mesh'],'compare':['a technical comparison diagram of short visible light wavelength and long microwave wavelength beside an aperture','an educational wavelength scale comparison for light microwave and a mesh hole'],'split_light':['a split technical diagram showing visible light passing through a perforated metal screen','an educational schematic where short light waves pass a small aperture'],'split_micro':['a split technical diagram showing microwaves blocked by a perforated metal screen','an educational schematic where a long microwave wave is stopped by conductive mesh'],'result':['a technical diagram of a microwave oven where visible light exits through the door while microwaves remain inside','an educational microwave shielding diagram showing viewing light and contained microwaves']}
-NEG=['a photograph of a railway wheel','a portrait photograph of a person']
+ 'door':['a technical diagram of a microwave oven door with a dark perforated metal viewing screen','an educational schematic of the dotted mesh in a microwave oven door'],'view':['a diagram showing visible light passing through a microwave oven door mesh','an educational schematic of looking through a perforated microwave door screen'],'blocked':['a diagram showing microwave waves blocked by a perforated conductive metal screen','an educational electromagnetic shielding schematic at a microwave oven door'],'section':['a cross section diagram of a microwave oven door showing glass metal mesh and oven cavity','a labeled technical cross section of a microwave door assembly'],'mesh':['a magnified diagram of a perforated conductive metal mesh with many small circular holes','a technical schematic of small apertures in a metal microwave shielding screen'],'light_scale':['a wavelength diagram showing short visible light waves next to a small aperture','an educational diagram comparing visible light wavelength with a mesh hole'],'light_fit':['a technical scale diagram showing several short visible light wavelengths fitting inside the width of one mesh aperture','an educational wavelength-to-aperture size comparison for visible light'],'light_pass':['a diagram of visible light rays passing through a small hole in a metal screen','an optics schematic of light transmitted through an aperture'],'light_reaches_eye':['a diagram of visible light passing through a small aperture and reaching a simple eye icon','an optics schematic showing transmitted light arriving at an eye, explaining visibility through a perforated screen'],'micro_scale':['a wavelength diagram showing a long microwave wave next to a small aperture','an educational diagram comparing microwave wavelength with a mesh hole'],'micro_block':['a diagram of a long microwave wave stopped at a conductive perforated screen','an electromagnetic shielding schematic showing microwave attenuation by metal mesh'],'compare':['a technical comparison diagram of short visible light wavelength and long microwave wavelength beside an aperture','an educational wavelength scale comparison for light microwave and a mesh hole'],'split_light':['a split technical diagram showing visible light passing through a perforated metal screen','an educational schematic where short light waves pass a small aperture'],'split_micro':['a split technical diagram showing microwaves blocked by a perforated metal screen','an educational schematic where a long microwave wave is stopped by conductive mesh'],'result':['a technical diagram of a microwave oven where visible light exits through the door while microwaves remain inside','an educational microwave shielding diagram showing viewing light and contained microwaves'],'summary':['a labeled summary diagram with two panels: light passing through a screen and a microwave blocked by a screen','an educational recap schematic pairing a visible-light-transmitted panel and a microwave-blocked panel']}
+NEG=['a photograph of a cat','a landscape photograph of mountains']
 
 ALL_LABELS=[label for _,_,states in SCENES for _,label,_,_ in states]
+
+def _build_state_colors(labels):
+ # Several kinds share one large fixed background template (the aperture
+ # column, the oven body) and differ only by thin lines or a swapped
+ # title -- real content, but too small an on-screen area to survive the
+ # real crop-zoom-equivalence check, which starts with a whole-frame mean
+ # pixel-difference test: even a strongly-colored but small patch gets
+ # diluted below its <3 threshold by the large shared background, so a
+ # thin-line-only difference is correctly judged as no new observed state.
+ # A large, uniquely-colored accent bar per beat fixes this -- but a
+ # formula-only hue assignment (golden-angle spacing, even i/N spacing) is
+ # fragile: adding or removing one label shifts every later index and can
+ # coincidentally land two unrelated beats' hues close together again
+ # (happened twice while developing this script). Farthest-point sampling
+ # over a real (hue, lightness) candidate grid instead directly maximizes
+ # the minimum pairwise RGB distance among the N colors actually chosen --
+ # a standard, always-terminating algorithm (unlike an ad-hoc repair loop
+ # nudging conflicting hues, which can oscillate forever, as the first
+ # version of this function did), robust to however many labels exist.
+ def dist(a,b): return sum((x-y)**2 for x,y in zip(a,b))**0.5
+ pool=[]
+ for hue_i in range(72):
+  for light_i in range(5):
+   r,g,b=colorsys.hls_to_rgb(hue_i/72,.3+.1*light_i,1.0); pool.append((r*255,g*255,b*255))
+ chosen=[pool.pop(0)]
+ while len(chosen)<len(labels):
+  best=max(pool,key=lambda c:min(dist(c,ch) for ch in chosen))
+  chosen.append(best); pool.remove(best)
+ return {labels[i]:tuple(round(c) for c in chosen[i]) for i in range(len(labels))}
+
+STATE_COLORS=_build_state_colors(ALL_LABELS)
 
 def main():
  ap=argparse.ArgumentParser(); ap.add_argument('--font',required=True); args=ap.parse_args(); font=lambda n:ImageFont.truetype(args.font,n)
  assets=Path('assets/microwave_door_mesh'); assets.mkdir(exist_ok=True)
- def state_color(label):
-  # Several kinds share one large fixed background template (the aperture
-  # column, the oven body) and differ only by thin lines or a swapped
-  # title -- real content, but too small an on-screen area to survive the
-  # real crop-zoom-equivalence check, which starts with a whole-frame mean
-  # pixel-difference test: even a strongly-colored but small patch gets
-  # diluted below its <3 threshold by the large shared background, so a
-  # thin-line-only difference is correctly judged as no new observed state.
-  # Every beat gets a hue from the golden-angle sequence (index * ~137.5
-  # degrees), not naive even spacing (i/N*360): naive spacing puts
-  # CONSECUTIVE beats at the minimum possible gap (360/N), which is the
-  # worst case since adjacent beats in one scene are exactly the pair most
-  # often compared against each other. The golden angle keeps consecutive
-  # indices far apart while still covering the circle evenly overall.
-  i=ALL_LABELS.index(label); hue=(i*0.6180339887)%1.0
-  lightness=.38 if i%2==0 else .62  # a second, independent separation axis: even a coincidentally-close hue pair still differs in lightness whenever their indices differ in parity
-  r,g,b=colorsys.hls_to_rgb(hue,lightness,1.0)
-  return (round(r*255),round(g*255),round(b*255))
  def panel(title,kind):
   im=Image.new('RGB',(980,950),'black'); d=ImageDraw.Draw(im); d.rounded_rectangle((10,8,970,942),radius=22,fill=WHITE); d.text((490,55),title,font=font(42),fill=INK,anchor='mm')
-  d.rounded_rectangle((40,92,940,146),radius=14,fill=state_color(title),outline=INK,width=4)
+  d.rounded_rectangle((40,88,940,148),radius=14,fill=STATE_COLORS[title],outline=INK,width=4)
   if kind in {'door','view','blocked','result'}:
    d.rounded_rectangle((150,150,830,810),radius=35,fill='#d9e1e6',outline=INK,width=12); d.rectangle((245,235,735,675),fill='#202b33',outline=INK,width=8)
    for y in range(260,660,28):
@@ -99,6 +116,18 @@ def main():
    if kind in {'micro_scale','micro_block','compare','split_micro'}:
     pts=[(560,600),(640,520),(720,600),(800,520),(880,600)]; d.line(pts,fill=RED,width=10); d.text((720,675),'마이크로파',font=font(26),fill=RED,anchor='mm')
     if kind in {'micro_block','split_micro'}: d.line((550,500,550,700),fill=RED,width=12); d.text((590,740),'차폐',font=font(27),fill=RED,anchor='mm')
+  elif kind=='summary':
+   for x0,color,label,passes in [(70,GREEN,'빛 : 통과',True),(520,RED,'마이크로파 : 차단',False)]:
+    x1=x0+370; cx=(x0+x1)//2
+    d.rounded_rectangle((x0,200,x1,820),radius=24,outline=color,width=10,fill='#eef2f4')
+    d.rectangle((cx-30,260,cx+30,760),fill='#7b8d99',outline=INK,width=6)
+    if passes:
+     pts=[(x,510+14*((x//8)%2)) for x in range(x0+30,cx-30,8)]; d.line(pts,fill=GREEN,width=7)
+     d.line((cx+30,510,x1-30,510),fill=GREEN,width=8); d.polygon([(x1-30,510),(x1-55,495),(x1-55,525)],fill=GREEN)
+    else:
+     pts=[(x,510+22*((x//8)%2)) for x in range(x0+30,cx-25,8)]; d.line(pts,fill=RED,width=7)
+     d.line((cx-30,470,cx-30,570),fill=RED,width=10)
+    d.text((cx,855),label,font=font(26),fill=color,anchor='mm')
   else: raise ValueError(kind)
   d.text((935,915),'개념도 · 크기 비례 아님',font=font(19),fill=GREY,anchor='rm'); return im
  scenes=[]
