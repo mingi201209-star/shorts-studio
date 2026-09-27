@@ -83,8 +83,8 @@
             "The wheelset follows a curved pair of rails."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic diagram of a curved railway track showing inner and outer rail paths",
+            "a top-down technical diagram of a train track bend with two rail lines"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -215,8 +215,8 @@
             "Inner and outer rails traverse the same bend."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic diagram of a curved railway track showing inner and outer rail paths",
+            "a top-down technical diagram of a train track bend with two rail lines"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -368,8 +368,8 @@
             "A rail wheel profile and rail contact are introduced."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic cross-section diagram of a railway wheel tread profile touching a rail",
+            "a technical diagram of a train wheel rolling surface in contact with a rail"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -544,8 +544,8 @@
             "The larger outer rolling radius is drawn from axle to contact."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic diagram of a circle with a radius line representing a train wheel rolling radius",
+            "a technical diagram showing a rolling radius measured from an axle center to a rail contact point"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
@@ -567,8 +567,8 @@
             "The smaller inner rolling radius is marked."
           ],
           "visual_qa_labels": [
-            "an educational mechanical engineering diagram of railway wheels and rails",
-            "a labeled technical schematic of a train wheelset mechanism"
+            "a schematic diagram of a circle with a radius line representing a train wheel rolling radius",
+            "a technical diagram showing a rolling radius measured from an axle center to a rail contact point"
           ],
           "visual_qa_negative_labels": [
             "a photograph of an airplane in the sky",
