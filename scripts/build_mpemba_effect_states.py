@@ -237,7 +237,7 @@ def _download_photo(spec, photo_dir: Path) -> Path:
     encoded = urllib.parse.quote(spec['commons_file'].replace(' ', '_'), safe='._-()')
     url = f'https://commons.wikimedia.org/wiki/Special:Redirect/file/{encoded}'
     last_error = None
-    for attempt in range(3):
+    for attempt in range(4):
         try:
             request = urllib.request.Request(
                 url,
@@ -256,10 +256,13 @@ def _download_photo(spec, photo_dir: Path) -> Path:
         except Exception as exc:
             last_error = exc
             path.unlink(missing_ok=True)
-            if attempt < 2:
-                time.sleep(1 + attempt)
+            if attempt < 3:
+                # Wikimedia can rate-limit shared GitHub Actions runner IPs.
+                # Back off long enough for a transient 429 window to clear
+                # instead of hammering the same endpoint again immediately.
+                time.sleep(8 * (attempt + 1))
     raise RuntimeError(
-        f"failed to fetch required production photo {spec['commons_file']!r} after 3 attempts: {last_error}"
+        f"failed to fetch required production photo {spec['commons_file']!r} after 4 attempts: {last_error}"
     )
 
 
@@ -297,7 +300,13 @@ def main():
     font = lambda n: ImageFont.truetype(args.font, n)
     assets = Path('assets/mpemba_effect'); assets.mkdir(exist_ok=True)
     photo_dir = assets / 'source_photos'
-    photo_paths = {kind: _download_photo(spec, photo_dir) for kind, spec in PHOTO_SOURCES.items()}
+    photo_paths = {}
+    for index, (kind, spec) in enumerate(PHOTO_SOURCES.items()):
+        if index:
+            # Avoid tripping Wikimedia's shared-runner rate limit with a
+            # burst of redirects from the same GitHub Actions IP.
+            time.sleep(4)
+        photo_paths[kind] = _download_photo(spec, photo_dir)
     print('PHOTO_ASSETS_READY=' + ','.join(sorted(photo_paths)))
 
 
