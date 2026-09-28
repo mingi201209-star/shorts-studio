@@ -106,7 +106,7 @@ SCENES = [
     # without giving away the full multi-factor explanation) -> CRISIS (the
     # specific claim plus the real observed anomaly).
     ('s_clue', [
-        ('SETUP', '하지만 보통은 찬물이 먼저라고 생각하죠.', None),
+        ('SETUP', '정말 찬물이 먼저 얼까요?', None),
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
@@ -119,6 +119,9 @@ SCENES = [
         ('온도가 높으면', '틀린 통념', 'assumption_wrong',
          'A schematic diagram with a large X crossed over the text "higher temperature always means a longer freezing time".',
          '온도가 높을수록 얼리는 시간이 더 길다는 통념에 크게 X표시가 된 모습'),
+        ('더 빨리 증발합니다', '증발은 더 빠름', 'evaporation_faster_confirmed',
+         'A schematic diagram with a checkmark next to a rising steam icon, confirming that hotter water does evaporate faster.',
+         '뜨거운 물이 실제로 더 빨리 증발한다는 것을 체크 표시와 김 아이콘으로 확인해 주는 모습'),
         ('하지만 같은 조건에서도', '같은 조건, 다른 결과', 'frost_compare',
          'A schematic diagram comparing two identical containers in the same freezer, where only the hot-water container already shows frost.',
          '같은 냉동실, 같은 크기의 용기인데 뜨거운 물 쪽에만 성에가 먼저 생긴 비교 모습'),
@@ -166,9 +169,12 @@ SCENES = [
         ('과냉각을 거칩니다', '과냉각의 차이', 'supercool',
          'A schematic line-graph diagram showing cold water\'s temperature dipping below the freezing point before turning to ice, next to hot water freezing right at the freezing line.',
          '찬물의 온도 그래프가 어는점 아래로 내려갔다가 어는 과냉각 구간을 보여주는 모습'),
-        ('함께 작용할', '여러 요인이 함께', 'synthesis',
-         'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- converging toward an ice result while a small question marker signals that no single mechanism explains every case.',
-         '증발, 대류, 과냉각 아이콘이 얼음 결과 쪽으로 모이되, 한 가지 원인으로 고정되지 않음을 작은 물음표로 함께 보여주는 모습'),
+        ('이런 요인들이', '여러 요인이 후보', 'factors_gather',
+         'A schematic diagram of the evaporation, convection, and supercooling icons gathering together near an ice-cube result, before any single cause is confirmed.',
+         '증발, 대류, 과냉각 아이콘이 얼음 결과 근처로 모이지만 아직 하나의 원인으로 확정되지 않은 모습'),
+        ('한 가지 원인만으로', '단일 원인 아님', 'no_single_cause',
+         'A schematic diagram with a large X over the text "one single true cause", showing that no single explanation is confirmed.',
+         '하나의 진짜 원인이라는 문구에 큰 X 표시가 있어 단일 원인으로 확정되지 않았음을 보여주는 모습'),
      ]),
     ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어붙는 일은 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서인지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 같은 용기와 양으로 직접 확인해보세요.', None)], [
         ('그래서 뜨거운 물이', '뜨거운 쪽이 먼저 얼음', 'final_result',
@@ -391,6 +397,16 @@ def main():
             d.line((130, 580, 850, 260), fill=RED, width=22)
             d.text((490, 700), '온도가 높을수록', font=font(34), fill=INK, anchor='mm')
             d.text((490, 770), '얼리는 시간도 더 길다', font=font(34), fill=INK, anchor='mm')
+        elif kind == 'evaporation_faster_confirmed':
+            d.rounded_rectangle((140, 220, 840, 640), radius=24, outline=INK, width=8, fill='#eef2f4')
+            for sx in (-60, 0, 60):
+                x = 490 + sx
+                pts = [(x + 10 * ((y // 20) % 2 * 2 - 1), 560 - y) for y in range(0, 260, 20)]
+                d.line(pts, fill=GREY, width=10)
+            d.ellipse((680, 260, 800, 380), fill=GREEN, outline=INK, width=6)
+            d.line((700, 320, 725, 345), fill=WHITE, width=8)
+            d.line((725, 345, 770, 290), fill=WHITE, width=8)
+            d.text((490, 760), '더 빠른 증발, 확인됨', font=font(28), fill=INK, anchor='mm')
         elif kind == 'frost_compare':
             container(d, 300, 220, 260, 560, RED, 0.65, frost=True)
             container(d, 680, 220, 260, 560, BLUE, 0.65, frost=False)
@@ -485,7 +501,7 @@ def main():
             d.line(cold_pts, fill=BLUE, width=10)
             d.text((300, 250), '뜨거운 물', font=font(26), fill=RED, anchor='mm')
             d.text((760, 660), '찬물(과냉각)', font=font(26), fill=BLUE, anchor='mm')
-        elif kind == 'synthesis':
+        elif kind == 'factors_gather':
             icons = [('증발', GREY, 220), ('대류', RED, 490), ('과냉각', BLUE, 760)]
             for label, color, x in icons:
                 d.ellipse((x - 70, 260, x + 70, 400), outline=color, width=10, fill='#eef2f4')
@@ -496,7 +512,13 @@ def main():
                 px, py = 490 + fx, 680 + fy
                 d.line((px - 10, py, px + 10, py), fill=INK, width=5)
                 d.line((px, py - 10, px, py + 10), fill=INK, width=5)
-            d.text((490, 800), '조건에 따라', font=font(28), fill=INK, anchor='mm')
+            d.text((490, 800), '아직 확정 전', font=font(28), fill=INK, anchor='mm')
+        elif kind == 'no_single_cause':
+            d.rounded_rectangle((110, 300, 870, 560), radius=24, outline=INK, width=8, fill='#eef2f4')
+            d.text((490, 400), '하나의 진짜 원인', font=font(32), fill=INK, anchor='mm')
+            d.line((150, 340, 830, 520), fill=RED, width=20)
+            d.line((150, 520, 830, 340), fill=RED, width=20)
+            d.text((490, 660), '단일 원인 아님', font=font(30), fill=RED, anchor='mm')
         elif kind == 'final_result':
             container(d, 300, 220, 260, 560, RED, 0.65, frozen=True)
             container(d, 680, 220, 260, 560, BLUE, 0.65)
