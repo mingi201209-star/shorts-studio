@@ -204,6 +204,14 @@ def _normalize_raster_asset(path:Path, build:Path, scene_id:str, index:int)->Pat
         flattened.save(out,"JPEG",quality=92)
     return out
 
+_MOVING_VISUAL_SUFFIXES={".mp4",".webm",".mov",".mkv",".ogv",".avi"}
+
+
+def _is_moving_visual_asset(asset:Path)->bool:
+    """True for source files whose own frames should play instead of -loop 1."""
+    return asset.suffix.lower() in _MOVING_VISUAL_SUFFIXES
+
+
 def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|None:
     asset=candidate.get("asset"); asset_url=candidate.get("asset_url")
     path=None; downloaded=False
@@ -215,7 +223,7 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         downloaded=True
     if path and path.suffix.lower()==".svg":
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
-    elif path and downloaded:
+    elif path and downloaded and not _is_moving_visual_asset(path):
         path=_normalize_raster_asset(path, build, scene_id, index)
     return path
 
@@ -257,17 +265,6 @@ def _log_asset_diagnostics(scene_id:str, asset:Path)->None:
     except Exception as e:
         dims=f"ffprobe failed: {e}"
     print(f"[asset] {scene_id}: {asset} ({size} bytes, {dims})")
-
-_MOVING_VISUAL_SUFFIXES={".mp4",".webm",".mov",".mkv",".ogv",".avi"}
-
-def _is_moving_visual_asset(asset:Path)->bool:
-    """Return True when a visual source has real internal motion.
-
-    Static images keep the existing -loop 1 path. Video sources use ffmpeg's
-    video demuxer so a production can show an actual demonstration instead
-    of faking cadence with crop/zoom of a still.
-    """
-    return asset.suffix.lower() in _MOVING_VISUAL_SUFFIXES
 
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
