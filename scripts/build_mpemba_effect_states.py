@@ -106,7 +106,7 @@ SCENES = [
     # without giving away the full multi-factor explanation) -> CRISIS (the
     # specific claim plus the real observed anomaly).
     ('s_clue', [
-        ('SETUP', '찬물이 먼저죠.', None),
+        ('SETUP', '하지만 보통은 찬물이 먼저라고 생각하죠.', None),
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
