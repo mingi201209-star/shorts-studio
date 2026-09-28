@@ -305,6 +305,11 @@ def main():
     print("STORY_PROMPT_V3_READY=build/leidenfrost_story_prompt.txt")
 
     hook=winner.text
+    # Keep beat timing robust to whichever strategy wins. Prompt V2 is
+    # intentionally free to choose a different candidate after scoring;
+    # visual cues must bind to the delivered winner, not to one assumed
+    # candidate's wording.
+    hook_result_cue = hook.rstrip(".?!").split()[-1]
     plans=[
         ("s_hook",[
             phrase("HOOK",hook,winner.strategy),
@@ -313,7 +318,7 @@ def main():
             beat(source_video,hook.split()[0],"real_300c_result","hook_result","video","concept",
                  "a real scientific experiment showing water transforming into a Leidenfrost droplet on a 300 degree Celsius superheated plate",
                  f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",VIDEO_ATTRIBUTION),
-            beat(png["hook_result"],"오히려","levitating_result","hook_diagram","result","concept",
+            beat(png["hook_result"],hook_result_cue,"levitating_result","hook_diagram","result","concept",
                  "an educational diagram of a water droplet floating above a red hot plate instead of vanishing",
                  "뜨거운 판 위에서 물방울이 바로 사라지지 않고 떠 있는 결과를 크게 보여주는 모습"),
             beat(png["expectation"],"더 뜨거우면","intuitive_expectation","expectation","hotter_vanishes","concept",
