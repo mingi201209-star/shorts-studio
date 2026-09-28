@@ -1,340 +1,368 @@
 #!/usr/bin/env python3
+"""Build the Leidenfrost success-pattern experiment.
+
+Purpose: test the common structure found in strong science Shorts:
+  real surprising result first -> intuitive expectation -> one visible clue
+  -> one mechanism -> one reversal -> precise payoff.
+
+Unlike the Mpemba production, this intentionally explains ONE mechanism only.
+The opening uses a real CC BY 4.0 experiment clip; every remaining visual is
+generated here so the finished Short is upload-friendly without ShareAlike
+licensing complications.
+"""
 from __future__ import annotations
 
-import argparse
-import hashlib
-import json
-import math
-import shutil
-import subprocess
-import time
-import urllib.parse
-import urllib.request
+import argparse, hashlib, json, subprocess, time, urllib.parse, urllib.request
 from pathlib import Path
-
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont
 
 from shorts_studio.hook_studio import (
-    HookCandidate, TopicBrief, build_story_generation_prompt,
-    generate_and_judge, story_writer_system_prompt,
+    HookCandidate, TopicBrief, generate_and_judge,
+    build_story_generation_prompt, story_writer_system_prompt,
 )
 
-W, H = 980, 950
-BLACK="#050505"; WHITE="#f7f7f2"; INK="#111111"; RED="#e34d45"
-BLUE="#3f7bd9"; GREY="#69757c"; PALE="#e9eef1"; ORANGE="#ef8d32"
+W,H=980,950
+INK="#17191c"; WHITE="#ffffff"; BLACK="#000000"
+RED="#e24a3b"; BLUE="#3578c8"; CYAN="#55c6d9"; GREY="#7b858d"; YELLOW="#f2c94c"
+NEG=["a photograph of a cat","a landscape photograph of mountains","a city skyline"]
 
-NEG=["a landscape photograph","a portrait of a person","unrelated food or animal content"]
-
-CHART_FILE="Heat transfer leading to Leidenfrost effect for water at 1 atm.png"
-CHART_CREDIT="Marco Guzman, Jr / Wikimedia Commons / public domain"
+VIDEO_FILE="Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv"
+VIDEO_PAGE="https://commons.wikimedia.org/wiki/File:Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv"
+VIDEO_ATTRIBUTION=(
+    "Elbahri M, Abdelaziz R, Disci-Zayed D, Homaeigohar S, Sosna J, Adam D, "
+    "Kienle L, Dankwort T, Abdelaziz M / Nature Communications / Wikimedia Commons / CC BY 4.0"
+)
 
 
 def sha(path:Path)->str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def font(path:str,size:int):
-    try:return ImageFont.truetype(path,size)
-    except Exception:return ImageFont.load_default()
+def get_font(path:str|None,size:int):
+    choices=[path,"/usr/share/fonts/truetype/nanum/NanumGothic.ttf",
+             "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"]
+    for p in choices:
+        if p and Path(p).is_file():
+            return ImageFont.truetype(p,size)
+    return ImageFont.load_default()
 
 
-def download_commons(filename:str,target:Path)->Path:
-    target.parent.mkdir(parents=True,exist_ok=True)
-    if target.is_file() and target.stat().st_size>0:return target
-    encoded=urllib.parse.quote(filename.replace(" ","_"),safe="._-()")
+def download_required_video(out:Path)->Path:
+    out.parent.mkdir(parents=True,exist_ok=True)
+    if out.is_file() and out.stat().st_size>50_000:
+        return out
+    encoded=urllib.parse.quote(VIDEO_FILE.replace(" ","_"),safe="._-()")
     url=f"https://commons.wikimedia.org/wiki/Special:Redirect/file/{encoded}"
     last=None
     for attempt in range(4):
         try:
-            req=urllib.request.Request(url,headers={"User-Agent":"shorts-studio/0.1 Leidenfrost production"})
-            with urllib.request.urlopen(req,timeout=40) as src:data=src.read()
-            if len(data)<10000:raise RuntimeError(f"download too small: {len(data)}")
-            target.write_bytes(data)
-            with Image.open(target) as im:im.verify()
-            return target
+            req=urllib.request.Request(url,headers={"User-Agent":"shorts-studio/0.1 (CC BY production asset)"})
+            with urllib.request.urlopen(req,timeout=45) as r:
+                data=r.read()
+            if len(data)<100_000:
+                raise RuntimeError(f"download suspiciously small: {len(data)} bytes")
+            out.write_bytes(data)
+            probe=subprocess.run(
+                ["ffprobe","-v","error","-select_streams","v:0",
+                 "-show_entries","stream=width,height,codec_name","-show_entries","format=duration",
+                 "-of","json",str(out)],capture_output=True,text=True,check=True,timeout=30)
+            info=json.loads(probe.stdout)
+            duration=float(info["format"]["duration"])
+            if duration<2.5:
+                raise RuntimeError(f"source video too short: {duration}")
+            print(f"LEIDENFROST_VIDEO_READY={out} duration={duration:.3f}s sha256={sha(out)}")
+            return out
         except Exception as exc:
-            last=exc;target.unlink(missing_ok=True)
-            if attempt<3:time.sleep(6*(attempt+1))
-    raise RuntimeError(f"failed to download {filename!r}: {last}")
+            last=exc
+            out.unlink(missing_ok=True)
+            if attempt<3:
+                time.sleep(5*(attempt+1))
+    raise RuntimeError(f"failed to fetch required Leidenfrost video: {last}")
+
+
+def canvas():
+    im=Image.new("RGB",(W,H),BLACK)
+    d=ImageDraw.Draw(im)
+    d.rounded_rectangle((16,16,W-16,H-16),radius=28,fill=WHITE)
+    return im,d
+
+
+def droplet(d,cx,cy,r=85,fill=BLUE):
+    pts=[(cx,cy-r-30),(cx-r,cy+35),(cx-r+15,cy+r),(cx,cy+r+25),
+         (cx+r-15,cy+r),(cx+r,cy+35)]
+    d.polygon(pts,fill=fill,outline=INK)
+    d.ellipse((cx-r,cy-r//2,cx+r,cy+r+20),fill=fill,outline=INK,width=6)
+
+
+def hot_plate(d,y=690):
+    d.rounded_rectangle((90,y,890,y+95),radius=24,fill=RED,outline=INK,width=7)
+    for x in range(150,850,120):
+        d.line((x,y+110,x+35,y+160),fill=RED,width=8)
+
+
+def save_panel(kind:str,label:str,out:Path,font_path:str|None):
+    im,d=canvas()
+    f30=get_font(font_path,30); f38=get_font(font_path,38); f52=get_font(font_path,52)
+    if kind=="hook_result":
+        hot_plate(d,690); droplet(d,490,450,105)
+        d.line((360,585,620,585),fill=CYAN,width=22)
+        d.text((490,235),"사라짐 X · 떠 있음",font=f52,fill=INK,anchor="mm")
+        d.text((490,840),"300°C 초가열 판",font=f30,fill=RED,anchor="mm")
+    elif kind=="expectation":
+        d.text((490,235),"보통 예상",font=f52,fill=INK,anchor="mm")
+        hot_plate(d,660); droplet(d,330,475,75)
+        for x in (530,620,710):
+            d.line((x,560,x,390),fill=GREY,width=12)
+            d.polygon([(x,350),(x-18,395),(x+18,395)],fill=GREY)
+        d.text((650,475),"더 뜨거움\n→ 더 빨리 사라짐?",font=f38,fill=INK,anchor="mm",align="center")
+    elif kind=="vapor_birth":
+        hot_plate(d,690); droplet(d,490,390,110)
+        for x in (390,450,510,570,630):
+            d.ellipse((x-22,585,x+22,630),fill=CYAN,outline=INK,width=4)
+        d.text((490,245),"물방울 아래에서 수증기 생성",font=f38,fill=INK,anchor="mm")
+    elif kind=="vapor_cushion":
+        hot_plate(d,720); droplet(d,490,365,120)
+        d.rounded_rectangle((270,575,710,650),radius=30,fill=CYAN,outline=INK,width=6)
+        d.text((490,612),"얇은 수증기층",font=f38,fill=INK,anchor="mm")
+        d.line((235,610,150,610),fill=INK,width=6)
+        d.text((135,610),"쿠션",font=f30,fill=INK,anchor="rm")
+    elif kind=="no_contact":
+        hot_plate(d,720); droplet(d,490,350,120)
+        d.rounded_rectangle((300,565,680,640),radius=30,fill=CYAN,outline=INK,width=6)
+        d.line((315,520,665,690),fill=RED,width=22)
+        d.line((315,690,665,520),fill=RED,width=22)
+        d.text((490,240),"금속과 직접 접촉하지 않음",font=f38,fill=INK,anchor="mm")
+    elif kind=="heat_blocked":
+        hot_plate(d,720); droplet(d,490,315,110)
+        d.rounded_rectangle((285,535,695,620),radius=30,fill=CYAN,outline=INK,width=6)
+        for x in (350,490,630):
+            d.line((x,700,x,635),fill=RED,width=14)
+            d.polygon([(x,620),(x-18,650),(x+18,650)],fill=RED)
+        d.text((490,480),"열 전달이 바로 이어지지 않음",font=f38,fill=INK,anchor="mm")
+    elif kind=="paradox_shield":
+        hot_plate(d,720); droplet(d,490,340,115)
+        d.arc((260,425,720,730),start=190,end=350,fill=CYAN,width=28)
+        d.text((490,230),"더 뜨거운데, 잠깐 보호됨",font=f38,fill=INK,anchor="mm")
+        d.text((490,820),"증기층 = 단열 쿠션",font=f30,fill=CYAN,anchor="mm")
+    elif kind=="glide":
+        hot_plate(d,690); droplet(d,330,430,90)
+        d.arc((280,380,760,590),start=350,end=160,fill=BLUE,width=16)
+        d.polygon([(770,485),(720,455),(725,510)],fill=BLUE)
+        for x in (300,340,380):
+            d.ellipse((x-12,580,x+12,605),fill=CYAN)
+        d.text((490,250),"수증기 위를 미끄러지듯 이동",font=f38,fill=INK,anchor="mm")
+    elif kind=="name":
+        hot_plate(d,705); droplet(d,490,365,105)
+        d.rounded_rectangle((315,555,665,625),radius=25,fill=CYAN,outline=INK,width=5)
+        d.text((490,225),"라이덴프로스트 효과",font=f52,fill=INK,anchor="mm")
+    elif kind=="payoff":
+        d.text((490,190),"충분히 뜨거운 표면",font=f38,fill=RED,anchor="mm")
+        hot_plate(d,690); droplet(d,490,340,110)
+        d.rounded_rectangle((285,545,695,625),radius=30,fill=CYAN,outline=INK,width=6)
+        d.text((490,585),"자기 수증기 위에 잠깐 뜸",font=f30,fill=INK,anchor="mm")
+        d.text((490,830),"바로 사라짐 → X",font=f38,fill=INK,anchor="mm")
+    else:
+        raise ValueError(kind)
+    out.parent.mkdir(parents=True,exist_ok=True)
+    im.save(out,quality=95)
+    return out
 
 
 class LeidenfrostHookGenerator:
     def generate(self,brief:TopicBrief)->list[HookCandidate]:
-        facts=brief.fact_by_strategy()
+        f=brief.fact_by_strategy()
         texts={
-            "contradiction":"놀랍게도 팬이 더 뜨거워질수록 물방울이 더 오래 남을 수 있습니다.",
-            "surprising_consequence":"놀랍게도 아주 뜨거운 팬에서는 물방울이 사라지지 않고 미끄러지듯 움직입니다.",
-            "counterintuitive_fact":"생각과 달리 더 뜨거운 팬 위의 물방울이 덜 뜨거운 팬보다 오래 버티기도 합니다.",
-            "visible_anomaly":"이상하게도 아주 뜨거운 팬에 떨어진 물방울은 바닥에 붙지 않고 둥글게 떠서 움직입니다.",
-            "mistaken_assumption":"하지만 팬이 뜨거울수록 물이 무조건 더 빨리 사라지는 것은 아닙니다.",
-            "unresolved_cause_effect":"그런데 팬이 너무 뜨거우면 물방울 아래에 기체층이 생겨 직접 접촉이 줄어듭니다.",
+            "contradiction":"뜨거운 판인데도 물방울이 직접 닿지 않고 떠다닐 수 있습니다.",
+            "surprising_consequence":"놀랍게도 300도짜리 판에서는 물방울이 오히려 바로 사라지지 않고 떠다닙니다.",
+            "counterintuitive_fact":"더 뜨거운 표면이 오히려 물방울을 잠깐 보호하는 조건이 생깁니다.",
+            "visible_anomaly":"뜨거운 팬 위의 물방울이 이상하게도 끓어 없어지는 대신 미끄러집니다.",
+            "mistaken_assumption":"팬이 더 뜨거우면 물은 항상 더 빨리 사라진다는 생각은 사실과 다를 수 있습니다.",
+            "unresolved_cause_effect":"물방울 아래 수증기층이 생기면 금속과 직접 접촉이 줄어듭니다. 그런데 왜 물방울이 떠 있을까요?",
         }
-        return [HookCandidate(strategy=s,text=texts[s],grounded_in=facts[s]) for s in texts]
+        return [HookCandidate(strategy=s,text=texts[s],grounded_in=f[s]) for s in texts]
 
 
-def topic_brief()->TopicBrief:
+def make_brief():
     return TopicBrief(
-        topic_id="leidenfrost", familiar_subject="뜨거운 팬과 물방울",
-        contradiction_fact="팬이 충분히 뜨거워지면 물방울이 더 오래 남을 수 있습니다",
-        surprising_consequence_fact="아주 뜨거운 팬에서는 물방울이 빠르게 사라지지 않고 표면을 미끄러지듯 움직일 수 있습니다",
-        counterintuitive_fact="더 뜨거운 표면의 물방울이 덜 뜨거운 표면의 물방울보다 오래 지속될 수 있습니다",
-        anomaly_fact="충분히 뜨거운 표면에서는 물방울이 둥글게 뭉쳐 표면 위를 움직입니다",
-        mistaken_assumption_fact="표면이 뜨거울수록 물방울은 항상 더 빨리 사라진다는 예상은 모든 온도 구간에서 맞지 않습니다",
-        cause_effect_fact="충분히 뜨거운 표면에서는 물방울 아래에 수증기층이 생겨 액체와 표면의 직접 접촉을 줄입니다",
-        payoff_text="물방울 아래의 얇은 수증기층이 직접 접촉과 열 전달을 방해해 물방울이 더 오래 지속될 수 있습니다",
+        topic_id="leidenfrost-effect",
+        familiar_subject="뜨거운 팬 위의 물방울",
+        contradiction_fact="뜨거운 판인데도 물방울이 직접 닿지 않고 떠다닐 수 있습니다",
+        surprising_consequence_fact="300도짜리 판에서는 물방울이 바로 사라지지 않고 떠다닐 수 있습니다",
+        counterintuitive_fact="더 뜨거운 표면이 물방울을 잠깐 보호하는 조건이 생길 수 있습니다",
+        anomaly_fact="뜨거운 팬 위의 물방울이 끓어 없어지는 대신 미끄러지듯 움직일 수 있습니다",
+        mistaken_assumption_fact="팬이 더 뜨거우면 물은 항상 더 빨리 사라진다는 생각은 맞지 않을 수 있습니다",
+        cause_effect_fact="물방울 아래 수증기층이 생기면 뜨거운 금속과 직접 접촉이 줄어듭니다",
+        payoff_text="충분히 뜨거운 표면에서는 물방울 아래에 증기층이 생겨 직접 접촉을 막고 물방울을 띄울 수 있습니다",
         grounded_facts=[
-            "이 현상은 라이덴프로스트 효과라고 불립니다",
-            "수증기층은 물방울을 뜨거운 표면에서 살짝 띄우고 열 전달을 억제합니다",
-            "라이덴프로스트가 시작되는 정확한 온도는 표면과 조건에 따라 달라질 수 있습니다",
+            "라이덴프로스트 효과에서 물방울은 자기 수증기 쿠션 위에 떠 있을 수 있습니다",
+            "증기층은 뜨거운 표면과 액체 사이의 직접 접촉을 줄이고 빠른 증발을 늦출 수 있습니다",
         ],
     )
 
 
-def select_hook():
-    brief=topic_brief()
-    result=generate_and_judge(brief,generator=LeidenfrostHookGenerator())
-    for verdict in result.verdicts:
-        print(
-            "PROMPT_V2_VERDICT="
-            + verdict.candidate.strategy
-            + ":"
-            + verdict.status
-            + ":"
-            + (verdict.reason or f"score={verdict.score}")
-        )
-    if result.winner is None:raise RuntimeError("Prompt V2 produced no Leidenfrost hook")
-    print(f"PROMPT_V2_JUDGE={result.judge_name}")
-    print(f"PROMPT_V2_SELECTED_STRATEGY={result.winner.strategy}")
-    print(f"PROMPT_V2_SELECTED_HOOK={result.winner.text}")
-    return brief,result.winner
+def phrase(role,text,hook_type=None):
+    x={"role":role,"text":text}
+    if hook_type:x["hook_type"]=hook_type
+    return x
 
 
-def base():
-    return Image.new("RGB",(W,H),BLACK)
-
-
-def card(d,box=(35,35,945,915),fill=WHITE):
-    d.rounded_rectangle(box,radius=34,fill=fill)
-
-
-def pan(d,y=610):
-    d.rounded_rectangle((100,y,880,y+105),radius=34,fill="#aeb7bc",outline=INK,width=8)
-    d.rectangle((390,y+105,590,y+155),fill="#727d83")
-    for x in range(170,860,90):d.line((x,y+112,x+40,y+152),fill=ORANGE,width=10)
-
-
-def drop(d,x,y,r=95,steam=False,shadow=True):
-    if shadow:d.ellipse((x-r*.8,y+r*.82,x+r*.8,y+r*1.02),fill="#b9c0c5")
-    d.ellipse((x-r,y-r,x+r,y+r),fill="#8ec5ff",outline=BLUE,width=8)
-    d.ellipse((x-r*.35,y-r*.55,x-r*.02,y-r*.22),fill="#dff1ff")
-    if steam:
-        for dx in (-45,0,45):
-            pts=[(x+dx+8*((yy//14)%2*2-1),y+r+20+yy) for yy in range(0,120,14)]
-            d.line(pts,fill=GREY,width=9)
-
-
-def save_panel(path:Path,kind:str,font_path:str):
-    im=base();d=ImageDraw.Draw(im);card(d)
-    f34=lambda:font(font_path,34);f28=lambda:font(font_path,28);f24=lambda:font(font_path,24)
-    if kind=="hover_close":
-        pan(d,650);drop(d,490,430,125,steam=True)
-        d.line((300,610,680,610),fill=ORANGE,width=10)
-        for x in range(350,680,80):d.line((x,595,x+25,570),fill=GREY,width=7)
-        d.text((490,825),"팬과 물방울 사이에 빈틈",font=f34(),fill=INK,anchor="mm")
-    elif kind=="hotter_compare":
-        d.text((270,170),"덜 뜨거운 팬",font=f28(),fill=INK,anchor="mm");d.text((710,170),"아주 뜨거운 팬",font=f28(),fill=INK,anchor="mm")
-        d.rounded_rectangle((100,600,430,690),radius=24,fill="#aeb7bc",outline=INK,width=6);d.rounded_rectangle((550,600,880,690),radius=24,fill="#aeb7bc",outline=INK,width=6)
-        for x in range(140,410,70):d.line((x,705,x+25,750),fill=ORANGE,width=9)
-        for x in range(590,860,55):d.line((x,705,x+30,770),fill=RED,width=12)
-        for dx in (-45,0,45):d.arc((220+dx,300,330+dx,560),180,360,fill=GREY,width=12)
-        drop(d,715,460,82,steam=True)
-        d.text((270,825),"치익 → 빠르게 작아짐",font=f24(),fill=GREY,anchor="mm");d.text((710,825),"둥글게 떠서 움직임",font=f24(),fill=BLUE,anchor="mm")
-    elif kind=="expected_faster":
-        pan(d,650);drop(d,490,480,90);d.line((490,250,490,360),fill=RED,width=18);d.polygon([(490,390),(455,340),(525,340)],fill=RED)
-        d.text((490,200),"더 뜨거우면",font=f34(),fill=RED,anchor="mm");d.text((490,830),"더 빨리 사라질 것 같다",font=f34(),fill=INK,anchor="mm")
-    elif kind=="skitter_path":
-        pan(d,650)
-        for x in (250,420,600,760):drop(d,x,485,55)
-        pts=[(210,410),(370,330),(540,410),(700,320),(810,390)];d.line(pts,fill=BLUE,width=12);d.polygon([(810,390),(765,360),(777,418)],fill=BLUE)
-        d.text((490,820),"붙지 않고 표면을 미끄러짐",font=f34(),fill=INK,anchor="mm")
-    elif kind=="contact_boil":
-        pan(d,650);d.ellipse((330,520,650,660),fill="#8ec5ff",outline=BLUE,width=6)
-        for x in range(360,650,55):d.arc((x-50,250,x+50,570),180,360,fill=GREY,width=12)
-        d.text((490,825),"직접 닿으면 열이 빠르게 들어옴",font=f28(),fill=INK,anchor="mm")
-    elif kind=="vapor_layer":
-        pan(d,690);drop(d,490,420,120,shadow=False);d.rounded_rectangle((290,610,690,665),radius=20,fill="#dce6ec",outline=GREY,width=5)
-        for x in range(330,660,60):d.line((x,640,x+20,615),fill=GREY,width=6)
-        d.text((490,640),"수증기층",font=f28(),fill=INK,anchor="mm");d.text((490,835),"직접 접촉을 막는 얇은 기체층",font=f34(),fill=INK,anchor="mm")
-    elif kind=="heat_block":
-        pan(d,690);drop(d,490,415,115,shadow=False);d.rounded_rectangle((300,605,680,665),radius=20,fill="#dce6ec",outline=GREY,width=5)
-        for x in (370,450,530,610):
-            d.line((x,760,x,690),fill=RED,width=14);d.polygon([(x,670),(x-20,705),(x+20,705)],fill=RED);d.line((x,605,x,555),fill=GREY,width=7)
-        d.text((490,830),"열 전달이 방해됨",font=f34(),fill=INK,anchor="mm")
-    elif kind=="shield":
-        pan(d,690);drop(d,490,410,110,shadow=False);d.arc((270,510,710,760),180,360,fill=BLUE,width=24);d.text((490,810),"증기 방패",font=font(font_path,42),fill=BLUE,anchor="mm")
-    elif kind=="vapor_forming":
-        # Mechanism step 1: the very bottom flashes into vapor while the
-        # droplet is still close to the plate.
-        pan(d,700);drop(d,490,500,125,shadow=False)
-        d.arc((340,570,640,735),180,360,fill=GREY,width=18)
-        for x in (390,455,525,590):
-            d.line((x,670,x,590),fill=GREY,width=10)
-            d.polygon([(x,565),(x-14,595),(x+14,595)],fill=GREY)
-        d.text((490,825),"바닥의 물 → 수증기",font=f34(),fill=INK,anchor="mm")
-    elif kind=="lifted_gap":
-        # Mechanism step 2: show the new physical gap, not the same vapor
-        # cross-section with different words.
-        pan(d,735);drop(d,490,390,115,shadow=False)
-        d.rounded_rectangle((315,610,665,665),radius=18,fill="#dce6ec",outline=GREY,width=5)
-        d.line((245,500,245,610),fill=BLUE,width=10);d.polygon([(245,480),(225,520),(265,520)],fill=BLUE)
-        d.line((735,610,735,500),fill=BLUE,width=10);d.polygon([(735,480),(715,520),(755,520)],fill=BLUE)
-        d.text((490,555),"접촉 끊김",font=f28(),fill=BLUE,anchor="mm")
-        d.text((490,835),"물방울이 팬에서 살짝 뜸",font=f34(),fill=INK,anchor="mm")
-    elif kind=="heat_barrier":
-        # Strong heat below, but arrows visibly stop at the vapor cushion.
-        pan(d,735);drop(d,490,365,105,shadow=False)
-        d.rounded_rectangle((300,600,680,670),radius=20,fill="#dce6ec",outline=BLUE,width=7)
-        for x in (355,445,535,625):
-            d.line((x,800,x,690),fill=RED,width=15)
-            d.polygon([(x,675),(x-18,705),(x+18,705)],fill=RED)
-            d.line((x,590,x,535),fill=GREY,width=7)
-        d.line((265,600,715,600),fill=BLUE,width=12)
-        d.text((490,850),"강한 열 ≠ 직접 접촉",font=f34(),fill=INK,anchor="mm")
-    elif kind=="insulation_path":
-        # Visualize the thermal resistance as a long detour through gas.
-        d.rounded_rectangle((100,220,880,760),radius=32,fill="#eef2f4",outline=INK,width=8)
-        d.rounded_rectangle((150,540,830,680),radius=26,fill="#f1a45a",outline=RED,width=7)
-        d.text((490,610),"뜨거운 팬",font=f34(),fill=WHITE,anchor="mm")
-        d.rounded_rectangle((250,380,730,500),radius=26,fill="#dce6ec",outline=BLUE,width=7)
-        d.text((490,440),"수증기층",font=f34(),fill=INK,anchor="mm")
-        d.ellipse((365,235,615,375),fill="#8ec5ff",outline=BLUE,width=7)
-        d.line((690,610,790,610),fill=RED,width=14);d.line((790,610,790,300),fill=RED,width=14);d.line((790,300,635,300),fill=RED,width=14)
-        d.polygon([(620,300),(655,280),(655,320)],fill=RED)
-        d.text((490,835),"열이 바로 들어가지 못함",font=f34(),fill=INK,anchor="mm")
-    elif kind=="motion_from_vapor":
-        # Asymmetric vapor escape turns the mechanism into sideways motion.
-        pan(d,705);drop(d,430,410,100,shadow=False)
-        for x,dx in ((360,-80),(420,-30),(500,65)):
-            d.line((x,610,x+dx,520),fill=GREY,width=10)
-            d.polygon([(x+dx,500),(x+dx-18,535),(x+dx+18,530)],fill=GREY)
-        d.line((540,400,800,400),fill=BLUE,width=16);d.polygon([(830,400),(785,375),(785,425)],fill=BLUE)
-        d.text((490,835),"빠져나가는 증기 → 옆으로 이동",font=f34(),fill=INK,anchor="mm")
-    elif kind=="cause_chain":
-        # Final recap is a causal chain, not a replay of the opening
-        # side-by-side comparison.
-        labels=[("너무 뜨거운 팬",RED),("수증기층 생성",GREY),("직접 접촉 감소",BLUE),("더 오래 지속",INK)]
-        ys=[190,370,550,730]
-        for i,(label,color) in enumerate(labels):
-            d.rounded_rectangle((210,ys[i]-55,770,ys[i]+55),radius=24,fill=WHITE,outline=color,width=8)
-            d.text((490,ys[i]),label,font=f34(),fill=color,anchor="mm")
-            if i<len(labels)-1:
-                d.line((490,ys[i]+65,490,ys[i+1]-80),fill=INK,width=9)
-                d.polygon([(490,ys[i+1]-60),(470,ys[i+1]-92),(510,ys[i+1]-92)],fill=INK)
-    elif kind=="payoff":
-        pan(d,680);drop(d,490,410,105,steam=True);d.text((490,180),"더 뜨거움",font=f34(),fill=RED,anchor="mm")
-        d.text((490,800),"↓",font=font(font_path,56),fill=INK,anchor="mm");d.text((490,860),"수증기층 때문에 더 오래 버팀",font=f34(),fill=INK,anchor="mm")
-    else:raise ValueError(kind)
-    im.save(path)
-
-
-def make_opening_motion(path:Path,font_path:str):
-    frames=path.parent/"opening_frames"
-    if frames.exists():shutil.rmtree(frames)
-    frames.mkdir(parents=True)
-    fps=24;count=round(fps*3.0)
-    for i in range(count):
-        t=i/max(1,count-1);im=base();d=ImageDraw.Draw(im);card(d);pan(d,660)
-        x=190+600*t;y=455-35*math.sin(t*math.pi*4);drop(d,x,y,82,steam=True)
-        d.text((490,150),"물방울이 팬 위를 미끄러집니다",font=font(font_path,34),fill=INK,anchor="mm")
-        im.save(frames/f"f_{i:04d}.png")
-    subprocess.run(["ffmpeg","-y","-framerate",str(fps),"-i",str(frames/"f_%04d.png"),"-an","-c:v","libx264","-pix_fmt","yuv420p",str(path)],check=True,capture_output=True)
-    shutil.rmtree(frames)
-
-
-def chart_panel(source:Path,target:Path,font_path:str):
-    im=base();d=ImageDraw.Draw(im);card(d)
-    with Image.open(source) as src:chart=ImageOps.contain(src.convert("RGB"),(820,560),method=Image.Resampling.LANCZOS)
-    im.paste(chart,((W-chart.width)//2,180))
-    d.rounded_rectangle((90,760,890,860),radius=24,fill="#fff3d8",outline=ORANGE,width=5)
-    d.text((490,810),"어느 구간부터 물방울 수명이 다시 길어집니다",font=font(font_path,28),fill=INK,anchor="mm")
-    im.save(target)
+def beat(asset:Path,cue:str,info_role:str,concept_id:str,state_id:str,kind:str,
+         qa_label:str,req:str,attribution:str|None=None):
+    digest=sha(asset)
+    return {
+        "start":0.0,
+        "asset":str(asset),
+        "attribution":attribution,
+        "visual_change":{
+            "kind":kind,"concept_id":concept_id,"state_id":state_id,
+            "narration_cue":cue,"added_information":info_role,
+            "source_sha256":digest,
+        },
+        "visual_qa_requirements":[req],
+        "visual_qa_labels":[qa_label],
+        "visual_qa_negative_labels":NEG,
+        "visual_qa_expected_sha256":[digest],
+        "info_role":info_role,
+    }
 
 
 def main():
-    ap=argparse.ArgumentParser();ap.add_argument("--font",required=True);args=ap.parse_args()
-    assets=Path("assets/leidenfrost");assets.mkdir(parents=True,exist_ok=True);build=Path("build");build.mkdir(exist_ok=True)
-    brief,hook=select_hook()
-    prompt=build_story_generation_prompt(brief,hook,uncertainty_notes=["라이덴프로스트가 시작되는 정확한 온도는 표면 재질과 조건에 따라 달라질 수 있습니다"])
-    (build/"leidenfrost_story_prompt.txt").write_text(story_writer_system_prompt()+"\n\n"+prompt+"\n",encoding="utf-8")
+    ap=argparse.ArgumentParser();ap.add_argument("--font",default=None);args=ap.parse_args()
+    assets=Path("assets/leidenfrost_effect"); assets.mkdir(parents=True,exist_ok=True)
+    source_video=download_required_video(assets/"source_experiment.ogv")
+
+    kinds=[
+        "hook_result","expectation","vapor_birth","vapor_cushion","no_contact",
+        "heat_blocked","paradox_shield","glide","name","payoff",
+    ]
+    png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
+
+    brief=make_brief()
+    hook_result=generate_and_judge(brief,generator=LeidenfrostHookGenerator())
+    if hook_result.winner is None:
+        raise RuntimeError("Prompt V2 produced no Leidenfrost hook")
+    winner=hook_result.winner
+    print(f"PROMPT_V2_JUDGE={hook_result.judge_name}")
+    print(f"PROMPT_V2_SELECTED_STRATEGY={winner.strategy}")
+    print(f"PROMPT_V2_SELECTED_HOOK={winner.text}")
+
+    build=Path("build");build.mkdir(exist_ok=True)
+    story_prompt=build_story_generation_prompt(
+        brief,winner,
+        uncertainty_notes=[
+            "라이덴프로스트 온도는 표면 상태와 조건에 따라 달라질 수 있습니다",
+            "이 영상은 물방울을 띄우는 증기층 메커니즘에 집중하며 세부 유체역학 전부를 설명하지 않습니다",
+        ],
+    )
+    (build/"leidenfrost_story_prompt.txt").write_text(
+        story_writer_system_prompt()+"\n\n"+story_prompt+"\n",encoding="utf-8")
     print("STORY_PROMPT_V3_READY=build/leidenfrost_story_prompt.txt")
 
-    motion=assets/"opening_motion.mp4";make_opening_motion(motion,args.font)
-    chart_src=download_commons(CHART_FILE,assets/"source"/"heat_transfer_public_domain.png")
-    chart=assets/"heat_transfer_evidence.png";chart_panel(chart_src,chart,args.font)
-
-    kinds=["hover_close","hotter_compare","expected_faster","skitter_path","contact_boil","vapor_layer","heat_block","shield","vapor_forming","lifted_gap","heat_barrier","insulation_path","motion_from_vapor","cause_chain","payoff"]
-    panels={}
-    for kind in kinds:
-        p=assets/f"{kind}.png";save_panel(p,kind,args.font);panels[kind]=p
-
-    scenes=[
-      ("s_hook",[("HOOK",hook.text,hook.strategy)],[
-        ("팬이 더","moving_demo",motion,"an educational animation of a blue water droplet visibly moving across a very hot metal pan","뜨거운 팬 위에서 물방울이 실제로 움직이는 장면"),
-        ("물방울이","hover_close",panels["hover_close"],"a close educational diagram of a water droplet hovering above a hot pan with vapor underneath","물방울과 팬 사이의 빈틈과 수증기가 보이는 확대 장면"),
-        ("더 오래","hotter_compare",panels["hotter_compare"],"a side-by-side educational comparison of water on a moderately hot pan versus a much hotter pan","덜 뜨거운 팬과 아주 뜨거운 팬의 물방울 행동이 비교되는 장면")]),
-      ("s_setup",[("SETUP","보통은 더 뜨거우면 물이 더 빨리 사라질 것 같죠.",None),("REVEAL","그런데 아주 뜨거운 팬에서는 물방울이 달라붙지 않고 굴러다닙니다.",None)],[
-        ("보통은","expected_faster",panels["expected_faster"],"an educational diagram showing the intuitive expectation that more heat makes water disappear faster","더 뜨거우면 물이 더 빨리 사라질 것이라는 예상"),
-        ("그런데","skitter_path",panels["skitter_path"],"an educational diagram showing a water droplet skittering across a hot pan instead of sticking","아주 뜨거운 팬에서 물방울이 달라붙지 않고 이동하는 모습"),
-        ("굴러다닙니다","heat_curve",chart,"a scientific graph showing droplet evaporation time changing non-monotonically with hot plate temperature","팬 온도에 따라 물방울이 사라지는 시간이 단순하게 줄지만은 않는 실제 그래프")]),
-      ("s_crisis",[("CRISIS","약간 뜨거울 때는 물이 팬에 직접 닿아 치익 하고 빠르게 증발합니다. 그런데 왜 더 뜨거운 팬에서는 더 오래 버틸까요?",None)],[
-        ("약간 뜨거울","contact_boil",panels["contact_boil"],"an educational diagram of water directly contacting a hot pan and boiling rapidly","물이 팬에 직접 닿아 빠르게 끓고 증발하는 모습"),
-        ("그런데 왜","vapor_layer",panels["vapor_layer"],"a clear diagram of a water droplet floating above a hot pan on a thin vapor layer","물방울 아래에 얇은 수증기층이 생겨 팬과 떨어진 모습")]),
-      ("s_explain",[("EXPLANATION","팬에 닿은 물의 맨 아래가 순간적으로 수증기가 됩니다. 이 얇은 수증기층이 물방울을 팬에서 살짝 띄웁니다.",None)],[
-        ("맨 아래가","vapor_forming",panels["vapor_forming"],"an educational cross-section showing the bottom of a water droplet flashing into vapor above a hot pan","물방울 맨 아래의 물이 팬 가까이에서 수증기로 바뀌는 과정"),
-        ("살짝 띄웁니다","lifted_gap",panels["lifted_gap"],"an educational diagram showing the water droplet physically lifted away from the hot pan by a new vapor gap","수증기층이 생긴 뒤 물방울과 팬 사이에 실제 간격이 생긴 모습")]),
-      ("s_twist",[("TWIST","열은 더 센데, 물방울은 팬에 직접 닿지 않게 된 겁니다.",None)],[
-        ("열은 더","heat_barrier",panels["heat_barrier"],"an educational diagram showing strong heat arrows stopping at a vapor barrier under a hovering water droplet","팬의 열은 강하지만 수증기층에서 직접 전달이 막히는 대비"),
-        ("직접 닿지","shield",panels["shield"],"an educational diagram of a blue vapor shield between a droplet and a hot pan","수증기층이 방패처럼 물방울과 팬 사이를 막는 모습")]),
-      ("s_synthesis",[("SYNTHESIS","이 기체층이 열 전달을 방해해서 물방울은 미끄러지듯 움직이고 더 천천히 사라집니다.",None)],[
-        ("열 전달을","insulation_path",panels["insulation_path"],"an educational thermal-path diagram showing heat taking an indirect route through a vapor layer before reaching the droplet","수증기층 때문에 팬의 열이 물방울에 곧바로 전달되지 못하는 경로"),
-        ("미끄러지듯","motion_from_vapor",panels["motion_from_vapor"],"an educational diagram showing asymmetric vapor escaping beneath a droplet and pushing it sideways across a hot pan","물방울 아래에서 빠져나가는 증기가 옆 방향 움직임으로 이어지는 모습")]),
-      ("s_payoff",[("PAYOFF","즉, 더 뜨거워서 오래 버티는 게 아니라 너무 뜨거워 생긴 수증기층이 방패가 되는 겁니다.",None)],[
-        ("더 뜨거워서","cause_chain",panels["cause_chain"],"an educational causal chain from an extremely hot pan to vapor-layer formation, reduced contact, and longer droplet lifetime","너무 뜨거운 팬에서 수증기층 생성, 접촉 감소, 더 긴 지속 시간으로 이어지는 인과관계"),
-        ("수증기층이","payoff",panels["payoff"],"an educational payoff diagram showing a water droplet lasting above a very hot pan because of a vapor layer","너무 뜨거워 생긴 수증기층 때문에 물방울이 오래 버티는 최종 원리")]),
+    hook=winner.text
+    plans=[
+        ("s_hook",[
+            phrase("HOOK",hook,winner.strategy),
+            phrase("CRISIS","더 뜨거우면 더 빨리 없어질 것 같은데, 왜 반대일까요?"),
+        ],[
+            beat(source_video,hook.split()[0],"real_300c_result","hook_result","video","concept",
+                 "a real scientific experiment showing water transforming into a Leidenfrost droplet on a 300 degree Celsius superheated plate",
+                 f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",VIDEO_ATTRIBUTION),
+            beat(png["hook_result"],"사라지지","levitating_result","hook_diagram","result","concept",
+                 "an educational diagram of a water droplet floating above a red hot plate instead of vanishing",
+                 "뜨거운 판 위에서 물방울이 바로 사라지지 않고 떠 있는 결과를 크게 보여주는 모습"),
+            beat(png["expectation"],"더 뜨거우면","intuitive_expectation","expectation","hotter_vanishes","concept",
+                 "an educational diagram showing the expectation that hotter surface means faster evaporation",
+                 "더 뜨거우면 물이 더 빨리 사라질 것이라는 직관적 예상을 보여주는 모습"),
+        ]),
+        ("s_reveal",[
+            phrase("REVEAL","물방울 밑에서는 수증기가 먼저 생겨 아주 얇은 쿠션을 만듭니다."),
+        ],[
+            beat(png["vapor_birth"],"물방울 밑에서는","vapor_birth","vapor_layer","birth","concept",
+                 "an educational cross section diagram of vapor forming under a water droplet above a hot plate",
+                 "물방울 아래에서 수증기가 만들어지는 단면 모습"),
+            beat(png["vapor_cushion"],"쿠션","vapor_cushion","vapor_layer","cushion","state",
+                 "an educational cross section diagram of a water droplet supported by a thin vapor cushion above a hot plate",
+                 "물방울과 뜨거운 판 사이에 얇은 수증기 쿠션이 생긴 모습"),
+        ]),
+        ("s_explain",[
+            phrase("EXPLANATION","그 증기층 때문에 물방울은 뜨거운 금속에 직접 닿지 않습니다. 그래서 열이 바로 전달되지 않습니다."),
+        ],[
+            beat(png["no_contact"],"그 증기층","no_direct_contact","insulation","no_contact","concept",
+                 "an educational diagram showing a water droplet separated from a hot metal surface by vapor with no direct contact",
+                 "수증기층 때문에 물방울이 뜨거운 금속에 직접 닿지 않는 모습"),
+            beat(png["heat_blocked"],"열이 바로","reduced_heat_transfer","insulation","heat_blocked","state",
+                 "an educational diagram showing heat transfer interrupted by a vapor layer under a water droplet",
+                 "수증기층이 뜨거운 판에서 물방울로 바로 이어지는 열 전달을 줄이는 모습"),
+        ]),
+        ("s_twist",[
+            phrase("TWIST","그래서 판이 더 뜨거워졌는데도 물방울은 잠깐 보호됩니다. 팬 위를 미끄러지는 움직임도 이 증기층이 받쳐 주기 때문입니다."),
+        ],[
+            beat(png["paradox_shield"],"더 뜨거워졌는데도","hotter_but_protected","paradox","shield","concept",
+                 "an educational diagram showing a water droplet protected above an extremely hot plate by a vapor layer",
+                 "판이 더 뜨거운데도 수증기층이 물방울을 잠깐 보호하는 역설적인 모습"),
+            beat(png["glide"],"미끄러지는","skittering_motion","glide","path","concept",
+                 "an educational diagram of a Leidenfrost water droplet skittering sideways across a hot plate on vapor",
+                 "수증기층 위에서 물방울이 팬 표면을 미끄러지듯 이동하는 모습"),
+        ]),
+        ("s_end",[
+            phrase("PAYOFF","이게 라이덴프로스트 효과입니다. 충분히 뜨거운 표면에서는 물이 바로 사라지는 대신, 자기 수증기 위에 잠깐 떠 있게 됩니다."),
+        ],[
+            beat(png["name"],"라이덴프로스트 효과","effect_name","payoff","name","concept",
+                 "an educational diagram of the Leidenfrost effect with a droplet floating above a hot plate on vapor",
+                 "물방울이 수증기 위에 뜬 현상을 라이덴프로스트 효과라고 정리하는 모습"),
+            beat(png["payoff"],"자기 수증기 위에","final_mechanism","payoff","mechanism","state",
+                 "an educational payoff diagram showing a water droplet floating on its own vapor above a sufficiently hot surface",
+                 "충분히 뜨거운 표면에서 물방울이 자기 수증기 위에 떠 있는 최종 원리를 보여주는 모습"),
+        ]),
     ]
 
-    outscenes=[]
-    for si,(sid,phrases,beats) in enumerate(scenes):
-        vb=[]
-        for bi,(cue,role,path,label,req) in enumerate(beats):
-            digest=sha(Path(path))
-            vb.append({
-              "start":float(bi*2),"asset":str(path),"attribution":CHART_CREDIT if Path(path)==chart else None,
-              "visual_change":{"kind":"concept" if bi==0 else "state","concept_id":sid,"state_id":f"{sid}:{role}:{bi}","narration_cue":cue,"added_information":label,"source_sha256":digest},
-              "visual_qa_requirements":[req],"visual_qa_labels":[label],"visual_qa_negative_labels":NEG,
-              "visual_qa_expected_sha256":[digest],"info_role":role,
-            })
-        plan=[]
-        for role,text,hook_type in phrases:
-            item={"role":role,"text":text}
-            if role=="HOOK":item["hook_type"]=hook_type
-            plan.append(item)
-        outscenes.append({
-          "id":sid,"narration":" ".join(x[1] for x in phrases),"visual_description":"; ".join(x[4] for x in beats),
-          "asset":vb[0]["asset"],"attribution":vb[0].get("attribution"),"visual_qa_requirements":[x[4] for x in beats],
-          "visual_qa_labels":[x[3] for x in beats],"visual_qa_negative_labels":NEG,
-          "visual_qa_expected_sha256":[vb[0]["visual_qa_expected_sha256"][0]],"visual_beats":vb,"narration_plan":plan,
-          "factual_notes":["충분히 뜨거운 표면에서는 물방울 아래에 수증기층이 형성될 수 있습니다.","수증기층은 액체와 뜨거운 표면의 직접 접촉을 줄이고 열 전달을 방해합니다."],
-          "overlay_title":"더 뜨거운데 더 오래?" if si==0 else None,
+    scenes=[]
+    for sid,narr_plan,beats in plans:
+        # Pydantic requires increasing authored starts; real starts are replaced
+        # from measured TTS cues during strict meaningful-change rendering.
+        for i,b in enumerate(beats): b["start"]=float(i)
+        narration=" ".join(p["text"] for p in narr_plan)
+        scenes.append({
+            "id":sid,"narration":narration,
+            "narration_plan":narr_plan,
+            "visual_description":"Evidence-first Leidenfrost visual sequence matched to narration.",
+            "asset":beats[0]["asset"],
+            "attribution":beats[0].get("attribution"),
+            "visual_beats":beats,
+            "visual_qa_requirements":["각 내레이션 단서에 맞는 라이덴프로스트 현상 또는 설명 도식이 실제 화면에 보여야 함"],
+            "visual_qa_labels":[beats[0]["visual_qa_labels"][0]],
+            "visual_qa_negative_labels":NEG,
+            "overlay_title":None,
         })
 
-    manifest={"title":"더 뜨거운 팬에서 물방울이 오래 버티는 이유","width":1080,"height":1920,"fps":30,
-      "overlay_title":None,"strict_source_diversity":False,"strict_meaningful_visual_changes":True,
-      "strict_retention_contract":True,"scenes":outscenes}
-    Path("examples/leidenfrost.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
-    print("LEIDENFROST_MANIFEST_READY=examples/leidenfrost.json")
-    print("MOVING_VISUAL_READY="+str(motion))
-    print("PUBLIC_DOMAIN_CHART_READY="+str(chart))
+    manifest={
+        "title":"300도 판에서 물방울이 사라지지 않는 이유",
+        "width":1080,"height":1920,"fps":30,
+        "overlay_title":"300도에서 물방울이 뜬다",
+        "max_visual_recovery_attempts":2,
+        "strict_source_diversity":False,
+        "strict_meaningful_visual_changes":True,
+        "strict_retention_contract":True,
+        "strict_entertainment_contract":False,
+        "scenes":scenes,
+    }
+    Path("examples").mkdir(exist_ok=True)
+    Path("examples/leidenfrost_effect.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
+
+    desc=f"""# 300도 판에서 물방울이 사라지지 않는 이유 — 출처
+
+실제 실험 영상:
+- Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv
+- Authors: Elbahri M, Abdelaziz R, Disci-Zayed D, Homaeigohar S, Sosna J, Adam D, Kienle L, Dankwort T, Abdelaziz M
+- Source: {VIDEO_PAGE}
+- License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+- 사용 변경: 세로형 Shorts 프레임에 맞게 리사이즈/구성하고 원본 음성은 사용하지 않음
+
+나머지 설명 도식은 이 제작 스크립트가 직접 생성했습니다.
+"""
+    Path("examples/leidenfrost_effect_upload_description.txt").write_text(desc,encoding="utf-8")
+    print("LEIDENFROST_MANIFEST_READY=examples/leidenfrost_effect.json")
 
 
-if __name__=="__main__":main()
+if __name__=="__main__":
+    main()
