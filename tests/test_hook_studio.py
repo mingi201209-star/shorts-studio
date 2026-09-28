@@ -382,7 +382,7 @@ def test_story_prompt_v3_encodes_retention_and_truth_contract():
     required = [
         "first sentence must immediately deliver",
         "One sentence should carry one new semantic move",
-        "do not manufacture a rhetorical question after every sentence",
+        "Do not manufacture a rhetorical question after every sentence",
         "Never upgrade a possibility",
         "No generic CTA",
         "Do not repeat the same fact",
