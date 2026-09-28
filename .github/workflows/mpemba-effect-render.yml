@@ -45,6 +45,14 @@ jobs:
           test -s assets/mpemba_effect/source_photos/frost_window_cc0.jpg
           test -s assets/mpemba_effect/source_photos/boiling_water_steam_cc0.jpg
           test -s assets/mpemba_effect/source_photos/freezer_ice_tray_cc0.jpg
+      - name: Verify Story Prompt V3 production contract
+        run: |
+          test -s build/mpemba_story_prompt.txt
+          grep -q 'first sentence must immediately deliver' build/mpemba_story_prompt.txt
+          grep -q 'One sentence should carry one new semantic move' build/mpemba_story_prompt.txt
+          grep -q 'Never upgrade a possibility' build/mpemba_story_prompt.txt
+          grep -q 'Do not repeat the same fact' build/mpemba_story_prompt.txt
+          grep -q '^STORY_PROMPT_V3_READY=' mpemba-generator.log
       - name: Verify Prompt V2 actually selected the production hook
         run: |
           grep -q '^PROMPT_V2_JUDGE=' mpemba-generator.log
@@ -180,6 +188,7 @@ jobs:
             review_frames/
             build/*.srt
             build/*.timing.json
+            build/mpemba_story_prompt.txt
             mpemba-generator.log
             mpemba-render.log
             assets/mpemba_effect/source_photos/

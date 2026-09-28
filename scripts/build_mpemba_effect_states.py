@@ -24,7 +24,8 @@ also asserted below before the manifest is written.
 import argparse, colorsys, hashlib, json, math, time, urllib.parse, urllib.request
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-from shorts_studio.hook_studio import HookCandidate, TopicBrief, generate_and_judge
+from shorts_studio.hook_studio import (HookCandidate, TopicBrief, generate_and_judge,
+                                      build_story_generation_prompt, story_writer_system_prompt)
 
 
 INK = '#182d40'; RED = '#c74432'; BLUE = '#1f6fb2'; GREEN = '#258368'; WHITE = '#f6f8fa'; GREY = '#687781'
@@ -105,9 +106,9 @@ SCENES = [
     # without giving away the full multi-factor explanation) -> CRISIS (the
     # specific claim plus the real observed anomaly).
     ('s_clue', [
-        ('SETUP', '사람들은 흔히 반대로 생각합니다.', None),
-        ('REVEAL', '첫 번째 단서는 바로 증발입니다.', None),
-        ('CRISIS', '온도가 높으면 더 걸린다고 하죠. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 모습이 관찰됩니다.', None),
+        ('SETUP', '사람들은 보통 찬물이 먼저 얼 거라고 생각합니다.', None),
+        ('REVEAL', '첫 번째 단서는 증발입니다.', None),
+        ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 결과가 늘 같지는 않고, 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 관찰되기도 합니다.', None),
      ], [
         ('사람들은', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
@@ -125,7 +126,7 @@ SCENES = [
          'A real close-up photograph of ice-crystal frost patterns on a frozen surface.',
          '용기 표면에 맺힌 성에 결정을 크게 확대해서 보여주는 모습'),
      ]),
-    ('s_explain', [('EXPLANATION', '그 이유 중 하나는 증발입니다. 뜨거운 물은 증발로 양이 줄어들어서, 얼려야 할 물 자체가 더 적어집니다.', None)], [
+    ('s_explain', [('EXPLANATION', '그 이유 중 하나는 증발입니다. 뜨거운 물은 더 많이 증발해 양이 줄 수 있고, 그러면 얼려야 할 물 자체가 더 적어집니다.', None)], [
         ('그 이유 중 하나는', '더 활발한 증발', 'evaporation_concept',
          'A schematic diagram comparing a hot-water container with heavy rising steam against a cold-water container with almost no steam.',
          '뜨거운 물 용기에서는 김이 많이 나고 찬물 용기에서는 거의 나지 않는 비교 모습'),
@@ -138,7 +139,7 @@ SCENES = [
      ]),
     # TWIST (not CRISIS -- CRISIS is already used in s_clue; a fresh role
     # name here keeps every scene's role a genuine first use).
-    ('s_crisis', [('TWIST', '하지만 증발만으로는 이 정도의 차이를 다 설명하지 못합니다. 그렇다면 다른 무언가가 함께 작용하고 있는 걸까요?', None)], [
+    ('s_crisis', [('TWIST', '하지만 증발만으로는 모든 경우를 설명하지 못합니다. 조건에 따라 결과가 달라진다면, 다른 무언가가 함께 작용할 가능성도 봐야 합니다.', None)], [
         ('증발만으로는', '증발만으로는 부족', 'question_more',
          'A schematic diagram showing a small evaporation cloud icon connected by an arrow to a much larger question mark, indicating an insufficient explanation.',
          '증발 아이콘 옆에 커다란 물음표가 붙어, 설명이 충분하지 않음을 보여주는 모습'),
@@ -152,7 +153,7 @@ SCENES = [
     # SYNTHESIS (not REVEAL -- REVEAL is already used as s_clue's early
     # teaser; this is the strongest explanatory moment requirement 7 calls
     # for, combining every factor into one payoff-adjacent scene).
-    ('s_reveal', [('SYNTHESIS', '빠른 대류로 뜨거운 물은 열을 더 빨리 잃고, 찬물은 얼기 전 온도가 더 내려가는 과냉각을 거칩니다. 이 셋이 함께 작용해 이런 역전이 일어납니다.', None)], [
+    ('s_reveal', [('SYNTHESIS', '일부 조건에서는 빠른 대류로 뜨거운 물이 열을 더 빨리 잃고, 찬물은 얼기 전 과냉각을 거칩니다. 이런 요인들이 함께 작용해 순서가 뒤집히는 경우가 있지만, 한 가지 원인이 늘 정답인 것은 아닙니다.', None)], [
         ('빠른 대류로', '더 빠른 열 손실', 'convection_speed',
          'A schematic diagram of convection arrows inside a container feeding into outward heat-loss arrows and a fast-dropping thermometer.',
          '대류 흐름이 열을 바깥으로 더 빠르게 내보내 온도계가 빠르게 떨어지는 모습'),
@@ -165,11 +166,11 @@ SCENES = [
         ('과냉각을 거칩니다', '과냉각의 차이', 'supercool',
          'A schematic line-graph diagram showing cold water\'s temperature dipping below the freezing point before turning to ice, next to hot water freezing right at the freezing line.',
          '찬물의 온도 그래프가 어는점 아래로 내려갔다가 어는 과냉각 구간을 보여주는 모습'),
-        ('함께 작용해', '세 가지가 함께', 'synthesis',
-         'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- each connected by an arrow into one combined ice-cube result icon.',
-         '증발, 대류, 과냉각 세 아이콘이 화살표로 모여 하나의 얼음 결과로 합쳐지는 모습'),
+        ('함께 작용해', '여러 요인이 함께', 'synthesis',
+         'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- converging toward an ice result while a small question marker signals that no single mechanism explains every case.',
+         '증발, 대류, 과냉각 아이콘이 얼음 결과 쪽으로 모이되, 한 가지 원인으로 고정되지 않음을 작은 물음표로 함께 보여주는 모습'),
      ]),
-    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 그런지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 어떤 쪽이 먼저 얼지 직접 확인해보세요.', None)], [
+    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어붙는 일은 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 나타나는지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 같은 크기의 용기와 같은 양의 물로 어떤 쪽이 먼저 어는지 직접 확인해보세요.', None)], [
         ('그래서 뜨거운 물이', '뜨거운 쪽이 먼저 얼음', 'final_result',
          'A schematic diagram of a fully frozen hot-water container with a checkmark and finish flag, next to a still partly liquid cold-water container.',
          '뜨거운 물 용기는 완전히 얼어 체크 표시가 있고, 찬물 용기는 아직 액체인 최종 비교 모습'),
@@ -495,7 +496,7 @@ def main():
                 px, py = 490 + fx, 680 + fy
                 d.line((px - 10, py, px + 10, py), fill=INK, width=5)
                 d.line((px, py - 10, px, py + 10), fill=INK, width=5)
-            d.text((490, 800), '얼음', font=font(28), fill=INK, anchor='mm')
+            d.text((490, 800), '조건에 따라', font=font(28), fill=INK, anchor='mm')
         elif kind == 'final_result':
             container(d, 300, 220, 260, 560, RED, 0.65, frozen=True)
             container(d, 680, 220, 260, 560, BLUE, 0.65)
@@ -586,6 +587,35 @@ def main():
             'asset': beats[0]['asset'], 'visual_beats': beats,
             'visual_qa_requirements': ['A schematic diagram about why hot water can sometimes freeze before cold water (the Mpemba effect), consistent with the narration.'],
         })
+
+    prompt_dir = Path('build'); prompt_dir.mkdir(exist_ok=True)
+    story_prompt = build_story_generation_prompt(
+        TopicBrief(
+            topic_id="mpemba-effect",
+            familiar_subject="냉동실 물",
+            contradiction_fact="뜨거운 물과 찬물 중 어느 쪽이 먼저 어는지는 단순한 시작 온도 순서와 다를 수 있습니다",
+            surprising_consequence_fact="같은 냉동실에서도 뜨거운 물 쪽에 먼저 성에가 생길 수 있습니다",
+            counterintuitive_fact="더 뜨거운 물이 찬물보다 먼저 얼기도 합니다",
+            anomaly_fact="같은 조건의 두 물통에서도 뜨거운 물 쪽 표면에 먼저 성에가 보일 수 있습니다",
+            mistaken_assumption_fact="뜨거운 물보다 먼저 어는 것은 늘 찬물이라는 생각이 항상 맞지는 않습니다",
+            cause_effect_fact="증발, 대류, 과냉각 같은 요인이 조건에 따라 관여할 수 있습니다",
+            payoff_text="뜨거운 물이 먼저 어는 경우는 실제로 가능하지만, 모든 경우를 설명하는 하나의 원인은 확정되지 않았습니다",
+            grounded_facts=[
+                "음펨바 효과는 조건에 따라 관찰 여부가 달라질 수 있습니다",
+                "정확히 언제 어떤 조건에서 나타나는지는 계속 연구되고 있습니다",
+            ],
+        ),
+        PROMPT_V2_HOOK,
+        uncertainty_notes=[
+            "물의 Mpemba 효과에는 단일하고 보편적으로 받아들여진 원인 하나가 확정되어 있지 않습니다",
+            "증발, 대류, 과냉각 등은 조건에 따라 관여할 수 있는 후보 메커니즘이며 중요도는 실험 조건에 따라 달라질 수 있습니다",
+        ],
+    )
+    (prompt_dir / 'mpemba_story_prompt.txt').write_text(
+        story_writer_system_prompt() + '\n\n' + story_prompt + '\n',
+        encoding='utf-8',
+    )
+    print('STORY_PROMPT_V3_READY=build/mpemba_story_prompt.txt')
 
     manifest = {
         'title': '뜨거운 물이 찬물보다 먼저 언다',

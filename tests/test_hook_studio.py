@@ -10,7 +10,8 @@ from shorts_studio.hook_studio import (
     HOOK_STRATEGIES, MIN_STRATEGY_FACTS, TopicBrief, HookCandidate,
     TemplateHookGenerator, RuleBasedHookJudge, AnthropicHookJudge,
     reject_hook_candidate, is_grounded_claim, generate_and_judge,
-    verify_curiosity_maintained,
+    verify_curiosity_maintained, build_story_generation_prompt,
+    story_writer_system_prompt,
 )
 from shorts_studio.retention_rules import (
     is_bare_why_question, has_generic_cta, reveals_payoff_prematurely,
@@ -372,3 +373,49 @@ def test_curiosity_maintained_requires_rehook_between_answers():
     result = verify_curiosity_maintained(p)
     assert result["status"] == "FAIL"
     assert "re-hook" in result["reason"]
+
+
+# --- Story Prompt V3: generation prompt -------------------------------------
+
+def test_story_prompt_v3_encodes_retention_and_truth_contract():
+    system = story_writer_system_prompt()
+    required = [
+        "first sentence must immediately deliver",
+        "One sentence should carry one new semantic move",
+        "do not manufacture a rhetorical question after every sentence",
+        "Never upgrade a possibility",
+        "No generic CTA",
+        "Do not repeat the same fact",
+    ]
+    for phrase in required:
+        assert phrase in system
+
+
+def test_story_generation_prompt_preserves_facts_uncertainty_and_selected_hook():
+    brief = _full_brief()
+    selected = HookCandidate(
+        strategy="contradiction",
+        text="생각과 달리 뜨거운 물을 부으면 멀쩡한 유리컵도 얼음물에서는 깨질 수 있습니다",
+        grounded_in=brief.contradiction_fact,
+    )
+    prompt = build_story_generation_prompt(
+        brief,
+        selected,
+        uncertainty_notes=["유리 파손 정도는 유리 종류와 기존 흠집에 따라 달라질 수 있음"],
+    )
+    assert selected.text in prompt
+    assert brief.payoff_text in prompt
+    assert "F1:" in prompt
+    assert "U1:" in prompt
+    assert "45–75 seconds" in prompt
+
+
+def test_story_generation_prompt_rejects_hook_strategy_without_fact():
+    brief = _full_brief(anomaly_fact=None)
+    selected = HookCandidate(
+        strategy="visible_anomaly",
+        text="유리컵을 자세히 보면 이상하게도 균열이 보입니다",
+        grounded_in="균열이 보입니다",
+    )
+    with pytest.raises(ValueError):
+        build_story_generation_prompt(brief, selected)

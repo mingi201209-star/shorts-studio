@@ -389,6 +389,122 @@ def generate_and_judge(brief: TopicBrief, generator: HookGenerator | None = None
 
 
 # ---------------------------------------------------------------------------
+# Story Prompt V3: evidence-led script-writing prompt.
+#
+# Design basis:
+# - the first spoken line must cash the same promise as the title/first frame;
+# - every following line must either add evidence, update the viewer's model,
+#   or create one earned new gap;
+# - do not manufacture a rhetorical question after every sentence;
+# - uncertainty is part of the story, not something to hide behind certainty.
+# ---------------------------------------------------------------------------
+
+_STORY_WRITER_SYSTEM_PROMPT = """You write Korean factual YouTube Shorts for a viewer who knows nothing and can swipe at any moment.
+
+Your job is NOT to sound viral, dramatic, or clever. Your job is to make the next sentence feel necessary.
+
+Use only the supplied facts. Never upgrade a possibility, proposed mechanism, correlation, or disputed explanation into a proven cause. When the evidence is conditional or debated, say so in plain Korean.
+
+Write spoken Korean, not essay Korean. Prefer concrete nouns and verbs over abstract labels. One sentence should carry one new semantic move. Delete greetings, setup-about-the-video, summaries that repeat the previous line, and generic engagement bait.
+
+The first sentence must immediately deliver the same promise as the selected hook/title. Do not make the viewer wait for context.
+
+Build curiosity by progressive disclosure:
+1. HOOK: concrete surprising result or contradiction.
+2. SETUP: the viewer's intuitive expectation, in one short line.
+3. REVEAL: one concrete clue/observation, not the whole answer.
+4. CRISIS: show why the first clue is insufficient or where the simple model breaks.
+5. EXPLANATION: explain one mechanism in everyday language.
+6. TWIST: one earned re-hook that changes the question; do not add a rhetorical question just for pacing.
+7. SYNTHESIS: combine only the mechanisms supported by the supplied facts, preserving uncertainty.
+8. PAYOFF: close the original information gap precisely. Do not merely repeat the hook.
+
+Pacing rules:
+- The first 1 second must contain subject + surprising result, not a greeting or topic announcement.
+- By about 5 seconds, the viewer must have a concrete observation or clue.
+- Put the strongest explanatory synthesis in the later half, after a partial answer and one re-hook.
+- Let important reveals land. Do not turn every sentence into a new question.
+- No sentence may exist only to say 'keep watching', 'you won't believe', or 'here is the crazy part'.
+- Do not use a technical term before giving its plain-language meaning, unless the term itself is the familiar subject.
+- No generic CTA such as like/subscribe/comment. If an ending invitation fits, make it specific to the subject or experiment.
+- Do not repeat the same fact in different words to create fake pacing.
+
+Return ONLY JSON:
+{
+  "narration_plan": [
+    {"role":"HOOK|SETUP|REVEAL|CRISIS|EXPLANATION|TWIST|SYNTHESIS|PAYOFF",
+     "text":"spoken Korean",
+     "fact_ids":["F1"]}
+  ],
+  "open_question_after_each_role": {
+    "HOOK":"what the viewer still needs resolved",
+    "SETUP":"...",
+    "REVEAL":"...",
+    "CRISIS":"...",
+    "EXPLANATION":"...",
+    "TWIST":"...",
+    "SYNTHESIS":"...",
+    "PAYOFF":"closed"
+  }
+}
+
+Before returning, silently cut any sentence that does not add a new fact, consequence, contradiction, or necessary transition."""
+
+
+def build_story_generation_prompt(brief: TopicBrief, selected_hook: HookCandidate,
+                                  uncertainty_notes: list[str] | None = None,
+                                  target_seconds: tuple[int, int] = (45, 75)) -> str:
+    """Build the actual full-script authoring prompt from the same facts the
+    hook stage used, so story generation cannot drift away from hook truth.
+
+    The prompt deliberately separates CONFIRMED INPUT FACTS from UNCERTAINTY
+    NOTES. A writer may simplify wording but may not erase that distinction.
+    """
+    if selected_hook.strategy not in brief.available_strategies():
+        raise ValueError("selected hook strategy has no declared fact in TopicBrief")
+
+    fact_lines: list[str] = []
+    seen: set[str] = set()
+    ordered = list(brief.fact_by_strategy().values()) + [brief.payoff_text] + list(brief.grounded_facts)
+    for fact in ordered:
+        if not fact or not fact.strip() or fact.strip() in seen:
+            continue
+        seen.add(fact.strip())
+        fact_lines.append(f"F{len(fact_lines)+1}: {fact.strip()}")
+
+    uncertainty_notes = [n.strip() for n in (uncertainty_notes or []) if n and n.strip()]
+    uncertainty_block = "\n".join(f"U{i+1}: {note}" for i, note in enumerate(uncertainty_notes)) or "없음"
+
+    return f"""[TOPIC]
+{brief.topic_id}
+
+[FAMILIAR SUBJECT]
+{brief.familiar_subject}
+
+[SELECTED HOOK — preserve its factual meaning]
+{selected_hook.text}
+
+[TARGET LENGTH]
+{target_seconds[0]}–{target_seconds[1]} seconds. Do not pad to reach a duration.
+
+[CONFIRMED INPUT FACTS]
+{chr(10).join(fact_lines)}
+
+[UNCERTAINTY / LIMITATIONS — preserve these explicitly]
+{uncertainty_block}
+
+[ENDING PAYOFF]
+{brief.payoff_text}
+
+Write the narration under the system rules. The hook may be lightly polished for spoken rhythm, but do not change its claim or reveal the final explanation early."""
+
+
+def story_writer_system_prompt() -> str:
+    """Public accessor so production builders/tests use one canonical prompt."""
+    return _STORY_WRITER_SYSTEM_PROMPT
+
+
+# ---------------------------------------------------------------------------
 # Story Prompt V2 (requirement 7): maintain curiosity instead of immediately
 # dumping the explanation. Builds on the EXISTING role-tagged narration_plan
 # infrastructure (models.NarrationPhrase.role, final_video_qa.
