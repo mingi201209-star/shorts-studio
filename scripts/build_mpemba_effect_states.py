@@ -1,12 +1,11 @@
 """Build real semantic visual states and a compact production manifest for
 the Mpemba-effect short ("hot water can sometimes freeze before cold
-water"). This is the first production built through the Prompt V2 pipeline
-(shorts_studio.hook_studio): the opening hook line below was selected by a
-real generate_and_judge() run over a structured TopicBrief covering six
-distinct hook strategies (see the module docstring in hook_studio.py), not
-authored as a single unexamined first draft -- see this repo's PR
-description for the actual generation/judging run and its full candidate
-list. The narration_plan below is phrase-level and role-tagged (HOOK ->
+water"). This is the first production that executes the Prompt V2 pipeline
+(shorts_studio.hook_studio) as part of the build itself: every build creates
+six distinct strategy candidates and passes all of them through
+generate_and_judge() before the selected winner becomes the actual HOOK
+narration. The render therefore fails closed if Prompt V2 cannot produce a
+winner compatible with the reviewed opening visual contract. The narration_plan below is phrase-level and role-tagged (HOOK ->
 SETUP -> REVEAL (early clue teaser) -> CRISIS (anomaly) -> EXPLANATION ->
 TWIST (insufficiency/re-hook) -> SYNTHESIS -> PAYOFF -- every role name is a
 genuine first use per verify_story_progression's no-stagnant-scene rule,
@@ -25,8 +24,64 @@ also asserted below before the manifest is written.
 import argparse, colorsys, hashlib, json, math
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
+from shorts_studio.hook_studio import HookCandidate, TopicBrief, generate_and_judge
+
 
 INK = '#182d40'; RED = '#c74432'; BLUE = '#1f6fb2'; GREEN = '#258368'; WHITE = '#f6f8fa'; GREY = '#687781'
+
+class MpembaHookGenerator:
+    """Production-specific candidate authoring; selection is independent."""
+    def generate(self, brief: TopicBrief) -> list[HookCandidate]:
+        facts = brief.fact_by_strategy()
+        texts = {
+            "contradiction": "냉동실에서 뜨거운 물과 찬물, 어느 쪽이 먼저 어는지는 단순한 온도 순서대로일까요?",
+            "surprising_consequence": "냉동실에서 같은 두 물통을 두었는데 뜨거운 물 쪽에 먼저 성에가 생기는 걸 상상해본 적 있나요?",
+            "counterintuitive_fact": "놀랍게도 더 뜨거운 물이, 냉동실에서 찬물보다 먼저 얼기도 합니다.",
+            "visible_anomaly": "냉동실에서 같은 조건의 두 물통인데 뜨거운 물 쪽 표면에 먼저 성에가 보이는 순간을 본 적 있나요?",
+            "mistaken_assumption": "냉동실에서 뜨거운 물보다 먼저 어는 건 늘 찬물이라고 생각하시나요?",
+            "unresolved_cause_effect": "냉동실에서 증발과 대류, 과냉각이 함께 작용하면 뜨거운 물이 먼저 얼 수 있을까요?",
+        }
+        return [
+            HookCandidate(strategy=strategy, text=texts[strategy], grounded_in=facts[strategy])
+            for strategy in texts
+        ]
+
+
+def select_mpemba_hook():
+    brief = TopicBrief(
+        topic_id="mpemba-effect",
+        familiar_subject="냉동실 물",
+        contradiction_fact="뜨거운 물과 찬물 중 어느 쪽이 먼저 어는지는 단순한 시작 온도 순서와 다를 수 있습니다",
+        surprising_consequence_fact="같은 냉동실에서도 뜨거운 물 쪽에 먼저 성에가 생길 수 있습니다",
+        counterintuitive_fact="더 뜨거운 물이 찬물보다 먼저 얼기도 합니다",
+        anomaly_fact="같은 조건의 두 물통에서도 뜨거운 물 쪽 표면에 먼저 성에가 보일 수 있습니다",
+        mistaken_assumption_fact="뜨거운 물보다 먼저 어는 것은 늘 찬물이라는 생각이 항상 맞지는 않습니다",
+        cause_effect_fact="증발과 대류, 과냉각이 조건에 따라 함께 작용하면 뜨거운 물이 먼저 얼 수 있습니다",
+        payoff_text="증발, 대류, 과냉각이 조건에 따라 함께 작용해 뜨거운 물이 찬물보다 먼저 얼 수 있습니다",
+        grounded_facts=[
+            "음펨바 효과는 조건에 따라 관찰 여부가 달라질 수 있습니다",
+            "정확히 언제 어떤 조건에서 나타나는지는 계속 연구되고 있습니다",
+        ],
+    )
+    result = generate_and_judge(brief, generator=MpembaHookGenerator())
+    if result.winner is None:
+        raise RuntimeError("Prompt V2 produced no valid Mpemba hook")
+    required_visual_cues = ("놀랍게도", "냉동실에서", "얼기도")
+    missing = [cue for cue in required_visual_cues if result.winner.text.count(cue) != 1]
+    if missing:
+        raise RuntimeError(
+            f"Prompt V2 winner no longer matches the reviewed opening visual contract; missing/non-unique cues: {missing}; "
+            f"winner={result.winner.text!r}"
+        )
+    print(f"PROMPT_V2_JUDGE={result.judge_name}")
+    print(f"PROMPT_V2_SELECTED_STRATEGY={result.winner.strategy}")
+    print(f"PROMPT_V2_SELECTED_HOOK={result.winner.text}")
+    return result
+
+
+PROMPT_V2_HOOK_RESULT = select_mpemba_hook()
+PROMPT_V2_HOOK = PROMPT_V2_HOOK_RESULT.winner
+
 
 # (scene_id, [(role, text, hook_type_or_None), ...], [(cue, panel_label, kind, clip_info_en, requirement_ko), ...])
 # `cue` only needs to occur exactly once across the WHOLE scene's
@@ -34,7 +89,7 @@ INK = '#182d40'; RED = '#c74432'; BLUE = '#1f6fb2'; GREEN = '#258368'; WHITE = '
 # words for the whole scene, not per-phrase) -- see hook_studio.py's usage
 # note reused here.
 SCENES = [
-    ('s_hook', [('HOOK', '놀랍게도 더 뜨거운 물이, 냉동실에서 찬물보다 먼저 얼기도 합니다.', 'counterintuitive_fact')], [
+    ('s_hook', [('HOOK', PROMPT_V2_HOOK.text, PROMPT_V2_HOOK.strategy)], [
         ('놀랍게도', '두 개의 물통', 'containers',
          'A schematic diagram of a hot-water container and a cold-water container placed side by side in a freezer.',
          '뜨거운 물 용기와 찬물 용기를 냉동실 안에 나란히 놓은 모습'),

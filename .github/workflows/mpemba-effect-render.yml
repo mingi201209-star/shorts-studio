@@ -1,7 +1,19 @@
 name: mpemba-effect-render
 on:
   push:
-    branches: [feat/prompt-v2-hook-story]
+    branches: [main]
+    paths:
+      - 'shorts_studio/**'
+      - 'scripts/build_mpemba_effect_states.py'
+      - '.github/workflows/mpemba-effect-render.yml'
+      - 'pyproject.toml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'shorts_studio/**'
+      - 'scripts/build_mpemba_effect_states.py'
+      - '.github/workflows/mpemba-effect-render.yml'
+      - 'pyproject.toml'
   workflow_dispatch:
 
 permissions:
@@ -27,6 +39,11 @@ jobs:
         run: |
           set -o pipefail
           python scripts/build_mpemba_effect_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee mpemba-generator.log
+      - name: Verify Prompt V2 actually selected the production hook
+        run: |
+          grep -q '^PROMPT_V2_JUDGE=' mpemba-generator.log
+          grep -q '^PROMPT_V2_SELECTED_STRATEGY=' mpemba-generator.log
+          grep -q '^PROMPT_V2_SELECTED_HOOK=' mpemba-generator.log
       - name: Validate production manifests
         run: |
           for manifest in examples/*.json; do

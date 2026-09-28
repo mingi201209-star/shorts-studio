@@ -132,16 +132,39 @@ class HookCandidate(BaseModel):
         return self
 
 
-def is_grounded_claim(candidate: HookCandidate, brief: TopicBrief, threshold: float = 0.6) -> bool:
-    """A candidate's claimed grounding must genuinely correspond to
-    something the author actually declared as real for this topic -- never
-    trust a generator's own claim that a candidate is grounded (requirement
-    3: no unsupported sensationalism). Uses the same token-overlap-ratio
-    near-duplicate proxy the rest of the engine relies on, not exact string
-    equality, so minor rephrasing of a declared fact still counts."""
-    facts = brief.all_declared_facts()
-    return any(token_overlap_ratio(candidate.grounded_in, f) >= threshold for f in facts)
+def _fact_token_coverage(text: str, fact: str) -> float:
+    """Substring-aware token coverage for Korean particles/endings.
 
+    The declared fact remains the source of truth. This helper only asks
+    whether the candidate sentence visibly carries enough of that fact's
+    lexical content to prevent a generator from laundering an unrelated
+    sensational claim through a truthful `grounded_in` field.
+    """
+    normalized_text = normalize_text(text)
+    tokens = [tok for tok in normalize_text(fact).split() if len(tok) >= 2]
+    if not tokens:
+        return 0.0
+    hits = sum(1 for tok in tokens if tok in normalized_text)
+    return hits / len(tokens)
+
+
+def is_grounded_claim(candidate: HookCandidate, brief: TopicBrief,
+                      grounding_threshold: float = 0.6,
+                      text_coverage_threshold: float = 0.25) -> bool:
+    """Require BOTH declared grounding and candidate wording to match.
+
+    A candidate must ground itself in the fact assigned to its own strategy,
+    not merely any convenient fact from the brief, and its actual hook text
+    must visibly carry a minimum share of that fact. This closes the loophole
+    where a generator could emit an unsupported sensational sentence while
+    pointing `grounded_in` at an unrelated truthful fact.
+    """
+    strategy_fact = brief.fact_by_strategy().get(candidate.strategy)
+    if not strategy_fact or not strategy_fact.strip():
+        return False
+    if token_overlap_ratio(candidate.grounded_in, strategy_fact) < grounding_threshold:
+        return False
+    return _fact_token_coverage(candidate.text, strategy_fact) >= text_coverage_threshold
 
 def reject_hook_candidate(candidate: HookCandidate, brief: TopicBrief) -> str | None:
     """Requirement-5 rejection rules, layered ON TOP of (never replacing)
@@ -374,45 +397,58 @@ def generate_and_judge(brief: TopicBrief, generator: HookGenerator | None = None
 # keeps exactly the behavior it had before this module existed.
 # ---------------------------------------------------------------------------
 
-_EXPLANATION_ROLES = ("EXPLANATION", "REVEAL", "PAYOFF")
+_ANSWER_ROLES = ("EXPLANATION", "REVEAL", "SYNTHESIS", "PAYOFF")
+_REHOOK_ROLES = ("CRISIS", "TWIST")
 
 
 def verify_curiosity_maintained(project) -> dict:
-    """FAIL if the SECOND distinct narrative role in the video is already an
-    explanation/reveal/payoff role -- i.e. the script jumps straight from
-    HOOK to giving the answer away, with no intervening evidence/clue beat
-    for the viewer to sit with the question.
+    """Enforce an actual curiosity arc, not merely "HOOK then something".
 
-    final_video_qa.verify_story_progression does NOT catch this: HOOK ->
-    EXPLANATION -> CRISIS -> PAYOFF already satisfies its own '>=4 distinct
-    roles, HOOK first, no stagnant scene' rule despite dumping the
-    explanation in the second beat. This function checks the specific shape
-    requirement 7 describes (HOOK -> evidence/clue -> partial explanation ->
-    new implication/re-hook -> strongest explanatory/payoff moment ->
-    ending) without forcing a rigid fixed-length template: only the 'HOOK
-    first' and 'not explained in the very next beat' transitions are
-    checked, plus that a genuine explanation/reveal/payoff role appears
-    somewhere before the end. Does not replace verify_ending_payoff_role's
-    own PAYOFF/REVEAL-last check -- callers should run both."""
+    Required shape stays deliberately role-based and flexible:
+      HOOK -> at least one non-answer beat -> partial answer ->
+      CRISIS/TWIST re-hook -> later stronger answer/payoff.
+
+    This rejects shallow shapes such as HOOK -> SETUP -> PAYOFF and catches
+    scripts that never renew tension after the first explanation. Existing
+    final-video progression/payoff gates remain separate and unchanged.
+    """
     roles: list[str] = []
     for scene in project.scenes:
         for phrase in getattr(scene, "narration_plan", None) or []:
             if not roles or roles[-1] != phrase.role:
                 roles.append(phrase.role)
+    evidence = {"role_sequence": roles}
     if not roles:
         return {"status": "FAIL", "reason": "no narration_plan roles declared"}
     if roles[0] != "HOOK":
-        return {"status": "FAIL", "reason": f"first role is '{roles[0]}', must be HOOK", "evidence": {"role_sequence": roles}}
+        return {"status": "FAIL", "reason": f"first role is '{roles[0]}', must be HOOK", "evidence": evidence}
     if len(roles) < 2:
-        return {"status": "FAIL", "reason": "only one distinct role used -- no story progression at all", "evidence": {"role_sequence": roles}}
-    if roles[1] in _EXPLANATION_ROLES:
+        return {"status": "FAIL", "reason": "only one distinct role used -- no story progression at all", "evidence": evidence}
+    if roles[1] in _ANSWER_ROLES:
         return {
             "status": "FAIL",
             "reason": f"second role is '{roles[1]}' -- the explanation/reveal/payoff is dumped immediately "
-                       "after the hook, with no evidence/clue beat maintaining curiosity",
-            "evidence": {"role_sequence": roles},
+                      "after the hook, with no evidence/clue beat maintaining curiosity",
+            "evidence": evidence,
         }
-    if not any(r in _EXPLANATION_ROLES for r in roles):
-        return {"status": "FAIL", "reason": "no EXPLANATION/REVEAL/PAYOFF role ever appears -- the video never actually explains anything",
-                "evidence": {"role_sequence": roles}}
-    return {"status": "PASS", "evidence": {"role_sequence": roles}}
+
+    answer_indices = [i for i, role in enumerate(roles) if role in _ANSWER_ROLES]
+    if not answer_indices:
+        return {"status": "FAIL", "reason": "no EXPLANATION/REVEAL/SYNTHESIS/PAYOFF role ever appears -- the video never actually explains anything",
+                "evidence": evidence}
+    if len(roles) < 5:
+        return {"status": "FAIL", "reason": "story is too shallow to sustain a hook -> clue -> partial answer -> re-hook -> payoff arc",
+                "evidence": evidence}
+    if len(answer_indices) < 2:
+        return {"status": "FAIL", "reason": "only one answer/payoff stage exists -- no partial-answer then stronger-answer progression",
+                "evidence": evidence}
+
+    first_answer, final_answer = answer_indices[0], answer_indices[-1]
+    if first_answer < 2:
+        return {"status": "FAIL", "reason": "first explanatory beat arrives before any clue/setup can maintain curiosity",
+                "evidence": evidence}
+    if not any(roles[i] in _REHOOK_ROLES for i in range(first_answer + 1, final_answer)):
+        return {"status": "FAIL", "reason": "no CRISIS/TWIST re-hook appears between the first answer and the final answer/payoff",
+                "evidence": evidence}
+
+    return {"status": "PASS", "evidence": evidence}

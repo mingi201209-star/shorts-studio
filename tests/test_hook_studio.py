@@ -158,8 +158,34 @@ def test_reject_hook_candidate_rejects_ungrounded_claim():
 
 def test_is_grounded_claim_true_for_declared_fact_paraphrase():
     brief = _full_brief()
-    c = HookCandidate(strategy="contradiction", text="x", grounded_in=brief.contradiction_fact)
+    c = HookCandidate(
+        strategy="contradiction",
+        text="생각과 달리 뜨거운 물을 부으면 멀쩡한 유리컵도 얼음물에서는 깨질 수 있습니다",
+        grounded_in=brief.contradiction_fact,
+    )
     assert is_grounded_claim(c, brief)
+
+
+def test_grounding_cannot_be_laundered_through_truthful_grounded_in():
+    brief = _full_brief()
+    c = HookCandidate(
+        strategy="contradiction",
+        text="유리컵 안에는 사실 외계 신호가 숨어 있습니다",
+        grounded_in=brief.contradiction_fact,
+    )
+    assert not is_grounded_claim(c, brief)
+    reason = reject_hook_candidate(c, brief)
+    assert reason is not None and ("grounded" in reason.lower() or "unsupported" in reason.lower())
+
+
+def test_grounding_must_match_candidates_own_strategy_fact():
+    brief = _full_brief()
+    c = HookCandidate(
+        strategy="contradiction",
+        text="놀랍게도 두꺼운 유리컵이 얇은 유리컵보다 더 쉽게 깨지기도 합니다",
+        grounded_in=brief.counterintuitive_fact,
+    )
+    assert not is_grounded_claim(c, brief)
 
 
 # --- RuleBasedHookJudge ------------------------------------------------------
@@ -323,3 +349,26 @@ def test_curiosity_maintained_fails_if_first_role_not_hook():
     result = verify_curiosity_maintained(p)
     assert result["status"] == "FAIL"
     assert "must be HOOK" in result["reason"]
+
+
+def test_curiosity_maintained_rejects_shallow_hook_setup_payoff():
+    p = _project([
+        _scene("s1", [_phrase("HOOK", "놀랍게도 결과가 뒤집혔습니다")]),
+        _scene("s2", [_phrase("SETUP", "먼저 상황을 보겠습니다")]),
+        _scene("s3", [_phrase("PAYOFF", "정답은 이것입니다")]),
+    ])
+    result = verify_curiosity_maintained(p)
+    assert result["status"] == "FAIL"
+
+
+def test_curiosity_maintained_requires_rehook_between_answers():
+    p = _project([
+        _scene("s1", [_phrase("HOOK", "놀랍게도 결과가 뒤집혔습니다")]),
+        _scene("s2", [_phrase("INVESTIGATION", "첫 단서를 찾았습니다")]),
+        _scene("s3", [_phrase("EXPLANATION", "부분 설명입니다")]),
+        _scene("s4", [_phrase("REVEAL", "더 강한 설명입니다")]),
+        _scene("s5", [_phrase("PAYOFF", "최종 결론입니다")]),
+    ])
+    result = verify_curiosity_maintained(p)
+    assert result["status"] == "FAIL"
+    assert "re-hook" in result["reason"]
