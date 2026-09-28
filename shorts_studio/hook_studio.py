@@ -409,6 +409,8 @@ Write spoken Korean, not essay Korean. Prefer concrete nouns and verbs over abst
 
 The first sentence must immediately deliver the same promise as the selected hook/title. Do not make the viewer wait for context.
 
+Do not manufacture a rhetorical question after every sentence; use one earned re-hook only when the story has actually changed.
+
 Build curiosity by progressive disclosure:
 1. HOOK: concrete surprising result or contradiction.
 2. SETUP: the viewer's intuitive expectation, in one short line.
