@@ -106,9 +106,9 @@ SCENES = [
     # without giving away the full multi-factor explanation) -> CRISIS (the
     # specific claim plus the real observed anomaly).
     ('s_clue', [
-        ('SETUP', '사람들은 보통 찬물이 먼저 얼 거라고 생각합니다.', None),
+        ('SETUP', '당연히 찬물이 먼저죠.', None),
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
-        ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 결과가 늘 같지는 않고, 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 관찰되기도 합니다.', None),
+        ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
         ('사람들은', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
@@ -126,7 +126,7 @@ SCENES = [
          'A real close-up photograph of ice-crystal frost patterns on a frozen surface.',
          '용기 표면에 맺힌 성에 결정을 크게 확대해서 보여주는 모습'),
      ]),
-    ('s_explain', [('EXPLANATION', '그 이유 중 하나는 증발입니다. 뜨거운 물은 더 많이 증발해 양이 줄 수 있고, 그러면 얼려야 할 물 자체가 더 적어집니다.', None)], [
+    ('s_explain', [('EXPLANATION', '그 이유 중 하나는 증발입니다. 뜨거운 물은 더 많이 증발해 줄어들고, 얼려야 할 물 자체가 적어집니다.', None)], [
         ('그 이유 중 하나는', '더 활발한 증발', 'evaporation_concept',
          'A schematic diagram comparing a hot-water container with heavy rising steam against a cold-water container with almost no steam.',
          '뜨거운 물 용기에서는 김이 많이 나고 찬물 용기에서는 거의 나지 않는 비교 모습'),
@@ -139,7 +139,7 @@ SCENES = [
      ]),
     # TWIST (not CRISIS -- CRISIS is already used in s_clue; a fresh role
     # name here keeps every scene's role a genuine first use).
-    ('s_crisis', [('TWIST', '하지만 증발만으로는 모든 경우를 설명하지 못합니다. 조건에 따라 결과가 달라진다면, 다른 무언가가 함께 작용할 가능성도 봐야 합니다.', None)], [
+    ('s_crisis', [('TWIST', '하지만 증발만으로는 모든 경우를 설명하지 못합니다. 다른 무언가가 함께 작용할 수 있습니다.', None)], [
         ('증발만으로는', '증발만으로는 부족', 'question_more',
          'A schematic diagram showing a small evaporation cloud icon connected by an arrow to a much larger question mark, indicating an insufficient explanation.',
          '증발 아이콘 옆에 커다란 물음표가 붙어, 설명이 충분하지 않음을 보여주는 모습'),
@@ -153,7 +153,7 @@ SCENES = [
     # SYNTHESIS (not REVEAL -- REVEAL is already used as s_clue's early
     # teaser; this is the strongest explanatory moment requirement 7 calls
     # for, combining every factor into one payoff-adjacent scene).
-    ('s_reveal', [('SYNTHESIS', '일부 조건에서는 빠른 대류로 뜨거운 물이 열을 더 빨리 잃고, 찬물은 얼기 전 과냉각을 거칩니다. 이런 요인들이 함께 작용해 순서가 뒤집히는 경우가 있지만, 한 가지 원인이 늘 정답인 것은 아닙니다.', None)], [
+    ('s_reveal', [('SYNTHESIS', '일부 조건에서는 빠른 대류로 뜨거운 물이 열을 더 빨리 잃고, 찬물은 얼기 전 과냉각을 거칩니다. 이런 요인들이 함께 작용할 수 있지만, 한 가지 원인만으로 설명되진 않습니다.', None)], [
         ('빠른 대류로', '더 빠른 열 손실', 'convection_speed',
          'A schematic diagram of convection arrows inside a container feeding into outward heat-loss arrows and a fast-dropping thermometer.',
          '대류 흐름이 열을 바깥으로 더 빠르게 내보내 온도계가 빠르게 떨어지는 모습'),
@@ -170,7 +170,7 @@ SCENES = [
          'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- converging toward an ice result while a small question marker signals that no single mechanism explains every case.',
          '증발, 대류, 과냉각 아이콘이 얼음 결과 쪽으로 모이되, 한 가지 원인으로 고정되지 않음을 작은 물음표로 함께 보여주는 모습'),
      ]),
-    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어붙는 일은 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 나타나는지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 같은 크기의 용기와 같은 양의 물로 어떤 쪽이 먼저 어는지 직접 확인해보세요.', None)], [
+    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어붙는 일은 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서인지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 같은 용기와 양으로 직접 확인해보세요.', None)], [
         ('그래서 뜨거운 물이', '뜨거운 쪽이 먼저 얼음', 'final_result',
          'A schematic diagram of a fully frozen hot-water container with a checkmark and finish flag, next to a still partly liquid cold-water container.',
          '뜨거운 물 용기는 완전히 얼어 체크 표시가 있고, 찬물 용기는 아직 액체인 최종 비교 모습'),
