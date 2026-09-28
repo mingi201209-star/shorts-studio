@@ -1,0 +1,15 @@
+# 더 뜨거운 팬에서 물방울이 오래 버티는 이유 — 자료 출처
+
+영상의 애니메이션과 도식은 직접 제작했습니다.
+
+과학 그래프:
+- Heat transfer leading to Leidenfrost effect for water at 1 atm
+- 제작자: Marco Guzman, Jr
+- Wikimedia Commons
+- 퍼블릭 도메인(PD-self)
+
+핵심 설명 참고:
+- UCSC Physics Demonstration Room — Leidenfrost Effect
+- American Physical Society Physics — The Physics of Droplets Takes Off
+
+라이덴프로스트 효과가 시작되는 정확한 온도는 팬의 재질과 표면 상태 등 조건에 따라 달라질 수 있습니다.

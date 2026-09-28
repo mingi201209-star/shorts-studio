@@ -273,3 +273,23 @@ def test_reference_layout_constants_are_unchanged():
     assert R.CAPTION_GAP_BELOW_IMAGE == 20
     assert R.CAPTION_MASK_TOP == 1230
     assert "FontSize=130" in R._TITLE_STYLE
+
+
+@requires_ffmpeg
+def test_real_video_visual_beat_preserves_internal_motion(tmp_path):
+    source = tmp_path / "moving.mp4"
+    subprocess.run(
+        ["ffmpeg","-y","-f","lavfi","-i","testsrc2=s=320x240:r=30:d=2",
+         "-an","-c:v","libx264","-pix_fmt","yuv420p",str(source)],
+        check=True,capture_output=True,
+    )
+    beat = SimpleNamespace(start=0.0, asset=str(source), asset_url=None, attribution=None)
+    clip, build = _beats_clip(tmp_path, [beat], 2.0, scene_id="moving")
+    assert clip.is_file() and clip.stat().st_size > 0
+    a = build / "moving_a.png"
+    b = build / "moving_b.png"
+    subprocess.run(["ffmpeg","-y","-ss","0.2","-i",str(clip),"-frames:v","1",str(a)],check=True,capture_output=True)
+    subprocess.run(["ffmpeg","-y","-ss","1.4","-i",str(clip),"-frames:v","1",str(b)],check=True,capture_output=True)
+    ia=np.asarray(Image.open(a).convert("RGB"),dtype=np.int16)
+    ib=np.asarray(Image.open(b).convert("RGB"),dtype=np.int16)
+    assert np.abs(ia-ib).mean() > 2.0

@@ -258,12 +258,29 @@ def _log_asset_diagnostics(scene_id:str, asset:Path)->None:
         dims=f"ffprobe failed: {e}"
     print(f"[asset] {scene_id}: {asset} ({size} bytes, {dims})")
 
+_MOVING_VISUAL_SUFFIXES={".mp4",".webm",".mov",".mkv",".ogv",".avi"}
+
+def _is_moving_visual_asset(asset:Path)->bool:
+    """Return True when a visual source has real internal motion.
+
+    Static images keep the existing -loop 1 path. Video sources use ffmpeg's
+    video demuxer so a production can show an actual demonstration instead
+    of faking cadence with crop/zoom of a still.
+    """
+    return asset.suffix.lower() in _MOVING_VISUAL_SUFFIXES
+
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
     if asset:
         _log_asset_diagnostics(scene.id,asset)
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
+        if _is_moving_visual_asset(asset):
+            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-i",str(audio),
+                 "-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),
+                 "-map","0:v:0","-map","1:a:0","-c:v","libx264","-pix_fmt","yuv420p",
+                 "-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
+        else:
+            cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
         vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
@@ -316,7 +333,11 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
             f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
         )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+        if _is_moving_visual_asset(asset):
+            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-t",str(beat_duration),
+                 "-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+        else:
+            cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
             subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
         except subprocess.CalledProcessError as e:
