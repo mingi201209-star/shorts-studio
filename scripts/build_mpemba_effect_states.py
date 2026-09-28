@@ -41,7 +41,7 @@ SCENES = [
         ('냉동실에서', '뜨거운 쪽에 먼저 성에', 'frost_first',
          'A close-up schematic showing frost forming on a hot-water container while an adjacent cold-water container remains unfrozen.',
          '냉동실 안에서 뜨거운 물 용기 표면에 먼저 성에가 맺히는 모습'),
-        ('찬물보다 먼저', '먼저 앞서는 쪽', 'frost_race',
+        ('얼기도', '먼저 앞서는 쪽', 'frost_race',
          'A schematic diagram of two containers in a race-track frame, with the hot-water container slightly ahead of the cold-water container.',
          '뜨거운 물 용기가 경주하듯 찬물 용기보다 살짝 앞서 있는 모습'),
      ]),
@@ -52,7 +52,7 @@ SCENES = [
     ('s_clue', [
         ('SETUP', '사람들은 흔히 반대로 생각합니다.', None),
         ('REVEAL', '첫 번째 단서는 바로 증발입니다.', None),
-        ('CRISIS', '온도가 높을수록 얼리는 데 더 오래 걸린다는 것이죠. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 모습이 관찰됩니다.', None),
+        ('CRISIS', '온도가 높으면 더 걸린다고 하죠. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 모습이 관찰됩니다.', None),
      ], [
         ('사람들은', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
@@ -60,7 +60,7 @@ SCENES = [
         ('첫 번째 단서는', '첫 번째 단서', 'clue_reveal',
          'A schematic diagram of a magnifying glass spotlighting a rising steam-cloud icon, labeled as clue number one.',
          '돋보기가 김이 피어오르는 아이콘을 비추며 첫 번째 단서로 표시하는 모습'),
-        ('온도가 높을수록', '틀린 통념', 'assumption_wrong',
+        ('온도가 높으면', '틀린 통념', 'assumption_wrong',
          'A schematic diagram with a large X crossed over the text "higher temperature always means a longer freezing time".',
          '온도가 높을수록 얼리는 시간이 더 길다는 통념에 크게 X표시가 된 모습'),
         ('하지만 같은 조건에서도', '같은 조건, 다른 결과', 'frost_compare',
@@ -97,30 +97,27 @@ SCENES = [
     # SYNTHESIS (not REVEAL -- REVEAL is already used as s_clue's early
     # teaser; this is the strongest explanatory moment requirement 7 calls
     # for, combining every factor into one payoff-adjacent scene).
-    ('s_reveal', [('SYNTHESIS', '빠른 대류로 뜨거운 물은 열을 더 빨리 잃고, 찬물은 얼기 전 온도가 더 내려가는 과냉각을 거치기도 합니다. 증발, 대류, 과냉각이 함께 작용해 이런 역전이 일어납니다.', None)], [
+    ('s_reveal', [('SYNTHESIS', '빠른 대류로 뜨거운 물은 열을 더 빨리 잃고, 찬물은 얼기 전 온도가 더 내려가는 과냉각을 거칩니다. 이 셋이 함께 작용해 이런 역전이 일어납니다.', None)], [
         ('빠른 대류로', '더 빠른 열 손실', 'convection_speed',
          'A schematic diagram of convection arrows inside a container feeding into outward heat-loss arrows and a fast-dropping thermometer.',
          '대류 흐름이 열을 바깥으로 더 빠르게 내보내 온도계가 빠르게 떨어지는 모습'),
-        ('뜨거운 물은', '열이 빠져나감', 'heat_loss_start',
+        ('열을 더 빨리 잃고', '열이 빠져나감', 'heat_loss_start',
          'A schematic diagram of a hot-water container with a few small heat-wave lines just beginning to leave it.',
          '뜨거운 물 용기에서 작은 열기 물결이 막 빠져나가기 시작하는 모습'),
         ('찬물은 얼기 전', '아직 어는점에서', 'cold_delay',
          'A schematic diagram of a single cold-water container sitting exactly at a freezing-point line, not yet turned to ice.',
          '찬물 용기가 어는점 선에 딱 머물러 아직 얼지 않고 있는 모습'),
-        ('과냉각을 거치기도', '과냉각의 차이', 'supercool',
+        ('과냉각을 거칩니다', '과냉각의 차이', 'supercool',
          'A schematic line-graph diagram showing cold water\'s temperature dipping below the freezing point before turning to ice, next to hot water freezing right at the freezing line.',
          '찬물의 온도 그래프가 어는점 아래로 내려갔다가 어는 과냉각 구간을 보여주는 모습'),
         ('함께 작용해', '세 가지가 함께', 'synthesis',
          'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- each connected by an arrow into one combined ice-cube result icon.',
          '증발, 대류, 과냉각 세 아이콘이 화살표로 모여 하나의 얼음 결과로 합쳐지는 모습'),
      ]),
-    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 어는 일이 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 그런지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때, 어떤 쪽이 먼저 얼지 직접 확인해보고 싶어질지도 모릅니다.', None)], [
+    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 어는 일이 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 그런지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 어떤 쪽이 먼저 얼지 직접 확인해보고 싶어질지도 모릅니다.', None)], [
         ('그래서 뜨거운 물이', '뜨거운 쪽이 먼저 얼음', 'final_result',
          'A schematic diagram of a fully frozen hot-water container with a checkmark and finish flag, next to a still partly liquid cold-water container.',
          '뜨거운 물 용기는 완전히 얼어 체크 표시가 있고, 찬물 용기는 아직 액체인 최종 비교 모습'),
-        ('찬물보다 먼저 어는', '결승선 통과', 'race_finish',
-         'A schematic diagram of a checkered finish-line flag over the hot-water container, ahead of the cold-water container.',
-         '체크무늬 결승선 깃발이 뜨거운 물 용기 위에 있어 먼저 도착했음을 보여주는 모습'),
         ('실제로 일어날 수', '실제로 확인된 일', 'confirmed_real',
          'A schematic diagram of a "REAL" stamp badge overlaid on the two containers, confirming this is a genuinely observed result.',
          '실제로 라는 도장이 두 용기 위에 찍혀 있어 진짜로 관찰된 현상임을 보여주는 모습'),
@@ -358,15 +355,6 @@ def main():
             d.line((300, 190, 340, 150), fill=WHITE, width=8)
             d.text((300, 810), '완전히 얼음', font=font(26), fill=GREEN, anchor='mm')
             d.text((680, 810), '아직 액체', font=font(26), fill=BLUE, anchor='mm')
-        elif kind == 'race_finish':
-            container(d, 300, 260, 220, 480, RED, 0.65, frozen=True)
-            container(d, 660, 340, 220, 400, BLUE, 0.65)
-            for fx in (240, 280, 320, 360):
-                for fy in range(150, 750, 60):
-                    color = INK if ((fx // 40) + (fy // 60)) % 2 == 0 else WHITE
-                    d.rectangle((fx, fy, fx + 40, fy + 60), fill=color, outline=INK, width=2)
-            d.line((260, 150, 260, 760), fill=INK, width=10)
-            d.text((300, 810), '결승선 통과', font=font(28), fill=RED, anchor='mm')
         elif kind == 'confirmed_real':
             d.rectangle((10, 150, 970, 900), fill='#f6e9b8')
             container(d, 300, 220, 260, 560, RED, 0.65, frozen=True)
