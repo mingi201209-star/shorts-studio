@@ -110,7 +110,7 @@ SCENES = [
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
-        ('하지만', '흔한 생각', 'assumption_claim',
+        ('보통은', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
          '온도가 높을수록 얼리는 시간이 더 길다는 흔한 생각을 모래시계로 표현한 모습'),
         ('찬물이 먼저라고', '찬물이 먼저라는 예상', 'assumption_cold_first',
