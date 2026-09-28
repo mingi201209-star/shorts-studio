@@ -37,7 +37,7 @@ class MpembaHookGenerator:
         texts = {
             "contradiction": "냉동실에서 뜨거운 물과 찬물, 어느 쪽이 먼저 어는지는 단순한 온도 순서대로일까요?",
             "surprising_consequence": "냉동실에서 같은 두 물통을 두었는데 뜨거운 물 쪽에 먼저 성에가 생기는 걸 상상해본 적 있나요?",
-            "counterintuitive_fact": "놀랍게도 더 뜨거운 물이, 냉동실에서 찬물보다 먼저 얼기도 합니다.",
+            "counterintuitive_fact": "놀랍게도 뜨거운 물이 찬물보다 먼저 얼기도 합니다.",
             "visible_anomaly": "냉동실에서 같은 조건의 두 물통인데 뜨거운 물 쪽 표면에 먼저 성에가 보이는 순간을 본 적 있나요?",
             "mistaken_assumption": "냉동실에서 뜨거운 물보다 먼저 어는 건 늘 찬물이라고 생각하시나요?",
             "unresolved_cause_effect": "냉동실에서 증발과 대류, 과냉각이 함께 작용하면 뜨거운 물이 먼저 얼 수 있을까요?",
@@ -57,8 +57,8 @@ def select_mpemba_hook():
         counterintuitive_fact="더 뜨거운 물이 찬물보다 먼저 얼기도 합니다",
         anomaly_fact="같은 조건의 두 물통에서도 뜨거운 물 쪽 표면에 먼저 성에가 보일 수 있습니다",
         mistaken_assumption_fact="뜨거운 물보다 먼저 어는 것은 늘 찬물이라는 생각이 항상 맞지는 않습니다",
-        cause_effect_fact="증발과 대류, 과냉각이 조건에 따라 함께 작용하면 뜨거운 물이 먼저 얼 수 있습니다",
-        payoff_text="증발, 대류, 과냉각이 조건에 따라 함께 작용해 뜨거운 물이 찬물보다 먼저 얼 수 있습니다",
+        cause_effect_fact="증발, 대류, 과냉각 같은 요인이 조건에 따라 관여할 수 있습니다",
+        payoff_text="뜨거운 물이 먼저 어는 경우는 실제로 가능하지만, 하나의 원인으로 모든 경우가 설명되지는 않습니다",
         grounded_facts=[
             "음펨바 효과는 조건에 따라 관찰 여부가 달라질 수 있습니다",
             "정확히 언제 어떤 조건에서 나타나는지는 계속 연구되고 있습니다",
@@ -67,7 +67,7 @@ def select_mpemba_hook():
     result = generate_and_judge(brief, generator=MpembaHookGenerator())
     if result.winner is None:
         raise RuntimeError("Prompt V2 produced no valid Mpemba hook")
-    required_visual_cues = ("놀랍게도", "냉동실에서", "얼기도")
+    required_visual_cues = ("놀랍게도", "찬물보다", "얼기도")
     missing = [cue for cue in required_visual_cues if result.winner.text.count(cue) != 1]
     if missing:
         raise RuntimeError(
@@ -94,7 +94,7 @@ SCENES = [
         ('놀랍게도', '두 개의 물통', 'containers',
          'A schematic diagram of a hot-water container and a cold-water container placed side by side in a freezer.',
          '뜨거운 물 용기와 찬물 용기를 냉동실 안에 나란히 놓은 모습'),
-        ('냉동실에서', '뜨거운 쪽에 먼저 성에', 'frost_first',
+        ('찬물보다', '뜨거운 쪽에 먼저 성에', 'frost_first',
          'A close-up schematic showing frost forming on a hot-water container while an adjacent cold-water container remains unfrozen.',
          '냉동실 안에서 뜨거운 물 용기 표면에 먼저 성에가 맺히는 모습'),
         ('얼기도', '먼저 앞서는 쪽', 'frost_race',
@@ -106,7 +106,7 @@ SCENES = [
     # without giving away the full multi-factor explanation) -> CRISIS (the
     # specific claim plus the real observed anomaly).
     ('s_clue', [
-        ('SETUP', '그런데 찬물이 먼저일까요?', None),
+        ('SETUP', '보통은 찬물이 먼저라고 생각하죠.', None),
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [

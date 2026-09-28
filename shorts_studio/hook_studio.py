@@ -422,8 +422,11 @@ Build curiosity by progressive disclosure:
 8. PAYOFF: close the original information gap precisely. Do not merely repeat the hook.
 
 Pacing rules:
-- The first 1 second must contain subject + surprising result, not a greeting or topic announcement.
-- By about 5 seconds, the viewer must have a concrete observation or clue.
+- The first spoken sentence must contain subject + surprising result immediately, not a greeting or topic announcement.
+- Keep the HOOK speakable in one breath. If it delays the first clue, shorten wording without weakening the claim.
+- No more than one short SETUP sentence may appear before the first REVEAL.
+- The REVEAL must have begun by 8 seconds, and the first 10 seconds must contain at least three distinct roles: HOOK, SETUP, REVEAL.
+- By about 5 seconds, the viewer should already have either a concrete observation or the setup that directly leads into the clue.
 - Put the strongest explanatory synthesis in the later half, after a partial answer and one re-hook.
 - Let important reveals land. Do not turn every sentence into a new question.
 - No sentence may exist only to say 'keep watching', 'you won't believe', or 'here is the crazy part'.
@@ -455,7 +458,7 @@ Before returning, silently cut any sentence that does not add a new fact, conseq
 
 def build_story_generation_prompt(brief: TopicBrief, selected_hook: HookCandidate,
                                   uncertainty_notes: list[str] | None = None,
-                                  target_seconds: tuple[int, int] = (45, 75)) -> str:
+                                  target_seconds: tuple[int, int] | None = None) -> str:
     """Build the actual full-script authoring prompt from the same facts the
     hook stage used, so story generation cannot drift away from hook truth.
 
@@ -476,6 +479,13 @@ def build_story_generation_prompt(brief: TopicBrief, selected_hook: HookCandidat
 
     uncertainty_notes = [n.strip() for n in (uncertainty_notes or []) if n and n.strip()]
     uncertainty_block = "\n".join(f"U{i+1}: {note}" for i, note in enumerate(uncertainty_notes)) or "없음"
+    if target_seconds is None:
+        length_instruction = "No fixed duration. End when the payoff is complete; never pad or stretch to hit a time target."
+    else:
+        length_instruction = (
+            f"{target_seconds[0]}–{target_seconds[1]} seconds is a soft production window, not a quota. "
+            "Do not pad or repeat information to reach it."
+        )
 
     return f"""[TOPIC]
 {brief.topic_id}
@@ -486,8 +496,8 @@ def build_story_generation_prompt(brief: TopicBrief, selected_hook: HookCandidat
 [SELECTED HOOK — preserve its factual meaning]
 {selected_hook.text}
 
-[TARGET LENGTH]
-{target_seconds[0]}–{target_seconds[1]} seconds. Do not pad to reach a duration.
+[LENGTH]
+{length_instruction}
 
 [CONFIRMED INPUT FACTS]
 {chr(10).join(fact_lines)}

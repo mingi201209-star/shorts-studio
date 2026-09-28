@@ -386,6 +386,8 @@ def test_story_prompt_v3_encodes_retention_and_truth_contract():
         "Never upgrade a possibility",
         "No generic CTA",
         "Do not repeat the same fact",
+        "The REVEAL must have begun by 8 seconds",
+        "first 10 seconds must contain at least three distinct roles",
     ]
     for phrase in required:
         assert phrase in system
@@ -407,7 +409,8 @@ def test_story_generation_prompt_preserves_facts_uncertainty_and_selected_hook()
     assert brief.payoff_text in prompt
     assert "F1:" in prompt
     assert "U1:" in prompt
-    assert "45–75 seconds" in prompt
+    assert "No fixed duration" in prompt
+    assert "never pad or stretch" in prompt
 
 
 def test_story_generation_prompt_rejects_hook_strategy_without_fact():
@@ -419,3 +422,15 @@ def test_story_generation_prompt_rejects_hook_strategy_without_fact():
     )
     with pytest.raises(ValueError):
         build_story_generation_prompt(brief, selected)
+
+
+def test_story_generation_prompt_supports_optional_soft_window_without_padding():
+    brief = _full_brief()
+    selected = HookCandidate(
+        strategy="contradiction",
+        text="생각과 달리 뜨거운 물을 부으면 멀쩡한 유리컵도 얼음물에서는 깨질 수 있습니다",
+        grounded_in=brief.contradiction_fact,
+    )
+    prompt = build_story_generation_prompt(brief, selected, target_seconds=(30, 60))
+    assert "30–60 seconds is a soft production window, not a quota" in prompt
+    assert "Do not pad or repeat information" in prompt
