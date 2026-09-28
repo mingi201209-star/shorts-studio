@@ -62,12 +62,12 @@ class LeidenfrostHookGenerator:
     def generate(self,brief:TopicBrief)->list[HookCandidate]:
         facts=brief.fact_by_strategy()
         texts={
-            "contradiction":"팬이 더 뜨거워질수록 물방울이 오히려 더 오래 남을 수 있습니다.",
-            "surprising_consequence":"아주 뜨거운 팬에서는 물방울이 사라지지 않고 미끄러지듯 도망갑니다.",
-            "counterintuitive_fact":"더 뜨거운 팬 위의 물방울이 덜 뜨거운 팬보다 오래 버티기도 합니다.",
-            "visible_anomaly":"아주 뜨거운 팬에 떨어진 물방울은 바닥에 붙지 않고 둥글게 떠서 움직입니다.",
-            "mistaken_assumption":"팬이 뜨거울수록 물은 무조건 더 빨리 사라진다고 생각하기 쉽습니다.",
-            "unresolved_cause_effect":"팬이 너무 뜨거우면 물방울 아래에 기체층이 생겨 직접 접촉이 줄어듭니다.",
+            "contradiction":"놀랍게도 팬이 더 뜨거워질수록 물방울이 더 오래 남을 수 있습니다.",
+            "surprising_consequence":"놀랍게도 아주 뜨거운 팬에서는 물방울이 사라지지 않고 미끄러지듯 움직입니다.",
+            "counterintuitive_fact":"생각과 달리 더 뜨거운 팬 위의 물방울이 덜 뜨거운 팬보다 오래 버티기도 합니다.",
+            "visible_anomaly":"이상하게도 아주 뜨거운 팬에 떨어진 물방울은 바닥에 붙지 않고 둥글게 떠서 움직입니다.",
+            "mistaken_assumption":"하지만 팬이 뜨거울수록 물이 무조건 더 빨리 사라지는 것은 아닙니다.",
+            "unresolved_cause_effect":"그런데 팬이 너무 뜨거우면 물방울 아래에 기체층이 생겨 직접 접촉이 줄어듭니다.",
         }
         return [HookCandidate(strategy=s,text=texts[s],grounded_in=facts[s]) for s in texts]
 
@@ -93,6 +93,15 @@ def topic_brief()->TopicBrief:
 def select_hook():
     brief=topic_brief()
     result=generate_and_judge(brief,generator=LeidenfrostHookGenerator())
+    for verdict in result.verdicts:
+        print(
+            "PROMPT_V2_VERDICT="
+            + verdict.candidate.strategy
+            + ":"
+            + verdict.status
+            + ":"
+            + (verdict.reason or f"score={verdict.score}")
+        )
     if result.winner is None:raise RuntimeError("Prompt V2 produced no Leidenfrost hook")
     print(f"PROMPT_V2_JUDGE={result.judge_name}")
     print(f"PROMPT_V2_SELECTED_STRATEGY={result.winner.strategy}")
