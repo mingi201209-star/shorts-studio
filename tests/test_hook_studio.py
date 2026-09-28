@@ -386,8 +386,9 @@ def test_story_prompt_v3_encodes_retention_and_truth_contract():
         "Never upgrade a possibility",
         "No generic CTA",
         "Do not repeat the same fact",
-        "The REVEAL must have begun by 8 seconds",
-        "first 10 seconds must contain at least three distinct roles",
+        "Between 3 and 8 seconds, start a real tension/state-change beat",
+        "Start the first REVEAL or PAYOFF after 8 seconds and no later than 12 seconds",
+        "first 10 seconds must contain at least three distinct narrative roles",
     ]
     for phrase in required:
         assert phrase in system

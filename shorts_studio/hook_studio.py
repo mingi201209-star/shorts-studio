@@ -425,7 +425,9 @@ Pacing rules:
 - The first spoken sentence must contain subject + surprising result immediately, not a greeting or topic announcement.
 - Keep the HOOK speakable in one breath. If it delays the first clue, shorten wording without weakening the claim.
 - No more than one short SETUP sentence may appear before the first REVEAL.
-- The REVEAL must have begun by 8 seconds, and the first 10 seconds must contain at least three distinct roles: HOOK, SETUP, REVEAL.
+- Between 3 and 8 seconds, start a real tension/state-change beat (for example a contradiction, question, CRISIS, or INVESTIGATION).
+- Start the first REVEAL or PAYOFF after 8 seconds and no later than 12 seconds.
+- The first 10 seconds must contain at least three distinct narrative roles.
 - By about 5 seconds, the viewer should already have either a concrete observation or the setup that directly leads into the clue.
 - Put the strongest explanatory synthesis in the later half, after a partial answer and one re-hook.
 - Let important reveals land. Do not turn every sentence into a new question.
