@@ -172,6 +172,64 @@ def save_panel(path:Path,kind:str,font_path:str):
         d.text((490,830),"열 전달이 방해됨",font=f34(),fill=INK,anchor="mm")
     elif kind=="shield":
         pan(d,690);drop(d,490,410,110,shadow=False);d.arc((270,510,710,760),180,360,fill=BLUE,width=24);d.text((490,810),"증기 방패",font=font(font_path,42),fill=BLUE,anchor="mm")
+    elif kind=="vapor_forming":
+        # Mechanism step 1: the very bottom flashes into vapor while the
+        # droplet is still close to the plate.
+        pan(d,700);drop(d,490,500,125,shadow=False)
+        d.arc((340,570,640,735),180,360,fill=GREY,width=18)
+        for x in (390,455,525,590):
+            d.line((x,670,x,590),fill=GREY,width=10)
+            d.polygon([(x,565),(x-14,595),(x+14,595)],fill=GREY)
+        d.text((490,825),"바닥의 물 → 수증기",font=f34(),fill=INK,anchor="mm")
+    elif kind=="lifted_gap":
+        # Mechanism step 2: show the new physical gap, not the same vapor
+        # cross-section with different words.
+        pan(d,735);drop(d,490,390,115,shadow=False)
+        d.rounded_rectangle((315,610,665,665),radius=18,fill="#dce6ec",outline=GREY,width=5)
+        d.line((245,500,245,610),fill=BLUE,width=10);d.polygon([(245,480),(225,520),(265,520)],fill=BLUE)
+        d.line((735,610,735,500),fill=BLUE,width=10);d.polygon([(735,480),(715,520),(755,520)],fill=BLUE)
+        d.text((490,555),"접촉 끊김",font=f28(),fill=BLUE,anchor="mm")
+        d.text((490,835),"물방울이 팬에서 살짝 뜸",font=f34(),fill=INK,anchor="mm")
+    elif kind=="heat_barrier":
+        # Strong heat below, but arrows visibly stop at the vapor cushion.
+        pan(d,735);drop(d,490,365,105,shadow=False)
+        d.rounded_rectangle((300,600,680,670),radius=20,fill="#dce6ec",outline=BLUE,width=7)
+        for x in (355,445,535,625):
+            d.line((x,800,x,690),fill=RED,width=15)
+            d.polygon([(x,675),(x-18,705),(x+18,705)],fill=RED)
+            d.line((x,590,x,535),fill=GREY,width=7)
+        d.line((265,600,715,600),fill=BLUE,width=12)
+        d.text((490,850),"강한 열 ≠ 직접 접촉",font=f34(),fill=INK,anchor="mm")
+    elif kind=="insulation_path":
+        # Visualize the thermal resistance as a long detour through gas.
+        d.rounded_rectangle((100,220,880,760),radius=32,fill="#eef2f4",outline=INK,width=8)
+        d.rounded_rectangle((150,540,830,680),radius=26,fill="#f1a45a",outline=RED,width=7)
+        d.text((490,610),"뜨거운 팬",font=f34(),fill=WHITE,anchor="mm")
+        d.rounded_rectangle((250,380,730,500),radius=26,fill="#dce6ec",outline=BLUE,width=7)
+        d.text((490,440),"수증기층",font=f34(),fill=INK,anchor="mm")
+        d.ellipse((365,235,615,375),fill="#8ec5ff",outline=BLUE,width=7)
+        d.line((690,610,790,610),fill=RED,width=14);d.line((790,610,790,300),fill=RED,width=14);d.line((790,300,635,300),fill=RED,width=14)
+        d.polygon([(620,300),(655,280),(655,320)],fill=RED)
+        d.text((490,835),"열이 바로 들어가지 못함",font=f34(),fill=INK,anchor="mm")
+    elif kind=="motion_from_vapor":
+        # Asymmetric vapor escape turns the mechanism into sideways motion.
+        pan(d,705);drop(d,430,410,100,shadow=False)
+        for x,dx in ((360,-80),(420,-30),(500,65)):
+            d.line((x,610,x+dx,520),fill=GREY,width=10)
+            d.polygon([(x+dx,500),(x+dx-18,535),(x+dx+18,530)],fill=GREY)
+        d.line((540,400,800,400),fill=BLUE,width=16);d.polygon([(830,400),(785,375),(785,425)],fill=BLUE)
+        d.text((490,835),"빠져나가는 증기 → 옆으로 이동",font=f34(),fill=INK,anchor="mm")
+    elif kind=="cause_chain":
+        # Final recap is a causal chain, not a replay of the opening
+        # side-by-side comparison.
+        labels=[("너무 뜨거운 팬",RED),("수증기층 생성",GREY),("직접 접촉 감소",BLUE),("더 오래 지속",INK)]
+        ys=[190,370,550,730]
+        for i,(label,color) in enumerate(labels):
+            d.rounded_rectangle((210,ys[i]-55,770,ys[i]+55),radius=24,fill=WHITE,outline=color,width=8)
+            d.text((490,ys[i]),label,font=f34(),fill=color,anchor="mm")
+            if i<len(labels)-1:
+                d.line((490,ys[i]+65,490,ys[i+1]-80),fill=INK,width=9)
+                d.polygon([(490,ys[i+1]-60),(470,ys[i+1]-92),(510,ys[i+1]-92)],fill=INK)
     elif kind=="payoff":
         pan(d,680);drop(d,490,410,105,steam=True);d.text((490,180),"더 뜨거움",font=f34(),fill=RED,anchor="mm")
         d.text((490,800),"↓",font=font(font_path,56),fill=INK,anchor="mm");d.text((490,860),"수증기층 때문에 더 오래 버팀",font=f34(),fill=INK,anchor="mm")
@@ -214,7 +272,7 @@ def main():
     chart_src=download_commons(CHART_FILE,assets/"source"/"heat_transfer_public_domain.png")
     chart=assets/"heat_transfer_evidence.png";chart_panel(chart_src,chart,args.font)
 
-    kinds=["hover_close","hotter_compare","expected_faster","skitter_path","contact_boil","vapor_layer","heat_block","shield","payoff"]
+    kinds=["hover_close","hotter_compare","expected_faster","skitter_path","contact_boil","vapor_layer","heat_block","shield","vapor_forming","lifted_gap","heat_barrier","insulation_path","motion_from_vapor","cause_chain","payoff"]
     panels={}
     for kind in kinds:
         p=assets/f"{kind}.png";save_panel(p,kind,args.font);panels[kind]=p
@@ -232,16 +290,16 @@ def main():
         ("약간 뜨거울","contact_boil",panels["contact_boil"],"an educational diagram of water directly contacting a hot pan and boiling rapidly","물이 팬에 직접 닿아 빠르게 끓고 증발하는 모습"),
         ("그런데 왜","vapor_layer",panels["vapor_layer"],"a clear diagram of a water droplet floating above a hot pan on a thin vapor layer","물방울 아래에 얇은 수증기층이 생겨 팬과 떨어진 모습")]),
       ("s_explain",[("EXPLANATION","팬에 닿은 물의 맨 아래가 순간적으로 수증기가 됩니다. 이 얇은 수증기층이 물방울을 팬에서 살짝 띄웁니다.",None)],[
-        ("맨 아래가","vapor_layer",panels["vapor_layer"],"a clear educational diagram of vapor forming under a water droplet on a hot pan","물방울 아래에서 수증기가 생기는 모습"),
-        ("살짝 띄웁니다","heat_block",panels["heat_block"],"an educational heat-transfer diagram showing a vapor gap separating a water droplet from a hot pan","수증기층이 물방울과 팬의 직접 접촉을 막는 모습")]),
+        ("맨 아래가","vapor_forming",panels["vapor_forming"],"an educational cross-section showing the bottom of a water droplet flashing into vapor above a hot pan","물방울 맨 아래의 물이 팬 가까이에서 수증기로 바뀌는 과정"),
+        ("살짝 띄웁니다","lifted_gap",panels["lifted_gap"],"an educational diagram showing the water droplet physically lifted away from the hot pan by a new vapor gap","수증기층이 생긴 뒤 물방울과 팬 사이에 실제 간격이 생긴 모습")]),
       ("s_twist",[("TWIST","열은 더 센데, 물방울은 팬에 직접 닿지 않게 된 겁니다.",None)],[
-        ("열은 더","heat_block",panels["heat_block"],"an educational diagram showing strong heat below a vapor-insulated water droplet","팬의 열은 강하지만 수증기층 때문에 물방울에 바로 전달되지 않는 모습"),
+        ("열은 더","heat_barrier",panels["heat_barrier"],"an educational diagram showing strong heat arrows stopping at a vapor barrier under a hovering water droplet","팬의 열은 강하지만 수증기층에서 직접 전달이 막히는 대비"),
         ("직접 닿지","shield",panels["shield"],"an educational diagram of a blue vapor shield between a droplet and a hot pan","수증기층이 방패처럼 물방울과 팬 사이를 막는 모습")]),
       ("s_synthesis",[("SYNTHESIS","이 기체층이 열 전달을 방해해서 물방울은 미끄러지듯 움직이고 더 천천히 사라집니다.",None)],[
-        ("열 전달을","shield",panels["shield"],"an educational diagram showing an insulating vapor cushion beneath a water droplet","수증기층이 열 전달을 막는 모습"),
-        ("미끄러지듯","skitter_path",panels["skitter_path"],"an educational diagram showing a water droplet moving sideways across a hot pan","물방울이 팬 표면을 미끄러지듯 움직이는 모습")]),
+        ("열 전달을","insulation_path",panels["insulation_path"],"an educational thermal-path diagram showing heat taking an indirect route through a vapor layer before reaching the droplet","수증기층 때문에 팬의 열이 물방울에 곧바로 전달되지 못하는 경로"),
+        ("미끄러지듯","motion_from_vapor",panels["motion_from_vapor"],"an educational diagram showing asymmetric vapor escaping beneath a droplet and pushing it sideways across a hot pan","물방울 아래에서 빠져나가는 증기가 옆 방향 움직임으로 이어지는 모습")]),
       ("s_payoff",[("PAYOFF","즉, 더 뜨거워서 오래 버티는 게 아니라 너무 뜨거워 생긴 수증기층이 방패가 되는 겁니다.",None)],[
-        ("더 뜨거워서","hotter_compare",panels["hotter_compare"],"a side-by-side comparison of water behavior on two differently heated pans","덜 뜨거운 팬과 아주 뜨거운 팬에서 물방울의 차이를 다시 비교한 모습"),
+        ("더 뜨거워서","cause_chain",panels["cause_chain"],"an educational causal chain from an extremely hot pan to vapor-layer formation, reduced contact, and longer droplet lifetime","너무 뜨거운 팬에서 수증기층 생성, 접촉 감소, 더 긴 지속 시간으로 이어지는 인과관계"),
         ("수증기층이","payoff",panels["payoff"],"an educational payoff diagram showing a water droplet lasting above a very hot pan because of a vapor layer","너무 뜨거워 생긴 수증기층 때문에 물방울이 오래 버티는 최종 원리")]),
     ]
 
