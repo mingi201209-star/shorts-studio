@@ -39,6 +39,12 @@ jobs:
         run: |
           set -o pipefail
           python scripts/build_mpemba_effect_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee mpemba-generator.log
+      - name: Verify real-photo assets were integrated
+        run: |
+          grep -q '^PHOTO_ASSETS_READY=' mpemba-generator.log
+          test -s assets/mpemba_effect/source_photos/frost_window_cc0.jpg
+          test -s assets/mpemba_effect/source_photos/boiling_water_steam_cc0.jpg
+          test -s assets/mpemba_effect/source_photos/freezer_ice_tray_cc0.jpg
       - name: Verify Prompt V2 actually selected the production hook
         run: |
           grep -q '^PROMPT_V2_JUDGE=' mpemba-generator.log
@@ -157,6 +163,13 @@ jobs:
               if fp.is_file():
                   dump_jpeg(f"evt_{e['scene']}_b{e['beat']}_t{e['start']:.1f}s", Image.open(fp))
           PY
+      - name: Prepare publish description with real-photo sources
+        if: success()
+        run: |
+          cp examples/mpemba_effect_upload_description.txt dist/upload-description.txt
+          grep -q 'Ice crystals on a windowpane' dist/upload-description.txt
+          grep -q '20250609 steam' dist/upload-description.txt
+          grep -q 'Bottles of water and a tray of ice cubes' dist/upload-description.txt
       - uses: actions/upload-artifact@v4
         if: success()
         with:
@@ -169,6 +182,7 @@ jobs:
             build/*.timing.json
             mpemba-generator.log
             mpemba-render.log
+            assets/mpemba_effect/source_photos/
       - uses: actions/upload-artifact@v4
         if: failure() || cancelled()
         with:

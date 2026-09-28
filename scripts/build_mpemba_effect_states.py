@@ -21,9 +21,9 @@ progression) actually runs as a hard pre-render gate -- not just tested in
 isolation. verify_curiosity_maintained (Story Prompt V2, hook_studio.py) is
 also asserted below before the manifest is written.
 """
-import argparse, colorsys, hashlib, json, math
+import argparse, colorsys, hashlib, json, math, time, urllib.parse, urllib.request
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 from shorts_studio.hook_studio import HookCandidate, TopicBrief, generate_and_judge
 
 
@@ -122,7 +122,7 @@ SCENES = [
          'A schematic diagram comparing two identical containers in the same freezer, where only the hot-water container already shows frost.',
          '같은 냉동실, 같은 크기의 용기인데 뜨거운 물 쪽에만 성에가 먼저 생긴 비교 모습'),
         ('성에가 먼저 맺히는', '성에 확대', 'frost_zoom',
-         'A close-up macro schematic of ice-crystal frost patterns forming on a cold surface.',
+         'A real close-up photograph of ice-crystal frost patterns on a frozen surface.',
          '용기 표면에 맺힌 성에 결정을 크게 확대해서 보여주는 모습'),
      ]),
     ('s_explain', [('EXPLANATION', '그 이유 중 하나는 증발입니다. 뜨거운 물은 증발로 양이 줄어들어서, 얼려야 할 물 자체가 더 적어집니다.', None)], [
@@ -130,7 +130,7 @@ SCENES = [
          'A schematic diagram comparing a hot-water container with heavy rising steam against a cold-water container with almost no steam.',
          '뜨거운 물 용기에서는 김이 많이 나고 찬물 용기에서는 거의 나지 않는 비교 모습'),
         ('뜨거운 물은', '증발로 줄어드는 양', 'evaporation',
-         'A schematic diagram of a hot-water container with rising steam arrows and a dropping water-level line, illustrating evaporation.',
+         'A real photograph of hot water visibly producing steam, framed with an educational overlay that connects evaporation to a smaller remaining amount of water.',
          '뜨거운 물 용기에서 김이 피어오르며 물의 높이가 낮아지는 증발 모습'),
         ('얼려야 할 물 자체가', '더 적어진 물의 양', 'volume_less',
          'A schematic bar-chart diagram comparing a shorter remaining hot-water volume bar against a taller original cold-water volume bar.',
@@ -183,13 +183,85 @@ SCENES = [
          'A schematic diagram of a magnifying glass over the text "results vary by condition", representing ongoing scientific study.',
          '조건마다 결과가 다르다는 문구를 돋보기로 들여다보는, 아직 연구 중임을 보여주는 모습'),
         ('다음에 얼음을 얼릴 때', '다음 실험', 'invite_setup',
-         'A schematic diagram of an ice-cube tray icon next to a small clock, suggesting trying this again next time.',
+         'A real photograph inside a household freezer showing water bottles and an ice-cube tray, grounding the invitation to try the experiment.',
          '얼음 트레이와 작은 시계 아이콘으로 다음에 다시 해보자는 뜻을 보여주는 모습'),
         ('직접 확인해보세요', '직접 확인해보기', 'invite',
          'A schematic diagram of two simple water containers with a question mark between them, inviting the viewer to try the experiment themselves.',
          '두 개의 물통 사이에 물음표가 있어 직접 실험해보도록 초대하는 모습'),
      ]),
 ]
+
+PHOTO_SOURCES = {
+    'frost_zoom': {
+        'commons_file': 'Ice crystals on a windowpane (Unsplash).jpg',
+        'local_name': 'frost_window_cc0.jpg',
+        'source_page': 'https://commons.wikimedia.org/wiki/File:Ice_crystals_on_a_windowpane_(Unsplash).jpg',
+        'license': 'CC0 1.0',
+        'credit': 'Wikimedia Commons · Ice crystals on a windowpane (Unsplash) · CC0 1.0',
+        'qa_label': 'a real close-up photograph of frost and ice crystals on a window',
+        'overlay': '실제 얼음 결정',
+    },
+    'evaporation': {
+        'commons_file': '20250609 steam.jpg',
+        'local_name': 'boiling_water_steam_cc0.jpg',
+        'source_page': 'https://commons.wikimedia.org/wiki/File:20250609_steam.jpg',
+        'license': 'CC0 1.0',
+        'credit': 'Wikimedia Commons · 20250609 steam · CC0 1.0',
+        'qa_label': 'a real photograph of hot water visibly producing steam',
+        'overlay': '실제 수증기 · 물의 양 ↓',
+    },
+    'invite_setup': {
+        'commons_file': 'Bottles of water and a tray of ice cubes inside a fridge freezer.jpg',
+        'local_name': 'freezer_ice_tray_cc0.jpg',
+        'source_page': 'https://commons.wikimedia.org/wiki/File:Bottles_of_water_and_a_tray_of_ice_cubes_inside_a_fridge_freezer.jpg',
+        'license': 'CC0 1.0',
+        'credit': 'Philsacor / Wikimedia Commons · CC0 1.0',
+        'qa_label': 'a real photograph inside a freezer showing water bottles and an ice-cube tray',
+        'overlay': '실제 냉동실 · 얼음 트레이',
+    },
+}
+
+
+def _download_photo(spec, photo_dir: Path) -> Path:
+    """Fetch one CC0 production photo with retries and image verification."""
+    photo_dir.mkdir(parents=True, exist_ok=True)
+    path = photo_dir / spec['local_name']
+    if path.is_file() and path.stat().st_size > 0:
+        try:
+            with Image.open(path) as probe:
+                probe.verify()
+            return path
+        except Exception:
+            path.unlink(missing_ok=True)
+
+    encoded = urllib.parse.quote(spec['commons_file'].replace(' ', '_'), safe='._-()')
+    url = f'https://commons.wikimedia.org/wiki/Special:Redirect/file/{encoded}'
+    last_error = None
+    for attempt in range(3):
+        try:
+            request = urllib.request.Request(
+                url,
+                headers={'User-Agent': 'shorts-studio/0.1 (production photo fetch; Wikimedia Commons)'},
+            )
+            with urllib.request.urlopen(request, timeout=30) as response:
+                data = response.read()
+            if len(data) < 10_000:
+                raise RuntimeError(f'photo download suspiciously small: {len(data)} bytes')
+            path.write_bytes(data)
+            with Image.open(path) as probe:
+                probe.verify()
+                if probe.width < 300 or probe.height < 300:
+                    raise RuntimeError(f'photo resolution too small: {probe.size}')
+            return path
+        except Exception as exc:
+            last_error = exc
+            path.unlink(missing_ok=True)
+            if attempt < 2:
+                time.sleep(1 + attempt)
+    raise RuntimeError(
+        f"failed to fetch required production photo {spec['commons_file']!r} after 3 attempts: {last_error}"
+    )
+
 
 NEG = ['a photograph of a cat', 'a landscape photograph of mountains']
 
@@ -224,6 +296,10 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument('--font', required=True); args = ap.parse_args()
     font = lambda n: ImageFont.truetype(args.font, n)
     assets = Path('assets/mpemba_effect'); assets.mkdir(exist_ok=True)
+    photo_dir = assets / 'source_photos'
+    photo_paths = {kind: _download_photo(spec, photo_dir) for kind, spec in PHOTO_SOURCES.items()}
+    print('PHOTO_ASSETS_READY=' + ','.join(sorted(photo_paths)))
+
 
     def container(d, cx, top, w, h, color, level_frac, frost=False, frozen=False, thermo=None):
         bottom = top + h
@@ -252,7 +328,16 @@ def main():
         d.text((490, 55), title, font=font(40), fill=INK, anchor='mm')
         d.rounded_rectangle((40, 88, 940, 146), radius=14, fill=STATE_COLORS[title], outline=INK, width=4)
 
-        if kind == 'containers':
+        if kind in PHOTO_SOURCES:
+            spec = PHOTO_SOURCES[kind]
+            with Image.open(photo_paths[kind]) as src:
+                photo = ImageOps.fit(src.convert('RGB'), (840, 620), method=Image.Resampling.LANCZOS)
+            im.paste(photo, (70, 175))
+            d.rectangle((70, 175, 910, 795), outline=INK, width=6)
+            d.rounded_rectangle((120, 705, 860, 780), radius=18, fill='black')
+            d.text((490, 742), spec['overlay'], font=font(30), fill=WHITE, anchor='mm')
+            d.text((490, 840), '실제 사진', font=font(28), fill=INK, anchor='mm')
+        elif kind == 'containers':
             container(d, 300, 220, 260, 560, RED, 0.7, thermo=RED)
             container(d, 680, 220, 260, 560, BLUE, 0.7, thermo=BLUE)
             d.text((300, 810), '뜨거운 물', font=font(30), fill=RED, anchor='mm')
@@ -301,7 +386,7 @@ def main():
             container(d, 680, 220, 260, 560, BLUE, 0.65, frost=False)
             d.text((300, 810), '먼저 성에', font=font(28), fill=RED, anchor='mm')
             d.text((680, 810), '아직 그대로', font=font(28), fill=BLUE, anchor='mm')
-        elif kind == 'frost_zoom':
+        elif kind == 'frost_zoom_schematic_fallback':
             for cx, cy, r in [(300, 300, 90), (620, 260, 70), (470, 480, 110), (720, 550, 75), (250, 620, 65), (600, 720, 85)]:
                 for ang in range(0, 360, 60):
                     ex = cx + r * math.cos(math.radians(ang)); ey = cy + r * math.sin(math.radians(ang))
@@ -320,7 +405,7 @@ def main():
             d.line(pts, fill='#c7d0d6', width=5)
             d.text((300, 810), '김이 많이 남', font=font(26), fill=RED, anchor='mm')
             d.text((680, 810), '거의 나지 않음', font=font(26), fill=BLUE, anchor='mm')
-        elif kind == 'evaporation':
+        elif kind == 'evaporation_schematic_fallback':
             container(d, 490, 260, 320, 520, RED, 0.55, thermo=RED)
             for i, sx in enumerate([-70, 0, 70]):
                 x = 490 + sx
@@ -432,7 +517,7 @@ def main():
             d.text((490, 430), '조건마다 결과가 다름', font=font(32), fill=INK, anchor='mm')
             d.ellipse((640, 560, 800, 720), outline=INK, width=14)
             d.line((760, 700, 860, 800), fill=INK, width=16)
-        elif kind == 'invite_setup':
+        elif kind == 'invite_setup_schematic_fallback':
             cx, cy = 400, 460
             d.rounded_rectangle((cx - 160, cy - 140, cx + 160, cy + 140), radius=20, outline=INK, width=10, fill='#dce6ec')
             for gx in range(-2, 3):
@@ -450,7 +535,8 @@ def main():
         else:
             raise ValueError(kind)
 
-        d.text((935, 915), '개념도 · 크기 비례 아님', font=font(19), fill=GREY, anchor='rm')
+        footer = '실제 사진 · Wikimedia Commons · CC0' if kind in PHOTO_SOURCES else '개념도 · 크기 비례 아님'
+        d.text((935, 915), footer, font=font(19), fill=GREY, anchor='rm')
         return im
 
     scenes = []
@@ -459,7 +545,7 @@ def main():
         for bi, (cue, label, kind, info_en, req_ko) in enumerate(states):
             im = panel(label, kind)
             path = assets / f'evidence_{si:02d}_{bi:02d}.png'; im.save(path)
-            beats.append({
+            beat = {
                 'start': float(bi * 2), 'asset': str(path),
                 'visual_change': {
                     'kind': 'concept' if bi == 0 else 'state', 'concept_id': sid,
@@ -467,10 +553,17 @@ def main():
                     'added_information': info_en, 'source_sha256': hashlib.sha256(path.read_bytes()).hexdigest(),
                 },
                 'visual_qa_requirements': [req_ko],
-                'visual_qa_labels': [info_en, f'an educational schematic diagram about {kind.replace("_", " ")}'],
+                'visual_qa_labels': (
+                    [info_en, PHOTO_SOURCES[kind]['qa_label']]
+                    if kind in PHOTO_SOURCES
+                    else [info_en, f'an educational schematic diagram about {kind.replace("_", " ")}']
+                ),
                 'visual_qa_negative_labels': NEG,
                 'info_role': kind,
-            })
+            }
+            if kind in PHOTO_SOURCES:
+                beat['attribution'] = PHOTO_SOURCES[kind]['credit']
+            beats.append(beat)
         narration_plan = []
         for role, text, hook_type in phrases:
             phrase = {'role': role, 'text': text, 'focus': role in ('HOOK', 'REVEAL', 'SYNTHESIS', 'PAYOFF')}
