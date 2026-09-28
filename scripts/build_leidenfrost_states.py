@@ -123,6 +123,13 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.text((720,260),"그런데",font=f38,fill=BLUE,anchor="mm")
         d.text((260,480),"더 빨리\n사라져야?",font=f38,fill=INK,anchor="mm",align="center")
         d.text((720,475),"왜\n떠 있지?",font=f52,fill=INK,anchor="mm",align="center")
+    elif kind=="vapor_hint":
+        d.rectangle((45,45,935,905),fill="#0f1f2a")
+        hot_plate(d,735)
+        droplet(d,490,345,120,fill=BLUE)
+        d.ellipse((415,565,565,655),fill=CYAN,outline=WHITE,width=7)
+        d.text((490,610),"수증기?",font=f38,fill=INK,anchor="mm")
+        d.text((490,210),"물방울 밑에 생기는 것",font=f38,fill=WHITE,anchor="mm")
     elif kind=="vapor_birth":
         hot_plate(d,690); droplet(d,490,390,110)
         for x in (390,450,510,570,630):
@@ -184,6 +191,14 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.arc((235,255,790,720),start=195,end=35,fill=CYAN,width=20)
         d.polygon([(785,380),(725,355),(745,420)],fill=CYAN)
         d.text((490,760),"팬 위를 미끄러짐",font=f38,fill=WHITE,anchor="mm")
+    elif kind=="support_force":
+        d.rectangle((45,45,935,905),fill="#182d38")
+        d.ellipse((275,140,705,570),fill=BLUE,outline=WHITE,width=10)
+        d.rounded_rectangle((250,610,730,685),radius=28,fill=CYAN,outline=WHITE,width=6)
+        for x in (340,490,640):
+            d.line((x,760,x,700),fill=YELLOW,width=18)
+            d.polygon([(x,675),(x-24,715),(x+24,715)],fill=YELLOW)
+        d.text((490,820),"수증기가 아래에서 받쳐 줌",font=f38,fill=WHITE,anchor="mm")
     elif kind=="name":
         d.rectangle((45,45,935,905),fill="#101820")
         d.text((490,235),"Leidenfrost",font=f52,fill=WHITE,anchor="mm")
@@ -278,8 +293,8 @@ def main():
 
     kinds=[
         "hook_result","expectation","question_gap","vapor_birth","vapor_expand","vapor_cushion",
-        "no_contact","contact_gap","heat_blocked","paradox_shield","protected_drop",
-        "glide","name","threshold","payoff",
+        "vapor_hint","no_contact","contact_gap","heat_blocked","paradox_shield","protected_drop",
+        "glide","support_force","name","threshold","payoff",
     ]
     png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
 
@@ -313,28 +328,32 @@ def main():
     plans=[
         ("s_hook",[
             phrase("HOOK",hook,winner.strategy),
-            phrase("CRISIS","더 뜨거우면 더 빨리 사라져야 할 것 같은데, 왜 반대일까요?"),
+            phrase("CRISIS","그런데 더 뜨거운데, 왜 안 사라질까요?"),
+            phrase("REVEAL","답은 물방울 밑의 수증기입니다."),
         ],[
             beat(source_video,hook.split()[0],"real_300c_result","hook_result","video","concept",
                  "a real scientific experiment showing water transforming into a Leidenfrost droplet on a 300 degree Celsius superheated plate",
                  f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",VIDEO_ATTRIBUTION),
-            beat(png["hook_result"],hook_result_cue,"levitating_result","hook_diagram","result","concept",
+            beat(png["hook_result"],"이상하게도","levitating_result","hook_diagram","result","concept",
                  "an educational diagram of a water droplet floating above a red hot plate instead of vanishing",
                  "뜨거운 판 위에서 물방울이 바로 사라지지 않고 떠 있는 결과를 크게 보여주는 모습"),
-            beat(png["expectation"],"더 뜨거우면","intuitive_expectation","expectation","hotter_vanishes","concept",
+            beat(png["expectation"],"더 뜨거운데","intuitive_expectation","expectation","hotter_vanishes","concept",
                  "an educational diagram showing the expectation that hotter surface means faster evaporation",
                  "더 뜨거우면 물이 더 빨리 사라질 것이라는 직관적 예상을 보여주는 모습"),
-            beat(png["question_gap"],"왜 반대일까요","open_question","question_gap","why_reverse","concept",
+            beat(png["question_gap"],"왜 안 사라질까요","open_question","question_gap","why_reverse","concept",
                  "a bold split screen educational graphic asking why a hotter plate can leave a droplet floating",
                  "더 뜨거운데 왜 물방울이 떠 있는지 질문을 두 갈래 대비 화면으로 보여주는 모습"),
+            beat(png["vapor_hint"],"수증기입니다","early_vapor_answer","vapor_hint","hint","concept",
+                 "a dark educational hint showing a single vapor pocket beneath a floating water droplet",
+                 "부분 정답으로 물방울 밑에 수증기가 있다는 사실만 먼저 보여주는 모습"),
         ]),
         ("s_reveal",[
-            phrase("REVEAL","물방울 밑에서는 수증기가 먼저 생겨 아주 얇은 쿠션을 만듭니다."),
+            phrase("INVESTIGATION","그 수증기가 물방울 아래로 퍼지면서 아주 얇은 쿠션을 만듭니다."),
         ],[
-            beat(png["vapor_birth"],"물방울 밑에서는","vapor_birth","vapor_layer","birth","concept",
+            beat(png["vapor_birth"],"그 수증기가","vapor_birth","vapor_layer","birth","concept",
                  "an educational cross section diagram of vapor forming under a water droplet above a hot plate",
                  "물방울 아래에서 수증기가 만들어지는 단면 모습"),
-            beat(png["vapor_expand"],"수증기가","vapor_spread","vapor_layer","spread","state",
+            beat(png["vapor_expand"],"아래로 퍼지면서","vapor_spread","vapor_layer","spread","state",
                  "an educational diagram filled with vapor bubbles spreading beneath a droplet above a hot plate",
                  "생긴 수증기가 물방울 아래쪽으로 퍼지는 모습을 크게 보여주는 모습"),
             beat(png["vapor_cushion"],"쿠션","vapor_cushion","vapor_layer","cushion","state",
@@ -366,6 +385,9 @@ def main():
             beat(png["glide"],"미끄러지는","skittering_motion","glide","path","concept",
                  "a top down dark pan diagram with a Leidenfrost droplet following a curved skating path",
                  "물방울이 팬 위에서 곡선을 그리며 미끄러지는 움직임을 위에서 내려다본 모습"),
+            beat(png["support_force"],"증기층이 받쳐","vapor_support_force","glide","support","state",
+                 "a dark diagram with upward arrows showing vapor physically supporting a water droplet from below",
+                 "수증기층이 아래에서 위쪽으로 물방울을 받쳐 주는 구조를 화살표로 보여주는 모습"),
         ]),
         ("s_end",[
             phrase("PAYOFF","이게 라이덴프로스트 효과입니다. 충분히 뜨거운 표면에서는 물이 바로 사라지는 대신, 자기 수증기 위에 잠깐 떠 있게 됩니다."),
