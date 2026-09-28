@@ -108,6 +108,21 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.line((360,585,620,585),fill=CYAN,width=22)
         d.text((490,235),"사라짐 X · 떠 있음",font=f52,fill=INK,anchor="mm")
         d.text((490,840),"300°C 초가열 판",font=f30,fill=RED,anchor="mm")
+    elif kind=="skid_contrast":
+        d.rectangle((45,45,935,905),fill="#111820")
+        d.rounded_rectangle((85,150,440,760),radius=32,fill="#f7dddd",outline=RED,width=8)
+        d.rounded_rectangle((540,150,895,760),radius=32,fill="#dceeff",outline=BLUE,width=8)
+        d.text((262,245),"사라짐",font=f38,fill=RED,anchor="mm")
+        d.text((718,245),"실제로는",font=f38,fill=BLUE,anchor="mm")
+        for x in (185,265,345):
+            d.line((x,540,x,350),fill=GREY,width=12)
+            d.polygon([(x,320),(x-18,360),(x+18,360)],fill=GREY)
+        d.line((130,300,390,610),fill=RED,width=24)
+        d.line((130,610,390,300),fill=RED,width=24)
+        d.ellipse((620,365,760,505),fill=BLUE,outline=WHITE,width=7)
+        d.arc((595,340,855,650),start=200,end=40,fill=CYAN,width=18)
+        d.polygon([(850,430),(800,405),(815,460)],fill=CYAN)
+        d.text((718,650),"미끄러짐",font=f38,fill=WHITE,anchor="mm")
     elif kind=="expectation":
         d.text((490,235),"보통 예상",font=f52,fill=INK,anchor="mm")
         hot_plate(d,660); droplet(d,330,475,75)
@@ -292,7 +307,7 @@ def main():
     source_video=download_required_video(assets/"source_experiment.ogv")
 
     kinds=[
-        "hook_result","expectation","question_gap","vapor_birth","vapor_expand","vapor_cushion",
+        "hook_result","skid_contrast","expectation","question_gap","vapor_birth","vapor_expand","vapor_cushion",
         "vapor_hint","no_contact","contact_gap","heat_blocked","paradox_shield","protected_drop",
         "glide","support_force","name","threshold","payoff",
     ]
@@ -337,7 +352,10 @@ def main():
             beat(png["hook_result"],"이상하게도","levitating_result","hook_diagram","result","concept",
                  "an educational diagram of a water droplet floating above a red hot plate instead of vanishing",
                  "뜨거운 판 위에서 물방울이 바로 사라지지 않고 떠 있는 결과를 크게 보여주는 모습"),
-            beat(png["expectation"],"더 뜨거운데","intuitive_expectation","expectation","hotter_vanishes","concept",
+            beat(png["skid_contrast"],"없어지는 대신","vanish_vs_skid","hook_contrast","skid","concept",
+                 "a high contrast split screen showing evaporation crossed out on the left and a water droplet skittering across a pan on the right",
+                 "물이 사라지는 예상은 X표시하고 실제로는 물방울이 미끄러지는 대비를 한 화면에 보여주는 모습"),
+            beat(png["expectation"],"그런데","intuitive_expectation","expectation","hotter_vanishes","concept",
                  "an educational diagram showing the expectation that hotter surface means faster evaporation",
                  "더 뜨거우면 물이 더 빨리 사라질 것이라는 직관적 예상을 보여주는 모습"),
             beat(png["question_gap"],"왜 안 사라질까요","open_question","question_gap","why_reverse","concept",
