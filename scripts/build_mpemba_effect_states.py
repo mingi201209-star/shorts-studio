@@ -429,17 +429,22 @@ def main():
                 d.ellipse((cx - 14, cy - 14, cx + 14, cy + 14), fill=WHITE, outline=INK, width=4)
             d.text((490, 870), '성에 결정 확대', font=font(28), fill=INK, anchor='mm')
         elif kind == 'evaporation_concept':
-            container(d, 300, 220, 260, 560, RED, 0.6)
-            container(d, 680, 220, 260, 560, BLUE, 0.6)
-            for i, sx in enumerate([-45, 0, 45]):
+            # Deliberately NOT another two-container comparison. The previous
+            # version looked too much like the opening after decorative chrome
+            # was removed, so the real observed-change gate correctly treated
+            # it as a replay. Make the mechanism itself dominate the frame.
+            d.rounded_rectangle((110, 210, 870, 760), radius=34, outline=INK, width=8, fill='#f7f1e8')
+            container(d, 300, 400, 240, 300, RED, 0.45)
+            for sx in (-70, 0, 70):
                 x = 300 + sx
-                pts = [(x + 9 * ((y // 18) % 2 * 2 - 1), 210 - y) for y in range(0, 130, 18)]
-                d.line(pts, fill=GREY, width=9)
-            x = 680
-            pts = [(x + 4 * ((y // 18) % 2 * 2 - 1), 210 - y) for y in range(0, 40, 18)]
-            d.line(pts, fill='#c7d0d6', width=5)
-            d.text((300, 810), '김이 많이 남', font=font(26), fill=RED, anchor='mm')
-            d.text((680, 810), '거의 나지 않음', font=font(26), fill=BLUE, anchor='mm')
+                pts = [(x + 14 * ((y // 20) % 2 * 2 - 1), 420 - y) for y in range(0, 260, 20)]
+                d.line(pts, fill=GREY, width=14)
+            d.polygon([(560, 290), (735, 290), (735, 245), (845, 350),
+                       (735, 455), (735, 410), (560, 410)], fill=RED, outline=INK)
+            d.text((700, 350), '증발 ↑', font=font(34), fill=WHITE, anchor='mm')
+            d.line((300, 650, 300, 735), fill=BLUE, width=14)
+            d.polygon([(300, 770), (270, 725), (330, 725)], fill=BLUE)
+            d.text((490, 835), '얼기 전부터 물의 양이 줄 수 있음', font=font(27), fill=INK, anchor='mm')
         elif kind == 'evaporation_schematic_fallback':
             container(d, 490, 260, 320, 520, RED, 0.55, thermo=RED)
             for i, sx in enumerate([-70, 0, 70]):
@@ -511,23 +516,33 @@ def main():
             d.text((300, 250), '뜨거운 물', font=font(26), fill=RED, anchor='mm')
             d.text((760, 660), '찬물(과냉각)', font=font(26), fill=BLUE, anchor='mm')
         elif kind == 'factors_gather':
-            icons = [('증발', GREY, 220), ('대류', RED, 490), ('과냉각', BLUE, 760)]
-            for label, color, x in icons:
-                d.ellipse((x - 70, 260, x + 70, 400), outline=color, width=10, fill='#eef2f4')
-                d.text((x, 330), label, font=font(26), fill=color, anchor='mm')
-                d.line((x, 400, 490, 600), fill=color, width=8)
-            d.ellipse((410, 600, 570, 760), fill='#d9e1e6', outline=INK, width=8)
-            for fx, fy in [(-25, -20), (10, 0), (30, -25)]:
-                px, py = 490 + fx, 680 + fy
-                d.line((px - 10, py, px + 10, py), fill=INK, width=5)
-                d.line((px, py - 10, px, py + 10), fill=INK, width=5)
-            d.text((490, 800), '아직 확정 전', font=font(28), fill=INK, anchor='mm')
+            # Large three-way convergence: the change must be visible in the
+            # rendered pixels, not supplied by a decorative header color.
+            d.rectangle((80, 210, 900, 780), fill='#eef2f4', outline=INK, width=8)
+            cards = [
+                ('증발', GREY, 120, 280),
+                ('대류', RED, 120, 470),
+                ('과냉각', BLUE, 120, 660),
+            ]
+            for label, color, x, y in cards:
+                d.rounded_rectangle((x, y - 60, x + 260, y + 60), radius=22,
+                                    fill=WHITE, outline=color, width=10)
+                d.text((x + 130, y), label, font=font(32), fill=color, anchor='mm')
+                d.line((x + 270, y, 625, 495), fill=color, width=14)
+            d.ellipse((600, 350, 850, 600), fill='#d9e1e6', outline=INK, width=10)
+            d.text((725, 475), '?', font=font(130), fill=INK, anchor='mm')
+            d.text((490, 835), '조건마다 비중이 달라질 수 있음', font=font(28), fill=INK, anchor='mm')
         elif kind == 'no_single_cause':
-            d.rounded_rectangle((110, 300, 870, 560), radius=24, outline=INK, width=8, fill='#eef2f4')
-            d.text((490, 400), '하나의 진짜 원인', font=font(32), fill=INK, anchor='mm')
-            d.line((150, 340, 830, 520), fill=RED, width=20)
-            d.line((150, 520, 830, 340), fill=RED, width=20)
-            d.text((490, 660), '단일 원인 아님', font=font(30), fill=RED, anchor='mm')
+            # Make the "not one universal cause" beat a full-frame visual
+            # reversal of the previous convergence diagram, not a small text
+            # card that only differs in a few pixels.
+            d.rectangle((70, 190, 910, 800), fill='#f7dddd', outline=RED, width=10)
+            for label, x in [('증발', 250), ('대류', 490), ('과냉각', 730)]:
+                d.ellipse((x - 90, 300, x + 90, 480), fill=WHITE, outline=INK, width=7)
+                d.text((x, 390), label, font=font(28), fill=INK, anchor='mm')
+            d.line((145, 245, 835, 720), fill=RED, width=28)
+            d.line((145, 720, 835, 245), fill=RED, width=28)
+            d.text((490, 745), '하나의 원인으로 고정할 수 없음', font=font(30), fill=RED, anchor='mm')
         elif kind == 'final_result':
             container(d, 300, 220, 260, 560, RED, 0.65, frozen=True)
             container(d, 680, 220, 260, 560, BLUE, 0.65)
