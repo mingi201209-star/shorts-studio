@@ -110,7 +110,7 @@ SCENES = [
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
-        ('사람들은', '흔한 생각', 'assumption_claim',
+        ('당연히', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
          '온도가 높을수록 얼리는 시간이 더 길다는 흔한 생각을 모래시계로 표현한 모습'),
         ('첫 번째 단서는', '첫 번째 단서', 'clue_reveal',
@@ -166,7 +166,7 @@ SCENES = [
         ('과냉각을 거칩니다', '과냉각의 차이', 'supercool',
          'A schematic line-graph diagram showing cold water\'s temperature dipping below the freezing point before turning to ice, next to hot water freezing right at the freezing line.',
          '찬물의 온도 그래프가 어는점 아래로 내려갔다가 어는 과냉각 구간을 보여주는 모습'),
-        ('함께 작용해', '여러 요인이 함께', 'synthesis',
+        ('함께 작용할', '여러 요인이 함께', 'synthesis',
          'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- converging toward an ice result while a small question marker signals that no single mechanism explains every case.',
          '증발, 대류, 과냉각 아이콘이 얼음 결과 쪽으로 모이되, 한 가지 원인으로 고정되지 않음을 작은 물음표로 함께 보여주는 모습'),
      ]),
