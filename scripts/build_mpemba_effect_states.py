@@ -579,7 +579,18 @@ def main():
 
         footer = '실제 사진 · Wikimedia Commons · CC0' if kind in PHOTO_SOURCES else '개념도 · 크기 비례 아님'
         d.text((935, 915), footer, font=font(19), fill=GREY, anchor='rm')
-        return im
+
+        # The old panel repeated a small beat title plus a large saturated
+        # color bar in every state. In motion that made genuinely different
+        # diagrams read like one PowerPoint template. The global Shorts
+        # overlay already names the subject, so strip only that decorative
+        # internal header and move the actual evidence area upward unchanged.
+        content = im.crop((10, 150, 970, 920))
+        clean = Image.new('RGB', (980, 950), 'black')
+        cd = ImageDraw.Draw(clean)
+        cd.rounded_rectangle((10, 8, 970, 942), radius=22, fill=WHITE)
+        clean.paste(content, (10, 70))
+        return clean
 
     scenes = []
     for si, (sid, phrases, states) in enumerate(SCENES):
@@ -651,7 +662,7 @@ def main():
 
     manifest = {
         'title': '뜨거운 물이 찬물보다 먼저 언다',
-        'overlay_title': '뜨거운 물의 반전',
+        'overlay_title': '뜨거운 물이 먼저 언다',
         'strict_meaningful_visual_changes': True,
         'strict_retention_contract': True,
         'scenes': scenes,
