@@ -110,9 +110,12 @@ SCENES = [
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
-        ('찬물이', '흔한 생각', 'assumption_claim',
+        ('하지만', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
          '온도가 높을수록 얼리는 시간이 더 길다는 흔한 생각을 모래시계로 표현한 모습'),
+        ('찬물이 먼저라고', '찬물이 먼저라는 예상', 'assumption_cold_first',
+         'A schematic comparison where the cold-water container is shown ahead of the hot-water container, visualizing the viewer\'s intuitive expectation before the clue overturns it.',
+         '찬물 용기가 뜨거운 물 용기보다 먼저 앞서 있다고 예상하는 비교 모습'),
         ('첫 번째 단서는', '첫 번째 단서', 'clue_reveal',
          'A schematic diagram of a magnifying glass spotlighting a rising steam-cloud icon, labeled as clue number one.',
          '돋보기가 김이 피어오르는 아이콘을 비추며 첫 번째 단서로 표시하는 모습'),
@@ -391,6 +394,15 @@ def main():
             d.ellipse((cx - 60, cy - 260, cx + 60, cy - 180), fill='#f5c94a', outline=INK, width=6)
             d.text((cx, cy - 220), '1', font=font(38), fill=INK, anchor='mm')
             d.text((490, 780), '첫 번째 단서', font=font(30), fill=INK, anchor='mm')
+        elif kind == 'assumption_cold_first':
+            d.rounded_rectangle((80, 180, 900, 800), radius=28, outline=INK, width=8, fill='#eef2f4')
+            container(d, 320, 300, 220, 380, BLUE, 0.68, frost=True)
+            container(d, 660, 340, 220, 340, RED, 0.68)
+            d.line((220, 250, 440, 250), fill=BLUE, width=12)
+            d.polygon([(440, 250), (410, 232), (410, 268)], fill=BLUE)
+            d.text((320, 735), '찬물 먼저?', font=font(30), fill=BLUE, anchor='mm')
+            d.text((660, 735), '뜨거운 물', font=font(30), fill=RED, anchor='mm')
+            d.text((490, 835), '우리가 보통 하는 예상', font=font(27), fill=INK, anchor='mm')
         elif kind == 'assumption_wrong':
             d.rounded_rectangle((90, 220, 890, 620), radius=24, outline=INK, width=8, fill='#eef2f4')
             d.line((130, 260, 850, 580), fill=RED, width=22)
