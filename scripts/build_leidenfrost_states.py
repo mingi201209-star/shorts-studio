@@ -331,7 +331,7 @@ def main():
             phrase("CRISIS","그런데 더 뜨거운데, 왜 안 사라질까요?"),
             phrase("REVEAL","답은 물방울 밑의 수증기입니다."),
         ],[
-            beat(source_video,hook.split()[0],"real_300c_result","hook_result","video","concept",
+            beat(source_video,hook,"real_300c_result","hook_result","video","concept",
                  "a real scientific experiment showing water transforming into a Leidenfrost droplet on a 300 degree Celsius superheated plate",
                  f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",VIDEO_ATTRIBUTION),
             beat(png["hook_result"],"이상하게도","levitating_result","hook_diagram","result","concept",
