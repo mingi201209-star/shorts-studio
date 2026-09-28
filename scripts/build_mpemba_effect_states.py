@@ -114,7 +114,7 @@ SCENES = [
          'A schematic diagram with three small icons -- evaporation, convection, and supercooling -- each connected by an arrow into one combined ice-cube result icon.',
          '증발, 대류, 과냉각 세 아이콘이 화살표로 모여 하나의 얼음 결과로 합쳐지는 모습'),
      ]),
-    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 그런지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 어떤 쪽이 먼저 얼지 직접 확인해보고 싶어질지도 모릅니다.', None)], [
+    ('s_end', [('PAYOFF', '그래서 뜨거운 물이 찬물보다 먼저 얼어 실제로 일어날 수 있습니다. 정확히 언제, 어떤 조건에서 그런지는 지금도 연구되고 있습니다. 다음에 얼음을 얼릴 때 어떤 쪽이 먼저 얼지 직접 확인해보고 싶어집니다.', None)], [
         ('그래서 뜨거운 물이', '뜨거운 쪽이 먼저 얼음', 'final_result',
          'A schematic diagram of a fully frozen hot-water container with a checkmark and finish flag, next to a still partly liquid cold-water container.',
          '뜨거운 물 용기는 완전히 얼어 체크 표시가 있고, 찬물 용기는 아직 액체인 최종 비교 모습'),
@@ -130,7 +130,7 @@ SCENES = [
         ('다음에 얼음을 얼릴 때', '다음 실험', 'invite_setup',
          'A schematic diagram of an ice-cube tray icon next to a small clock, suggesting trying this again next time.',
          '얼음 트레이와 작은 시계 아이콘으로 다음에 다시 해보자는 뜻을 보여주는 모습'),
-        ('직접 확인해보고 싶어질지도', '직접 확인해보기', 'invite',
+        ('직접 확인해보고', '직접 확인해보기', 'invite',
          'A schematic diagram of two simple water containers with a question mark between them, inviting the viewer to try the experiment themselves.',
          '두 개의 물통 사이에 물음표가 있어 직접 실험해보도록 초대하는 모습'),
      ]),
