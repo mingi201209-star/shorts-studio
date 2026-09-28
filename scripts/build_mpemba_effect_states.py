@@ -107,8 +107,8 @@ SCENES = [
     # specific claim plus the real observed anomaly).
     ('s_clue', [
         ('SETUP', '하지만 보통은 찬물이 먼저라고 생각하죠.', None),
-        ('REVEAL', '첫 번째 단서는 증발입니다.', None),
-        ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
+        ('REVEAL', '뜨거운 물은 얼기 전부터 조금씩 줄어듭니다.', None),
+        ('CRISIS', '그런데 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 생기는 경우가 있습니다.', None),
      ], [
         ('보통은', '흔한 생각', 'assumption_claim',
          'A schematic diagram of an hourglass next to the text "hotter water takes longer to freeze", stating a common assumption.',
@@ -116,19 +116,16 @@ SCENES = [
         ('찬물이 먼저라고', '찬물이 먼저라는 예상', 'assumption_cold_first',
          'A schematic comparison where the cold-water container is shown ahead of the hot-water container, visualizing the viewer\'s intuitive expectation before the clue overturns it.',
          '찬물 용기가 뜨거운 물 용기보다 먼저 앞서 있다고 예상하는 비교 모습'),
-        ('첫 번째 단서는', '첫 번째 단서', 'clue_reveal',
-         'A schematic diagram of a magnifying glass spotlighting a rising steam-cloud icon, labeled as clue number one.',
-         '돋보기가 김이 피어오르는 아이콘을 비추며 첫 번째 단서로 표시하는 모습'),
-        ('온도가 높으면', '틀린 통념', 'assumption_wrong',
-         'A schematic diagram with a large X crossed over the text "higher temperature always means a longer freezing time".',
-         '온도가 높을수록 얼리는 시간이 더 길다는 통념에 크게 X표시가 된 모습'),
-        ('더 빨리 증발합니다', '증발은 더 빠름', 'evaporation_faster_confirmed',
-         'A schematic diagram with a checkmark next to a rising steam icon, confirming that hotter water does evaporate faster.',
-         '뜨거운 물이 실제로 더 빨리 증발한다는 것을 체크 표시와 김 아이콘으로 확인해 주는 모습'),
-        ('하지만 같은 조건에서도', '같은 조건, 다른 결과', 'frost_compare',
+        ('뜨거운 물은', '줄어들기 시작하는 물', 'clue_reveal',
+         'A schematic magnifying glass spotlighting steam rising from hot water, showing that the hot-water sample is already losing water before freezing.',
+         '뜨거운 물에서 김이 올라오고 물의 양이 줄기 시작하는 모습을 돋보기로 강조한 모습'),
+        ('조금씩 줄어듭니다', '줄어든 물의 양', 'evaporation_faster_confirmed',
+         'A schematic hot-water container with a visibly lower water line and rising steam, showing that some water has already left as vapor.',
+         '뜨거운 물 용기의 물 높이가 낮아지고 김이 올라와 물의 양이 줄어든 모습'),
+        ('같은 조건에서도', '같은 조건, 다른 결과', 'frost_compare',
          'A schematic diagram comparing two identical containers in the same freezer, where only the hot-water container already shows frost.',
          '같은 냉동실, 같은 크기의 용기인데 뜨거운 물 쪽에만 성에가 먼저 생긴 비교 모습'),
-        ('성에가 먼저 맺히는', '성에 확대', 'frost_zoom',
+        ('성에가 먼저 생기는', '성에 확대', 'frost_zoom',
          'A real close-up photograph of ice-crystal frost patterns on a frozen surface.',
          '용기 표면에 맺힌 성에 결정을 크게 확대해서 보여주는 모습'),
      ]),
@@ -391,9 +388,9 @@ def main():
                 d.line(pts, fill=GREY, width=16)
             d.ellipse((cx + 220 - 110, cy - 110, cx + 220 + 110, cy + 110), outline=INK, width=12, fill=None)
             d.line((cx + 220 + 78, cy + 78, cx + 220 + 150, cy + 150), fill=INK, width=16)
-            d.ellipse((cx - 60, cy - 260, cx + 60, cy - 180), fill='#f5c94a', outline=INK, width=6)
-            d.text((cx, cy - 220), '1', font=font(38), fill=INK, anchor='mm')
-            d.text((490, 780), '첫 번째 단서', font=font(30), fill=INK, anchor='mm')
+            d.line((250, 650, 250, 735), fill=BLUE, width=12)
+            d.polygon([(250, 770), (225, 730), (275, 730)], fill=BLUE)
+            d.text((490, 780), '얼기 전부터 줄어드는 물', font=font(28), fill=INK, anchor='mm')
         elif kind == 'assumption_cold_first':
             d.rounded_rectangle((80, 180, 900, 800), radius=28, outline=INK, width=8, fill='#eef2f4')
             container(d, 320, 300, 220, 380, BLUE, 0.68, frost=True)
@@ -411,14 +408,14 @@ def main():
             d.text((490, 770), '얼리는 시간도 더 길다', font=font(34), fill=INK, anchor='mm')
         elif kind == 'evaporation_faster_confirmed':
             d.rounded_rectangle((140, 220, 840, 640), radius=24, outline=INK, width=8, fill='#eef2f4')
-            for sx in (-60, 0, 60):
+            container(d, 490, 300, 280, 300, RED, 0.45)
+            for sx in (-55, 0, 55):
                 x = 490 + sx
-                pts = [(x + 10 * ((y // 20) % 2 * 2 - 1), 560 - y) for y in range(0, 260, 20)]
+                pts = [(x + 10 * ((y // 20) % 2 * 2 - 1), 430 - y) for y in range(0, 220, 20)]
                 d.line(pts, fill=GREY, width=10)
-            d.ellipse((680, 260, 800, 380), fill=GREEN, outline=INK, width=6)
-            d.line((700, 320, 725, 345), fill=WHITE, width=8)
-            d.line((725, 345, 770, 290), fill=WHITE, width=8)
-            d.text((490, 760), '더 빠른 증발, 확인됨', font=font(28), fill=INK, anchor='mm')
+            d.line((710, 300, 710, 500), fill=BLUE, width=12)
+            d.polygon([(710, 540), (685, 500), (735, 500)], fill=BLUE)
+            d.text((490, 760), '물의 양이 줄어듦', font=font(28), fill=INK, anchor='mm')
         elif kind == 'frost_compare':
             container(d, 300, 220, 260, 560, RED, 0.65, frost=True)
             container(d, 680, 220, 260, 560, BLUE, 0.65, frost=False)

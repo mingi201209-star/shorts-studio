@@ -383,6 +383,7 @@ def test_story_prompt_v3_encodes_retention_and_truth_contract():
         "first sentence must immediately deliver",
         "One sentence should carry one new semantic move",
         "Do not manufacture a rhetorical question after every sentence",
+        "Do not announce the script structure with meta lines",
         "Never upgrade a possibility",
         "No generic CTA",
         "Do not repeat the same fact",
@@ -435,3 +436,9 @@ def test_story_generation_prompt_supports_optional_soft_window_without_padding()
     prompt = build_story_generation_prompt(brief, selected, target_seconds=(30, 60))
     assert "30–60 seconds is a soft production window, not a quota" in prompt
     assert "Do not pad or repeat information" in prompt
+
+
+def test_story_prompt_v3_names_meta_signposting_to_avoid():
+    system = story_writer_system_prompt()
+    assert "첫 번째 단서는" in system
+    assert "State the clue, observation, or consequence itself" in system
