@@ -106,7 +106,7 @@ SCENES = [
     # without giving away the full multi-factor explanation) -> CRISIS (the
     # specific claim plus the real observed anomaly).
     ('s_clue', [
-        ('SETUP', '정말 찬물이 먼저 얼까요?', None),
+        ('SETUP', '그런데 찬물이 먼저일까요?', None),
         ('REVEAL', '첫 번째 단서는 증발입니다.', None),
         ('CRISIS', '온도가 높으면 물은 더 빨리 증발합니다. 하지만 같은 조건에서도 뜨거운 물 쪽에 성에가 먼저 맺히는 경우가 있습니다.', None),
      ], [
@@ -545,10 +545,11 @@ def main():
             d.text((790, 300), '?', font=font(150), fill=RED, anchor='mm')
             d.text((490, 700), '언제, 어떤 조건에서?', font=font(30), fill=INK, anchor='mm')
         elif kind == 'debate':
-            d.rounded_rectangle((150, 300, 830, 560), radius=24, outline=INK, width=8, fill='#eef2f4')
-            d.text((490, 430), '조건마다 결과가 다름', font=font(32), fill=INK, anchor='mm')
-            d.ellipse((640, 560, 800, 720), outline=INK, width=14)
-            d.line((760, 700, 860, 800), fill=INK, width=16)
+            d.rounded_rectangle((60, 190, 920, 800), radius=30, fill='#8ea0ab', outline=INK, width=8)
+            d.rounded_rectangle((150, 300, 830, 560), radius=24, outline=INK, width=8, fill=GREEN)
+            d.text((490, 430), '조건마다 결과가 다름', font=font(32), fill=WHITE, anchor='mm')
+            d.ellipse((640, 600, 800, 760), outline=INK, width=14, fill='#eef2f4')
+            d.line((760, 740, 860, 800), fill=INK, width=16)
         elif kind == 'invite_setup_schematic_fallback':
             cx, cy = 400, 460
             d.rounded_rectangle((cx - 160, cy - 140, cx + 160, cy + 140), radius=20, outline=INK, width=10, fill='#dce6ec')
