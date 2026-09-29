@@ -557,7 +557,7 @@ def _mix_production_audio(video:Path, project, scene_windows:list[dict], out:Pat
         input_index+=1
 
     filters.append(
-        f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:dropout_transition=0,"
+        f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:dropout_transition=0:normalize=0,"
         "alimiter=limit=0.95[mix]"
     )
     mixed=out
