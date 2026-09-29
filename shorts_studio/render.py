@@ -332,8 +332,15 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
         if _is_moving_visual_asset(asset):
-            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-t",str(beat_duration),
-                 "-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+            # source_start lets a later beat use a genuinely different
+            # physical moment from the same long source clip. This is not a
+            # crop/zoom cadence trick: the source frames themselves differ.
+            source_start=float(getattr(beat,"source_start",0.0) or 0.0)
+            cmd=["ffmpeg","-y","-stream_loop","-1"]
+            if source_start>0:
+                cmd += ["-ss",str(source_start)]
+            cmd += ["-i",str(asset),"-t",str(beat_duration),
+                    "-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         else:
             cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
