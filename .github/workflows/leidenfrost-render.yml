@@ -38,10 +38,13 @@ jobs:
         run: |
           grep -q '^LEIDENFROST_VIDEO_READY=' leidenfrost-generator.log
           grep -q '^LEIDENFROST_MID_VIDEO_READY=' leidenfrost-generator.log
+          grep -q '^LEIDENFROST_PAYOFF_VIDEO_READY=' leidenfrost-generator.log
           test -s assets/leidenfrost_effect/source_experiment.ogv
           test -s assets/leidenfrost_effect/source_underwater_vapor.ogv
+          test -s assets/leidenfrost_effect/source_plate_rotation.ogv
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_experiment.ogv
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_underwater_vapor.ogv
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_plate_rotation.ogv
       - name: Verify first-scene title and semantic motion assets
         run: |
           grep -q '"overlay_title_mode": "first_scene_only"' examples/leidenfrost_effect.json
