@@ -281,79 +281,155 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
 
 
 def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps:int=30)->Path:
-    """Generate semantic motion, never crop/zoom motion.
+    """Generate semantic physical-state motion on a dark channel canvas.
 
-    Each frame changes the represented physical state itself: vapor forms
-    and spreads, or the droplet translates across the pan. This is the
-    opposite of faking cadence by moving a camera over one still.
+    These clips deliberately avoid the old white-card template. Motion must
+    change the represented state itself; camera crop/zoom is never used as a
+    substitute for visual information.
     """
     frames=out.parent/(out.stem+"_frames")
     frames.mkdir(parents=True,exist_ok=True)
     total=max(2,int(duration*fps))
-    f38=get_font(font_path,38)
+    f30=get_font(font_path,30); f38=get_font(font_path,38)
+
+    def dark_canvas(accent="#0b1118"):
+        im=Image.new("RGB",(W,H),accent)
+        return im,ImageDraw.Draw(im)
+
+    def plate(d,y=735):
+        d.rounded_rectangle((90,y,890,y+105),radius=28,fill="#f05243")
+        d.rectangle((120,y+18,860,y+34),fill="#ff9a74")
+
+    def vapor_layer(d,left=260,right=720,y=590,height=76):
+        d.rounded_rectangle((left,y,right,y+height),radius=height//2,fill="#5cd6e7")
+        d.rounded_rectangle((left+18,y+14,right-18,y+30),radius=10,fill="#b8f4ff")
+
+    def drop(d,cx,cy,r=110):
+        # clean, high-contrast droplet silhouette rather than textbook prose
+        pts=[(cx,cy-r-28),(cx-r,cy+20),(cx-r+12,cy+r),(cx,cy+r+22),
+             (cx+r-12,cy+r),(cx+r,cy+20)]
+        d.polygon(pts,fill="#4e9ef0")
+        d.ellipse((cx-r,cy-r//2,cx+r,cy+r+18),fill="#4e9ef0")
+        d.ellipse((cx-r//2,cy-r//2,cx-r//5,cy-r//5),fill="#a9dcff")
+
     for i in range(total):
         t=i/(total-1)
-        im,d=canvas()
-        if kind=="vapor_cushion_motion":
-            hot_plate(d,735)
-            droplet(d,490,350-int(25*t),115)
-            # Vapor grows from separate bubbles into a continuous cushion.
-            for j,x in enumerate((330,410,490,570,650)):
-                r=int(18+32*min(1,max(0,t*1.5-j*0.08)))
-                y=int(625-18*t*((j%2)*2-1))
-                d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline=INK,width=4)
-            if t>0.45:
-                alpha=(t-0.45)/0.55
-                left=int(360-90*alpha); right=int(620+90*alpha)
-                d.rounded_rectangle((left,575,right,650),radius=28,fill=CYAN,outline=INK,width=5)
-            d.text((490,210),"수증기가 이어져 쿠션이 됨",font=f38,fill=INK,anchor="mm")
-        elif kind=="glide_motion":
-            d.rectangle((45,45,935,905),fill="#1c1f24")
-            d.ellipse((110,105,870,865),fill="#454b52",outline=WHITE,width=10)
-            x=int(220+540*t)
-            y=int(470-90*__import__("math").sin(t*3.14159))
-            d.ellipse((x-88,y-88,x+88,y+88),fill=BLUE,outline=WHITE,width=7)
-            for k in range(4):
-                px=x-int(55+55*k)
-                if px>130:
-                    d.ellipse((px-18,y+75,px+18,y+98),fill=CYAN)
-            d.line((180,690,800,690),fill=CYAN,width=12)
-            d.polygon([(815,690),(775,665),(775,715)],fill=CYAN)
-            d.text((490,780),"수증기 위에서 실제 위치가 바뀜",font=f38,fill=WHITE,anchor="mm")
+        if kind=="hook_glide_motion":
+            im,d=dark_canvas("#080d12")
+            d.ellipse((95,80,885,870),fill="#2b3037",outline="#69717c",width=8)
+            x=int(185+600*t)
+            y=int(480-115*math.sin(math.pi*t))
+            # luminous trail is evidence of changing position, not camera motion
+            for k in range(6):
+                px=x-int(48+46*k)
+                if px>135:
+                    alpha=max(0.2,1-k/7)
+                    rr=int(19*alpha)
+                    d.ellipse((px-rr,y+92-rr,px+rr,y+92+rr),fill="#42b9cf")
+            drop(d,x,y,82)
+            d.text((490,810),"미끄러진다",font=f38,fill=WHITE,anchor="mm")
+
+        elif kind=="hook_float_motion":
+            im,d=dark_canvas("#120d0b")
+            plate(d,730)
+            lift=int(50*t)
+            drop(d,490,410-lift,118)
+            # vapor visibly appears from nothing and opens a gap
+            spread=int(110+150*t)
+            vapor_layer(d,490-spread,490+spread,585-int(18*t),72)
+            d.text((490,180),"닿지 않는다",font=f38,fill=WHITE,anchor="mm")
+
+        elif kind=="vapor_cushion_motion":
+            im,d=dark_canvas("#08131a")
+            plate(d,735)
+            drop(d,490,360-int(22*t),116)
+            for j,x in enumerate((325,405,485,565,645)):
+                growth=max(0.0,min(1.0,t*1.7-j*.09))
+                r=int(8+38*growth)
+                y=int(620-10*math.sin((t+j*.2)*math.pi*2))
+                d.ellipse((x-r,y-r//2,x+r,y+r//2),fill="#46cde0")
+            if t>.42:
+                a=(t-.42)/.58
+                vapor_layer(d,int(385-125*a),int(595+125*a),585,74)
+            d.text((490,180),"증기가 이어진다",font=f38,fill=WHITE,anchor="mm")
+
         elif kind=="heat_blocked_motion":
-            d.rectangle((45,45,935,905),fill="#2b1716")
-            d.rounded_rectangle((90,690,890,825),radius=25,fill="#f05a48",outline=WHITE,width=7)
-            d.rounded_rectangle((260,515,720,610),radius=35,fill=CYAN,outline=WHITE,width=7)
-            droplet(d,490,300,120,fill="#5ca7ef")
-            # Heat arrows rise from the plate each cycle but visibly stall and
-            # fade right at the vapor-layer boundary -- the physical claim
-            # itself (heat blocked from reaching the droplet), not decoration.
-            cycle=(t*2.0)%1.0
-            for k,x in enumerate((280,390,500,610,720)):
-                rise=max(0.0,min(1.0,cycle*1.6-k*0.12))
-                if rise<=0:
-                    continue
-                y_start=675
-                y_stop=int(675-95*min(rise,0.82))
-                d.line((x,y_start,x,y_stop),fill=YELLOW,width=14)
-                if rise<0.82:
-                    d.polygon([(x,y_stop-14),(x-18,y_stop+14),(x+18,y_stop+14)],fill=YELLOW)
-            d.text((490,470),"수증기층에서 열 흐름이 꺾임",font=f38,fill=WHITE,anchor="mm")
-        elif kind=="payoff_motion":
-            d.rectangle((45,45,935,905),fill="#dff6fb")
-            hot_plate(d,735)
-            lift=int(18*__import__("math").sin(t*3.14159))
-            droplet(d,490,365-lift,120)
-            width=int(240+220*t)
-            d.rounded_rectangle((490-width//2,570,490+width//2,650),radius=30,fill=CYAN,outline=INK,width=7)
-            for x in (390,490,590):
-                h=int(30+45*t)
-                d.line((x,690,x,690-h),fill=YELLOW,width=12)
-                d.polygon([(x,690-h-14),(x-14,690-h+10),(x+14,690-h+10)],fill=YELLOW)
-            d.text((490,210),"자기 수증기 위에 떠 있음",font=f38,fill=INK,anchor="mm")
+            im,d=dark_canvas("#180b0a")
+            plate(d,735)
+            vapor_layer(d,255,725,550,78)
+            drop(d,490,300,116)
+            cycle=(t*2.2)%1.0
+            for k,x in enumerate((275,385,495,605,715)):
+                rise=max(0.0,min(1.0,cycle*1.8-k*.10))
+                y0=710
+                y1=int(710-125*min(.80,rise))
+                if rise>0:
+                    d.line((x,y0,x,y1),fill="#ffd54f",width=14)
+                    if rise<.80:
+                        d.polygon([(x,y1-16),(x-16,y1+12),(x+16,y1+12)],fill="#ffd54f")
+            d.line((210,530,770,530),fill="#ffcf5a",width=5)
+            d.text((490,455),"열 흐름",font=f30,fill="#ffd86a",anchor="mm")
+
+        elif kind=="insulated_float_motion":
+            im,d=dark_canvas("#07141a")
+            plate(d,735)
+            gap=int(24+48*t)
+            vapor_layer(d,265,715,575,80)
+            drop(d,490,440-gap,120)
+            # direct-contact marker separates as the droplet rises
+            d.line((360,655,620,655),fill="#ff5a52",width=18)
+            d.line((375,625,605,685),fill="#ff5a52",width=18)
+            d.line((375,685,605,625),fill="#ff5a52",width=18)
+            d.text((490,180),"직접 접촉 X",font=f38,fill=WHITE,anchor="mm")
+
+        elif kind=="glide_motion":
+            im,d=dark_canvas("#070b10")
+            d.ellipse((100,82,880,862),fill="#262d34",outline="#76808c",width=8)
+            theta=math.pi*(1.05+.92*t)
+            cx,cy=490,470
+            x=int(cx+265*math.cos(theta))
+            y=int(cy+185*math.sin(theta))
+            drop(d,x,y,78)
+            # trace grows along the actual path
+            pts=[]
+            for q in range(max(2,int(36*t)+2)):
+                u=q/max(1,int(36*t)+1)
+                th=math.pi*(1.05+.92*u)
+                pts.append((int(cx+265*math.cos(th)),int(cy+185*math.sin(th))))
+            if len(pts)>1:
+                d.line(pts,fill="#46cde0",width=14)
+            d.text((490,810),"증기 위를 탄다",font=f38,fill=WHITE,anchor="mm")
+
+        elif kind=="support_motion":
+            im,d=dark_canvas("#08141a")
+            plate(d,760)
+            vapor_layer(d,240,740,585,86)
+            drop(d,490,350-int(16*math.sin(math.pi*t)),118)
+            # pressure/support arrows strengthen from the vapor layer upward
+            strength=int(32+72*t)
+            for x in (345,490,635):
+                d.line((x,690,x,690-strength),fill="#ffd64f",width=16)
+                d.polygon([(x,690-strength-18),(x-18,690-strength+14),(x+18,690-strength+14)],fill="#ffd64f")
+            d.text((490,185),"아래에서 받친다",font=f38,fill=WHITE,anchor="mm")
+
+        elif kind=="final_float_motion":
+            im,d=dark_canvas("#07131a")
+            plate(d,745)
+            # start close, then visibly settle into a clean floating state
+            settle=1-math.exp(-5*t)
+            lift=int(58*settle)
+            vapor_layer(d,int(370-110*settle),int(610+110*settle),585,82)
+            drop(d,490,430-lift,126)
+            for x in (350,430,510,590,670):
+                h=int(24+54*settle)
+                d.line((x,710,x,710-h),fill="#ffd54f",width=10)
+            d.text((490,170),"라이덴프로스트",font=f38,fill=WHITE,anchor="mm")
+
         else:
             raise ValueError(kind)
+
         im.save(frames/f"{i:04d}.png")
+
     out.parent.mkdir(parents=True,exist_ok=True)
     subprocess.run([
         "ffmpeg","-y","-framerate",str(fps),"-i",str(frames/"%04d.png"),
