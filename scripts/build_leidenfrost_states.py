@@ -356,12 +356,23 @@ def phrase(role,text,hook_type=None):
 
 
 def beat(asset:Path,cue:str,info_role:str,concept_id:str,state_id:str,kind:str,
-         qa_label:str,req:str,attribution:str|None=None):
+         qa_label:str,req:str,attribution:str|None=None, *,
+         presentation_kind:str|None=None, hero_visual:bool=False,
+         internal_text:str|None=None, source_start:float=0.0,
+         sfx_asset:Path|None=None, sfx_gain_db:float=-16.0):
     digest=sha(asset)
-    return {
+    if presentation_kind is None:
+        presentation_kind = "physical_animation" if asset.suffix.lower() in {".mp4",".webm",".mov",".mkv",".ogv",".avi"} else "explanatory_diagram"
+    if internal_text is None:
+        internal_text = "none" if presentation_kind in {"real_motion","real_still"} else "label"
+    payload={
         "start":0.0,
         "asset":str(asset),
         "attribution":attribution,
+        "presentation_kind":presentation_kind,
+        "hero_visual":hero_visual,
+        "internal_text":internal_text,
+        "source_start":source_start,
         "visual_change":{
             "kind":kind,"concept_id":concept_id,"state_id":state_id,
             "narration_cue":cue,"added_information":info_role,
@@ -373,6 +384,10 @@ def beat(asset:Path,cue:str,info_role:str,concept_id:str,state_id:str,kind:str,
         "visual_qa_expected_sha256":[digest],
         "info_role":info_role,
     }
+    if sfx_asset is not None:
+        payload["sfx_asset"]=str(sfx_asset)
+        payload["sfx_gain_db"]=sfx_gain_db
+    return payload
 
 
 def main():
