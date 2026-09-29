@@ -442,3 +442,34 @@ def test_story_prompt_v3_names_meta_signposting_to_avoid():
     system = story_writer_system_prompt()
     assert "첫 번째 단서는" in system
     assert "State the clue, observation, or consequence itself" in system
+
+
+def test_rule_based_hook_judge_prefers_tighter_equivalent_hook():
+    brief = _full_brief()
+    short = HookCandidate(
+        strategy="contradiction",
+        text="놀랍게도 뜨거운 물엔 멀쩡한 유리컵이 얼음물엔 깨집니다",
+        grounded_in=brief.contradiction_fact,
+    )
+    long = HookCandidate(
+        strategy="contradiction",
+        text="놀랍게도 많은 사람들이 예상하지 못하지만 뜨거운 물엔 멀쩡한 유리컵이 얼음물을 부으면 갑자기 깨질 수 있습니다",
+        grounded_in=brief.contradiction_fact,
+    )
+    result = RuleBasedHookJudge().judge([long, short], brief)
+    assert result.winner is not None
+    assert result.winner.text == short.text
+
+
+def test_story_prompt_v4_encodes_high_retention_generation_rules():
+    system = story_writer_system_prompt()
+    for phrase in (
+        "roughly 3–4 spoken seconds",
+        "first 5 seconds",
+        "two distinct visual/evidence states",
+        "flat explanation plateau",
+        "every 4–7 seconds",
+        "TWIST/re-hook in the later-middle",
+        "final PAYOFF",
+    ):
+        assert phrase in system
