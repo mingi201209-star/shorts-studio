@@ -293,3 +293,26 @@ def test_real_video_visual_beat_preserves_internal_motion(tmp_path):
     ia=np.asarray(Image.open(a).convert("RGB"),dtype=np.int16)
     ib=np.asarray(Image.open(b).convert("RGB"),dtype=np.int16)
     assert np.abs(ia-ib).mean() > 2.0
+
+
+@requires_ffmpeg
+def test_moving_visual_source_start_uses_later_semantic_moment(tmp_path):
+    source = tmp_path / "two_states.mp4"
+    subprocess.run([
+        "ffmpeg","-y",
+        "-f","lavfi","-i","color=c=red:s=320x240:r=30:d=1",
+        "-f","lavfi","-i","color=c=blue:s=320x240:r=30:d=1",
+        "-filter_complex","[0:v][1:v]concat=n=2:v=1:a=0[v]",
+        "-map","[v]","-c:v","libx264","-pix_fmt","yuv420p",str(source),
+    ],check=True,capture_output=True)
+    beat=SimpleNamespace(
+        start=0.0,asset=str(source),asset_url=None,attribution=None,source_start=1.1
+    )
+    clip,build=_beats_clip(tmp_path,[beat],0.7,scene_id="offset")
+    frame=build/"offset_frame.png"
+    subprocess.run([
+        "ffmpeg","-y","-ss","0.2","-i",str(clip),"-frames:v","1",str(frame)
+    ],check=True,capture_output=True)
+    arr=np.asarray(Image.open(frame).convert("RGB"),dtype=np.float32)
+    # The later source moment is blue, not the red opening second.
+    assert arr[:,:,2].mean() > arr[:,:,0].mean() + 40
