@@ -636,11 +636,15 @@ def render(manifest:str,dry_run:bool=False)->dict:
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
-    if getattr(p,"background_music",None) or any(
+    narration_reference=None
+    has_production_audio=bool(getattr(p,"background_music",None)) or any(
         getattr(beat,"sfx_asset",None)
         for scene in p.scenes
         for beat in (getattr(scene,"visual_beats",None) or [])
-    ):
+    )
+    if has_production_audio:
+        narration_reference=build/"final_narration_reference.mp4"
+        shutil.copy2(final,narration_reference)
         mixed=dist/"final_mixed.mp4"
         _mix_production_audio(final,p,scene_windows,mixed)
         mixed.replace(final)
@@ -653,7 +657,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     semantic={"status":semantic_status,"results":semantic_results}
     require_semantic=bool(os.environ.get("SHORTS_REQUIRE_SEMANTIC_QA"))
     semantic_ok=production_semantic_ok(semantic["status"],require_semantic)
-    final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build)
+    final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build,narration_reference=narration_reference)
     overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) and final_video["status"]=="PASS" else "FAIL"
     report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"captions":caption_result,"output":str(final)}
     # Psychological Entertainment Contract (Layer 2): report-only,
