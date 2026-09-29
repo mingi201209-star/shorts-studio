@@ -2,7 +2,7 @@ name: leidenfrost-render
 
 on:
   push:
-    branches: [exp/leidenfrost-success-patterns]
+    branches: [exp/leidenfrost-success-patterns, feat/visual-production-engine-v2]
     paths:
       - 'shorts_studio/**'
       - 'tests/**'
@@ -37,8 +37,11 @@ jobs:
       - name: Verify real moving experiment source
         run: |
           grep -q '^LEIDENFROST_VIDEO_READY=' leidenfrost-generator.log
+          grep -q '^LEIDENFROST_MID_VIDEO_READY=' leidenfrost-generator.log
           test -s assets/leidenfrost_effect/source_experiment.ogv
+          test -s assets/leidenfrost_effect/source_underwater_vapor.ogv
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_experiment.ogv
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_underwater_vapor.ogv
       - name: Verify first-scene title and semantic motion assets
         run: |
           grep -q '"overlay_title_mode": "first_scene_only"' examples/leidenfrost_effect.json
@@ -92,6 +95,8 @@ jobs:
           assert checks['retention_contract']['status']=='PASS',checks['retention_contract']
           assert checks['first_10s_retention']['status']=='PASS',checks['first_10s_retention']
           assert checks['meaningful_visual_changes']['status']=='PASS',checks['meaningful_visual_changes']
+          assert checks['production_quality_v2']['status']=='PASS',checks['production_quality_v2']
+          assert checks['production_quality_v2']['human_silent_review']['status']=='REQUIRED'
           print('LEIDENFROST_FINAL_PASS duration=',probe['format']['duration'])
           PY
       - name: Sample review frames
