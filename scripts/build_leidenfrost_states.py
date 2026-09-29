@@ -578,6 +578,18 @@ def main():
     # visual cues must bind to the delivered winner, not to one assumed
     # candidate's wording.
     hook_result_cue = hook.rstrip(".?!").split()[-1]
+    # The real opening source is only ~3 seconds long. Cut to a genuinely
+    # different physical-state animation around the middle of whichever
+    # Prompt V2 hook wins, rather than looping the same experiment clip until
+    # the end of a 4-5 second sentence.
+    hook_mid_cue={
+        "contradiction":"직접",
+        "surprising_consequence":"판에서도",
+        "counterintuitive_fact":"오히려",
+        "visible_anomaly":"이상하게도",
+        "mistaken_assumption":"항상",
+        "unresolved_cause_effect":"증기층이",
+    }[winner.strategy]
     plans=[
         ("s_hook",[
             phrase("HOOK",hook,winner.strategy),
@@ -589,11 +601,11 @@ def main():
                  f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",
                  VIDEO_ATTRIBUTION,presentation_kind="real_motion",hero_visual=True,internal_text="none",
                  sfx_asset=sound["hit"],sfx_gain_db=-20.0),
-            beat(motion["hook_glide"],"그런데","skittering_motion","hook_result","skid","state",
+            beat(motion["hook_glide"],hook_mid_cue,"skittering_motion","hook_result","skid","state",
                  "a top down dark pan animation with a Leidenfrost droplet visibly changing position along a curved path",
                  "끓어 없어지는 대신 물방울이 실제로 위치를 바꾸며 미끄러지는 현상을 보여주는 움직임",
                  presentation_kind="physical_animation",internal_text="label"),
-            beat(motion["hook_float"],"왜 안 사라질까요","floating_anomaly","hook_gap","floating","concept",
+            beat(motion["hook_float"],"그런데","floating_anomaly","hook_gap","floating","concept",
                  "a physical animation showing a water droplet lifting above a very hot plate as a vapor cushion grows underneath",
                  "더 뜨거운 표면인데도 물방울이 떠서 버티는 모순을 움직임으로 보여주는 장면",
                  presentation_kind="physical_animation",internal_text="label"),
