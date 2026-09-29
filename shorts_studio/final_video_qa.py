@@ -997,6 +997,16 @@ FIRST_10S_STATE_CHANGE_WINDOW = (3.0, 8.0)
 FIRST_10S_PAYOFF_WINDOW = (8.0, 12.0)
 MIN_DISTINCT_ROLES_IN_FIRST_10S = 3
 
+# Stronger opt-in structure for new productions. These are measured from the
+# real synthesized narration and rendered pixels, never author-declared labels
+# alone. They are structural retention targets, not a prediction of views.
+HIGH_RETENTION_MAX_HOOK_SECONDS = 4.0
+HIGH_RETENTION_MIN_FIRST5_VISUAL_CHANGES = 2
+HIGH_RETENTION_LATEST_EARLY_REVEAL_SECONDS = 10.5
+HIGH_RETENTION_MAX_STATIC_SECONDS = 4.0
+HIGH_RETENTION_TWIST_FRACTION = (0.45, 0.82)
+HIGH_RETENTION_PAYOFF_FRACTION = (0.68, 0.95)
+
 _STATE_CHANGE_ROLES = ("CRISIS", "INVESTIGATION")
 _EARLY_PAYOFF_ROLES = ("REVEAL", "PAYOFF")
 
@@ -1056,6 +1066,91 @@ def verify_first_10s_retention(narration_timeline: list[dict], visual_cut_timest
         "narration_timeline_first_12s": [e for e in narration_timeline if e["start"] < 12.0],
         "visual_proof_cuts": proof_cuts,
         "distinct_early_roles": distinct_early_roles,
+    }
+    if reasons:
+        return {"status": "FAIL", "reason": "; ".join(reasons), "evidence": evidence}
+    return {"status": "PASS", "evidence": evidence}
+
+
+def verify_high_retention_profile(narration_timeline: list[dict], visual_activity: dict,
+                                  final_duration: float) -> dict:
+    """Verify a tighter real-render pacing shape for new Shorts.
+
+    This is not an entertainment score and does not predict performance. It
+    verifies concrete conditions tied to observed early-retention problems:
+    a compact hook, multiple opening picture changes, an early partial answer,
+    a later re-hook, and a payoff saved for the final stretch.
+    """
+    if not narration_timeline or final_duration <= 0:
+        return {"status": "FAIL", "reason": "missing real narration timing or final duration"}
+
+    reasons = []
+    hooks = [e for e in narration_timeline if e.get("role") == "HOOK"]
+    if not hooks:
+        hook_duration = None
+        reasons.append("no HOOK timing available")
+    else:
+        hook = hooks[0]
+        hook_duration = max(0.0, float(hook["end"]) - float(hook["start"]))
+        if hook_duration > HIGH_RETENTION_MAX_HOOK_SECONDS + 0.05:
+            reasons.append(
+                f"opening HOOK lasts {hook_duration:.2f}s (> {HIGH_RETENTION_MAX_HOOK_SECONDS:.1f}s)"
+            )
+
+    first5 = int(visual_activity.get("first_5s_visual_changes", 0) or 0)
+    if first5 < HIGH_RETENTION_MIN_FIRST5_VISUAL_CHANGES:
+        reasons.append(
+            f"only {first5} real visual change(s) in first 5s "
+            f"(need >= {HIGH_RETENTION_MIN_FIRST5_VISUAL_CHANGES})"
+        )
+
+    max_static = float(visual_activity.get("max_static_visual_seconds", 0.0) or 0.0)
+    if max_static > HIGH_RETENTION_MAX_STATIC_SECONDS + 0.05:
+        reasons.append(
+            f"real picture stays effectively static for {max_static:.1f}s "
+            f"(> {HIGH_RETENTION_MAX_STATIC_SECONDS:.1f}s)"
+        )
+
+    reveals = [e for e in narration_timeline if e.get("role") in ("REVEAL", "PAYOFF")]
+    reveal_start = float(reveals[0]["start"]) if reveals else None
+    if reveal_start is None or reveal_start > HIGH_RETENTION_LATEST_EARLY_REVEAL_SECONDS:
+        reasons.append(
+            "first REVEAL/PAYOFF arrives too late "
+            f"(need <= {HIGH_RETENTION_LATEST_EARLY_REVEAL_SECONDS:.1f}s)"
+        )
+
+    twist_window = (
+        final_duration * HIGH_RETENTION_TWIST_FRACTION[0],
+        final_duration * HIGH_RETENTION_TWIST_FRACTION[1],
+    )
+    twist_starts = [
+        float(e["start"]) for e in narration_timeline if e.get("role") == "TWIST"
+    ]
+    if not any(twist_window[0] <= t <= twist_window[1] for t in twist_starts):
+        reasons.append(
+            f"no TWIST/re-hook in later-middle window {twist_window[0]:.1f}-{twist_window[1]:.1f}s"
+        )
+
+    payoff_window = (
+        final_duration * HIGH_RETENTION_PAYOFF_FRACTION[0],
+        final_duration * HIGH_RETENTION_PAYOFF_FRACTION[1],
+    )
+    payoffs = [e for e in narration_timeline if e.get("role") == "PAYOFF"]
+    payoff_start = float(payoffs[0]["start"]) if payoffs else None
+    if payoff_start is None or not (payoff_window[0] <= payoff_start <= payoff_window[1]):
+        reasons.append(
+            f"PAYOFF must start in final stretch {payoff_window[0]:.1f}-{payoff_window[1]:.1f}s"
+        )
+
+    evidence = {
+        "hook_duration_seconds": hook_duration,
+        "first_5s_visual_changes": first5,
+        "max_static_visual_seconds": max_static,
+        "first_reveal_start": reveal_start,
+        "twist_starts": twist_starts,
+        "twist_window": twist_window,
+        "payoff_start": payoff_start,
+        "payoff_window": payoff_window,
     }
     if reasons:
         return {"status": "FAIL", "reason": "; ".join(reasons), "evidence": evidence}
@@ -1170,6 +1265,10 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         narration_timeline = compute_first_10s_narration_timeline(scene_windows)
         first_10s_retention = verify_first_10s_retention(narration_timeline, visual_activity["cut_timestamps"])
         checks["first_10s_retention"] = first_10s_retention
+        if getattr(project, "engagement_profile", "standard") == "high_retention_v1":
+            checks["high_retention_profile"] = verify_high_retention_profile(
+                narration_timeline, visual_activity, final_duration
+            )
 
     # Title behavior is now a declared production choice. Persistent remains
     # the default; first_scene_only is verified against real final frames.
