@@ -95,13 +95,31 @@ jobs:
           print('LEIDENFROST_FINAL_PASS duration=',probe['format']['duration'])
           PY
       - name: Sample review frames
+        # Evenly-spaced fractions of the real duration, not fixed absolute
+        # seconds: a fixed schedule silently drifts out of alignment with
+        # scene boundaries whenever a scene's length changes (as happened
+        # here -- the new heat_blocked beat landed entirely between two of
+        # the old fixed sample points), so every scene stops being reviewable
+        # by pure coincidence. Fractional sampling keeps coverage spread
+        # across the whole video regardless of how any one scene's timing
+        # shifts, for this production and any future one.
         if: success()
         run: |
           mkdir -p review_frames
           duration=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 dist/final.mp4)
-          for t in 0.4 2.2 5.0 9.5 14.0 21.0 29.0; do
-            ffmpeg -y -ss "$t" -i dist/final.mp4 -frames:v 1 "review_frames/t_${t}.jpg"
-          done
+          export LEIDENFROST_DURATION="$duration"
+          python - <<'PY'
+          import os
+          import subprocess
+          duration = float(os.environ["LEIDENFROST_DURATION"])
+          n = 12
+          for i in range(n):
+              frac = (i + 0.5) / n
+              t = max(0.0, min(duration - 0.05, frac * duration))
+              label = f"{frac:.3f}"
+              subprocess.run(["ffmpeg", "-y", "-ss", str(t), "-i", "dist/final.mp4",
+                               "-frames:v", "1", f"review_frames/f_{label}.jpg"], check=True)
+          PY
           ffmpeg -y -ss "$(python -c "print(max(0,float('$duration')-0.6))")" -i dist/final.mp4 -frames:v 1 review_frames/end.jpg
       - name: Dump QA summary
         if: success()
