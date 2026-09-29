@@ -676,19 +676,19 @@ def make_topic_configs():
 
 CUES={
     "golf_ball_dimples":{
-        "hook_compare":"놀랍게도","flight_compare":"매끈한 골프공보다","distance_result":"더 멀리","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은","wake_shrink":"공기 꼬리를",
+        "hook_compare":"매끈한 골프공이","flight_compare":"오히려","distance_result":"덜 날아갑니다","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은","wake_shrink":"공기 꼬리를",
         "dimple_surface":"작은 홈들이","turbulence":"공기를 일부러","attached_flow":"더 오래 붙어",
         "separation_compare":"늦게 떨어져","pressure_wake":"저압 영역이","drag_arrow":"저항이 줄어",
         "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","not_decoration":"장식이 아니라","payoff_dimple":"공기역학 장치",
     },
     "head_restraint":{
-        "hook_gap":"놀랍게도","rear_impact":"충돌 때","delayed_support":"받칩니다","torso_move":"몸통이","head_lag":"그런데 머리는",
+        "hook_gap":"의외로","rear_impact":"헤드레스트가 멀면","delayed_support":"머리를 늦게","torso_move":"몸통이","head_lag":"그런데 머리는",
         "relative_gap":"움직임 차이가","neck_bend":"목이 크게","timing":"이때","close_restraint":"가까운 헤드레스트",
         "early_contact":"빨리 받아","reduced_motion":"차이를 줄입니다","comfort_misconception":"푹신함이",
         "geometry":"높이와 머리 뒤 거리","impact_support_setup":"장치입니다","support":"머리를 빨리 받쳐","payoff":"목 보호 장치",
     },
     "elevator_counterweight":{
-        "car_up":"놀랍게도","whole_weight":"전체 무게를","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
+        "car_up":"의외로","whole_weight":"객실을","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
         "opposite_up":"객실이 올라가면","pulley":"균형추는 내려가고","opposite_down":"객실이 내려가면",
         "balance_empty":"균형추는 객실 무게와","balance_partial":"승객 하중의 일부","motor_difference":"모터가 처리할 차이를",
         "light_car":"빈 객실이","counter_down":"균형추 쪽이 더 무거울","not_dead_weight":"그 무거운 추는","energy":"에너지를 줄이는","payoff":"균형 장치",
