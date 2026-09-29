@@ -541,7 +541,7 @@ def make_topic_configs():
         ],["hook_gap","rear_impact","torso_move","head_lag"]),
         ("head_investigation",[
             phrase("INVESTIGATION","이때 머리와 몸통의 움직임 차이가 커지면 목이 크게 휘어질 수 있습니다."),
-        ],["relative_gap","neck_bend","timing"]),
+        ],["timing","relative_gap","neck_bend"]),
         ("head_explain",[
             phrase("EXPLANATION","헤드레스트가 높고 머리에 가까우면 머리를 더 빨리 받아 움직임 차이를 줄입니다."),
         ],["close_restraint","early_contact","reduced_motion"]),
