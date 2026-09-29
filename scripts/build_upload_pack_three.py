@@ -296,6 +296,14 @@ def headrest_frame(state:str,t:float,font_path:str|None):
         x=int(80+150*t); car(d,x,560,.82,BLUE); car(d,600-int(45*t),560,.62,RED)
         arrow(d,(760,450,500,450),RED,18)
         label(d,"뒤에서 충돌",(490,230),f56,WHITE)
+    elif state=="delayed_support":
+        d.rectangle((35,35,945,915),fill="#261c28",outline=RED,width=10)
+        seat_person(d,410,360,690,305,0,-55)
+        d.line((500,360,690,360),fill=RED,width=16)
+        d.ellipse((560,285,720,445),outline=RED,width=10)
+        # moving timer arc = delay before the restraint reaches the head
+        d.arc((120,180,360,420),-90,-90+int(300*t),fill=YELLOW,width=22)
+        label(d,"머리까지 닿는 데 시간이 걸림",(490,790),f44,WHITE)
     elif state=="torso_move":
         d.rectangle((35,35,945,915),fill="#10263b",outline=BLUE,width=10)
         shift=int(110*t); seat_person(d,430,360,620,305,shift,0)
@@ -317,20 +325,29 @@ def headrest_frame(state:str,t:float,font_path:str|None):
         d.line((440+torso,500,440+torso+head,430),fill=RED,width=18)
         label(d,"몸통 ↔ 머리 움직임 차이",(490,150),f44,WHITE)
     elif state=="neck_bend":
-        bend=int(95*t)
-        d.line((430,700,470,505),fill=ORANGE,width=58)
-        d.line((470,505,470-bend,400),fill=RED,width=30)
-        d.ellipse((398-bend,315,542-bend,459),fill="#ffd5ad",outline=WHITE,width=6)
-        label(d,"목이 크게 휘어질 수 있음",(490,820),f44,RED)
+        d.rectangle((35,35,945,915),fill="#4a171b",outline=RED,width=12)
+        bend=int(120*t)
+        # close-up neck angle, not the same seat composition as adjacent states
+        d.line((490,760,505,520),fill=ORANGE,width=72)
+        d.line((505,520,505-bend,365),fill=RED,width=38)
+        d.ellipse((410-bend,270,570-bend,430),fill="#ffd5ad",outline=WHITE,width=7)
+        d.arc((385,430,625,670),205,330,fill=YELLOW,width=18)
+        label(d,"머리·몸통 차이 → 목이 휘어짐",(490,165),f44,WHITE)
+        label(d,"위험한 상대 움직임",(490,835),f44,YELLOW)
     elif state=="timing":
         d.line((130,500,850,500),fill=GREY,width=9)
         x=int(160+650*t); d.ellipse((x-28,472,x+28,528),fill=YELLOW)
         d.rounded_rectangle((650,300,800,430),radius=25,fill=BLUE,outline=WHITE,width=7)
         label(d,"얼마나 빨리 머리를 받치나",(490,190),f44,WHITE)
     elif state=="close_restraint":
-        gap=int(150-90*t); seat_person(d,430,360,520+gap,305,0,0)
-        arrow(d,(620,620,535,620),GREEN,14)
-        label(d,"머리에 가깝게",(490,820),f56,GREEN)
+        d.rectangle((35,35,945,915),fill="#113c31",outline=GREEN,width=12)
+        gap=int(185-105*t)
+        # side-view measurement layout: head on left, restraint on right.
+        d.ellipse((225,260,465,500),fill="#ffd5ad",outline=WHITE,width=8)
+        d.rounded_rectangle((610-gap//3,225,755-gap//3,540),radius=32,fill=BLUE,outline=WHITE,width=8)
+        arrow(d,(470,590,610-gap//3,590),GREEN,16)
+        label(d,"머리와 받침 사이 거리 ↓",(490,165),f44,WHITE)
+        label(d,"가까울수록 빨리 받침",(490,790),f44,GREEN)
     elif state=="early_contact":
         head_move=int(90*t)
         seat_person(d,430,360,555,305,40,head_move)
@@ -357,6 +374,14 @@ def headrest_frame(state:str,t:float,font_path:str|None):
         d.line((610,280,610,450),fill=GREEN,width=10)
         label(d,"높이",(690,355),f34,GREEN); label(d,"거리",(530,235),f34,GREEN)
         label(d,"핵심은 위치",(490,800),f56,WHITE)
+    elif state=="impact_support_setup":
+        d.rectangle((35,35,945,915),fill="#20242b",outline=YELLOW,width=10)
+        car(d,120,620,.55,BLUE)
+        car(d,610-int(100*t),620,.48,RED)
+        arrow(d,(810,510,540,510),RED,20)
+        d.rounded_rectangle((255,170,725,430),radius=35,fill="#15382c",outline=GREEN,width=8)
+        label(d,"충돌 순간",(490,245),f56,WHITE)
+        label(d,"받침이 머리를 기다림",(490,350),f44,GREEN)
     elif state=="support":
         move=int(55*t); seat_person(d,430,360,560,305,50,move)
         d.arc((510,270,760,510),95,270,fill=GREEN,width=20)
@@ -544,7 +569,7 @@ def make_topic_configs():
             phrase("HOOK","놀랍게도 헤드레스트가 멀면 충돌 때 머리를 늦게 받칩니다.","surprising_consequence"),
             phrase("CRISIS","뒤에서 받히면 몸통이 먼저 밀립니다."),
             phrase("REVEAL","그런데 머리는 잠깐 뒤처집니다."),
-        ],["hook_gap","rear_impact","torso_move","head_lag"]),
+        ],["hook_gap","rear_impact","delayed_support","torso_move","head_lag"]),
         ("head_investigation",[
             phrase("INVESTIGATION","이때 머리와 몸통의 움직임 차이가 커지면 목이 크게 휘어질 수 있습니다."),
         ],["timing","relative_gap","neck_bend"]),
@@ -555,8 +580,8 @@ def make_topic_configs():
             phrase("TWIST","그래서 핵심은 푹신함이 아니라 높이와 머리 뒤 거리입니다."),
         ],["comfort_misconception","geometry"]),
         ("head_end",[
-            phrase("PAYOFF","헤드레스트는 목 보호용 안전장치입니다. 충돌 때 머리를 빨리 받쳐 움직임 차이를 줄입니다."),
-        ],["payoff","support"]),
+            phrase("PAYOFF","헤드레스트는 목 보호 장치입니다. 충돌 때 머리를 빨리 받쳐 몸통과 머리의 차이를 줄입니다."),
+        ],["payoff","impact_support_setup","support"]),
     ]
 
     elev_brief=TopicBrief(
@@ -639,10 +664,10 @@ CUES={
         "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","not_decoration":"장식이 아니라","payoff_dimple":"공기역학 장치",
     },
     "head_restraint":{
-        "hook_gap":"놀랍게도","rear_impact":"충돌 때","torso_move":"몸통이","head_lag":"그런데 머리는",
+        "hook_gap":"놀랍게도","rear_impact":"충돌 때","delayed_support":"머리를 늦게","torso_move":"몸통이","head_lag":"그런데 머리는",
         "relative_gap":"움직임 차이가","neck_bend":"목이 크게","timing":"이때","close_restraint":"가까운 헤드레스트",
         "early_contact":"빨리 받아","reduced_motion":"차이를 줄입니다","comfort_misconception":"푹신함이",
-        "geometry":"높이와 머리 뒤 거리","support":"머리를 빨리 받쳐","payoff":"안전장치",
+        "geometry":"높이와 머리 뒤 거리","impact_support_setup":"충돌 때","support":"머리를 빨리 받쳐","payoff":"목 보호 장치",
     },
     "elevator_counterweight":{
         "car_up":"놀랍게도","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
