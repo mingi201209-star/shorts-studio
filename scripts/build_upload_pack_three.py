@@ -205,6 +205,12 @@ def golf_frame(state:str,t:float,font_path:str|None):
         d.polygon([(390,330),(390,510),(760,420+broad),(760,420-broad)],fill="#8e3f49")
         d.polygon([(795,380),(795,460),(930,420+narrow),(930,420-narrow)],fill="#245d70")
         label(d,"큰 꼬리",(300,690),f44,RED); label(d,"작은 꼬리",(715,690),f44,CYAN)
+    elif state=="wake_shrink":
+        golf_ball(d,360,430,120,True)
+        wide=180-int(105*t)
+        d.polygon([(480,320),(480,540),(900,430+wide),(900,430-wide)],fill="#245d70")
+        arrow(d,(760,250,620,250),GREEN,14)
+        label(d,"후류가 좁아짐",(660,690),f44,GREEN)
     elif state=="dimple_surface":
         golf_ball(d,490,475,250,True)
         for a in range(0,360,30):
@@ -491,7 +497,7 @@ def make_topic_configs():
             phrase("HOOK","놀랍게도 매끈한 골프공보다 딤플이 파인 공이 더 멀리 날아갑니다.","surprising_consequence"),
             phrase("CRISIS","표면이 거칠면 공기저항이 더 커질 것 같죠."),
             phrase("REVEAL","그런데 딤플은 공 뒤의 큰 공기 꼬리를 줄입니다."),
-        ],["hook_compare","flight_compare","distance_result","expected_drag","drag_expectation","wake_compare"]),
+        ],["hook_compare","flight_compare","distance_result","expected_drag","drag_expectation","wake_compare","wake_shrink"]),
         ("golf_investigation",[
             phrase("INVESTIGATION","작은 홈들이 공 표면의 공기를 일부러 어지럽혀 흐름이 더 오래 붙어 있게 합니다."),
         ],["dimple_surface","turbulence","attached_flow"]),
@@ -621,7 +627,7 @@ def make_topic_configs():
 
 CUES={
     "golf_ball_dimples":{
-        "hook_compare":"놀랍게도","flight_compare":"매끈한 골프공보다","distance_result":"더 멀리","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은",
+        "hook_compare":"놀랍게도","flight_compare":"매끈한 골프공보다","distance_result":"더 멀리","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은","wake_shrink":"공기 꼬리를",
         "dimple_surface":"작은 홈들이","turbulence":"공기를 일부러","attached_flow":"더 오래 붙어",
         "separation_compare":"늦게 떨어져","pressure_wake":"저압 영역이","drag_arrow":"저항이 줄어",
         "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","not_decoration":"장식이 아니라","payoff_dimple":"공기역학 장치",
