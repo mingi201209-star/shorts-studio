@@ -1104,7 +1104,7 @@ def verify_retention_contract(project) -> dict:
     return {"status": overall, "checks": checks}
 
 
-def run_final_video_qa(video: Path, project, sources: list[dict], semantic_results: list[dict], probe: dict, scene_windows: list[dict], build_dir: Path) -> dict:
+def run_final_video_qa(video: Path, project, sources: list[dict], semantic_results: list[dict], probe: dict, scene_windows: list[dict], build_dir: Path, narration_reference: Path | None = None) -> dict:
     """scene_windows: [{"scene": id, "start": cumulative_start_in_final_video,
     "caption_window": (start,end) or None}] -- caption_window is the first
     caption's (start,end) *within that scene's own clip*, or None if the
@@ -1123,7 +1123,10 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
     checks["scenes_present"] = verify_scenes_present([s.id for s in project.scenes], sources)
     checks["visual_cut_cadence"] = verify_visual_cut_cadence(scene_windows, project.scenes)
     checks["no_semantic_skip"] = verify_no_semantic_skip(semantic_results)
-    checks["narration_continuity"] = verify_narration_continuity(video)
+    # Music/SFX must never hide a broken TTS track. When production audio
+    # is mixed in, render() passes the narration-only concat here so this
+    # historical gate keeps measuring speech continuity, not "some sound".
+    checks["narration_continuity"] = verify_narration_continuity(narration_reference or video)
 
     # Real, pixel-level ground truth on the actual rendered file -- does not
     # trust the manifest's visual_beats timestamps at all, so a beat that
