@@ -470,9 +470,10 @@ def make_brief():
     )
 
 
-def phrase(role,text,hook_type=None):
+def phrase(role,text,hook_type=None,focus=False):
     x={"role":role,"text":text}
     if hook_type:x["hook_type"]=hook_type
+    if focus:x["focus"]=True
     return x
 
 
