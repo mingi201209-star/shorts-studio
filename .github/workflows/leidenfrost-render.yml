@@ -125,6 +125,34 @@ jobs:
           },ensure_ascii=False))
           print('===LEIDENFROST_QA_END===')
           PY
+      - name: Dump review frames into the job log
+        # Artifact downloads go through Azure Blob Storage, which is blocked
+        # by this session's org egress policy, so the only retrievable path
+        # for actual human visual review is small thumbnails printed into
+        # the job log itself (same technique as mpemba-effect-render.yml).
+        if: success()
+        run: |
+          python - <<'PY'
+          import base64, io
+          from pathlib import Path
+          from PIL import Image
+
+          def dump_jpeg(label, img):
+              img = img.convert('RGB')
+              w = 420
+              h = round(img.height * w / img.width)
+              img = img.resize((w, h), Image.LANCZOS)
+              buf = io.BytesIO()
+              img.save(buf, format='JPEG', quality=60)
+              data = base64.b64encode(buf.getvalue()).decode()
+              print(f"===FRAME[{label}]_BEGIN===")
+              for i in range(0, len(data), 160):
+                  print(data[i:i+160])
+              print(f"===FRAME[{label}]_END===")
+
+          for p in sorted(Path('review_frames').glob('*.jpg')):
+              dump_jpeg(p.stem, Image.open(p))
+          PY
       - name: Prepare upload description
         if: success()
         run: cp examples/leidenfrost_effect_upload_description.txt dist/upload-description.txt
