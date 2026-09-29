@@ -502,10 +502,10 @@ def make_topic_configs():
         ],
     )
     head_hooks={
-        "contradiction":"차 헤드레스트는 편의용 쿠션처럼 보이지만, 사실은 충돌 안전장치입니다.",
         "surprising_consequence":"놀랍게도 차 헤드레스트가 낮거나 멀면 뒤에서 받혔을 때 머리를 더 늦게 받칠 수 있습니다.",
         "counterintuitive_fact":"차 헤드레스트는 푹신함보다 위치가 더 중요합니다.",
         "visible_anomaly":"차 헤드레스트가 있어도 머리에서 너무 멀면 이상하게도 충돌 순간 바로 받쳐주지 못합니다.",
+        "mistaken_assumption":"차 헤드레스트가 단순한 편의 쿠션이라는 생각은 사실과 다릅니다.",
     }
     head_scenes=[
         ("head_hook",[
@@ -531,7 +531,7 @@ def make_topic_configs():
         topic_id="elevator-counterweight",
         familiar_subject="엘리베이터 균형추",
         contradiction_fact="엘리베이터 모터는 객실 전체 무게를 매번 통째로 들어올리는 방식이 아닙니다",
-        surprising_consequence_fact="엘리베이터 샤프트 반대편의 균형추가 객실과 반대로 움직여 필요한 에너지를 줄입니다",
+        surprising_consequence_fact="엘리베이터 모터는 객실 전체 무게를 매번 통째로 들어올리지 않아도 됩니다",
         counterintuitive_fact="빈 엘리베이터가 올라갈 때는 균형추 쪽이 더 무거울 수 있습니다",
         anomaly_fact="엘리베이터 객실이 올라갈 때 샤프트 반대편에서는 무거운 추가 내려갑니다",
         mistaken_assumption_fact="엘리베이터 모터가 매번 객실 전체 무게를 그대로 들어올린다는 생각은 맞지 않습니다",
@@ -543,10 +543,10 @@ def make_topic_configs():
         ],
     )
     elev_hooks={
-        "contradiction":"엘리베이터 균형추 때문에 모터는 객실 전체 무게를 매번 통째로 들지 않습니다.",
-        "surprising_consequence":"놀랍게도 엘리베이터 반대편의 무거운 추가 내려가며 객실 상승을 돕습니다.",
+        "surprising_consequence":"놀랍게도 엘리베이터 모터는 객실 무게를 매번 통째로 들어올리는 게 아닙니다.",
         "counterintuitive_fact":"엘리베이터 균형추는 짐처럼 보이지만 사실은 필요한 에너지를 줄입니다.",
         "visible_anomaly":"엘리베이터 객실이 올라가면 반대편의 무거운 추가 이상하게도 내려갑니다.",
+        "mistaken_assumption":"엘리베이터 모터가 객실 전체 무게를 그대로 든다는 생각은 사실과 다릅니다.",
     }
     elev_scenes=[
         ("elev_hook",[
@@ -674,6 +674,7 @@ def build_topic(topic:Topic,font_path:str|None):
         # Keep the winning Prompt V2 strategy in the authored HOOK metadata.
         if scene_index==0:
             plan[0]["hook_type"]=winner.strategy
+            plan[0]["text"]=winner.text
         beats=[]
         for i,state in enumerate(states):
             cue=cues[state]
@@ -682,6 +683,10 @@ def build_topic(topic:Topic,font_path:str|None):
         # Schema starts are only ordering placeholders. strict meaningful-change
         # mode replaces them with measured narration-cue timing before render.
         for i,b in enumerate(beats): b["start"]=float(i)
+        if scene_index==0:
+            beats[0]["visual_qa_requirements"]=[
+                f"첫 훅 '{plan[0]['text']}'의 익숙한 대상과 이상한 결과가 첫 화면에서 직접 보여야 함"
+            ]
         narration=" ".join(p["text"] for p in plan)
         scenes.append({
             "id":sid,
