@@ -536,10 +536,14 @@ def main():
     png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
 
     motion={
+        "hook_glide":save_motion_clip("hook_glide_motion",assets/"hook_glide_motion.mp4",args.font,3.0),
+        "hook_float":save_motion_clip("hook_float_motion",assets/"hook_float_motion.mp4",args.font,3.0),
         "vapor_cushion":save_motion_clip("vapor_cushion_motion",assets/"vapor_cushion_motion.mp4",args.font,3.2),
-        "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
-        "payoff":save_motion_clip("payoff_motion",assets/"payoff_motion.mp4",args.font,3.4),
         "heat_blocked":save_motion_clip("heat_blocked_motion",assets/"heat_blocked_motion.mp4",args.font,3.0),
+        "insulated_float":save_motion_clip("insulated_float_motion",assets/"insulated_float_motion.mp4",args.font,3.2),
+        "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
+        "support":save_motion_clip("support_motion",assets/"support_motion.mp4",args.font,3.2),
+        "final_float":save_motion_clip("final_float_motion",assets/"final_float_motion.mp4",args.font,3.4),
     }
     sound={
         "bed":save_audio_bed(assets/"ambient_pulse.wav"),
@@ -585,11 +589,11 @@ def main():
                  f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",
                  VIDEO_ATTRIBUTION,presentation_kind="real_motion",hero_visual=True,internal_text="none",
                  sfx_asset=sound["hit"],sfx_gain_db=-20.0),
-            beat(motion["glide"],"끓어 없어지는 대신","skittering_motion","hook_result","skid","state",
+            beat(motion["hook_glide"],"끓어 없어지는 대신","skittering_motion","hook_result","skid","state",
                  "a top down dark pan animation with a Leidenfrost droplet visibly changing position along a curved path",
                  "끓어 없어지는 대신 물방울이 실제로 위치를 바꾸며 미끄러지는 현상을 보여주는 움직임",
                  presentation_kind="physical_animation",internal_text="label"),
-            beat(motion["payoff"],"왜 안 사라질까요","floating_anomaly","hook_gap","floating","state",
+            beat(motion["hook_float"],"왜 안 사라질까요","floating_anomaly","hook_gap","floating","state",
                  "a physical animation showing a water droplet lifting above a very hot plate as a vapor cushion grows underneath",
                  "더 뜨거운 표면인데도 물방울이 떠서 버티는 모순을 움직임으로 보여주는 장면",
                  presentation_kind="physical_animation",internal_text="label"),
@@ -622,7 +626,7 @@ def main():
                  "an educational diagram showing a water droplet separated from a hot metal surface by vapor with no direct contact",
                  "수증기층 때문에 물방울과 뜨거운 금속의 직접 접촉이 끊긴 구조",
                  presentation_kind="explanatory_diagram",internal_text="label"),
-            beat(motion["payoff"],"열이 바로 전달되지 않습니다","insulated_float","insulation","supported","state",
+            beat(motion["insulated_float"],"열이 바로 전달되지 않습니다","insulated_float","insulation","supported","state",
                  "a physical animation showing a droplet remaining lifted as the vapor layer supports it above a hot plate",
                  "직접 접촉이 줄어든 상태에서 물방울이 수증기층 위에 떠 있는 결과를 움직임으로 보여주는 장면",
                  presentation_kind="physical_animation",internal_text="label"),
@@ -638,7 +642,7 @@ def main():
                  "a top down physical animation with a Leidenfrost droplet changing position along a curved skating path",
                  "물방울이 팬 위에서 실제 위치를 바꾸며 곡선을 따라 미끄러지는 움직임",
                  presentation_kind="physical_animation",internal_text="label"),
-            beat(motion["payoff"],"증기층이 받쳐","vapor_support_force","glide","support","state",
+            beat(motion["support"],"증기층이 받쳐","vapor_support_force","glide","support","state",
                  "a physical animation showing the vapor cushion expanding beneath and supporting the floating droplet",
                  "수증기층이 아래에서 물방울을 받쳐 떠 있게 하는 상태를 움직임으로 보여주는 장면",
                  presentation_kind="physical_animation",internal_text="label"),
@@ -646,14 +650,14 @@ def main():
         ("s_end",[
             phrase("PAYOFF","이게 라이덴프로스트 효과입니다. 충분히 뜨거운 표면에서는 물이 바로 사라지는 대신, 자기 수증기 위에 잠깐 떠 있게 됩니다."),
         ],[
-            beat(motion["payoff"],"라이덴프로스트 효과입니다","final_mechanism","payoff","mechanism","state",
+            beat(motion["final_float"],"라이덴프로스트 효과입니다","final_mechanism","payoff","mechanism","state",
                  "a bright physical animation showing a droplet floating on a growing vapor cushion above a hot surface",
                  "라이덴프로스트 효과의 핵심 구조를 마지막에 크게 움직임으로 보여주는 장면",
                  presentation_kind="physical_animation",hero_visual=True,internal_text="label"),
-            beat(source_video,"자기 수증기 위에","real_final_result","payoff","real_callback","state",
+            beat(source_video_payoff,"자기 수증기 위에","real_final_result","payoff","real_callback","state",
                  "a real scientific experiment showing a Leidenfrost droplet forming and persisting on a 300 degree Celsius superheated plate",
                  "처음 봤던 실제 300도 실험으로 돌아가 물방울이 뜨는 결과를 최종 보상 화면으로 보여주는 장면",
-                 VIDEO_ATTRIBUTION,presentation_kind="real_motion",hero_visual=True,internal_text="none",
+                 PAYOFF_VIDEO_ATTRIBUTION,presentation_kind="real_motion",hero_visual=True,internal_text="none",
                  sfx_asset=sound["hit"],sfx_gain_db=-22.0),
         ]),
     ]
