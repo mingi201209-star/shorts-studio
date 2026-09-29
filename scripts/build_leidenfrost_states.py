@@ -177,15 +177,6 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.line((150,525,830,725),fill="#ff5252",width=26)
         d.line((150,725,830,525),fill="#ff5252",width=26)
         d.text((490,675),"직접 접촉 X",font=f38,fill=WHITE,anchor="mm")
-    elif kind=="heat_blocked":
-        d.rectangle((45,45,935,905),fill="#2b1716")
-        d.rounded_rectangle((90,690,890,825),radius=25,fill="#f05a48",outline=WHITE,width=7)
-        d.rounded_rectangle((260,515,720,610),radius=35,fill=CYAN,outline=WHITE,width=7)
-        droplet(d,490,300,120,fill="#5ca7ef")
-        for x in (280,390,500,610,720):
-            d.line((x,675,x,625),fill=YELLOW,width=14)
-            d.polygon([(x,610),(x-18,638),(x+18,638)],fill=YELLOW)
-        d.text((490,470),"수증기층에서 열 흐름이 꺾임",font=f38,fill=WHITE,anchor="mm")
     elif kind=="paradox_shield":
         d.rectangle((45,45,935,905),fill="#e54f3d")
         d.polygon([(490,125),(790,250),(735,610),(490,790),(245,610),(190,250)],
@@ -282,6 +273,25 @@ def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps
             d.line((180,690,800,690),fill=CYAN,width=12)
             d.polygon([(815,690),(775,665),(775,715)],fill=CYAN)
             d.text((490,780),"수증기 위에서 실제 위치가 바뀜",font=f38,fill=WHITE,anchor="mm")
+        elif kind=="heat_blocked_motion":
+            d.rectangle((45,45,935,905),fill="#2b1716")
+            d.rounded_rectangle((90,690,890,825),radius=25,fill="#f05a48",outline=WHITE,width=7)
+            d.rounded_rectangle((260,515,720,610),radius=35,fill=CYAN,outline=WHITE,width=7)
+            droplet(d,490,300,120,fill="#5ca7ef")
+            # Heat arrows rise from the plate each cycle but visibly stall and
+            # fade right at the vapor-layer boundary -- the physical claim
+            # itself (heat blocked from reaching the droplet), not decoration.
+            cycle=(t*2.0)%1.0
+            for k,x in enumerate((280,390,500,610,720)):
+                rise=max(0.0,min(1.0,cycle*1.6-k*0.12))
+                if rise<=0:
+                    continue
+                y_start=675
+                y_stop=int(675-95*min(rise,0.82))
+                d.line((x,y_start,x,y_stop),fill=YELLOW,width=14)
+                if rise<0.82:
+                    d.polygon([(x,y_stop-14),(x-18,y_stop+14),(x+18,y_stop+14)],fill=YELLOW)
+            d.text((490,470),"수증기층에서 열 흐름이 꺾임",font=f38,fill=WHITE,anchor="mm")
         elif kind=="payoff_motion":
             d.rectangle((45,45,935,905),fill="#dff6fb")
             hot_plate(d,735)
@@ -370,7 +380,7 @@ def main():
 
     kinds=[
         "hook_result","skid_contrast","expectation","question_gap","vapor_birth","vapor_expand","vapor_cushion",
-        "vapor_hint","no_contact","contact_gap","heat_blocked","paradox_shield","protected_drop",
+        "vapor_hint","no_contact","contact_gap","paradox_shield","protected_drop",
         "glide","support_force","name","threshold","payoff",
     ]
     png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
@@ -379,6 +389,7 @@ def main():
         "vapor_cushion":save_motion_clip("vapor_cushion_motion",assets/"vapor_cushion_motion.mp4",args.font,3.2),
         "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
         "payoff":save_motion_clip("payoff_motion",assets/"payoff_motion.mp4",args.font,3.4),
+        "heat_blocked":save_motion_clip("heat_blocked_motion",assets/"heat_blocked_motion.mp4",args.font,3.0),
     }
 
     brief=make_brief()
@@ -455,7 +466,7 @@ def main():
             beat(png["contact_gap"],"직접 닿지","visible_gap","insulation","gap","state",
                  "a high contrast close up diagram emphasizing the physical gap between water and hot metal",
                  "물방울과 뜨거운 금속 사이의 직접 접촉이 끊긴 틈을 크게 확대해 보여주는 모습"),
-            beat(png["heat_blocked"],"열이 바로","reduced_heat_transfer","insulation","heat_blocked","state",
+            beat(motion["heat_blocked"],"열이 바로","reduced_heat_transfer","insulation","heat_blocked","state",
                  "a dark thermal educational diagram showing heat flow interrupted by a vapor layer under a water droplet",
                  "수증기층에서 뜨거운 판의 열 흐름이 바로 이어지지 않는 모습을 보여주는 장면"),
         ]),
