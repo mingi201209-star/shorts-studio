@@ -267,11 +267,17 @@ _STRATEGY_PRIORITY = {
     "visible_anomaly": 2, "mistaken_assumption": 2, "unresolved_cause_effect": 1,
 }
 
+# Soft preference only. Real spoken duration is measured after TTS by
+# high_retention_v1; this keeps the generator/judge from preferring ornamental
+# five-second hooks when a tighter grounded version says the same thing.
+HOOK_SOFT_SPOKEN_CHAR_TARGET = 30
+
 
 def _score_candidate(candidate: HookCandidate) -> float:
     strategy_score = _STRATEGY_PRIORITY.get(candidate.strategy, 0)
     tension_score = tension_marker_strength(candidate.text)
-    length_penalty = max(0, len(candidate.text) - 40) * 0.02
+    spoken_chars = len(normalize_text(candidate.text).replace(" ", ""))
+    length_penalty = max(0, spoken_chars - HOOK_SOFT_SPOKEN_CHAR_TARGET) * 0.09
     return strategy_score + tension_score - length_penalty
 
 
@@ -317,7 +323,8 @@ _HOOK_JUDGE_SYSTEM_PROMPT = (
     "video from a list of candidates that already passed structural "
     "screening. Pick the one most likely to make a viewer scrolling past "
     "think 'wait, what? then why/how?' within one second, without giving "
-    "away the ending. Respond with ONLY a JSON object: "
+    "away the ending. Prefer one concrete clause that can be spoken in roughly "
+    "3-4 seconds over a longer hook with the same factual promise. Respond with ONLY a JSON object: "
     "{\"winner_index\": <int>, \"reason\": \"<one short sentence>\"}. "
     "winner_index is the 0-based index into the given candidate list. Never "
     "invent a candidate; choose only among the ones given."
@@ -424,13 +431,16 @@ Build curiosity by progressive disclosure:
 
 Pacing rules:
 - The first spoken sentence must contain subject + surprising result immediately, not a greeting or topic announcement.
-- Keep the HOOK speakable in one breath. If it delays the first clue, shorten wording without weakening the claim.
+- Keep the HOOK to one concrete clause and make it finish in roughly 3–4 spoken seconds. Front-load subject + surprising result; delete ornamental words before deleting factual meaning.
+- In the first 5 seconds, the viewer should receive at least two distinct visual/evidence states: result, comparison, consequence, or clue. Do not rely on crop/zoom of one picture.
 - No more than one short SETUP sentence may appear before the first REVEAL.
 - Between 3 and 8 seconds, start a real tension/state-change beat (for example a contradiction, question, CRISIS, or INVESTIGATION).
 - Start the first REVEAL or PAYOFF after 8 seconds and no later than 12 seconds.
 - The first 10 seconds must contain at least three distinct narrative roles.
 - By about 5 seconds, the viewer should already have either a concrete observation or the setup that directly leads into the clue.
 - Put the strongest explanatory synthesis in the later half, after a partial answer and one re-hook.
+- Avoid a flat explanation plateau: every 4–7 seconds, add a new observation, consequence, contradiction, or state change. Alternate concrete evidence → plain-language mechanism → consequence instead of stacking abstract explanation sentences.
+- Place the earned TWIST/re-hook in the later-middle of the story, after the viewer has a partial answer. Reserve the final PAYOFF for the last stretch and end soon after it lands.
 - Let important reveals land. Do not turn every sentence into a new question.
 - No sentence may exist only to say 'keep watching', 'you won't believe', or 'here is the crazy part'.
 - Do not use a technical term before giving its plain-language meaning, unless the term itself is the familiar subject.
