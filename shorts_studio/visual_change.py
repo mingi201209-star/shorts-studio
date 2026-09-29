@@ -164,7 +164,13 @@ def verify_observed_changes(project, windows, video, build_dir, media_box):
                 # local offset used for the rendered-state observation.
                 cap = cv2.VideoCapture(str(beat.asset))
                 try:
-                    cap.set(cv2.CAP_PROP_POS_MSEC, min(.25, max(0.0, (end-start)/2)) * 1000.0)
+                    # Match the same semantic source offset the renderer uses.
+                    # Without this, a later source_start would render (say)
+                    # second 8 while QA compared it to second 0.25 and could
+                    # falsely report the correct moving beat as unrelated.
+                    source_start=float(getattr(beat,"source_start",0.0) or 0.0)
+                    local_sample=min(.25, max(0.0, (end-start)/2))
+                    cap.set(cv2.CAP_PROP_POS_MSEC, (source_start+local_sample) * 1000.0)
                     ok, frame_from_video = cap.read()
                     if ok and frame_from_video is not None:
                         source = frame_from_video
