@@ -186,7 +186,7 @@ def golf_frame(state:str,t:float,font_path:str|None):
         d.ellipse((365,495,415,545),fill=GREY)
         d.ellipse((810,365,860,415),fill=GREEN)
         label(d,"매끈",(390,735),f34,GREY); label(d,"딤플",(830,735),f34,CYAN)
-        label(d,"딤플 공이 더 멀리",(490,180),f56,GREEN)
+        label(d,"딤플 공이 더 멀리",(490,180),f58,GREEN)
     elif state=="expected_drag":
         golf_ball(d,490,450,145,True)
         for y in (340,410,480,550):
@@ -196,7 +196,7 @@ def golf_frame(state:str,t:float,font_path:str|None):
     elif state=="drag_expectation":
         golf_ball(d,390,450,145,True)
         arrow(d,(565,450,855,450),RED,28)
-        label(d,"공기저항 ↑ ?",(660,335),f56,RED)
+        label(d,"공기저항 ↑ ?",(660,335),f58,RED)
         label(d,"직관",(490,760),f44,GREY)
     elif state=="wake_compare":
         golf_ball(d,280,420,105,False); golf_ball(d,690,420,105,True)
@@ -261,7 +261,7 @@ def golf_frame(state:str,t:float,font_path:str|None):
         label(d,"작은 홈 수백 개",(490,135),f44,INK)
     elif state=="not_decoration":
         golf_ball(d,490,460,245,True)
-        label(d,"장식",(490,170),f56,GREY)
+        label(d,"장식",(490,170),f58,GREY)
         d.line((280,250,700,690),fill=RED,width=30)
         d.line((700,250,280,690),fill=RED,width=30)
         label(d,"기능이 있는 표면",(490,820),f44,GREEN)
