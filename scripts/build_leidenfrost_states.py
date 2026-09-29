@@ -12,7 +12,7 @@ licensing complications.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, subprocess, time, urllib.parse, urllib.request
+import argparse, hashlib, json, math, random, struct, subprocess, time, urllib.parse, urllib.request, wave
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -100,6 +100,45 @@ def hot_plate(d,y=690):
     d.rounded_rectangle((90,y,890,y+95),radius=24,fill=RED,outline=INK,width=7)
     for x in range(150,850,120):
         d.line((x,y+110,x+35,y+160),fill=RED,width=8)
+
+
+def _write_mono_wav(out:Path,samples:list[float],sample_rate:int=48000)->Path:
+    out.parent.mkdir(parents=True,exist_ok=True)
+    with wave.open(str(out),"wb") as wav:
+        wav.setnchannels(1); wav.setsampwidth(2); wav.setframerate(sample_rate)
+        wav.writeframes(b"".join(struct.pack("<h",max(-32767,min(32767,int(x*32767)))) for x in samples))
+    return out
+
+
+def save_audio_bed(out:Path,duration:float=8.0,sample_rate:int=48000)->Path:
+    """A very quiet, non-melodic pulse bed; narration stays dominant."""
+    total=int(duration*sample_rate); samples=[]
+    for n in range(total):
+        t=n/sample_rate
+        pulse=0.55+0.45*(0.5+0.5*math.sin(2*math.pi*1.5*t))
+        tone=(math.sin(2*math.pi*82*t)+0.45*math.sin(2*math.pi*123*t))
+        samples.append(0.09*pulse*tone/1.45)
+    return _write_mono_wav(out,samples,sample_rate)
+
+
+def save_soft_whoosh(out:Path,duration:float=0.42,sample_rate:int=48000)->Path:
+    rng=random.Random(7); total=int(duration*sample_rate); samples=[]; state=0.0
+    for n in range(total):
+        t=n/sample_rate
+        env=math.sin(math.pi*min(1.0,t/duration))**2
+        state=0.90*state+0.10*rng.uniform(-1.0,1.0)
+        samples.append(0.32*env*state)
+    return _write_mono_wav(out,samples,sample_rate)
+
+
+def save_soft_hit(out:Path,duration:float=0.28,sample_rate:int=48000)->Path:
+    total=int(duration*sample_rate); samples=[]
+    for n in range(total):
+        t=n/sample_rate
+        env=math.exp(-13*t)
+        sweep=170+110*(1-t/duration)
+        samples.append(0.34*env*(math.sin(2*math.pi*sweep*t)+0.35*math.sin(2*math.pi*2*sweep*t)))
+    return _write_mono_wav(out,samples,sample_rate)
 
 
 def save_panel(kind:str,label:str,out:Path,font_path:str|None):
@@ -414,6 +453,11 @@ def main():
         "payoff":save_motion_clip("payoff_motion",assets/"payoff_motion.mp4",args.font,3.4),
         "heat_blocked":save_motion_clip("heat_blocked_motion",assets/"heat_blocked_motion.mp4",args.font,3.0),
     }
+    sound={
+        "bed":save_audio_bed(assets/"ambient_pulse.wav"),
+        "whoosh":save_soft_whoosh(assets/"soft_whoosh.wav"),
+        "hit":save_soft_hit(assets/"soft_hit.wav"),
+    }
 
     brief=make_brief()
     hook_result=generate_and_judge(brief,generator=LeidenfrostHookGenerator())
@@ -554,6 +598,8 @@ def main():
         "strict_retention_contract":True,
         "strict_production_quality_v2":True,
         "strict_entertainment_contract":False,
+        "background_music":str(sound["bed"]),
+        "background_music_gain_db":-32.0,
         "scenes":scenes,
     }
     Path("examples").mkdir(exist_ok=True)
