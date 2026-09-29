@@ -297,14 +297,20 @@ def headrest_frame(state:str,t:float,font_path:str|None):
         arrow(d,(760,450,500,450),RED,18)
         label(d,"뒤에서 충돌",(490,230),f56,WHITE)
     elif state=="torso_move":
-        shift=int(85*t); seat_person(d,430,360,620,305,shift,0)
-        arrow(d,(260,780,260+180*t,780),YELLOW,16)
-        label(d,"몸통은 좌석과 함께 먼저",(490,150),f44,WHITE)
+        d.rectangle((35,35,945,915),fill="#10263b",outline=BLUE,width=10)
+        shift=int(110*t); seat_person(d,430,360,620,305,shift,0)
+        arrow(d,(180,760,180+310*t,760),YELLOW,22)
+        label(d,"좌석 + 몸통이 먼저 이동",(490,150),f44,WHITE)
     elif state=="head_lag":
-        torso=int(95*t); head=int(-65*t)
+        # Strongly distinct state: red warning field + enlarged separation
+        # arrow. This is a semantic change (head lag), not framing churn.
+        d.rectangle((35,35,945,915),fill="#35181b",outline=RED,width=10)
+        torso=int(110*t); head=int(-90*t)
         seat_person(d,430,360,650,305,torso,head)
-        arrow(d,(520+torso,260,520+torso+head,260),RED,16)
-        label(d,"머리는 잠깐 뒤처짐",(490,820),f44,RED)
+        arrow(d,(600+torso,255,600+torso+head,255),RED,24)
+        d.arc((340,235,650,560),210,335,fill=RED,width=18)
+        label(d,"몸통보다 머리가 늦음",(490,155),f44,WHITE)
+        label(d,"머리는 잠깐 뒤처짐",(490,825),f44,RED)
     elif state=="relative_gap":
         torso=int(80*t); head=int(-70*t)
         seat_person(d,430,360,670,305,torso,head)
@@ -528,29 +534,29 @@ def make_topic_configs():
         ],
     )
     head_hooks={
-        "surprising_consequence":"놀랍게도 차 헤드레스트가 낮거나 멀면 뒤에서 받혔을 때 머리를 더 늦게 받칠 수 있습니다.",
+        "surprising_consequence":"놀랍게도 헤드레스트가 멀면 충돌 때 머리를 늦게 받칩니다.",
         "counterintuitive_fact":"차 헤드레스트는 푹신함보다 위치가 더 중요합니다.",
         "visible_anomaly":"차 헤드레스트가 있어도 머리에서 너무 멀면 이상하게도 충돌 순간 바로 받쳐주지 못합니다.",
         "mistaken_assumption":"차 헤드레스트가 단순한 편의 쿠션이라는 생각은 사실과 다릅니다.",
     }
     head_scenes=[
         ("head_hook",[
-            phrase("HOOK","놀랍게도 차 헤드레스트가 낮거나 멀면 뒤에서 받혔을 때 머리를 더 늦게 받칠 수 있습니다.","surprising_consequence"),
-            phrase("CRISIS","충돌 순간 몸통은 좌석과 함께 먼저 밀립니다."),
-            phrase("REVEAL","하지만 머리는 관성 때문에 잠깐 뒤처집니다."),
+            phrase("HOOK","놀랍게도 헤드레스트가 멀면 충돌 때 머리를 늦게 받칩니다.","surprising_consequence"),
+            phrase("CRISIS","뒤에서 받히면 몸통이 먼저 밀립니다."),
+            phrase("REVEAL","그런데 머리는 잠깐 뒤처집니다."),
         ],["hook_gap","rear_impact","torso_move","head_lag"]),
         ("head_investigation",[
             phrase("INVESTIGATION","이때 머리와 몸통의 움직임 차이가 커지면 목이 크게 휘어질 수 있습니다."),
         ],["timing","relative_gap","neck_bend"]),
         ("head_explain",[
-            phrase("EXPLANATION","헤드레스트가 높고 머리에 가까우면 머리를 더 빨리 받아 움직임 차이를 줄입니다."),
+            phrase("EXPLANATION","가까운 헤드레스트는 머리를 빨리 받아 몸통과 머리의 차이를 줄입니다."),
         ],["close_restraint","early_contact","reduced_motion"]),
         ("head_twist",[
-            phrase("TWIST","그래서 편하게 기대는 쿠션처럼 보여도 실제로 중요한 건 높이와 머리 뒤까지의 거리입니다."),
+            phrase("TWIST","그래서 핵심은 푹신함이 아니라 높이와 머리 뒤 거리입니다."),
         ],["comfort_misconception","geometry"]),
         ("head_end",[
-            phrase("PAYOFF","헤드레스트는 뒤에서 받혔을 때 머리를 빨리 지지해 목의 부담을 줄이는 안전장치입니다."),
-        ],["support","payoff"]),
+            phrase("PAYOFF","헤드레스트는 목 보호용 안전장치입니다. 충돌 때 머리를 빨리 받쳐 움직임 차이를 줄입니다."),
+        ],["payoff","support"]),
     ]
 
     elev_brief=TopicBrief(
@@ -633,10 +639,10 @@ CUES={
         "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","not_decoration":"장식이 아니라","payoff_dimple":"공기역학 장치",
     },
     "head_restraint":{
-        "hook_gap":"놀랍게도","rear_impact":"뒤에서 받혔을 때","torso_move":"몸통은","head_lag":"하지만 머리는",
-        "relative_gap":"움직임 차이가","neck_bend":"목이 크게","timing":"이때","close_restraint":"머리에 가까우면",
-        "early_contact":"더 빨리 받아","reduced_motion":"움직임 차이를 줄입니다","comfort_misconception":"편하게 기대는",
-        "geometry":"높이와 머리 뒤까지의 거리","support":"머리를 빨리 지지해","payoff":"안전장치",
+        "hook_gap":"놀랍게도","rear_impact":"충돌 때","torso_move":"몸통이","head_lag":"그런데 머리는",
+        "relative_gap":"움직임 차이가","neck_bend":"목이 크게","timing":"이때","close_restraint":"가까운 헤드레스트",
+        "early_contact":"빨리 받아","reduced_motion":"차이를 줄입니다","comfort_misconception":"푹신함이",
+        "geometry":"높이와 머리 뒤 거리","support":"머리를 빨리 받쳐","payoff":"안전장치",
     },
     "elevator_counterweight":{
         "car_up":"놀랍게도","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
