@@ -498,6 +498,82 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
     result={**result,"recovery_attempts":recovery_attempts,"recovery_exhausted":bool(exhausted)}
     return {"clip":clip,"source":used,"semantic":result}
 
+def _mix_production_audio(video:Path, project, scene_windows:list[dict], out:Path)->Path:
+    """Mix optional background music and beat-aligned SFX under narration.
+
+    Narration in the already-rendered final video is always the primary track.
+    Music/SFX are deliberately gain-limited by the model and mixed only after
+    visual timing is final, so beat cues follow the same resolved timeline the
+    viewer actually sees.
+    """
+    background=getattr(project,"background_music",None)
+    windows={w["scene"]:w for w in scene_windows}
+    cues=[]
+    for scene in project.scenes:
+        window=windows.get(scene.id)
+        if not window:
+            continue
+        for beat in list(getattr(scene,"visual_beats",None) or []):
+            asset=getattr(beat,"sfx_asset",None)
+            if not asset:
+                continue
+            start=float(window["start"])+float(getattr(beat,"start",0.0) or 0.0)
+            cues.append((start,Path(asset),float(getattr(beat,"sfx_gain_db",-16.0))))
+    if not background and not cues:
+        return video
+
+    for _,asset,_ in cues:
+        if not asset.is_file():
+            raise RuntimeError(f"sound effect asset missing: {asset}")
+    bg_path=Path(background) if background else None
+    if bg_path is not None and not bg_path.is_file():
+        raise RuntimeError(f"background music asset missing: {bg_path}")
+
+    duration=_media_duration_seconds(video)
+    cmd=["ffmpeg","-y","-i",str(video)]
+    filters=["[0:a]anull[voice]"]
+    labels=["[voice]"]
+    input_index=1
+
+    if bg_path is not None:
+        cmd += ["-stream_loop","-1","-i",str(bg_path)]
+        gain=float(getattr(project,"background_music_gain_db",-30.0))
+        fade_out=max(0.0,duration-0.6)
+        filters.append(
+            f"[{input_index}:a]volume={gain}dB,atrim=0:{duration:.3f},"
+            f"afade=t=in:st=0:d=0.35,afade=t=out:st={fade_out:.3f}:d=0.55[bg]"
+        )
+        labels.append("[bg]")
+        input_index+=1
+
+    for cue_index,(start,asset,gain) in enumerate(cues):
+        cmd += ["-i",str(asset)]
+        delay=max(0,int(round(start*1000)))
+        label=f"sfx{cue_index}"
+        filters.append(
+            f"[{input_index}:a]volume={gain}dB,adelay={delay}:all=1[{label}]"
+        )
+        labels.append(f"[{label}]")
+        input_index+=1
+
+    filters.append(
+        f"{''.join(labels)}amix=inputs={len(labels)}:duration=first:dropout_transition=0,"
+        "alimiter=limit=0.95[mix]"
+    )
+    mixed=out
+    cmd += [
+        "-filter_complex",";".join(filters),
+        "-map","0:v:0","-map","[mix]",
+        "-c:v","copy","-c:a","aac","-b:a","192k",
+        str(mixed),
+    ]
+    try:
+        subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"ffmpeg failed production audio mix: {e.stderr[-2000:] if e.stderr else e}") from e
+    return mixed
+
+
 def render(manifest:str,dry_run:bool=False)->dict:
     p=load_project(manifest)
     # Fail before spending a full render on a manifest that doesn't have
@@ -560,6 +636,14 @@ def render(manifest:str,dry_run:bool=False)->dict:
     lst=build/"concat.txt"; lst.write_text("\n".join(f"file '{x.resolve()}'" for x in concat),encoding="utf-8")
     final=dist/"final.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(final)],check=True,capture_output=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+    if getattr(p,"background_music",None) or any(
+        getattr(beat,"sfx_asset",None)
+        for scene in p.scenes
+        for beat in (getattr(scene,"visual_beats",None) or [])
+    ):
+        mixed=dist/"final_mixed.mp4"
+        _mix_production_audio(final,p,scene_windows,mixed)
+        mixed.replace(final)
     probe=json.loads(subprocess.run(["ffprobe","-v","error","-show_entries","stream=codec_type,width,height,r_frame_rate","-show_entries","format=duration","-of","json",str(final)],capture_output=True,text=True,check=True,timeout=_FFMPEG_TIMEOUT_SECONDS).stdout)
     caption_result=merge_scene_srt_files(scene_windows,build,float(probe["format"]["duration"]),dist/"captions.srt")
     visual=asset_visual_gate(p,sources)
