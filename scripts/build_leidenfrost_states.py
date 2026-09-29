@@ -552,6 +552,7 @@ def main():
         "strict_source_diversity":False,
         "strict_meaningful_visual_changes":True,
         "strict_retention_contract":True,
+        "strict_production_quality_v2":True,
         "strict_entertainment_contract":False,
         "scenes":scenes,
     }
@@ -560,14 +561,21 @@ def main():
 
     desc=f"""# 300도 판에서 물방울이 사라지지 않는 이유 — 출처
 
-실제 실험 영상:
+실제 실험 영상 1:
 - Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv
 - Authors: Elbahri M, Abdelaziz R, Disci-Zayed D, Homaeigohar S, Sosna J, Adam D, Kienle L, Dankwort T, Abdelaziz M
 - Source: {VIDEO_PAGE}
 - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
-- 사용 변경: 세로형 Shorts 프레임에 맞게 리사이즈/구성하고 원본 음성은 사용하지 않음
 
-나머지 설명 도식은 이 제작 스크립트가 직접 생성했습니다.
+실제 실험 영상 2:
+- Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s3.ogv
+- Authors: Elbahri M, Abdelaziz R, Disci-Zayed D, Homaeigohar S, Sosna J, Adam D, Kienle L, Dankwort T, Abdelaziz M
+- Source: {VIDEO_PAGE_MID}
+- License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+사용 변경: 세로형 Shorts 프레임에 맞게 리사이즈/구성하고 원본 음성은 사용하지 않음.
+
+나머지 설명 도식과 물리 애니메이션은 이 제작 스크립트가 직접 생성했습니다.
 """
     Path("examples/leidenfrost_effect_upload_description.txt").write_text(desc,encoding="utf-8")
     print("LEIDENFROST_MANIFEST_READY=examples/leidenfrost_effect.json")
