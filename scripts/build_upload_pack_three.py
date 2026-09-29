@@ -401,11 +401,21 @@ def elevator_frame(state:str,t:float,font_path:str|None):
     if state=="car_up":
         elevator(d,560-int(330*t),220+int(330*t),2,1.0,True)
         label(d,"객실 ↑",(300,810),f44,BLUE); label(d,"추 ↓",(680,810),f44,ORANGE)
+    elif state=="whole_weight":
+        elevator(d,445-int(35*t),350+int(35*t),3,1.0,True)
+        arrow(d,(300,720,300,830),RED,24)
+        label(d,"객실 전체 무게",(300,875),f44,RED)
+        d.rounded_rectangle((585,105,825,190),radius=22,fill="#26313b",outline=WHITE,width=6)
+        label(d,"모터가 전부 들까?",(705,147),f34,WHITE)
     elif state=="hypothetical_no_counter":
-        d.rounded_rectangle((210,180,570,720),radius=25,fill=BLUE,outline=WHITE,width=8)
-        arrow(d,(680,700,680,250),RED,30)
-        label(d,"객실만 들어올린다면",(490,120),f44,WHITE)
-        label(d,"큰 힘",(760,460),f56,RED)
+        elevator(d,520-int(80*t),280+int(80*t),2,1.0,True)
+        # Cross out the counterweight only: this is explicitly the "car alone"
+        # hypothetical, while keeping the elevator shaft visually obvious.
+        d.line((585,270,805,650),fill=RED,width=26)
+        d.line((805,270,585,650),fill=RED,width=26)
+        label(d,"균형추 없음(가정)",(695,740),f34,RED)
+        arrow(d,(300,700,300,300),YELLOW,22)
+        label(d,"객실만 들어올리기",(300,835),f34,WHITE)
     elif state=="motor_strain":
         d.ellipse((300,250,680,630),fill="#632b31",outline=RED,width=12)
         label(d,"MOTOR",(490,400),f56,WHITE)
@@ -434,22 +444,20 @@ def elevator_frame(state:str,t:float,font_path:str|None):
         arrow(d,(470,300,470,650),BLUE,16); arrow(d,(820,650,820,300),ORANGE,16)
         label(d,"객실 ↓  추 ↑",(490,840),f44,WHITE)
     elif state=="balance_empty":
-        d.rounded_rectangle((80,220,430,700),radius=35,fill="#17365a",outline=BLUE,width=8)
-        d.rounded_rectangle((550,220,900,700),radius=35,fill="#5a3518",outline=ORANGE,width=8)
-        label(d,"객실",(255,330),f44,WHITE); label(d,"균형추",(725,330),f44,WHITE)
-        label(d,"무게 일부 상쇄",(490,810),f56,GREEN)
+        elevator(d,430-int(35*t),365+int(35*t),0,1.05,False)
+        d.rounded_rectangle((150,735,830,860),radius=28,fill="#15382c",outline=GREEN,width=8)
+        label(d,"객실 ↔ 균형추",(490,775),f44,WHITE)
+        label(d,"서로 무게를 일부 상쇄",(490,825),f34,GREEN)
     elif state=="balance_partial":
         elevator(d,420,390,4,1.15,False)
         d.line((160,790,820,790),fill=GREY,width=9)
         label(d,"객실 + 일부 하중과 균형",(490,845),f34,WHITE)
     elif state=="motor_difference":
-        d.rounded_rectangle((110,250,870,680),radius=45,fill="#16252f",outline=WHITE,width=8)
-        label(d,"전체 무게",(330,380),f44,GREY)
-        arrow(d,(420,380,620,380),RED,18)
-        label(d,"차이",(700,380),f56,YELLOW)
-        d.ellipse((610,520,790,700),fill=GREEN,outline=WHITE,width=8)
-        label(d,"M",(700,610),f56,INK)
-        label(d,"모터가 처리할 차이를 줄임",(490,810),f34,GREEN)
+        elevator(d,445-int(30*t),355+int(30*t),3,1.1,True)
+        d.rounded_rectangle((105,720,875,865),radius=30,fill="#16252f",outline=WHITE,width=7)
+        label(d,"객실과 추가 서로 상쇄",(300,770),f34,WHITE)
+        arrow(d,(455,770,625,770),YELLOW,16)
+        label(d,"모터는 남은 차이를 보탬",(705,815),f34,GREEN)
     elif state=="light_car":
         elevator(d,330,390,0,1.2,False)
         d.polygon([(690,700),(650,640),(730,640)],fill=ORANGE)
@@ -458,6 +466,13 @@ def elevator_frame(state:str,t:float,font_path:str|None):
         elevator(d,520-int(210*t),230+int(300*t),0,1.2,False)
         arrow(d,(820,300,820,720),ORANGE,18)
         label(d,"추의 중력이 객실 상승을 도움",(490,835),f34,WHITE)
+    elif state=="not_dead_weight":
+        elevator(d,405-int(35*t),390+int(35*t),2,1.1,False)
+        d.rounded_rectangle((555,225,820,700),radius=32,outline=YELLOW,width=14)
+        label(d,"짐?",(690,190),f56,RED)
+        d.line((590,245,790,675),fill=RED,width=24)
+        d.line((790,245,590,675),fill=RED,width=24)
+        label(d,"균형 역할",(690,765),f44,GREEN)
     elif state=="energy":
         elevator(d,420-int(90*t),370+int(90*t),2,1.0,True)
         bars=[1.0,.78,.58,.42]
@@ -600,17 +615,17 @@ def make_topic_configs():
         ],
     )
     elev_hooks={
-        "surprising_consequence":"놀랍게도 엘리베이터 모터는 객실 무게를 매번 통째로 들어올리는 게 아닙니다.",
+        "surprising_consequence":"놀랍게도 엘리베이터 모터는 객실 전체 무게를 그대로 들지 않습니다.",
         "counterintuitive_fact":"엘리베이터 균형추는 짐처럼 보이지만 사실은 필요한 에너지를 줄입니다.",
         "visible_anomaly":"엘리베이터 객실이 올라가면 반대편의 무거운 추가 이상하게도 내려갑니다.",
         "mistaken_assumption":"엘리베이터 모터가 객실 전체 무게를 그대로 든다는 생각은 사실과 다릅니다.",
     }
     elev_scenes=[
         ("elev_hook",[
-            phrase("HOOK","놀랍게도 엘리베이터 모터는 객실 무게를 매번 통째로 들어올리는 게 아닙니다.","contradiction"),
-            phrase("CRISIS","객실만 끌어올린다면 움직일 때마다 큰 힘이 필요하겠죠."),
-            phrase("REVEAL","샤프트 반대편에는 무거운 균형추가 같이 움직입니다."),
-        ],["car_up","hypothetical_no_counter","motor_strain","reveal_counter"]),
+            phrase("HOOK","놀랍게도 엘리베이터 모터는 객실 전체 무게를 그대로 들지 않습니다.","surprising_consequence"),
+            phrase("CRISIS","객실만 든다면 큰 힘이 필요하겠죠."),
+            phrase("REVEAL","실제로는 반대편 균형추가 함께 움직입니다."),
+        ],["car_up","whole_weight","hypothetical_no_counter","motor_strain","reveal_counter"]),
         ("elev_investigation",[
             phrase("INVESTIGATION","객실이 올라가면 균형추는 내려가고, 객실이 내려가면 반대로 올라갑니다."),
         ],["opposite_up","pulley","opposite_down"]),
@@ -621,8 +636,8 @@ def make_topic_configs():
             phrase("TWIST","그래서 빈 객실이 올라갈 때는 오히려 균형추 쪽이 더 무거울 수도 있습니다."),
         ],["light_car","counter_down"]),
         ("elev_end",[
-            phrase("PAYOFF","반대편의 무거운 추는 짐이 아니라 엘리베이터가 쓰는 에너지를 줄이는 핵심 장치입니다."),
-        ],["energy","payoff"]),
+            phrase("PAYOFF","그 무거운 추는 짐이 아니라 에너지를 줄이는 균형 장치입니다."),
+        ],["energy","not_dead_weight","payoff"]),
     ]
 
     return [
@@ -670,10 +685,10 @@ CUES={
         "geometry":"높이와 머리 뒤 거리","impact_support_setup":"장치입니다","support":"머리를 빨리 받쳐","payoff":"목 보호 장치",
     },
     "elevator_counterweight":{
-        "car_up":"놀랍게도","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
+        "car_up":"놀랍게도","whole_weight":"전체 무게를","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
         "opposite_up":"객실이 올라가면","pulley":"균형추는 내려가고","opposite_down":"객실이 내려가면",
         "balance_empty":"균형추는 객실 무게와","balance_partial":"승객 하중의 일부","motor_difference":"모터가 처리할 차이를",
-        "light_car":"빈 객실이","counter_down":"균형추 쪽이 더 무거울","energy":"에너지를 줄이는","payoff":"핵심 장치",
+        "light_car":"빈 객실이","counter_down":"균형추 쪽이 더 무거울","energy":"그 무거운 추는","not_dead_weight":"짐이 아니라","payoff":"균형 장치",
     },
 }
 
