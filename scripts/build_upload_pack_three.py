@@ -178,12 +178,26 @@ def golf_frame(state:str,t:float,font_path:str|None):
         d.arc((80,370,540,760),180,335,fill=GREY,width=9)
         d.arc((80,180,900,800),180,335,fill=CYAN,width=13)
         label(d,"같은 출발, 다른 거리",(490,145),f44,WHITE)
+    elif state=="distance_result":
+        d.line((90,650,890,650),fill=GREY,width=8)
+        golf_ball(d,300,610,62,False); golf_ball(d,760,610,62,True)
+        d.line((120,520,390,520),fill=GREY,width=10)
+        d.line((120,390,835,390),fill=CYAN,width=14)
+        d.ellipse((365,495,415,545),fill=GREY)
+        d.ellipse((810,365,860,415),fill=GREEN)
+        label(d,"매끈",(390,735),f34,GREY); label(d,"딤플",(830,735),f34,CYAN)
+        label(d,"딤플 공이 더 멀리",(490,180),f56,GREEN)
     elif state=="expected_drag":
         golf_ball(d,490,450,145,True)
         for y in (340,410,480,550):
             arrow(d,(100,y,340,y),WHITE,10)
         arrow(d,(760,450,875,450),RED,22)
         label(d,"거칠면 저항 ↑ ?",(490,735),f58,RED)
+    elif state=="drag_expectation":
+        golf_ball(d,390,450,145,True)
+        arrow(d,(565,450,855,450),RED,28)
+        label(d,"공기저항 ↑ ?",(660,335),f56,RED)
+        label(d,"직관",(490,760),f44,GREY)
     elif state=="wake_compare":
         golf_ball(d,280,420,105,False); golf_ball(d,690,420,105,True)
         # broad vs narrow wakes pulse
@@ -245,6 +259,12 @@ def golf_frame(state:str,t:float,font_path:str|None):
                 rr=38+int(5*math.sin(t*math.pi))
                 d.ellipse((x-rr,y-rr,x+rr,y+rr),outline=GREY,width=7)
         label(d,"작은 홈 수백 개",(490,135),f44,INK)
+    elif state=="not_decoration":
+        golf_ball(d,490,460,245,True)
+        label(d,"장식",(490,170),f56,GREY)
+        d.line((280,250,700,690),fill=RED,width=30)
+        d.line((700,250,280,690),fill=RED,width=30)
+        label(d,"기능이 있는 표면",(490,820),f44,GREEN)
     elif state=="payoff_path":
         x=120+int(700*t); y=690-int(300*math.sin(math.pi*t))
         golf_ball(d,x,y,55,True)
@@ -471,7 +491,7 @@ def make_topic_configs():
             phrase("HOOK","놀랍게도 매끈한 골프공보다 딤플이 파인 공이 더 멀리 날아갑니다.","surprising_consequence"),
             phrase("CRISIS","표면이 거칠면 공기저항이 더 커질 것 같죠."),
             phrase("REVEAL","그런데 딤플은 공 뒤의 큰 공기 꼬리를 줄입니다."),
-        ],["hook_compare","flight_compare","expected_drag","wake_compare"]),
+        ],["hook_compare","flight_compare","distance_result","expected_drag","drag_expectation","wake_compare"]),
         ("golf_investigation",[
             phrase("INVESTIGATION","작은 홈들이 공 표면의 공기를 일부러 어지럽혀 흐름이 더 오래 붙어 있게 합니다."),
         ],["dimple_surface","turbulence","attached_flow"]),
@@ -483,7 +503,7 @@ def make_topic_configs():
         ],["roughness_win","dimple_macro"]),
         ("golf_end",[
             phrase("PAYOFF","골프공의 작은 홈은 장식이 아니라 비행 거리를 만드는 공기역학 장치입니다."),
-        ],["payoff_path","payoff_dimple"]),
+        ],["payoff_path","not_decoration","payoff_dimple"]),
     ]
 
     head_brief=TopicBrief(
@@ -601,10 +621,10 @@ def make_topic_configs():
 
 CUES={
     "golf_ball_dimples":{
-        "hook_compare":"놀랍게도","flight_compare":"매끈한 골프공보다","expected_drag":"표면이 거칠면","wake_compare":"그런데 딤플은",
+        "hook_compare":"놀랍게도","flight_compare":"매끈한 골프공보다","distance_result":"더 멀리","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은",
         "dimple_surface":"작은 홈들이","turbulence":"공기를 일부러","attached_flow":"더 오래 붙어",
         "separation_compare":"늦게 떨어져","pressure_wake":"저압 영역이","drag_arrow":"저항이 줄어",
-        "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","payoff_dimple":"공기역학 장치",
+        "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","not_decoration":"장식이 아니라","payoff_dimple":"공기역학 장치",
     },
     "head_restraint":{
         "hook_gap":"놀랍게도","rear_impact":"뒤에서 받혔을 때","torso_move":"몸통은","head_lag":"하지만 머리는",
