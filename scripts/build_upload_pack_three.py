@@ -230,6 +230,10 @@ def golf_frame(state:str,t:float,font_path:str|None):
             d.ellipse((x-8,y-8,x+8,y+8),fill=CYAN)
         label(d,"일부러 흐름을 어지럽힘",(490,795),f44,WHITE)
     elif state=="attached_flow":
+        # Switch to a bright diagnostic view so the real rendered pixels
+        # clearly register the new aerodynamic state instead of reading as
+        # another dark teaching card.
+        d.rectangle((0,0,W,H),fill="#eef8fb")
         golf_ball(d,450,465,155,True)
         for off in (-110,-50,10,70,130):
             pts=[]
@@ -237,8 +241,8 @@ def golf_frame(state:str,t:float,font_path:str|None):
                 a=math.pi+(math.pi*1.55*k/29)
                 r=215+off*.18
                 pts.append((450+r*math.cos(a),465+(.55*r)*math.sin(a)+off*.22))
-            d.line(pts,fill=CYAN,width=8)
-        label(d,"공기가 더 뒤까지 붙음",(490,805),f44,WHITE)
+            d.line(pts,fill=BLUE,width=9)
+        label(d,"공기가 더 뒤까지 붙음",(490,805),f44,INK)
     elif state=="separation_compare":
         golf_ball(d,270,430,105,False); golf_ball(d,700,430,105,True)
         d.line((310,325,405,260),fill=RED,width=12); d.line((310,535,405,600),fill=RED,width=12)
@@ -537,13 +541,13 @@ def make_topic_configs():
     )
     golf_hooks={
         "contradiction":"골프공 딤플은 표면을 거칠게 만들지만, 오히려 공기저항을 줄일 수 있습니다.",
-        "surprising_consequence":"매끈한 골프공이 오히려 딤플 공보다 덜 날아갑니다.",
+        "surprising_consequence":"뜻밖에도 매끈한 골프공이 더 짧게 날아갑니다.",
         "counterintuitive_fact":"골프공 딤플처럼 적당한 거칠기가 사실은 비행에 더 유리할 수 있습니다.",
         "visible_anomaly":"골프공 딤플을 따라간 공기는 이상하게도 매끈한 공보다 더 뒤까지 붙어갑니다.",
     }
     golf_scenes=[
         ("golf_hook",[
-            phrase("HOOK","매끈한 골프공이 오히려 딤플 공보다 덜 날아갑니다.","surprising_consequence"),
+            phrase("HOOK","뜻밖에도 매끈한 골프공이 더 짧게 날아갑니다.","surprising_consequence"),
             phrase("CRISIS","표면이 거칠면 공기저항이 더 커질 것 같죠."),
             phrase("REVEAL","그런데 딤플은 공 뒤의 큰 공기 꼬리를 줄입니다."),
         ],["hook_compare","flight_compare","distance_result","expected_drag","drag_expectation","wake_compare","wake_shrink"]),
@@ -676,7 +680,7 @@ def make_topic_configs():
 
 CUES={
     "golf_ball_dimples":{
-        "hook_compare":"매끈한 골프공이","flight_compare":"오히려","distance_result":"덜 날아갑니다","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은","wake_shrink":"공기 꼬리를",
+        "hook_compare":"뜻밖에도","flight_compare":"매끈한 골프공이","distance_result":"더 짧게","expected_drag":"표면이 거칠면","drag_expectation":"공기저항이","wake_compare":"그런데 딤플은","wake_shrink":"공기 꼬리를",
         "dimple_surface":"작은 홈들이","turbulence":"공기를 일부러","attached_flow":"더 오래 붙어",
         "separation_compare":"늦게 떨어져","pressure_wake":"저압 영역이","drag_arrow":"저항이 줄어",
         "roughness_win":"그래서","dimple_macro":"적당한 거칠기가","payoff_path":"골프공의 작은 홈은","not_decoration":"장식이 아니라","payoff_dimple":"공기역학 장치",
