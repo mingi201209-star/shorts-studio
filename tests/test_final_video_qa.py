@@ -184,7 +184,9 @@ def test_visual_cut_cadence_includes_unbroken_hold_across_scene_boundary():
 def test_verify_title_policy_first_scene_only_passes_when_later_top_is_plain(tmp_path):
     import cv2
     first, build = _clip_with_title(tmp_path, "첫 장면 제목")
-    later = _clip_with_title(tmp_path / "later", None)
+    later_root = tmp_path / "later"
+    later_root.mkdir()
+    later = _clip_with_title(later_root, None)
     concat = tmp_path / "concat.txt"
     concat.write_text(f"file '{first.resolve()}'\nfile '{later.resolve()}'\n",encoding="utf-8")
     video = tmp_path / "joined.mp4"
