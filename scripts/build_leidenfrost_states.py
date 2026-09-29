@@ -648,15 +648,16 @@ def main():
                  presentation_kind="physical_animation",internal_text="label"),
         ]),
         ("s_end",[
-            phrase("PAYOFF","이게 라이덴프로스트 효과입니다. 충분히 뜨거운 표면에서는 물이 바로 사라지는 대신, 자기 수증기 위에 잠깐 떠 있게 됩니다."),
+            phrase("PAYOFF","이게 라이덴프로스트 효과입니다."),
+            phrase("PAYOFF","이 증기층은 물방울을 띄우는 데서 끝나지 않습니다. 실제 실험에서는 물방울 하나가 뜨거운 표면 위에서 알루미늄 판을 받치고 돌립니다.",focus=True),
         ],[
             beat(motion["final_float"],"라이덴프로스트 효과입니다","final_mechanism","payoff","mechanism","state",
-                 "a bright physical animation showing a droplet floating on a growing vapor cushion above a hot surface",
-                 "라이덴프로스트 효과의 핵심 구조를 마지막에 크게 움직임으로 보여주는 장면",
+                 "a dark physical animation showing a droplet settling onto a growing vapor cushion above a hot surface",
+                 "라이덴프로스트 효과의 핵심인 떠 있는 물방울과 증기층을 마지막에 크게 움직임으로 보여주는 장면",
                  presentation_kind="physical_animation",hero_visual=True,internal_text="label"),
-            beat(source_video_payoff,"자기 수증기 위에","real_final_result","payoff","real_callback","state",
-                 "a real scientific experiment showing a Leidenfrost droplet forming and persisting on a 300 degree Celsius superheated plate",
-                 "처음 봤던 실제 300도 실험으로 돌아가 물방울이 뜨는 결과를 최종 보상 화면으로 보여주는 장면",
+            beat(source_video_payoff,"실제 실험에서는","real_final_result","payoff","plate_rotation","concept",
+                 "a real scientific experiment showing an aluminium plate supported and rotated by a water droplet on a hot turbine-like surface via the Leidenfrost effect",
+                 "실제 실험에서 라이덴프로스트 물방울이 뜨거운 표면 위의 알루미늄 판을 받치고 회전시키는 최종 결과",
                  PAYOFF_VIDEO_ATTRIBUTION,presentation_kind="real_motion",hero_visual=True,internal_text="none",
                  sfx_asset=sound["hit"],sfx_gain_db=-22.0),
         ]),
@@ -715,6 +716,13 @@ def main():
 - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 
 사용 변경: 세로형 Shorts 프레임에 맞게 리사이즈/구성하고 원본 음성은 사용하지 않음.
+
+실제 실험 영상 3:
+- A-sublimation-heat-engine-ncomms7390-s3.ogv
+- Authors: Wells G, Ledesma-Aguilar R, McHale G, Sefiane K
+- Source: {VIDEO_PAGE_PAYOFF}
+- License: Creative Commons Attribution 4.0 International (CC BY 4.0)
+- 내용: 라이덴프로스트 물방울이 뜨거운 터빈형 표면 위의 알루미늄 판을 받치고 회전시키는 실험
 
 나머지 설명 도식과 물리 애니메이션은 이 제작 스크립트가 직접 생성했습니다.
 """
