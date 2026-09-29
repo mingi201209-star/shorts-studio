@@ -8,6 +8,7 @@ recovered from actual TTS synthesis (not a character-count guess).
 """
 from shorts_studio.final_video_qa import (
     compute_first_10s_narration_timeline, verify_first_10s_retention,
+    verify_high_retention_profile,
 )
 
 
@@ -106,3 +107,48 @@ def test_timeline_uses_real_scene_cumulative_offsets_not_scene_relative_time():
     timeline = compute_first_10s_narration_timeline(_windows(scenes))
     crisis = next(e for e in timeline if e["role"] == "CRISIS")
     assert crisis["start"] == 6.0  # 5.0 (scene start) + 1.0 (unit-relative start)
+
+
+def test_high_retention_profile_passes_compact_escalating_arc():
+    timeline = [
+        _unit("HOOK", "result", 0.0, 3.6),
+        _unit("CRISIS", "expectation breaks", 4.0, 6.5),
+        _unit("REVEAL", "partial answer", 8.8, 10.0),
+        _unit("EXPLANATION", "mechanism", 12.0, 16.0),
+        _unit("TWIST", "new consequence", 20.0, 23.0),
+        _unit("PAYOFF", "close gap", 29.0, 32.0),
+    ]
+    activity = {"first_5s_visual_changes": 2, "max_static_visual_seconds": 3.5}
+    result = verify_high_retention_profile(timeline, activity, 36.0)
+    assert result["status"] == "PASS", result
+
+
+def test_high_retention_profile_fails_slow_hook_and_dead_opening():
+    timeline = [
+        _unit("HOOK", "too long", 0.0, 5.1),
+        _unit("CRISIS", "change", 5.5, 8.0),
+        _unit("REVEAL", "answer", 9.0, 11.0),
+        _unit("TWIST", "twist", 22.0, 24.0),
+        _unit("PAYOFF", "payoff", 30.0, 33.0),
+    ]
+    activity = {"first_5s_visual_changes": 1, "max_static_visual_seconds": 5.0}
+    result = verify_high_retention_profile(timeline, activity, 36.0)
+    assert result["status"] == "FAIL"
+    assert "HOOK lasts" in result["reason"]
+    assert "first 5s" in result["reason"]
+    assert "static" in result["reason"]
+
+
+def test_high_retention_profile_fails_when_twist_or_payoff_timing_is_flat():
+    timeline = [
+        _unit("HOOK", "result", 0.0, 3.0),
+        _unit("CRISIS", "change", 4.0, 6.0),
+        _unit("REVEAL", "answer", 8.5, 10.0),
+        _unit("TWIST", "too early", 11.0, 13.0),
+        _unit("PAYOFF", "too early", 15.0, 17.0),
+    ]
+    activity = {"first_5s_visual_changes": 2, "max_static_visual_seconds": 3.0}
+    result = verify_high_retention_profile(timeline, activity, 36.0)
+    assert result["status"] == "FAIL"
+    assert "TWIST" in result["reason"]
+    assert "PAYOFF" in result["reason"]
