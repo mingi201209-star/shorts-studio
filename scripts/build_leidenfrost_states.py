@@ -651,7 +651,7 @@ def main():
                  "a bold red and blue shield diagram showing a water droplet protected above an extremely hot plate",
                  "더 뜨거운 조건인데도 증기층이 물방울을 잠깐 보호하는 역설을 한눈에 보여주는 모습",
                  presentation_kind="explanatory_diagram",internal_text="label"),
-            beat(motion["glide"],"미끄러지는 움직임","skittering_motion","glide","path","concept",
+            beat(motion["glide"],"미끄러지는 움직임","vapor_supported_glide","glide","path","concept",
                  "a top down physical animation with a Leidenfrost droplet changing position along a curved skating path",
                  "물방울이 팬 위에서 실제 위치를 바꾸며 곡선을 따라 미끄러지는 움직임",
                  presentation_kind="physical_animation",internal_text="label"),
