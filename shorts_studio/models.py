@@ -59,6 +59,20 @@ class VisualBeat(BaseModel):
     # predates the Information Change Contract unaffected.
     info_role: str | None = None
     visual_change: VisualChange | None = None
+    # Visual Production Engine V2 authoring metadata. Optional for legacy
+    # productions; strict_production_quality_v2 requires every real beat to
+    # declare these explicitly so the engine can reject slide-heavy layouts.
+    presentation_kind: Literal[
+        "real_motion", "real_still", "physical_animation",
+        "explanatory_diagram", "text_card",
+    ] | None = None
+    hero_visual: bool = False
+    # Internal text INSIDE the picture asset (captions are separate). Strict
+    # V2 rejects sentence-level prose and permits only no text / short labels.
+    internal_text: Literal["none", "label", "sentence"] | None = None
+    # For moving source media, optionally begin from a later semantic moment
+    # instead of replaying the same first frame/segment every time.
+    source_start: float = Field(default=0.0, ge=0)
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -297,6 +311,12 @@ class Project(BaseModel):
     # as "fun verified" -- only real post-publish data, or a human review,
     # can establish that.
     strict_retention_contract: bool = False
+    # Visual Production Engine V2: opt-in production-shape gate. This does
+    # not claim to prove entertainment value; it rejects known structural
+    # failure modes (opening explanation cards, slide streaks, no mid-video
+    # hero visual, static ending, prose inside the media, too little real
+    # evidence). Human silent-watch review remains mandatory.
+    strict_production_quality_v2: bool = False
     # Psychological Entertainment Contract (Layer 2), Phase 1: minimal
     # foundation only. A Project with no event_graph is completely
     # unaffected by any of this -- comet.json, radium_girls.json,
