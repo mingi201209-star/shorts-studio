@@ -297,7 +297,7 @@ class Project(BaseModel):
     # as "fun verified" -- only real post-publish data, or a human review,
     # can establish that.
     strict_retention_contract: bool = False
-    # Psychological Entertainment Contract (Layer 2), Phase 1: minimal
+    # Stronger opt-in structure for new audience-retention-focused Shorts.\n    # It verifies pacing structure, not actual future views or entertainment value.\n    engagement_profile: Literal["standard", "high_retention_v1"] = "standard"\n    # Psychological Entertainment Contract (Layer 2), Phase 1: minimal
     # foundation only. A Project with no event_graph is completely
     # unaffected by any of this -- comet.json, radium_girls.json,
     # titanic_fourth_funnel.json, and train_wheels.json declare none, and
