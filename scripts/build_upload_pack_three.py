@@ -179,6 +179,9 @@ def golf_frame(state:str,t:float,font_path:str|None):
         d.arc((80,180,900,800),180,335,fill=CYAN,width=13)
         label(d,"같은 출발, 다른 거리",(490,145),f44,WHITE)
     elif state=="distance_result":
+        # Force a genuinely new visual state in the opening, not a same-card
+        # recolor/crop: the result board flips to a light measurement view.
+        d.rectangle((0,0,W,H),fill="#eaf7ff")
         d.line((90,650,890,650),fill=GREY,width=8)
         golf_ball(d,300,610,62,False); golf_ball(d,760,610,62,True)
         d.line((120,520,390,520),fill=GREY,width=10)
@@ -186,7 +189,7 @@ def golf_frame(state:str,t:float,font_path:str|None):
         d.ellipse((365,495,415,545),fill=GREY)
         d.ellipse((810,365,860,415),fill=GREEN)
         label(d,"매끈",(390,735),f34,GREY); label(d,"딤플",(830,735),f34,CYAN)
-        label(d,"딤플 공이 더 멀리",(490,180),f58,GREEN)
+        label(d,"딤플 공이 더 멀리",(490,180),f58,"#116b45")
     elif state=="expected_drag":
         golf_ball(d,490,450,145,True)
         for y in (340,410,480,550):
@@ -534,13 +537,13 @@ def make_topic_configs():
     )
     golf_hooks={
         "contradiction":"골프공 딤플은 표면을 거칠게 만들지만, 오히려 공기저항을 줄일 수 있습니다.",
-        "surprising_consequence":"놀랍게도 매끈한 골프공보다 딤플이 파인 공이 더 멀리 날아갑니다.",
+        "surprising_consequence":"매끈한 골프공이 오히려 딤플 공보다 덜 날아갑니다.",
         "counterintuitive_fact":"골프공 딤플처럼 적당한 거칠기가 사실은 비행에 더 유리할 수 있습니다.",
         "visible_anomaly":"골프공 딤플을 따라간 공기는 이상하게도 매끈한 공보다 더 뒤까지 붙어갑니다.",
     }
     golf_scenes=[
         ("golf_hook",[
-            phrase("HOOK","놀랍게도 매끈한 골프공보다 딤플이 파인 공이 더 멀리 날아갑니다.","surprising_consequence"),
+            phrase("HOOK","매끈한 골프공이 오히려 딤플 공보다 덜 날아갑니다.","surprising_consequence"),
             phrase("CRISIS","표면이 거칠면 공기저항이 더 커질 것 같죠."),
             phrase("REVEAL","그런데 딤플은 공 뒤의 큰 공기 꼬리를 줄입니다."),
         ],["hook_compare","flight_compare","distance_result","expected_drag","drag_expectation","wake_compare","wake_shrink"]),
@@ -574,14 +577,14 @@ def make_topic_configs():
         ],
     )
     head_hooks={
-        "surprising_consequence":"놀랍게도 헤드레스트가 멀면 충돌 때 머리를 늦게 받칩니다.",
+        "surprising_consequence":"의외로 헤드레스트가 멀면 머리를 늦게 받칩니다.",
         "counterintuitive_fact":"차 헤드레스트는 푹신함보다 위치가 더 중요합니다.",
         "visible_anomaly":"차 헤드레스트가 있어도 머리에서 너무 멀면 이상하게도 충돌 순간 바로 받쳐주지 못합니다.",
         "mistaken_assumption":"차 헤드레스트가 단순한 편의 쿠션이라는 생각은 사실과 다릅니다.",
     }
     head_scenes=[
         ("head_hook",[
-            phrase("HOOK","놀랍게도 헤드레스트가 멀면 충돌 때 머리를 늦게 받칩니다.","surprising_consequence"),
+            phrase("HOOK","의외로 헤드레스트가 멀면 머리를 늦게 받칩니다.","surprising_consequence"),
             phrase("CRISIS","뒤에서 받히면 몸통이 먼저 밀립니다."),
             phrase("REVEAL","그런데 머리는 잠깐 뒤처집니다."),
         ],["hook_gap","rear_impact","delayed_support","torso_move","head_lag"]),
@@ -603,7 +606,7 @@ def make_topic_configs():
         topic_id="elevator-counterweight",
         familiar_subject="엘리베이터 균형추",
         contradiction_fact="엘리베이터 모터는 객실 전체 무게를 매번 통째로 들어올리는 방식이 아닙니다",
-        surprising_consequence_fact="엘리베이터 모터는 객실 전체 무게를 매번 통째로 들어올리지 않아도 됩니다",
+        surprising_consequence_fact="엘리베이터 모터는 객실을 통째로 들어올리지 않아도 됩니다",
         counterintuitive_fact="빈 엘리베이터가 올라갈 때는 균형추 쪽이 더 무거울 수 있습니다",
         anomaly_fact="엘리베이터 객실이 올라갈 때 샤프트 반대편에서는 무거운 추가 내려갑니다",
         mistaken_assumption_fact="엘리베이터 모터가 매번 객실 전체 무게를 그대로 들어올린다는 생각은 맞지 않습니다",
@@ -615,14 +618,14 @@ def make_topic_configs():
         ],
     )
     elev_hooks={
-        "surprising_consequence":"놀랍게도 엘리베이터 모터는 객실 전체 무게를 그대로 들지 않습니다.",
+        "surprising_consequence":"의외로 엘리베이터 모터는 객실을 통째로 들지 않습니다.",
         "counterintuitive_fact":"엘리베이터 균형추는 짐처럼 보이지만 사실은 필요한 에너지를 줄입니다.",
         "visible_anomaly":"엘리베이터 객실이 올라가면 반대편의 무거운 추가 이상하게도 내려갑니다.",
         "mistaken_assumption":"엘리베이터 모터가 객실 전체 무게를 그대로 든다는 생각은 사실과 다릅니다.",
     }
     elev_scenes=[
         ("elev_hook",[
-            phrase("HOOK","놀랍게도 엘리베이터 모터는 객실 전체 무게를 그대로 들지 않습니다.","surprising_consequence"),
+            phrase("HOOK","의외로 엘리베이터 모터는 객실을 통째로 들지 않습니다.","surprising_consequence"),
             phrase("CRISIS","객실만 든다면 큰 힘이 필요하겠죠."),
             phrase("REVEAL","실제로는 반대편 균형추가 함께 움직입니다."),
         ],["car_up","whole_weight","hypothetical_no_counter","motor_strain","reveal_counter"]),
@@ -637,7 +640,7 @@ def make_topic_configs():
         ],["light_car","counter_down"]),
         ("elev_end",[
             phrase("PAYOFF","그 무거운 추는 짐이 아니라 에너지를 줄이는 균형 장치입니다."),
-        ],["energy","not_dead_weight","payoff"]),
+        ],["not_dead_weight","energy","payoff"]),
     ]
 
     return [
@@ -688,7 +691,7 @@ CUES={
         "car_up":"놀랍게도","whole_weight":"전체 무게를","hypothetical_no_counter":"객실만","motor_strain":"큰 힘이","reveal_counter":"균형추가",
         "opposite_up":"객실이 올라가면","pulley":"균형추는 내려가고","opposite_down":"객실이 내려가면",
         "balance_empty":"균형추는 객실 무게와","balance_partial":"승객 하중의 일부","motor_difference":"모터가 처리할 차이를",
-        "light_car":"빈 객실이","counter_down":"균형추 쪽이 더 무거울","energy":"그 무거운 추는","not_dead_weight":"짐이 아니라","payoff":"균형 장치",
+        "light_car":"빈 객실이","counter_down":"균형추 쪽이 더 무거울","not_dead_weight":"그 무거운 추는","energy":"에너지를 줄이는","payoff":"균형 장치",
     },
 }
 
@@ -784,6 +787,7 @@ def build_topic(topic:Topic,font_path:str|None):
         "strict_source_diversity":False,
         "strict_meaningful_visual_changes":True,
         "strict_retention_contract":True,
+        "engagement_profile":"high_retention_v1",
         "strict_entertainment_contract":False,
         "scenes":scenes,
     }
