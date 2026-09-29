@@ -38,6 +38,13 @@ jobs:
           grep -q '^LEIDENFROST_VIDEO_READY=' leidenfrost-generator.log
           test -s assets/leidenfrost_effect/source_experiment.ogv
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_experiment.ogv
+      - name: Verify first-scene title and semantic motion assets
+        run: |
+          grep -q '"overlay_title_mode": "first_scene_only"' examples/leidenfrost_effect.json
+          test -s assets/leidenfrost_effect/vapor_cushion_motion.mp4
+          test -s assets/leidenfrost_effect/glide_motion.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/vapor_cushion_motion.mp4
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/glide_motion.mp4
       - name: Verify Prompt V2 and Story Prompt V3
         run: |
           grep -q '^PROMPT_V2_SELECTED_HOOK=' leidenfrost-generator.log
