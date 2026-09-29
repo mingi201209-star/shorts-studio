@@ -5,6 +5,7 @@ on:
     branches: [exp/leidenfrost-success-patterns]
     paths:
       - 'shorts_studio/**'
+      - 'tests/**'
       - 'scripts/build_leidenfrost_states.py'
       - '.github/workflows/leidenfrost-render.yml'
       - 'pyproject.toml'
