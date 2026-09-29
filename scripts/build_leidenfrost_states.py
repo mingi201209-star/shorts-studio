@@ -28,6 +28,8 @@ NEG=["a photograph of a cat","a landscape photograph of mountains","a city skyli
 
 VIDEO_FILE="Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv"
 VIDEO_PAGE="https://commons.wikimedia.org/wiki/File:Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv"
+VIDEO_FILE_MID="Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s3.ogv"
+VIDEO_PAGE_MID="https://commons.wikimedia.org/wiki/File:Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s3.ogv"
 VIDEO_ATTRIBUTION=(
     "Elbahri M, Abdelaziz R, Disci-Zayed D, Homaeigohar S, Sosna J, Adam D, "
     "Kienle L, Dankwort T, Abdelaziz M / Nature Communications / Wikimedia Commons / CC BY 4.0"
@@ -47,11 +49,11 @@ def get_font(path:str|None,size:int):
     return ImageFont.load_default()
 
 
-def download_required_video(out:Path)->Path:
+def download_required_video(out:Path, filename:str=VIDEO_FILE, min_duration:float=2.5, log_label:str="LEIDENFROST_VIDEO_READY")->Path:
     out.parent.mkdir(parents=True,exist_ok=True)
     if out.is_file() and out.stat().st_size>50_000:
         return out
-    encoded=urllib.parse.quote(VIDEO_FILE.replace(" ","_"),safe="._-()")
+    encoded=urllib.parse.quote(filename.replace(" ","_"),safe="._-()")
     url=f"https://commons.wikimedia.org/wiki/Special:Redirect/file/{encoded}"
     last=None
     for attempt in range(4):
@@ -68,9 +70,9 @@ def download_required_video(out:Path)->Path:
                  "-of","json",str(out)],capture_output=True,text=True,check=True,timeout=30)
             info=json.loads(probe.stdout)
             duration=float(info["format"]["duration"])
-            if duration<2.5:
-                raise RuntimeError(f"source video too short: {duration}")
-            print(f"LEIDENFROST_VIDEO_READY={out} duration={duration:.3f}s sha256={sha(out)}")
+            if duration<min_duration:
+                raise RuntimeError(f"source video too short: {duration} < {min_duration}")
+            print(f"{log_label}={out} duration={duration:.3f}s sha256={sha(out)}")
             return out
         except Exception as exc:
             last=exc
@@ -377,6 +379,12 @@ def main():
     ap=argparse.ArgumentParser();ap.add_argument("--font",default=None);args=ap.parse_args()
     assets=Path("assets/leidenfrost_effect"); assets.mkdir(parents=True,exist_ok=True)
     source_video=download_required_video(assets/"source_experiment.ogv")
+    source_video_mid=download_required_video(
+        assets/"source_underwater_vapor.ogv",
+        VIDEO_FILE_MID,
+        min_duration=30.0,
+        log_label="LEIDENFROST_MID_VIDEO_READY",
+    )
 
     kinds=[
         "hook_result","skid_contrast","expectation","question_gap","vapor_birth","vapor_expand","vapor_cushion",
