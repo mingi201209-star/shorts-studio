@@ -243,6 +243,57 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
     return out
 
 
+def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps:int=30)->Path:
+    """Generate semantic motion, never crop/zoom motion.
+
+    Each frame changes the represented physical state itself: vapor forms
+    and spreads, or the droplet translates across the pan. This is the
+    opposite of faking cadence by moving a camera over one still.
+    """
+    frames=out.parent/(out.stem+"_frames")
+    frames.mkdir(parents=True,exist_ok=True)
+    total=max(2,int(duration*fps))
+    f38=get_font(font_path,38)
+    for i in range(total):
+        t=i/(total-1)
+        im,d=canvas()
+        if kind=="vapor_cushion_motion":
+            hot_plate(d,735)
+            droplet(d,490,350-int(25*t),115)
+            # Vapor grows from separate bubbles into a continuous cushion.
+            for j,x in enumerate((330,410,490,570,650)):
+                r=int(18+32*min(1,max(0,t*1.5-j*0.08)))
+                y=int(625-18*t*((j%2)*2-1))
+                d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline=INK,width=4)
+            if t>0.45:
+                alpha=(t-0.45)/0.55
+                left=int(360-90*alpha); right=int(620+90*alpha)
+                d.rounded_rectangle((left,575,right,650),radius=28,fill=CYAN,outline=INK,width=5)
+            d.text((490,210),"수증기가 이어져 쿠션이 됨",font=f38,fill=INK,anchor="mm")
+        elif kind=="glide_motion":
+            d.rectangle((45,45,935,905),fill="#1c1f24")
+            d.ellipse((110,105,870,865),fill="#454b52",outline=WHITE,width=10)
+            x=int(220+540*t)
+            y=int(470-90*__import__("math").sin(t*3.14159))
+            d.ellipse((x-88,y-88,x+88,y+88),fill=BLUE,outline=WHITE,width=7)
+            for k in range(4):
+                px=x-int(55+55*k)
+                if px>130:
+                    d.ellipse((px-18,y+75,px+18,y+98),fill=CYAN)
+            d.line((180,690,800,690),fill=CYAN,width=12)
+            d.polygon([(815,690),(775,665),(775,715)],fill=CYAN)
+            d.text((490,780),"수증기 위에서 실제 위치가 바뀜",font=f38,fill=WHITE,anchor="mm")
+        else:
+            raise ValueError(kind)
+        im.save(frames/f"{i:04d}.png")
+    out.parent.mkdir(parents=True,exist_ok=True)
+    subprocess.run([
+        "ffmpeg","-y","-framerate",str(fps),"-i",str(frames/"%04d.png"),
+        "-c:v","libx264","-pix_fmt","yuv420p","-movflags","+faststart",str(out)
+    ],check=True,capture_output=True,timeout=120)
+    return out
+
+
 class LeidenfrostHookGenerator:
     def generate(self,brief:TopicBrief)->list[HookCandidate]:
         f=brief.fact_by_strategy()
@@ -313,6 +364,11 @@ def main():
     ]
     png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
 
+    motion={
+        "vapor_cushion":save_motion_clip("vapor_cushion_motion",assets/"vapor_cushion_motion.mp4",args.font,3.2),
+        "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
+    }
+
     brief=make_brief()
     hook_result=generate_and_judge(brief,generator=LeidenfrostHookGenerator())
     if hook_result.winner is None:
@@ -374,7 +430,7 @@ def main():
             beat(png["vapor_expand"],"아래로 퍼지면서","vapor_spread","vapor_layer","spread","state",
                  "an educational diagram filled with vapor bubbles spreading beneath a droplet above a hot plate",
                  "생긴 수증기가 물방울 아래쪽으로 퍼지는 모습을 크게 보여주는 모습"),
-            beat(png["vapor_cushion"],"쿠션","vapor_cushion","vapor_layer","cushion","state",
+            beat(motion["vapor_cushion"],"쿠션","vapor_cushion","vapor_layer","cushion","state",
                  "an educational cross section diagram of a water droplet supported by a thin vapor cushion above a hot plate",
                  "물방울과 뜨거운 판 사이에 얇은 수증기 쿠션이 생긴 모습"),
         ]),
@@ -400,7 +456,7 @@ def main():
             beat(png["protected_drop"],"잠깐 보호됩니다","supported_drop","paradox","supported","state",
                  "a large blue droplet visibly supported by a curved vapor cushion",
                  "물방울이 수증기층 위에서 실제로 받쳐지는 구조를 크게 보여주는 모습"),
-            beat(png["glide"],"미끄러지는","skittering_motion","glide","path","concept",
+            beat(motion["glide"],"미끄러지는","skittering_motion","glide","path","concept",
                  "a top down dark pan diagram with a Leidenfrost droplet following a curved skating path",
                  "물방울이 팬 위에서 곡선을 그리며 미끄러지는 움직임을 위에서 내려다본 모습"),
             beat(png["support_force"],"증기층이 받쳐","vapor_support_force","glide","support","state",
@@ -444,7 +500,8 @@ def main():
     manifest={
         "title":"300도 판에서 물방울이 사라지지 않는 이유",
         "width":1080,"height":1920,"fps":30,
-        "overlay_title":"300도에서 물방울이 뜬다",
+        "overlay_title":"물방울이 뜬다",
+        "overlay_title_mode":"first_scene_only",
         "max_visual_recovery_attempts":2,
         "strict_source_diversity":False,
         "strict_meaningful_visual_changes":True,

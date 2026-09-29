@@ -81,6 +81,56 @@ def verify_title_visible(video: Path, sample_timestamps: list[float], build_dir:
             return {"status": "FAIL", "reason": f"no crisp title text detected near the top at t={ts} (edge_var={var:.1f} < {MIN_TEXT_EDGE_VAR})", "evidence": evidence}
     return {"status": "PASS", "evidence": evidence}
 
+def verify_title_policy(video: Path, scene_windows: list[dict], project, build_dir: Path) -> dict:
+    """Verify the declared title behavior against real rendered frames.
+
+    Existing productions default to a persistent title. A new production
+    can opt into first_scene_only; then the title must be present in the
+    opening and absent later. This keeps the old safety contract while
+    allowing a less slide-like visual language where explicitly requested.
+    """
+    if not scene_windows:
+        return {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
+
+    first = scene_windows[0]
+    first_ts = first["start"] + min(0.3, max(0.05, first["duration"] / 4))
+    if getattr(project, "overlay_title_mode", "persistent") == "persistent":
+        last = scene_windows[-1]
+        mid = scene_windows[len(scene_windows)//2]
+        samples=[]
+        for w in {first["scene"]:first, mid["scene"]:mid, last["scene"]:last}.values():
+            samples.append(w["start"] + min(0.3, max(0.05, w["duration"] / 4)))
+        return verify_title_visible(video, samples, build_dir)
+
+    opening = _extract_frame(video, first_ts, build_dir / "_titlepolicy_open.jpg")
+    import cv2
+    img = cv2.imread(str(opening))
+    if img is None:
+        return {"status":"FAIL","reason":"could not read opening title-policy frame"}
+    opening_var = _laplacian_var(img, TITLE_ROW_BAND)
+    evidence=[{"t":first_ts,"expected":"title","title_band_edge_var":opening_var}]
+    if opening_var < MIN_TEXT_EDGE_VAR:
+        return {"status":"FAIL","reason":"first_scene_only title missing from opening scene","evidence":evidence}
+
+    later_windows = scene_windows[1:]
+    if later_windows:
+        probes=[later_windows[0], later_windows[len(later_windows)//2], later_windows[-1]]
+        seen=set()
+        for idx,w in enumerate(probes):
+            key=w["scene"]
+            if key in seen: continue
+            seen.add(key)
+            ts=w["start"] + min(0.3, max(0.05, w["duration"] / 4))
+            frame=_extract_frame(video, ts, build_dir / f"_titlepolicy_later_{idx}.jpg")
+            later=cv2.imread(str(frame))
+            if later is None:
+                return {"status":"FAIL","reason":f"could not read later title-policy frame at {ts}","evidence":evidence}
+            var=_laplacian_var(later, TITLE_ROW_BAND)
+            evidence.append({"t":ts,"expected":"no_title","title_band_edge_var":var})
+            if var >= MIN_TEXT_EDGE_VAR:
+                return {"status":"FAIL","reason":f"title-like content remains in top band after opening (edge_var={var:.1f})","evidence":evidence}
+    return {"status":"PASS","evidence":evidence}
+
 def verify_captions_visible(video: Path, sample_points: list[tuple[float, tuple[float, float]]], build_dir: Path, brightness_threshold: int = 200) -> dict:
     """For each (frame_timestamp, expected_caption_row_band), verify real
     bright (near-white fill) pixels exist inside the expected caption band
@@ -1109,13 +1159,10 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         first_10s_retention = verify_first_10s_retention(narration_timeline, visual_activity["cut_timestamps"])
         checks["first_10s_retention"] = first_10s_retention
 
-    title_samples = []
-    if scene_windows:
-        first = scene_windows[0]; last = scene_windows[-1]
-        mid = scene_windows[len(scene_windows)//2]
-        for w in {first["scene"]: first, mid["scene"]: mid, last["scene"]: last}.values():
-            title_samples.append(final_ts(w["start"] + 0.3))
-    checks["title_visible"] = verify_title_visible(video, title_samples, build_dir) if title_samples else {"status": "NOT_EVALUATED", "reason": "no scenes to sample"}
+    # Title behavior is now a declared production choice. Persistent remains
+    # the default; first_scene_only is verified against real final frames.
+    title_windows = [{**w, "start": final_ts(w["start"])} for w in scene_windows]
+    checks["title_visible"] = verify_title_policy(video, title_windows, project, build_dir)
 
     caption_points = []
     safe_area_samples = []

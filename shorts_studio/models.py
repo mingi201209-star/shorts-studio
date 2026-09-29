@@ -248,6 +248,10 @@ class Project(BaseModel):
     height: int = 1920
     fps: int = 30
     overlay_title: str | None = None
+    # Persistent is the repo-wide historical default. New productions may
+    # opt into a first-scene-only title so the hook gets a strong label
+    # without turning the entire Short into a static slide template.
+    overlay_title_mode: Literal["persistent", "first_scene_only"] = "persistent"
     scenes: list[Scene] = Field(min_length=1)
     # Cap on per-scene asset-swap/re-render/re-QA cycles before the whole production FAILs.
     max_visual_recovery_attempts: int = Field(default=2, ge=0)

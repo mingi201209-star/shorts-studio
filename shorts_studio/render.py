@@ -522,7 +522,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     provider=default_vision_provider()
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
-    for scene in p.scenes:
+    for scene_index, scene in enumerate(p.scenes):
         audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
         if p.strict_meaningful_visual_changes:
             timing=json.loads((build/f"{scene.id}.timing.json").read_text(encoding="utf-8"))
@@ -532,7 +532,12 @@ def render(manifest:str,dry_run:bool=False)->dict:
             scene.visual_beats=resolved.visual_beats
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
-        title=scene.overlay_title or p.overlay_title
+        if scene.overlay_title is not None:
+            title=scene.overlay_title
+        elif p.overlay_title and (p.overlay_title_mode=="persistent" or scene_index==0):
+            title=p.overlay_title
+        else:
+            title=None
         outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,title=title,asset_cache=asset_cache)
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")

@@ -11,7 +11,7 @@ import shorts_studio.render as R
 from shorts_studio.final_video_qa import (
     verify_bottom_safe_area_clean, verify_captions_visible,
     verify_composition_9x16, verify_no_semantic_skip, verify_scenes_present,
-    verify_title_visible, verify_picture_caption_gutter, verify_visual_cut_cadence,
+    verify_title_visible, verify_title_policy, verify_picture_caption_gutter, verify_visual_cut_cadence,
 )
 
 requires_ffmpeg = pytest.mark.skipif(not __import__("shutil").which("ffmpeg"), reason="requires a real ffmpeg binary")
@@ -178,3 +178,19 @@ def test_visual_cut_cadence_includes_unbroken_hold_across_scene_boundary():
     assert result["failures"][0]["scene_boundary"] == ["s1", "s2"]
     beats2[0].asset_url = "plane"
     assert verify_visual_cut_cadence(windows, scenes)["status"] == "PASS"
+
+
+@requires_ffmpeg
+def test_verify_title_policy_first_scene_only_passes_when_later_top_is_plain(tmp_path):
+    import cv2
+    first, build = _clip_with_title(tmp_path, "첫 장면 제목")
+    later = _clip_with_title(tmp_path / "later", None)
+    concat = tmp_path / "concat.txt"
+    concat.write_text(f"file '{first.resolve()}'\nfile '{later.resolve()}'\n",encoding="utf-8")
+    video = tmp_path / "joined.mp4"
+    subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(concat),"-c","copy",str(video)],
+                   check=True,capture_output=True)
+    project=SimpleNamespace(overlay_title_mode="first_scene_only")
+    windows=[{"scene":"s1","start":0.0,"duration":3.0},{"scene":"s2","start":3.0,"duration":3.0}]
+    result=verify_title_policy(video,windows,project,tmp_path/"qa")
+    assert result["status"]=="PASS",result
