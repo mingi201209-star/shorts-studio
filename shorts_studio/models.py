@@ -73,6 +73,11 @@ class VisualBeat(BaseModel):
     # For moving source media, optionally begin from a later semantic moment
     # instead of replaying the same first frame/segment every time.
     source_start: float = Field(default=0.0, ge=0)
+    # Optional production-audio cue aligned to this resolved visual beat.
+    # Local files keep CI/rendering deterministic; narration remains the
+    # dominant mix and cue gain is deliberately capped at 0 dB.
+    sfx_asset: str | None = None
+    sfx_gain_db: float = Field(default=-16.0, ge=-40.0, le=0.0)
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -317,6 +322,11 @@ class Project(BaseModel):
     # hero visual, static ending, prose inside the media, too little real
     # evidence). Human silent-watch review remains mandatory.
     strict_production_quality_v2: bool = False
+    # Optional low-level music bed. This is a production/aesthetic feature,
+    # never treated as an organic-ranking signal. Beat-level sound effects
+    # are declared on VisualBeat and mixed after scene concatenation.
+    background_music: str | None = None
+    background_music_gain_db: float = Field(default=-30.0, ge=-45.0, le=-12.0)
     # Psychological Entertainment Contract (Layer 2), Phase 1: minimal
     # foundation only. A Project with no event_graph is completely
     # unaffected by any of this -- comet.json, radium_girls.json,
