@@ -146,6 +146,9 @@ class Scene(BaseModel):
     # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
     visual_qa_expected_sha256: list[str] = []
     overlay_title: str | None = None
+    # Optional real-time title window. None preserves the historical
+    # whole-scene title duration.
+    overlay_title_seconds: float | None = Field(default=None, gt=0)
     # Authored role/text segments for this scene's TTS audio (see
     # shorts_studio/prosody.py). When empty, the engine runs the same
     # automatic Korean boundary planner over the flat `narration` string as

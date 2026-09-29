@@ -268,7 +268,8 @@ def _log_asset_diagnostics(scene_id:str, asset:Path)->None:
 
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
-    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
+    title_window=min(duration, scene.overlay_title_seconds) if title and getattr(scene,"overlay_title_seconds",None) else duration
+    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,title_window) if title else None
     if asset:
         _log_asset_diagnostics(scene.id,asset)
         if _is_moving_visual_asset(asset):
@@ -347,7 +348,8 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     joined=build/f"{scene.id}_beats_joined.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
-    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
+    title_window=min(duration, scene.overlay_title_seconds) if title and getattr(scene,"overlay_title_seconds",None) else duration
+    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,title_window) if title else None
     vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips

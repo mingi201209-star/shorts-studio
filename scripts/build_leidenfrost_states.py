@@ -225,9 +225,8 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.rounded_rectangle((175,150,300,770),radius=55,fill=WHITE,outline=INK,width=8)
         d.rectangle((210,360,265,730),fill=RED)
         d.ellipse((185,690,290,795),fill=RED,outline=INK,width=6)
-        d.text((490,300),"표면이 충분히 뜨거워지면",font=f38,fill=INK,anchor="lm")
-        d.text((490,430),"끓음만 일어나는 게 아니라",font=f30,fill=INK,anchor="lm")
-        d.text((490,535),"증기층이 유지될 수 있음",font=f38,fill=RED,anchor="lm")
+        d.text((500,330),"충분히 뜨거움",font=f52,fill=INK,anchor="lm")
+        d.text((500,505),"증기층 유지",font=f52,fill=RED,anchor="lm")
     elif kind=="payoff":
         d.rectangle((45,45,935,905),fill="#dff6fb")
         hot_plate(d,735); droplet(d,490,350,125)
@@ -283,6 +282,18 @@ def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps
             d.line((180,690,800,690),fill=CYAN,width=12)
             d.polygon([(815,690),(775,665),(775,715)],fill=CYAN)
             d.text((490,780),"수증기 위에서 실제 위치가 바뀜",font=f38,fill=WHITE,anchor="mm")
+        elif kind=="payoff_motion":
+            d.rectangle((45,45,935,905),fill="#dff6fb")
+            hot_plate(d,735)
+            lift=int(18*__import__("math").sin(t*3.14159))
+            droplet(d,490,365-lift,120)
+            width=int(240+220*t)
+            d.rounded_rectangle((490-width//2,570,490+width//2,650),radius=30,fill=CYAN,outline=INK,width=7)
+            for x in (390,490,590):
+                h=int(30+45*t)
+                d.line((x,690,x,690-h),fill=YELLOW,width=12)
+                d.polygon([(x,690-h-14),(x-14,690-h+10),(x+14,690-h+10)],fill=YELLOW)
+            d.text((490,210),"자기 수증기 위에 떠 있음",font=f38,fill=INK,anchor="mm")
         else:
             raise ValueError(kind)
         im.save(frames/f"{i:04d}.png")
@@ -367,6 +378,7 @@ def main():
     motion={
         "vapor_cushion":save_motion_clip("vapor_cushion_motion",assets/"vapor_cushion_motion.mp4",args.font,3.2),
         "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
+        "payoff":save_motion_clip("payoff_motion",assets/"payoff_motion.mp4",args.font,3.4),
     }
 
     brief=make_brief()
@@ -472,7 +484,7 @@ def main():
             beat(png["threshold"],"충분히 뜨거운","temperature_condition","payoff","threshold","state",
                  "an educational thermometer graphic showing a sufficiently hot surface condition for a persistent vapor layer",
                  "표면이 충분히 뜨거워져 증기층이 유지되는 조건을 온도계 구도로 보여주는 모습"),
-            beat(png["payoff"],"자기 수증기 위에","final_mechanism","payoff","mechanism","state",
+            beat(motion["payoff"],"자기 수증기 위에","final_mechanism","payoff","mechanism","state",
                  "a bright payoff diagram showing a droplet floating on its own vapor above a hot surface",
                  "뜨거운 표면에서 물방울이 자기 수증기 위에 떠 있는 최종 원리를 한 화면에 보여주는 모습"),
         ]),
@@ -495,6 +507,7 @@ def main():
             "visual_qa_labels":[beats[0]["visual_qa_labels"][0]],
             "visual_qa_negative_labels":NEG,
             "overlay_title":None,
+            "overlay_title_seconds": 2.8 if sid=="s_hook" else None,
         })
 
     manifest={

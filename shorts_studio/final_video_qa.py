@@ -112,6 +112,18 @@ def verify_title_policy(video: Path, scene_windows: list[dict], project, build_d
     if opening_var < MIN_TEXT_EDGE_VAR:
         return {"status":"FAIL","reason":"first_scene_only title missing from opening scene","evidence":evidence}
 
+    title_seconds = getattr(project.scenes[0], "overlay_title_seconds", None) if getattr(project, "scenes", None) else None
+    if title_seconds is not None and title_seconds + 0.35 < first["duration"]:
+        ts = first["start"] + title_seconds + 0.35
+        frame = _extract_frame(video, ts, build_dir / "_titlepolicy_after_window.jpg")
+        after = cv2.imread(str(frame))
+        if after is None:
+            return {"status":"FAIL","reason":"could not read post-title-window frame","evidence":evidence}
+        var = _laplacian_var(after, TITLE_ROW_BAND)
+        evidence.append({"t":ts,"expected":"no_title_after_window","title_band_edge_var":var})
+        if var >= MIN_TEXT_EDGE_VAR:
+            return {"status":"FAIL","reason":f"title remains after declared title window (edge_var={var:.1f})","evidence":evidence}
+
     later_windows = scene_windows[1:]
     if later_windows:
         probes=[later_windows[0], later_windows[len(later_windows)//2], later_windows[-1]]

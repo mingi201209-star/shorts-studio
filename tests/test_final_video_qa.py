@@ -196,3 +196,21 @@ def test_verify_title_policy_first_scene_only_passes_when_later_top_is_plain(tmp
     windows=[{"scene":"s1","start":0.0,"duration":3.0},{"scene":"s2","start":3.0,"duration":3.0}]
     result=verify_title_policy(video,windows,project,tmp_path/"qa")
     assert result["status"]=="PASS",result
+
+
+@requires_ffmpeg
+def test_verify_title_policy_checks_declared_opening_window(tmp_path):
+    build = tmp_path / "build"; build.mkdir(exist_ok=True)
+    audio = build / "a.mp3"
+    subprocess.run(["ffmpeg","-y","-f","lavfi","-i","anullsrc=r=24000:cl=mono","-t","3","-q:a","9",str(audio)],
+                   check=True,capture_output=True)
+    srt = build / "s.srt"; srt.write_text("1\n00:00:00,500 --> 00:00:02,000\n자막\n\n",encoding="utf-8")
+    scene=SimpleNamespace(id="limited",motion=SimpleNamespace(type="push_in"),overlay_title_seconds=1.0)
+    limited=R._composite_scene_clip(scene,None,audio,srt,3.0,30,build,0,title="첫 장면 제목")
+    project=SimpleNamespace(
+        overlay_title_mode="first_scene_only",
+        scenes=[SimpleNamespace(overlay_title_seconds=1.0)],
+    )
+    windows=[{"scene":"s1","start":0.0,"duration":3.0}]
+    result=verify_title_policy(limited,windows,project,build/"qa_window")
+    assert result["status"]=="PASS",result
