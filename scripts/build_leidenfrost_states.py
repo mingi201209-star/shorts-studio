@@ -30,9 +30,15 @@ VIDEO_FILE="Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-z
 VIDEO_PAGE="https://commons.wikimedia.org/wiki/File:Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s2.ogv"
 VIDEO_FILE_MID="Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s3.ogv"
 VIDEO_PAGE_MID="https://commons.wikimedia.org/wiki/File:Underwater-Leidenfrost-nanochemistry-for-creation-of-size-tailored-zinc-peroxide-cancer-ncomms15319-s3.ogv"
+VIDEO_FILE_PAYOFF="A-sublimation-heat-engine-ncomms7390-s3.ogv"
+VIDEO_PAGE_PAYOFF="https://commons.wikimedia.org/wiki/File:A-sublimation-heat-engine-ncomms7390-s3.ogv"
 VIDEO_ATTRIBUTION=(
     "Elbahri M, Abdelaziz R, Disci-Zayed D, Homaeigohar S, Sosna J, Adam D, "
     "Kienle L, Dankwort T, Abdelaziz M / Nature Communications / Wikimedia Commons / CC BY 4.0"
+)
+PAYOFF_VIDEO_ATTRIBUTION=(
+    "Wells G, Ledesma-Aguilar R, McHale G, Sefiane K / Nature Communications / "
+    "Wikimedia Commons / CC BY 4.0"
 )
 
 
@@ -438,6 +444,12 @@ def main():
         VIDEO_FILE_MID,
         min_duration=30.0,
         log_label="LEIDENFROST_MID_VIDEO_READY",
+    )
+    source_video_payoff=download_required_video(
+        assets/"source_plate_rotation.ogv",
+        VIDEO_FILE_PAYOFF,
+        min_duration=10.0,
+        log_label="LEIDENFROST_PAYOFF_VIDEO_READY",
     )
 
     kinds=[
