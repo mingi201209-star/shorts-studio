@@ -40,7 +40,7 @@ def _extract_frame(video: Path, ts: float, out: Path) -> Path:
 # rendered frames: a blurred/plain region measures well under 5, a crisp
 # bordered title/caption measures in the hundreds to low thousands.
 MIN_TEXT_EDGE_VAR = 50.0
-TITLE_ROW_BAND = (10, 290)          # covers _TITLE_STYLE's real 2-line extent at FontSize=130 (measured rows ~44-274)
+TITLE_ROW_BAND = (10, 275)          # measured title rows end ~274; stop before IMAGE_TOP_Y=280 so media can never masquerade as title
 # Heuristic tripwire, NOT the primary guard -- the primary guard is the
 # deterministic magenta-marker regression in test_safe_area_regression.py,
 # which proves via the actual ffmpeg filter graph that the fg band can never
