@@ -1171,6 +1171,12 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         first_10s_retention = verify_first_10s_retention(narration_timeline, visual_activity["cut_timestamps"])
         checks["first_10s_retention"] = first_10s_retention
 
+    production_quality_v2 = None
+    if getattr(project, "strict_production_quality_v2", False):
+        from .production_quality import verify_production_quality_v2
+        production_quality_v2 = verify_production_quality_v2(project, scene_windows, final_duration)
+        checks["production_quality_v2"] = production_quality_v2
+
     # Title behavior is now a declared production choice. Persistent remains
     # the default; first_scene_only is verified against real final frames.
     title_windows = [{**w, "start": final_ts(w["start"])} for w in scene_windows]
@@ -1245,6 +1251,8 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         "distinct_narrative_roles": len(set(_all_narration_roles(project))),
         "retention_contract_status": retention_contract["status"] if retention_contract else "NOT_EVALUATED",
         "first_10s_retention_status": first_10s_retention["status"] if first_10s_retention else "NOT_EVALUATED",
+        "production_quality_v2_status": production_quality_v2["status"] if production_quality_v2 else "NOT_EVALUATED",
+        "human_silent_review_required": bool(production_quality_v2),
     }
 
     overall = "PASS" if all(c["status"] == "PASS" for c in checks.values()) else "FAIL"
