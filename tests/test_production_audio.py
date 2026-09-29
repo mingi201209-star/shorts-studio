@@ -1,4 +1,5 @@
 import json
+import re
 import shutil
 import subprocess
 from types import SimpleNamespace
@@ -49,6 +50,20 @@ def test_mix_production_audio_keeps_video_duration_and_adds_optional_layers(tmp_
     ],capture_output=True,text=True,check=True).stdout)
     assert 1.8 <= float(probe["format"]["duration"]) <= 2.2
     assert {s["codec_type"] for s in probe["streams"]} >= {"video","audio"}
+
+    def mean_volume(path):
+        measured=subprocess.run([
+            "ffmpeg","-hide_banner","-i",str(path),"-map","0:a:0",
+            "-af","volumedetect","-f","null","-"
+        ],capture_output=True,text=True,check=True)
+        match=re.search(r"mean_volume:\s*(-?[0-9.]+) dB",measured.stderr)
+        assert match,measured.stderr
+        return float(match.group(1))
+
+    # Adding very quiet production layers must not turn narration down just
+    # because amix has more inputs. Low-level bed/SFX may raise RMS slightly,
+    # but the voice-dominant reference must never be attenuated.
+    assert mean_volume(out) >= mean_volume(source) - 1.0
 
 
 def test_mix_production_audio_is_noop_when_no_layers_are_declared(tmp_path):
