@@ -451,7 +451,7 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_heat_arrows(image, camera, count=3, strength=0.70, y1=-0.48, bend=0.18)
 
     elif kind == "name":
-        _draw_plate(image, camera, 1.26, y=-2.05, scale=0.82)
+        _draw_plate(image, camera, 1.26, x=0.0, z=0.55, scale=0.82)
         _draw_vapor_layer(image, camera, center=(0.0, -0.40, 0.25), spread=1.28 + 0.18 * pulse, thickness=0.18)
         _draw_sphere(image, (0.0, 0.92 + 0.26 * math.sin(t * math.pi * 2.0), 0.25), 1.38, "#2c78c9", camera, outline="#d9efff")
         _draw_path(image, [(-2.4, -0.35, 0.0), (0.0, -0.08, 0.65), (2.4, -0.35, 0.0)], "#58d6e8", camera, width=12, alpha=210)
