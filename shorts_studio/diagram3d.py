@@ -278,28 +278,28 @@ def _camera_for(kind: str, t: float) -> Camera:
     physical state itself (droplet, vapor, heat flow, glide path, etc.), never
     from orbiting, panning, zooming, or camera shake.
     """
-    profiles = {
-        "hook_result": (0.12, -0.28, 9.0, 810.0, 475.0),
-        "skid_contrast": (-0.58, -0.42, 9.55, 805.0, 465.0),
-        "expectation": (0.52, -0.18, 8.8, 820.0, 485.0),
-        "question_gap": (-0.35, -0.62, 9.85, 825.0, 455.0),
-        "vapor_hint": (0.62, -0.08, 8.0, 880.0, 510.0),
-        "vapor_birth": (-0.68, -0.30, 9.4, 790.0, 480.0),
-        "vapor_expand": (0.36, -0.52, 10.1, 770.0, 455.0),
-        "vapor_cushion": (-0.18, -0.12, 8.2, 870.0, 505.0),
-        "no_contact": (0.56, -0.38, 9.0, 810.0, 475.0),
-        "contact_gap": (0.02, -0.03, 7.2, 920.0, 515.0),
-        "heat_blocked": (-0.52, -0.26, 8.9, 830.0, 485.0),
-        "paradox_shield": (0.68, -0.46, 10.2, 770.0, 455.0),
-        "protected_drop": (0.06, -0.06, 7.6, 900.0, 515.0),
-        "glide": (-0.12, -0.98, 10.5, 770.0, 455.0),
-        "support_force": (-0.58, -0.18, 8.7, 840.0, 490.0),
-        "name": (0.22, -0.24, 8.5, 850.0, 485.0),
-        "threshold": (0.00, -0.58, 10.65, 820.0, 455.0),
-        "payoff": (0.46, -0.22, 8.3, 860.0, 490.0),
+    # Camera is intentionally placed closer to the subject for a more immersive\n    # perspective while remaining fixed within each beat.\n    profiles = {
+        "hook_result": (0.12, -0.28, 8.25, 810.0, 475.0),
+        "skid_contrast": (-0.58, -0.42, 8.75, 805.0, 465.0),
+        "expectation": (0.52, -0.18, 8.05, 820.0, 485.0),
+        "question_gap": (-0.35, -0.62, 9.00, 825.0, 455.0),
+        "vapor_hint": (0.62, -0.08, 7.35, 880.0, 510.0),
+        "vapor_birth": (-0.68, -0.30, 8.60, 790.0, 480.0),
+        "vapor_expand": (0.36, -0.52, 9.25, 770.0, 455.0),
+        "vapor_cushion": (-0.18, -0.12, 7.50, 870.0, 505.0),
+        "no_contact": (0.56, -0.38, 8.25, 810.0, 475.0),
+        "contact_gap": (0.02, -0.03, 6.75, 920.0, 515.0),
+        "heat_blocked": (-0.52, -0.26, 8.15, 830.0, 485.0),
+        "paradox_shield": (0.68, -0.46, 9.35, 770.0, 455.0),
+        "protected_drop": (0.06, -0.06, 7.00, 900.0, 515.0),
+        "glide": (-0.12, -0.98, 9.65, 770.0, 455.0),
+        "support_force": (-0.58, -0.18, 7.95, 840.0, 490.0),
+        "name": (0.22, -0.24, 7.80, 850.0, 485.0),
+        "threshold": (0.00, -0.58, 9.75, 820.0, 455.0),
+        "payoff": (0.46, -0.22, 7.60, 860.0, 490.0),
     }
     yaw, pitch, distance, focal, cy = profiles.get(
-        kind, (0.1, -0.25, 9.4, 780.0, 475.0)
+        kind, (0.1, -0.25, 8.6, 780.0, 475.0)
     )
     return Camera(yaw=yaw, pitch=pitch, distance=distance, focal=focal, cy=cy)
 
