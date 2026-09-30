@@ -214,16 +214,59 @@ def _draw_path(
 
 
 def _camera_for(kind: str, t: float) -> Camera:
-    sway = math.sin(t * math.pi * 2.0) * 0.035
-    if kind == "contact_gap":
-        return Camera(yaw=0.04 + sway, pitch=-0.03, distance=7.4, focal=900.0, cy=505.0)
-    if kind == "glide":
-        return Camera(yaw=-0.10 + sway, pitch=-0.95, distance=10.5, focal=760.0, cy=455.0)
-    if kind == "protected_drop":
-        return Camera(yaw=0.05 + sway, pitch=-0.06, distance=7.8, focal=870.0, cy=510.0)
-    if kind == "threshold":
-        return Camera(yaw=-0.03 + sway, pitch=-0.34, distance=11.3, focal=730.0, cy=470.0)
-    return Camera(yaw=0.10 + sway, pitch=-0.25, distance=9.4, focal=780.0, cy=475.0)
+    # Each beat gets a genuinely different 3D viewpoint. The orbit is large
+    # enough to read as spatial motion at Shorts scale, but the information
+    # change still comes from geometry/state changes below -- never crop churn.
+    profiles = {
+        "hook_result": (0.12, -0.28, 9.0, 810.0, 475.0),
+        "skid_contrast": (-0.58, -0.42, 10.6, 750.0, 455.0),
+        "expectation": (0.52, -0.18, 8.8, 820.0, 485.0),
+        "question_gap": (-0.35, -0.62, 11.0, 760.0, 445.0),
+        "vapor_hint": (0.62, -0.08, 8.0, 880.0, 510.0),
+        "vapor_birth": (-0.68, -0.30, 9.4, 790.0, 480.0),
+        "vapor_expand": (0.36, -0.52, 10.1, 770.0, 455.0),
+        "vapor_cushion": (-0.18, -0.12, 8.2, 870.0, 505.0),
+        "no_contact": (0.56, -0.38, 9.0, 810.0, 475.0),
+        "contact_gap": (0.02, -0.03, 7.2, 920.0, 515.0),
+        "heat_blocked": (-0.52, -0.26, 8.9, 830.0, 485.0),
+        "paradox_shield": (0.68, -0.46, 10.2, 770.0, 455.0),
+        "protected_drop": (0.06, -0.06, 7.6, 900.0, 515.0),
+        "glide": (-0.12, -0.98, 10.5, 770.0, 455.0),
+        "support_force": (-0.58, -0.18, 8.7, 840.0, 490.0),
+        "name": (0.22, -0.24, 8.5, 850.0, 485.0),
+        "threshold": (0.00, -0.58, 12.0, 750.0, 445.0),
+        "payoff": (0.46, -0.22, 8.3, 860.0, 490.0),
+    }
+    yaw, pitch, distance, focal, cy = profiles.get(kind, (0.1, -0.25, 9.4, 780.0, 475.0))
+    phase = (sum(ord(c) for c in kind) % 11) * 0.17
+    yaw += 0.24 * math.sin(t * math.pi * 2.0 + phase)
+    pitch += 0.07 * math.sin(t * math.pi * 4.0 + phase * 0.5)
+    distance += 0.20 * math.sin(t * math.pi * 2.0 + phase + 1.1)
+    return Camera(yaw=yaw, pitch=pitch, distance=distance, focal=focal, cy=cy)
+
+
+def _background_for(kind: str) -> tuple[int, int, int, int]:
+    backgrounds = {
+        "hook_result": (7, 13, 19, 255),
+        "skid_contrast": (9, 13, 28, 255),
+        "expectation": (26, 11, 7, 255),
+        "question_gap": (7, 12, 31, 255),
+        "vapor_hint": (3, 25, 31, 255),
+        "vapor_birth": (4, 17, 34, 255),
+        "vapor_expand": (3, 29, 38, 255),
+        "vapor_cushion": (4, 35, 39, 255),
+        "no_contact": (9, 18, 31, 255),
+        "contact_gap": (4, 23, 29, 255),
+        "heat_blocked": (30, 10, 6, 255),
+        "paradox_shield": (38, 7, 5, 255),
+        "protected_drop": (3, 23, 31, 255),
+        "glide": (8, 12, 17, 255),
+        "support_force": (3, 29, 34, 255),
+        "name": (5, 16, 32, 255),
+        "threshold": (24, 12, 7, 255),
+        "payoff": (4, 24, 30, 255),
+    }
+    return backgrounds.get(kind, (7, 13, 19, 255))
 
 
 def _draw_plate(image: Image.Image, camera: Camera, heat: float = 1.0, x: float = 0.0, z: float = 0.0, scale: float = 1.0) -> None:
@@ -278,15 +321,17 @@ def _draw_heat_arrows(
 
 
 def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 950) -> Image.Image:
-    image = Image.new("RGBA", (width, height), (7, 13, 19, 255))
+    image = Image.new("RGBA", (width, height), _background_for(kind))
     camera = _camera_for(kind, t)
-    bob = 0.07 * math.sin(t * math.pi * 2.0)
+    bob = 0.18 * math.sin(t * math.pi * 2.0)
     pulse = 0.5 + 0.5 * math.sin(t * math.pi * 2.0)
 
     if kind == "hook_result":
         _draw_plate(image, camera, 1.30)
-        _draw_vapor_layer(image, camera, spread=0.90 + 0.08 * pulse, thickness=0.18 + 0.03 * pulse)
-        _draw_sphere(image, (0.0, 0.62 + bob, 0.0), 1.05, "#2c78c9", camera, outline="#d9efff")
+        x = 0.42 * math.sin(t * math.pi * 2.0)
+        _draw_vapor_layer(image, camera, center=(x, -0.58, 0.0), spread=0.76 + 0.30 * pulse, thickness=0.16 + 0.06 * pulse)
+        _draw_sphere(image, (x, 0.68 + bob, 0.0), 1.08, "#2c78c9", camera, outline="#d9efff")
+        _draw_heat_arrows(image, camera, count=3, strength=0.72 + 0.18 * pulse, y1=-0.34, bend=0.26)
 
     elif kind == "skid_contrast":
         _draw_plate(image, camera, 1.20, x=-1.8, scale=0.47)
@@ -305,46 +350,56 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_heat_arrows(image, camera, count=5, strength=0.75 + 0.45 * t, y1=0.18 + 0.10 * t)
 
     elif kind == "question_gap":
-        _draw_plate(image, camera, 1.28, x=-1.65, scale=0.50)
-        _draw_plate(image, camera, 1.28, x=1.65, scale=0.50)
-        left_r = 0.62 * (1.0 - 0.45 * t)
-        _draw_sphere(image, (-1.65, 0.34 + 0.22 * t, 0.0), max(0.28, left_r), "#4c6d84", camera, alpha=220)
-        _draw_vapor_layer(image, camera, center=(1.65, -0.58, 0.0), spread=0.38 + 0.04 * pulse, thickness=0.13)
-        _draw_sphere(image, (1.65, 0.56 + bob, 0.0), 0.74, "#2c78c9", camera, outline="#d9efff")
+        _draw_plate(image, camera, 1.10 + 0.25 * t, x=-2.05, z=-0.65, scale=0.42)
+        _draw_plate(image, camera, 1.34, x=2.05, z=0.55, scale=0.52)
+        left_r = max(0.20, 0.72 * (1.0 - 0.65 * t))
+        _draw_sphere(image, (-2.05, 0.18 + 0.34 * t, -0.65), left_r, "#526f82", camera, alpha=220)
+        right_y = 0.38 + 0.54 * t + 0.10 * math.sin(t * math.pi * 4.0)
+        _draw_vapor_layer(image, camera, center=(2.05, -0.52, 0.55), spread=0.28 + 0.30 * t, thickness=0.10 + 0.07 * t)
+        _draw_sphere(image, (2.05, right_y, 0.55), 0.80, "#2c78c9", camera, outline="#d9efff")
+        _draw_heat_arrows(image, camera, count=3, strength=0.85, y1=0.12, bend=-0.22)
 
     elif kind == "vapor_hint":
-        _draw_plate(image, camera, 1.22)
-        _draw_sphere(image, (0.0, 0.68 + bob, 0.0), 1.03, "#2c78c9", camera, outline="#d9efff")
-        grow = 0.18 + 0.55 * t
-        _draw_sphere(image, (0.0, -0.63 + 0.04 * t, 0.0), (grow, 0.10 + 0.05 * t, grow * 0.70), "#58d6e8", camera, alpha=175)
+        _draw_plate(image, camera, 1.22, x=-0.55, z=0.35, scale=0.88)
+        _draw_sphere(image, (-0.55, 0.98 + 0.20 * math.sin(t * math.pi * 2.0), 0.35), 1.28, "#2c78c9", camera, outline="#d9efff")
+        grow = 0.16 + 0.88 * t
+        _draw_sphere(image, (-0.55, -0.48 + 0.10 * t, 0.35), (grow, 0.12 + 0.12 * t, grow * 0.62), "#58d6e8", camera, alpha=185)
+        _draw_path(image, [(-1.8, -0.92, 0.6), (-1.1, -0.60, 0.5), (-0.55, -0.34, 0.35)], "#8eeef8", camera, width=9, arrow=True)
 
     elif kind == "vapor_birth":
-        _draw_plate(image, camera, 1.22)
-        _draw_sphere(image, (0.0, 0.72 + 0.06 * t, 0.0), 1.04, "#2c78c9", camera, outline="#d9efff")
-        for idx, x in enumerate(np.linspace(-1.45, 1.45, 5)):
-            phase = (t + idx * 0.10) % 1.0
-            y0 = -0.95
-            y1 = -0.72 + 0.65 * phase
-            _draw_path(image, [(float(x), y0, 0.0), (float(x) * 0.94, y1, 0.0)], "#58d6e8", camera, width=10, alpha=210)
-            _draw_sphere(image, (float(x) * 0.94, y1, 0.0), (0.20, 0.12, 0.16), "#9feef6", camera, alpha=170)
+        _draw_plate(image, camera, 1.24, x=0.35, z=-0.35, scale=0.94)
+        _draw_sphere(image, (0.35, 0.96 + 0.12 * t, -0.35), 1.00, "#2c78c9", camera, outline="#d9efff")
+        for idx, x in enumerate(np.linspace(-1.55, 1.55, 6)):
+            phase = (t * 1.8 + idx * 0.13) % 1.0
+            y0 = -0.98
+            y1 = -0.82 + 1.02 * phase
+            z = -0.75 + (idx % 3) * 0.72
+            _draw_path(image, [(float(x), y0, z), (float(x) * 0.82, y1, z * 0.7)], "#58d6e8", camera, width=12, alpha=220)
+            _draw_sphere(image, (float(x) * 0.82, y1, z * 0.7), (0.24, 0.16, 0.20), "#a8f4fb", camera, alpha=185)
 
     elif kind == "vapor_expand":
-        _draw_plate(image, camera, 1.22)
-        _draw_sphere(image, (0.0, 0.72 + bob, 0.0), 1.04, "#2c78c9", camera, outline="#d9efff")
-        spread = 0.45 + 0.85 * t
-        for j, x in enumerate(np.linspace(-1.65, 1.65, 7)):
-            wob = 0.08 * math.sin((t * 5.0 + j) * math.pi)
-            _draw_sphere(image, (float(x) * spread, -0.58 + wob, 0.0), (0.48, 0.14, 0.34), "#58d6e8", camera, alpha=145)
+        _draw_plate(image, camera, 1.24, x=0.0, z=0.30)
+        _draw_sphere(image, (0.0, 1.08 + 0.16 * math.sin(t * math.pi * 2.0), 0.30), 0.92, "#2c78c9", camera, outline="#d9efff")
+        spread = 0.55 + 1.20 * t
+        for j, x in enumerate(np.linspace(-1.65, 1.65, 8)):
+            wob = 0.16 * math.sin((t * 4.0 + j * 0.22) * math.pi)
+            z = -0.85 + (j % 4) * 0.56
+            _draw_sphere(image, (float(x) * spread, -0.46 + wob, z), (0.58, 0.18, 0.44), "#58d6e8", camera, alpha=155)
+        _draw_path(image, [(-2.6, -0.44, -0.4), (0.0, -0.28, 0.15), (2.6, -0.44, 0.6)], "#aaf5fb", camera, width=10, alpha=190)
 
     elif kind == "vapor_cushion":
-        _draw_plate(image, camera, 1.25)
-        _draw_vapor_layer(image, camera, spread=0.55 + 0.55 * t, thickness=0.14 + 0.06 * t)
-        _draw_sphere(image, (0.0, 0.46 + 0.48 * t + bob, 0.0), 1.05, "#2c78c9", camera, outline="#d9efff")
+        _draw_plate(image, camera, 1.28, z=-0.35, scale=1.02)
+        _draw_vapor_layer(image, camera, center=(0.0, -0.42, -0.35), spread=0.38 + 0.92 * t, thickness=0.10 + 0.16 * t)
+        _draw_sphere(image, (0.0, 0.28 + 0.88 * t + 0.10 * math.sin(t * math.pi * 4.0), -0.35), 1.12, "#2c78c9", camera, outline="#d9efff")
+        for x in (-1.4, 0.0, 1.4):
+            _draw_path(image, [(x, -0.94, -0.35), (x * 0.72, -0.18 + 0.16 * t, -0.35)], "#79eaf5", camera, width=11, arrow=True, alpha=210)
 
     elif kind == "no_contact":
-        _draw_plate(image, camera, 1.25)
-        _draw_vapor_layer(image, camera, spread=1.00 + 0.05 * pulse, thickness=0.18)
-        _draw_sphere(image, (0.0, 0.68 + bob, 0.0), 1.04, "#2c78c9", camera, outline="#d9efff")
+        _draw_plate(image, camera, 1.25, x=-0.72, z=0.45, scale=0.90)
+        gap = 0.48 + 0.34 * pulse
+        _draw_vapor_layer(image, camera, center=(-0.72, -0.48, 0.45), spread=0.88 + 0.18 * pulse, thickness=0.16)
+        _draw_sphere(image, (-0.72, 0.58 + gap, 0.45), 0.98, "#2c78c9", camera, outline="#d9efff")
+        _draw_path(image, [(1.65, -0.92, 0.35), (1.65, -0.35, 0.35), (1.65, 0.34, 0.35)], "#d9efff", camera, width=7, arrow=True, alpha=210)
 
     elif kind == "contact_gap":
         _draw_plate(image, camera, 1.28)
@@ -352,10 +407,13 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_sphere(image, (0.0, 0.96 + 0.08 * t, 0.0), (1.75, 1.45, 1.35), "#2c78c9", camera, outline="#d9efff")
 
     elif kind == "heat_blocked":
-        _draw_plate(image, camera, 1.35)
-        _draw_vapor_layer(image, camera, spread=1.12, thickness=0.20)
-        _draw_sphere(image, (0.0, 0.72 + bob, 0.0), 1.03, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=5, strength=1.0, y1=-0.40, bend=0.85 + 0.35 * pulse)
+        _draw_plate(image, camera, 1.40, x=0.75, z=-0.25, scale=0.96)
+        _draw_vapor_layer(image, camera, center=(0.75, -0.44, -0.25), spread=1.08, thickness=0.23)
+        _draw_sphere(image, (0.75, 0.88 + 0.14 * math.sin(t * math.pi * 2.0), -0.25), 0.96, "#2c78c9", camera, outline="#d9efff")
+        xs = (-2.1, -1.1, 0.0, 1.2, 2.2)
+        for idx, x in enumerate(xs):
+            bend = (-1.1 if idx < 2 else 1.1 if idx > 2 else 0.0) * (0.65 + 0.45 * pulse)
+            _draw_path(image, [(x, -1.02, 0.15), (x, -0.56, 0.08), (x + bend, -0.18, 0.02)], "#ffd166", camera, width=11, arrow=True, alpha=235)
 
     elif kind == "paradox_shield":
         image.paste((34, 8, 7, 255), (0, 0, width, height))
@@ -385,15 +443,18 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
             _draw_path(image, path, "#58d6e8", camera, width=8, alpha=205)
 
     elif kind == "support_force":
-        _draw_plate(image, camera, 1.30)
-        _draw_vapor_layer(image, camera, spread=1.00, thickness=0.18 + 0.02 * pulse)
-        _draw_sphere(image, (0.0, 0.64 + 0.18 * t + bob, 0.0), 1.02, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=3, strength=0.95, y1=-0.18 + 0.08 * t)
+        _draw_plate(image, camera, 1.32, x=-0.25, z=0.35)
+        _draw_vapor_layer(image, camera, center=(-0.25, -0.44, 0.35), spread=0.92 + 0.24 * pulse, thickness=0.20)
+        _draw_sphere(image, (-0.25, 0.62 + 0.62 * t + 0.10 * math.sin(t * math.pi * 4.0), 0.35), 1.00, "#2c78c9", camera, outline="#d9efff")
+        for x in (-1.35, -0.25, 0.85):
+            _draw_path(image, [(x, -0.82, 0.35), (x, -0.10 + 0.22 * t, 0.35)], "#72e8f5", camera, width=14, arrow=True, alpha=235)
+        _draw_heat_arrows(image, camera, count=3, strength=0.70, y1=-0.48, bend=0.18)
 
     elif kind == "name":
-        _draw_plate(image, camera, 1.26)
-        _draw_vapor_layer(image, camera, spread=1.00 + 0.05 * pulse, thickness=0.18)
-        _draw_sphere(image, (0.0, 0.70 + bob, 0.0), 1.05, "#2c78c9", camera, outline="#d9efff")
+        _draw_plate(image, camera, 1.26, y=-2.05, scale=0.82)
+        _draw_vapor_layer(image, camera, center=(0.0, -0.40, 0.25), spread=1.28 + 0.18 * pulse, thickness=0.18)
+        _draw_sphere(image, (0.0, 0.92 + 0.26 * math.sin(t * math.pi * 2.0), 0.25), 1.38, "#2c78c9", camera, outline="#d9efff")
+        _draw_path(image, [(-2.4, -0.35, 0.0), (0.0, -0.08, 0.65), (2.4, -0.35, 0.0)], "#58d6e8", camera, width=12, alpha=210)
         d = ImageDraw.Draw(image, "RGBA")
         try:
             font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
@@ -402,18 +463,34 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         d.text((width // 2, 110), "LEIDENFROST", fill=(225, 245, 255, 245), anchor="mm", font=font)
 
     elif kind == "threshold":
-        for idx, (x, heat, stable) in enumerate(((-2.2, 0.9, False), (0.0, 1.1, False), (2.2, 1.38, True))):
-            _draw_plate(image, camera, heat, x=x, scale=0.30)
-            _draw_sphere(image, (x, 0.22 + 0.07 * math.sin((t + idx * 0.2) * math.pi * 2.0), 0.0), 0.50, "#2c78c9", camera, outline="#d9efff")
+        # Three states are all visible from frame zero so semantic QA samples
+        # the actual contrast: touching/shrinking -> hotter -> lifted on vapor.
+        states = (
+            (-2.45, 0.88, 0.34, 0.12, False),
+            (0.0, 1.15, 0.46, 0.30, False),
+            (2.45, 1.45, 0.62, 0.88, True),
+        )
+        for idx, (x, heat, radius, y, stable) in enumerate(states):
+            z = (-0.55, 0.25, 0.70)[idx]
+            _draw_plate(image, camera, heat, x=x, z=z, scale=0.31 + 0.03 * idx)
+            rr = radius * (1.0 - 0.28 * t if idx == 0 else 1.0)
+            yy = y + (0.08 * math.sin((t + idx * 0.23) * math.pi * 2.0))
+            _draw_sphere(image, (x, yy, z), max(0.22, rr), "#2c78c9", camera, outline="#d9efff")
+            _draw_heat_arrows(image, camera, count=2 + idx, strength=0.55 + 0.18 * idx, y1=-0.42 + 0.10 * idx)
+            if idx == 1:
+                for dx in (-0.28, 0.28):
+                    _draw_sphere(image, (x + dx, -0.52 + 0.10 * pulse, z), (0.16, 0.08, 0.12), "#79eaf5", camera, alpha=170)
             if stable:
-                _draw_vapor_layer(image, camera, center=(x, -0.46, 0.0), spread=0.34 + 0.03 * pulse, thickness=0.10)
+                _draw_vapor_layer(image, camera, center=(x, -0.40, z), spread=0.38 + 0.16 * pulse, thickness=0.12 + 0.04 * pulse)
 
     elif kind == "payoff":
-        _draw_plate(image, camera, 1.38)
-        _draw_vapor_layer(image, camera, spread=1.08 + 0.08 * pulse, thickness=0.20 + 0.03 * pulse)
-        x = 0.34 * math.sin(t * math.pi * 2.0)
-        _draw_sphere(image, (x, 0.74 + 0.09 * math.sin(t * math.pi * 4.0), 0.0), 1.10, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=3, strength=0.85, y1=-0.26, bend=0.35)
+        _draw_plate(image, camera, 1.40, z=0.25)
+        x = -1.25 + 2.50 * t
+        z = 0.55 * math.sin(t * math.pi * 2.0)
+        _draw_vapor_layer(image, camera, center=(x, -0.46, z), spread=0.72 + 0.22 * pulse, thickness=0.18 + 0.05 * pulse)
+        _draw_sphere(image, (x, 0.82 + 0.16 * math.sin(t * math.pi * 4.0), z), 1.08, "#2c78c9", camera, outline="#d9efff")
+        _draw_path(image, [(-1.9, -0.34, -0.3), (-0.7, -0.18, 0.45), (0.6, -0.24, -0.35), (1.8, -0.12, 0.25)], "#6ee8f5", camera, width=11, alpha=215)
+        _draw_heat_arrows(image, camera, count=3, strength=0.88, y1=-0.30, bend=0.42)
 
     else:
         raise ValueError(f"unknown 3D diagram kind: {kind}")
