@@ -214,9 +214,12 @@ def _draw_path(
 
 
 def _camera_for(kind: str, t: float) -> Camera:
-    # Each beat gets a genuinely different 3D viewpoint. The orbit is large
-    # enough to read as spatial motion at Shorts scale, but the information
-    # change still comes from geometry/state changes below -- never crop churn.
+    """Return a fixed camera for each 3D beat.
+
+    ``t`` is intentionally ignored. All within-beat motion must come from the
+    physical state itself (droplet, vapor, heat flow, glide path, etc.), never
+    from orbiting, panning, zooming, or camera shake.
+    """
     profiles = {
         "hook_result": (0.12, -0.28, 9.0, 810.0, 475.0),
         "skid_contrast": (-0.58, -0.42, 10.6, 750.0, 455.0),
@@ -237,11 +240,9 @@ def _camera_for(kind: str, t: float) -> Camera:
         "threshold": (0.00, -0.58, 12.0, 750.0, 445.0),
         "payoff": (0.46, -0.22, 8.3, 860.0, 490.0),
     }
-    yaw, pitch, distance, focal, cy = profiles.get(kind, (0.1, -0.25, 9.4, 780.0, 475.0))
-    phase = (sum(ord(c) for c in kind) % 11) * 0.17
-    yaw += 0.24 * math.sin(t * math.pi * 2.0 + phase)
-    pitch += 0.07 * math.sin(t * math.pi * 4.0 + phase * 0.5)
-    distance += 0.20 * math.sin(t * math.pi * 2.0 + phase + 1.1)
+    yaw, pitch, distance, focal, cy = profiles.get(
+        kind, (0.1, -0.25, 9.4, 780.0, 475.0)
+    )
     return Camera(yaw=yaw, pitch=pitch, distance=distance, focal=focal, cy=cy)
 
 
@@ -509,6 +510,15 @@ def render_3d_motion(
     frames = out.parent / f"{out.stem}_frames"
     frames.mkdir(parents=True, exist_ok=True)
     total = max(2, int(duration * fps))
+
+    # Fail closed if a future edit accidentally reintroduces camera motion.
+    fixed_camera = _camera_for(kind, 0.0)
+    for probe_t in (0.25, 0.5, 0.75, 1.0):
+        if _camera_for(kind, probe_t) != fixed_camera:
+            raise RuntimeError(
+                f"3D camera must remain fixed within a beat: {kind} at t={probe_t}"
+            )
+
     for i in range(total):
         t = i / (total - 1)
         frame = render_diagram_frame(kind, t, width=width, height=height)
