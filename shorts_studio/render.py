@@ -12,6 +12,7 @@ from .final_video_qa import run_final_video_qa, verify_source_budget, verify_ret
 from .captions import merge_scene_srt_files
 from .entertainment_qa import run_entertainment_contract_report
 from .visual_change import audit_visual_changes, resolve_visual_cues
+from .production_v2 import verify_visual_production_structure
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -503,6 +504,15 @@ def render(manifest:str,dry_run:bool=False)->dict:
         budget=verify_source_budget(p)
         if budget["status"]!="PASS":
             raise RuntimeError(f"source budget check failed: {budget['reason']}")
+    # Visual Production Engine V2: upstream shot-design gate. Fail before
+    # synthesis/render if the production does not contain the required
+    # Hero/Evidence/Mechanism/Second-Peak/Payoff grammar or leaves visual
+    # states unclassified. The same contract is checked again against the
+    # real post-TTS timeline in final_video_qa.py.
+    if getattr(p,"strict_visual_production_v2",False):
+        production=verify_visual_production_structure(p)
+        if production["status"]!="PASS":
+            raise RuntimeError(f"visual production V2 structure failed: {production}")
     # Retention-engine contract (Idea Gate era): script-level, so it's cheap
     # to fail BEFORE a real render -- exactly like the source-budget gate
     # above. Opt-in via strict_retention_contract (see models.py) so every

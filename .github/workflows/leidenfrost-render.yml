@@ -92,6 +92,7 @@ jobs:
           assert checks['retention_contract']['status']=='PASS',checks['retention_contract']
           assert checks['first_10s_retention']['status']=='PASS',checks['first_10s_retention']
           assert checks['meaningful_visual_changes']['status']=='PASS',checks['meaningful_visual_changes']
+          assert checks['visual_production_v2']['status']=='PASS',checks['visual_production_v2']
           print('LEIDENFROST_FINAL_PASS duration=',probe['format']['duration'])
           PY
       - name: Sample review frames

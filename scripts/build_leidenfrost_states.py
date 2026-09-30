@@ -247,7 +247,35 @@ def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps
     for i in range(total):
         t=i/(total-1)
         im,d=canvas()
-        if kind=="vapor_cushion_motion":
+        if kind=="expectation_motion":
+            d.rectangle((45,45,935,905),fill="#fff1e6")
+            hot_plate(d,735)
+            shrink=max(28,int(120*(1.0-0.72*t)))
+            droplet(d,490,380,shrink,fill=BLUE)
+            heat_count=2+int(4*t)
+            for k in range(heat_count):
+                x=260+k*95
+                d.line((x,690,x,635-int(45*t)),fill=YELLOW,width=12)
+                d.polygon([(x,615-int(45*t)),(x-16,645-int(45*t)),(x+16,645-int(45*t))],fill=YELLOW)
+            d.text((490,210),"더 뜨거우면 더 빨리 사라질까?",font=f38,fill=INK,anchor="mm")
+        elif kind=="vapor_hint_motion":
+            d.rectangle((45,45,935,905),fill="#0f1f2a")
+            hot_plate(d,735)
+            droplet(d,490,345-int(10*t),120,fill=BLUE)
+            r=int(28+62*t)
+            d.ellipse((490-r,610-r//2,490+r,610+r//2),fill=CYAN,outline=WHITE,width=7)
+            d.text((490,210),"물방울 밑에서 수증기가 자람",font=f38,fill=WHITE,anchor="mm")
+        elif kind=="support_force_motion":
+            d.rectangle((45,45,935,905),fill="#182d38")
+            lift=int(22*t)
+            d.ellipse((275,140-lift,705,570-lift),fill=BLUE,outline=WHITE,width=10)
+            d.rounded_rectangle((250,610,730,685),radius=28,fill=CYAN,outline=WHITE,width=6)
+            for x in (340,490,640):
+                h=int(35+70*t)
+                d.line((x,770,x,770-h),fill=YELLOW,width=18)
+                d.polygon([(x,745-h),(x-24,785-h),(x+24,785-h)],fill=YELLOW)
+            d.text((490,835),"수증기 힘이 물방울을 위로 받침",font=f38,fill=WHITE,anchor="mm")
+        elif kind=="vapor_cushion_motion":
             hot_plate(d,735)
             droplet(d,490,350-int(25*t),115)
             # Vapor grows from separate bubbles into a continuous cushion.
@@ -386,6 +414,9 @@ def main():
     png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
 
     motion={
+        "expectation":save_motion_clip("expectation_motion",assets/"expectation_motion.mp4",args.font,3.0),
+        "vapor_hint":save_motion_clip("vapor_hint_motion",assets/"vapor_hint_motion.mp4",args.font,3.0),
+        "support_force":save_motion_clip("support_force_motion",assets/"support_force_motion.mp4",args.font,3.0),
         "vapor_cushion":save_motion_clip("vapor_cushion_motion",assets/"vapor_cushion_motion.mp4",args.font,3.2),
         "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
         "payoff":save_motion_clip("payoff_motion",assets/"payoff_motion.mp4",args.font,3.4),
@@ -434,13 +465,13 @@ def main():
             beat(png["skid_contrast"],"없어지는 대신","vanish_vs_skid","hook_contrast","skid","concept",
                  "a high contrast split screen showing evaporation crossed out on the left and a water droplet skittering across a pan on the right",
                  "물이 사라지는 예상은 X표시하고 실제로는 물방울이 미끄러지는 대비를 한 화면에 보여주는 모습"),
-            beat(png["expectation"],"그런데","intuitive_expectation","expectation","hotter_vanishes","concept",
+            beat(motion["expectation"],"그런데","intuitive_expectation","expectation","hotter_vanishes","concept",
                  "an educational diagram showing the expectation that hotter surface means faster evaporation",
                  "더 뜨거우면 물이 더 빨리 사라질 것이라는 직관적 예상을 보여주는 모습"),
             beat(png["question_gap"],"왜 안 사라질까요","open_question","question_gap","why_reverse","concept",
                  "a bold split screen educational graphic asking why a hotter plate can leave a droplet floating",
                  "더 뜨거운데 왜 물방울이 떠 있는지 질문을 두 갈래 대비 화면으로 보여주는 모습"),
-            beat(png["vapor_hint"],"수증기입니다","early_vapor_answer","vapor_hint","hint","concept",
+            beat(motion["vapor_hint"],"수증기입니다","early_vapor_answer","vapor_hint","hint","concept",
                  "a dark educational hint showing a single vapor pocket beneath a floating water droplet",
                  "부분 정답으로 물방울 밑에 수증기가 있다는 사실만 먼저 보여주는 모습"),
         ]),
@@ -482,7 +513,7 @@ def main():
             beat(motion["glide"],"미끄러지는","skittering_motion","glide","path","concept",
                  "a top down dark pan diagram with a Leidenfrost droplet following a curved skating path",
                  "물방울이 팬 위에서 곡선을 그리며 미끄러지는 움직임을 위에서 내려다본 모습"),
-            beat(png["support_force"],"증기층이 받쳐","vapor_support_force","glide","support","state",
+            beat(motion["support_force"],"증기층이 받쳐","vapor_support_force","glide","support","state",
                  "a dark diagram with upward arrows showing vapor physically supporting a water droplet from below",
                  "수증기층이 아래에서 위쪽으로 물방울을 받쳐 주는 구조를 화살표로 보여주는 모습"),
         ]),
@@ -501,11 +532,42 @@ def main():
         ]),
     ]
 
+    production_tags={
+        ("s_hook",0):("hero","real_footage"),
+        ("s_hook",1):("support","evidence_graphic"),
+        ("s_hook",2):("evidence","evidence_graphic"),
+        ("s_hook",3):("support","physical_animation"),
+        ("s_hook",4):("support","evidence_graphic"),
+        ("s_hook",5):("support","physical_animation"),
+        ("s_reveal",0):("support","evidence_graphic"),
+        ("s_reveal",1):("support","evidence_graphic"),
+        ("s_reveal",2):("mechanism","physical_animation"),
+        ("s_explain",0):("support","evidence_graphic"),
+        ("s_explain",1):("support","evidence_graphic"),
+        ("s_explain",2):("second_peak","physical_animation"),
+        ("s_twist",0):("support","evidence_graphic"),
+        ("s_twist",1):("support","evidence_graphic"),
+        ("s_twist",2):("support","physical_animation"),
+        ("s_twist",3):("support","physical_animation"),
+        ("s_end",0):("support","explainer_card"),
+        ("s_end",1):("support","evidence_graphic"),
+        ("s_end",2):("payoff","physical_animation"),
+    }
+
     scenes=[]
+    seen_tags=set()
     for sid,narr_plan,beats in plans:
         # Pydantic requires increasing authored starts; real starts are replaced
         # from measured TTS cues during strict meaningful-change rendering.
-        for i,b in enumerate(beats): b["start"]=float(i)
+        for i,b in enumerate(beats):
+            b["start"]=float(i)
+            role,mode=production_tags[(sid,i)]
+            b["production"]={
+                "role":role,
+                "visual_mode":mode,
+                "added_information":b["info_role"],
+            }
+            seen_tags.add((sid,i))
         narration=" ".join(p["text"] for p in narr_plan)
         scenes.append({
             "id":sid,"narration":narration,
@@ -521,6 +583,10 @@ def main():
             "overlay_title_seconds": 2.8 if sid=="s_hook" else None,
         })
 
+    expected_tags={(sid,i) for sid,_,beats in plans for i,_ in enumerate(beats)}
+    if seen_tags!=expected_tags or set(production_tags)!=expected_tags:
+        raise RuntimeError("Visual Production V2 tag coverage drifted from the real beat list")
+
     manifest={
         "title":"300도 판에서 물방울이 사라지지 않는 이유",
         "width":1080,"height":1920,"fps":30,
@@ -530,6 +596,10 @@ def main():
         "strict_source_diversity":False,
         "strict_meaningful_visual_changes":True,
         "strict_retention_contract":True,
+        "strict_visual_production_v2":True,
+        "observable_phenomenon":"매우 뜨거운 표면에서 물방울이 바로 사라지지 않고 떠서 미끄러진다.",
+        "silent_story":"실제 300도 실험 → 사라지지 않는 대비 → 밑의 수증기 단서 → 증기 쿠션 → 열 전달이 막히는 두 번째 피크 → 미끄러지는 결과 → 수증기 위에 뜬 최종 payoff",
+        "silent_interest_review":"pending",
         "strict_entertainment_contract":False,
         "scenes":scenes,
     }

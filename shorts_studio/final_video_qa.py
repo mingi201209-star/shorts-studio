@@ -1171,6 +1171,12 @@ def run_final_video_qa(video: Path, project, sources: list[dict], semantic_resul
         first_10s_retention = verify_first_10s_retention(narration_timeline, visual_activity["cut_timestamps"])
         checks["first_10s_retention"] = first_10s_retention
 
+    if getattr(project, "strict_visual_production_v2", False):
+        from .production_v2 import verify_visual_production_timeline
+        checks["visual_production_v2"] = verify_visual_production_timeline(
+            project, scene_windows, final_duration
+        )
+
     # Title behavior is now a declared production choice. Persistent remains
     # the default; first_scene_only is verified against real final frames.
     title_windows = [{**w, "start": final_ts(w["start"])} for w in scene_windows]
