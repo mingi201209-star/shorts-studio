@@ -12,7 +12,7 @@ licensing complications.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, subprocess, time, urllib.parse, urllib.request
+import argparse, hashlib, json, math, subprocess, time, urllib.parse, urllib.request
 from pathlib import Path
 from PIL import Image, ImageDraw, ImageFont
 
@@ -236,91 +236,272 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
     return out
 
 
-def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps:int=30)->Path:
-    """Generate semantic physical-state motion, never crop/zoom motion."""
+def _hex_rgb(value:str)->tuple[int,int,int]:
+    value=value.lstrip("#")
+    return tuple(int(value[i:i+2],16) for i in (0,2,4))
+
+
+def _mix(a:str,b:str,t:float)->str:
+    ar=_hex_rgb(a); br=_hex_rgb(b)
+    t=max(0.0,min(1.0,t))
+    vals=[round(ar[i]*(1-t)+br[i]*t) for i in range(3)]
+    return "#"+"".join(f"{v:02x}" for v in vals)
+
+
+def sphere3d(d,cx:int,cy:int,r:int,phase:float=0.0,flatten:float=0.9):
+    """Layered glossy sphere/ellipsoid: deliberately 3D, never a flat icon."""
+    ry=max(12,int(r*flatten))
+    d.ellipse((cx-r-18,cy+ry-18,cx+r+18,cy+ry+28),fill="#061018")
+    steps=18
+    for j in range(steps,0,-1):
+        q=j/steps
+        rr=max(2,int(r*q)); ryy=max(2,int(ry*q))
+        # light comes from upper-left; smaller inner layers get brighter/cyan.
+        col=_mix("#08365f","#5ab9ff",1-q*0.72)
+        ox=int((1-q)*-r*0.18); oy=int((1-q)*-ry*0.16)
+        d.ellipse((cx-rr+ox,cy-ryy+oy,cx+rr+ox,cy+ryy+oy),fill=col)
+    d.ellipse((cx-int(r*.52),cy-int(ry*.57),cx-int(r*.18),cy-int(ry*.28)),fill="#dff7ff")
+    glint=int(6+5*(0.5+0.5*math.sin(phase*math.tau)))
+    d.ellipse((cx-int(r*.38)-glint,cy-int(ry*.38)-glint,
+               cx-int(r*.38)+glint,cy-int(ry*.38)+glint),fill="#ffffff")
+    d.arc((cx-r,cy-ry,cx+r,cy+ry),start=205,end=340,fill="#96e6ff",width=max(3,r//18))
+
+
+def plate3d(d,y:int=650,heat:float=1.0,tilt:float=0.0):
+    """Perspective metal slab with a glowing hot top edge and visible depth."""
+    skew=int(55+18*tilt)
+    top=[(90,y),(890,y),(835,y+95),(145,y+95)]
+    front=[(145,y+95),(835,y+95),(805,y+220),(175,y+220)]
+    side=[(835,y+95),(890,y),(860,y+125),(805,y+220)]
+    d.polygon(front,fill="#202830",outline="#5f6d78")
+    d.polygon(side,fill="#141b21",outline="#4d5962")
+    d.polygon(top,fill="#48535d",outline="#8b99a4")
+    glow=_mix("#f36b4d","#ff2d20",max(0.0,min(1.0,(heat-.75)/.7)))
+    d.line((118,y+17,870,y+17),fill=glow,width=18)
+    d.line((145,y+42,842,y+42),fill=_mix(glow,"#ffd08a",.35),width=6)
+    # perspective brushing
+    for x in range(170,830,110):
+        d.line((x,y+58,x-24,y+84),fill="#626e77",width=2)
+    return top,front
+
+
+def vapor3d(d,cx:int,y:int,width:int,height:int,phase:float=0.0):
+    """Layered translucent-looking vapor lens with perspective depth."""
+    wobble=int(7*math.sin(phase*math.tau))
+    for j in range(7,0,-1):
+        q=j/7
+        w=max(20,int(width*q)); h=max(10,int(height*(.55+.45*q)))
+        col=_mix("#173b4a","#72e6f6",1-q*.68)
+        yy=y+int((1-q)*height*.18)+wobble//max(1,j)
+        d.ellipse((cx-w//2,yy-h//2,cx+w//2,yy+h//2),fill=col)
+    d.arc((cx-width//2,y-height//2,cx+width//2,y+height//2),
+          start=185,end=355,fill="#d4fbff",width=max(3,height//10))
+
+
+def heat_arrow3d(d,x:int,y0:int,y1:int,strength:float=1.0,curve:int=0):
+    col="#ffb347"
+    w=max(8,int(13*strength))
+    mid=(y0+y1)//2
+    if curve:
+        pts=[(x,y0),(x+curve//3,mid+25),(x+curve,y1)]
+        d.line(pts,fill="#8a381f",width=w+8,joint="curve")
+        d.line(pts,fill=col,width=w,joint="curve")
+        tx=x+curve; ty=y1
+    else:
+        d.line((x,y0,x,y1),fill="#8a381f",width=w+8)
+        d.line((x,y0,x,y1),fill=col,width=w)
+        tx=x; ty=y1
+    d.polygon([(tx,ty-18),(tx-18,ty+13),(tx+18,ty+13)],fill="#ffd277")
+
+
+def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=2.8,fps:int=24)->Path:
+    """Render every synthetic Leidenfrost beat as moving pseudo-3D geometry.
+
+    Motion must describe a physical state change (rise, spread, support, glide,
+    heating, separation). Camera-only crop/zoom motion is intentionally absent.
+    """
     frames=out.parent/(out.stem+"_frames")
     frames.mkdir(parents=True,exist_ok=True)
     total=max(2,int(duration*fps))
+    f46=get_font(font_path,46)
+
     for i in range(total):
         t=i/(total-1)
+        pulse=0.5+0.5*math.sin(t*math.tau)
         im,d=canvas()
-        if kind=="expectation_motion":
-            hot_plate(d,720,1.0+0.35*t)
-            shrink=max(26,int(118*(1.0-0.72*t)))
-            droplet(d,490,380,shrink,fill=BLUE)
-            for k,x in enumerate((300,395,490,585,680)):
-                if k < 2+int(3*t):
-                    upward_heat(d,x,690,620-int(40*t),.75)
-        elif kind=="vapor_hint_motion":
-            # The clue grows from a pinpoint pocket into a clearly visible
-            # localized bubble; it never becomes a full layer yet.
-            hot_plate(d,760,1.2)
-            droplet(d,490,285-int(24*t),150)
-            r=int(18+120*t)
-            d.ellipse((490-r,625-r//4,490+r,625+r//4),fill=CYAN,outline="#d9fbff",width=5)
-            if t>0.55:
-                d.ellipse((380,610,430,645),fill="#8ceaf5")
-                d.ellipse((550,600,610,642),fill="#8ceaf5")
-        elif kind=="support_force_motion":
-            hot_plate(d,720,1.3); vapor_band(d,270,710,585,70)
-            lift=int(20*t); droplet(d,490,365-lift,120)
-            for x in (350,490,630):
-                upward_heat(d,x,690,650-int(55*t),.85)
-        elif kind=="vapor_cushion_motion":
-            # Strong semantic transition: many separated jets merge into one
-            # continuous sheet while the droplet rises substantially. This
-            # must register as a real state change, not just minor motion.
-            hot_plate(d,780,1.25)
-            lift=int(110*t)
-            droplet(d,490,330-lift,142)
-            if t<0.55:
-                for j,x in enumerate((260,350,440,530,620,710)):
-                    prog=max(0.0,min(1.0,t*2.2-j*0.05))
-                    h=int(25+150*prog)
-                    d.line((x,735,x,735-h),fill=CYAN,width=22)
-                    d.ellipse((x-16,719-h,x+16,751-h),fill="#c9f7ff")
-            a=max(0.0,(t-0.35)/0.65)
-            if a>0:
-                left=int(420-250*a); right=int(560+250*a)
-                h=int(42+58*a)
-                vapor_band(d,left,right,590,h)
-                d.line((left+25,705,right-25,705),fill="#2b8ea0",width=5)
-        elif kind=="glide_motion":
-            d.ellipse((95,80,885,870),fill="#3a4148",outline="#8d969e",width=7)
-            x=int(220+540*t); y=int(470-90*__import__("math").sin(t*3.14159))
-            d.ellipse((x-86,y-86,x+86,y+86),fill=BLUE,outline="#d9efff",width=6)
-            for k in range(4):
-                px=x-int(55+55*k)
-                if px>130:
-                    d.ellipse((px-16,y+72,px+16,y+92),fill=CYAN)
-            d.arc((180,250,830,720),start=195,end=25,fill=CYAN,width=12)
-        elif kind=="heat_blocked_motion":
-            hot_plate(d,720,1.35); vapor_band(d,260,720,545,76); droplet(d,490,315,120)
+
+        if kind=="hook_result":
+            plate3d(d,670,1.35)
+            vapor3d(d,490,585,int(330+80*pulse),72,t)
+            sphere3d(d,490,365-int(20*pulse),122,t)
+
+        elif kind=="skid_contrast":
+            # Left outcome collapses; right outcome physically travels.
+            plate3d(d,690,1.15)
+            rr=max(16,int(105*(1-.78*t)))
+            sphere3d(d,255,390,rr,t)
+            x=int(575+235*t); y=int(400-55*math.sin(t*math.pi))
+            sphere3d(d,x,y,86,t)
+            vapor3d(d,x,535,160,44,t)
+            heat_arrow3d(d,740,660,530,.65,curve=55)
+
+        elif kind=="expectation":
+            plate3d(d,685,1.0+.45*t)
+            rr=max(26,int(125*(1-.70*t)))
+            sphere3d(d,390,385,rr,t)
+            for j,x in enumerate((575,655,735)):
+                heat_arrow3d(d,x,660,535-int(45*t),.55+.15*j)
+
+        elif kind=="question_gap":
+            plate3d(d,700,1.28)
+            # Left visibly evaporates while right visibly lifts on vapor.
+            rr=max(18,int(96*(1-.72*t)))
+            sphere3d(d,265,390,rr,t)
+            right_y=405-int(45*t)
+            sphere3d(d,715,right_y,90,t)
+            vapor3d(d,715,555,int(105+115*t),50,t)
+
+        elif kind=="vapor_hint":
+            plate3d(d,705,1.22)
+            sphere3d(d,490,330-int(18*t),140,t)
+            vapor3d(d,490,585,int(70+170*t),int(30+35*t),t)
+
+        elif kind=="vapor_birth":
+            plate3d(d,710,1.24)
+            sphere3d(d,490,295-int(18*t),145,t)
+            for j,x in enumerate((330,410,490,570,650)):
+                q=max(0.0,min(1.0,t*1.7-j*.10))
+                if q>0:
+                    h=int(30+155*q)
+                    d.line((x,675,x,675-h),fill="#74e4f3",width=24)
+                    d.ellipse((x-20,655-h,x+20,695-h),fill="#d4fbff")
+
+        elif kind=="vapor_expand":
+            plate3d(d,710,1.25)
+            sphere3d(d,490,292-int(22*t),142,t)
+            for j,base in enumerate((0.18,0.31,0.44,0.56,0.69,0.82)):
+                direction=-1 if j<3 else 1
+                x=int(W*base + direction*80*t)
+                y=int(590+22*math.sin((t+j*.16)*math.tau))
+                r=int(35+45*t)
+                vapor3d(d,x,y,r*2,48,t+j*.08)
+
+        elif kind=="vapor_cushion":
+            plate3d(d,720,1.28)
+            lift=int(95*t)
+            sphere3d(d,490,335-lift,148,t)
+            vapor3d(d,490,585,int(180+480*t),int(48+45*t),t)
+            for x in (330,410,490,570,650):
+                if t<.6:
+                    heat_arrow3d(d,x,690,620-int(55*t),.45)
+
+        elif kind=="no_contact":
+            plate3d(d,715,1.20)
+            gap=int(30+75*t)
+            vapor3d(d,490,590,int(320+130*t),68,t)
+            sphere3d(d,490,480-gap,130,t)
+
+        elif kind=="contact_gap":
+            # Macro cutaway: drop fills upper half, vapor gap breathes below it.
+            d.rectangle((0,0,W,H),fill="#07151d")
+            gap=int(55+65*pulse)
+            sphere3d(d,490,180-gap//4,330,t,flatten=.72)
+            vapor3d(d,490,565,int(590+110*pulse),int(60+35*pulse),t)
+            plate3d(d,700,1.3)
+
+        elif kind=="heat_blocked":
+            plate3d(d,720,1.38)
+            vapor3d(d,490,555,500,78,t)
+            sphere3d(d,490,315,132,t)
             cycle=(t*2.0)%1.0
-            for k,x in enumerate((280,390,500,610,720)):
-                rise=max(0.0,min(1.0,cycle*1.6-k*0.12))
-                if rise<=0: continue
-                y_stop=int(695-105*min(rise,0.82))
-                d.line((x,695,x,y_stop),fill=YELLOW,width=12)
-                if rise<0.82:
-                    d.polygon([(x,y_stop-12),(x-16,y_stop+12),(x+16,y_stop+12)],fill=YELLOW)
-        elif kind=="payoff_motion":
-            hot_plate(d,730,1.35)
-            lift=int(16*__import__("math").sin(t*3.14159))
-            droplet(d,490,360-lift,124)
-            width=int(260+210*t)
-            vapor_band(d,490-width//2,490+width//2,575,78)
-            for x in (360,490,620):
-                upward_heat(d,x,705,650-int(28*t),.7)
+            for j,x in enumerate((300,395,490,585,680)):
+                rise=max(0.0,min(1.0,cycle*1.7-j*.11))
+                if rise>0:
+                    stop=615-int(95*min(rise,.82))
+                    heat_arrow3d(d,x,695,stop,.65)
+
+        elif kind=="paradox_shield":
+            # Extreme heat increases, yet the droplet remains stably separated.
+            im,d=canvas()
+            d.rectangle((0,0,W,H),fill=_mix("#170807","#3a0d08",t))
+            plate3d(d,675,1.2+.35*t)
+            vapor3d(d,490,515,290,64,t)
+            sphere3d(d,490,300-int(14*pulse),100,t)
+            for x,curve in ((220,-35),(350,-18),(630,18),(760,35)):
+                heat_arrow3d(d,x,645,520,.8,curve=curve)
+
+        elif kind=="protected_drop":
+            # Macro 3D support: vapor lens widens while drop is physically lifted.
+            im,d=canvas()
+            d.rectangle((0,0,W,H),fill="#061923")
+            lift=int(48*t)
+            sphere3d(d,490,135-lift,345,t,flatten=.70)
+            vapor3d(d,490,560,int(520+210*t),int(72+32*pulse),t)
+            plate3d(d,720,1.32)
+            for x in (300,490,680):
+                heat_arrow3d(d,x,700,625-int(35*t),.72)
+
+        elif kind=="glide":
+            # Perspective top plane; bead follows an actual curved path.
+            d.ellipse((90,70,890,870),fill="#333d46",outline="#818f99",width=8)
+            x=int(210+560*t)
+            y=int(500-120*math.sin(t*math.pi))
+            sphere3d(d,x,y,82,t,flatten=.82)
+            vapor3d(d,x,y+115,145,38,t)
+            d.arc((160,250,860,760),start=195,end=25,fill="#6be2f2",width=12)
+
+        elif kind=="support_force":
+            plate3d(d,720,1.32)
+            lift=int(55*t)
+            vapor3d(d,490,585,430,70,t)
+            sphere3d(d,490,360-lift,128,t)
+            for x,curve in ((345,-15),(490,0),(635,15)):
+                heat_arrow3d(d,x,695,620-int(55*t),.80,curve=curve)
+
+        elif kind=="name":
+            plate3d(d,720,1.25)
+            vapor3d(d,490,590,410,68,t)
+            sphere3d(d,490,395-int(20*pulse),126,t)
+            # Name reveal floats in the empty upper region, not on a card.
+            alpha=min(1.0,t*2.2)
+            col=_mix("#183442","#e8f7ff",alpha)
+            d.text((490,125),"LEIDENFROST",font=f46,fill=col,anchor="mm")
+
+        elif kind=="threshold":
+            # Three 3D states animate sequentially: warm -> hotter -> stable vapor.
+            xs=(195,490,785)
+            for j,x in enumerate(xs):
+                local=max(0.0,min(1.0,t*3-j))
+                y=655
+                top=[(x-115,y),(x+115,y),(x+92,y+55),(x-92,y+55)]
+                d.polygon(top,fill=_mix("#303b44","#70433a",local),outline="#84929c")
+                d.polygon([(x-92,y+55),(x+92,y+55),(x+78,y+135),(x-78,y+135)],
+                          fill="#222a31",outline="#59656e")
+                d.line((x-95,y+12,x+95,y+12),
+                       fill=_mix("#a45d49","#ff3729",local),width=12)
+                sphere3d(d,x,385-int(35*local),72,t+j*.1)
+                if j==2 and local>.3:
+                    a=(local-.3)/.7
+                    vapor3d(d,x,525,int(70+120*a),int(28+25*a),t)
+
+        elif kind=="payoff":
+            plate3d(d,720,1.38)
+            lift=int(30*math.sin(t*math.pi))
+            sphere3d(d,490,330-lift,145,t)
+            vapor3d(d,490,575,int(330+240*t),int(64+24*pulse),t)
+            for x,curve in ((330,-18),(490,0),(650,18)):
+                heat_arrow3d(d,x,695,625-int(32*t),.68,curve=curve)
+
         else:
             raise ValueError(kind)
+
         im.save(frames/f"{i:04d}.png")
 
     out.parent.mkdir(parents=True,exist_ok=True)
     subprocess.run([
         "ffmpeg","-y","-framerate",str(fps),"-i",str(frames/"%04d.png"),
         "-c:v","libx264","-pix_fmt","yuv420p","-movflags","+faststart",str(out)
-    ],check=True,capture_output=True,timeout=120)
+    ],check=True,capture_output=True,timeout=180)
     return out
 
 
@@ -389,19 +570,19 @@ def main():
 
     kinds=[
         "hook_result","skid_contrast","expectation","question_gap","vapor_birth","vapor_expand","vapor_cushion",
-        "vapor_hint","no_contact","contact_gap","paradox_shield","protected_drop",
+        "vapor_hint","no_contact","contact_gap","heat_blocked","paradox_shield","protected_drop",
         "glide","support_force","name","threshold","payoff",
     ]
-    png={k:save_panel(k,k,assets/f"{k}.png",args.font) for k in kinds}
-
+    # Visual Production V2.1 contract: every generated diagram is a moving
+    # pseudo-3D physical visualization. No static PNG diagram is allowed into
+    # the manifest; the only non-generated visual is the real experiment clip.
     motion={
-        "expectation":save_motion_clip("expectation_motion",assets/"expectation_motion.mp4",args.font,3.0),
-        "vapor_hint":save_motion_clip("vapor_hint_motion",assets/"vapor_hint_motion.mp4",args.font,3.0),
-        "support_force":save_motion_clip("support_force_motion",assets/"support_force_motion.mp4",args.font,3.0),
-        "vapor_cushion":save_motion_clip("vapor_cushion_motion",assets/"vapor_cushion_motion.mp4",args.font,3.2),
-        "glide":save_motion_clip("glide_motion",assets/"glide_motion.mp4",args.font,3.4),
-        "payoff":save_motion_clip("payoff_motion",assets/"payoff_motion.mp4",args.font,3.4),
-        "heat_blocked":save_motion_clip("heat_blocked_motion",assets/"heat_blocked_motion.mp4",args.font,3.0),
+        k:save_motion_clip(
+            k,assets/f"{k}_3d_motion.mp4",args.font,
+            duration=3.2 if k in {"glide","vapor_cushion","payoff"} else 2.8,
+            fps=24,
+        )
+        for k in kinds
     }
 
     brief=make_brief()
@@ -440,30 +621,30 @@ def main():
             beat(source_video,hook,"real_300c_result","hook_result","video","concept",
                  "a real scientific experiment showing water transforming into a Leidenfrost droplet on a 300 degree Celsius superheated plate",
                  f"실제 실험 영상이 첫 훅 '{hook}'에 나온 뜨거운 판과 물방울 현상을 직접 보여주는 모습",VIDEO_ATTRIBUTION),
-            beat(png["hook_result"],"이상하게도","levitating_result","hook_diagram","result","concept",
-                 "an educational diagram of a water droplet floating above a red hot plate instead of vanishing",
+            beat(motion["hook_result"],"이상하게도","levitating_result","hook_diagram","result","concept",
+                 "a moving cinematic 3D scientific visualization of a water droplet floating above a red hot plate instead of vanishing",
                  "뜨거운 판 위에서 물방울이 바로 사라지지 않고 떠 있는 결과를 크게 보여주는 모습"),
-            beat(png["skid_contrast"],"없어지는 대신","vanish_vs_skid","hook_contrast","skid","concept",
-                 "a high contrast split screen showing evaporation crossed out on the left and a water droplet skittering across a pan on the right",
+            beat(motion["skid_contrast"],"없어지는 대신","vanish_vs_skid","hook_contrast","skid","concept",
+                 "a moving high contrast 3D split visualization showing evaporation crossed out on the left and a water droplet skittering across a pan on the right",
                  "물이 사라지는 예상은 X표시하고 실제로는 물방울이 미끄러지는 대비를 한 화면에 보여주는 모습"),
             beat(motion["expectation"],"그런데","intuitive_expectation","expectation","hotter_vanishes","concept",
-                 "an educational diagram showing the expectation that hotter surface means faster evaporation",
+                 "a moving cinematic 3D scientific visualization showing the expectation that hotter surface means faster evaporation",
                  "더 뜨거우면 물이 더 빨리 사라질 것이라는 직관적 예상을 보여주는 모습"),
-            beat(png["question_gap"],"왜 안 사라질까요","open_question","question_gap","why_reverse","concept",
-                 "a bold split screen educational graphic asking why a hotter plate can leave a droplet floating",
+            beat(motion["question_gap"],"왜 안 사라질까요","open_question","question_gap","why_reverse","concept",
+                 "a moving cinematic 3D split visualization asking why a hotter plate can leave a droplet floating",
                  "더 뜨거운데 왜 물방울이 떠 있는지 질문을 두 갈래 대비 화면으로 보여주는 모습"),
             beat(motion["vapor_hint"],"수증기입니다","early_vapor_answer","vapor_hint","hint","concept",
-                 "a dark educational hint showing a single vapor pocket beneath a floating water droplet",
+                 "a moving dark cinematic 3D scientific visualization showing a single vapor pocket beneath a floating water droplet",
                  "부분 정답으로 물방울 밑에 수증기가 있다는 사실만 먼저 보여주는 모습"),
         ]),
         ("s_reveal",[
             phrase("INVESTIGATION","그 수증기가 물방울 아래로 퍼지면서 아주 얇은 쿠션을 만듭니다."),
         ],[
-            beat(png["vapor_birth"],"그 수증기가","vapor_birth","vapor_layer","birth","concept",
+            beat(motion["vapor_birth"],"그 수증기가","vapor_birth","vapor_layer","birth","concept",
                  "an educational cross section diagram of vapor forming under a water droplet above a hot plate",
                  "물방울 아래에서 수증기가 만들어지는 단면 모습"),
-            beat(png["vapor_expand"],"아래로 퍼지면서","vapor_spread","vapor_layer","spread","state",
-                 "an educational diagram filled with vapor bubbles spreading beneath a droplet above a hot plate",
+            beat(motion["vapor_expand"],"아래로 퍼지면서","vapor_spread","vapor_layer","spread","state",
+                 "a moving cinematic 3D scientific visualization filled with vapor bubbles spreading beneath a droplet above a hot plate",
                  "생긴 수증기가 물방울 아래쪽으로 퍼지는 모습을 크게 보여주는 모습"),
             beat(motion["vapor_cushion"],"쿠션","vapor_cushion","vapor_layer","cushion","state",
                  "an educational cross section diagram of a water droplet supported by a thin vapor cushion above a hot plate",
@@ -472,66 +653,66 @@ def main():
         ("s_explain",[
             phrase("EXPLANATION","그 증기층 때문에 물방울은 뜨거운 금속에 직접 닿지 않습니다. 그래서 열이 바로 전달되지 않습니다."),
         ],[
-            beat(png["no_contact"],"그 증기층","no_direct_contact","insulation","no_contact","concept",
-                 "an educational diagram showing a water droplet separated from a hot metal surface by vapor with no direct contact",
+            beat(motion["no_contact"],"그 증기층","no_direct_contact","insulation","no_contact","concept",
+                 "a moving cinematic 3D scientific visualization showing a water droplet separated from a hot metal surface by vapor with no direct contact",
                  "수증기층 때문에 물방울이 뜨거운 금속에 직접 닿지 않는 모습"),
-            beat(png["contact_gap"],"직접 닿지","visible_gap","insulation","gap","state",
-                 "a high contrast close up diagram emphasizing the physical gap between water and hot metal",
+            beat(motion["contact_gap"],"직접 닿지","visible_gap","insulation","gap","state",
+                 "a moving high contrast 3D macro visualization emphasizing the physical gap between water and hot metal",
                  "물방울과 뜨거운 금속 사이의 직접 접촉이 끊긴 틈을 크게 확대해 보여주는 모습"),
             beat(motion["heat_blocked"],"열이 바로","reduced_heat_transfer","insulation","heat_blocked","state",
-                 "a dark thermal educational diagram showing heat flow interrupted by a vapor layer under a water droplet",
+                 "a moving dark 3D thermal visualization showing heat flow interrupted by a vapor layer under a water droplet",
                  "수증기층에서 뜨거운 판의 열 흐름이 바로 이어지지 않는 모습을 보여주는 장면"),
         ]),
         ("s_twist",[
             phrase("TWIST","그래서 판이 더 뜨거워졌는데도 물방울은 잠깐 보호됩니다. 팬 위를 미끄러지는 움직임도 이 증기층이 받쳐 주기 때문입니다."),
         ],[
-            beat(png["paradox_shield"],"더 뜨거워졌는데도","hotter_but_protected","paradox","shield","concept",
-                 "a physical cross section showing a water droplet still separated from an extremely hot glowing metal surface by a vapor layer",
+            beat(motion["paradox_shield"],"더 뜨거워졌는데도","hotter_but_protected","paradox","shield","concept",
+                 "a moving cinematic 3D physical cross section showing a water droplet still separated from an extremely hot glowing metal surface by a vapor layer",
                  "더 뜨거워진 금속 표면 위에서도 물방울과 금속 사이에 증기층이 유지되는 모습을 보여주는 장면"),
-            beat(png["protected_drop"],"잠깐 보호됩니다","supported_drop","paradox","supported","state",
-                 "a large blue droplet visibly supported by a curved vapor cushion",
+            beat(motion["protected_drop"],"잠깐 보호됩니다","supported_drop","paradox","supported","state",
+                 "a moving glossy 3D blue droplet visibly supported by a curved vapor cushion",
                  "물방울이 수증기층 위에서 실제로 받쳐지는 구조를 크게 보여주는 모습"),
             beat(motion["glide"],"미끄러지는","skittering_motion","glide","path","concept",
-                 "a top down dark pan diagram with a Leidenfrost droplet following a curved skating path",
+                 "a moving top-down 3D metal-pan visualization with a Leidenfrost droplet following a curved skating path",
                  "물방울이 팬 위에서 곡선을 그리며 미끄러지는 움직임을 위에서 내려다본 모습"),
             beat(motion["support_force"],"증기층이 받쳐","vapor_support_force","glide","support","state",
-                 "a dark diagram with upward arrows showing vapor physically supporting a water droplet from below",
+                 "a moving 3D physical visualization with upward heat-flow arrows showing vapor physically supporting a water droplet from below",
                  "수증기층이 아래에서 위쪽으로 물방울을 받쳐 주는 구조를 화살표로 보여주는 모습"),
         ]),
         ("s_end",[
             phrase("PAYOFF","이게 라이덴프로스트 효과입니다. 충분히 뜨거운 표면에서는 물이 바로 사라지는 대신, 자기 수증기 위에 잠깐 떠 있게 됩니다."),
         ],[
-            beat(png["name"],"라이덴프로스트 효과","effect_name","payoff","name","concept",
-                 "a dark title-like scientific diagram naming the Leidenfrost effect around a floating water droplet",
+            beat(motion["name"],"라이덴프로스트 효과","effect_name","payoff","name","concept",
+                 "a moving cinematic 3D scientific name reveal naming the Leidenfrost effect around a floating water droplet",
                  "수증기 위에 뜬 물방울과 함께 라이덴프로스트 효과라는 이름을 처음 공개하는 모습"),
-            beat(png["threshold"],"충분히 뜨거운","temperature_condition","payoff","threshold","state",
-                 "a three-state physical progression showing hotter metal surfaces and a stable vapor layer under the droplet only at the hottest state",
+            beat(motion["threshold"],"충분히 뜨거운","temperature_condition","payoff","threshold","state",
+                 "a moving three-state 3D physical progression showing hotter metal surfaces and a stable vapor layer under the droplet only at the hottest state",
                  "표면이 더 뜨거워질수록 마지막 상태에서 안정된 증기층이 생기는 물리적 진행을 보여주는 모습"),
             beat(motion["payoff"],"자기 수증기 위에","final_mechanism","payoff","mechanism","state",
-                 "a bright payoff diagram showing a droplet floating on its own vapor above a hot surface",
+                 "a moving cinematic 3D payoff visualization showing a droplet floating on its own vapor above a hot surface",
                  "뜨거운 표면에서 물방울이 자기 수증기 위에 떠 있는 최종 원리를 한 화면에 보여주는 모습"),
         ]),
     ]
 
     production_tags={
         ("s_hook",0):("hero","real_footage"),
-        ("s_hook",1):("support","evidence_graphic"),
-        ("s_hook",2):("evidence","evidence_graphic"),
+        ("s_hook",1):("support","physical_animation"),
+        ("s_hook",2):("evidence","physical_animation"),
         ("s_hook",3):("support","physical_animation"),
-        ("s_hook",4):("support","evidence_graphic"),
+        ("s_hook",4):("support","physical_animation"),
         ("s_hook",5):("support","physical_animation"),
-        ("s_reveal",0):("support","evidence_graphic"),
-        ("s_reveal",1):("support","evidence_graphic"),
+        ("s_reveal",0):("support","physical_animation"),
+        ("s_reveal",1):("support","physical_animation"),
         ("s_reveal",2):("mechanism","physical_animation"),
-        ("s_explain",0):("support","evidence_graphic"),
-        ("s_explain",1):("support","evidence_graphic"),
+        ("s_explain",0):("support","physical_animation"),
+        ("s_explain",1):("support","physical_animation"),
         ("s_explain",2):("second_peak","physical_animation"),
-        ("s_twist",0):("support","evidence_graphic"),
-        ("s_twist",1):("support","evidence_graphic"),
+        ("s_twist",0):("support","physical_animation"),
+        ("s_twist",1):("support","physical_animation"),
         ("s_twist",2):("support","physical_animation"),
         ("s_twist",3):("support","physical_animation"),
-        ("s_end",0):("support","explainer_card"),
-        ("s_end",1):("support","evidence_graphic"),
+        ("s_end",0):("support","physical_animation"),
+        ("s_end",1):("support","physical_animation"),
         ("s_end",2):("payoff","physical_animation"),
     }
 
@@ -596,7 +777,7 @@ def main():
 - License: Creative Commons Attribution 4.0 International (CC BY 4.0)
 - 사용 변경: 세로형 Shorts 프레임에 맞게 리사이즈/구성하고 원본 음성은 사용하지 않음
 
-나머지 설명 도식은 이 제작 스크립트가 직접 생성했습니다.
+나머지 설명 장면은 이 제작 스크립트가 직접 생성한 움직이는 3D 물리 도식입니다.
 """
     Path("examples/leidenfrost_effect_upload_description.txt").write_text(desc,encoding="utf-8")
     print("LEIDENFROST_MANIFEST_READY=examples/leidenfrost_effect.json")
