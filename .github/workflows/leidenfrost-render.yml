@@ -39,13 +39,39 @@ jobs:
           grep -q '^LEIDENFROST_VIDEO_READY=' leidenfrost-generator.log
           test -s assets/leidenfrost_effect/source_experiment.ogv
           ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_experiment.ogv
-      - name: Verify first-scene title and semantic motion assets
+      - name: Verify first-scene title and all-moving 3D diagram contract
         run: |
           grep -q '"overlay_title_mode": "first_scene_only"' examples/leidenfrost_effect.json
-          test -s assets/leidenfrost_effect/vapor_cushion_motion.mp4
-          test -s assets/leidenfrost_effect/glide_motion.mp4
-          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/vapor_cushion_motion.mp4
-          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/glide_motion.mp4
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+
+          data=json.loads(Path('examples/leidenfrost_effect.json').read_text())
+          synthetic=[]
+          real=[]
+          for scene in data['scenes']:
+              for beat in scene['visual_beats']:
+                  asset=beat['asset']
+                  mode=beat['production']['visual_mode']
+                  if mode=='real_footage':
+                      real.append(asset)
+                      continue
+                  synthetic.append((asset,mode))
+                  assert mode=='physical_animation',(scene['id'],asset,mode)
+                  assert asset.endswith('_3d_motion.mp4'),(scene['id'],asset)
+                  assert not asset.lower().endswith(('.png','.jpg','.jpeg','.webp')),(scene['id'],asset)
+                  p=Path(asset)
+                  assert p.is_file() and p.stat().st_size>0,p
+                  probe=json.loads(subprocess.run([
+                      'ffprobe','-v','error','-select_streams','v:0',
+                      '-show_entries','stream=codec_name,width,height,r_frame_rate',
+                      '-show_entries','format=duration','-of','json',str(p)
+                  ],capture_output=True,text=True,check=True).stdout)
+                  assert float(probe['format']['duration'])>=2.5,(p,probe)
+          assert len(real)==1,real
+          assert len(synthetic)==18,synthetic
+          print('ALL_MOVING_3D_DIAGRAMS_PASS synthetic=',len(synthetic),'real=',len(real))
+          PY
       - name: Verify Prompt V2 and Story Prompt V3
         run: |
           grep -q '^PROMPT_V2_SELECTED_HOOK=' leidenfrost-generator.log
