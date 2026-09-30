@@ -95,8 +95,8 @@ def _draw_mesh(
 def _sphere_mesh(
     center: tuple[float, float, float],
     radius: tuple[float, float, float],
-    lat_steps: int = 12,
-    lon_steps: int = 24,
+    lat_steps: int = 16,
+    lon_steps: int = 32,
 ) -> tuple[np.ndarray, list[tuple[int, int, int, int]]]:
     cx, cy, cz = center
     rx, ry, rz = radius
@@ -161,6 +161,28 @@ def _draw_box(
     _draw_mesh(image, verts, faces, color, camera, outline=outline)
 
 
+def _draw_screen_ellipse(
+    image: Image.Image,
+    center: tuple[float, float],
+    radii: tuple[float, float],
+    color: str,
+    alpha: int = 255,
+    width: int = 3,
+    fill: bool = False,
+) -> None:
+    cx, cy = center
+    rx, ry = max(1.0, radii[0]), max(1.0, radii[1])
+    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay, "RGBA")
+    box = (cx - rx, cy - ry, cx + rx, cy + ry)
+    rgba = _rgb(color) + (alpha,)
+    if fill:
+        d.ellipse(box, fill=rgba)
+    else:
+        d.ellipse(box, outline=rgba, width=width)
+    image.alpha_composite(overlay)
+
+
 def _draw_sphere(
     image: Image.Image,
     center: tuple[float, float, float],
@@ -174,9 +196,45 @@ def _draw_sphere(
         radii = (float(radius), float(radius), float(radius))
     else:
         radii = tuple(float(v) for v in radius)
-    verts, faces = _sphere_mesh(center, radii)
-    _draw_mesh(image, verts, faces, color, camera, alpha=alpha, outline=outline)
 
+    # Smooth material pass: never draw every mesh edge. The old behavior
+    # turned droplets and vapor into wireframe CAD objects.
+    verts, faces = _sphere_mesh(center, radii)
+    _draw_mesh(image, verts, faces, color, camera, alpha=alpha, outline=None)
+
+    # Approximate the projected silhouette from the 3D center and principal
+    # radii. This gives one clean rim instead of a grid over every face.
+    cx, cy, cz = center
+    probes = np.array(
+        [
+            [cx, cy, cz],
+            [cx + radii[0], cy, cz],
+            [cx, cy + radii[1], cz],
+        ],
+        dtype=float,
+    )
+    xy, _ = _project(probes, camera)
+    rx = float(np.linalg.norm(xy[1] - xy[0]))
+    ry = float(np.linalg.norm(xy[2] - xy[0]))
+    if outline:
+        _draw_screen_ellipse(
+            image, tuple(xy[0]), (rx, ry), outline,
+            alpha=min(235, max(100, alpha)), width=max(2, int(min(rx, ry) * 0.035)),
+        )
+
+    # Glossy highlight only on water-like, mostly opaque droplets. It creates
+    # volume without introducing camera motion or decorative wireframes.
+    if color.lower() in {"#2c78c9", "#417aa6", "#526f82", "#427da8"} and alpha >= 200:
+        highlight_center = (float(xy[0][0] - rx * 0.28), float(xy[0][1] - ry * 0.32))
+        _draw_screen_ellipse(
+            image,
+            highlight_center,
+            (max(4.0, rx * 0.15), max(3.0, ry * 0.10)),
+            "#e7fbff",
+            alpha=170,
+            width=1,
+            fill=True,
+        )
 
 def _draw_path(
     image: Image.Image,
@@ -271,12 +329,26 @@ def _background_for(kind: str) -> tuple[int, int, int, int]:
 
 
 def _draw_plate(image: Image.Image, camera: Camera, heat: float = 1.0, x: float = 0.0, z: float = 0.0, scale: float = 1.0) -> None:
-    _draw_box(image, (x, -1.65, z), (6.8 * scale, 1.05, 4.4 * scale), "#3e474f", camera, outline="#7f8b95")
+    # Brushed-metal body. The hot surface is no longer one giant orange slab;
+    # heat is communicated by a dark metal top plus thin glowing perimeter
+    # rails, which reads less like a toy/PPT object.
+    _draw_box(image, (x, -1.65, z), (6.8 * scale, 1.05, 4.4 * scale), "#303840", camera, outline="#6f7b84")
+    _draw_box(image, (x, -1.09, z), (6.50 * scale, 0.10, 4.10 * scale), "#575f66", camera, outline="#818b92")
+
     glow = "#ff3d22" if heat >= 1.2 else "#ff744c"
-    _draw_box(image, (x, -1.08, z), (6.55 * scale, 0.09, 4.15 * scale), glow, camera)
+    hot = "#ffd166" if heat >= 1.35 else "#ffad57"
+    edge = 0.10 * scale
+    half_x = 3.18 * scale
+    half_z = 1.98 * scale
+    _draw_box(image, (x, -1.02, z - half_z), (6.35 * scale, 0.055, edge), glow, camera)
+    _draw_box(image, (x, -1.02, z + half_z), (6.35 * scale, 0.055, edge), glow, camera)
+    _draw_box(image, (x - half_x, -1.02, z), (edge, 0.055, 3.86 * scale), glow, camera)
+    _draw_box(image, (x + half_x, -1.02, z), (edge, 0.055, 3.86 * scale), glow, camera)
+
     if heat > 1.0:
-        inner = "#ffad57" if heat < 1.3 else "#ffd166"
-        _draw_box(image, (x, -1.00, z), (5.9 * scale, 0.035, 3.7 * scale), inner, camera)
+        # A thin central heat band gives the metal a hot sheen without
+        # replacing the whole material with flat orange.
+        _draw_box(image, (x, -0.99, z), (5.2 * scale, 0.025, 0.12 * scale), hot, camera)
 
 
 def _draw_vapor_layer(
@@ -287,16 +359,36 @@ def _draw_vapor_layer(
     thickness: float = 0.20,
     alpha: int = 155,
 ) -> None:
+    # Layered translucent lenses create a soft volumetric cushion rather than
+    # a single outlined ellipsoid.
+    cx, cy, cz = center
     _draw_sphere(
         image,
-        center,
+        (cx, cy, cz),
         (2.25 * spread, thickness, 1.55 * spread),
-        "#58d6e8",
+        "#2b91a6",
         camera,
-        alpha=alpha,
-        outline="#bdf7ff",
+        alpha=max(70, int(alpha * 0.52)),
+        outline=None,
     )
-
+    _draw_sphere(
+        image,
+        (cx, cy + thickness * 0.10, cz),
+        (1.82 * spread, thickness * 0.72, 1.25 * spread),
+        "#64ddec",
+        camera,
+        alpha=max(85, int(alpha * 0.68)),
+        outline="#c7f9ff",
+    )
+    _draw_sphere(
+        image,
+        (cx, cy + thickness * 0.20, cz),
+        (1.20 * spread, thickness * 0.38, 0.82 * spread),
+        "#a8f4fb",
+        camera,
+        alpha=max(45, int(alpha * 0.32)),
+        outline=None,
+    )
 
 def _draw_heat_arrows(
     image: Image.Image,
