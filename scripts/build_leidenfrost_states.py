@@ -179,15 +179,30 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.rounded_rectangle((65,745,915,855),radius=18,fill="#3f454b",outline="#8c969e",width=5)
         d.line((90,755,890,755),fill=RED,width=14)
     elif kind=="paradox_shield":
-        # No shield icon: simply make the surface visibly hotter while the
-        # drop remains separated by the same vapor layer.
-        hot_plate(d,720,1.35)
-        vapor_band(d,285,695,575,74)
-        droplet(d,490,355,118)
-        for x in (310,490,670): upward_heat(d,x,690,635,.8)
+        # Wide "extreme heat" state: small hovering drop over a surface that
+        # visually dominates the lower half. This is intentionally a very
+        # different composition from the preceding close thermal mechanism.
+        d.rectangle((0,0,W,H),fill="#2a0d0b")
+        d.rounded_rectangle((40,640,940,900),radius=26,fill="#4a2521",outline="#8d5148",width=5)
+        d.line((70,655,910,655),fill="#ff3b30",width=24)
+        d.line((110,690,870,690),fill="#ff9b62",width=10)
+        droplet(d,490,255,88)
+        vapor_band(d,360,620,470,58)
+        for x in (170,300,490,680,810):
+            upward_heat(d,x,620,485,.95)
     elif kind=="protected_drop":
-        hot_plate(d,720,1.3); vapor_band(d,250,730,585,78); droplet(d,490,350,122)
-        d.arc((220,455,760,785),start=195,end=345,fill=CYAN,width=14)
+        # Macro cross-section: the droplet now fills the top half and the
+        # vapor layer fills the width, so the viewer sees "supported by gas"
+        # as a physical gap rather than another near-identical wide shot.
+        d.rectangle((0,0,W,H),fill="#071923")
+        d.ellipse((70,-170,910,570),fill=BLUE,outline="#d9efff",width=10)
+        d.ellipse((245,20,315,90),fill="#b9dcff")
+        vapor_band(d,80,900,595,105)
+        d.rounded_rectangle((35,790,945,925),radius=20,fill="#3f454b",outline="#8c969e",width=5)
+        d.line((70,802,910,802),fill=RED,width=18)
+        for x in (250,490,730):
+            d.line((x,760,x,705),fill=YELLOW,width=14)
+            d.polygon([(x,685),(x-18,715),(x+18,715)],fill=YELLOW)
     elif kind=="glide":
         # Top-down metal pan with a clean path trace.
         d.ellipse((95,80,885,870),fill="#3a4148",outline="#8d969e",width=7)
