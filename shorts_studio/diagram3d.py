@@ -280,9 +280,9 @@ def _camera_for(kind: str, t: float) -> Camera:
     """
     profiles = {
         "hook_result": (0.12, -0.28, 9.0, 810.0, 475.0),
-        "skid_contrast": (-0.58, -0.42, 10.6, 750.0, 455.0),
+        "skid_contrast": (-0.58, -0.42, 9.55, 805.0, 465.0),
         "expectation": (0.52, -0.18, 8.8, 820.0, 485.0),
-        "question_gap": (-0.35, -0.62, 11.0, 760.0, 445.0),
+        "question_gap": (-0.35, -0.62, 9.85, 825.0, 455.0),
         "vapor_hint": (0.62, -0.08, 8.0, 880.0, 510.0),
         "vapor_birth": (-0.68, -0.30, 9.4, 790.0, 480.0),
         "vapor_expand": (0.36, -0.52, 10.1, 770.0, 455.0),
@@ -295,7 +295,7 @@ def _camera_for(kind: str, t: float) -> Camera:
         "glide": (-0.12, -0.98, 10.5, 770.0, 455.0),
         "support_force": (-0.58, -0.18, 8.7, 840.0, 490.0),
         "name": (0.22, -0.24, 8.5, 850.0, 485.0),
-        "threshold": (0.00, -0.58, 12.0, 750.0, 445.0),
+        "threshold": (0.00, -0.58, 10.65, 820.0, 455.0),
         "payoff": (0.46, -0.22, 8.3, 860.0, 490.0),
     }
     yaw, pitch, distance, focal, cy = profiles.get(
@@ -398,18 +398,44 @@ def _draw_heat_arrows(
     y0: float = -1.02,
     y1: float = -0.30,
     bend: float = 0.0,
+    phase: float = 0.0,
 ) -> None:
+    """Draw animated heat shimmer streams without textbook arrowheads.
+
+    The camera stays fixed; only the heat field itself undulates upward.
+    A soft orange outer glow plus a thinner warm core reads like rising
+    convection rather than diagram arrows.
+    """
     xs = np.linspace(-2.2, 2.2, count)
-    for x in xs:
-        endx = float(x + math.copysign(bend * (0.35 + abs(x) / 3.5), x if x != 0 else 1.0))
+    for idx, x in enumerate(xs):
+        side = math.copysign(1.0, x if x != 0 else (idx - count / 2.0 or 1.0))
+        flare = bend * (0.35 + abs(float(x)) / 3.5) * side
+        points: list[tuple[float, float, float]] = []
+        for k in range(8):
+            u = k / 7.0
+            wave = math.sin((phase * 1.65 + idx * 0.19 + u * 0.72) * math.pi * 2.0)
+            drift = wave * (0.06 + 0.11 * strength) * (0.25 + 0.75 * u)
+            px = float(x) + flare * u + drift
+            py = y0 + (y1 - y0) * u
+            pz = 0.18 + 0.10 * math.sin((phase * 1.35 + idx * 0.23 + u) * math.pi * 2.0)
+            points.append((px, py, pz))
         _draw_path(
             image,
-            [(float(x), y0, 0.25), (float(x), (y0 + y1) / 2.0, 0.15), (endx, y1, 0.05)],
-            "#ffd166",
+            points,
+            "#ff6b35",
             camera,
-            width=max(5, int(8 * strength)),
-            arrow=True,
-            alpha=min(255, int(190 + 50 * strength)),
+            width=max(7, int(12 * strength)),
+            arrow=False,
+            alpha=min(155, int(95 + 45 * strength)),
+        )
+        _draw_path(
+            image,
+            points,
+            "#ffc766",
+            camera,
+            width=max(3, int(5 * strength)),
+            arrow=False,
+            alpha=min(235, int(165 + 45 * strength)),
         )
 
 
@@ -424,33 +450,33 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         x = 0.42 * math.sin(t * math.pi * 2.0)
         _draw_vapor_layer(image, camera, center=(x, -0.58, 0.0), spread=0.76 + 0.30 * pulse, thickness=0.16 + 0.06 * pulse)
         _draw_sphere(image, (x, 0.68 + bob, 0.0), 1.08, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=3, strength=0.72 + 0.18 * pulse, y1=-0.34, bend=0.26)
+        _draw_heat_arrows(image, camera, count=3, strength=0.72 + 0.18 * pulse, y1=-0.34, bend=0.26, phase=t)
 
     elif kind == "skid_contrast":
-        _draw_plate(image, camera, 1.20, x=-1.8, scale=0.47)
-        _draw_plate(image, camera, 1.20, x=1.8, scale=0.47)
-        left_r = max(0.22, 0.72 * (1.0 - 0.70 * t))
-        _draw_sphere(image, (-1.8, 0.35 + 0.15 * t, 0.0), left_r, "#417aa6", camera, alpha=210)
-        glide_x = 1.35 + 0.85 * t
+        _draw_plate(image, camera, 1.20, x=-1.62, scale=0.54)
+        _draw_plate(image, camera, 1.20, x=1.62, scale=0.54)
+        left_r = max(0.25, 0.82 * (1.0 - 0.70 * t))
+        _draw_sphere(image, (-1.62, 0.40 + 0.15 * t, 0.0), left_r, "#417aa6", camera, alpha=210)
+        glide_x = 1.18 + 0.82 * t
         _draw_vapor_layer(image, camera, center=(glide_x, -0.58, 0.0), spread=0.34, thickness=0.12)
-        _draw_sphere(image, (glide_x, 0.52 + 0.05 * math.sin(t * math.pi * 4.0), 0.0), 0.72, "#2c78c9", camera, outline="#d9efff")
+        _draw_sphere(image, (glide_x, 0.58 + 0.05 * math.sin(t * math.pi * 4.0), 0.0), 0.82, "#2c78c9", camera, outline="#d9efff")
         _draw_path(image, [(1.1, -0.35, 0.7), (1.6, -0.28, 0.5), (2.4, -0.16, 0.1)], "#58d6e8", camera, width=8, arrow=True)
 
     elif kind == "expectation":
         _draw_plate(image, camera, 1.05 + 0.35 * t)
         r = max(0.32, 1.05 * (1.0 - 0.60 * t))
         _draw_sphere(image, (0.0, 0.62 + 0.10 * t, 0.0), r, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=5, strength=0.75 + 0.45 * t, y1=0.18 + 0.10 * t)
+        _draw_heat_arrows(image, camera, count=5, strength=0.75 + 0.45 * t, y1=0.18 + 0.10 * t, phase=t)
 
     elif kind == "question_gap":
-        _draw_plate(image, camera, 1.10 + 0.25 * t, x=-2.05, z=-0.65, scale=0.42)
-        _draw_plate(image, camera, 1.34, x=2.05, z=0.55, scale=0.52)
-        left_r = max(0.20, 0.72 * (1.0 - 0.65 * t))
-        _draw_sphere(image, (-2.05, 0.18 + 0.34 * t, -0.65), left_r, "#526f82", camera, alpha=220)
+        _draw_plate(image, camera, 1.10 + 0.25 * t, x=-1.78, z=-0.55, scale=0.50)
+        _draw_plate(image, camera, 1.34, x=1.78, z=0.48, scale=0.60)
+        left_r = max(0.24, 0.82 * (1.0 - 0.65 * t))
+        _draw_sphere(image, (-1.78, 0.24 + 0.34 * t, -0.55), left_r, "#526f82", camera, alpha=220)
         right_y = 0.38 + 0.54 * t + 0.10 * math.sin(t * math.pi * 4.0)
-        _draw_vapor_layer(image, camera, center=(2.05, -0.52, 0.55), spread=0.28 + 0.30 * t, thickness=0.10 + 0.07 * t)
-        _draw_sphere(image, (2.05, right_y, 0.55), 0.80, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=3, strength=0.85, y1=0.12, bend=-0.22)
+        _draw_vapor_layer(image, camera, center=(1.78, -0.50, 0.48), spread=0.34 + 0.34 * t, thickness=0.11 + 0.08 * t)
+        _draw_sphere(image, (1.78, right_y, 0.48), 0.92, "#2c78c9", camera, outline="#d9efff")
+        _draw_heat_arrows(image, camera, count=3, strength=0.85, y1=0.12, bend=-0.22, phase=t)
 
     elif kind == "vapor_hint":
         _draw_plate(image, camera, 1.22, x=-0.55, z=0.35, scale=0.88)
@@ -506,20 +532,26 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         xs = (-2.1, -1.1, 0.0, 1.2, 2.2)
         for idx, x in enumerate(xs):
             bend = (-1.1 if idx < 2 else 1.1 if idx > 2 else 0.0) * (0.65 + 0.45 * pulse)
-            _draw_path(image, [(x, -1.02, 0.15), (x, -0.56, 0.08), (x + bend, -0.18, 0.02)], "#ffd166", camera, width=11, arrow=True, alpha=235)
+            pts = []
+            for k in range(8):
+                u = k / 7.0
+                wave = 0.13 * math.sin((t * 1.6 + idx * 0.21 + u * 0.8) * math.pi * 2.0)
+                pts.append((x + bend * u + wave * u, -1.02 + 0.84 * u, 0.12 + 0.06 * math.sin((t + u) * math.pi * 2.0)))
+            _draw_path(image, pts, "#ff6b35", camera, width=13, arrow=False, alpha=130)
+            _draw_path(image, pts, "#ffc766", camera, width=5, arrow=False, alpha=220)
 
     elif kind == "paradox_shield":
         image.paste((34, 8, 7, 255), (0, 0, width, height))
         _draw_plate(image, camera, 1.45)
         _draw_vapor_layer(image, camera, spread=1.05 + 0.08 * pulse, thickness=0.19)
         _draw_sphere(image, (0.0, 0.70 + bob, 0.0), 0.95, "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=5, strength=1.15, y1=-0.36, bend=0.52)
+        _draw_heat_arrows(image, camera, count=5, strength=1.15, y1=-0.36, bend=0.52, phase=t)
 
     elif kind == "protected_drop":
         _draw_plate(image, camera, 1.38)
         _draw_vapor_layer(image, camera, center=(0.0, -0.36, 0.0), spread=1.25, thickness=0.20 + 0.03 * pulse)
         _draw_sphere(image, (0.0, 1.05 + 0.12 * t, 0.0), (1.75, 1.48, 1.45), "#2c78c9", camera, outline="#d9efff")
-        _draw_heat_arrows(image, camera, count=3, strength=0.90, y1=-0.22)
+        _draw_heat_arrows(image, camera, count=3, strength=0.90, y1=-0.22, phase=t)
 
     elif kind == "glide":
         _draw_plate(image, camera, 1.25)
@@ -541,7 +573,7 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_sphere(image, (-0.25, 0.62 + 0.62 * t + 0.10 * math.sin(t * math.pi * 4.0), 0.35), 1.00, "#2c78c9", camera, outline="#d9efff")
         for x in (-1.35, -0.25, 0.85):
             _draw_path(image, [(x, -0.82, 0.35), (x, -0.10 + 0.22 * t, 0.35)], "#72e8f5", camera, width=14, arrow=True, alpha=235)
-        _draw_heat_arrows(image, camera, count=3, strength=0.70, y1=-0.48, bend=0.18)
+        _draw_heat_arrows(image, camera, count=3, strength=0.70, y1=-0.48, bend=0.18, phase=t)
 
     elif kind == "name":
         _draw_plate(image, camera, 1.26, x=0.0, z=0.55, scale=0.82)
@@ -569,7 +601,7 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
             rr = radius * (1.0 - 0.28 * t if idx == 0 else 1.0)
             yy = y + (0.08 * math.sin((t + idx * 0.23) * math.pi * 2.0))
             _draw_sphere(image, (x, yy, z), max(0.22, rr), "#2c78c9", camera, outline="#d9efff")
-            _draw_heat_arrows(image, camera, count=2 + idx, strength=0.55 + 0.18 * idx, y1=-0.42 + 0.10 * idx)
+            _draw_heat_arrows(image, camera, count=2 + idx, strength=0.55 + 0.18 * idx, y1=-0.42 + 0.10 * idx, phase=t)
             if idx == 1:
                 for dx in (-0.28, 0.28):
                     _draw_sphere(image, (x + dx, -0.52 + 0.10 * pulse, z), (0.16, 0.08, 0.12), "#79eaf5", camera, alpha=170)
@@ -583,7 +615,7 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_vapor_layer(image, camera, center=(x, -0.46, z), spread=0.72 + 0.22 * pulse, thickness=0.18 + 0.05 * pulse)
         _draw_sphere(image, (x, 0.82 + 0.16 * math.sin(t * math.pi * 4.0), z), 1.08, "#2c78c9", camera, outline="#d9efff")
         _draw_path(image, [(-1.9, -0.34, -0.3), (-0.7, -0.18, 0.45), (0.6, -0.24, -0.35), (1.8, -0.12, 0.25)], "#6ee8f5", camera, width=11, alpha=215)
-        _draw_heat_arrows(image, camera, count=3, strength=0.88, y1=-0.30, bend=0.42)
+        _draw_heat_arrows(image, camera, count=3, strength=0.88, y1=-0.30, bend=0.42, phase=t)
 
     else:
         raise ValueError(f"unknown 3D diagram kind: {kind}")
