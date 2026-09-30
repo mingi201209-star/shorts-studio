@@ -274,7 +274,7 @@ def main():
                  "a moving cinematic 3D scientific name reveal naming the Leidenfrost effect around a floating water droplet",
                  "수증기 위에 뜬 물방울과 함께 라이덴프로스트 효과라는 이름을 처음 공개하는 모습"),
             beat(motion["threshold"],"충분히 뜨거운","temperature_condition","payoff","threshold","state",
-                 "a moving three-state 3D physical progression showing hotter metal surfaces and a stable vapor layer under the droplet only at the hottest state",
+                 "three moving blue water droplets over three hot metal plates, with the rightmost droplet clearly lifted by a bright cyan vapor cushion",
                  "표면이 더 뜨거워질수록 마지막 상태에서 안정된 증기층이 생기는 물리적 진행을 보여주는 모습"),
             beat(motion["payoff"],"자기 수증기 위에","final_mechanism","payoff","mechanism","state",
                  "a moving cinematic 3D payoff visualization showing a droplet floating on its own vapor above a hot surface",
