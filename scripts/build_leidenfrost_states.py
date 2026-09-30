@@ -146,18 +146,28 @@ def save_panel(kind:str,label:str,out:Path,font_path:str|None):
         d.ellipse((650,335,805,490),fill=BLUE,outline="#d9efff",width=6)
         vapor_band(d,625,830,575,62)
     elif kind=="vapor_hint":
-        hot_plate(d,710,1.2); droplet(d,490,365,115)
-        d.ellipse((435,570,545,625),fill=CYAN,outline="#d9fbff",width=5)
+        # One tiny local pocket only: visually a clue, not yet a layer.
+        hot_plate(d,760,1.2); droplet(d,490,285,150)
+        d.ellipse((455,615,525,650),fill=CYAN,outline="#d9fbff",width=5)
     elif kind=="vapor_birth":
-        hot_plate(d,710,1.15); droplet(d,490,365,110)
-        for x,r in ((395,22),(445,28),(495,34),(550,27),(605,21)):
-            d.ellipse((x-r,590-r//2,x+r,590+r//2),fill=CYAN,outline="#bdf6ff",width=3)
+        # Distinct state 1: narrow vertical vapor jets erupt from separate
+        # points under the drop. Large geometry change vs the single pocket.
+        hot_plate(d,765,1.2); droplet(d,490,250,155)
+        for x,h in ((350,95),(420,145),(490,180),(560,145),(630,95)):
+            d.line((x,710,x,710-h),fill=CYAN,width=24)
+            d.ellipse((x-18,692-h,x+18,728-h),fill="#bdf6ff")
     elif kind=="vapor_expand":
-        hot_plate(d,710,1.15); droplet(d,490,360,110)
-        for x,y,r in [(300,610,42),(380,585,55),(490,600,72),(605,580,52),(690,610,40)]:
-            d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline="#c8f8ff",width=3)
+        # Distinct state 2: the jets have spread sideways into a broad,
+        # turbulent sheet occupying most of the frame width.
+        hot_plate(d,760,1.2); droplet(d,490,245,145)
+        for x,y,r in [(180,610,65),(300,580,85),(430,605,105),(560,575,95),(700,600,78),(810,620,55)]:
+            d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline="#c8f8ff",width=4)
+        d.line((150,670,830,670),fill="#9af0fb",width=10)
     elif kind=="vapor_cushion":
-        hot_plate(d,710,1.2); vapor_band(d,260,720,575,76); droplet(d,490,360,118)
+        # Distinct state 3: bubbles collapse into one continuous thin layer,
+        # with the drop visibly higher above the plate.
+        hot_plate(d,780,1.25); vapor_band(d,170,810,585,100); droplet(d,490,220,142)
+        d.line((215,705,765,705),fill="#2b8ea0",width=5)
     elif kind=="no_contact":
         hot_plate(d,720,1.15); vapor_band(d,300,680,570,70); droplet(d,490,345,118)
         # Leave an unmistakable dark gap instead of drawing a giant X.
@@ -227,23 +237,39 @@ def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps
                 if k < 2+int(3*t):
                     upward_heat(d,x,690,620-int(40*t),.75)
         elif kind=="vapor_hint_motion":
-            hot_plate(d,720,1.2); droplet(d,490,355-int(8*t),118)
-            r=int(22+82*t)
-            d.ellipse((490-r,610-r//3,490+r,610+r//3),fill=CYAN,outline="#d9fbff",width=4)
+            # The clue grows from a pinpoint pocket into a clearly visible
+            # localized bubble; it never becomes a full layer yet.
+            hot_plate(d,760,1.2)
+            droplet(d,490,285-int(24*t),150)
+            r=int(18+120*t)
+            d.ellipse((490-r,625-r//4,490+r,625+r//4),fill=CYAN,outline="#d9fbff",width=5)
+            if t>0.55:
+                d.ellipse((380,610,430,645),fill="#8ceaf5")
+                d.ellipse((550,600,610,642),fill="#8ceaf5")
         elif kind=="support_force_motion":
             hot_plate(d,720,1.3); vapor_band(d,270,710,585,70)
             lift=int(20*t); droplet(d,490,365-lift,120)
             for x in (350,490,630):
                 upward_heat(d,x,690,650-int(55*t),.85)
         elif kind=="vapor_cushion_motion":
-            hot_plate(d,720,1.25); droplet(d,490,370-int(24*t),116)
-            for j,x in enumerate((330,410,490,570,650)):
-                r=int(16+30*min(1,max(0,t*1.5-j*0.08)))
-                y=int(615-10*t*((j%2)*2-1))
-                d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline="#c9f7ff",width=3)
-            if t>0.45:
-                a=(t-0.45)/0.55
-                vapor_band(d,int(360-100*a),int(620+100*a),575,72)
+            # Strong semantic transition: many separated jets merge into one
+            # continuous sheet while the droplet rises substantially. This
+            # must register as a real state change, not just minor motion.
+            hot_plate(d,780,1.25)
+            lift=int(110*t)
+            droplet(d,490,330-lift,142)
+            if t<0.55:
+                for j,x in enumerate((260,350,440,530,620,710)):
+                    prog=max(0.0,min(1.0,t*2.2-j*0.05))
+                    h=int(25+150*prog)
+                    d.line((x,735,x,735-h),fill=CYAN,width=22)
+                    d.ellipse((x-16,719-h,x+16,751-h),fill="#c9f7ff")
+            a=max(0.0,(t-0.35)/0.65)
+            if a>0:
+                left=int(420-250*a); right=int(560+250*a)
+                h=int(42+58*a)
+                vapor_band(d,left,right,590,h)
+                d.line((left+25,705,right-25,705),fill="#2b8ea0",width=5)
         elif kind=="glide_motion":
             d.ellipse((95,80,885,870),fill="#3a4148",outline="#8d969e",width=7)
             x=int(220+540*t); y=int(470-90*__import__("math").sin(t*3.14159))
