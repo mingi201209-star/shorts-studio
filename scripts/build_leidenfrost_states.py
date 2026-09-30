@@ -81,260 +81,200 @@ def download_required_video(out:Path)->Path:
 
 
 def canvas():
-    im=Image.new("RGB",(W,H),BLACK)
-    d=ImageDraw.Draw(im)
-    d.rounded_rectangle((16,16,W-16,H-16),radius=28,fill=WHITE)
-    return im,d
+    # One consistent dark physical-visualization canvas. The renderer already
+    # provides the outer black Shorts frame, so an extra white rounded "slide"
+    # inside the media box only makes the video look like a deck.
+    im=Image.new("RGB",(W,H),"#0b1117")
+    return im,ImageDraw.Draw(im)
 
 
 def droplet(d,cx,cy,r=85,fill=BLUE):
-    pts=[(cx,cy-r-30),(cx-r,cy+35),(cx-r+15,cy+r),(cx,cy+r+25),
-         (cx+r-15,cy+r),(cx+r,cy+35)]
-    d.polygon(pts,fill=fill,outline=INK)
-    d.ellipse((cx-r,cy-r//2,cx+r,cy+r+20),fill=fill,outline=INK,width=6)
+    # A Leidenfrost drop reads much more naturally as a rounded bead than as
+    # the old teardrop/pin icon. Add one restrained highlight for volume.
+    outline="#d9efff"
+    d.ellipse((cx-r,cy-r,cx+r,cy+r),fill=fill,outline=outline,width=max(4,r//18))
+    hr=max(8,r//5)
+    d.ellipse((cx-r//2,cy-r//2,cx-r//2+hr,cy-r//2+hr),fill="#b9dcff")
 
 
-def hot_plate(d,y=690):
-    d.rounded_rectangle((90,y,890,y+95),radius=24,fill=RED,outline=INK,width=7)
-    for x in range(150,850,120):
-        d.line((x,y+110,x+35,y+160),fill=RED,width=8)
+def hot_plate(d,y=690,heat=1.0):
+    # Dark metal body + a hot glowing top edge: closer to a physical surface
+    # than a flat red cartoon bar.
+    d.rounded_rectangle((70,y,910,y+105),radius=22,fill="#39424a",outline="#78838c",width=5)
+    glow="#ff5d4d" if heat<1.25 else "#ff3b30"
+    d.line((90,y+8,890,y+8),fill=glow,width=14)
+    if heat>1.05:
+        d.line((115,y+27,865,y+27),fill="#ff9b62",width=6)
+
+
+def vapor_band(d,left=280,right=700,y=575,h=76):
+    d.rounded_rectangle((left,y,right,y+h),radius=h//2,fill="#66d6e8",outline="#c9f7ff",width=4)
+
+
+def upward_heat(d,x,y0,y1,alpha=1.0):
+    c="#ffd166"
+    d.line((x,y0,x,y1),fill=c,width=max(8,int(14*alpha)))
+    d.polygon([(x,y1-16),(x-16,y1+12),(x+16,y1+12)],fill=c)
 
 
 def save_panel(kind:str,label:str,out:Path,font_path:str|None):
     im,d=canvas()
-    f30=get_font(font_path,30); f38=get_font(font_path,38); f52=get_font(font_path,52)
+    f34=get_font(font_path,34); f46=get_font(font_path,46)
+
     if kind=="hook_result":
-        hot_plate(d,690); droplet(d,490,450,105)
-        d.line((360,585,620,585),fill=CYAN,width=22)
-        d.text((490,235),"사라짐 X · 떠 있음",font=f52,fill=INK,anchor="mm")
-        d.text((490,840),"300°C 초가열 판",font=f30,fill=RED,anchor="mm")
+        hot_plate(d,710,1.25); vapor_band(d,310,670,575,72); droplet(d,490,400,112)
+        d.text((490,150),"300°C",font=f46,fill="#ff9b62",anchor="mm")
     elif kind=="skid_contrast":
-        d.rectangle((45,45,935,905),fill="#111820")
-        d.rounded_rectangle((85,150,440,760),radius=32,fill="#f7dddd",outline=RED,width=8)
-        d.rounded_rectangle((540,150,895,760),radius=32,fill="#dceeff",outline=BLUE,width=8)
-        d.text((262,245),"사라짐",font=f38,fill=RED,anchor="mm")
-        d.text((718,245),"실제로는",font=f38,fill=BLUE,anchor="mm")
-        for x in (185,265,345):
-            d.line((x,540,x,350),fill=GREY,width=12)
-            d.polygon([(x,320),(x-18,360),(x+18,360)],fill=GREY)
-        d.line((130,300,390,610),fill=RED,width=24)
-        d.line((130,610,390,300),fill=RED,width=24)
-        d.ellipse((620,365,760,505),fill=BLUE,outline=WHITE,width=7)
-        d.arc((595,340,855,650),start=200,end=40,fill=CYAN,width=18)
-        d.polygon([(850,430),(800,405),(815,460)],fill=CYAN)
-        d.text((718,650),"미끄러짐",font=f38,fill=WHITE,anchor="mm")
+        # Left: expected disappearance. Right: observed glide. No red X or
+        # boxed cards; the physical states themselves carry the contrast.
+        hot_plate(d,700,1.15)
+        for rr,a in ((82,1),(56,.7),(30,.45)):
+            c="#5f7d8f" if a<1 else "#78a6bf"
+            d.ellipse((225-rr,390-rr,225+rr,390+rr),outline=c,width=7)
+        d.ellipse((610,330,780,500),fill=BLUE,outline="#d9efff",width=6)
+        d.arc((555,285,865,620),start=190,end=35,fill=CYAN,width=18)
+        d.polygon([(850,390),(804,365),(817,418)],fill=CYAN)
     elif kind=="expectation":
-        d.text((490,235),"보통 예상",font=f52,fill=INK,anchor="mm")
-        hot_plate(d,660); droplet(d,330,475,75)
-        for x in (530,620,710):
-            d.line((x,560,x,390),fill=GREY,width=12)
-            d.polygon([(x,350),(x-18,395),(x+18,395)],fill=GREY)
-        d.text((650,475),"더 뜨거움\n→ 더 빨리 사라짐?",font=f38,fill=INK,anchor="mm",align="center")
+        hot_plate(d,700,1.2); droplet(d,360,410,90)
+        for x in (560,650,740): upward_heat(d,x,650,500)
     elif kind=="question_gap":
-        d.rectangle((45,45,935,905),fill="#17191c")
-        d.rounded_rectangle((90,150,430,760),radius=35,fill="#f7dddd",outline=RED,width=8)
-        d.rounded_rectangle((550,150,890,760),radius=35,fill="#dceeff",outline=BLUE,width=8)
-        d.text((260,260),"더 뜨거움",font=f38,fill=RED,anchor="mm")
-        d.text((720,260),"그런데",font=f38,fill=BLUE,anchor="mm")
-        d.text((260,480),"더 빨리\n사라져야?",font=f38,fill=INK,anchor="mm",align="center")
-        d.text((720,475),"왜\n떠 있지?",font=f52,fill=INK,anchor="mm",align="center")
+        # Same hot surface, two incompatible outcomes side-by-side.
+        d.line((490,120,490,820),fill="#2e3943",width=3)
+        d.rounded_rectangle((75,690,445,775),radius=18,fill="#39424a")
+        d.line((95,700,425,700),fill=RED,width=12)
+        d.ellipse((190,340,330,480),outline="#607786",width=7)
+        d.ellipse((650,335,805,490),fill=BLUE,outline="#d9efff",width=6)
+        vapor_band(d,625,830,575,62)
     elif kind=="vapor_hint":
-        d.rectangle((45,45,935,905),fill="#0f1f2a")
-        hot_plate(d,735)
-        droplet(d,490,345,120,fill=BLUE)
-        d.ellipse((415,565,565,655),fill=CYAN,outline=WHITE,width=7)
-        d.text((490,610),"수증기?",font=f38,fill=INK,anchor="mm")
-        d.text((490,210),"물방울 밑에 생기는 것",font=f38,fill=WHITE,anchor="mm")
+        hot_plate(d,710,1.2); droplet(d,490,365,115)
+        d.ellipse((435,570,545,625),fill=CYAN,outline="#d9fbff",width=5)
     elif kind=="vapor_birth":
-        hot_plate(d,690); droplet(d,490,390,110)
-        for x in (390,450,510,570,630):
-            d.ellipse((x-22,585,x+22,630),fill=CYAN,outline=INK,width=4)
-        d.text((490,245),"물방울 아래에서 수증기 생성",font=f38,fill=INK,anchor="mm")
+        hot_plate(d,710,1.15); droplet(d,490,365,110)
+        for x,r in ((395,22),(445,28),(495,34),(550,27),(605,21)):
+            d.ellipse((x-r,590-r//2,x+r,590+r//2),fill=CYAN,outline="#bdf6ff",width=3)
     elif kind=="vapor_expand":
-        d.rectangle((45,45,935,905),fill="#dff6fb")
-        hot_plate(d,735)
-        for x,y,r in [(220,560,55),(340,500,70),(490,555,90),(650,490,65),(770,565,50)]:
-            d.ellipse((x-r,y-r,x+r,y+r),fill=CYAN,outline=INK,width=6)
-        d.text((490,210),"수증기가 아래쪽을 채움",font=f38,fill=INK,anchor="mm")
-        d.polygon([(420,675),(560,675),(600,615),(380,615)],fill=BLUE,outline=INK)
+        hot_plate(d,710,1.15); droplet(d,490,360,110)
+        for x,y,r in [(300,610,42),(380,585,55),(490,600,72),(605,580,52),(690,610,40)]:
+            d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline="#c8f8ff",width=3)
     elif kind=="vapor_cushion":
-        hot_plate(d,720); droplet(d,490,365,120)
-        d.rounded_rectangle((270,575,710,650),radius=30,fill=CYAN,outline=INK,width=6)
-        d.text((490,612),"얇은 수증기층",font=f38,fill=INK,anchor="mm")
-        d.line((235,610,150,610),fill=INK,width=6)
-        d.text((135,610),"쿠션",font=f30,fill=INK,anchor="rm")
+        hot_plate(d,710,1.2); vapor_band(d,260,720,575,76); droplet(d,490,360,118)
     elif kind=="no_contact":
-        hot_plate(d,720); droplet(d,490,350,120)
-        d.rounded_rectangle((300,565,680,640),radius=30,fill=CYAN,outline=INK,width=6)
-        d.line((315,520,665,690),fill=RED,width=22)
-        d.line((315,690,665,520),fill=RED,width=22)
-        d.text((490,240),"금속과 직접 접촉하지 않음",font=f38,fill=INK,anchor="mm")
+        hot_plate(d,720,1.15); vapor_band(d,300,680,570,70); droplet(d,490,345,118)
+        # Leave an unmistakable dark gap instead of drawing a giant X.
+        d.line((320,545,660,545),fill="#91a4b0",width=3)
     elif kind=="contact_gap":
-        d.rectangle((45,45,935,905),fill="#111820")
-        d.ellipse((205,115,775,580),fill=BLUE,outline=WHITE,width=10)
-        d.rounded_rectangle((160,600,820,690),radius=30,fill=CYAN,outline=WHITE,width=6)
-        d.rounded_rectangle((80,735,900,835),radius=22,fill=RED,outline=WHITE,width=7)
-        d.line((150,525,830,725),fill="#ff5252",width=26)
-        d.line((150,725,830,525),fill="#ff5252",width=26)
-        d.text((490,675),"직접 접촉 X",font=f38,fill=WHITE,anchor="mm")
+        # Tight physical close-up: bottom of droplet, vapor gap, hot metal.
+        d.ellipse((155,25,825,600),fill=BLUE,outline="#d9efff",width=7)
+        vapor_band(d,120,860,625,72)
+        d.rounded_rectangle((65,745,915,855),radius=18,fill="#3f454b",outline="#8c969e",width=5)
+        d.line((90,755,890,755),fill=RED,width=14)
     elif kind=="paradox_shield":
-        d.rectangle((45,45,935,905),fill="#e54f3d")
-        d.polygon([(490,125),(790,250),(735,610),(490,790),(245,610),(190,250)],
-                  fill="#dff6fb",outline=WHITE)
-        droplet(d,490,405,105,fill=BLUE)
-        d.text((490,205),"HOT",font=f52,fill=RED,anchor="mm")
-        d.text((490,690),"더 뜨거운데 잠깐 보호됨",font=f38,fill=INK,anchor="mm")
+        # No shield icon: simply make the surface visibly hotter while the
+        # drop remains separated by the same vapor layer.
+        hot_plate(d,720,1.35)
+        vapor_band(d,285,695,575,74)
+        droplet(d,490,355,118)
+        for x in (310,490,670): upward_heat(d,x,690,635,.8)
     elif kind=="protected_drop":
-        d.rectangle((45,45,935,905),fill="#dceeff")
-        d.ellipse((245,150,735,650),fill=WHITE,outline=BLUE,width=14)
-        droplet(d,490,385,115)
-        d.arc((250,430,730,790),start=190,end=350,fill=CYAN,width=32)
-        d.text((490,765),"증기층이 받쳐 줌",font=f38,fill=INK,anchor="mm")
+        hot_plate(d,720,1.3); vapor_band(d,250,730,585,78); droplet(d,490,350,122)
+        d.arc((220,455,760,785),start=195,end=345,fill=CYAN,width=14)
     elif kind=="glide":
-        d.rectangle((45,45,935,905),fill="#1c1f24")
-        d.ellipse((110,105,870,865),fill="#454b52",outline=WHITE,width=10)
-        d.ellipse((230,290,410,470),fill=BLUE,outline=WHITE,width=7)
-        d.arc((235,255,790,720),start=195,end=35,fill=CYAN,width=20)
-        d.polygon([(785,380),(725,355),(745,420)],fill=CYAN)
-        d.text((490,760),"팬 위를 미끄러짐",font=f38,fill=WHITE,anchor="mm")
+        # Top-down metal pan with a clean path trace.
+        d.ellipse((95,80,885,870),fill="#3a4148",outline="#8d969e",width=7)
+        d.ellipse((210,320,380,490),fill=BLUE,outline="#d9efff",width=6)
+        d.arc((220,255,820,700),start=195,end=30,fill=CYAN,width=18)
+        d.polygon([(820,390),(770,365),(787,420)],fill=CYAN)
     elif kind=="support_force":
-        d.rectangle((45,45,935,905),fill="#182d38")
-        d.ellipse((275,140,705,570),fill=BLUE,outline=WHITE,width=10)
-        d.rounded_rectangle((250,610,730,685),radius=28,fill=CYAN,outline=WHITE,width=6)
-        for x in (340,490,640):
-            d.line((x,760,x,700),fill=YELLOW,width=18)
-            d.polygon([(x,675),(x-24,715),(x+24,715)],fill=YELLOW)
-        d.text((490,820),"수증기가 아래에서 받쳐 줌",font=f38,fill=WHITE,anchor="mm")
+        hot_plate(d,720,1.25); vapor_band(d,270,710,585,70); droplet(d,490,350,122)
+        for x in (350,490,630): upward_heat(d,x,690,630,.8)
     elif kind=="name":
-        d.rectangle((45,45,935,905),fill="#101820")
-        d.text((490,235),"Leidenfrost",font=f52,fill=WHITE,anchor="mm")
-        d.text((490,325),"라이덴프로스트 효과",font=f38,fill=CYAN,anchor="mm")
-        droplet(d,490,540,105,fill=BLUE)
-        d.rounded_rectangle((315,690,665,760),radius=25,fill=CYAN,outline=WHITE,width=5)
+        vapor_band(d,300,680,620,64); droplet(d,490,415,112)
+        d.text((490,160),"LEIDENFROST",font=f46,fill="#e7f5ff",anchor="mm")
     elif kind=="threshold":
-        d.rectangle((45,45,935,905),fill="#fff0df")
-        d.rounded_rectangle((175,150,300,770),radius=55,fill=WHITE,outline=INK,width=8)
-        d.rectangle((210,360,265,730),fill=RED)
-        d.ellipse((185,690,290,795),fill=RED,outline=INK,width=6)
-        d.text((500,330),"충분히 뜨거움",font=f52,fill=INK,anchor="lm")
-        d.text((500,505),"증기층 유지",font=f52,fill=RED,anchor="lm")
+        # Replace the textbook thermometer with a physical progression:
+        # hotter surface -> stable vapor support.
+        for idx,(x,heat) in enumerate(((90,.8),(350,1.05),(610,1.35))):
+            d.rounded_rectangle((x,650,x+240,760),radius=18,fill="#39424a",outline="#737f88",width=4)
+            d.line((x+20,662,x+220,662),fill="#ff8a66" if heat<1.2 else "#ff3b30",width=12)
+            rr=58
+            d.ellipse((x+120-rr,405-rr,x+120+rr,405+rr),fill=BLUE,outline="#d9efff",width=5)
+            if heat>=1.2:
+                d.rounded_rectangle((x+55,530,x+185,575),radius=20,fill=CYAN,outline="#c8f8ff",width=3)
     elif kind=="payoff":
-        d.rectangle((45,45,935,905),fill="#dff6fb")
-        hot_plate(d,735); droplet(d,490,350,125)
-        d.rounded_rectangle((250,560,730,650),radius=35,fill=CYAN,outline=INK,width=7)
-        d.line((170,475,330,475),fill=GREY,width=12)
-        d.polygon([(340,475),(305,450),(305,500)],fill=GREY)
-        d.text((490,205),"뜨거운 표면 → 증기 쿠션 → 떠 있는 물방울",font=f30,fill=INK,anchor="mm")
-        d.text((490,825),"바로 사라지는 대신 잠깐 뜸",font=f38,fill=INK,anchor="mm")
+        hot_plate(d,730,1.35); vapor_band(d,230,750,570,82); droplet(d,490,340,128)
+        for x in (340,490,640): upward_heat(d,x,700,635,.65)
     else:
         raise ValueError(kind)
+
     out.parent.mkdir(parents=True,exist_ok=True)
     im.save(out,quality=95)
     return out
 
 
 def save_motion_clip(kind:str,out:Path,font_path:str|None,duration:float=3.2,fps:int=30)->Path:
-    """Generate semantic motion, never crop/zoom motion.
-
-    Each frame changes the represented physical state itself: vapor forms
-    and spreads, or the droplet translates across the pan. This is the
-    opposite of faking cadence by moving a camera over one still.
-    """
+    """Generate semantic physical-state motion, never crop/zoom motion."""
     frames=out.parent/(out.stem+"_frames")
     frames.mkdir(parents=True,exist_ok=True)
     total=max(2,int(duration*fps))
-    f38=get_font(font_path,38)
     for i in range(total):
         t=i/(total-1)
         im,d=canvas()
         if kind=="expectation_motion":
-            d.rectangle((45,45,935,905),fill="#fff1e6")
-            hot_plate(d,735)
-            shrink=max(28,int(120*(1.0-0.72*t)))
+            hot_plate(d,720,1.0+0.35*t)
+            shrink=max(26,int(118*(1.0-0.72*t)))
             droplet(d,490,380,shrink,fill=BLUE)
-            heat_count=2+int(4*t)
-            for k in range(heat_count):
-                x=260+k*95
-                d.line((x,690,x,635-int(45*t)),fill=YELLOW,width=12)
-                d.polygon([(x,615-int(45*t)),(x-16,645-int(45*t)),(x+16,645-int(45*t))],fill=YELLOW)
-            d.text((490,210),"더 뜨거우면 더 빨리 사라질까?",font=f38,fill=INK,anchor="mm")
+            for k,x in enumerate((300,395,490,585,680)):
+                if k < 2+int(3*t):
+                    upward_heat(d,x,690,620-int(40*t),.75)
         elif kind=="vapor_hint_motion":
-            d.rectangle((45,45,935,905),fill="#0f1f2a")
-            hot_plate(d,735)
-            droplet(d,490,345-int(10*t),120,fill=BLUE)
-            r=int(28+62*t)
-            d.ellipse((490-r,610-r//2,490+r,610+r//2),fill=CYAN,outline=WHITE,width=7)
-            d.text((490,210),"물방울 밑에서 수증기가 자람",font=f38,fill=WHITE,anchor="mm")
+            hot_plate(d,720,1.2); droplet(d,490,355-int(8*t),118)
+            r=int(22+82*t)
+            d.ellipse((490-r,610-r//3,490+r,610+r//3),fill=CYAN,outline="#d9fbff",width=4)
         elif kind=="support_force_motion":
-            d.rectangle((45,45,935,905),fill="#182d38")
-            lift=int(22*t)
-            d.ellipse((275,140-lift,705,570-lift),fill=BLUE,outline=WHITE,width=10)
-            d.rounded_rectangle((250,610,730,685),radius=28,fill=CYAN,outline=WHITE,width=6)
-            for x in (340,490,640):
-                h=int(35+70*t)
-                d.line((x,770,x,770-h),fill=YELLOW,width=18)
-                d.polygon([(x,745-h),(x-24,785-h),(x+24,785-h)],fill=YELLOW)
-            d.text((490,835),"수증기 힘이 물방울을 위로 받침",font=f38,fill=WHITE,anchor="mm")
+            hot_plate(d,720,1.3); vapor_band(d,270,710,585,70)
+            lift=int(20*t); droplet(d,490,365-lift,120)
+            for x in (350,490,630):
+                upward_heat(d,x,690,650-int(55*t),.85)
         elif kind=="vapor_cushion_motion":
-            hot_plate(d,735)
-            droplet(d,490,350-int(25*t),115)
-            # Vapor grows from separate bubbles into a continuous cushion.
+            hot_plate(d,720,1.25); droplet(d,490,370-int(24*t),116)
             for j,x in enumerate((330,410,490,570,650)):
-                r=int(18+32*min(1,max(0,t*1.5-j*0.08)))
-                y=int(625-18*t*((j%2)*2-1))
-                d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline=INK,width=4)
+                r=int(16+30*min(1,max(0,t*1.5-j*0.08)))
+                y=int(615-10*t*((j%2)*2-1))
+                d.ellipse((x-r,y-r//2,x+r,y+r//2),fill=CYAN,outline="#c9f7ff",width=3)
             if t>0.45:
-                alpha=(t-0.45)/0.55
-                left=int(360-90*alpha); right=int(620+90*alpha)
-                d.rounded_rectangle((left,575,right,650),radius=28,fill=CYAN,outline=INK,width=5)
-            d.text((490,210),"수증기가 이어져 쿠션이 됨",font=f38,fill=INK,anchor="mm")
+                a=(t-0.45)/0.55
+                vapor_band(d,int(360-100*a),int(620+100*a),575,72)
         elif kind=="glide_motion":
-            d.rectangle((45,45,935,905),fill="#1c1f24")
-            d.ellipse((110,105,870,865),fill="#454b52",outline=WHITE,width=10)
-            x=int(220+540*t)
-            y=int(470-90*__import__("math").sin(t*3.14159))
-            d.ellipse((x-88,y-88,x+88,y+88),fill=BLUE,outline=WHITE,width=7)
+            d.ellipse((95,80,885,870),fill="#3a4148",outline="#8d969e",width=7)
+            x=int(220+540*t); y=int(470-90*__import__("math").sin(t*3.14159))
+            d.ellipse((x-86,y-86,x+86,y+86),fill=BLUE,outline="#d9efff",width=6)
             for k in range(4):
                 px=x-int(55+55*k)
                 if px>130:
-                    d.ellipse((px-18,y+75,px+18,y+98),fill=CYAN)
-            d.line((180,690,800,690),fill=CYAN,width=12)
-            d.polygon([(815,690),(775,665),(775,715)],fill=CYAN)
-            d.text((490,780),"수증기 위에서 실제 위치가 바뀜",font=f38,fill=WHITE,anchor="mm")
+                    d.ellipse((px-16,y+72,px+16,y+92),fill=CYAN)
+            d.arc((180,250,830,720),start=195,end=25,fill=CYAN,width=12)
         elif kind=="heat_blocked_motion":
-            d.rectangle((45,45,935,905),fill="#2b1716")
-            d.rounded_rectangle((90,690,890,825),radius=25,fill="#f05a48",outline=WHITE,width=7)
-            d.rounded_rectangle((260,515,720,610),radius=35,fill=CYAN,outline=WHITE,width=7)
-            droplet(d,490,300,120,fill="#5ca7ef")
-            # Heat arrows rise from the plate each cycle but visibly stall and
-            # fade right at the vapor-layer boundary -- the physical claim
-            # itself (heat blocked from reaching the droplet), not decoration.
+            hot_plate(d,720,1.35); vapor_band(d,260,720,545,76); droplet(d,490,315,120)
             cycle=(t*2.0)%1.0
             for k,x in enumerate((280,390,500,610,720)):
                 rise=max(0.0,min(1.0,cycle*1.6-k*0.12))
-                if rise<=0:
-                    continue
-                y_start=675
-                y_stop=int(675-95*min(rise,0.82))
-                d.line((x,y_start,x,y_stop),fill=YELLOW,width=14)
+                if rise<=0: continue
+                y_stop=int(695-105*min(rise,0.82))
+                d.line((x,695,x,y_stop),fill=YELLOW,width=12)
                 if rise<0.82:
-                    d.polygon([(x,y_stop-14),(x-18,y_stop+14),(x+18,y_stop+14)],fill=YELLOW)
-            d.text((490,470),"수증기층에서 열 흐름이 꺾임",font=f38,fill=WHITE,anchor="mm")
+                    d.polygon([(x,y_stop-12),(x-16,y_stop+12),(x+16,y_stop+12)],fill=YELLOW)
         elif kind=="payoff_motion":
-            d.rectangle((45,45,935,905),fill="#dff6fb")
-            hot_plate(d,735)
-            lift=int(18*__import__("math").sin(t*3.14159))
-            droplet(d,490,365-lift,120)
-            width=int(240+220*t)
-            d.rounded_rectangle((490-width//2,570,490+width//2,650),radius=30,fill=CYAN,outline=INK,width=7)
-            for x in (390,490,590):
-                h=int(30+45*t)
-                d.line((x,690,x,690-h),fill=YELLOW,width=12)
-                d.polygon([(x,690-h-14),(x-14,690-h+10),(x+14,690-h+10)],fill=YELLOW)
-            d.text((490,210),"자기 수증기 위에 떠 있음",font=f38,fill=INK,anchor="mm")
+            hot_plate(d,730,1.35)
+            lift=int(16*__import__("math").sin(t*3.14159))
+            droplet(d,490,360-lift,124)
+            width=int(260+210*t)
+            vapor_band(d,490-width//2,490+width//2,575,78)
+            for x in (360,490,620):
+                upward_heat(d,x,705,650-int(28*t),.7)
         else:
             raise ValueError(kind)
         im.save(frames/f"{i:04d}.png")
+
     out.parent.mkdir(parents=True,exist_ok=True)
     subprocess.run([
         "ffmpeg","-y","-framerate",str(fps),"-i",str(frames/"%04d.png"),
@@ -505,8 +445,8 @@ def main():
             phrase("TWIST","그래서 판이 더 뜨거워졌는데도 물방울은 잠깐 보호됩니다. 팬 위를 미끄러지는 움직임도 이 증기층이 받쳐 주기 때문입니다."),
         ],[
             beat(png["paradox_shield"],"더 뜨거워졌는데도","hotter_but_protected","paradox","shield","concept",
-                 "a bold red and blue shield diagram showing a water droplet protected above an extremely hot plate",
-                 "더 뜨거운 조건인데도 증기층이 물방울을 잠깐 보호하는 역설을 큰 방패 구도로 보여주는 모습"),
+                 "a physical cross section showing a water droplet still separated from an extremely hot glowing metal surface by a vapor layer",
+                 "더 뜨거워진 금속 표면 위에서도 물방울과 금속 사이에 증기층이 유지되는 모습을 보여주는 장면"),
             beat(png["protected_drop"],"잠깐 보호됩니다","supported_drop","paradox","supported","state",
                  "a large blue droplet visibly supported by a curved vapor cushion",
                  "물방울이 수증기층 위에서 실제로 받쳐지는 구조를 크게 보여주는 모습"),
@@ -524,8 +464,8 @@ def main():
                  "a dark title-like scientific diagram naming the Leidenfrost effect around a floating water droplet",
                  "수증기 위에 뜬 물방울과 함께 라이덴프로스트 효과라는 이름을 처음 공개하는 모습"),
             beat(png["threshold"],"충분히 뜨거운","temperature_condition","payoff","threshold","state",
-                 "an educational thermometer graphic showing a sufficiently hot surface condition for a persistent vapor layer",
-                 "표면이 충분히 뜨거워져 증기층이 유지되는 조건을 온도계 구도로 보여주는 모습"),
+                 "a three-state physical progression showing hotter metal surfaces and a stable vapor layer under the droplet only at the hottest state",
+                 "표면이 더 뜨거워질수록 마지막 상태에서 안정된 증기층이 생기는 물리적 진행을 보여주는 모습"),
             beat(motion["payoff"],"자기 수증기 위에","final_mechanism","payoff","mechanism","state",
                  "a bright payoff diagram showing a droplet floating on its own vapor above a hot surface",
                  "뜨거운 표면에서 물방울이 자기 수증기 위에 떠 있는 최종 원리를 한 화면에 보여주는 모습"),
