@@ -278,7 +278,9 @@ def _camera_for(kind: str, t: float) -> Camera:
     physical state itself (droplet, vapor, heat flow, glide path, etc.), never
     from orbiting, panning, zooming, or camera shake.
     """
-    # Camera is intentionally placed closer to the subject for a more immersive\n    # perspective while remaining fixed within each beat.\n    profiles = {
+    # Camera is intentionally placed closer to the subject for a more immersive
+    # perspective while remaining fixed within each beat.
+    profiles = {
         "hook_result": (0.12, -0.28, 8.25, 810.0, 475.0),
         "skid_contrast": (-0.58, -0.42, 8.75, 805.0, 465.0),
         "expectation": (0.52, -0.18, 8.05, 820.0, 485.0),
