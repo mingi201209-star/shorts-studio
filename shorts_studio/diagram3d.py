@@ -486,39 +486,49 @@ def _draw_soft_path(
         overlay = overlay.filter(ImageFilter.GaussianBlur(blur))
     image.alpha_composite(overlay)
 
-def _camera_for(kind: str, t: float) -> Camera:
-    """Return a fixed camera for each 3D beat.
+# One global front camera for the entire production.
+#
+# The user's requirement is not merely "no motion inside a beat". The viewpoint
+# must also NOT jump above/below or left/right between beats. Scene composition
+# changes must be achieved by moving/scaling the physical objects, never by
+# changing the camera.
+_FRONT_CAMERA = Camera(
+    yaw=0.0,
+    pitch=-0.18,
+    distance=8.20,
+    focal=820.0,
+    cy=485.0,
+)
 
-    ``t`` is intentionally ignored. All within-beat motion must come from the
-    physical state itself (droplet, vapor, heat flow, glide path, etc.), never
-    from orbiting, panning, zooming, or camera shake.
-    """
-    # Camera is intentionally placed closer to the subject for a more immersive
-    # perspective while remaining fixed within each beat.
-    profiles = {
-        "hook_result": (0.12, -0.28, 8.25, 810.0, 475.0),
-        "skid_contrast": (-0.58, -0.42, 8.75, 805.0, 465.0),
-        "expectation": (0.52, -0.18, 8.05, 820.0, 485.0),
-        "question_gap": (-0.35, -0.62, 9.00, 825.0, 455.0),
-        "vapor_hint": (0.62, -0.08, 7.35, 880.0, 510.0),
-        "vapor_birth": (-0.68, -0.30, 8.60, 790.0, 480.0),
-        "vapor_expand": (0.36, -0.52, 9.25, 770.0, 455.0),
-        "vapor_cushion": (-0.18, -0.12, 7.50, 870.0, 505.0),
-        "no_contact": (0.56, -0.38, 8.25, 810.0, 475.0),
-        "contact_gap": (0.02, -0.03, 6.75, 920.0, 515.0),
-        "heat_blocked": (-0.52, -0.26, 8.15, 830.0, 485.0),
-        "paradox_shield": (0.68, -0.46, 9.35, 770.0, 455.0),
-        "protected_drop": (0.06, -0.06, 7.00, 900.0, 515.0),
-        "glide": (-0.12, -0.98, 9.65, 770.0, 455.0),
-        "support_force": (-0.58, -0.18, 7.95, 840.0, 490.0),
-        "name": (0.22, -0.24, 7.80, 850.0, 485.0),
-        "threshold": (0.00, -0.58, 9.75, 820.0, 455.0),
-        "payoff": (0.46, -0.22, 7.60, 860.0, 490.0),
-    }
-    yaw, pitch, distance, focal, cy = profiles.get(
-        kind, (0.1, -0.25, 8.6, 780.0, 475.0)
-    )
-    return Camera(yaw=yaw, pitch=pitch, distance=distance, focal=focal, cy=cy)
+_FRONT_CAMERA_KINDS = (
+    "hook_result",
+    "skid_contrast",
+    "expectation",
+    "question_gap",
+    "vapor_hint",
+    "vapor_birth",
+    "vapor_expand",
+    "vapor_cushion",
+    "no_contact",
+    "contact_gap",
+    "heat_blocked",
+    "paradox_shield",
+    "protected_drop",
+    "glide",
+    "support_force",
+    "name",
+    "threshold",
+    "payoff",
+)
+
+
+def _camera_for(kind: str, t: float) -> Camera:
+    """Return the same front-facing camera for every 3D beat and every frame."""
+    # Keep parameters in the signature so existing callers do not change.
+    # They are intentionally ignored: neither time nor scene kind may alter
+    # the viewpoint.
+    _ = (kind, t)
+    return _FRONT_CAMERA
 
 
 def _background_for(kind: str) -> tuple[int, int, int, int]:
@@ -1036,13 +1046,19 @@ def render_3d_motion(
     frames.mkdir(parents=True, exist_ok=True)
     total = max(2, int(duration * fps))
 
-    # Fail closed if a future edit accidentally reintroduces camera motion.
+    # Fail closed if a future edit accidentally reintroduces camera motion OR
+    # scene-to-scene viewpoint changes. Every beat must share the exact same
+    # front-facing camera, not merely remain fixed inside its own beat.
     fixed_camera = _camera_for(kind, 0.0)
-    for probe_t in (0.25, 0.5, 0.75, 1.0):
-        if _camera_for(kind, probe_t) != fixed_camera:
-            raise RuntimeError(
-                f"3D camera must remain fixed within a beat: {kind} at t={probe_t}"
-            )
+    if fixed_camera != _FRONT_CAMERA:
+        raise RuntimeError(f"3D camera must use the global front view: {kind}")
+    for camera_kind in _FRONT_CAMERA_KINDS:
+        for probe_t in (0.0, 0.25, 0.5, 0.75, 1.0):
+            if _camera_for(camera_kind, probe_t) != _FRONT_CAMERA:
+                raise RuntimeError(
+                    "3D camera must remain identical across every beat: "
+                    f"{camera_kind} at t={probe_t}"
+                )
 
     for i in range(total):
         t = i / (total - 1)
