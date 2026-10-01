@@ -54,16 +54,18 @@ jobs:
 
           minimum_duration = {
               "hero_dimples": 3.9,
-              "smooth_morph": 4.9,
-              "smooth_wake": 5.4,
+              "smooth_morph": 4.4,
+              "smooth_wake": 4.4,
               "boundary_layer": 4.4,
-              "separation_compare": 6.9,
+              "separation_compare": 4.4,
+              "wake_compare": 4.4,
               "dimple_wake": 4.4,
               "trip_turbulence": 4.4,
               "attached_flow": 4.4,
               "wake_shrink": 4.4,
               "drag_compare": 4.4,
-              "flight_payoff": 7.9,
+              "flight_payoff_setup": 4.4,
+              "flight_payoff": 5.4,
           }
           for kind in KINDS:
               for t in (0.0, 0.25, 0.5, 0.75, 1.0):
