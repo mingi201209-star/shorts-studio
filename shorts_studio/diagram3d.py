@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 
 @dataclass(frozen=True)
@@ -183,6 +183,116 @@ def _draw_screen_ellipse(
     image.alpha_composite(overlay)
 
 
+def _projected_ellipse_geometry(
+    center: tuple[float, float, float],
+    radii: tuple[float, float, float],
+    camera: Camera,
+) -> tuple[tuple[float, float], float, float]:
+    cx, cy, cz = center
+    rx, ry, rz = radii
+    probes = np.array(
+        [
+            [cx, cy, cz],
+            [cx + rx, cy, cz],
+            [cx - rx, cy, cz],
+            [cx, cy + ry, cz],
+            [cx, cy - ry, cz],
+            [cx, cy, cz + rz],
+            [cx, cy, cz - rz],
+        ],
+        dtype=float,
+    )
+    xy, _ = _project(probes, camera)
+    center_xy = xy[0]
+    screen_rx = max(1.0, float(np.max(np.abs(xy[1:, 0] - center_xy[0]))))
+    screen_ry = max(1.0, float(np.max(np.abs(xy[1:, 1] - center_xy[1]))))
+    return (float(center_xy[0]), float(center_xy[1])), screen_rx, screen_ry
+
+
+def _draw_soft_projected_ellipse(
+    image: Image.Image,
+    center: tuple[float, float, float],
+    radii: tuple[float, float, float],
+    color: str,
+    camera: Camera,
+    alpha: int,
+    blur: float,
+) -> None:
+    center_xy, rx, ry = _projected_ellipse_geometry(center, radii, camera)
+    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay, "RGBA")
+    cx, cy = center_xy
+    d.ellipse(
+        (cx - rx, cy - ry, cx + rx, cy + ry),
+        fill=_rgb(color) + (max(0, min(255, alpha)),),
+    )
+    if blur > 0.0:
+        overlay = overlay.filter(ImageFilter.GaussianBlur(blur))
+    image.alpha_composite(overlay)
+
+
+def _draw_glossy_water(
+    image: Image.Image,
+    center: tuple[float, float, float],
+    radii: tuple[float, float, float],
+    color: str,
+    camera: Camera,
+    alpha: int,
+    outline: str | None,
+) -> None:
+    """Render a smooth screen-space dielectric instead of faceted mesh bands."""
+    (cx, cy), rx, ry = _projected_ellipse_geometry(center, radii, camera)
+    pad = 4
+    left = max(0, int(math.floor(cx - rx - pad)))
+    top = max(0, int(math.floor(cy - ry - pad)))
+    right = min(image.width, int(math.ceil(cx + rx + pad)))
+    bottom = min(image.height, int(math.ceil(cy + ry + pad)))
+    if right <= left or bottom <= top:
+        return
+
+    yy, xx = np.mgrid[top:bottom, left:right]
+    dx = (xx - cx) / max(rx, 1.0)
+    dy = (yy - cy) / max(ry, 1.0)
+    r2 = dx * dx + dy * dy
+    mask = r2 <= 1.0
+    nz = np.sqrt(np.clip(1.0 - r2, 0.0, 1.0))
+
+    # Broad product-lighting reflection from upper-left plus a darker lower rim.
+    light = np.clip(0.40 + 0.52 * (-0.40 * dx - 0.62 * dy + 0.72 * nz), 0.18, 1.0)
+    fresnel = np.power(np.clip(1.0 - nz, 0.0, 1.0), 2.2)
+    base = np.array(_rgb(color), dtype=float)
+    cool = np.array((118.0, 218.0, 246.0), dtype=float)
+    rgb = base[None, None, :] * (0.62 + 0.48 * light[..., None])
+    rgb += cool[None, None, :] * (0.24 * fresnel[..., None])
+    rgb *= (1.0 - 0.12 * np.clip(dy, 0.0, 1.0)[..., None])
+
+    # Two soft reflection sources avoid the "blue plastic ball" look.
+    spec_a = np.exp(-(((dx + 0.33) / 0.14) ** 2 + ((dy + 0.38) / 0.10) ** 2))
+    spec_b = np.exp(-(((dx - 0.24) / 0.10) ** 2 + ((dy - 0.10) / 0.055) ** 2))
+    rgb += spec_a[..., None] * np.array((190.0, 226.0, 245.0))[None, None, :] * 0.78
+    rgb += spec_b[..., None] * np.array((92.0, 176.0, 216.0))[None, None, :] * 0.28
+    rgb = np.clip(rgb, 0.0, 255.0)
+
+    a = np.zeros_like(r2, dtype=float)
+    base_alpha = max(0, min(255, alpha))
+    a[mask] = base_alpha * (0.90 + 0.10 * fresnel[mask])
+    rgba = np.zeros((bottom - top, right - left, 4), dtype=np.uint8)
+    rgba[..., :3] = rgb.astype(np.uint8)
+    rgba[..., 3] = np.clip(a, 0.0, 255.0).astype(np.uint8)
+    tile = Image.fromarray(rgba, mode="RGBA")
+    image.alpha_composite(tile, (left, top))
+
+    # A restrained bright rim keeps the silhouette readable on a phone.
+    rim_color = outline or "#bdeeff"
+    _draw_screen_ellipse(
+        image,
+        (cx, cy),
+        (rx, ry),
+        rim_color,
+        alpha=min(220, max(110, int(alpha * 0.82))),
+        width=max(2, int(min(rx, ry) * 0.020)),
+    )
+
 def _draw_sphere(
     image: Image.Image,
     center: tuple[float, float, float],
@@ -197,44 +307,25 @@ def _draw_sphere(
     else:
         radii = tuple(float(v) for v in radius)
 
-    # Smooth material pass: never draw every mesh edge. The old behavior
-    # turned droplets and vapor into wireframe CAD objects.
+    water_colors = {"#2c78c9", "#417aa6", "#526f82", "#427da8"}
+    if color.lower() in water_colors and alpha >= 200:
+        _draw_glossy_water(image, center, radii, color, camera, alpha, outline)
+        return
+
     verts, faces = _sphere_mesh(center, radii)
     _draw_mesh(image, verts, faces, color, camera, alpha=alpha, outline=None)
 
-    # Approximate the projected silhouette from the 3D center and principal
-    # radii. This gives one clean rim instead of a grid over every face.
-    cx, cy, cz = center
-    probes = np.array(
-        [
-            [cx, cy, cz],
-            [cx + radii[0], cy, cz],
-            [cx, cy + radii[1], cz],
-        ],
-        dtype=float,
-    )
-    xy, _ = _project(probes, camera)
-    rx = float(np.linalg.norm(xy[1] - xy[0]))
-    ry = float(np.linalg.norm(xy[2] - xy[0]))
     if outline:
-        _draw_screen_ellipse(
-            image, tuple(xy[0]), (rx, ry), outline,
-            alpha=min(235, max(100, alpha)), width=max(2, int(min(rx, ry) * 0.035)),
-        )
-
-    # Glossy highlight only on water-like, mostly opaque droplets. It creates
-    # volume without introducing camera motion or decorative wireframes.
-    if color.lower() in {"#2c78c9", "#417aa6", "#526f82", "#427da8"} and alpha >= 200:
-        highlight_center = (float(xy[0][0] - rx * 0.28), float(xy[0][1] - ry * 0.32))
+        center_xy, rx, ry = _projected_ellipse_geometry(center, radii, camera)
         _draw_screen_ellipse(
             image,
-            highlight_center,
-            (max(4.0, rx * 0.15), max(3.0, ry * 0.10)),
-            "#e7fbff",
-            alpha=170,
-            width=1,
-            fill=True,
+            center_xy,
+            (rx, ry),
+            outline,
+            alpha=min(225, max(100, alpha)),
+            width=max(2, int(min(rx, ry) * 0.025)),
         )
+
 
 def _droplet_radii(
     base_radius: float,
@@ -285,18 +376,16 @@ def _draw_contact_shadow(
     radius: tuple[float, float] = (1.0, 0.72),
     alpha: int = 80,
 ) -> None:
-    cx, cy, cz = center
-    probes = np.array(
-        [[cx, cy, cz], [cx + radius[0], cy, cz], [cx, cy, cz + radius[1]]],
-        dtype=float,
+    _draw_soft_projected_ellipse(
+        image,
+        center,
+        (radius[0], 0.035, radius[1]),
+        "#000000",
+        camera,
+        alpha=max(0, min(135, alpha)),
+        blur=max(5.0, 0.07 * camera.focal / max(camera.distance, 1.0)),
     )
-    xy, _ = _project(probes, camera)
-    rx = max(5.0, float(np.linalg.norm(xy[1] - xy[0])))
-    ry = max(3.0, float(np.linalg.norm(xy[2] - xy[0])) * 0.52)
-    _draw_screen_ellipse(
-        image, tuple(xy[0]), (rx, ry), "#000000",
-        alpha=max(0, min(150, alpha)), width=1, fill=True,
-    )
+
 
 def _draw_path(
     image: Image.Image,
@@ -332,6 +421,30 @@ def _draw_path(
             )
     image.alpha_composite(overlay)
 
+
+
+def _draw_soft_path(
+    image: Image.Image,
+    points: list[tuple[float, float, float]],
+    color: str,
+    camera: Camera,
+    width: int = 8,
+    alpha: int = 160,
+    blur: float = 5.0,
+) -> None:
+    pts = np.array(points, dtype=float)
+    xy, _ = _project(pts, camera)
+    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay, "RGBA")
+    d.line(
+        [tuple(v) for v in xy],
+        fill=_rgb(color) + (max(0, min(255, alpha)),),
+        width=max(1, width),
+        joint="curve",
+    )
+    if blur > 0.0:
+        overlay = overlay.filter(ImageFilter.GaussianBlur(blur))
+    image.alpha_composite(overlay)
 
 def _camera_for(kind: str, t: float) -> Camera:
     """Return a fixed camera for each 3D beat.
@@ -396,8 +509,11 @@ def _draw_plate(image: Image.Image, camera: Camera, heat: float = 1.0, x: float 
     # Brushed-metal body. The hot surface is no longer one giant orange slab;
     # heat is communicated by a dark metal top plus thin glowing perimeter
     # rails, which reads less like a toy/PPT object.
-    _draw_box(image, (x, -1.65, z), (6.8 * scale, 1.05, 4.4 * scale), "#303840", camera, outline="#6f7b84")
-    _draw_box(image, (x, -1.09, z), (6.50 * scale, 0.10, 4.10 * scale), "#575f66", camera, outline="#818b92")
+    _draw_box(image, (x, -1.65, z), (6.8 * scale, 1.05, 4.4 * scale), "#303840", camera, outline=None)
+    _draw_box(image, (x, -1.09, z), (6.50 * scale, 0.10, 4.10 * scale), "#575f66", camera, outline=None)
+    # Stable brushed-metal reflections: physical surface cues without CAD edges.
+    _draw_box(image, (x, -1.035, z - 0.62 * scale), (5.65 * scale, 0.018, 0.055 * scale), "#707980", camera)
+    _draw_box(image, (x, -1.033, z + 0.58 * scale), (4.90 * scale, 0.016, 0.035 * scale), "#646d74", camera)
 
     glow = "#ff3d22" if heat >= 1.2 else "#ff744c"
     hot = "#ffd166" if heat >= 1.35 else "#ffad57"
@@ -425,44 +541,63 @@ def _draw_vapor_layer(
     phase: float = 0.0,
     outflow: float = 0.0,
 ) -> None:
-    # Central vapor pocket plus thinner edge outflow. Geometry is exaggerated
-    # only enough to survive mobile viewing; the physical ordering is kept.
+    # Render the cushion as a soft translucent film, not a stack of faceted
+    # cyan solids. A denser center plus faint edge leakage keeps the physical
+    # structure legible without turning it into a diagram arrow.
     cx, cy, cz = center
     sway_x = 0.055 * spread * math.sin(phase * math.pi * 2.0)
     sway_z = 0.040 * spread * math.sin((phase + 0.23) * math.pi * 2.0)
-    _draw_sphere(
-        image, (cx + sway_x * 0.35, cy, cz + sway_z * 0.25),
-        (2.18 * spread, thickness * 0.78, 1.50 * spread),
-        "#246f82", camera, alpha=max(58, int(alpha * 0.42)), outline=None,
+    _draw_soft_projected_ellipse(
+        image,
+        (cx + sway_x * 0.30, cy, cz + sway_z * 0.20),
+        (2.16 * spread, max(0.045, thickness * 0.76), 1.48 * spread),
+        "#1d6678",
+        camera,
+        alpha=max(35, int(alpha * 0.32)),
+        blur=10.0,
     )
-    _draw_sphere(
-        image, (cx - sway_x * 0.20, cy + thickness * 0.08, cz - sway_z * 0.18),
-        (1.68 * spread, thickness * 0.60, 1.18 * spread),
-        "#57cbdc", camera, alpha=max(78, int(alpha * 0.60)), outline="#c7f9ff",
+    _draw_soft_projected_ellipse(
+        image,
+        (cx - sway_x * 0.18, cy + thickness * 0.08, cz - sway_z * 0.15),
+        (1.66 * spread, max(0.035, thickness * 0.54), 1.16 * spread),
+        "#58dbe8",
+        camera,
+        alpha=max(62, int(alpha * 0.55)),
+        blur=5.0,
     )
-    _draw_sphere(
-        image, (cx + sway_x * 0.15, cy + thickness * 0.15, cz + sway_z * 0.10),
-        (0.92 * spread, thickness * 0.34, 0.66 * spread),
-        "#b7f7fb", camera, alpha=max(40, int(alpha * 0.27)), outline=None,
+    _draw_soft_projected_ellipse(
+        image,
+        (cx + sway_x * 0.12, cy + thickness * 0.14, cz + sway_z * 0.08),
+        (0.88 * spread, max(0.025, thickness * 0.30), 0.63 * spread),
+        "#b7fbff",
+        camera,
+        alpha=max(38, int(alpha * 0.28)),
+        blur=2.5,
     )
+
     if outflow > 0.0:
-        strength = max(0.0, min(1.0, outflow))
-        for idx, side in enumerate((-1.0, 1.0)):
-            start_x = cx + side * 1.45 * spread
-            pts: list[tuple[float, float, float]] = []
+        strength=max(0.0,min(1.0,outflow))
+        for idx,side in enumerate((-1.0,1.0)):
+            start_x=cx+side*1.42*spread
+            pts=[]
             for k in range(7):
-                u = k / 6.0
-                curl = math.sin((phase * 1.7 + idx * 0.31 + u * 0.8) * math.pi * 2.0)
+                u=k/6.0
+                curl=math.sin((phase*1.7+idx*0.31+u*0.8)*math.pi*2.0)
                 pts.append((
-                    start_x + side * (0.25 + 0.85 * u) * spread * strength,
-                    cy + thickness * (0.05 + 0.18 * u) + 0.025 * curl,
-                    cz + 0.15 * curl * (0.25 + 0.75 * u),
+                    start_x+side*(0.18+0.72*u)*spread*strength,
+                    cy+thickness*(0.04+0.14*u)+0.018*curl,
+                    cz+0.11*curl*(0.25+0.75*u),
                 ))
-            _draw_path(
-                image, pts, "#7fe9f4", camera,
-                width=max(4, int(7 * strength)), arrow=False,
-                alpha=int(105 + 80 * strength),
+            _draw_soft_path(
+                image,
+                pts,
+                "#77e6ef",
+                camera,
+                width=max(3,int(5*strength)),
+                alpha=int(80+65*strength),
+                blur=4.5,
             )
+
 
 def _draw_heat_arrows(
     image: Image.Image,
@@ -493,23 +628,23 @@ def _draw_heat_arrows(
             py = y0 + (y1 - y0) * u
             pz = 0.18 + 0.10 * math.sin((phase * 1.35 + idx * 0.23 + u) * math.pi * 2.0)
             points.append((px, py, pz))
-        _draw_path(
+        _draw_soft_path(
             image,
             points,
             "#ff6b35",
             camera,
-            width=max(7, int(12 * strength)),
-            arrow=False,
-            alpha=min(155, int(95 + 45 * strength)),
+            width=max(8, int(13 * strength)),
+            alpha=min(130, int(82 + 38 * strength)),
+            blur=5.0,
         )
         _draw_path(
             image,
             points,
             "#ffc766",
             camera,
-            width=max(3, int(5 * strength)),
+            width=max(2, int(3.5 * strength)),
             arrow=False,
-            alpha=min(235, int(165 + 45 * strength)),
+            alpha=min(205, int(145 + 38 * strength)),
         )
 
 
