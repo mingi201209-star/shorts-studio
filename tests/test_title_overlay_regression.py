@@ -133,3 +133,48 @@ def test_render_propagates_project_level_overlay_title_to_every_scene(tmp_path, 
         os.chdir(prev)
 
     assert captured_titles == ["프로젝트 제목", "프로젝트 제목"], captured_titles
+
+
+def test_render_first_scene_only_title_does_not_propagate_to_later_scenes(tmp_path, monkeypatch):
+    captured_titles = []
+
+    def fake_composite(scene, asset, audio, srt, duration, fps, build, index, title=None):
+        captured_titles.append(title)
+        clip = build / f"{scene.id}.mp4"
+        subprocess.run(["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}",
+                        "-i",str(audio),"-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",
+                        "-shortest",str(clip)],check=True,capture_output=True)
+        return clip
+
+    monkeypatch.setattr(R, "_composite_scene_clip", fake_composite)
+    real_which = R.shutil.which
+    monkeypatch.setattr(R.shutil, "which", lambda name: real_which(name) or (name=="ffprobe" and real_which("ffmpeg")))
+
+    async def fake_synthesize_plan(plan, audio_path, timing_path, **kw):
+        from shorts_studio.timing import WordTiming
+        audio_path.parent.mkdir(parents=True,exist_ok=True)
+        subprocess.run(["ffmpeg","-y","-f","lavfi","-i","anullsrc=r=24000:cl=mono","-t","1",
+                        "-q:a","9",str(audio_path)],check=True,capture_output=True)
+        timing_path.write_text("{}",encoding="utf-8")
+        text = " ".join(p.text for p in plan)
+        return [WordTiming(text,0.0,0.8)]
+
+    monkeypatch.setattr(R, "synthesize_plan", fake_synthesize_plan)
+    manifest=tmp_path/"m.json"
+    manifest.write_text(
+        '{"title":"t","width":1080,"height":1920,"fps":30,'
+        '"overlay_title":"훅 제목","overlay_title_mode":"first_scene_only",'
+        '"scenes":[{"id":"s1","narration":"하나","visual_description":"d"},'
+        '{"id":"s2","narration":"둘","visual_description":"d"},'
+        '{"id":"s3","narration":"셋","visual_description":"d"}]}',
+        encoding="utf-8",
+    )
+    prev=Path.cwd()
+    try:
+        import os
+        os.chdir(tmp_path)
+        try: R.render(str(manifest))
+        except Exception: pass
+    finally:
+        os.chdir(prev)
+    assert captured_titles == ["훅 제목", None, None], captured_titles

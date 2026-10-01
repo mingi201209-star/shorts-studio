@@ -1,0 +1,225 @@
+name: leidenfrost-render
+
+on:
+  push:
+    branches: [exp/leidenfrost-success-patterns]
+    paths:
+      - 'shorts_studio/**'
+      - 'tests/**'
+      - 'scripts/build_leidenfrost_states.py'
+      - '.github/workflows/leidenfrost-render.yml'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install render and vision dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg fonts-nanum fonts-noto-cjk librsvg2-bin
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -e '.[dev,vision]'
+      - name: Full regression
+        run: pytest -q
+      - name: Build Leidenfrost production
+        run: |
+          set -o pipefail
+          python scripts/build_leidenfrost_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee leidenfrost-generator.log
+      - name: Verify real moving experiment source
+        run: |
+          grep -q '^LEIDENFROST_VIDEO_READY=' leidenfrost-generator.log
+          test -s assets/leidenfrost_effect/source_experiment.ogv
+          ffprobe -v error -select_streams v:0 -show_entries stream=codec_name,width,height -of json assets/leidenfrost_effect/source_experiment.ogv
+      - name: Verify first-scene title and all-moving 3D diagram contract
+        run: |
+          grep -q '"overlay_title_mode": "first_scene_only"' examples/leidenfrost_effect.json
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+
+          data=json.loads(Path('examples/leidenfrost_effect.json').read_text())
+          synthetic=[]
+          real=[]
+          for scene in data['scenes']:
+              for beat in scene['visual_beats']:
+                  asset=beat['asset']
+                  mode=beat['production']['visual_mode']
+                  if mode=='real_footage':
+                      real.append(asset)
+                      continue
+                  synthetic.append((asset,mode))
+                  assert mode=='physical_animation',(scene['id'],asset,mode)
+                  assert asset.endswith('_3d_motion.mp4'),(scene['id'],asset)
+                  assert not asset.lower().endswith(('.png','.jpg','.jpeg','.webp')),(scene['id'],asset)
+                  p=Path(asset)
+                  assert p.is_file() and p.stat().st_size>0,p
+                  probe=json.loads(subprocess.run([
+                      'ffprobe','-v','error','-select_streams','v:0',
+                      '-show_entries','stream=codec_name,width,height,r_frame_rate',
+                      '-show_entries','format=duration','-of','json',str(p)
+                  ],capture_output=True,text=True,check=True).stdout)
+                  assert float(probe['format']['duration'])>=2.5,(p,probe)
+          assert len(real)==1,real
+          assert len(synthetic)==18,synthetic
+          print('ALL_MOVING_3D_DIAGRAMS_PASS synthetic=',len(synthetic),'real=',len(real))
+          PY
+      - name: Verify Prompt V2 and Story Prompt V3
+        run: |
+          grep -q '^PROMPT_V2_SELECTED_HOOK=' leidenfrost-generator.log
+          grep -q '^STORY_PROMPT_V3_READY=' leidenfrost-generator.log
+          test -s build/leidenfrost_story_prompt.txt
+          grep -q 'One sentence should carry one new semantic move' build/leidenfrost_story_prompt.txt
+          grep -q 'Do not announce the script structure with meta lines' build/leidenfrost_story_prompt.txt
+      - name: Validate manifest
+        run: python -m shorts_studio validate examples/leidenfrost_effect.json
+      - name: Verify curiosity contract
+        run: |
+          python - <<'PY'
+          from shorts_studio.project import load_project
+          from shorts_studio.hook_studio import verify_curiosity_maintained
+          p=load_project('examples/leidenfrost_effect.json')
+          r=verify_curiosity_maintained(p)
+          assert r['status']=='PASS',r
+          print('curiosity_maintained PASS',r['evidence'])
+          PY
+      - name: Render Leidenfrost short
+        env:
+          SHORTS_REQUIRE_SEMANTIC_QA: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -o pipefail
+          python -m shorts_studio render examples/leidenfrost_effect.json 2>&1 | tee leidenfrost-render.log
+      - name: Verify final deliverable
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          v=Path('dist/final.mp4')
+          assert v.is_file() and v.stat().st_size>0
+          probe=json.loads(subprocess.run(['ffprobe','-v','error','-of','json',
+            '-show_entries','stream=codec_name,width,height','-show_entries','format=duration',
+            str(v)],capture_output=True,text=True,check=True).stdout)
+          vs=next(s for s in probe['streams'] if 'width' in s)
+          assert (vs['width'],vs['height'])==(1080,1920),vs
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          assert q['status']=='PASS',q
+          assert q['semantic_visual_qa']['status']=='PASS',q['semantic_visual_qa']
+          assert q['final_video_qa']['status']=='PASS',q['final_video_qa']
+          checks=q['final_video_qa']['checks']
+          assert checks['retention_contract']['status']=='PASS',checks['retention_contract']
+          assert checks['first_10s_retention']['status']=='PASS',checks['first_10s_retention']
+          assert checks['meaningful_visual_changes']['status']=='PASS',checks['meaningful_visual_changes']
+          assert checks['visual_production_v2']['status']=='PASS',checks['visual_production_v2']
+          print('LEIDENFROST_FINAL_PASS duration=',probe['format']['duration'])
+          PY
+      - name: Sample review frames
+        # Evenly-spaced fractions of the real duration, not fixed absolute
+        # seconds: a fixed schedule silently drifts out of alignment with
+        # scene boundaries whenever a scene's length changes (as happened
+        # here -- the new heat_blocked beat landed entirely between two of
+        # the old fixed sample points), so every scene stops being reviewable
+        # by pure coincidence. Fractional sampling keeps coverage spread
+        # across the whole video regardless of how any one scene's timing
+        # shifts, for this production and any future one.
+        if: success()
+        run: |
+          mkdir -p review_frames
+          duration=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 dist/final.mp4)
+          export LEIDENFROST_DURATION="$duration"
+          python - <<'PY'
+          import os
+          import subprocess
+          duration = float(os.environ["LEIDENFROST_DURATION"])
+          n = 12
+          for i in range(n):
+              frac = (i + 0.5) / n
+              t = max(0.0, min(duration - 0.05, frac * duration))
+              label = f"{frac:.3f}"
+              subprocess.run(["ffmpeg", "-y", "-ss", str(t), "-i", "dist/final.mp4",
+                               "-frames:v", "1", f"review_frames/f_{label}.jpg"], check=True)
+          PY
+          ffmpeg -y -ss "$(python -c "print(max(0,float('$duration')-0.6))")" -i dist/final.mp4 -frames:v 1 review_frames/end.jpg
+      - name: Dump QA summary
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          fv=q['final_video_qa']
+          m=fv['checks']['meaningful_visual_changes']
+          a=fv['checks']['visual_activity_real']
+          print('===LEIDENFROST_QA_BEGIN===')
+          print(json.dumps({
+            'status':q['status'],
+            'semantic_visual_qa':q['semantic_visual_qa']['status'],
+            'final_video_qa':fv['status'],
+            'first_10s_retention':fv['checks']['first_10s_retention'],
+            'meaningful_event_count':len(m.get('events',[])),
+            'first_5s_meaningful_changes':m.get('first_5s_meaningful_changes'),
+            'visual_activity':a,
+          },ensure_ascii=False))
+          print('===LEIDENFROST_QA_END===')
+          PY
+      - name: Dump review frames into the job log
+        # Artifact downloads go through Azure Blob Storage, which is blocked
+        # by this session's org egress policy, so the only retrievable path
+        # for actual human visual review is small thumbnails printed into
+        # the job log itself (same technique as mpemba-effect-render.yml).
+        if: success()
+        run: |
+          python - <<'PY'
+          import base64, io
+          from pathlib import Path
+          from PIL import Image
+
+          def dump_jpeg(label, img):
+              img = img.convert('RGB')
+              w = 420
+              h = round(img.height * w / img.width)
+              img = img.resize((w, h), Image.LANCZOS)
+              buf = io.BytesIO()
+              img.save(buf, format='JPEG', quality=60)
+              data = base64.b64encode(buf.getvalue()).decode()
+              print(f"===FRAME[{label}]_BEGIN===")
+              for i in range(0, len(data), 160):
+                  print(data[i:i+160])
+              print(f"===FRAME[{label}]_END===")
+
+          for p in sorted(Path('review_frames').glob('*.jpg')):
+              dump_jpeg(p.stem, Image.open(p))
+          PY
+      - name: Prepare upload description
+        if: success()
+        run: cp examples/leidenfrost_effect_upload_description.txt dist/upload-description.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: leidenfrost-success-pattern-experiment
+          retention-days: 30
+          path: |
+            dist/
+            review_frames/
+            build/leidenfrost_story_prompt.txt
+            leidenfrost-generator.log
+            leidenfrost-render.log
+            examples/leidenfrost_effect_upload_description.txt
+      - uses: actions/upload-artifact@v4
+        if: failure() || cancelled()
+        with:
+          name: leidenfrost-diagnostics
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            dist/
+            leidenfrost-generator.log
+            leidenfrost-render.log

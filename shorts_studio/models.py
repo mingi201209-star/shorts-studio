@@ -38,6 +38,23 @@ class VisualChange(BaseModel):
     added_information: str = Field(min_length=1)
     source_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
+class ProductionVisualTag(BaseModel):
+    """Upstream Visual Production Engine V2 intent for one actual visual state.
+
+    This is a production-plan declaration, not proof that a viewer will find
+    the state interesting. production_v2.py cross-checks every declared state
+    against the real render timeline so key roles cannot be satisfied by a
+    detached checklist that never appears in the video.
+    """
+    model_config = _FORBID_EXTRA
+    role: Literal["hero", "evidence", "mechanism", "second_peak", "payoff", "support"]
+    visual_mode: Literal[
+        "real_footage", "real_photo", "physical_animation",
+        "evidence_graphic", "mechanism_overlay", "explainer_card",
+    ]
+    added_information: str = Field(min_length=1)
+
+
 class VisualBeat(BaseModel):
     """An optional timed visual cut inside one narration scene."""
     model_config = _FORBID_EXTRA
@@ -59,6 +76,7 @@ class VisualBeat(BaseModel):
     # predates the Information Change Contract unaffected.
     info_role: str | None = None
     visual_change: VisualChange | None = None
+    production: ProductionVisualTag | None = None
 
 class NarrationPhrase(BaseModel):
     """One authored, role-tagged text segment of a scene's spoken delivery
@@ -113,6 +131,10 @@ class Scene(BaseModel):
     # Optional visual-only cuts inside this scene. Empty preserves the original
     # one-image-per-scene renderer exactly.
     visual_beats: list[VisualBeat] = []
+    # For scenes without visual_beats, strict Visual Production V2 can tag
+    # the scene's single base visual directly. Scenes with visual_beats tag
+    # every beat instead; production_v2.py rejects partial coverage.
+    production: ProductionVisualTag | None = None
     factual_notes: list[str] = []
 
     @model_validator(mode="after")
@@ -146,6 +168,9 @@ class Scene(BaseModel):
     # similarity-score judgment. A mismatch (wrong/substituted file) fails closed.
     visual_qa_expected_sha256: list[str] = []
     overlay_title: str | None = None
+    # Optional real-time title window. None preserves the historical
+    # whole-scene title duration.
+    overlay_title_seconds: float | None = Field(default=None, gt=0)
     # Authored role/text segments for this scene's TTS audio (see
     # shorts_studio/prosody.py). When empty, the engine runs the same
     # automatic Korean boundary planner over the flat `narration` string as
@@ -248,6 +273,10 @@ class Project(BaseModel):
     height: int = 1920
     fps: int = 30
     overlay_title: str | None = None
+    # Persistent is the repo-wide historical default. New productions may
+    # opt into a first-scene-only title so the hook gets a strong label
+    # without turning the entire Short into a static slide template.
+    overlay_title_mode: Literal["persistent", "first_scene_only"] = "persistent"
     scenes: list[Scene] = Field(min_length=1)
     # Cap on per-scene asset-swap/re-render/re-QA cycles before the whole production FAILs.
     max_visual_recovery_attempts: int = Field(default=2, ge=0)
@@ -290,6 +319,17 @@ class Project(BaseModel):
     # as "fun verified" -- only real post-publish data, or a human review,
     # can establish that.
     strict_retention_contract: bool = False
+    # Visual Production Engine V2 is an upstream shot-design contract, not a
+    # post-hoc "fun score". Opt-in productions must classify every rendered
+    # visual state and provide a silent visual story. The structural pass is
+    # re-checked against the real rendered timeline in final_video_qa.py.
+    # A PASS means the required production grammar is present; it does NOT
+    # prove human interest. silent_interest_review remains an explicit human
+    # review result for the "would I watch 10s muted?" question.
+    strict_visual_production_v2: bool = False
+    observable_phenomenon: str | None = None
+    silent_story: str | None = None
+    silent_interest_review: Literal["pending", "pass", "fail"] = "pending"
     # Psychological Entertainment Contract (Layer 2), Phase 1: minimal
     # foundation only. A Project with no event_graph is completely
     # unaffected by any of this -- comet.json, radium_girls.json,

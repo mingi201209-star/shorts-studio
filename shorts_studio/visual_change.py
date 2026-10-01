@@ -158,6 +158,18 @@ def verify_observed_changes(project, windows, video, build_dir, media_box):
             # merely against the previous frame. A wrong but changing image
             # cannot stand in for a declared explanatory state.
             source = cv2.imread(str(beat.asset)) if beat.asset else None
+            if source is None and beat.asset:
+                # Moving visual beats are real evidence too. cv2.imread cannot
+                # decode a video container, so sample the source at the same
+                # local offset used for the rendered-state observation.
+                cap = cv2.VideoCapture(str(beat.asset))
+                try:
+                    cap.set(cv2.CAP_PROP_POS_MSEC, min(.25, max(0.0, (end-start)/2)) * 1000.0)
+                    ok, frame_from_video = cap.read()
+                    if ok and frame_from_video is not None:
+                        source = frame_from_video
+                finally:
+                    cap.release()
             if source is None:
                 meaningful = False
                 failures.append(f"{scene.id}/{i}: source cannot be independently decoded")

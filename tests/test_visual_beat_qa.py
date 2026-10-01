@@ -131,3 +131,32 @@ def test_repeated_visual_beat_asset_is_resolved_only_once(monkeypatch, tmp_path)
 
     assert first==second==resolved
     assert calls==[("scene_01_beat0",0)]
+
+
+def test_downloaded_video_asset_skips_raster_normalization(monkeypatch, tmp_path):
+    video = tmp_path / "remote.webm"
+    video.write_bytes(b"fake-webm")
+    normalized = []
+
+    def fake_download(url, path, max_attempts=4):
+        path.write_bytes(video.read_bytes())
+        return path
+
+    def should_not_normalize(*args, **kwargs):
+        normalized.append(True)
+        raise AssertionError("moving media must not enter raster normalization")
+
+    monkeypatch.setattr(R, "_download", fake_download)
+    monkeypatch.setattr(R, "_normalize_raster_asset", should_not_normalize)
+    out = R._resolve_asset({"asset": None, "asset_url": "https://example.test/demo.webm"}, tmp_path, "s", 0)
+    assert out.suffix == ".webm"
+    assert out.read_bytes() == b"fake-webm"
+    assert normalized == []
+
+
+def test_moving_visual_suffix_detection():
+    from pathlib import Path
+    assert R._is_moving_visual_asset(Path("demo.webm"))
+    assert R._is_moving_visual_asset(Path("demo.mp4"))
+    assert R._is_moving_visual_asset(Path("demo.ogv"))
+    assert not R._is_moving_visual_asset(Path("still.jpg"))

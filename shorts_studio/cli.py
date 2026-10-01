@@ -2,6 +2,7 @@ import argparse, json
 from .project import load_project
 from .render import render
 from .final_video_qa import verify_source_budget, verify_retention_contract
+from .production_v2 import verify_visual_production_structure
 
 def main():
     ap=argparse.ArgumentParser(prog="shorts_studio"); sub=ap.add_subparsers(dest="cmd",required=True)
@@ -28,6 +29,11 @@ def main():
             budget=verify_source_budget(p)
             if budget["status"]!="PASS":
                 print(json.dumps({"status":"FAIL","reason":budget["reason"],"source_budget":budget["evidence"]},ensure_ascii=False))
+                raise SystemExit(1)
+        if getattr(p,"strict_visual_production_v2",False):
+            production=verify_visual_production_structure(p)
+            if production["status"]!="PASS":
+                print(json.dumps({"status":"FAIL","visual_production_v2":production},ensure_ascii=False))
                 raise SystemExit(1)
         if getattr(p,"strict_retention_contract",False):
             retention=verify_retention_contract(p)

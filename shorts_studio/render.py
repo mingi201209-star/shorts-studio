@@ -12,6 +12,7 @@ from .final_video_qa import run_final_video_qa, verify_source_budget, verify_ret
 from .captions import merge_scene_srt_files
 from .entertainment_qa import run_entertainment_contract_report
 from .visual_change import audit_visual_changes, resolve_visual_cues
+from .production_v2 import verify_visual_production_structure
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -204,6 +205,14 @@ def _normalize_raster_asset(path:Path, build:Path, scene_id:str, index:int)->Pat
         flattened.save(out,"JPEG",quality=92)
     return out
 
+_MOVING_VISUAL_SUFFIXES={".mp4",".webm",".mov",".mkv",".ogv",".avi"}
+
+
+def _is_moving_visual_asset(asset:Path)->bool:
+    """True for source files whose own frames should play instead of -loop 1."""
+    return asset.suffix.lower() in _MOVING_VISUAL_SUFFIXES
+
+
 def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|None:
     asset=candidate.get("asset"); asset_url=candidate.get("asset_url")
     path=None; downloaded=False
@@ -215,7 +224,7 @@ def _resolve_asset(candidate:dict, build:Path, scene_id:str, index:int)->Path|No
         downloaded=True
     if path and path.suffix.lower()==".svg":
         path=_rasterize_svg(path, build/f"{scene_id}_asset_{index}.png")
-    elif path and downloaded:
+    elif path and downloaded and not _is_moving_visual_asset(path):
         path=_normalize_raster_asset(path, build, scene_id, index)
     return path
 
@@ -260,10 +269,17 @@ def _log_asset_diagnostics(scene_id:str, asset:Path)->None:
 
 def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None)->Path:
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
-    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
+    title_window=min(duration, scene.overlay_title_seconds) if title and getattr(scene,"overlay_title_seconds",None) else duration
+    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,title_window) if title else None
     if asset:
         _log_asset_diagnostics(scene.id,asset)
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
+        if _is_moving_visual_asset(asset):
+            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-i",str(audio),
+                 "-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),
+                 "-map","0:v:0","-map","1:a:0","-c:v","libx264","-pix_fmt","yuv420p",
+                 "-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
+        else:
+            cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
         vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
@@ -316,7 +332,11 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
             f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
         )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
-        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+        if _is_moving_visual_asset(asset):
+            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-t",str(beat_duration),
+                 "-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+        else:
+            cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
             subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
         except subprocess.CalledProcessError as e:
@@ -329,7 +349,8 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     joined=build/f"{scene.id}_beats_joined.mp4"
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
-    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
+    title_window=min(duration, scene.overlay_title_seconds) if title and getattr(scene,"overlay_title_seconds",None) else duration
+    title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,title_window) if title else None
     vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips
@@ -483,6 +504,15 @@ def render(manifest:str,dry_run:bool=False)->dict:
         budget=verify_source_budget(p)
         if budget["status"]!="PASS":
             raise RuntimeError(f"source budget check failed: {budget['reason']}")
+    # Visual Production Engine V2: upstream shot-design gate. Fail before
+    # synthesis/render if the production does not contain the required
+    # Hero/Evidence/Mechanism/Second-Peak/Payoff grammar or leaves visual
+    # states unclassified. The same contract is checked again against the
+    # real post-TTS timeline in final_video_qa.py.
+    if getattr(p,"strict_visual_production_v2",False):
+        production=verify_visual_production_structure(p)
+        if production["status"]!="PASS":
+            raise RuntimeError(f"visual production V2 structure failed: {production}")
     # Retention-engine contract (Idea Gate era): script-level, so it's cheap
     # to fail BEFORE a real render -- exactly like the source-budget gate
     # above. Opt-in via strict_retention_contract (see models.py) so every
@@ -504,7 +534,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     provider=default_vision_provider()
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
-    for scene in p.scenes:
+    for scene_index, scene in enumerate(p.scenes):
         audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
         if p.strict_meaningful_visual_changes:
             timing=json.loads((build/f"{scene.id}.timing.json").read_text(encoding="utf-8"))
@@ -514,7 +544,12 @@ def render(manifest:str,dry_run:bool=False)->dict:
             scene.visual_beats=resolved.visual_beats
         subtitle_reports.append(q)
         if q["status"]!="PASS": raise RuntimeError(f"subtitle QA failed: {scene.id}: {q}")
-        title=scene.overlay_title or p.overlay_title
+        if scene.overlay_title is not None:
+            title=scene.overlay_title
+        elif p.overlay_title and (p.overlay_title_mode=="persistent" or scene_index==0):
+            title=p.overlay_title
+        else:
+            title=None
         outcome=_render_scene_with_recovery(scene,audio,duration,srt,p.fps,build,p.max_visual_recovery_attempts,provider,title=title,asset_cache=asset_cache)
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
