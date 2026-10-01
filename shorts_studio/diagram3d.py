@@ -528,9 +528,13 @@ def _background_for(kind: str) -> tuple[int, int, int, int]:
         "expectation": (26, 11, 7, 255),
         "question_gap": (7, 12, 31, 255),
         "vapor_hint": (3, 25, 31, 255),
+        # Three intentionally distinct lighting states make the mechanism
+        # progression legible at phone size: vapor is born in a dark field,
+        # expansion lights the whole scene, then the final cushion resolves
+        # back to a darker high-contrast state. Camera geometry stays fixed.
         "vapor_birth": (4, 17, 34, 255),
-        "vapor_expand": (3, 29, 38, 255),
-        "vapor_cushion": (4, 35, 39, 255),
+        "vapor_expand": (5, 48, 55, 255),
+        "vapor_cushion": (3, 22, 30, 255),
         "no_contact": (9, 18, 31, 255),
         "contact_gap": (4, 23, 29, 255),
         "heat_blocked": (30, 10, 6, 255),
@@ -785,28 +789,66 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
 
     elif kind == "vapor_expand":
         _draw_plate(image, camera, 1.24, x=0.0, z=0.30)
-        _draw_contact_shadow(image, camera, (0.0, -0.965, 0.30), (1.08, 0.76), alpha=60)
+        _draw_contact_shadow(image, camera, (0.0, -0.965, 0.30), (1.08, 0.76), alpha=48)
+
+        # A broad vapor front sweeps across the hot surface. This is a real
+        # physical state change, not a crop/zoom: the illuminated gas occupies
+        # a much larger fraction of the frame as it spreads outward.
+        front = t * t * (3.0 - 2.0 * t)
+        _draw_soft_projected_ellipse(
+            image,
+            (0.0, -0.60 + 0.05 * math.sin(t * math.pi * 2.0), 0.30),
+            (1.55 + 1.65 * front, 0.085 + 0.055 * front, 1.02 + 0.92 * front),
+            "#78eef5",
+            camera,
+            alpha=72 + int(42 * front),
+            blur=11.0 - 3.0 * front,
+        )
+        _draw_soft_projected_ellipse(
+            image,
+            (0.0, -0.51, 0.30),
+            (0.82 + 1.35 * front, 0.052 + 0.045 * front, 0.56 + 0.76 * front),
+            "#c5fbff",
+            camera,
+            alpha=58 + int(52 * front),
+            blur=5.5,
+        )
         _draw_vapor_layer(
             image, camera, center=(0.0, -0.48, 0.30),
-            spread=0.48 + 0.92 * t, thickness=0.10 + 0.10 * t,
-            alpha=150, phase=t, outflow=0.42 + 0.48 * t,
+            spread=0.42 + 1.12 * t, thickness=0.09 + 0.13 * t,
+            alpha=168, phase=t, outflow=0.48 + 0.52 * t,
         )
         _draw_droplet(
-            image, (0.0, 0.84 + 0.22 * t + 0.10 * math.sin(t * math.pi * 2.0), 0.30),
-            0.98, camera, t, intensity=0.115, flatten=0.04 * (1.0 - t), phase=0.18,
+            image,
+            (0.0, 0.66 + 0.62 * t + 0.12 * math.sin(t * math.pi * 2.0), 0.30),
+            0.98, camera, t, intensity=0.125, flatten=0.07 * (1.0 - t), phase=0.18,
         )
 
     elif kind == "vapor_cushion":
         _draw_plate(image, camera, 1.28, z=-0.35, scale=1.02)
-        _draw_contact_shadow(image, camera, (0.0, -0.965, -0.35), (1.30, 0.88), alpha=56)
+        _draw_contact_shadow(image, camera, (0.0, -0.965, -0.35), (1.30, 0.88), alpha=42)
+
+        # The expanding cloud resolves into a thinner, brighter load-bearing
+        # cushion. The darkened lighting state makes this a clear second beat.
+        settle = t * t * (3.0 - 2.0 * t)
+        _draw_soft_projected_ellipse(
+            image,
+            (0.0, -0.43, -0.35),
+            (2.35 + 0.35 * pulse, 0.075 + 0.025 * pulse, 1.42 + 0.20 * pulse),
+            "#bafcff",
+            camera,
+            alpha=105 + int(35 * pulse),
+            blur=3.8,
+        )
         _draw_vapor_layer(
             image, camera, center=(0.0, -0.42, -0.35),
-            spread=0.38 + 0.92 * t, thickness=0.10 + 0.16 * t,
-            phase=t, outflow=0.34 + 0.52 * t,
+            spread=0.82 + 0.38 * settle, thickness=0.12 + 0.08 * pulse,
+            alpha=188, phase=t, outflow=0.58 + 0.28 * pulse,
         )
         _draw_droplet(
-            image, (0.0, 0.30 + 0.84 * t + 0.08 * math.sin(t * math.pi * 4.0), -0.35),
-            1.12, camera, t, intensity=0.13, flatten=0.10 * (1.0 - t), phase=0.07,
+            image,
+            (0.0, 0.82 + 0.42 * settle + 0.11 * math.sin(t * math.pi * 4.0), -0.35),
+            1.12, camera, t, intensity=0.13, flatten=0.055 * (1.0 - settle), phase=0.07,
         )
 
     elif kind == "no_contact":
