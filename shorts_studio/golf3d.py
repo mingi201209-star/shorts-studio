@@ -37,13 +37,15 @@ KINDS = (
     "hero_dimples",
     "smooth_morph",
     "smooth_wake",
-    "dimple_wake",
     "boundary_layer",
+    "separation_compare",
+    "wake_compare",
+    "dimple_wake",
     "trip_turbulence",
     "attached_flow",
-    "separation_compare",
     "wake_shrink",
     "drag_compare",
+    "flight_payoff_setup",
     "flight_payoff",
 )
 
@@ -293,49 +295,53 @@ def _draw_wake(
     vortex_count: int = 8,
     length_scale: float = 1.0,
 ) -> None:
-    """Draw a coherent downstream wake instead of static translucent blobs.
+    """Coherent downstream wake with a readable but calm motion hierarchy.
 
-    Each vortex has a lifetime and convects downstream. A small global
-    breathing term prevents the volume from feeling frozen without turning
-    turbulence into random white-noise flicker.
+    The wake is deliberately continuous, not frame-random noise: a broad
+    low-frequency volume breathes slightly while longer-lived vortices convect
+    downstream. This makes the flow easy to track on a phone without looking
+    like flicker or a particle effect pasted on top.
     """
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay, "RGBA")
-    breathe = 1.0 + 0.025 * math.sin(math.tau * 0.73 * micro_t)
-    eff_width = width * breathe
 
-    # Low-frequency wake volume: enough area to make wide-vs-narrow wake
-    # readable on a phone, but still much dimmer than the moving vortices.
-    env_rx = sr * 1.32 * length_scale
-    env_ry = sr * max(0.16, eff_width * 0.72)
-    env_cx = sx + sr * 1.82 * length_scale
+    breathe = 1.0 + 0.070 * math.sin(math.tau * 0.73 * micro_t)
+    eff_width = width * breathe
+    sway_y = sr * 0.055 * math.sin(math.tau * 0.47 * micro_t + 0.4)
+    sway_x = sr * 0.040 * math.sin(math.tau * 0.39 * micro_t)
+
+    env_rx = sr * 1.36 * length_scale
+    env_ry = sr * max(0.18, eff_width * 0.74)
+    env_cx = sx + sr * 1.82 * length_scale + sway_x
+    env_cy = sy + sway_y
     d.ellipse(
-        (env_cx - env_rx, sy - env_ry, env_cx + env_rx, sy + env_ry),
-        fill=(19, 105, 128, int(20 * intensity)),
+        (env_cx - env_rx, env_cy - env_ry, env_cx + env_rx, env_cy + env_ry),
+        fill=(19, 111, 134, int(32 * intensity)),
     )
 
     for i in range(vortex_count):
-        rate = 0.20 + 0.018 * (i % 3)
+        rate = 0.24 + 0.018 * (i % 3)
         age = (micro_t * rate + i / max(1, vortex_count)) % 1.0
-        x = sx + sr * (0.58 + 2.72 * length_scale * age)
-        envelope = eff_width * (0.92 - 0.38 * age)
+        x = sx + sr * (0.56 + 2.82 * length_scale * age)
+        envelope = eff_width * (0.98 - 0.42 * age)
         side = -1.0 if i % 2 else 1.0
         y = (
             sy
-            + side * sr * envelope * (0.14 + 0.20 * math.sin(math.pi * age))
-            + sr * 0.052 * math.sin(math.tau * (0.61 * micro_t + i * 0.173))
+            + side * sr * envelope * (0.18 + 0.24 * math.sin(math.pi * age))
+            + sr * 0.070 * math.sin(math.tau * (0.61 * micro_t + i * 0.173))
         )
-        size_x = sr * (0.22 + 0.18 * _smoothstep(age))
-        size_y = sr * max(0.12, envelope * (0.24 + 0.15 * (1.0 - age)))
-        life = math.sin(math.pi * age) ** 1.5
-        alpha = int((24 + 58 * life) * intensity)
+        size_x = sr * (0.26 + 0.22 * _smoothstep(age))
+        size_y = sr * max(0.15, envelope * (0.28 + 0.17 * (1.0 - age)))
+        life = math.sin(math.pi * age) ** 1.35
+        alpha = int((36 + 78 * life) * intensity)
         d.ellipse(
             (x - size_x, y - size_y, x + size_x, y + size_y),
-            fill=(35, 167, 194, max(0, min(150, alpha))),
+            fill=(36, 174, 202, max(0, min(175, alpha))),
         )
 
-    overlay = overlay.filter(ImageFilter.GaussianBlur(max(7, int(sr * 0.080))))
+    overlay = overlay.filter(ImageFilter.GaussianBlur(max(7, int(sr * 0.075))))
     image.alpha_composite(overlay)
+
 
 def _streamline_points(
     sx: float,
@@ -390,48 +396,83 @@ def _draw_flow(
         strength,
         vortex_count=vortex_count,
     )
+
+    glow_layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    glow_draw = ImageDraw.Draw(glow_layer, "RGBA")
     base = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(base, "RGBA")
-    offsets = (-1.36, -1.08, -0.82, -0.58, -0.32, 0.32, 0.58, 0.82, 1.08, 1.36)
+
+    offsets = (-1.42, -1.18, -0.96, -0.74, -0.52, -0.30,
+               0.30, 0.52, 0.74, 0.96, 1.18, 1.42)
 
     for j, off in enumerate(offsets):
-        pts = _streamline_points(sx, sy, sr, off, attached, wake_width)
+        raw = _streamline_points(sx, sy, sr, off, attached, wake_width)
+        pts = []
+        for k, (px, py) in enumerate(raw):
+            # Incoming air stays calm. Only the downstream half develops a
+            # small coherent wave, so the viewer reads "flow around the ball"
+            # rather than a vibrating diagram.
+            downstream = _clamp01((px - (sx + sr * 0.05)) / max(sr * 2.8, 1.0))
+            wave = (
+                sr * 0.050 * downstream
+                * math.sin(math.tau * (0.46 * micro - 0.72 * downstream + j * 0.071))
+            )
+            pts.append((px, py + wave))
+
+        main_width = max(3, int(sr * 0.024))
+        glow_width = max(main_width + 3, int(sr * 0.060))
+        glow_draw.line(
+            pts,
+            fill=(55, 180, 208, int(34 * strength)),
+            width=glow_width,
+        )
         d.line(
             pts,
-            fill=(72, 194, 222, int(82 * strength)),
-            width=max(2, int(sr * 0.014)),
+            fill=(77, 205, 229, int(112 * strength)),
+            width=main_width,
         )
 
-        # Three phase-offset beads per streamline plus short motion-streak
-        # surrogates make direction/speed readable without covering the scene
-        # in a dense particle cloud.
-        local_speed = 0.22 + 0.035 * (1.0 - min(1.0, abs(off) / 1.4)) + 0.008 * (j % 3)
-        for bead in range(3):
-            phase = (micro * local_speed + j * 0.113 + bead / 3.0) % 1.0
-            for trail_i, alpha_scale in enumerate((1.0, 0.46, 0.18)):
-                q = (phase - trail_i * 0.018) % 1.0
+        # Two moving bright packets per streamline. They are longer than the
+        # old beads, which makes direction legible without raising particle
+        # count until the frame looks noisy.
+        local_speed = 0.30 + 0.045 * (1.0 - min(1.0, abs(off) / 1.45)) + 0.010 * (j % 3)
+        for packet in range(2):
+            phase = (micro * local_speed + j * 0.097 + packet * 0.5) % 1.0
+            q0 = (phase - 0.035) % 1.0
+            q1 = (phase + 0.035) % 1.0
+            p0 = _sample_path(pts, q0)
+            p1 = _sample_path(pts, q1)
+            d.line(
+                (p0[0], p0[1], p1[0], p1[1]),
+                fill=(205, 250, 255, int(220 * strength)),
+                width=max(main_width + 2, int(sr * 0.034)),
+            )
+            for trail_i, alpha_scale in enumerate((0.52, 0.24)):
+                q = (phase - (trail_i + 1) * 0.050) % 1.0
                 px, py = _sample_path(pts, q)
-                rr = max(2.0, sr * (0.024 - 0.004 * trail_i))
-                alpha = int(220 * strength * alpha_scale)
+                rr = max(2.5, sr * (0.022 - trail_i * 0.003))
                 d.ellipse(
                     (px - rr, py - rr, px + rr, py + rr),
-                    fill=(187, 246, 255, max(0, min(255, alpha))),
+                    fill=(175, 239, 248, int(180 * strength * alpha_scale)),
                 )
 
-    base = base.filter(ImageFilter.GaussianBlur(0.55))
+    glow_layer = glow_layer.filter(ImageFilter.GaussianBlur(max(2, int(sr * 0.020))))
+    image.alpha_composite(glow_layer)
+    base = base.filter(ImageFilter.GaussianBlur(0.45))
     image.alpha_composite(base)
 
     if boundary_glow > 0.0:
         glow = Image.new("RGBA", image.size, (0, 0, 0, 0))
         gd = ImageDraw.Draw(glow, "RGBA")
-        pad = sr * 1.038
+        pad = sr * 1.040
+        pulse = 0.92 + 0.08 * math.sin(math.tau * 0.63 * micro)
         gd.arc(
             (sx - pad, sy - pad, sx + pad, sy + pad),
-            195, 525,
-            fill=(98, 235, 244, int(150 * boundary_glow)),
-            width=max(5, int(sr * 0.045)),
+            190, 530,
+            fill=(102, 239, 247, int(178 * boundary_glow * pulse)),
+            width=max(6, int(sr * 0.058)),
         )
-        glow = glow.filter(ImageFilter.GaussianBlur(max(3, int(sr * 0.022))))
+        glow = glow.filter(ImageFilter.GaussianBlur(max(3, int(sr * 0.025))))
         image.alpha_composite(glow)
 
 
@@ -517,7 +558,7 @@ def _draw_pressure_region(
     scale: float,
     intensity: float,
 ) -> None:
-    pulse = 0.94 + 0.06 * math.sin(math.tau * 0.57 * micro_t)
+    pulse = 0.88 + 0.12 * math.sin(math.tau * 0.57 * micro_t)
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay, "RGBA")
     rx = sr * (0.58 + 0.58 * scale) * pulse
@@ -525,7 +566,7 @@ def _draw_pressure_region(
     cx = sx + sr * (0.92 + 0.20 * scale)
     d.ellipse(
         (cx - rx, sy - ry, cx + rx, sy + ry),
-        fill=(211, 78, 69, int(48 * intensity)),
+        fill=(211, 78, 69, int(64 * intensity)),
     )
     overlay = overlay.filter(ImageFilter.GaussianBlur(max(8, int(sr * 0.11))))
     image.alpha_composite(overlay)
@@ -579,8 +620,8 @@ def render_golf_frame(
         sx, sy, sr = _draw_ball(
             image, story, dimple_strength=amount, spin_speed=0.30, time_seconds=micro
         )
-        attached = 0.92 - 0.58 * mix
-        wake = 0.50 + 0.76 * mix
+        attached = 0.92 - 0.44 * mix
+        wake = 0.50 + 0.48 * mix
         _draw_flow(
             image, story, sx, sy, sr,
             attached=attached, wake_width=wake, strength=1.08,
@@ -606,8 +647,8 @@ def render_golf_frame(
 
     elif kind == "dimple_wake":
         mix = 0.25 + 0.75 * story
-        attached = 0.44 + 0.50 * story
-        wake = 1.10 - 0.62 * story
+        attached = 0.42 + 0.38 * story
+        wake = 1.12 - 0.40 * story
         sx, sy, sr = _draw_ball(
             image, story, dimple_strength=0.34 + 0.66 * mix, spin_speed=0.30,
             time_seconds=micro,
@@ -615,12 +656,12 @@ def render_golf_frame(
         _draw_flow(
             image, story, sx, sy, sr,
             attached=attached, wake_width=wake, strength=1.06,
-            boundary_glow=0.34 + 0.30 * story, time_seconds=micro, vortex_count=9,
+            boundary_glow=0.24 + 0.22 * story, time_seconds=micro, vortex_count=9,
         )
         _draw_separation_markers(image, sx, sy, sr, attached, intensity=0.85)
         _draw_pressure_region(
             image, micro, sx, sy, sr,
-            scale=0.80 - 0.48 * story, intensity=0.55 - 0.22 * story,
+            scale=0.84 - 0.34 * story, intensity=0.60 - 0.18 * story,
         )
 
     elif kind == "boundary_layer":
@@ -629,28 +670,28 @@ def render_golf_frame(
         )
         _draw_flow(
             image, story, sx, sy, sr,
-            attached=0.66, wake_width=0.82, strength=0.82, boundary_glow=1.0,
-            time_seconds=micro, vortex_count=7,
+            attached=0.64, wake_width=0.86, strength=0.94, boundary_glow=1.24,
+            time_seconds=micro, vortex_count=8,
         )
         _draw_turbulence_particles(
-            image, story, sx, sy, sr, 0.48, time_seconds=micro, count=30
+            image, story, sx, sy, sr, 0.64, time_seconds=micro, count=44
         )
 
     elif kind == "trip_turbulence":
         pulse = 0.5 + 0.5 * math.sin(micro * math.tau * 0.82)
-        attached = 0.74 + 0.13 * story
-        wake = 0.72 - 0.15 * story
+        attached = 0.72 + 0.14 * story
+        wake = 0.78 - 0.16 * story
         sx, sy, sr = _draw_ball(
             image, story, dimple_strength=1.0, spin_speed=0.28, time_seconds=micro
         )
         _draw_flow(
             image, story, sx, sy, sr,
-            attached=attached, wake_width=wake, strength=0.98, boundary_glow=0.92,
-            time_seconds=micro, vortex_count=8,
+            attached=attached, wake_width=wake, strength=1.08, boundary_glow=1.18,
+            time_seconds=micro, vortex_count=9,
         )
         _draw_turbulence_particles(
             image, story, sx, sy, sr,
-            0.72 + 0.24 * pulse, time_seconds=micro, count=48,
+            0.82 + 0.18 * pulse, time_seconds=micro, count=60,
         )
         _draw_separation_markers(image, sx, sy, sr, attached, intensity=0.70)
 
@@ -660,7 +701,7 @@ def render_golf_frame(
         )
         _draw_flow(
             image, story, sx, sy, sr,
-            attached=0.97, wake_width=0.46, strength=1.12, boundary_glow=0.56,
+            attached=0.98, wake_width=0.42, strength=1.10, boundary_glow=0.18,
             time_seconds=micro, vortex_count=7,
         )
         _draw_separation_markers(image, sx, sy, sr, 0.97, intensity=0.78)
@@ -691,10 +732,25 @@ def render_golf_frame(
             if dimples == 0.0:
                 _draw_pressure_region(image, local_micro, sx, sy, sr, scale=0.92, intensity=0.72)
 
+    elif kind == "wake_compare":
+        # Consequence view after the separation comparison: one smooth ball
+        # and a large coherent vortex street. The camera is unchanged; only
+        # the phenomenon takes visual priority.
+        sx, sy, sr = _draw_ball(
+            image, story, dimple_strength=0.0, spin_speed=0.0, time_seconds=micro
+        )
+        _draw_flow(
+            image, story, sx, sy, sr,
+            attached=0.26, wake_width=1.38, strength=1.30, boundary_glow=0.0,
+            time_seconds=micro, vortex_count=12,
+        )
+        _draw_separation_markers(image, sx, sy, sr, 0.26, intensity=1.0)
+        _draw_pressure_region(image, micro, sx, sy, sr, scale=1.10, intensity=1.0)
+
     elif kind == "wake_shrink":
         mix = story
-        attached = 0.40 + 0.55 * mix
-        wake = 1.14 - 0.66 * mix
+        attached = 0.30 + 0.66 * mix
+        wake = 1.36 - 0.90 * mix
         sx, sy, sr = _draw_ball(
             image, story, dimple_strength=1.0, spin_speed=0.31, time_seconds=micro
         )
@@ -706,7 +762,7 @@ def render_golf_frame(
         _draw_separation_markers(image, sx, sy, sr, attached, intensity=0.84)
         _draw_pressure_region(
             image, micro, sx, sy, sr,
-            scale=0.82 - 0.52 * mix, intensity=0.58 - 0.26 * mix,
+            scale=0.96 - 0.66 * mix, intensity=0.74 - 0.38 * mix,
         )
 
     elif kind == "drag_compare":
@@ -732,6 +788,34 @@ def render_golf_frame(
                 image, local_micro, sx, sy, sr,
                 scale=pressure, intensity=0.78 if dimples == 0.0 else 0.36,
             )
+
+    elif kind == "flight_payoff_setup":
+        # A readable setup for the final motion: the ball remains near its
+        # starting position while a few soft future-position ghosts establish
+        # direction. The following payoff beat then carries the real ball
+        # through that path.
+        center = (-0.38, 0.0, 0.0)
+        sx, sy, sr = _draw_ball(
+            image, story, center=center, dimple_strength=1.0, spin_speed=0.32,
+            time_seconds=micro,
+        )
+        _draw_flow(
+            image, story, sx, sy, sr,
+            attached=0.96, wake_width=0.44, strength=1.06, boundary_glow=0.36,
+            time_seconds=micro, vortex_count=8,
+        )
+        ghosts = Image.new("RGBA", image.size, (0, 0, 0, 0))
+        gd = ImageDraw.Draw(ghosts, "RGBA")
+        for i, xw in enumerate((-0.05, 0.28, 0.61, 0.90)):
+            gx, gy, gr = _ball_geometry((xw, 0.0, 0.0), 1.52, OPTIMAL_GOLF_CAMERA)
+            alpha = 54 - i * 9
+            gd.ellipse(
+                (gx - gr * 0.80, gy - gr * 0.80, gx + gr * 0.80, gy + gr * 0.80),
+                outline=(137, 223, 238, max(16, alpha)),
+                width=3,
+            )
+        ghosts = ghosts.filter(ImageFilter.GaussianBlur(0.7))
+        image.alpha_composite(ghosts)
 
     elif kind == "flight_payoff":
         # Keep the camera fixed. The ball itself carries through the frame,
