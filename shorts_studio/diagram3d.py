@@ -236,6 +236,68 @@ def _draw_sphere(
             fill=True,
         )
 
+def _droplet_radii(
+    base_radius: float,
+    t: float,
+    intensity: float = 0.12,
+    flatten: float = 0.0,
+    phase: float = 0.0,
+) -> tuple[float, float, float]:
+    """Art-directed liquid deformation with approximate volume preservation."""
+    w1 = math.sin((t + phase) * math.pi * 2.0)
+    w2 = math.sin((t * 2.05 + phase * 0.73) * math.pi * 2.0)
+    lateral = 1.0 + intensity * (0.72 * w1 + 0.28 * w2) + 0.62 * flatten
+    depth = 1.0 - intensity * (0.24 * w1 - 0.16 * w2) + 0.28 * flatten
+    vertical = 1.0 - intensity * (0.76 * w1 + 0.16 * w2) - 0.86 * flatten
+    lateral = max(0.72, min(1.38, lateral))
+    depth = max(0.78, min(1.28, depth))
+    vertical = max(0.62, min(1.32, vertical))
+    return (base_radius * lateral, base_radius * vertical, base_radius * depth)
+
+
+def _draw_droplet(
+    image: Image.Image,
+    center: tuple[float, float, float],
+    base_radius: float,
+    camera: Camera,
+    t: float,
+    intensity: float = 0.12,
+    flatten: float = 0.0,
+    phase: float = 0.0,
+    color: str = "#2c78c9",
+    alpha: int = 255,
+) -> None:
+    _draw_sphere(
+        image,
+        center,
+        _droplet_radii(base_radius, t, intensity=intensity, flatten=flatten, phase=phase),
+        color,
+        camera,
+        alpha=alpha,
+        outline="#d9efff" if alpha >= 220 else None,
+    )
+
+
+def _draw_contact_shadow(
+    image: Image.Image,
+    camera: Camera,
+    center: tuple[float, float, float],
+    radius: tuple[float, float] = (1.0, 0.72),
+    alpha: int = 80,
+) -> None:
+    cx, cy, cz = center
+    probes = np.array(
+        [[cx, cy, cz], [cx + radius[0], cy, cz], [cx, cy, cz + radius[1]]],
+        dtype=float,
+    )
+    xy, _ = _project(probes, camera)
+    rx = max(5.0, float(np.linalg.norm(xy[1] - xy[0])))
+    ry = max(3.0, float(np.linalg.norm(xy[2] - xy[0])) * 0.52)
+    _draw_screen_ellipse(
+        image, tuple(xy[0]), (rx, ry), "#000000",
+        alpha=max(0, min(150, alpha)), width=1, fill=True,
+    )
+
 def _draw_path(
     image: Image.Image,
     points: list[tuple[float, float, float]],
@@ -360,37 +422,47 @@ def _draw_vapor_layer(
     spread: float = 1.0,
     thickness: float = 0.20,
     alpha: int = 155,
+    phase: float = 0.0,
+    outflow: float = 0.0,
 ) -> None:
-    # Layered translucent lenses create a soft volumetric cushion rather than
-    # a single outlined ellipsoid.
+    # Central vapor pocket plus thinner edge outflow. Geometry is exaggerated
+    # only enough to survive mobile viewing; the physical ordering is kept.
     cx, cy, cz = center
+    sway_x = 0.055 * spread * math.sin(phase * math.pi * 2.0)
+    sway_z = 0.040 * spread * math.sin((phase + 0.23) * math.pi * 2.0)
     _draw_sphere(
-        image,
-        (cx, cy, cz),
-        (2.25 * spread, thickness, 1.55 * spread),
-        "#2b91a6",
-        camera,
-        alpha=max(70, int(alpha * 0.52)),
-        outline=None,
+        image, (cx + sway_x * 0.35, cy, cz + sway_z * 0.25),
+        (2.18 * spread, thickness * 0.78, 1.50 * spread),
+        "#246f82", camera, alpha=max(58, int(alpha * 0.42)), outline=None,
     )
     _draw_sphere(
-        image,
-        (cx, cy + thickness * 0.10, cz),
-        (1.82 * spread, thickness * 0.72, 1.25 * spread),
-        "#64ddec",
-        camera,
-        alpha=max(85, int(alpha * 0.68)),
-        outline="#c7f9ff",
+        image, (cx - sway_x * 0.20, cy + thickness * 0.08, cz - sway_z * 0.18),
+        (1.68 * spread, thickness * 0.60, 1.18 * spread),
+        "#57cbdc", camera, alpha=max(78, int(alpha * 0.60)), outline="#c7f9ff",
     )
     _draw_sphere(
-        image,
-        (cx, cy + thickness * 0.20, cz),
-        (1.20 * spread, thickness * 0.38, 0.82 * spread),
-        "#a8f4fb",
-        camera,
-        alpha=max(45, int(alpha * 0.32)),
-        outline=None,
+        image, (cx + sway_x * 0.15, cy + thickness * 0.15, cz + sway_z * 0.10),
+        (0.92 * spread, thickness * 0.34, 0.66 * spread),
+        "#b7f7fb", camera, alpha=max(40, int(alpha * 0.27)), outline=None,
     )
+    if outflow > 0.0:
+        strength = max(0.0, min(1.0, outflow))
+        for idx, side in enumerate((-1.0, 1.0)):
+            start_x = cx + side * 1.45 * spread
+            pts: list[tuple[float, float, float]] = []
+            for k in range(7):
+                u = k / 6.0
+                curl = math.sin((phase * 1.7 + idx * 0.31 + u * 0.8) * math.pi * 2.0)
+                pts.append((
+                    start_x + side * (0.25 + 0.85 * u) * spread * strength,
+                    cy + thickness * (0.05 + 0.18 * u) + 0.025 * curl,
+                    cz + 0.15 * curl * (0.25 + 0.75 * u),
+                ))
+            _draw_path(
+                image, pts, "#7fe9f4", camera,
+                width=max(4, int(7 * strength)), arrow=False,
+                alpha=int(105 + 80 * strength),
+            )
 
 def _draw_heat_arrows(
     image: Image.Image,
@@ -450,8 +522,16 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
     if kind == "hook_result":
         _draw_plate(image, camera, 1.30)
         x = 0.42 * math.sin(t * math.pi * 2.0)
-        _draw_vapor_layer(image, camera, center=(x, -0.58, 0.0), spread=0.76 + 0.30 * pulse, thickness=0.16 + 0.06 * pulse)
-        _draw_sphere(image, (x, 0.68 + bob, 0.0), 1.08, "#2c78c9", camera, outline="#d9efff")
+        _draw_contact_shadow(image, camera, (x, -0.965, 0.0), (1.12, 0.78), alpha=68)
+        _draw_vapor_layer(
+            image, camera, center=(x, -0.58, 0.0),
+            spread=0.76 + 0.30 * pulse, thickness=0.16 + 0.06 * pulse,
+            phase=t, outflow=0.46 + 0.18 * pulse,
+        )
+        _draw_droplet(
+            image, (x, 0.68 + bob, 0.0), 1.08, camera, t,
+            intensity=0.115, flatten=0.035 + 0.025 * pulse,
+        )
         _draw_heat_arrows(image, camera, count=3, strength=0.72 + 0.18 * pulse, y1=-0.34, bend=0.26, phase=t)
 
     elif kind == "skid_contrast":
@@ -482,38 +562,56 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
 
     elif kind == "vapor_hint":
         _draw_plate(image, camera, 1.22, x=-0.55, z=0.35, scale=0.88)
-        _draw_sphere(image, (-0.55, 0.98 + 0.20 * math.sin(t * math.pi * 2.0), 0.35), 1.28, "#2c78c9", camera, outline="#d9efff")
-        grow = 0.16 + 0.88 * t
-        _draw_sphere(image, (-0.55, -0.48 + 0.10 * t, 0.35), (grow, 0.12 + 0.12 * t, grow * 0.62), "#58d6e8", camera, alpha=185)
-        _draw_path(image, [(-1.8, -0.92, 0.6), (-1.1, -0.60, 0.5), (-0.55, -0.34, 0.35)], "#8eeef8", camera, width=9, arrow=True)
+        _draw_contact_shadow(image, camera, (-0.55, -0.965, 0.35), (1.20, 0.82), alpha=72)
+        _draw_droplet(
+            image, (-0.55, 0.90 + 0.16 * math.sin(t * math.pi * 2.0), 0.35),
+            1.28, camera, t, intensity=0.105, flatten=max(0.0, 0.11 * (1.0 - t)),
+        )
+        _draw_vapor_layer(
+            image, camera, center=(-0.55, -0.52 + 0.06 * t, 0.35),
+            spread=max(0.10, 0.22 + 0.62 * t), thickness=0.07 + 0.12 * t,
+            alpha=145 + int(35 * t), phase=t, outflow=0.15 + 0.45 * t,
+        )
 
     elif kind == "vapor_birth":
         _draw_plate(image, camera, 1.24, x=0.35, z=-0.35, scale=0.94)
-        _draw_sphere(image, (0.35, 0.96 + 0.12 * t, -0.35), 1.00, "#2c78c9", camera, outline="#d9efff")
-        for idx, x in enumerate(np.linspace(-1.55, 1.55, 6)):
-            phase = (t * 1.8 + idx * 0.13) % 1.0
-            y0 = -0.98
-            y1 = -0.82 + 1.02 * phase
-            z = -0.75 + (idx % 3) * 0.72
-            _draw_path(image, [(float(x), y0, z), (float(x) * 0.82, y1, z * 0.7)], "#58d6e8", camera, width=12, alpha=220)
-            _draw_sphere(image, (float(x) * 0.82, y1, z * 0.7), (0.24, 0.16, 0.20), "#a8f4fb", camera, alpha=185)
+        birth = t * t * (3.0 - 2.0 * t)
+        _draw_contact_shadow(image, camera, (0.35, -0.965, -0.35), (1.02, 0.74), alpha=int(92 - 30 * birth))
+        _draw_vapor_layer(
+            image, camera, center=(0.35, -0.53 + 0.05 * birth, -0.35),
+            spread=0.18 + 0.76 * birth, thickness=0.055 + 0.16 * birth,
+            alpha=120 + int(60 * birth), phase=t, outflow=0.08 + 0.72 * birth,
+        )
+        _draw_droplet(
+            image, (0.35, 0.68 + 0.34 * birth, -0.35), 1.00, camera, t,
+            intensity=0.13, flatten=0.14 * (1.0 - birth), phase=0.12,
+        )
 
     elif kind == "vapor_expand":
         _draw_plate(image, camera, 1.24, x=0.0, z=0.30)
-        _draw_sphere(image, (0.0, 1.08 + 0.16 * math.sin(t * math.pi * 2.0), 0.30), 0.92, "#2c78c9", camera, outline="#d9efff")
-        spread = 0.55 + 1.20 * t
-        for j, x in enumerate(np.linspace(-1.65, 1.65, 8)):
-            wob = 0.16 * math.sin((t * 4.0 + j * 0.22) * math.pi)
-            z = -0.85 + (j % 4) * 0.56
-            _draw_sphere(image, (float(x) * spread, -0.46 + wob, z), (0.58, 0.18, 0.44), "#58d6e8", camera, alpha=155)
-        _draw_path(image, [(-2.6, -0.44, -0.4), (0.0, -0.28, 0.15), (2.6, -0.44, 0.6)], "#aaf5fb", camera, width=10, alpha=190)
+        _draw_contact_shadow(image, camera, (0.0, -0.965, 0.30), (1.08, 0.76), alpha=60)
+        _draw_vapor_layer(
+            image, camera, center=(0.0, -0.48, 0.30),
+            spread=0.48 + 0.92 * t, thickness=0.10 + 0.10 * t,
+            alpha=150, phase=t, outflow=0.42 + 0.48 * t,
+        )
+        _draw_droplet(
+            image, (0.0, 0.84 + 0.22 * t + 0.10 * math.sin(t * math.pi * 2.0), 0.30),
+            0.98, camera, t, intensity=0.115, flatten=0.04 * (1.0 - t), phase=0.18,
+        )
 
     elif kind == "vapor_cushion":
         _draw_plate(image, camera, 1.28, z=-0.35, scale=1.02)
-        _draw_vapor_layer(image, camera, center=(0.0, -0.42, -0.35), spread=0.38 + 0.92 * t, thickness=0.10 + 0.16 * t)
-        _draw_sphere(image, (0.0, 0.28 + 0.88 * t + 0.10 * math.sin(t * math.pi * 4.0), -0.35), 1.12, "#2c78c9", camera, outline="#d9efff")
-        for x in (-1.4, 0.0, 1.4):
-            _draw_path(image, [(x, -0.94, -0.35), (x * 0.72, -0.18 + 0.16 * t, -0.35)], "#79eaf5", camera, width=11, arrow=True, alpha=210)
+        _draw_contact_shadow(image, camera, (0.0, -0.965, -0.35), (1.30, 0.88), alpha=56)
+        _draw_vapor_layer(
+            image, camera, center=(0.0, -0.42, -0.35),
+            spread=0.38 + 0.92 * t, thickness=0.10 + 0.16 * t,
+            phase=t, outflow=0.34 + 0.52 * t,
+        )
+        _draw_droplet(
+            image, (0.0, 0.30 + 0.84 * t + 0.08 * math.sin(t * math.pi * 4.0), -0.35),
+            1.12, camera, t, intensity=0.13, flatten=0.10 * (1.0 - t), phase=0.07,
+        )
 
     elif kind == "no_contact":
         _draw_plate(image, camera, 1.25, x=-0.72, z=0.45, scale=0.90)
@@ -524,13 +622,27 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
 
     elif kind == "contact_gap":
         _draw_plate(image, camera, 1.28)
-        _draw_vapor_layer(image, camera, center=(0.0, -0.42, 0.0), spread=1.22, thickness=0.16 + 0.03 * pulse)
-        _draw_sphere(image, (0.0, 0.96 + 0.08 * t, 0.0), (1.75, 1.45, 1.35), "#2c78c9", camera, outline="#d9efff")
+        _draw_contact_shadow(image, camera, (0.0, -0.965, 0.0), (1.58, 1.02), alpha=52)
+        _draw_vapor_layer(
+            image, camera, center=(0.0, -0.42, 0.0),
+            spread=1.22, thickness=0.16 + 0.03 * pulse, phase=t, outflow=0.62,
+        )
+        _draw_droplet(
+            image, (0.0, 0.96 + 0.08 * t, 0.0), 1.58, camera, t,
+            intensity=0.09, flatten=0.10, phase=0.21,
+        )
 
     elif kind == "heat_blocked":
         _draw_plate(image, camera, 1.40, x=0.75, z=-0.25, scale=0.96)
-        _draw_vapor_layer(image, camera, center=(0.75, -0.44, -0.25), spread=1.08, thickness=0.23)
-        _draw_sphere(image, (0.75, 0.88 + 0.14 * math.sin(t * math.pi * 2.0), -0.25), 0.96, "#2c78c9", camera, outline="#d9efff")
+        _draw_contact_shadow(image, camera, (0.75, -0.965, -0.25), (1.04, 0.72), alpha=50)
+        _draw_vapor_layer(
+            image, camera, center=(0.75, -0.44, -0.25),
+            spread=1.08, thickness=0.23, phase=t, outflow=0.58,
+        )
+        _draw_droplet(
+            image, (0.75, 0.88 + 0.14 * math.sin(t * math.pi * 2.0), -0.25),
+            0.96, camera, t, intensity=0.105, flatten=0.035, phase=0.15,
+        )
         xs = (-2.1, -1.1, 0.0, 1.2, 2.2)
         for idx, x in enumerate(xs):
             bend = (-1.1 if idx < 2 else 1.1 if idx > 2 else 0.0) * (0.65 + 0.45 * pulse)
@@ -551,8 +663,15 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
 
     elif kind == "protected_drop":
         _draw_plate(image, camera, 1.38)
-        _draw_vapor_layer(image, camera, center=(0.0, -0.36, 0.0), spread=1.25, thickness=0.20 + 0.03 * pulse)
-        _draw_sphere(image, (0.0, 1.05 + 0.12 * t, 0.0), (1.75, 1.48, 1.45), "#2c78c9", camera, outline="#d9efff")
+        _draw_contact_shadow(image, camera, (0.0, -0.965, 0.0), (1.52, 0.98), alpha=46)
+        _draw_vapor_layer(
+            image, camera, center=(0.0, -0.36, 0.0),
+            spread=1.25, thickness=0.20 + 0.03 * pulse, phase=t, outflow=0.72,
+        )
+        _draw_droplet(
+            image, (0.0, 1.05 + 0.12 * t, 0.0), 1.55, camera, t,
+            intensity=0.10, flatten=0.055, phase=0.31,
+        )
         _draw_heat_arrows(image, camera, count=3, strength=0.90, y1=-0.22, phase=t)
 
     elif kind == "glide":
@@ -560,8 +679,15 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         ang = -0.85 + 1.55 * t
         x = 2.15 * math.sin(ang)
         z = 1.55 * math.cos(ang)
-        _draw_vapor_layer(image, camera, center=(x, -0.56, z), spread=0.46, thickness=0.12)
-        _draw_sphere(image, (x, 0.50 + 0.06 * math.sin(t * math.pi * 5.0), z), 0.72, "#2c78c9", camera, outline="#d9efff")
+        _draw_contact_shadow(image, camera, (x, -0.965, z), (0.72, 0.50), alpha=58)
+        _draw_vapor_layer(
+            image, camera, center=(x, -0.56, z),
+            spread=0.46, thickness=0.12, phase=t, outflow=0.55,
+        )
+        _draw_droplet(
+            image, (x, 0.50 + 0.06 * math.sin(t * math.pi * 5.0), z),
+            0.72, camera, t, intensity=0.16, flatten=0.035, phase=0.27,
+        )
         path = []
         for q in np.linspace(0.0, t, 18):
             a = -0.85 + 1.55 * float(q)
@@ -614,8 +740,16 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_plate(image, camera, 1.40, z=0.25)
         x = -1.25 + 2.50 * t
         z = 0.55 * math.sin(t * math.pi * 2.0)
-        _draw_vapor_layer(image, camera, center=(x, -0.46, z), spread=0.72 + 0.22 * pulse, thickness=0.18 + 0.05 * pulse)
-        _draw_sphere(image, (x, 0.82 + 0.16 * math.sin(t * math.pi * 4.0), z), 1.08, "#2c78c9", camera, outline="#d9efff")
+        _draw_contact_shadow(image, camera, (x, -0.965, z), (1.05, 0.74), alpha=50)
+        _draw_vapor_layer(
+            image, camera, center=(x, -0.46, z),
+            spread=0.72 + 0.22 * pulse, thickness=0.18 + 0.05 * pulse,
+            phase=t, outflow=0.66,
+        )
+        _draw_droplet(
+            image, (x, 0.82 + 0.16 * math.sin(t * math.pi * 4.0), z),
+            1.08, camera, t, intensity=0.14, flatten=0.045, phase=0.22,
+        )
         _draw_path(image, [(-1.9, -0.34, -0.3), (-0.7, -0.18, 0.45), (0.6, -0.24, -0.35), (1.8, -0.12, 0.25)], "#6ee8f5", camera, width=11, alpha=215)
         _draw_heat_arrows(image, camera, count=3, strength=0.88, y1=-0.30, bend=0.42, phase=t)
 
