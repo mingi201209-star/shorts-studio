@@ -231,6 +231,26 @@ def _draw_soft_projected_ellipse(
     image.alpha_composite(overlay)
 
 
+
+def _draw_soft_projected_polygon(
+    image: Image.Image,
+    points: list[tuple[float, float, float]],
+    color: str,
+    camera: Camera,
+    alpha: int,
+    blur: float,
+) -> None:
+    xy, _ = _project(np.array(points, dtype=float), camera)
+    overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
+    d = ImageDraw.Draw(overlay, "RGBA")
+    d.polygon(
+        [tuple(v) for v in xy],
+        fill=_rgb(color) + (max(0, min(255, alpha)),),
+    )
+    if blur > 0.0:
+        overlay = overlay.filter(ImageFilter.GaussianBlur(blur))
+    image.alpha_composite(overlay)
+
 def _draw_glossy_water(
     image: Image.Image,
     center: tuple[float, float, float],
@@ -239,59 +259,68 @@ def _draw_glossy_water(
     camera: Camera,
     alpha: int,
     outline: str | None,
+    deform_t: float | None = None,
+    deform_phase: float = 0.0,
+    deform_strength: float = 0.0,
 ) -> None:
-    """Render a smooth screen-space dielectric instead of faceted mesh bands."""
+    """Render a smooth dielectric with optional low-order liquid silhouette modes."""
     (cx, cy), rx, ry = _projected_ellipse_geometry(center, radii, camera)
-    pad = 4
-    left = max(0, int(math.floor(cx - rx - pad)))
-    top = max(0, int(math.floor(cy - ry - pad)))
-    right = min(image.width, int(math.ceil(cx + rx + pad)))
-    bottom = min(image.height, int(math.ceil(cy + ry + pad)))
+    pad = 5
+    left = max(0, int(math.floor(cx - rx * 1.12 - pad)))
+    top = max(0, int(math.floor(cy - ry * 1.12 - pad)))
+    right = min(image.width, int(math.ceil(cx + rx * 1.12 + pad)))
+    bottom = min(image.height, int(math.ceil(cy + ry * 1.12 + pad)))
     if right <= left or bottom <= top:
         return
 
     yy, xx = np.mgrid[top:bottom, left:right]
     dx = (xx - cx) / max(rx, 1.0)
     dy = (yy - cy) / max(ry, 1.0)
-    r2 = dx * dx + dy * dy
-    mask = r2 <= 1.0
-    nz = np.sqrt(np.clip(1.0 - r2, 0.0, 1.0))
+    radial = np.sqrt(dx * dx + dy * dy)
+    theta = np.arctan2(dy, dx)
 
-    # Broad product-lighting reflection from upper-left plus a darker lower rim.
-    light = np.clip(0.40 + 0.52 * (-0.40 * dx - 0.62 * dy + 0.72 * nz), 0.18, 1.0)
-    fresnel = np.power(np.clip(1.0 - nz, 0.0, 1.0), 2.2)
+    if deform_t is not None and deform_strength > 0.0:
+        ph = (deform_t + deform_phase) * math.pi * 2.0
+        boundary = (
+            1.0
+            + deform_strength * 0.55 * np.sin(3.0 * theta + ph)
+            + deform_strength * 0.30 * np.sin(5.0 * theta - 0.72 * ph)
+            + deform_strength * 0.15 * np.cos(2.0 * theta + 0.35 * ph)
+        )
+        boundary = np.clip(boundary, 0.86, 1.14)
+        q = radial / boundary
+    else:
+        q = radial
+
+    mask = q <= 1.0
+    nz = np.sqrt(np.clip(1.0 - q * q, 0.0, 1.0))
+
+    light = np.clip(0.42 + 0.50 * (-0.40 * dx - 0.62 * dy + 0.72 * nz), 0.18, 1.0)
+    fresnel = np.power(np.clip(1.0 - nz, 0.0, 1.0), 2.15)
     base = np.array(_rgb(color), dtype=float)
-    cool = np.array((118.0, 218.0, 246.0), dtype=float)
+    cool = np.array((126.0, 221.0, 247.0), dtype=float)
     rgb = base[None, None, :] * (0.62 + 0.48 * light[..., None])
-    rgb += cool[None, None, :] * (0.24 * fresnel[..., None])
+    rgb += cool[None, None, :] * (0.23 * fresnel[..., None])
     rgb *= (1.0 - 0.12 * np.clip(dy, 0.0, 1.0)[..., None])
 
-    # Two soft reflection sources avoid the "blue plastic ball" look.
     spec_a = np.exp(-(((dx + 0.33) / 0.14) ** 2 + ((dy + 0.38) / 0.10) ** 2))
-    spec_b = np.exp(-(((dx - 0.24) / 0.10) ** 2 + ((dy - 0.10) / 0.055) ** 2))
-    rgb += spec_a[..., None] * np.array((190.0, 226.0, 245.0))[None, None, :] * 0.78
-    rgb += spec_b[..., None] * np.array((92.0, 176.0, 216.0))[None, None, :] * 0.28
+    spec_b = np.exp(-(((dx - 0.24) / 0.11) ** 2 + ((dy - 0.08) / 0.060) ** 2))
+    rgb += spec_a[..., None] * np.array((194.0, 231.0, 247.0))[None, None, :] * 0.80
+    rgb += spec_b[..., None] * np.array((96.0, 183.0, 222.0))[None, None, :] * 0.24
+
+    rim = np.array(_rgb(outline or "#bdeeff"), dtype=float)
+    edge = mask & (q >= 0.958)
+    rgb[edge] = rgb[edge] * 0.58 + rim * 0.42
     rgb = np.clip(rgb, 0.0, 255.0)
 
-    a = np.zeros_like(r2, dtype=float)
+    a = np.zeros_like(q, dtype=float)
     base_alpha = max(0, min(255, alpha))
     a[mask] = base_alpha * (0.90 + 0.10 * fresnel[mask])
     rgba = np.zeros((bottom - top, right - left, 4), dtype=np.uint8)
     rgba[..., :3] = rgb.astype(np.uint8)
     rgba[..., 3] = np.clip(a, 0.0, 255.0).astype(np.uint8)
-    tile = Image.fromarray(rgba, mode="RGBA")
-    image.alpha_composite(tile, (left, top))
+    image.alpha_composite(Image.fromarray(rgba, mode="RGBA"), (left, top))
 
-    # A restrained bright rim keeps the silhouette readable on a phone.
-    rim_color = outline or "#bdeeff"
-    _draw_screen_ellipse(
-        image,
-        (cx, cy),
-        (rx, ry),
-        rim_color,
-        alpha=min(220, max(110, int(alpha * 0.82))),
-        width=max(2, int(min(rx, ry) * 0.020)),
-    )
 
 def _draw_sphere(
     image: Image.Image,
@@ -358,14 +387,25 @@ def _draw_droplet(
     color: str = "#2c78c9",
     alpha: int = 255,
 ) -> None:
-    _draw_sphere(
+    radii = _droplet_radii(
+        base_radius,
+        t,
+        intensity=intensity,
+        flatten=flatten,
+        phase=phase,
+    )
+    organic = min(0.082, 0.030 + intensity * 0.26 + flatten * 0.08)
+    _draw_glossy_water(
         image,
         center,
-        _droplet_radii(base_radius, t, intensity=intensity, flatten=flatten, phase=phase),
+        radii,
         color,
         camera,
-        alpha=alpha,
-        outline="#d9efff" if alpha >= 220 else None,
+        alpha,
+        "#d9efff" if alpha >= 220 else None,
+        deform_t=t,
+        deform_phase=phase,
+        deform_strength=organic,
     )
 
 
@@ -506,29 +546,44 @@ def _background_for(kind: str) -> tuple[int, int, int, int]:
 
 
 def _draw_plate(image: Image.Image, camera: Camera, heat: float = 1.0, x: float = 0.0, z: float = 0.0, scale: float = 1.0) -> None:
-    # Brushed-metal body. The hot surface is no longer one giant orange slab;
-    # heat is communicated by a dark metal top plus thin glowing perimeter
-    # rails, which reads less like a toy/PPT object.
+    # Solid metal body first. Heat is a soft surface emission, never a red CAD
+    # perimeter, so the plate reads as an object rather than an outlined diagram.
     _draw_box(image, (x, -1.65, z), (6.8 * scale, 1.05, 4.4 * scale), "#303840", camera, outline=None)
+
+    if heat > 1.0:
+        h = max(0.0, min(1.0, (heat - 1.0) / 0.45))
+        corners = [
+            (x - 3.28 * scale, -1.055, z - 2.02 * scale),
+            (x + 3.28 * scale, -1.055, z - 2.02 * scale),
+            (x + 3.28 * scale, -1.055, z + 2.02 * scale),
+            (x - 3.28 * scale, -1.055, z + 2.02 * scale),
+        ]
+        _draw_soft_projected_polygon(
+            image,
+            corners,
+            "#ff4a2b" if heat >= 1.25 else "#ff7954",
+            camera,
+            alpha=int(30 + 42 * h),
+            blur=16.0,
+        )
+
     _draw_box(image, (x, -1.09, z), (6.50 * scale, 0.10, 4.10 * scale), "#575f66", camera, outline=None)
-    # Stable brushed-metal reflections: physical surface cues without CAD edges.
+
+    # Stable brushed-metal reflections.
     _draw_box(image, (x, -1.035, z - 0.62 * scale), (5.65 * scale, 0.018, 0.055 * scale), "#707980", camera)
     _draw_box(image, (x, -1.033, z + 0.58 * scale), (4.90 * scale, 0.016, 0.035 * scale), "#646d74", camera)
 
-    glow = "#ff3d22" if heat >= 1.2 else "#ff744c"
-    hot = "#ffd166" if heat >= 1.35 else "#ffad57"
-    edge = 0.10 * scale
-    half_x = 3.18 * scale
-    half_z = 1.98 * scale
-    _draw_box(image, (x, -1.02, z - half_z), (6.35 * scale, 0.055, edge), glow, camera)
-    _draw_box(image, (x, -1.02, z + half_z), (6.35 * scale, 0.055, edge), glow, camera)
-    _draw_box(image, (x - half_x, -1.02, z), (edge, 0.055, 3.86 * scale), glow, camera)
-    _draw_box(image, (x + half_x, -1.02, z), (edge, 0.055, 3.86 * scale), glow, camera)
-
     if heat > 1.0:
-        # A thin central heat band gives the metal a hot sheen without
-        # replacing the whole material with flat orange.
-        _draw_box(image, (x, -0.99, z), (5.2 * scale, 0.025, 0.12 * scale), hot, camera)
+        h = max(0.0, min(1.0, (heat - 1.0) / 0.45))
+        _draw_soft_projected_ellipse(
+            image,
+            (x, -1.005, z),
+            (2.55 * scale, 0.040, 1.45 * scale),
+            "#ff6b3a" if heat >= 1.25 else "#ff9a68",
+            camera,
+            alpha=int(24 + 36 * h),
+            blur=9.0,
+        )
 
 
 def _draw_vapor_layer(
@@ -553,8 +608,8 @@ def _draw_vapor_layer(
         (2.16 * spread, max(0.045, thickness * 0.76), 1.48 * spread),
         "#1d6678",
         camera,
-        alpha=max(35, int(alpha * 0.32)),
-        blur=10.0,
+        alpha=max(42, int(alpha * 0.38)),
+        blur=9.0,
     )
     _draw_soft_projected_ellipse(
         image,
@@ -562,8 +617,8 @@ def _draw_vapor_layer(
         (1.66 * spread, max(0.035, thickness * 0.54), 1.16 * spread),
         "#58dbe8",
         camera,
-        alpha=max(62, int(alpha * 0.55)),
-        blur=5.0,
+        alpha=max(72, int(alpha * 0.68)),
+        blur=4.0,
     )
     _draw_soft_projected_ellipse(
         image,
@@ -571,8 +626,8 @@ def _draw_vapor_layer(
         (0.88 * spread, max(0.025, thickness * 0.30), 0.63 * spread),
         "#b7fbff",
         camera,
-        alpha=max(38, int(alpha * 0.28)),
-        blur=2.5,
+        alpha=max(46, int(alpha * 0.36)),
+        blur=2.0,
     )
 
     if outflow > 0.0:
@@ -642,9 +697,9 @@ def _draw_heat_arrows(
             points,
             "#ffc766",
             camera,
-            width=max(2, int(3.5 * strength)),
+            width=max(2, int(2.5 * strength)),
             arrow=False,
-            alpha=min(205, int(145 + 38 * strength)),
+            alpha=min(145, int(100 + 28 * strength)),
         )
 
 
@@ -676,8 +731,14 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_sphere(image, (-1.62, 0.40 + 0.15 * t, 0.0), left_r, "#417aa6", camera, alpha=210)
         glide_x = 1.18 + 0.82 * t
         _draw_vapor_layer(image, camera, center=(glide_x, -0.58, 0.0), spread=0.34, thickness=0.12)
-        _draw_sphere(image, (glide_x, 0.58 + 0.05 * math.sin(t * math.pi * 4.0), 0.0), 0.82, "#2c78c9", camera, outline="#d9efff")
-        _draw_path(image, [(1.1, -0.35, 0.7), (1.6, -0.28, 0.5), (2.4, -0.16, 0.1)], "#58d6e8", camera, width=8, arrow=True)
+        _draw_droplet(
+            image, (glide_x, 0.58 + 0.05 * math.sin(t * math.pi * 4.0), 0.0),
+            0.82, camera, t, intensity=0.14, flatten=0.04, phase=0.19,
+        )
+        _draw_soft_path(
+            image, [(1.1, -0.35, 0.7), (1.6, -0.28, 0.5), (2.4, -0.16, 0.1)],
+            "#58d6e8", camera, width=7, alpha=95, blur=5.0,
+        )
 
     elif kind == "expectation":
         _draw_plate(image, camera, 1.05 + 0.35 * t)
@@ -752,8 +813,14 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
         _draw_plate(image, camera, 1.25, x=-0.72, z=0.45, scale=0.90)
         gap = 0.48 + 0.34 * pulse
         _draw_vapor_layer(image, camera, center=(-0.72, -0.48, 0.45), spread=0.88 + 0.18 * pulse, thickness=0.16)
-        _draw_sphere(image, (-0.72, 0.58 + gap, 0.45), 0.98, "#2c78c9", camera, outline="#d9efff")
-        _draw_path(image, [(1.65, -0.92, 0.35), (1.65, -0.35, 0.35), (1.65, 0.34, 0.35)], "#d9efff", camera, width=7, arrow=True, alpha=210)
+        _draw_droplet(
+            image, (-0.72, 0.58 + gap, 0.45), 0.98, camera, t,
+            intensity=0.105, flatten=0.035, phase=0.13,
+        )
+        _draw_soft_path(
+            image, [(1.65, -0.92, 0.35), (1.65, -0.35, 0.35), (1.65, 0.34, 0.35)],
+            "#d9efff", camera, width=6, alpha=90, blur=4.0,
+        )
 
     elif kind == "contact_gap":
         _draw_plate(image, camera, 1.28)
@@ -786,14 +853,17 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
                 u = k / 7.0
                 wave = 0.13 * math.sin((t * 1.6 + idx * 0.21 + u * 0.8) * math.pi * 2.0)
                 pts.append((x + bend * u + wave * u, -1.02 + 0.84 * u, 0.12 + 0.06 * math.sin((t + u) * math.pi * 2.0)))
-            _draw_path(image, pts, "#ff6b35", camera, width=13, arrow=False, alpha=130)
-            _draw_path(image, pts, "#ffc766", camera, width=5, arrow=False, alpha=220)
+            _draw_soft_path(image, pts, "#ff6b35", camera, width=13, alpha=105, blur=6.0)
+            _draw_path(image, pts, "#ffc766", camera, width=2, arrow=False, alpha=105)
 
     elif kind == "paradox_shield":
         image.paste((34, 8, 7, 255), (0, 0, width, height))
         _draw_plate(image, camera, 1.45)
         _draw_vapor_layer(image, camera, spread=1.05 + 0.08 * pulse, thickness=0.19)
-        _draw_sphere(image, (0.0, 0.70 + bob, 0.0), 0.95, "#2c78c9", camera, outline="#d9efff")
+        _draw_droplet(
+            image, (0.0, 0.70 + bob, 0.0), 0.95, camera, t,
+            intensity=0.12, flatten=0.045, phase=0.17,
+        )
         _draw_heat_arrows(image, camera, count=5, strength=1.15, y1=-0.36, bend=0.52, phase=t)
 
     elif kind == "protected_drop":
@@ -828,21 +898,36 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
             a = -0.85 + 1.55 * float(q)
             path.append((2.15 * math.sin(a), -0.48, 1.55 * math.cos(a)))
         if len(path) > 1:
-            _draw_path(image, path, "#58d6e8", camera, width=8, alpha=205)
+            _draw_soft_path(image, path, "#58d6e8", camera, width=7, alpha=105, blur=5.0)
 
     elif kind == "support_force":
         _draw_plate(image, camera, 1.32, x=-0.25, z=0.35)
-        _draw_vapor_layer(image, camera, center=(-0.25, -0.44, 0.35), spread=0.92 + 0.24 * pulse, thickness=0.20)
-        _draw_sphere(image, (-0.25, 0.62 + 0.62 * t + 0.10 * math.sin(t * math.pi * 4.0), 0.35), 1.00, "#2c78c9", camera, outline="#d9efff")
+        _draw_vapor_layer(
+            image, camera, center=(-0.25, -0.44, 0.35),
+            spread=0.92 + 0.24 * pulse, thickness=0.20, phase=t, outflow=0.56,
+        )
+        _draw_droplet(
+            image, (-0.25, 0.62 + 0.62 * t + 0.10 * math.sin(t * math.pi * 4.0), 0.35),
+            1.00, camera, t, intensity=0.13, flatten=0.05 * (1.0 - t), phase=0.09,
+        )
         for x in (-1.35, -0.25, 0.85):
-            _draw_path(image, [(x, -0.82, 0.35), (x, -0.10 + 0.22 * t, 0.35)], "#72e8f5", camera, width=14, arrow=True, alpha=235)
+            _draw_soft_path(
+                image, [(x, -0.82, 0.35), (x, -0.10 + 0.22 * t, 0.35)],
+                "#72e8f5", camera, width=9, alpha=110, blur=5.0,
+            )
         _draw_heat_arrows(image, camera, count=3, strength=0.70, y1=-0.48, bend=0.18, phase=t)
 
     elif kind == "name":
         _draw_plate(image, camera, 1.26, x=0.0, z=0.55, scale=0.82)
         _draw_vapor_layer(image, camera, center=(0.0, -0.40, 0.25), spread=1.28 + 0.18 * pulse, thickness=0.18)
-        _draw_sphere(image, (0.0, 0.92 + 0.26 * math.sin(t * math.pi * 2.0), 0.25), 1.38, "#2c78c9", camera, outline="#d9efff")
-        _draw_path(image, [(-2.4, -0.35, 0.0), (0.0, -0.08, 0.65), (2.4, -0.35, 0.0)], "#58d6e8", camera, width=12, alpha=210)
+        _draw_droplet(
+            image, (0.0, 0.92 + 0.26 * math.sin(t * math.pi * 2.0), 0.25),
+            1.38, camera, t, intensity=0.11, flatten=0.05, phase=0.25,
+        )
+        _draw_soft_path(
+            image, [(-2.4, -0.35, 0.0), (0.0, -0.08, 0.65), (2.4, -0.35, 0.0)],
+            "#58d6e8", camera, width=10, alpha=95, blur=5.0,
+        )
         d = ImageDraw.Draw(image, "RGBA")
         try:
             font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 52)
@@ -885,7 +970,10 @@ def render_diagram_frame(kind: str, t: float, width: int = 980, height: int = 95
             image, (x, 0.82 + 0.16 * math.sin(t * math.pi * 4.0), z),
             1.08, camera, t, intensity=0.14, flatten=0.045, phase=0.22,
         )
-        _draw_path(image, [(-1.9, -0.34, -0.3), (-0.7, -0.18, 0.45), (0.6, -0.24, -0.35), (1.8, -0.12, 0.25)], "#6ee8f5", camera, width=11, alpha=215)
+        _draw_soft_path(
+            image, [(-1.9, -0.34, -0.3), (-0.7, -0.18, 0.45), (0.6, -0.24, -0.35), (1.8, -0.12, 0.25)],
+            "#6ee8f5", camera, width=9, alpha=105, blur=5.0,
+        )
         _draw_heat_arrows(image, camera, count=3, strength=0.88, y1=-0.30, bend=0.42, phase=t)
 
     else:
