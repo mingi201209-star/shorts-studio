@@ -23,7 +23,7 @@ def test_secondary_motion_keeps_running_after_story_state_settles():
     for kind in golf3d.KINDS:
         before = _frame(kind, 1.0, 2.0)
         after = _frame(kind, 1.0, 2.5)
-        assert _mad(before, after) > 0.10, kind
+        assert _mad(before, after) > 0.35, kind
 
 
 def test_consecutive_golf_states_are_not_visual_replays():
@@ -33,11 +33,13 @@ def test_consecutive_golf_states_are_not_visual_replays():
         "smooth_wake",
         "boundary_layer",
         "separation_compare",
+        "wake_compare",
         "dimple_wake",
         "trip_turbulence",
         "attached_flow",
         "wake_shrink",
         "drag_compare",
+        "flight_payoff_setup",
         "flight_payoff",
     )
     frames = [_frame(kind, 1.0, 1.5) for kind in sequence]
