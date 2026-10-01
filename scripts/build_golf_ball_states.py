@@ -164,7 +164,7 @@ def main() -> None:
             [
                 phrase(
                     "HOOK",
-                    "골프공의 이 울퉁불퉁한 딤플, 매끈하게 없애면 오히려 공은 덜 날아갑니다.",
+                    "이상하게도 골프공은 표면의 딤플을 없애 매끈하게 만들면 더 멀리 가는 게 아니라 덜 날아갑니다.",
                     "counterintuitive_fact",
                 ),
                 phrase("CRISIS", "표면이 거칠어졌는데 왜 공기 저항은 줄어들까요?"),
@@ -178,7 +178,7 @@ def main() -> None:
                     "hero_surface",
                     "concept",
                     "a cinematic scientific 3D visualization of a rotating dimpled golf ball with airflow and a compact wake",
-                    "딤플이 크게 보이는 골프공이 회전하고 공기 흐름과 작은 뒤쪽 wake가 함께 보이는 모습",
+                    "골프공은 표면의 딤플을 크게 보여 주고, 회전하는 공 주변의 공기 흐름과 작은 뒤쪽 wake가 함께 보이는 모습",
                 ),
                 beat(
                     real_photo,
