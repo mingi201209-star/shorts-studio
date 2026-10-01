@@ -182,7 +182,7 @@ def main() -> None:
                 ),
                 beat(
                     real_photo,
-                    "울퉁불퉁한",
+                    "표면의 딤플을",
                     "real_dimple_evidence",
                     "dimple_effect",
                     "real_surface",
