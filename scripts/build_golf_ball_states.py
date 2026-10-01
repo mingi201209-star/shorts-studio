@@ -126,18 +126,21 @@ def main() -> None:
     # Clips are intentionally longer than the narration windows they serve.
     # The renderer uses -stream_loop for moving sources; keeping each one-shot
     # transition longer than its real beat prevents a visible reset seam.
+
     durations = {
         "hero_dimples": 4.0,
-        "smooth_morph": 5.0,
-        "smooth_wake": 5.5,
+        "smooth_morph": 4.5,
+        "smooth_wake": 4.5,
         "boundary_layer": 4.5,
-        "separation_compare": 7.0,
+        "separation_compare": 4.5,
+        "wake_compare": 4.5,
         "dimple_wake": 4.5,
         "trip_turbulence": 4.5,
         "attached_flow": 4.5,
         "wake_shrink": 4.5,
         "drag_compare": 4.5,
-        "flight_payoff": 8.0,
+        "flight_payoff_setup": 4.5,
+        "flight_payoff": 5.5,
     }
 
     missing = set(KINDS) - set(durations)
@@ -164,31 +167,33 @@ def main() -> None:
     )
 
 
+
     plans = [
         (
             "s_hook",
             [
                 phrase(
                     "HOOK",
-                    "이상하게도 골프공은 표면의 딤플을 없애 매끈하게 만들면 더 멀리 가는 게 아니라 덜 날아갑니다.",
+                    "골프공의 딤플을 없애 매끈하게 만들면 오히려 덜 날아갑니다.",
                     "counterintuitive_fact",
                 ),
-                phrase("CRISIS", "표면이 거칠어졌는데 왜 공기 저항은 줄어들까요?"),
+                phrase("CRISIS", "그런데 왜 그럴까요?"),
+                phrase("REVEAL", "답은 공 바로 옆의 얇은 공기층입니다."),
             ],
             [
                 beat(
                     motion["hero_dimples"],
-                    "딤플",
+                    "골프공의",
                     "dimpled_ball_visible",
                     "dimple_effect",
                     "hero_surface",
                     "concept",
                     "a cinematic scientific 3D visualization of a rotating dimpled golf ball with airflow and a compact wake",
-                    "골프공은 표면의 딤플을 크게 보여 주고, 회전하는 공 주변의 공기 흐름과 작은 뒤쪽 wake가 함께 보이는 모습",
+                    "골프공의 딤플이 크게 보이고, 회전하는 공 주변의 공기 흐름과 작은 뒤쪽 wake가 함께 보이는 모습",
                 ),
                 beat(
                     real_photo,
-                    "표면의 딤플을",
+                    "딤플을",
                     "real_dimple_evidence",
                     "dimple_effect",
                     "real_surface",
@@ -199,17 +204,17 @@ def main() -> None:
                 ),
                 beat(
                     motion["smooth_morph"],
-                    "매끈하게",
+                    "만들면",
                     "dimples_removed",
                     "dimple_effect",
                     "smooth_transition",
                     "state",
-                    "a moving 3D golf ball whose dimples smoothly disappear while separation moves forward and the wake grows",
-                    "같은 시점에서 딤플이 부드럽게 사라지고, 분리 지점이 앞으로 오며 공 뒤 wake가 넓어지는 연속 변화",
+                    "a moving 3D golf ball whose dimples smoothly disappear while separation moves forward and the wake begins to grow",
+                    "같은 시점에서 딤플이 부드럽게 사라지고 분리 지점이 앞으로 오며 wake가 커지기 시작하는 연속 변화",
                 ),
                 beat(
                     motion["smooth_wake"],
-                    "덜 날아갑니다",
+                    "그런데",
                     "smooth_large_wake",
                     "dimple_effect",
                     "smooth_wake_result",
@@ -217,21 +222,6 @@ def main() -> None:
                     "a smooth moving golf ball with early airflow separation, a large coherent wake, and visible separation markers",
                     "매끈한 공에서 공기 흐름이 일찍 떨어지고 뒤쪽에 넓고 계속 움직이는 wake가 생기는 결과 장면",
                 ),
-            ],
-        ),
-        (
-            "s_reveal",
-            [
-                phrase(
-                    "REVEAL",
-                    "답은 골프공 바로 옆의 얇은 공기층입니다.",
-                ),
-                phrase(
-                    "INVESTIGATION",
-                    "매끈한 공에서는 이 공기층이 뒤쪽에서 일찍 떨어져 큰 소용돌이 꼬리를 만듭니다.",
-                ),
-            ],
-            [
                 beat(
                     motion["boundary_layer"],
                     "답은",
@@ -242,15 +232,36 @@ def main() -> None:
                     "a moving dimpled golf ball with a bright thin boundary layer hugging the surface and readable airflow particles",
                     "골프공 바로 옆의 얇은 공기층이 밝은 표면층과 움직이는 입자로 한눈에 보이는 장면",
                 ),
+            ],
+        ),
+        (
+            "s_reveal",
+            [
+                phrase(
+                    "INVESTIGATION",
+                    "매끈한 공은 흐름이 일찍 떨어지고 뒤에 큰 소용돌이 꼬리를 남깁니다.",
+                ),
+            ],
+            [
                 beat(
                     motion["separation_compare"],
-                    "매끈한 공에서는",
+                    "매끈한 공은",
                     "early_vs_late_separation",
                     "boundary_layer",
                     "separation_comparison",
                     "state",
                     "a fixed-camera two-state comparison showing early separation and a wide wake on the smooth ball versus delayed separation and a narrow wake on the dimpled ball",
                     "같은 시점에서 매끈한 공은 앞에서 일찍 분리되고 딤플 공은 뒤에서 늦게 분리되는 차이가 동시에 보이는 장면",
+                ),
+                beat(
+                    motion["wake_compare"],
+                    "뒤에",
+                    "large_vortex_tail",
+                    "boundary_layer",
+                    "large_wake_result",
+                    "state",
+                    "a smooth golf ball leaving a large coherent vortex wake with visible downstream motion",
+                    "매끈한 공 뒤에 넓은 저압 wake와 큰 소용돌이들이 계속 흘러가는 결과 장면",
                 ),
             ],
         ),
@@ -259,7 +270,7 @@ def main() -> None:
             [
                 phrase(
                     "EXPLANATION",
-                    "딤플은 그 공기층을 일부러 난류로 바꿉니다. 이 난류는 표면을 더 오래 따라가다가 뒤에서 늦게 떨어집니다.",
+                    "딤플은 공기층을 난류로 바꿉니다. 이 흐름은 표면을 오래 따라가 뒤에서 늦게 떨어집니다.",
                 ),
             ],
             [
@@ -270,8 +281,8 @@ def main() -> None:
                     "turbulent_layer",
                     "dimple_transition",
                     "concept",
-                    "a moving golf ball where dimples become prominent as the separation point shifts rearward and the wake narrows",
-                    "딤플이 보이기 시작하면서 분리 지점이 뒤로 이동하고 wake가 줄어드는 인과 변화",
+                    "a moving golf ball where dimples become prominent as the separation point shifts rearward and the wake begins to narrow",
+                    "딤플이 보이기 시작하면서 분리 지점이 뒤로 이동하고 wake가 줄기 시작하는 인과 변화",
                 ),
                 beat(
                     motion["trip_turbulence"],
@@ -285,7 +296,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["attached_flow"],
-                    "더 오래 따라가다가",
+                    "표면을 오래",
                     "later_flow_separation",
                     "turbulent_layer",
                     "attached_flow",
@@ -300,13 +311,13 @@ def main() -> None:
             [
                 phrase(
                     "TWIST",
-                    "그래서 매끈한 공보다 공 뒤의 저압 영역이 작아지고, 압력 항력이 줄어듭니다.",
+                    "그래서 뒤쪽 저압 영역이 작아져 압력 항력이 줄어듭니다.",
                 ),
             ],
             [
                 beat(
                     motion["wake_shrink"],
-                    "매끈한 공보다",
+                    "그래서",
                     "wake_area_shrinks",
                     "wake_drag",
                     "wake_shrink",
@@ -331,17 +342,27 @@ def main() -> None:
             [
                 phrase(
                     "PAYOFF",
-                    "골프공의 딤플은 장식이 아니라, 공기 흐름을 바꿔 비거리를 만드는 공기역학 설계입니다.",
+                    "딤플은 장식이 아닙니다. 공기 흐름을 바꿔 비거리를 만드는 설계입니다.",
                 ),
             ],
             [
                 beat(
+                    motion["flight_payoff_setup"],
+                    "딤플은",
+                    "flight_direction_established",
+                    "payoff",
+                    "flight_setup",
+                    "concept",
+                    "a dimpled golf ball with a compact wake and soft future-position ghosts establishing flight direction",
+                    "딤플 공과 작은 wake가 보이고 앞쪽의 옅은 위치 잔상으로 비행 방향이 먼저 읽히는 장면",
+                ),
+                beat(
                     motion["flight_payoff"],
-                    "비거리를",
+                    "공기 흐름을",
                     "final_dimpled_flight",
                     "payoff",
                     "flight_payoff",
-                    "concept",
+                    "state",
                     "a cinematic 3D dimpled golf ball moving through frame with continuous rotation, flow particles, and a compact aerodynamic wake",
                     "고정 카메라에서 딤플 공 자체가 앞으로 이동하고 회전·입자·작은 wake가 끝까지 이어지는 최종 payoff 장면",
                 ),
@@ -355,14 +376,16 @@ def main() -> None:
         ("s_hook", 1): ("evidence", "real_photo"),
         ("s_hook", 2): ("support", "physical_animation"),
         ("s_hook", 3): ("support", "physical_animation"),
-        ("s_reveal", 0): ("mechanism", "physical_animation"),
+        ("s_hook", 4): ("mechanism", "physical_animation"),
+        ("s_reveal", 0): ("support", "physical_animation"),
         ("s_reveal", 1): ("support", "physical_animation"),
         ("s_explain", 0): ("support", "physical_animation"),
         ("s_explain", 1): ("second_peak", "physical_animation"),
         ("s_explain", 2): ("support", "physical_animation"),
         ("s_compare", 0): ("support", "physical_animation"),
         ("s_compare", 1): ("support", "physical_animation"),
-        ("s_end", 0): ("payoff", "physical_animation"),
+        ("s_end", 0): ("support", "physical_animation"),
+        ("s_end", 1): ("payoff", "physical_animation"),
     }
 
     scenes = []
