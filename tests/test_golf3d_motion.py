@@ -56,7 +56,14 @@ def test_transition_states_move_toward_their_final_physical_state():
     # One-shot story progress must change the physical result substantially;
     # micro-motion alone must never be the only difference between these
     # causal states.
-    for kind in ("smooth_morph", "dimple_wake", "trip_turbulence", "wake_shrink"):
+    for kind in (
+        "smooth_morph",
+        "separation_compare",
+        "dimple_wake",
+        "trip_turbulence",
+        "wake_shrink",
+        "drag_compare",
+    ):
         start = _frame(kind, 0.0, 0.1)
         settled = _frame(kind, 1.0, 1.2)
         assert _mad(start, settled) > 0.65, kind
