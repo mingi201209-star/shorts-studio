@@ -39,7 +39,7 @@ def test_hydro_secondary_motion_never_freezes():
     for kind in hydro3d.KINDS:
         before = _frame(kind, 1.0, 2.0)
         after = _frame(kind, 1.0, 2.5)
-        assert _mad(before, after) > 0.75, kind
+        assert _mad(before, after) > 12.5, kind
 
 
 def test_hydro_causal_transitions_change_the_physical_state():
