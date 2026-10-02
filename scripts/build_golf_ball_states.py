@@ -174,7 +174,7 @@ def main() -> None:
             [
                 phrase(
                     "HOOK",
-                    "골프공의 딤플을 없애 매끈하게 만들면 오히려 덜 날아갑니다.",
+                    "이상하게도 골프공의 딤플을 없애 매끈하게 만들면 오히려 덜 날아갑니다.",
                     "counterintuitive_fact",
                 ),
                 phrase("CRISIS", "그런데 왜 그럴까요?"),
