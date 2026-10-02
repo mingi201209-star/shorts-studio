@@ -182,16 +182,16 @@ def main() -> None:
             [
                 phrase(
                     "HOOK",
-                    "이상하게도 빗길에서 속도가 올라가면 타이어는 도로를 더 세게 누르는 게 아니라 물 위에 떠버릴 수 있습니다.",
+                    "이상하게도 빗길에서 타이어는 도로 대신 물 위에 뜰 수 있습니다.",
                     "counterintuitive_fact",
                 ),
                 phrase(
                     "CRISIS",
-                    "어떻게 얇은 물층이 무거운 차의 접촉을 끊을까요?",
+                    "무거운 차가 어떻게 물에 뜰까요?",
                 ),
                 phrase(
                     "REVEAL",
-                    "답은 타이어 앞에서 빠져나가지 못한 물이 쐐기처럼 쌓이는 순간입니다.",
+                    "앞에서 못 빠진 물이 타이어 밑에 쐐기를 만듭니다.",
                 ),
             ],
             [
@@ -228,7 +228,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["contact_shrink"],
-                    "접촉을",
+                    "어떻게",
                     "contact_patch_shrinks",
                     "hydro_contact",
                     "contact_loss",
@@ -238,7 +238,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["water_wedge"],
-                    "쐐기처럼",
+                    "쐐기를",
                     "water_wedge_forms",
                     "water_wedge",
                     "wedge_formation",
@@ -474,8 +474,8 @@ def main() -> None:
 핵심 물리 참고:
 - FAA Airplane Flying Handbook, Chapter 9 — Dynamic Hydroplaning
   https://www.faa.gov/sites/faa.gov/files/regulations_policies/handbooks_manuals/aviation/airplane_handbook/10_afh_ch9.pdf
-- NHTSA hydroplaning guidance — water can build under tires until road contact is greatly reduced
-  https://static.nhtsa.gov/odi/inv/2011/INRD-EA11003-50073P.pdf
+- NHTSA — Tire Wet Contact Phenomena / Hydroplaning
+  https://www.nhtsa.gov/sites/nhtsa.gov/files/nadssae_pres2006010559.pdf
 
 설명 애니메이션:
 - 타이어, 젖은 도로, 물 쐐기, 트레드 배수, 접촉면, 수막 장면은 shorts-studio에서 직접 생성한 물리 시각화입니다.
