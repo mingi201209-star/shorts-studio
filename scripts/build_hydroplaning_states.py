@@ -182,16 +182,16 @@ def main() -> None:
             [
                 phrase(
                     "HOOK",
-                    "이상하게도 빗길에서 타이어는 도로 대신 물 위에 뜰 수 있습니다.",
+                    "이상하게도 빗길에선 타이어가 도로가 아니라 물 위를 달릴 수 있습니다.",
                     "counterintuitive_fact",
                 ),
                 phrase(
                     "CRISIS",
-                    "무거운 차가 어떻게 물에 뜰까요?",
+                    "차 무게를 받는 타이어가 어떻게 물 위로 떠오를 수 있을까요?",
                 ),
                 phrase(
                     "REVEAL",
-                    "앞에서 못 빠진 물이 타이어 밑에 쐐기를 만듭니다.",
+                    "못 빠진 물이 타이어 밑에 쐐기를 만듭니다.",
                 ),
             ],
             [
@@ -207,7 +207,7 @@ def main() -> None:
                 ),
                 beat(
                     real_photo,
-                    "타이어는",
+                    "도로가",
                     "real_wet_road_evidence",
                     "hydro_contact",
                     "real_wet_road",
@@ -218,7 +218,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["full_hydroplane"],
-                    "물 위에",
+                    "달릴 수",
                     "hydroplane_result_tease",
                     "hydro_contact",
                     "tire_riding_on_water",
@@ -228,7 +228,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["contact_shrink"],
-                    "어떻게",
+                    "떠오를",
                     "contact_patch_shrinks",
                     "hydro_contact",
                     "contact_loss",
@@ -238,7 +238,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["water_wedge"],
-                    "쐐기를",
+                    "못 빠진 물이",
                     "water_wedge_forms",
                     "water_wedge",
                     "wedge_formation",
@@ -253,7 +253,11 @@ def main() -> None:
             [
                 phrase(
                     "INVESTIGATION",
-                    "속도가 오르면 물을 빼낼 시간이 줄고 접촉면이 빠르게 작아집니다.",
+                    "속도가 오르면 물을 밀어낼 시간이 줄어듭니다.",
+                ),
+                phrase(
+                    "INVESTIGATION",
+                    "타이어 홈은 물을 빼지만, 배수가 못 따라가면 접촉면이 들립니다.",
                 ),
             ],
             [
@@ -269,7 +273,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["drainage_channels"],
-                    "물을",
+                    "타이어 홈은",
                     "tread_channels_water_out",
                     "water_management",
                     "tread_drainage",
@@ -279,7 +283,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["pressure_lift"],
-                    "접촉면이",
+                    "배수가 못 따라가면",
                     "water_pressure_lifts_tire",
                     "water_management",
                     "pressure_lift",
@@ -294,7 +298,11 @@ def main() -> None:
             [
                 phrase(
                     "EXPLANATION",
-                    "수막이 생기면 물층이 타이어를 받칩니다. 접촉이 사라지면 핸들을 돌려도 옆힘이 잘 전달되지 않습니다.",
+                    "수막은 물층이 타이어를 받치는 상태입니다.",
+                ),
+                phrase(
+                    "EXPLANATION",
+                    "접촉이 줄면 조향력도 크게 줄어듭니다.",
                 ),
             ],
             [
@@ -310,7 +318,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["steering_loss"],
-                    "핸들을",
+                    "접촉이 줄면",
                     "steering_force_collapses",
                     "traction_loss",
                     "steering_loss",
@@ -325,13 +333,17 @@ def main() -> None:
             [
                 phrase(
                     "TWIST",
-                    "브레이크도 같습니다. 접촉이 없으면 제동력이 줄고, 속도가 낮아지면 접촉이 돌아옵니다.",
+                    "접촉이 줄면 제동력도 약해집니다.",
+                ),
+                phrase(
+                    "TWIST",
+                    "속도를 낮추면 접촉이 돌아옵니다.",
                 ),
             ],
             [
                 beat(
                     motion["braking_loss"],
-                    "브레이크도",
+                    "접촉이 줄면",
                     "braking_force_collapses",
                     "traction_loss",
                     "braking_loss",
@@ -341,7 +353,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["recover_contact"],
-                    "속도가 낮아지면",
+                    "속도를 낮추면",
                     "contact_patch_recovers",
                     "traction_recovery",
                     "contact_recovery",
@@ -356,23 +368,27 @@ def main() -> None:
             [
                 phrase(
                     "PAYOFF",
-                    "수막현상은 물층이 타이어와 도로의 접촉을 끊는 순간입니다.",
+                    "정상일 땐 물이 빠져 접촉이 남습니다.",
+                ),
+                phrase(
+                    "PAYOFF",
+                    "수막현상은 그 접촉이 사라지는 순간입니다.",
                 ),
             ],
             [
                 beat(
                     motion["final_drive"],
-                    "수막현상은",
-                    "stable_wet_contact_reference",
+                    "정상일 땐",
+                    "normal_vs_hydro_reference",
                     "payoff",
-                    "wet_contact_reference",
+                    "wet_vs_hydro_comparison",
                     "concept",
-                    "a rolling tire maintaining a clear contact patch on a wet road while water drains through the tread",
-                    "젖은 도로에서도 타이어 홈으로 물이 빠지고 접촉선이 유지되는 기준 상태",
+                    "a grounded wet-road tire with strong drainage shown beside a translucent hydroplaning reference wheel lifted on a water wedge",
+                    "정상 접촉 타이어와 물쐐기 위에 뜬 반투명 수막 기준 타이어가 한 화면에서 직접 비교되는 장면",
                 ),
                 beat(
                     motion["final_cutaway"],
-                    "접촉을",
+                    "수막현상은",
                     "hydroplane_definition_payoff",
                     "payoff",
                     "contact_disappears",
