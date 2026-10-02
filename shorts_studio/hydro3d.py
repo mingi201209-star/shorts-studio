@@ -100,7 +100,7 @@ def _draw_road(image: Image.Image, micro: float, speed: float, wetness: float) -
 
     # Moving asphalt highlights give the viewer a stable car-follow camera
     # while preserving clear object-scale motion for the whole beat.
-    offset = (micro * (88.0 + 118.0 * speed)) % 150.0
+    offset = (micro * (104.0 + 138.0 * speed)) % 150.0
     for row, alpha in ((top + 38, 40), (top + 86, 30), (top + 142, 22)):
         for i in range(-2, 10):
             x = i * 150.0 - offset
@@ -119,7 +119,7 @@ def _draw_road(image: Image.Image, micro: float, speed: float, wetness: float) -
         fill=(33, 134, 176, int(70 + 40 * wetness)),
     )
 
-    shimmer = (micro * (130 + 90 * speed)) % 210
+    shimmer = (micro * (150 + 110 * speed)) % 210
     for i in range(-1, 7):
         x = i * 210 - shimmer
         d.line(
@@ -445,11 +445,11 @@ def render_hydro_frame(
     steering = False
 
     if kind == "hero_contact":
-        speed = 0.42
-        wedge = 0.20
-        pressure = 0.16
-        spray = 0.34
-        drainage = 0.48
+        speed = 0.56
+        wedge = 0.22
+        pressure = 0.18
+        spray = 0.50
+        drainage = 0.64
 
     elif kind == "water_wedge":
         mix = story
