@@ -817,13 +817,13 @@ def render_golf_frame(
             )
 
     elif kind == "flight_payoff_setup":
-        # A readable setup for the final motion: the ball remains near its
-        # starting position while a few soft future-position ghosts establish
-        # direction. The following payoff beat then carries the real ball
-        # through that path.
-        center = (-0.38, 0.0, 0.0)
+        # Begin the payoff as one continuous physical move instead of holding
+        # a diagram and then cutting to flight. The ball eases toward the exact
+        # start position of the next beat while the fixed camera never moves.
+        lead = _smootherstep(min(1.0, micro / 2.7))
+        center = (-0.58 + 0.26 * lead, 0.0, 0.0)
         sx, sy, sr = _draw_ball(
-            image, story, center=center, dimple_strength=1.0, spin_speed=0.32,
+            image, story, center=center, dimple_strength=1.0, spin_speed=0.36,
             time_seconds=micro,
         )
         _draw_flow(
@@ -847,8 +847,8 @@ def render_golf_frame(
     elif kind == "flight_payoff":
         # Keep the camera fixed. The ball itself carries through the frame,
         # while rotation/flow/wake continue for the whole long payoff beat.
-        travel = min(1.0, micro / 8.0)
-        center = (-0.32 + 1.12 * travel, 0.0, 0.0)
+        travel = _smootherstep(min(1.0, micro / 4.5))
+        center = (-0.32 + 1.20 * travel, 0.0, 0.0)
         sx, sy, sr = _draw_ball(
             image, story, center=center, dimple_strength=1.0, spin_speed=0.34,
             time_seconds=micro,
@@ -862,8 +862,8 @@ def render_golf_frame(
         td = ImageDraw.Draw(trail, "RGBA")
         for i in range(5):
             q = max(0.0, micro - 0.13 * (i + 1))
-            q_travel = min(1.0, q / 8.0)
-            ghost_center = (-0.32 + 1.12 * q_travel, 0.0, 0.0)
+            q_travel = _smootherstep(min(1.0, q / 4.5))
+            ghost_center = (-0.32 + 1.20 * q_travel, 0.0, 0.0)
             gx, gy, gr = _ball_geometry(ghost_center, 1.52, OPTIMAL_GOLF_CAMERA)
             td.ellipse(
                 (gx - gr * 0.84, gy - gr * 0.84, gx + gr * 0.84, gy + gr * 0.84),
