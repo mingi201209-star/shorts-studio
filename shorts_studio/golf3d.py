@@ -27,7 +27,7 @@ class Camera:
 # explanation into a perspective-heavy camera move.
 OPTIMAL_GOLF_CAMERA = Camera(
     yaw=-0.34,
-    pitch=-0.26,
+    pitch=-0.22,
     distance=7.35,
     focal=895.0,
     cx=340.0,
@@ -692,7 +692,7 @@ def render_golf_frame(
         )
         _draw_turbulence_particles(
             image, story, sx, sy, sr,
-            0.82 + 0.18 * pulse, time_seconds=micro, count=60,
+            0.96 + 0.22 * pulse, time_seconds=micro, count=108,
         )
         _draw_separation_markers(image, sx, sy, sr, attached, intensity=0.70)
 
@@ -702,8 +702,15 @@ def render_golf_frame(
         )
         _draw_flow(
             image, story, sx, sy, sr,
-            attached=0.98, wake_width=0.42, strength=1.10, boundary_glow=0.18,
-            time_seconds=micro, vortex_count=7,
+            attached=0.98, wake_width=0.42, strength=1.16, boundary_glow=0.34,
+            time_seconds=micro, vortex_count=8,
+        )
+        # The boundary layer remains turbulent even while attached. Keep
+        # those surface particles moving so this long explanation beat reads
+        # as continuous airflow, not a held diagram.
+        _draw_turbulence_particles(
+            image, story, sx, sy, sr,
+            0.82, time_seconds=micro, count=84,
         )
         _draw_separation_markers(image, sx, sy, sr, 0.97, intensity=0.78)
 
@@ -712,7 +719,10 @@ def render_golf_frame(
         # popping instantly to a two-ball diagram. The existing dimpled ball
         # stays large and near the center while the smooth comparison state
         # grows out above it; both then settle into the fixed-camera split.
-        split = _smootherstep(story)
+        # Hold the inherited single-ball state briefly, then split. Besides
+        # feeling more continuous, this gives the compositor a stable source
+        # anchor before the physical comparison begins.
+        split = _smootherstep(_clamp01((story - 0.40) / 0.60))
         states = (
             (0.18 + 1.17 * split, 0.0, 0.28, 1.24, 0.26 + 0.64 * split),
             (-(0.08 + 1.27 * split), 1.0, 0.96, 0.46, 1.34 - 0.44 * split),
@@ -776,7 +786,9 @@ def render_golf_frame(
         # Same continuity rule as the separation comparison: start from the
         # dimpled state already on screen, then physically split into the
         # smooth-vs-dimple drag comparison without moving the camera.
-        split = _smootherstep(story)
+        # As above, preserve the incoming dimpled state for the first few
+        # frames before the smooth comparison grows out of it.
+        split = _smootherstep(_clamp01((story - 0.40) / 0.60))
         states = (
             (0.18 + 1.07 * split, 0.0, 0.28, 1.26, 1.0, 0.26 + 0.62 * split),
             (-(0.08 + 1.17 * split), 1.0, 0.96, 0.46, 0.28, 1.32 - 0.44 * split),
