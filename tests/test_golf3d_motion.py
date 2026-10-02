@@ -67,3 +67,13 @@ def test_transition_states_move_toward_their_final_physical_state():
         start = _frame(kind, 0.0, 0.1)
         settled = _frame(kind, 1.0, 1.2)
         assert _mad(start, settled) > 0.65, kind
+
+
+def test_payoff_has_large_readable_motion_every_half_second():
+    # The final payoff used to move too little for the rendered activity gate,
+    # producing a 5.5-second apparent hold even though tiny particles moved.
+    # Guard the object-scale carry itself, not just generic micro-motion.
+    for kind in ("flight_payoff_setup", "flight_payoff"):
+        before = _frame(kind, 1.0, 1.0)
+        after = _frame(kind, 1.0, 1.5)
+        assert _mad(before, after) > 1.5, kind
