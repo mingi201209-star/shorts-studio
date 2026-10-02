@@ -207,7 +207,7 @@ def main() -> None:
                 ),
                 beat(
                     real_photo,
-                    "빗길에서",
+                    "타이어는",
                     "real_wet_road_evidence",
                     "hydro_contact",
                     "real_wet_road",
@@ -253,7 +253,7 @@ def main() -> None:
             [
                 phrase(
                     "INVESTIGATION",
-                    "속도가 올라갈수록 타이어 아래로 밀려드는 물을 밖으로 보낼 시간이 줄고, 실제 접촉면은 앞쪽부터 빠르게 작아집니다.",
+                    "속도가 오르면 물을 빼낼 시간이 줄고 접촉면이 빠르게 작아집니다.",
                 ),
             ],
             [
@@ -269,7 +269,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["drainage_channels"],
-                    "밖으로",
+                    "물을",
                     "tread_channels_water_out",
                     "water_management",
                     "tread_drainage",
@@ -279,7 +279,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["pressure_lift"],
-                    "접촉면은",
+                    "접촉면이",
                     "water_pressure_lifts_tire",
                     "water_management",
                     "pressure_lift",
@@ -294,7 +294,7 @@ def main() -> None:
             [
                 phrase(
                     "EXPLANATION",
-                    "타이어 홈은 물이 옆으로 빠질 길을 만들지만, 수막이 생겨 접촉이 거의 사라지면 핸들을 돌려도 도로에 옆힘을 전달하기 어려워집니다.",
+                    "수막이 생기면 물층이 타이어를 받칩니다. 접촉이 사라지면 핸들을 돌려도 옆힘이 잘 전달되지 않습니다.",
                 ),
             ],
             [
@@ -325,7 +325,7 @@ def main() -> None:
             [
                 phrase(
                     "TWIST",
-                    "브레이크도 같습니다. 접촉면이 사라지면 제동력을 전달할 곳이 줄고, 속도가 내려가 물을 밀어낼 수 있게 되면 접촉이 다시 돌아옵니다.",
+                    "브레이크도 같습니다. 접촉이 없으면 제동력이 줄고, 속도가 낮아지면 접촉이 돌아옵니다.",
                 ),
             ],
             [
@@ -341,7 +341,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["recover_contact"],
-                    "다시 돌아옵니다",
+                    "속도가 낮아지면",
                     "contact_patch_recovers",
                     "traction_recovery",
                     "contact_recovery",
@@ -356,13 +356,13 @@ def main() -> None:
             [
                 phrase(
                     "PAYOFF",
-                    "그래서 수막현상은 단순히 길이 미끄러운 게 아니라, 타이어와 도로 사이에 물층이 끼어 접촉 자체가 사라지는 순간입니다.",
+                    "수막현상은 물층이 타이어와 도로의 접촉을 끊는 순간입니다.",
                 ),
             ],
             [
                 beat(
                     motion["final_drive"],
-                    "단순히",
+                    "수막현상은",
                     "stable_wet_contact_reference",
                     "payoff",
                     "wet_contact_reference",
@@ -372,7 +372,7 @@ def main() -> None:
                 ),
                 beat(
                     motion["final_cutaway"],
-                    "사라지는 순간입니다",
+                    "접촉을",
                     "hydroplane_definition_payoff",
                     "payoff",
                     "contact_disappears",
@@ -430,7 +430,7 @@ def main() -> None:
                 "visual_qa_labels": [beats[0]["visual_qa_labels"][0]],
                 "visual_qa_negative_labels": NEG,
                 "overlay_title": None,
-                "overlay_title_seconds": 2.8 if sid == "s_hook" else None,
+                "overlay_title_seconds": 2.2 if sid == "s_hook" else None,
             }
         )
 
