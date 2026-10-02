@@ -575,14 +575,14 @@ def render_hydro_frame(
         # Final stable state: slower road speed, visible drainage, and a
         # restored contact patch. The road still scrolls and the tire still
         # rotates so the ending never becomes a freeze-frame.
-        speed = 0.40
-        wetness = 0.62
+        speed = 0.50
+        wetness = 0.66
         wedge = 0.24
         pressure = 0.18
         contact = 0.96
         lift = 0.03
-        spray = 0.38
-        drainage = 0.88
+        spray = 0.48
+        drainage = 0.96
 
     road_y = _draw_road(image, micro, speed=speed, wetness=wetness)
     cx, cy, radius = _draw_tire(
