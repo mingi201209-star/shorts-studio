@@ -22,15 +22,16 @@ class Camera:
 # Topic-specific composition, not a global camera preset.
 # The golf ball sits left of center so its dimples remain large on mobile while
 # the downstream wake has enough horizontal room to stay readable.
-# A shallow 3/4 angle keeps the surface texture visible without hiding the
-# separation/wake mechanism behind a dramatic perspective.
+# The camera is fixed slightly above the ball and looks diagonally downward:
+# enough 3D depth to read the spherical surface, without turning the airflow
+# explanation into a perspective-heavy camera move.
 OPTIMAL_GOLF_CAMERA = Camera(
-    yaw=-0.24,
-    pitch=-0.11,
-    distance=7.20,
-    focal=880.0,
-    cx=345.0,
-    cy=455.0,
+    yaw=-0.34,
+    pitch=-0.26,
+    distance=7.35,
+    focal=895.0,
+    cx=340.0,
+    cy=475.0,
 )
 
 KINDS = (
@@ -707,17 +708,23 @@ def render_golf_frame(
         _draw_separation_markers(image, sx, sy, sr, 0.97, intensity=0.78)
 
     elif kind == "separation_compare":
-        # Same camera, two simultaneous physical states. The composition
-        # changes because the information changes, not because the viewpoint
-        # does.
-        for idx, (cy_world, dimples, attached, wake) in enumerate(
-            ((1.35, 0.0, 0.28, 1.24), (-1.35, 1.0, 0.96, 0.46))
-        ):
+        # Continue from the preceding single dimpled-ball state instead of
+        # popping instantly to a two-ball diagram. The existing dimpled ball
+        # stays large and near the center while the smooth comparison state
+        # grows out above it; both then settle into the fixed-camera split.
+        split = _smootherstep(story)
+        states = (
+            (0.18 + 1.17 * split, 0.0, 0.28, 1.24, 0.26 + 0.64 * split),
+            (-(0.08 + 1.27 * split), 1.0, 0.96, 0.46, 1.34 - 0.44 * split),
+        )
+        for idx, (cy_world, dimples, attached, wake, radius) in enumerate(states):
+            if idx == 0 and split < 0.015:
+                continue
             local_micro = micro + idx * 0.37
             sx, sy, sr = _draw_ball(
                 image, story,
                 center=(0.0, cy_world, 0.0),
-                radius=0.90,
+                radius=radius,
                 dimple_strength=dimples,
                 spin_speed=0.26,
                 time_seconds=local_micro,
@@ -766,14 +773,22 @@ def render_golf_frame(
         )
 
     elif kind == "drag_compare":
-        for idx, (cy_world, dimples, attached, wake, pressure) in enumerate(
-            ((1.25, 0.0, 0.28, 1.26, 1.0), (-1.25, 1.0, 0.96, 0.46, 0.28))
-        ):
+        # Same continuity rule as the separation comparison: start from the
+        # dimpled state already on screen, then physically split into the
+        # smooth-vs-dimple drag comparison without moving the camera.
+        split = _smootherstep(story)
+        states = (
+            (0.18 + 1.07 * split, 0.0, 0.28, 1.26, 1.0, 0.26 + 0.62 * split),
+            (-(0.08 + 1.17 * split), 1.0, 0.96, 0.46, 0.28, 1.32 - 0.44 * split),
+        )
+        for idx, (cy_world, dimples, attached, wake, pressure, radius) in enumerate(states):
+            if idx == 0 and split < 0.015:
+                continue
             local_micro = micro + idx * 0.29
             sx, sy, sr = _draw_ball(
                 image, story,
                 center=(0.0, cy_world, 0.0),
-                radius=0.88,
+                radius=radius,
                 dimple_strength=dimples,
                 spin_speed=0.27,
                 time_seconds=local_micro,
@@ -883,9 +898,11 @@ def render_golf_motion(
     # "morph starts over" seam that -stream_loop would expose.
     progress_seconds = {
         "smooth_morph": 0.90,
+        "separation_compare": 0.85,
         "dimple_wake": 1.00,
         "trip_turbulence": 1.10,
         "wake_shrink": 1.00,
+        "drag_compare": 0.85,
     }
 
     try:
