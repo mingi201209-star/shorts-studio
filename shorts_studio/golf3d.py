@@ -818,10 +818,11 @@ def render_golf_frame(
 
     elif kind == "flight_payoff_setup":
         # Begin the payoff as one continuous physical move instead of holding
-        # a diagram and then cutting to flight. The ball eases toward the exact
-        # start position of the next beat while the fixed camera never moves.
-        lead = _smootherstep(min(1.0, micro / 2.7))
-        center = (-0.58 + 0.26 * lead, 0.0, 0.0)
+        # a diagram and then cutting to flight. Use a steady physical carry
+        # rather than an ease-to-stop so every half-second still contains
+        # visible object motion while the camera remains completely fixed.
+        lead = min(1.0, micro / 2.7)
+        center = (-0.82 + 0.72 * lead, 0.0, 0.0)
         sx, sy, sr = _draw_ball(
             image, story, center=center, dimple_strength=1.0, spin_speed=0.36,
             time_seconds=micro,
@@ -833,7 +834,7 @@ def render_golf_frame(
         )
         ghosts = Image.new("RGBA", image.size, (0, 0, 0, 0))
         gd = ImageDraw.Draw(ghosts, "RGBA")
-        for i, xw in enumerate((-0.05, 0.28, 0.61, 0.90)):
+        for i, xw in enumerate((0.35, 0.82, 1.28, 1.72)):
             gx, gy, gr = _ball_geometry((xw, 0.0, 0.0), 1.52, OPTIMAL_GOLF_CAMERA)
             alpha = 54 - i * 9
             gd.ellipse(
@@ -845,10 +846,12 @@ def render_golf_frame(
         image.alpha_composite(ghosts)
 
     elif kind == "flight_payoff":
-        # Keep the camera fixed. The ball itself carries through the frame,
-        # while rotation/flow/wake continue for the whole long payoff beat.
-        travel = _smootherstep(min(1.0, micro / 4.5))
-        center = (-0.32 + 1.20 * travel, 0.0, 0.0)
+        # Keep the camera fixed. The ball itself carries through the frame at
+        # a readable near-constant speed, while rotation/flow/wake continue.
+        # The wider travel makes motion legible on a phone without relying on
+        # camera movement or crop/zoom churn.
+        travel = min(1.0, micro / 3.4)
+        center = (-0.10 + 1.90 * travel, 0.0, 0.0)
         sx, sy, sr = _draw_ball(
             image, story, center=center, dimple_strength=1.0, spin_speed=0.34,
             time_seconds=micro,
@@ -862,8 +865,8 @@ def render_golf_frame(
         td = ImageDraw.Draw(trail, "RGBA")
         for i in range(5):
             q = max(0.0, micro - 0.13 * (i + 1))
-            q_travel = _smootherstep(min(1.0, q / 4.5))
-            ghost_center = (-0.32 + 1.20 * q_travel, 0.0, 0.0)
+            q_travel = min(1.0, q / 3.4)
+            ghost_center = (-0.10 + 1.90 * q_travel, 0.0, 0.0)
             gx, gy, gr = _ball_geometry(ghost_center, 1.52, OPTIMAL_GOLF_CAMERA)
             td.ellipse(
                 (gx - gr * 0.84, gy - gr * 0.84, gx + gr * 0.84, gy + gr * 0.84),
