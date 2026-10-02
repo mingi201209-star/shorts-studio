@@ -100,33 +100,42 @@ def _draw_road(image: Image.Image, micro: float, speed: float, wetness: float) -
 
     # Moving asphalt highlights give the viewer a stable car-follow camera
     # while preserving clear object-scale motion for the whole beat.
-    offset = (micro * (104.0 + 138.0 * speed)) % 150.0
-    for row, alpha in ((top + 38, 40), (top + 86, 30), (top + 142, 22)):
-        for i in range(-2, 10):
-            x = i * 150.0 - offset
+    offset = (micro * (155.0 + 190.0 * speed)) % 118.0
+    for row, alpha, width in (
+        (top + 28, 88, 5),
+        (top + 62, 72, 5),
+        (top + 100, 60, 4),
+        (top + 140, 50, 4),
+        (top + 178, 40, 4),
+    ):
+        for i in range(-3, 13):
+            x = i * 118.0 - offset
             d.line(
-                (x, row, x + 74, row - 5),
-                fill=(100, 111, 119, alpha),
-                width=3,
+                (x, row, x + 76, row - 7),
+                fill=(112, 126, 134, alpha),
+                width=width,
             )
 
     # Water sheet is intentionally thin and translucent. The wedge under the
     # tire carries the hydroplaning story; this base layer establishes that
     # the whole road is wet.
-    water_h = 9 + int(18 * wetness)
+    water_h = 14 + int(28 * wetness)
     d.rectangle(
-        (0, top - water_h, w, top + 4),
-        fill=(33, 134, 176, int(70 + 40 * wetness)),
+        (0, top - water_h, w, top + 6),
+        fill=(31, 139, 183, int(92 + 64 * wetness)),
     )
 
-    shimmer = (micro * (150 + 110 * speed)) % 210
-    for i in range(-1, 7):
-        x = i * 210 - shimmer
-        d.line(
-            (x, top - water_h * 0.55, x + 115, top - water_h * 0.55 - 4),
-            fill=(164, 235, 250, int(78 + 42 * wetness)),
-            width=2,
-        )
+    shimmer = (micro * (210 + 150 * speed)) % 132
+    for band in range(3):
+        yy = top - water_h * (0.30 + 0.24 * band)
+        phase = shimmer + band * 37
+        for i in range(-2, 11):
+            x = i * 132 - phase
+            d.line(
+                (x, yy, x + 92, yy - 5 - band),
+                fill=(174, 240, 251, int(105 + 68 * wetness)),
+                width=3 + (band == 0),
+            )
 
     layer = layer.filter(ImageFilter.GaussianBlur(0.35))
     image.alpha_composite(layer)
@@ -146,7 +155,9 @@ def _draw_tire(
     cx = w * 0.43
     radius = w * 0.225
     cy_ground = road_y - radius * 0.88
-    cy = cy_ground - radius * 0.24 * lift
+    # Vertical separation is intentionally visually exaggerated (not a
+    # dimensional scale claim) so a phone viewer can see contact disappear.
+    cy = cy_ground - radius * 0.42 * lift
 
     back_dx, back_dy = -34, -16
     layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
@@ -185,17 +196,27 @@ def _draw_tire(
     hub = radius * 0.105
     d.ellipse((cx - hub, cy - hub, cx + hub, cy + hub), fill=(32, 35, 38, 255))
 
+    # Large rotating spokes make real wheel motion legible at 1080x1920.
+    # They rotate with the tire; the camera and lighting remain fixed.
+    phase = micro * math.tau * spin_speed
+    for i in range(6):
+        a = phase * 0.92 + i * math.tau / 6
+        x1 = cx + math.cos(a) * hub * 1.35
+        y1 = cy + math.sin(a) * hub * 1.35
+        x2 = cx + math.cos(a) * rim * 0.88
+        y2 = cy + math.sin(a) * rim * 0.88
+        d.line((x1, y1, x2, y2), fill=(206, 216, 220, 205), width=10)
+
     # Rotating tread blocks. Motion is continuous even after the story state
     # settles, so long narration beats never turn into a held diagram.
-    phase = micro * math.tau * spin_speed
-    for i in range(30):
-        a = (i / 30.0) * math.tau + phase
+    for i in range(36):
+        a = (i / 36.0) * math.tau + phase
         x1 = cx + math.cos(a) * radius * 0.91
         y1 = cy + math.sin(a) * radius * 0.91
         x2 = cx + math.cos(a) * radius * 1.02
         y2 = cy + math.sin(a) * radius * 1.02
-        alpha = int((58 + 100 * max(0.0, math.sin(a))) * tread_visibility)
-        d.line((x1, y1, x2, y2), fill=(158, 166, 169, alpha), width=4)
+        alpha = int((82 + 145 * max(0.0, math.sin(a))) * tread_visibility)
+        d.line((x1, y1, x2, y2), fill=(171, 181, 185, alpha), width=6)
 
     # Three readable circumferential groove cues near the visible lower face.
     for off in (-0.18, 0.0, 0.18):
@@ -237,11 +258,11 @@ def _draw_contact_patch(
     layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(layer, "RGBA")
     c = _clamp01(contact)
-    length = radius * (0.34 + 1.00 * c)
+    length = radius * (0.42 + 1.18 * c)
     y = road_y - 4
     alpha = int(65 + 155 * c)
     color = (87, 225, 176, alpha) if c > 0.48 else (255, 177, 87, alpha)
-    width = max(5, int(7 + 7 * c + 2 * pulse))
+    width = max(7, int(10 + 10 * c + 3 * pulse))
     d.line((cx - length / 2, y, cx + length / 2, y), fill=color, width=width)
     if c < 0.18:
         # Broken segments make "almost no road contact" readable without text.
@@ -265,9 +286,9 @@ def _draw_water_wedge(
     layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(layer, "RGBA")
 
-    lead_x = cx + radius * 0.70
-    tip_x = cx + radius * (1.72 + 0.28 * a)
-    top_y = road_y - radius * (0.05 + 0.40 * a)
+    lead_x = cx + radius * 0.56
+    tip_x = cx + radius * (1.88 + 0.40 * a)
+    top_y = road_y - radius * (0.08 + 0.52 * a)
     wave = radius * 0.020 * math.sin(math.tau * 1.1 * micro)
     poly = [
         (cx - radius * 0.45, road_y - 5),
@@ -275,26 +296,26 @@ def _draw_water_wedge(
         (tip_x, top_y + wave),
         (tip_x + radius * 0.12, road_y + 2),
     ]
-    d.polygon(poly, fill=(24, 132, 181, int(72 + 110 * a)))
-    d.line(poly[:3], fill=(163, 236, 250, int(145 + 80 * a)), width=max(3, int(radius * 0.022)))
+    d.polygon(poly, fill=(24, 137, 188, int(98 + 132 * a)))
+    d.line(poly[:3], fill=(171, 241, 252, int(175 + 70 * a)), width=max(4, int(radius * 0.030)))
 
     # Coherent moving pressure bands inside the wedge.
-    for i in range(5):
-        phase = (micro * (0.58 + 0.05 * i) + i * 0.17) % 1.0
+    for i in range(8):
+        phase = (micro * (0.72 + 0.045 * i) + i * 0.13) % 1.0
         x = lead_x + (tip_x - lead_x) * phase
         local = 1.0 - phase
         h = radius * (0.08 + 0.25 * a * local)
         d.line(
             (x, road_y - 3, x, road_y - h),
             fill=(104, 218, 244, int((55 + 115 * p) * (0.55 + 0.45 * local))),
-            width=3,
+            width=5,
         )
 
     # Upward water-pressure arrows under the tire.
-    for i in range(4):
-        x = cx - radius * 0.32 + i * radius * 0.23
+    for i in range(6):
+        x = cx - radius * 0.44 + i * radius * 0.18
         h = radius * (0.09 + 0.21 * p) * (0.86 + 0.10 * math.sin(micro * 4.0 + i))
-        d.line((x, road_y - 4, x, road_y - h), fill=(95, 215, 241, int(70 + 145 * p)), width=4)
+        d.line((x, road_y - 4, x, road_y - h), fill=(95, 220, 246, int(95 + 150 * p)), width=6)
         d.polygon(
             [(x, road_y - h - 9), (x - 7, road_y - h + 3), (x + 7, road_y - h + 3)],
             fill=(156, 239, 252, int(85 + 150 * p)),
@@ -319,7 +340,7 @@ def _draw_spray(
     layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(layer, "RGBA")
 
-    count = 64
+    count = 108
     for i in range(count):
         base = i / count
         phase = (base + micro * (0.32 + 0.17 * speed) * (0.85 + (i % 5) * 0.035)) % 1.0
@@ -327,14 +348,14 @@ def _draw_spray(
         x = cx + radius * (0.48 + 2.15 * phase)
         y = road_y - radius * (0.04 + 0.48 * math.sin(math.pi * phase) * strength)
         y += side * radius * 0.035 * math.sin(i * 1.7 + micro * 6.0)
-        rr = 2.0 + 4.5 * (1.0 - phase)
-        alpha = int((45 + 155 * math.sin(math.pi * phase)) * strength)
+        rr = 3.0 + 6.0 * (1.0 - phase)
+        alpha = int((62 + 180 * math.sin(math.pi * phase)) * strength)
         d.ellipse((x - rr, y - rr, x + rr, y + rr), fill=(178, 238, 250, alpha))
-        if i % 4 == 0:
+        if i % 3 == 0:
             d.line(
-                (x - radius * 0.08, y + radius * 0.02, x, y),
-                fill=(116, 214, 237, int(alpha * 0.52)),
-                width=2,
+                (x - radius * 0.14, y + radius * 0.03, x, y),
+                fill=(122, 220, 242, int(alpha * 0.64)),
+                width=3,
             )
     layer = layer.filter(ImageFilter.GaussianBlur(0.55))
     image.alpha_composite(layer)
@@ -361,13 +382,13 @@ def _draw_drainage(
             q = (micro * 0.44 + j / 5.0 + lane * 0.21) % 1.0
             x = start_x - radius * 0.88 * q
             y = start_y + lane * radius * 0.40 + math.sin(q * math.pi) * radius * 0.06
-            rr = 4.0
-            d.ellipse((x - rr, y - rr, x + rr, y + rr), fill=(137, 233, 249, int(165 * s)))
+            rr = 5.5
+            d.ellipse((x - rr, y - rr, x + rr, y + rr), fill=(151, 240, 252, int(205 * s)))
     d.line(
         (cx - radius * 0.45, road_y - radius * 0.12,
          cx + radius * 0.60, road_y - radius * 0.12),
-        fill=(62, 178, 220, int(72 * s)),
-        width=6,
+        fill=(65, 190, 228, int(110 * s)),
+        width=9,
     )
     layer = layer.filter(ImageFilter.GaussianBlur(0.5))
     image.alpha_composite(layer)
@@ -561,7 +582,7 @@ def render_hydro_frame(
     elif kind == "final_cutaway":
         # Payoff cycles around a near-threshold state: enough contact to see
         # the road, enough water pressure to see how easily it can disappear.
-        osc = 0.5 + 0.5 * math.sin(micro * math.tau * 0.22)
+        osc = 0.5 + 0.5 * math.sin(micro * math.tau * 0.38)
         speed = 0.68 + 0.10 * osc
         wetness = 0.82
         wedge = 0.62 + 0.20 * osc
