@@ -39,9 +39,12 @@ KINDS = (
     "drainage_channels",
     "speed_ramp",
     "pressure_lift",
+    "wedge_closeup",
     "steering_loss",
+    "braking_loss",
     "recover_contact",
     "final_cutaway",
+    "final_drive",
 )
 
 
@@ -510,6 +513,19 @@ def render_hydro_frame(
         spray = 0.92
         drainage = 0.20
 
+    elif kind == "wedge_closeup":
+        # Same fixed viewpoint, but the physical state itself makes the water
+        # wedge dominate: high water pressure, nearly lost contact, and strong
+        # coherent spray/pressure bands.
+        speed = 0.88
+        wetness = 0.94
+        wedge = 1.00
+        pressure = 1.00
+        contact = 0.12
+        lift = 0.76
+        spray = 1.00
+        drainage = 0.12
+
     elif kind == "steering_loss":
         speed = 0.86
         wetness = 0.92
@@ -520,6 +536,16 @@ def render_hydro_frame(
         spray = 1.00
         drainage = 0.16
         steering = True
+
+    elif kind == "braking_loss":
+        speed = 0.84
+        wetness = 0.92
+        wedge = 0.98
+        pressure = 0.96
+        contact = 0.06
+        lift = 0.80
+        spray = 0.96
+        drainage = 0.16
 
     elif kind == "recover_contact":
         mix = story
@@ -545,6 +571,19 @@ def render_hydro_frame(
         spray = 0.72 + 0.18 * osc
         drainage = 0.54
 
+    elif kind == "final_drive":
+        # Final stable state: slower road speed, visible drainage, and a
+        # restored contact patch. The road still scrolls and the tire still
+        # rotates so the ending never becomes a freeze-frame.
+        speed = 0.40
+        wetness = 0.62
+        wedge = 0.24
+        pressure = 0.18
+        contact = 0.96
+        lift = 0.03
+        spray = 0.38
+        drainage = 0.88
+
     road_y = _draw_road(image, micro, speed=speed, wetness=wetness)
     cx, cy, radius = _draw_tire(
         image,
@@ -569,6 +608,20 @@ def render_hydro_frame(
 
     if steering:
         _draw_turn_cue(image, micro, cx, cy, radius, contact)
+
+    if kind == "braking_loss":
+        # Requested braking force points opposite travel, but with almost no
+        # tire-road contact the transmissible force collapses.
+        layer = Image.new("RGBA", image.size, (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer, "RGBA")
+        alpha = int(45 + 185 * contact)
+        y = road_y - radius * 0.12
+        x0 = cx + radius * 0.18
+        x1 = x0 - radius * (0.16 + 0.36 * contact)
+        d.line((x0, y, x1, y), fill=(255, 178, 90, alpha), width=5)
+        d.polygon([(x1 - 10, y), (x1 + 4, y - 7), (x1 + 4, y + 7)], fill=(255, 198, 114, alpha))
+        layer = layer.filter(ImageFilter.GaussianBlur(0.4))
+        image.alpha_composite(layer)
 
     return image
 
