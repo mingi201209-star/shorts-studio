@@ -4,10 +4,10 @@ from shorts_studio import golf3d
 def test_golf_video_uses_one_topic_optimized_camera():
     camera = golf3d.OPTIMAL_GOLF_CAMERA
 
-    # Shallow 3/4 viewpoint: enough surface depth to read dimples, but still
-    # near side-on so the downstream wake remains legible.
-    assert -0.35 < camera.yaw < -0.15
-    assert -0.18 < camera.pitch < -0.05
+    # Fixed slightly-above diagonal view: enough top surface to read the
+    # dimples as 3D geometry while keeping the downstream wake legible.
+    assert -0.42 < camera.yaw < -0.25
+    assert -0.34 < camera.pitch < -0.18
 
     # Ball is intentionally left of center to reserve mobile-screen room for
     # the wake. This is topic-specific composition, not a global camera rule.
