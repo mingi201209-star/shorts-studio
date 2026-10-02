@@ -305,10 +305,10 @@ def _draw_wake(
     overlay = Image.new("RGBA", image.size, (0, 0, 0, 0))
     d = ImageDraw.Draw(overlay, "RGBA")
 
-    breathe = 1.0 + 0.070 * math.sin(math.tau * 0.73 * micro_t)
+    breathe = 1.0 + 0.100 * math.sin(math.tau * 0.73 * micro_t)
     eff_width = width * breathe
-    sway_y = sr * 0.055 * math.sin(math.tau * 0.47 * micro_t + 0.4)
-    sway_x = sr * 0.040 * math.sin(math.tau * 0.39 * micro_t)
+    sway_y = sr * 0.080 * math.sin(math.tau * 0.47 * micro_t + 0.4)
+    sway_x = sr * 0.060 * math.sin(math.tau * 0.39 * micro_t)
 
     env_rx = sr * 1.36 * length_scale
     env_ry = sr * max(0.18, eff_width * 0.74)
@@ -414,13 +414,13 @@ def _draw_flow(
             # rather than a vibrating diagram.
             downstream = _clamp01((px - (sx + sr * 0.05)) / max(sr * 2.8, 1.0))
             wave = (
-                sr * 0.050 * downstream
+                sr * 0.095 * downstream
                 * math.sin(math.tau * (0.46 * micro - 0.72 * downstream + j * 0.071))
             )
             pts.append((px, py + wave))
 
-        main_width = max(3, int(sr * 0.024))
-        glow_width = max(main_width + 3, int(sr * 0.060))
+        main_width = max(4, int(sr * 0.031))
+        glow_width = max(main_width + 4, int(sr * 0.074))
         glow_draw.line(
             pts,
             fill=(55, 180, 208, int(34 * strength)),
@@ -428,7 +428,7 @@ def _draw_flow(
         )
         d.line(
             pts,
-            fill=(77, 205, 229, int(112 * strength)),
+            fill=(77, 205, 229, int(138 * strength)),
             width=main_width,
         )
 
@@ -445,7 +445,7 @@ def _draw_flow(
             d.line(
                 (p0[0], p0[1], p1[0], p1[1]),
                 fill=(205, 250, 255, int(220 * strength)),
-                width=max(main_width + 2, int(sr * 0.034)),
+                width=max(main_width + 3, int(sr * 0.045)),
             )
             for trail_i, alpha_scale in enumerate((0.52, 0.24)):
                 q = (phase - (trail_i + 1) * 0.050) % 1.0
