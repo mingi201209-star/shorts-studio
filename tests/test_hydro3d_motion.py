@@ -20,7 +20,7 @@ def test_hydro_secondary_motion_never_freezes_after_state_settles():
     for kind in hydro3d.KINDS:
         before = _frame(kind, 1.0, 2.0)
         after = _frame(kind, 1.0, 2.5)
-        assert _mad(before, after) > 0.35, kind
+        assert _mad(before, after) > 12.5, kind
 
 
 def test_hydro_story_states_are_visually_distinct():
