@@ -63,28 +63,30 @@ class HydroplaningHookGenerator:
     def generate(self, brief: TopicBrief) -> list[HookCandidate]:
         f = brief.fact_by_strategy()
         texts = {
-            "contradiction": "타이어가 도로에 딱 붙어 있을 것 같지만, 물 위에서 완전히 떨어질 수 있습니다.",
-            "surprising_consequence": "놀랍게도 멀쩡해 보이는 타이어가 빗길에서 도로를 전혀 밟지 못할 수 있습니다.",
-            "counterintuitive_fact": "타이어 홈이 멀쩡히 있어도 물이 너무 많으면 소용이 없을 수 있습니다.",
-            "visible_anomaly": "젖은 도로 위의 타이어가 회전만 할 뿐 바닥에는 닿지 않습니다.",
-            "mistaken_assumption": "타이어가 돌고 있으면 당연히 도로를 밟고 있다는 생각은 사실과 다를 수 있습니다.",
-            "unresolved_cause_effect": "타이어 홈은 물을 계속 빼내고 있습니다. 그런데 왜 결국 도로에서 뜰까요?",
+            "contradiction": "그런데 타이어가 도로에 닿지 않습니다.",
+            "surprising_consequence": "놀랍게도 멀쩡한 타이어도 빗길에서 잃습니다.",
+            "counterintuitive_fact": "타이어 홈이 있어도 사실은 지키지 못합니다.",
+            "visible_anomaly": "이상하게도 젖은 도로 위에서 돌기만 합니다.",
+            "mistaken_assumption": "타이어가 돌고 있어도 사실은 맞지는 않습니다.",
+            "unresolved_cause_effect": "그런데 타이어 홈은 결국 역할을 못합니다.",
         }
         return [HookCandidate(strategy=s, text=texts[s], grounded_in=f[s]) for s in texts]
 
 
-# Each hook candidate is one long sentence (it has to carry the whole
-# attention-grabbing claim), which would otherwise force a single beat to
-# hold for its entire speaking duration. Splitting it into two contiguous
+# Each hook candidate is kept short (~16-21 chars) specifically so that,
+# split into two roughly-even halves below, each half's own beat comfortably
+# clears the 3.5s visual_cut_cadence limit even at the slower end of the
+# engine's real measured narration pace (see the empirical rate/overhead fit
+# in this module's build-time notes). Splitting into two contiguous
 # substrings of the SAME sentence gives the hero reveal a second cut point
 # without changing a single word of the hook copy itself.
 HOOK_CUE_SPLITS = {
-    "contradiction": ("타이어가 도로에 딱 붙어 있을 것 같지만", "물 위에서 완전히 떨어질 수 있습니다"),
-    "surprising_consequence": ("놀랍게도 멀쩡해 보이는 타이어가", "빗길에서 도로를 전혀 밟지 못할 수 있습니다"),
-    "counterintuitive_fact": ("타이어 홈이 멀쩡히 있어도", "물이 너무 많으면 소용이 없을 수 있습니다"),
-    "visible_anomaly": ("젖은 도로 위의 타이어가 회전만 할 뿐", "바닥에는 닿지 않습니다"),
-    "mistaken_assumption": ("타이어가 돌고 있으면 당연히", "도로를 밟고 있다는 생각은 사실과 다를 수 있습니다"),
-    "unresolved_cause_effect": ("타이어 홈은 물을 계속 빼내고 있습니다", "그런데 왜 결국 도로에서 뜰까요"),
+    "contradiction": ("그런데 타이어가", "도로에 닿지 않습니다"),
+    "surprising_consequence": ("놀랍게도 멀쩡한", "타이어도 빗길에서 잃습니다"),
+    "counterintuitive_fact": ("타이어 홈이 있어도", "사실은 지키지 못합니다"),
+    "visible_anomaly": ("이상하게도 젖은 도로", "위에서 돌기만 합니다"),
+    "mistaken_assumption": ("타이어가 돌고 있어도", "사실은 맞지는 않습니다"),
+    "unresolved_cause_effect": ("그런데 타이어 홈은", "결국 역할을 못합니다"),
 }
 
 
@@ -145,7 +147,7 @@ def main():
     # substantially different frame under the engine's own real
     # equivalent-framing/replay detector (shorts_studio.visual_change).
     # Finely slicing a near-flat stretch of the physics curve into many
-    # almost-identical states was the earlier failure mode (CI run
+    # almost-identical states was an earlier failure mode (CI run
     # 37039874973): the fix is fewer, well-separated beats whose states
     # really do look different, not more beats papering over a plateau.
     # Each clip plays forward a small window AROUND its anchor (never a
@@ -156,8 +158,19 @@ def main():
     # to the verified anchor value, regardless of exactly how long the real
     # TTS-measured beat turns out to be. Rotation keeps the clip visibly
     # alive even over such a narrow global-progress window.
+    #
+    # A second CI round (run 37078260370) passed every one of these
+    # per-source-pair distinctness checks yet still failed visual_cut_cadence
+    # / visual_activity_real / first_10s_retention / second_peak timing on
+    # the real composited final.mp4: several scenes had only 1-2 beats, so
+    # their individual narration gaps ran 5-6s each -- the fix there is not
+    # more anchors but a THIRD hook anchor (hook_mid, between hook_a/hook_b)
+    # and a redistribution of the existing anchors across more, shorter
+    # per-beat narration (see `plans` below), so every scene has enough cut
+    # points to keep each gap well under the 3.5s limit.
     clips = {
-        "hook_a": (0.770, 0.790, 2.2),    # already mid-liftoff, near-zero contact
+        "hook_a": (0.770, 0.790, 2.2),    # already mid-liftoff, contact fading
+        "hook_mid": (0.830, 0.850, 2.0),  # further lifted, contact almost gone
         "hook_b": (0.890, 0.910, 2.0),    # fully floating, zero contact -- the "wow"
         "base": (0.000, 0.015, 2.2),      # normal rolling, full contact, groove outflow
         "wedge1": (0.360, 0.380, 2.2),    # wedge now clearly visible, contact dented
@@ -195,73 +208,75 @@ def main():
 
     # Beat count and placement were chosen empirically against the engine's
     # own real equivalent-framing/replay detector (see the verification
-    # notes in hydroplaning3d.py's camera/physics docstring and the g
-    # anchors used for `clips` above) rather than by evenly slicing
-    # narration: every beat here renders a frame that is genuinely,
-    # substantially different -- by real pixel content, not just by
-    # authored state_id -- from every other beat in the whole video. That
-    # is what the previous (24-beat) design got wrong: finely slicing a
-    # near-flat stretch of the physics curve produced many beats that
-    # looked almost identical and were correctly rejected as "no new
-    # state". Narration is correspondingly short and non-redundant per
-    # beat so no single beat's cue-to-cue gap can approach the 3.5s
-    # visual-cut-cadence limit.
+    # notes in hydroplaning3d.py and the g anchors used for `clips` above)
+    # AND against an empirical fit of real measured narration timing from
+    # two prior CI renders (rate ~4.3-5.5 normalized chars/sec; a ~1.2-1.3s
+    # fixed overhead on the first beat of every scene after the first;
+    # ~0.5-0.6s trailing pad on every scene's last beat). Every phrase below
+    # is deliberately short (one clause, ~6-12 chars) and EVERY beat gets
+    # its own phrase/cue -- no scene is left with a single beat covering
+    # several sentences, which is what produced 5-6s holds in the previous
+    # round (CI run 37078260370) even though the underlying 3D states were
+    # already genuinely distinct. s_end was folded into s_twist as its last
+    # beat so the payoff line does not pay a second scene-transition
+    # overhead on top of its own (unavoidably ~11-char) technical term.
     hook = winner.text
-    hook_first, _ = HOOK_CUE_SPLITS[winner.strategy]
-    crisis = "그런데 조금 전까지는 멀쩡했습니다."
+    hook_a_text, hook_b_text = HOOK_CUE_SPLITS[winner.strategy]
+    crisis = "하지만 순간 달라집니다."
     plans = [
         ("s_hook", [
-            phrase("HOOK", hook, winner.strategy),
+            phrase("HOOK", hook_a_text, winner.strategy),
+            phrase("HOOK", hook_b_text),
             phrase("CRISIS", crisis),
         ], [
-            beat(motion["hook_a"], hook_first, "levitating_result", "hook_diagram", "mid_liftoff", "concept",
-                 "a moving cinematic 3D visualization of a car tire mid-liftoff off a wet road, almost no road contact left",
-                 "타이어가 도로와의 접촉을 거의 다 잃어가는 극적인 결과를 먼저 보여주는 모습"),
-            beat(motion["hook_b"], "조금 전까지는 멀쩡했습니다", "levitating_result_full", "hook_diagram", "full_float", "state",
+            beat(motion["hook_a"], hook_a_text, "levitating_result", "hook_diagram", "mid_liftoff", "concept",
+                 "a moving cinematic 3D visualization of a car tire mid-liftoff off a wet road, contact fading",
+                 "타이어가 도로와의 접촉을 잃어가기 시작하는 극적인 결과를 먼저 보여주는 모습"),
+            beat(motion["hook_mid"], hook_b_text, "levitating_result_more", "hook_diagram", "deep_liftoff", "state",
+                 "a moving cinematic 3D visualization of a car tire further lifted off a wet road, almost no road contact left",
+                 "같은 타이어가 더 떠올라 접촉이 거의 남지 않은 모습을 보여주는 장면"),
+            beat(motion["hook_b"], crisis, "levitating_result_full", "hook_diagram", "full_float", "state",
                  "a moving cinematic 3D visualization of a car tire fully lifted off a wet road by a layer of water, zero road contact",
                  "같은 타이어가 완전히 떠서 도로와 전혀 닿지 않는 모습을 보여주는 장면"),
         ]),
         ("s_reveal", [
-            phrase("REVEAL", "이게 바로 그 타이어의 실제 트레드입니다."),
-            phrase("INVESTIGATION", "평소에는 홈이 물을 밀어내 도로에 단단히 붙어 있습니다."),
+            phrase("REVEAL", "실제 트레드입니다."),
+            phrase("INVESTIGATION", "단단히 붙어 있습니다."),
+            phrase("INVESTIGATION", "물이 쌓입니다."),
         ], [
             beat(tire_photo, "실제 트레드입니다", "real_tread_grounding", "tread_photo", "real", "concept",
                  "a real close-up photograph of an actual car tire's tread and grooves",
                  "지금까지 보여준 타이어 트레드가 실제로 어떻게 생겼는지 진짜 사진으로 보여주는 장면",
                  TIRE_PHOTO_ATTRIBUTION),
-            beat(motion["base"], "도로에 단단히 붙어 있습니다", "normal_contact_maintained", "base", "normal", "concept",
+            beat(motion["base"], "단단히 붙어 있습니다", "normal_contact_maintained", "base", "normal", "concept",
                  "a moving 3D visualization of a car tire rolling normally on a wet road with a full bright contact patch and water draining sideways from its grooves",
                  "타이어가 도로에 단단히 붙어 구르며 홈이 물을 양옆으로 밀어내는 정상 상태를 보여주는 모습"),
-        ]),
-        ("s_explain", [
-            phrase("EXPLANATION", "물이 너무 많아지면 앞쪽에 쌓이기 시작합니다."),
-            phrase("EXPLANATION", "쐐기 모양으로 점점 커집니다."),
-        ], [
-            beat(motion["wedge1"], "앞쪽에 쌓이기 시작합니다", "drainage_overload", "wedge", "forming", "concept",
+            beat(motion["wedge1"], "물이 쌓입니다", "drainage_overload", "wedge", "forming", "concept",
                  "a moving 3D visualization of a water wedge forming at the leading edge of a rolling car tire, its road contact patch visibly dented",
                  "홈이 다 빼내지 못한 물이 타이어 앞쪽에 쌓여 물 쐐기가 생기기 시작하는 모습을 보여주는 장면"),
-            beat(motion["wedge2"], "점점 커집니다", "wedge_growing", "wedge", "large", "state",
-                 "a moving 3D visualization of a large water wedge in front of a car tire, its road contact patch clearly shrunk",
-                 "타이어 앞의 물 쐐기가 뚜렷하게 커지고 접촉면이 눈에 띄게 줄어든 모습을 보여주는 장면"),
         ]),
-        ("s_twist", [
-            phrase("TWIST", "접촉면이 눈에 띄게 줄어듭니다."),
-            phrase("TWIST", "이제 절반도 남지 않았습니다."),
-            phrase("TWIST", "거의 다 떠오르고 있습니다."),
+        ("s_explain", [
+            phrase("EXPLANATION", "쐐기가 커집니다."),
+            phrase("EXPLANATION", "접촉면이 줄어듭니다."),
         ], [
-            beat(motion["contact1"], "눈에 띄게 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
+            beat(motion["wedge2"], "쐐기가 커집니다", "wedge_growing", "wedge", "large", "state",
+                 "a moving 3D visualization of a large water wedge in front of a car tire, its road contact patch clearly shrunk",
+                 "타이어 앞의 물 쐐기가 뚜렷하게 커진 모습을 보여주는 장면"),
+            beat(motion["contact1"], "접촉면이 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
                  "a moving 3D visualization of a car tire's bright road contact patch visibly collapsing while a large water wedge sits ahead of it",
                  "타이어와 도로가 닿는 밝은 접촉면이 눈에 띄게 줄어드는 모습을 보여주는 장면"),
-            beat(motion["contact2"], "절반도 남지 않았습니다", "contact_half_gone", "contact", "half_gone", "state",
+        ]),
+        ("s_twist", [
+            phrase("TWIST", "반도 안 남았습니다."),
+            phrase("TWIST", "거의 다 떠올랐습니다."),
+            phrase("PAYOFF", "하이드로플레이닝입니다."),
+        ], [
+            beat(motion["contact2"], "반도 안 남았습니다", "contact_half_gone", "contact", "half_gone", "state",
                  "a moving 3D visualization of a car tire with less than half of its original road contact patch remaining and the tire visibly rising",
-                 "접촉면이 처음의 절반도 남지 않고 타이어가 눈에 띄게 떠오르는 모습을 보여주는 장면"),
-            beat(motion["contact3"], "거의 다 떠오르고 있습니다", "contact_almost_gone", "contact", "almost_gone", "state",
+                 "접촉면이 절반도 남지 않고 타이어가 눈에 띄게 떠오르는 모습을 보여주는 장면"),
+            beat(motion["contact3"], "거의 다 떠올랐습니다", "contact_almost_gone", "contact", "almost_gone", "state",
                  "a moving 3D visualization of a car tire almost fully lifted off a wet road, only a sliver of contact patch left",
                  "타이어의 접촉면이 거의 사라지고 거의 다 떠오른 상태를 보여주는 장면"),
-        ]),
-        ("s_end", [
-            phrase("PAYOFF", "이것이 하이드로플레이닝입니다."),
-        ], [
             beat(motion["payoff"], "하이드로플레이닝입니다", "final_hydroplane", "hydroplane", "full_lift", "concept",
                  "a moving cinematic 3D payoff visualization of a car tire fully lifted off a wet road, floating entirely on a layer of water with no road contact left",
                  "타이어가 도로와의 접촉을 완전히 잃고 물 위에 떠 있는 최종 상태를 한 화면에 보여주는 모습"),
@@ -271,14 +286,15 @@ def main():
     production_tags = {
         ("s_hook", 0): ("hero", "physical_animation"),
         ("s_hook", 1): ("support", "physical_animation"),
+        ("s_hook", 2): ("support", "physical_animation"),
         ("s_reveal", 0): ("evidence", "real_photo"),
         ("s_reveal", 1): ("support", "physical_animation"),
-        ("s_explain", 0): ("mechanism", "physical_animation"),
+        ("s_reveal", 2): ("mechanism", "physical_animation"),
+        ("s_explain", 0): ("support", "physical_animation"),
         ("s_explain", 1): ("support", "physical_animation"),
         ("s_twist", 0): ("support", "physical_animation"),
-        ("s_twist", 1): ("support", "physical_animation"),
-        ("s_twist", 2): ("second_peak", "physical_animation"),
-        ("s_end", 0): ("payoff", "physical_animation"),
+        ("s_twist", 1): ("second_peak", "physical_animation"),
+        ("s_twist", 2): ("payoff", "physical_animation"),
     }
 
     scenes = []
@@ -327,10 +343,11 @@ def main():
     Path("examples").mkdir(exist_ok=True)
     Path("examples/hydroplaning.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 
-    desc = """# 타이어가 도로에서 뜨는 이유 — 출처
+    desc = f"""# 타이어가 도로에서 뜨는 이유 — 출처
 
-모든 영상은 실제 좌표의 원기둥·타원체·박스 geometry를 카메라로 투영해 프레임마다 렌더한
-자체 제작 3D 물리 시각화입니다. 외부 사진/영상 자료는 사용하지 않았습니다.
+대부분의 장면은 실제 좌표의 원기둥·타원체·박스 geometry를 카메라로 투영해 프레임마다 렌더한
+자체 제작 3D 물리 시각화입니다. 실제 타이어 트레드를 보여주는 장면 한 곳에만 아래 CC0 사진을
+사용했습니다: {TIRE_PHOTO_ATTRIBUTION} ({TIRE_PHOTO_PAGE}).
 
 설명된 물리적 메커니즘(물이 타이어와 노면 사이에 쌓이면 접촉력이 감소할 수 있고, 충분히 심해지면
 완전히 접촉을 잃을 수 있으며, 트레드 홈은 접촉 영역의 물 배출에 도움을 준다는 점)은 미국 도로교통
