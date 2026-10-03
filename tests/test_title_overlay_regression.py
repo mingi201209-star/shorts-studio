@@ -135,6 +135,53 @@ def test_render_propagates_project_level_overlay_title_to_every_scene(tmp_path, 
     assert captured_titles == ["프로젝트 제목", "프로젝트 제목"], captured_titles
 
 
+def test_wrap_title_safe_never_breaks_inside_a_word():
+    """Real bug from a hydroplaning render: libass's own automatic wrapping
+    split '타이어가 도로에서 뜬다' as '타이어가 도' / '로에서 뜬다', cutting
+    the word '도로' in half. _wrap_title_safe must always break at a real
+    whitespace boundary, choosing the most balanced such split."""
+    wrapped = R._wrap_title_safe("타이어가 도로에서 뜬다")
+    lines = wrapped.split("\n")
+    assert lines == ["타이어가", "도로에서 뜬다"], lines
+    # Every word from the original title must survive whole on exactly one
+    # line -- no word's characters may be split across the break.
+    for line in lines:
+        for word in line.split():
+            assert word in ("타이어가", "도로에서", "뜬다"), word
+
+
+def test_wrap_title_safe_balances_longer_titles():
+    wrapped = R._wrap_title_safe("매일 라듐을 입에 댄 여성들")
+    lines = wrapped.split("\n")
+    assert len(lines) == 2
+    original_words = "매일 라듐을 입에 댄 여성들".split()
+    rejoined = (lines[0] + " " + lines[1]).split()
+    assert rejoined == original_words, rejoined
+    # No single line may be drastically longer than the other -- a lopsided
+    # split (e.g. everything but the last word on line 1) is not "balanced".
+    assert abs(len(lines[0]) - len(lines[1])) <= 3, lines
+
+
+def test_wrap_title_safe_leaves_single_word_titles_untouched():
+    # A title with no whitespace cannot be split without cutting the word
+    # itself, so it must be left as one line rather than ever being broken.
+    assert R._wrap_title_safe("하이드로플레이닝") == "하이드로플레이닝"
+
+
+def test_title_srt_uses_word_boundary_safe_wrap(tmp_path):
+    srt = R._write_title_srt(tmp_path / "t.srt", "타이어가 도로에서 뜬다", 3.0)
+    text = srt.read_text(encoding="utf-8")
+    assert "타이어가\n도로에서 뜬다" in text, text
+    assert "도\n로" not in text, text
+
+
+def test_title_style_disables_automatic_word_wrap():
+    # WrapStyle=2 means libass only breaks lines on an explicit \N we supply
+    # ourselves (via _wrap_title_safe) -- it must never silently re-wrap a
+    # line (and so never re-split a word) on its own.
+    assert "WrapStyle=2" in R._TITLE_STYLE
+
+
 def test_render_first_scene_only_title_does_not_propagate_to_later_scenes(tmp_path, monkeypatch):
     captured_titles = []
 

@@ -139,15 +139,48 @@ CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 # render (rows ~44-274) to be well-balanced and to end comfortably above
 # IMAGE_TOP_Y=280, which was pushed down from 230 specifically to make room
 # for this taller two-line title.
-_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=130,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
+#
+# WrapStyle=2 ("no word wrapping; only \N breaks lines") was added after a
+# real hydroplaning render showed libass's own automatic wrapping splitting
+# "타이어가 도로에서 뜬다" as "타이어가 도" / "로에서 뜬다" -- cutting the
+# word "도로" in half. libass's default auto-wrap breaks on whatever glyph
+# boundary fits the pixel width, with no notion of a Korean word boundary
+# (a space), so any title it has to wrap can break mid-word. _wrap_title_safe
+# below now always supplies the line break itself, at a real word (whitespace)
+# boundary; WrapStyle=2 stops libass from ever re-wrapping (and so ever
+# re-splitting a word) on top of that.
+_TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=130,Outline=2,Shadow=0,Bold=1,WrapStyle=2,{_PLAY_RES}"
 
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:
         return ""
     return f",subtitles={title_srt.as_posix()}:force_style='{_TITLE_STYLE}'"
 
+def _wrap_title_safe(title:str)->str:
+    """Break a title into display lines only at whitespace (word) boundaries,
+    never inside a word -- see the WrapStyle=2 note on _TITLE_STYLE above for
+    why this exists. A title with 0-1 words cannot be split without cutting a
+    word, so it is returned unchanged (single line, left to overflow in the
+    pathological case of one very long word rather than ever break it).
+    Otherwise every possible word-boundary split into two lines is scored by
+    its worse (longer) line, and the most balanced split wins -- ties go to
+    the split closest to the middle, matching how a human would break it."""
+    words=title.split()
+    if len(words)<2:
+        return title
+    best=None
+    for k in range(1,len(words)):
+        line1=" ".join(words[:k]); line2=" ".join(words[k:])
+        balance=max(len(line1),len(line2))
+        centering=abs(k-len(words)/2)
+        score=(balance,centering)
+        if best is None or score<best[0]:
+            best=(score,f"{line1}\n{line2}")
+    return best[1]
+
 def _write_title_srt(path:Path, title:str, duration:float)->Path:
-    path.write_text(f"1\n{_srt_time(0.0)} --> {_srt_time(duration)}\n{title}\n\n",encoding="utf-8")
+    wrapped=_wrap_title_safe(title)
+    path.write_text(f"1\n{_srt_time(0.0)} --> {_srt_time(duration)}\n{wrapped}\n\n",encoding="utf-8")
     return path
 
 def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
