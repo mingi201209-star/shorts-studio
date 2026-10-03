@@ -1,0 +1,249 @@
+name: hydroplaning-render
+
+on:
+  push:
+    branches: [content/hydroplaning-3d]
+    paths:
+      - 'shorts_studio/**'
+      - 'tests/**'
+      - 'scripts/build_hydroplaning_states.py'
+      - '.github/workflows/hydroplaning-render.yml'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install render and vision dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg fonts-nanum fonts-noto-cjk librsvg2-bin
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -e '.[dev,vision]'
+      - name: Full regression
+        run: pytest -q
+      - name: Build hydroplaning production
+        run: |
+          set -o pipefail
+          python scripts/build_hydroplaning_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee hydroplaning-generator.log
+      - name: Verify fixed camera and continuous physical-state contract
+        run: |
+          python - <<'PY'
+          from shorts_studio import hydroplaning3d as hp
+
+          expected = hp.camera_for(0.0)
+          for g in (0.0, 0.1, 0.25, 0.4, 0.5, 0.6, 0.75, 0.9, 1.0):
+              assert hp.camera_for(g) == expected, g
+
+          gs = [i / 200 for i in range(201)]
+          wedge = [hp.wedge_size_at(g) for g in gs]
+          contact = [hp.contact_width_at(g) for g in gs]
+          lift = [hp.lift_at(g) for g in gs]
+          for a, b in zip(wedge, wedge[1:]):
+              assert b >= a - 1e-9, "wedge must never shrink"
+          for a, b in zip(contact, contact[1:]):
+              assert b <= a + 1e-9, "contact patch must never regrow"
+          for a, b in zip(lift, lift[1:]):
+              assert b >= a - 1e-9, "lift must never drop"
+          assert contact[0] == 1.0 and contact[-1] < 0.05
+          assert lift[0] == 0.0 and lift[-1] == hp._MAX_LIFT
+          assert hp.groove_outflow_at(0.05) > 0.2, "groove outflow must exist during normal drainage"
+          assert hp.groove_outflow_at(1.0) < 0.02, "groove outflow must fade once hydroplaning is complete"
+          print("HYDROPLANING_PHYSICS_CONTRACT_PASS")
+          PY
+      - name: Verify beats are genuinely distinct and real photo is the only non-3D asset
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+
+          data = json.loads(Path('examples/hydroplaning.json').read_text())
+          assets = []
+          hashes = set()
+          clip_count = 0
+          photo_count = 0
+          for scene in data['scenes']:
+              for beat in scene['visual_beats']:
+                  asset = beat['asset']
+                  mode = beat['production']['visual_mode']
+                  p = Path(asset)
+                  assert p.is_file() and p.stat().st_size > 0, p
+                  h = beat['visual_change']['source_sha256']
+                  assert h not in hashes, f"duplicate asset reused across beats: {asset}"
+                  hashes.add(h)
+                  if mode == 'real_photo':
+                      assert asset.lower().endswith(('.jpg', '.jpeg', '.png')), (scene['id'], asset)
+                      photo_count += 1
+                  else:
+                      assert mode == 'physical_animation', (scene['id'], asset, mode)
+                      assert asset.endswith('.mp4'), (scene['id'], asset)
+                      probe = json.loads(subprocess.run([
+                          'ffprobe', '-v', 'error', '-select_streams', 'v:0',
+                          '-show_entries', 'stream=codec_name,width,height,r_frame_rate',
+                          '-show_entries', 'format=duration', '-of', 'json', str(p)
+                      ], capture_output=True, text=True, check=True).stdout)
+                      assert float(probe['format']['duration']) >= 1.2, (p, probe)
+                      clip_count += 1
+                  assets.append(asset)
+          assert photo_count == 1, photo_count
+          assert len(assets) == len(set(assets)), "every beat must use its own distinct file"
+          print('HYDROPLANING_ASSETS_DISTINCT_PASS clips=', clip_count, 'real_photo=', photo_count)
+          PY
+      - name: Verify real tire tread photo source
+        run: |
+          grep -q '^HYDROPLANING_PHOTO_READY=' hydroplaning-generator.log
+          test -s assets/hydroplaning/tire_tread_photo.jpg
+          python -c "from PIL import Image; Image.open('assets/hydroplaning/tire_tread_photo.jpg').verify()"
+      - name: Verify Prompt V2 and Story Prompt V3
+        run: |
+          grep -q '^PROMPT_V2_SELECTED_HOOK=' hydroplaning-generator.log
+          grep -q '^STORY_PROMPT_V3_READY=' hydroplaning-generator.log
+          test -s build/hydroplaning_story_prompt.txt
+          grep -q 'One sentence should carry one new semantic move' build/hydroplaning_story_prompt.txt
+      - name: Validate manifest
+        run: python -m shorts_studio validate examples/hydroplaning.json
+      - name: Verify curiosity contract
+        run: |
+          python - <<'PY'
+          from shorts_studio.project import load_project
+          from shorts_studio.hook_studio import verify_curiosity_maintained
+          p=load_project('examples/hydroplaning.json')
+          r=verify_curiosity_maintained(p)
+          assert r['status']=='PASS',r
+          print('curiosity_maintained PASS',r['evidence'])
+          PY
+      - name: Render hydroplaning short
+        env:
+          SHORTS_REQUIRE_SEMANTIC_QA: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -o pipefail
+          python -m shorts_studio render examples/hydroplaning.json 2>&1 | tee hydroplaning-render.log
+      - name: Verify final deliverable
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+          v=Path('dist/final.mp4')
+          assert v.is_file() and v.stat().st_size>0
+          probe=json.loads(subprocess.run(['ffprobe','-v','error','-of','json',
+            '-show_entries','stream=codec_name,width,height','-show_entries','format=duration',
+            str(v)],capture_output=True,text=True,check=True).stdout)
+          vs=next(s for s in probe['streams'] if 'width' in s)
+          assert (vs['width'],vs['height'])==(1080,1920),vs
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          assert q['status']=='PASS',q
+          assert q['semantic_visual_qa']['status']=='PASS',q['semantic_visual_qa']
+          assert q['final_video_qa']['status']=='PASS',q['final_video_qa']
+          checks=q['final_video_qa']['checks']
+          assert checks['retention_contract']['status']=='PASS',checks['retention_contract']
+          assert checks['first_10s_retention']['status']=='PASS',checks['first_10s_retention']
+          assert checks['meaningful_visual_changes']['status']=='PASS',checks['meaningful_visual_changes']
+          assert checks['visual_production_v2']['status']=='PASS',checks['visual_production_v2']
+          print('HYDROPLANING_FINAL_PASS duration=',probe['format']['duration'])
+          PY
+      - name: Sample review frames
+        # Evenly-spaced fractions of the real measured duration, not fixed
+        # absolute seconds, so review coverage stays spread across the whole
+        # physical sequence regardless of how beat timing shifts.
+        if: success()
+        run: |
+          mkdir -p review_frames
+          duration=$(ffprobe -v error -show_entries format=duration -of default=nw=1:nk=1 dist/final.mp4)
+          export HYDROPLANING_DURATION="$duration"
+          python - <<'PY'
+          import os
+          import subprocess
+          duration = float(os.environ["HYDROPLANING_DURATION"])
+          n = 14
+          for i in range(n):
+              frac = (i + 0.5) / n
+              t = max(0.0, min(duration - 0.05, frac * duration))
+              label = f"{frac:.3f}"
+              subprocess.run(["ffmpeg", "-y", "-ss", str(t), "-i", "dist/final.mp4",
+                               "-frames:v", "1", f"review_frames/f_{label}.jpg"], check=True)
+          PY
+          ffmpeg -y -ss "$(python -c "print(max(0,float('$duration')-0.6))")" -i dist/final.mp4 -frames:v 1 review_frames/end.jpg
+      - name: Dump QA summary
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          fv=q['final_video_qa']
+          m=fv['checks']['meaningful_visual_changes']
+          a=fv['checks']['visual_activity_real']
+          print('===HYDROPLANING_QA_BEGIN===')
+          print(json.dumps({
+            'status':q['status'],
+            'semantic_visual_qa':q['semantic_visual_qa']['status'],
+            'final_video_qa':fv['status'],
+            'first_10s_retention':fv['checks']['first_10s_retention'],
+            'meaningful_event_count':len(m.get('events',[])),
+            'first_5s_meaningful_changes':m.get('first_5s_meaningful_changes'),
+            'visual_activity':a,
+          },ensure_ascii=False))
+          print('===HYDROPLANING_QA_END===')
+          PY
+      - name: Dump review frames into the job log
+        # Artifact downloads go through Azure Blob Storage, which this
+        # session's org egress policy blocks, so the only retrievable path
+        # for actual human visual review is small thumbnails printed into
+        # the job log itself (same technique as leidenfrost-render.yml).
+        if: success()
+        run: |
+          python - <<'PY'
+          import base64, io
+          from pathlib import Path
+          from PIL import Image
+
+          def dump_jpeg(label, img):
+              img = img.convert('RGB')
+              w = 420
+              h = round(img.height * w / img.width)
+              img = img.resize((w, h), Image.LANCZOS)
+              buf = io.BytesIO()
+              img.save(buf, format='JPEG', quality=60)
+              data = base64.b64encode(buf.getvalue()).decode()
+              print(f"===FRAME[{label}]_BEGIN===")
+              for i in range(0, len(data), 160):
+                  print(data[i:i+160])
+              print(f"===FRAME[{label}]_END===")
+
+          for p in sorted(Path('review_frames').glob('*.jpg')):
+              dump_jpeg(p.stem, Image.open(p))
+          PY
+      - name: Prepare upload description
+        if: success()
+        run: cp examples/hydroplaning_upload_description.txt dist/upload-description.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: hydroplaning-production
+          retention-days: 30
+          path: |
+            dist/
+            review_frames/
+            build/hydroplaning_story_prompt.txt
+            hydroplaning-generator.log
+            hydroplaning-render.log
+            examples/hydroplaning_upload_description.txt
+      - uses: actions/upload-artifact@v4
+        if: failure() || cancelled()
+        with:
+          name: hydroplaning-diagnostics
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            dist/
+            hydroplaning-generator.log
+            hydroplaning-render.log
