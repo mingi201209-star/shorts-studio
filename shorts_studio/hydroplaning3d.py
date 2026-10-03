@@ -246,8 +246,36 @@ def _draw_tire_mesh(image: Image.Image, verts: np.ndarray, faces: list[tuple[int
     image.alpha_composite(overlay)
 
 
-def _draw_wet_road(image: Image.Image, camera: Camera) -> None:
+_ROAD_FLOW_SPACING = 1.35
+_ROAD_FLOW_COUNT = 9
+
+
+def _draw_road_flow(image: Image.Image, camera: Camera, rotation: float) -> None:
+    """Asphalt texture flecks scrolling under the tire as it rolls forward.
+
+    The camera never moves -- these use the tire's own true rolling distance
+    (rotation * radius, the same quantity a non-slipping tire actually
+    travels), so a fixed shot still reads continuous forward motion, the way
+    a camera rigidly mounted to the car would see the road slide beneath it.
+    This is also a fast, independent clock layered on the slow
+    wedge/contact/lift state, so it keeps the screen visibly live even
+    during a beat whose physical state barely changes.
+    """
+    distance = rotation * _TIRE_RADIUS
+    phase = distance % _ROAD_FLOW_SPACING
+    half_span = _ROAD_FLOW_SPACING * _ROAD_FLOW_COUNT * 0.5
+    for i in range(_ROAD_FLOW_COUNT):
+        x = -half_span + i * _ROAD_FLOW_SPACING - phase
+        shade = "#5a5f66" if i % 2 == 0 else "#3c4046"
+        _draw_soft_projected_ellipse(
+            image, (x, _ROAD_Y + 0.004, 0.0), (0.32, 0.01, 2.7), shade, camera,
+            alpha=100, blur=1.2,
+        )
+
+
+def _draw_wet_road(image: Image.Image, camera: Camera, rotation: float) -> None:
     _draw_box(image, (0.0, _ROAD_Y - 0.5, 0.0), (10.5, 1.0, 7.0), "#45494f", camera, outline=None)
+    _draw_road_flow(image, camera, rotation)
     _draw_soft_projected_ellipse(
         image, (0.3, _ROAD_Y + 0.01, 0.0), (5.4, 0.02, 3.3), "#4f87ab", camera,
         alpha=110, blur=2.0,
@@ -263,8 +291,8 @@ def _draw_contact_patch(image: Image.Image, camera: Camera, contact: float) -> N
     if contact <= 0.01:
         return
     length_x = 0.80 * contact
-    half_w = _TIRE_HALF_WIDTH * 1.05
-    center_x = -(1.0 - contact) * 0.30
+    half_w = _TIRE_HALF_WIDTH * (0.78 + 0.27 * contact)
+    center_x = -(1.0 - contact) * 0.45
     y = _ROAD_Y + 0.03
     # Rounded-rectangle footprint via an 8-point polygon (chamfered corners)
     # instead of a thin ellipse -- a tire's contact patch is a squared area,
@@ -332,12 +360,16 @@ def _wedge_geometry(wedge: float) -> tuple[float, float, float]:
     return edge_x + width_x * 0.5, width_x * 0.5, height
 
 
-def _draw_water_wedge(image: Image.Image, camera: Camera, wedge: float) -> None:
+def _draw_water_wedge(image: Image.Image, camera: Camera, wedge: float, rotation: float) -> None:
     """A mound of water pressed against the tire's leading edge, not a
     free-floating droplet -- it is anchored at the tire's own contact radius
     and only grows forward and taller, so it always visibly touches the
     tire instead of reading as a separate disconnected blob. Same color as
-    the float layer below so the two read as one connected body of water."""
+    the float layer below so the two read as one connected body of water.
+
+    Its surface ripples continuously with ``rotation`` (the tire's own fast,
+    continuous spin, not the slow wedge-growth state), so the water reads as
+    actually flowing even during a beat whose wedge size barely changes."""
     if wedge <= 0.01:
         return
     center_x, half_w, height = _wedge_geometry(wedge)
@@ -345,15 +377,17 @@ def _draw_water_wedge(image: Image.Image, camera: Camera, wedge: float) -> None:
         image, (center_x, _ROAD_Y + height * 0.5, 0.0),
         (half_w, height * 0.5, 0.52 + 0.55 * wedge),
         _WATER_COLOR, camera, int(205 + 45 * wedge), _WATER_HIGHLIGHT,
-        deform_t=wedge, deform_strength=0.05,
+        deform_t=wedge, deform_phase=rotation / (2.0 * math.pi), deform_strength=0.08,
     )
 
 
-def _draw_float_layer(image: Image.Image, camera: Camera, lift: float, wedge: float) -> None:
+def _draw_float_layer(image: Image.Image, camera: Camera, lift: float, wedge: float, rotation: float) -> None:
     """The water the tire is riding on. Its forward edge always reaches at
     least as far as the wedge's own leading edge (never short of it), so the
     two shapes overlap with no visible seam/gap -- one continuous flooded
-    patch of road, with the wedge simply its tallest point at the front."""
+    patch of road, with the wedge simply its tallest point at the front.
+    Ripples with ``rotation`` for the same continuous-flow reason as the
+    wedge above."""
     if lift <= 0.01 and wedge <= 0.01:
         return
     back_edge = -_TIRE_RADIUS * 1.02
@@ -368,7 +402,69 @@ def _draw_float_layer(image: Image.Image, camera: Camera, lift: float, wedge: fl
         image, (center_x, _ROAD_Y + height * 0.5, 0.0),
         (half_extent, height, _TIRE_HALF_WIDTH * 1.35),
         _WATER_COLOR, camera, int(150 + 60 * lift / _MAX_LIFT) if lift > 0.01 else 120, _WATER_HIGHLIGHT,
-        deform_t=max(lift, wedge), deform_strength=0.03,
+        deform_t=max(lift, wedge), deform_phase=rotation / (2.0 * math.pi), deform_strength=0.06,
+    )
+
+
+_N_SPOKES = 8
+_SPOKE_COLOR = "#d3d8dd"
+_SPOKE_HALF_ANGLE = 0.17  # radians -- 8 spokes at this half-angle sweep ~43% of the rim
+
+
+def _draw_wheel_face(image: Image.Image, camera: Camera, hub: tuple[float, float, float], rotation: float) -> None:
+    """Sidewall shading, a large low-profile rim, spokes and hub cap -- a
+    real alloy-wheel face rather than a flat disc with one small center
+    circle.
+
+    The rim is sized like a real low-profile tire (big wheel, thin rubber
+    sidewall) specifically so the spoke-swept area is a large fraction of
+    the whole tire disc. The spokes are drawn at the tire mesh's own
+    rotation angle, so the wheel visibly spins on screen even during a beat
+    whose slow hydroplaning state (wedge/contact/lift) barely changes --
+    rotation is a fast, continuous, independent clock (2.2 full turns across
+    the whole production) layered on top of that slow progression, and a
+    large bright rotating pattern is what actually keeps the picture reading
+    as alive frame to frame without moving the camera at all.
+    """
+    rim_z = hub[2] + _TIRE_HALF_WIDTH + 0.015
+
+    # A thin, subtly darker sidewall band between the tread's outer edge and
+    # the rim reads as real depth instead of one flat rubber-colored disc.
+    _draw_soft_projected_ellipse(
+        image, (hub[0], hub[1], rim_z - 0.004),
+        (_TIRE_RADIUS * 0.90, _TIRE_RADIUS * 0.90, 0.02), "#3f4349", camera,
+        alpha=120, blur=2.0,
+    )
+
+    _draw_soft_projected_ellipse(
+        image, (hub[0], hub[1], rim_z),
+        (_TIRE_RADIUS * 0.80, _TIRE_RADIUS * 0.80, 0.02), "#9398a0", camera,
+        alpha=235, blur=0.0,
+    )
+    _draw_soft_projected_ellipse(
+        image, (hub[0], hub[1], rim_z + 0.002),
+        (_TIRE_RADIUS * 0.74, _TIRE_RADIUS * 0.74, 0.02), "#35383d", camera,
+        alpha=235, blur=0.0,
+    )
+
+    inner_r = _TIRE_RADIUS * 0.22
+    outer_r = _TIRE_RADIUS * 0.78
+    spoke_z = rim_z + 0.003
+    for k in range(_N_SPOKES):
+        angle = rotation + 2.0 * math.pi * k / _N_SPOKES
+        a0, a1 = angle - _SPOKE_HALF_ANGLE, angle + _SPOKE_HALF_ANGLE
+        points = [
+            (hub[0] + inner_r * math.cos(a0), hub[1] + inner_r * math.sin(a0), spoke_z),
+            (hub[0] + outer_r * math.cos(a0), hub[1] + outer_r * math.sin(a0), spoke_z),
+            (hub[0] + outer_r * math.cos(a1), hub[1] + outer_r * math.sin(a1), spoke_z),
+            (hub[0] + inner_r * math.cos(a1), hub[1] + inner_r * math.sin(a1), spoke_z),
+        ]
+        _draw_soft_projected_polygon(image, points, _SPOKE_COLOR, camera, alpha=235, blur=0.0)
+
+    _draw_soft_projected_ellipse(
+        image, (hub[0], hub[1], rim_z + 0.005),
+        (_TIRE_RADIUS * 0.28, _TIRE_RADIUS * 0.28, 0.02), "#aab0b6", camera,
+        alpha=235, blur=0.0,
     )
 
 
@@ -382,38 +478,19 @@ def render_hydroplaning_frame(g: float, width: int = W, height: int = H) -> Imag
     # road and water materials below are all drawn far brighter than this.
     image = Image.new("RGBA", (width, height), (8, 9, 11, 255))
 
-    _draw_wet_road(image, camera)
+    _draw_wet_road(image, camera, state["rotation"])
     _draw_contact_patch(image, camera, state["contact"])
     _draw_groove_outflow(image, camera, state["rotation"], state["outflow"])
-    _draw_water_wedge(image, camera, state["wedge"])
+    _draw_water_wedge(image, camera, state["wedge"], state["rotation"])
     # The floating water slab must be composited BEFORE the tire mesh so the
     # tire correctly occludes its far/upper portion, leaving only the real
     # visible gap instead of incorrectly painting water on top of the rubber.
-    _draw_float_layer(image, camera, state["lift"], state["wedge"])
+    _draw_float_layer(image, camera, state["lift"], state["wedge"], state["rotation"])
 
     hub = (_HUB_CENTER[0], _HUB_CENTER[1] + state["lift"], _HUB_CENTER[2])
     verts, faces, colors = _tire_mesh(hub, state["rotation"])
     _draw_tire_mesh(image, verts, faces, colors, camera)
-    # A metal rim ring plus a hub cap make the sidewall read as a real wheel
-    # rather than a flat rubber disc -- a tire's sidewall always shows a rim
-    # well before the center cap, not just a single small circle floating
-    # in the middle of a dark disc.
-    rim_z = hub[2] + _TIRE_HALF_WIDTH + 0.015
-    _draw_soft_projected_ellipse(
-        image, (hub[0], hub[1], rim_z),
-        (_TIRE_RADIUS * 0.62, _TIRE_RADIUS * 0.62, 0.02), "#8b9096", camera,
-        alpha=235, blur=0.0,
-    )
-    _draw_soft_projected_ellipse(
-        image, (hub[0], hub[1], rim_z + 0.002),
-        (_TIRE_RADIUS * 0.56, _TIRE_RADIUS * 0.56, 0.02), "#3a3d42", camera,
-        alpha=235, blur=0.0,
-    )
-    _draw_soft_projected_ellipse(
-        image, (hub[0], hub[1], rim_z + 0.004),
-        (_TIRE_RADIUS * 0.26, _TIRE_RADIUS * 0.26, 0.02), "#9aa0a6", camera,
-        alpha=235, blur=0.0,
-    )
+    _draw_wheel_face(image, camera, hub, state["rotation"])
 
     return image.convert("RGB")
 

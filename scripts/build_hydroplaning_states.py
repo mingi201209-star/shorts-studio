@@ -148,15 +148,41 @@ def main():
     #    -- and the opening uses one single LARGE jump (already-hydroplaning
     #    straight to the normal baseline) instead of three fine steps, so
     #    the first real cut is unmistakable rather than subtle.
+    #  - run 37103835807: that fix cleared every gate except
+    #    visual_activity_real, which still found 12.5s of real static picture
+    #    from 6.5s onward (threshold 5.0s) -- direct per-0.5s adjacent-frame
+    #    diffs the user pulled from the real final.mp4 showed 2.5-6.5s well
+    #    above the 12.0 change threshold but 8.5-17.0s consistently under it,
+    #    even though the physics (wedge/contact/lift) kept changing: the
+    #    wedge2/contact1/contact2/payoff windows above were still only
+    #    dg=0.03-0.04 wide, too little real motion to clear a threshold
+    #    measured over the WHOLE padded 1080x950 media box (most of which is
+    #    dark background/road, diluting the mean). Fixed on two fronts:
+    #    (1) widened wedge1/wedge2/contact1/contact2/contact3's windows here
+    #    to use most of the real gap to their next anchor (dg=0.07-0.17
+    #    instead of 0.03-0.04); (2) shorts_studio/hydroplaning3d.py now ties
+    #    a large, high-contrast rotating wheel-spoke pattern, a continuously
+    #    rippling water-flow phase, and a scrolling road texture all directly
+    #    to the tire's own rotation -- a fast, continuous clock (2.2 full
+    #    spins across the whole production) layered on the slow hydroplaning
+    #    state, so every beat stays visibly live regardless of how little the
+    #    slow physics itself moves within its own window. Locally verified
+    #    against a direct reimplementation of the real 2fps/media-box/
+    #    mean-abs-diff>12 check (see shorts_studio.final_video_qa.
+    #    measure_visual_activity) run against the actual rendered clips at
+    #    this run's real measured beat timings: max_static_visual_seconds
+    #    drops to ~2.5s, well under the 5.0s gate, with every beat boundary
+    #    clearing the threshold by a comfortable (12-58) margin, not a
+    #    razor-thin one.
     clips = {
-        "hook_b": (0.880, 0.920, 2.2),    # cold open: already fully floating
+        "hook_b": (0.880, 0.935, 2.2),    # cold open: already fully floating
         "base": (0.000, 0.150, 2.2),      # normal rolling, full contact, draining
-        "wedge1": (0.370, 0.410, 2.2),    # wedge now clearly visible, contact dented
-        "wedge2": (0.470, 0.500, 2.0),    # wedge bigger, contact further reduced -- REVEAL
-        "contact1": (0.550, 0.585, 2.0),  # contact patch visibly collapsing
-        "contact2": (0.640, 0.675, 2.0),  # less than half the patch left
-        "contact3": (0.730, 0.830, 2.2),  # almost fully lifted
-        "payoff": (0.990, 1.000, 2.4),    # final full hydroplaning state
+        "wedge1": (0.370, 0.460, 2.2),    # wedge now clearly visible, contact dented
+        "wedge2": (0.470, 0.540, 2.0),    # wedge bigger, contact further reduced -- REVEAL
+        "contact1": (0.550, 0.630, 2.0),  # contact patch visibly collapsing
+        "contact2": (0.640, 0.720, 2.0),  # less than half the patch left
+        "contact3": (0.730, 0.860, 2.2),  # almost fully lifted
+        "payoff": (0.950, 1.000, 2.4),    # final full hydroplaning state
     }
     motion = {
         k: render_motion_clip(assets / f"{k}.mp4", g0, g1, duration=dur, fps=30)
