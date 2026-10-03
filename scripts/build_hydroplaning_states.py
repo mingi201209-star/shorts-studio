@@ -63,31 +63,14 @@ class HydroplaningHookGenerator:
     def generate(self, brief: TopicBrief) -> list[HookCandidate]:
         f = brief.fact_by_strategy()
         texts = {
-            "contradiction": "그런데 타이어가 도로에 닿지 않습니다.",
-            "surprising_consequence": "놀랍게도 멀쩡한 타이어도 빗길에서 잃습니다.",
-            "counterintuitive_fact": "타이어 홈이 있어도 사실은 지키지 못합니다.",
-            "visible_anomaly": "이상하게도 젖은 도로 위에서 돌기만 합니다.",
-            "mistaken_assumption": "타이어가 돌고 있어도 사실은 맞지는 않습니다.",
-            "unresolved_cause_effect": "그런데 타이어 홈은 결국 역할을 못합니다.",
+            "contradiction": "실은 도로에 닿지 않습니다.",
+            "surprising_consequence": "실은 멀쩡한 타이어도 뜹니다.",
+            "counterintuitive_fact": "실은 타이어 홈이 지키지 못합니다.",
+            "visible_anomaly": "실은 젖은 도로에서 돌기만 합니다.",
+            "mistaken_assumption": "실은 도로를 밟고 있지 않습니다.",
+            "unresolved_cause_effect": "실은 타이어 홈이 역할을 못합니다.",
         }
         return [HookCandidate(strategy=s, text=texts[s], grounded_in=f[s]) for s in texts]
-
-
-# Each hook candidate is kept short (~16-21 chars) specifically so that,
-# split into two roughly-even halves below, each half's own beat comfortably
-# clears the 3.5s visual_cut_cadence limit even at the slower end of the
-# engine's real measured narration pace (see the empirical rate/overhead fit
-# in this module's build-time notes). Splitting into two contiguous
-# substrings of the SAME sentence gives the hero reveal a second cut point
-# without changing a single word of the hook copy itself.
-HOOK_CUE_SPLITS = {
-    "contradiction": ("그런데 타이어가", "도로에 닿지 않습니다"),
-    "surprising_consequence": ("놀랍게도 멀쩡한", "타이어도 빗길에서 잃습니다"),
-    "counterintuitive_fact": ("타이어 홈이 있어도", "사실은 지키지 못합니다"),
-    "visible_anomaly": ("이상하게도 젖은 도로", "위에서 돌기만 합니다"),
-    "mistaken_assumption": ("타이어가 돌고 있어도", "사실은 맞지는 않습니다"),
-    "unresolved_cause_effect": ("그런데 타이어 홈은", "결국 역할을 못합니다"),
-}
 
 
 def make_brief() -> TopicBrief:
@@ -146,38 +129,33 @@ def main():
     # EVERY pair of anchors -- not just neighbors -- renders a genuinely,
     # substantially different frame under the engine's own real
     # equivalent-framing/replay detector (shorts_studio.visual_change).
-    # Finely slicing a near-flat stretch of the physics curve into many
-    # almost-identical states was an earlier failure mode (CI run
-    # 37039874973): the fix is fewer, well-separated beats whose states
-    # really do look different, not more beats papering over a plateau.
-    # Each clip plays forward a small window AROUND its anchor (never a
-    # frozen still) so the tire keeps rotating and water keeps moving.
-    # Each window is deliberately narrow (the anchor +/- ~0.01) so the frame
-    # actually sampled by the engine's meaningful-visual-change check (taken
-    # shortly after the beat starts, not at its end) always lands very close
-    # to the verified anchor value, regardless of exactly how long the real
-    # TTS-measured beat turns out to be. Rotation keeps the clip visibly
-    # alive even over such a narrow global-progress window.
     #
-    # A second CI round (run 37078260370) passed every one of these
-    # per-source-pair distinctness checks yet still failed visual_cut_cadence
-    # / visual_activity_real / first_10s_retention / second_peak timing on
-    # the real composited final.mp4: several scenes had only 1-2 beats, so
-    # their individual narration gaps ran 5-6s each -- the fix there is not
-    # more anchors but a THIRD hook anchor (hook_mid, between hook_a/hook_b)
-    # and a redistribution of the existing anchors across more, shorter
-    # per-beat narration (see `plans` below), so every scene has enough cut
-    # points to keep each gap well under the 3.5s limit.
+    # Two real CI rounds taught two separate lessons:
+    #  - run 37039874973: finely slicing a near-flat stretch of the physics
+    #    curve into many almost-identical states fails the per-beat
+    #    distinctness check outright. Fix: fewer, well-separated anchors.
+    #  - run 37081489230: even with well-separated anchors, a narrow g
+    #    window around each one (the anchor +/- ~0.01, chosen purely to keep
+    #    the sampled frame close to the verified value) reads as visually
+    #    STATIC to a real viewer and to the engine's real pixel-level cut
+    #    detector once composited into the actual final.mp4 -- direct human
+    #    review of that run's frames at 0.5/1.5/2.5/3.5s confirmed they were
+    #    "almost identical", and visual_activity_real found zero real cuts
+    #    in the first 6s despite three "different" declared beats there.
+    #    Fix here: each window now runs forward a real, substantial fraction
+    #    of the gap to the NEXT anchor (not a tiny slice), so the water and
+    #    tire are visibly, continuously moving for the clip's entire runtime
+    #    -- and the opening uses one single LARGE jump (already-hydroplaning
+    #    straight to the normal baseline) instead of three fine steps, so
+    #    the first real cut is unmistakable rather than subtle.
     clips = {
-        "hook_a": (0.770, 0.790, 2.2),    # already mid-liftoff, contact fading
-        "hook_mid": (0.830, 0.850, 2.0),  # further lifted, contact almost gone
-        "hook_b": (0.890, 0.910, 2.0),    # fully floating, zero contact -- the "wow"
-        "base": (0.000, 0.015, 2.2),      # normal rolling, full contact, groove outflow
-        "wedge1": (0.360, 0.380, 2.2),    # wedge now clearly visible, contact dented
-        "wedge2": (0.460, 0.480, 2.0),    # wedge bigger, contact further reduced
-        "contact1": (0.540, 0.560, 2.0),  # contact patch visibly collapsing
-        "contact2": (0.630, 0.650, 2.0),  # less than half the patch left
-        "contact3": (0.720, 0.740, 2.0),  # almost fully lifted
+        "hook_b": (0.880, 0.920, 2.2),    # cold open: already fully floating
+        "base": (0.000, 0.150, 2.2),      # normal rolling, full contact, draining
+        "wedge1": (0.370, 0.410, 2.2),    # wedge now clearly visible, contact dented
+        "wedge2": (0.470, 0.500, 2.0),    # wedge bigger, contact further reduced -- REVEAL
+        "contact1": (0.550, 0.585, 2.0),  # contact patch visibly collapsing
+        "contact2": (0.640, 0.675, 2.0),  # less than half the patch left
+        "contact3": (0.730, 0.830, 2.2),  # almost fully lifted
         "payoff": (0.990, 1.000, 2.4),    # final full hydroplaning state
     }
     motion = {
@@ -206,63 +184,66 @@ def main():
         story_writer_system_prompt() + "\n\n" + story_prompt + "\n", encoding="utf-8")
     print("STORY_PROMPT_V3_READY=build/hydroplaning_story_prompt.txt")
 
-    # Beat count and placement were chosen empirically against the engine's
-    # own real equivalent-framing/replay detector (see the verification
-    # notes in hydroplaning3d.py and the g anchors used for `clips` above)
-    # AND against an empirical fit of real measured narration timing from
-    # two prior CI renders (rate ~4.3-5.5 normalized chars/sec; a ~1.2-1.3s
-    # fixed overhead on the first beat of every scene after the first;
-    # ~0.5-0.6s trailing pad on every scene's last beat). Every phrase below
-    # is deliberately short (one clause, ~6-12 chars) and EVERY beat gets
-    # its own phrase/cue -- no scene is left with a single beat covering
-    # several sentences, which is what produced 5-6s holds in the previous
-    # round (CI run 37078260370) even though the underlying 3D states were
-    # already genuinely distinct. s_end was folded into s_twist as its last
-    # beat so the payoff line does not pay a second scene-transition
-    # overhead on top of its own (unavoidably ~11-char) technical term.
+    # Story order rebuilt around the real first_10s_retention windows
+    # (0.2-3.0s: a real visual cut proving the HOOK claim; 3-8s: a new
+    # state-change/tension beat; 8-12s: an early REVEAL/PAYOFF) instead of
+    # evenly dividing narration. The opening is now exactly ONE dramatic cut
+    # -- hero (already fully floating) straight to the normal baseline, a
+    # huge pixel jump that a real cut detector cannot miss -- rather than
+    # three fine steps across a narrow g range, which run 37081489230 showed
+    # reads as static to both a human viewer and the engine's real
+    # visual_activity_real detector even though each step was a "different"
+    # declared state. REVEAL is now genuinely the wedge visibly growing
+    # (wedge2), timed via the real measured per-beat rate from that run
+    # (~3.2-4.2 normalized chars/sec within a scene, ~1.3-2.4s crossing a
+    # scene boundary) to land inside the mandatory 8-12s window, not just
+    # relabeled.
+    # hookb is deliberately kept IN THE SAME SCENE as base (not alone in its
+    # own scene) so its hold is pure phrase-length/rate with no risk of
+    # picking up the unpredictable ~1.3-2.4s trailing-silence pad a scene's
+    # OWN last beat pays (observed directly in run 37081489230's real
+    # per-beat timings) -- that pad alone could push the mandatory
+    # 0.2-3.0s opening visual-proof cut outside its window regardless of how
+    # short the hook text is. Every scene's actual LAST beat below carries
+    # the shortest phrase in that scene for the same reason.
     hook = winner.text
-    hook_a_text, hook_b_text = HOOK_CUE_SPLITS[winner.strategy]
-    crisis = "하지만 순간 달라집니다."
+    crisis = "방금 전엔 멀쩡했어요."
     plans = [
         ("s_hook", [
-            phrase("HOOK", hook_a_text, winner.strategy),
-            phrase("HOOK", hook_b_text),
+            phrase("HOOK", hook, winner.strategy),
             phrase("CRISIS", crisis),
         ], [
-            beat(motion["hook_a"], hook_a_text, "levitating_result", "hook_diagram", "mid_liftoff", "concept",
-                 "a moving cinematic 3D visualization of a car tire mid-liftoff off a wet road, contact fading",
-                 "타이어가 도로와의 접촉을 잃어가기 시작하는 극적인 결과를 먼저 보여주는 모습"),
-            beat(motion["hook_mid"], hook_b_text, "levitating_result_more", "hook_diagram", "deep_liftoff", "state",
-                 "a moving cinematic 3D visualization of a car tire further lifted off a wet road, almost no road contact left",
-                 "같은 타이어가 더 떠올라 접촉이 거의 남지 않은 모습을 보여주는 장면"),
-            beat(motion["hook_b"], crisis, "levitating_result_full", "hook_diagram", "full_float", "state",
+            beat(motion["hook_b"], hook, "levitating_result", "hook_diagram", "full_float", "concept",
                  "a moving cinematic 3D visualization of a car tire fully lifted off a wet road by a layer of water, zero road contact",
-                 "같은 타이어가 완전히 떠서 도로와 전혀 닿지 않는 모습을 보여주는 장면"),
+                 "타이어가 물 위에 완전히 떠서 도로와 전혀 닿지 않는 극적인 결과를 먼저 크게 보여주는 모습"),
+            beat(motion["base"], crisis, "normal_contact_maintained", "base", "normal", "concept",
+                 "a moving 3D visualization of a car tire rolling normally on a wet road with a full bright contact patch touching the road and water draining sideways from its grooves",
+                 "같은 타이어가 방금 전에는 도로에 단단히 붙어 정상적으로 구르던 모습과 대비해서 보여주는 장면"),
         ]),
         ("s_reveal", [
-            phrase("REVEAL", "실제 트레드입니다."),
-            phrase("INVESTIGATION", "단단히 붙어 있습니다."),
+            phrase("INVESTIGATION", "실제 트레드입니다."),
             phrase("INVESTIGATION", "물이 쌓입니다."),
+            phrase("REVEAL", "쐐기처럼 커집니다."),
+            phrase("EXPLANATION", "접촉이 줄어듭니다."),
         ], [
             beat(tire_photo, "실제 트레드입니다", "real_tread_grounding", "tread_photo", "real", "concept",
                  "a real close-up photograph of an actual car tire's tread and grooves",
                  "지금까지 보여준 타이어 트레드가 실제로 어떻게 생겼는지 진짜 사진으로 보여주는 장면",
                  TIRE_PHOTO_ATTRIBUTION),
-            beat(motion["base"], "단단히 붙어 있습니다", "normal_contact_maintained", "base", "normal", "concept",
-                 "a moving 3D visualization of a car tire rolling normally on a wet road with a full bright contact patch and water draining sideways from its grooves",
-                 "타이어가 도로에 단단히 붙어 구르며 홈이 물을 양옆으로 밀어내는 정상 상태를 보여주는 모습"),
+            # wedge1 is NOT this scene's last beat (wedge2/contact1 follow it
+            # here too, after merging what used to be a separate s_explain
+            # scene) -- keeping REVEAL inside the SAME scene as the photo
+            # saves one scene-transition trailing-silence pad (~1.3-2.4s
+            # observed in run 37081489230), which is exactly what pushed
+            # REVEAL's start past the mandatory 8-12s window when it lived
+            # in its own scene.
             beat(motion["wedge1"], "물이 쌓입니다", "drainage_overload", "wedge", "forming", "concept",
                  "a moving 3D visualization of a water wedge forming at the leading edge of a rolling car tire, its road contact patch visibly dented",
                  "홈이 다 빼내지 못한 물이 타이어 앞쪽에 쌓여 물 쐐기가 생기기 시작하는 모습을 보여주는 장면"),
-        ]),
-        ("s_explain", [
-            phrase("EXPLANATION", "쐐기가 커집니다."),
-            phrase("EXPLANATION", "접촉면이 줄어듭니다."),
-        ], [
-            beat(motion["wedge2"], "쐐기가 커집니다", "wedge_growing", "wedge", "large", "state",
-                 "a moving 3D visualization of a large water wedge in front of a car tire, its road contact patch clearly shrunk",
-                 "타이어 앞의 물 쐐기가 뚜렷하게 커진 모습을 보여주는 장면"),
-            beat(motion["contact1"], "접촉면이 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
+            beat(motion["wedge2"], "쐐기처럼 커집니다", "wedge_growing", "wedge", "large", "state",
+                 "a moving 3D visualization of a large water wedge in front of a car tire, its road contact patch clearly shrunk compared to a moment ago",
+                 "타이어 앞의 물 쐐기가 눈에 띄게 커지고 접촉면이 함께 줄어드는 원인이 드러나는 장면"),
+            beat(motion["contact1"], "접촉이 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
                  "a moving 3D visualization of a car tire's bright road contact patch visibly collapsing while a large water wedge sits ahead of it",
                  "타이어와 도로가 닿는 밝은 접촉면이 눈에 띄게 줄어드는 모습을 보여주는 장면"),
         ]),
@@ -286,12 +267,10 @@ def main():
     production_tags = {
         ("s_hook", 0): ("hero", "physical_animation"),
         ("s_hook", 1): ("support", "physical_animation"),
-        ("s_hook", 2): ("support", "physical_animation"),
         ("s_reveal", 0): ("evidence", "real_photo"),
         ("s_reveal", 1): ("support", "physical_animation"),
         ("s_reveal", 2): ("mechanism", "physical_animation"),
-        ("s_explain", 0): ("support", "physical_animation"),
-        ("s_explain", 1): ("support", "physical_animation"),
+        ("s_reveal", 3): ("support", "physical_animation"),
         ("s_twist", 0): ("support", "physical_animation"),
         ("s_twist", 1): ("second_peak", "physical_animation"),
         ("s_twist", 2): ("payoff", "physical_animation"),
