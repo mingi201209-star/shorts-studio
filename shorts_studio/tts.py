@@ -5,6 +5,7 @@ from pathlib import Path
 from .timing import WordTiming
 from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers
 from .korean_speech_planner import adjust_rate, analyze_unit
+from .breath import plan_breaths, render_breath_gap_clip, select_breath_gaps
 
 DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 # A flat rate/pitch is only a fallback for scenes with no authored
@@ -183,7 +184,7 @@ def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c:a", "libmp3lame", "-q:a", "4", str(out_path)], check=True, capture_output=True)
     return out_path
 
-async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True) -> list[WordTiming]:
+async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True, enable_subtle_breaths: bool=False, breath_seed: int=0) -> list[WordTiming]:
     """Korean Prosody Planner V1 synthesis engine. Consecutive
     "continuation"-boundary phrases are merged into ONE Edge TTS call (one
     continuous pitch/energy contour -- no per-sentence reset, no robotic
@@ -194,7 +195,13 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
     number, never split by punctuation handling. WordBoundary timing (real
     per-word timestamps) is kept throughout for caption sync -- prosody and
     timing accuracy are handled independently, as they measure different
-    things."""
+    things.
+
+    `enable_subtle_breaths` (default False; existing callers/productions are
+    completely unaffected) opts into replacing a small number of the
+    already-inserted inter-unit silences with a soft procedural inhale of
+    the exact same duration -- see shorts_studio.breath for the placement
+    policy and why no word/caption timestamp ever moves as a result."""
     audio_path.parent.mkdir(parents=True, exist_ok=True)
     if not phrases:
         raise RuntimeError("no narration phrases to synthesize")
@@ -221,6 +228,8 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
         unit_meta.append({"role": unit[0].role, "text": unit_text, "rate": rate, "base_unit_rate": base_unit_rate, "boundary": unit[-1].boundary, "focus": any(p.focus for p in unit), "speech_features": speech_features.__dict__})
 
     gaps = [pause_after(unit[-1]) for unit in units[:-1]]  # gap AFTER unit i (i < last)
+    breath_gaps = select_breath_gaps(len(units), gaps) if enable_subtle_breaths else []
+    breath_plans = plan_breaths(gaps, breath_gaps, seed=breath_seed) if breath_gaps else {}
 
     if len(units) == 1:
         audio_path.write_bytes(unit_audio[0])
@@ -248,10 +257,14 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
             real_durations.append(max(audio_duration, boundary_duration))
         concat_parts = [part_paths[0]]
         for i in range(1, len(part_paths)):
-            gap_seconds = gaps[i - 1]
+            gap_index = i - 1
+            gap_seconds = gaps[gap_index]
             if gap_seconds > 0:
                 gap_path = tmp_dir / f"{audio_path.stem}_gap{i}.mp3"
-                _silence_clip(gap_path, gap_seconds)
+                if gap_index in breath_plans:
+                    render_breath_gap_clip(gap_path, gap_seconds, breath_plans[gap_index])
+                else:
+                    _silence_clip(gap_path, gap_seconds)
                 concat_parts.append(gap_path)
             concat_parts.append(part_paths[i])
         _concat_audio(concat_parts, audio_path)
@@ -278,6 +291,10 @@ async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_pa
     timing_path.write_text(json.dumps({
         "source": "korean-speech-planner-v3", "voice": voice, "base_rate": base_rate, "base_pitch": base_pitch, "volume": volume,
         "units": unit_meta, "gaps_seconds": gaps, "raw": unit_raw, "words": [w.__dict__ for w in words],
+        "breaths": [
+            {"gap_index": p.gap_index, "duration": p.duration, "gain_db": p.gain_db}
+            for p in sorted(breath_plans.values(), key=lambda p: p.gap_index)
+        ],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
     if not words:
         raise RuntimeError("TTS returned no timing boundary events; do not guess from scene duration")

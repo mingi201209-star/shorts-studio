@@ -352,6 +352,16 @@ class Project(BaseModel):
     # prove entertainment success on its own.
     strict_entertainment_contract: bool = False
     event_graph: DeclaredEventGraph | None = None
+    # Opt-in, off by default: replaces a small number (see
+    # shorts_studio.breath.select_breath_gaps, never more than 3) of the
+    # narration's own already-inserted inter-sentence silences with a soft
+    # procedural inhale of the exact same duration, so no word or caption
+    # timestamp ever moves. An A/B comparison is required before turning
+    # this on for any real production -- see shorts_studio/breath.py's
+    # module docstring for the full placement/timing/loudness policy and
+    # why this defaults to False (every manifest written before this
+    # existed must keep producing byte-identical narration audio).
+    enable_subtle_breaths: bool = False
 
     @model_validator(mode="after")
     def vertical(self):
