@@ -1,0 +1,92 @@
+name: tts-naturalness-ab
+
+on:
+  push:
+    branches: [exp/tts-naturalness-v2]
+    paths:
+      - 'scripts/tts_naturalness_ab.py'
+      - '.github/workflows/tts-naturalness-ab.yml'
+      - 'shorts_studio/**'
+      - 'pyproject.toml'
+  pull_request:
+    branches: [exp/tts-subtle-breathing]
+    paths:
+      - 'scripts/tts_naturalness_ab.py'
+      - '.github/workflows/tts-naturalness-ab.yml'
+      - 'shorts_studio/**'
+      - 'pyproject.toml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install -e '.[dev]'
+
+      - name: Compile experiment
+        run: python -m py_compile scripts/tts_naturalness_ab.py
+
+      - name: Full regression
+        run: pytest -q
+
+      - name: Show currently available Korean Edge voices
+        run: |
+          python -m edge_tts --list-voices | grep 'ko-KR' | tee ko_voices.txt
+
+      - name: Render four naturalness samples
+        run: python scripts/tts_naturalness_ab.py
+
+      - name: Verify outputs
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("tts_naturalness_ab")
+          mapping = json.loads((root / "mapping.json").read_text(encoding="utf-8"))
+          expected = {
+              "A_current_unitized",
+              "B_hyunsu_multi_continuous",
+              "C_hyunsu_native_continuous",
+              "D_injoon_continuous",
+          }
+          assert set(mapping) == expected, mapping.keys()
+          for name in expected:
+              p = root / f"{name}.mp3"
+              assert p.is_file() and p.stat().st_size > 10_000, (name, p.stat().st_size if p.exists() else None)
+              d = float(mapping[name]["duration_seconds"])
+              assert 8.0 < d < 40.0, (name, d)
+              print(name, d, p.stat().st_size)
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: tts-naturalness-ab
+          retention-days: 14
+          path: |
+            tts_naturalness_ab/
+            ko_voices.txt
+
+      - uses: actions/upload-artifact@v4
+        if: failure() || cancelled()
+        with:
+          name: tts-naturalness-ab-diagnostics
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            tts_naturalness_ab/
+            ko_voices.txt

@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from .project import load_project
 from .prosody import PhraseSpec, plan_narration
-from .tts import synthesize_plan
+from .tts import synthesize_continuous_plan, synthesize_plan
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
@@ -463,12 +463,16 @@ def _media_duration_seconds(path:Path)->float:
     ).stdout)
     return float(data["format"]["duration"])
 
-def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False, breath_seed:int=0)->tuple[Path,float,Path,dict,list,list]:
+def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False, breath_seed:int=0, tts_continuity_mode:str="unitized")->tuple[Path,float,Path,dict,list,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     plan=_narration_plan(scene)
     _log_narration_plan(scene,plan)
-    words=asyncio.run(synthesize_plan(plan,audio,timing,use_role_rates=True,
-                                       enable_subtle_breaths=enable_subtle_breaths,breath_seed=breath_seed))
+    if tts_continuity_mode == "scene_continuous":
+        print(f"[prosody] {scene.id}: scene-continuous provider call")
+        words=asyncio.run(synthesize_continuous_plan(plan,audio,timing))
+    else:
+        words=asyncio.run(synthesize_plan(plan,audio,timing,use_role_rates=True,
+                                           enable_subtle_breaths=enable_subtle_breaths,breath_seed=breath_seed))
     duration=max(w.end for w in words)+.08
     print(f"[duration] {scene.id}: {duration:.3f}s")
     caps=segment(words,duration)
@@ -569,7 +573,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
     for scene_index, scene in enumerate(p.scenes):
-        audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build,enable_subtle_breaths=p.enable_subtle_breaths,breath_seed=scene_index)
+        audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build,enable_subtle_breaths=p.enable_subtle_breaths,breath_seed=scene_index,tts_continuity_mode=p.tts_continuity_mode)
         if p.strict_meaningful_visual_changes:
             timing=json.loads((build/f"{scene.id}.timing.json").read_text(encoding="utf-8"))
             resolved=resolve_visual_cues(scene,timing["words"],duration)
