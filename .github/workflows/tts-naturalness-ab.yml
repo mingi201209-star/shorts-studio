@@ -8,6 +8,13 @@ on:
       - '.github/workflows/tts-naturalness-ab.yml'
       - 'shorts_studio/**'
       - 'pyproject.toml'
+  pull_request:
+    branches: [exp/tts-subtle-breathing]
+    paths:
+      - 'scripts/tts_naturalness_ab.py'
+      - '.github/workflows/tts-naturalness-ab.yml'
+      - 'shorts_studio/**'
+      - 'pyproject.toml'
   workflow_dispatch:
 
 permissions:
