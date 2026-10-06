@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 """Build the hydroplaning Shorts production.
 
-Mostly self-produced 3D physical animation (shorts_studio/hydroplaning3d.py)
-driven by one continuous global progress value, so beats slicing contiguous
-windows of that timeline play as a single physical scene, not independent
-vignettes. One real CC0 photo of an actual tire tread grounds the explanation
-in a real object before the 3D mechanism animation takes over. The opening
-hook previews the end state (the tire already floating) before the
-explanation scenes play the real causal chain from the beginning.
+Quality-reset production: the opening is grounded in real high-resolution
+rain/tire footage so the very first frame does not read as low-budget CG.
+The existing physical animation is demoted to a short mechanism explainer
+later in the story instead of carrying the opening impression. A real tire
+photo still grounds tread geometry before the mechanism sequence.
 """
 from __future__ import annotations
 
@@ -25,6 +23,14 @@ NEG = ["a photograph of a cat", "a landscape photograph of mountains", "a city s
 TIRE_PHOTO_FILE = "The tire wheel of Mercedes-AMG C63 S (W205).JPG"
 TIRE_PHOTO_PAGE = "https://commons.wikimedia.org/wiki/File:The_tire_wheel_of_Mercedes-AMG_C63_S_(W205).JPG"
 TIRE_PHOTO_ATTRIBUTION = "Tokumeigakarinoaoshima / Wikimedia Commons / CC0 1.0 Universal Public Domain Dedication"
+
+HOOK_TIRE_VIDEO_URL = "https://videos.pexels.com/video-files/13891268/13891268-uhd_4096_2160_24fps.mp4"
+HOOK_TIRE_VIDEO_PAGE = "https://www.pexels.com/video/close-up-of-car-tyre-in-rain-13891268/"
+HOOK_TIRE_VIDEO_ATTRIBUTION = "Erik Mclean / Pexels / Pexels License"
+
+HOOK_ROAD_VIDEO_URL = "https://videos.pexels.com/video-files/13370432/13370432-uhd_2160_3840_25fps.mp4"
+HOOK_ROAD_VIDEO_PAGE = "https://www.pexels.com/video/driving-along-a-wet-road-on-a-rainy-day-13370432/"
+HOOK_ROAD_VIDEO_ATTRIBUTION = "Zero51 / Pexels / Pexels License"
 
 
 def sha(path: Path) -> str:
@@ -59,16 +65,53 @@ def download_required_photo(out: Path) -> Path:
     raise RuntimeError(f"failed to fetch required tire tread photo: {last}")
 
 
+
+def download_required_video(url: str, out: Path, label: str) -> Path:
+    """Fetch one fixed, explicitly licensed real-footage source.
+
+    The URL is pinned to the source provider's concrete MP4, not a search
+    result or a rotating CDN query.  We fail closed if the response is too
+    small or not an MP4 container so a broken stock source can never silently
+    degrade into a placeholder.
+    """
+    out.parent.mkdir(parents=True, exist_ok=True)
+    if out.is_file() and out.stat().st_size > 1_000_000:
+        return out
+    last = None
+    for attempt in range(4):
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={"User-Agent": "shorts-studio/0.1 (licensed production asset)"},
+            )
+            with urllib.request.urlopen(req, timeout=60) as r:
+                data = r.read()
+            if len(data) < 1_000_000:
+                raise RuntimeError(f"{label} download suspiciously small: {len(data)} bytes")
+            # ISO-BMFF/MP4 stores an ftyp box near the start.
+            if b"ftyp" not in data[:64]:
+                raise RuntimeError(f"{label} response does not look like MP4")
+            out.write_bytes(data)
+            print(f"HYDROPLANING_REAL_VIDEO_READY={out} bytes={len(data)} sha256={sha(out)}")
+            return out
+        except Exception as exc:
+            last = exc
+            out.unlink(missing_ok=True)
+            if attempt < 3:
+                time.sleep(5 * (attempt + 1))
+    raise RuntimeError(f"failed to fetch required {label} footage: {last}")
+
+
 class HydroplaningHookGenerator:
     def generate(self, brief: TopicBrief) -> list[HookCandidate]:
         f = brief.fact_by_strategy()
         texts = {
-            "contradiction": "실은 도로에 닿지 않습니다.",
-            "surprising_consequence": "실은 멀쩡한 타이어도 뜹니다.",
-            "counterintuitive_fact": "실은 타이어 홈이 지키지 못합니다.",
-            "visible_anomaly": "실은 젖은 도로에서 돌기만 합니다.",
-            "mistaken_assumption": "실은 도로를 밟고 있지 않습니다.",
-            "unresolved_cause_effect": "실은 타이어 홈이 역할을 못합니다.",
+            "contradiction": "빗길에선 타이어가 돌고 있어도 도로를 놓칠 수 있습니다.",
+            "surprising_consequence": "빗길에선 멀쩡한 타이어도 도로에서 뜰 수 있습니다.",
+            "counterintuitive_fact": "타이어 홈이 있어도 물을 다 빼내지 못할 수 있습니다.",
+            "visible_anomaly": "빗길에선 타이어가 돌면서도 접촉을 잃을 수 있습니다.",
+            "mistaken_assumption": "타이어가 돌고 있다고 항상 도로를 밟는 건 아닙니다.",
+            "unresolved_cause_effect": "물이 빠지는 것보다 빨리 쌓이면 타이어가 뜹니다.",
         }
         return [HookCandidate(strategy=s, text=texts[s], grounded_in=f[s]) for s in texts]
 
@@ -123,6 +166,12 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--font", default=None); args = ap.parse_args()
     assets = Path("assets/hydroplaning"); assets.mkdir(parents=True, exist_ok=True)
     tire_photo = download_required_photo(assets / "tire_tread_photo.jpg")
+    hook_tire_video = download_required_video(
+        HOOK_TIRE_VIDEO_URL, assets / "hook_real_tire_rain.mp4", "real tire-in-rain"
+    )
+    hook_road_video = download_required_video(
+        HOOK_ROAD_VIDEO_URL, assets / "hook_real_wet_road.mp4", "real wet-road"
+    )
 
     # Each clip is centered on one of a small set of global-progress anchor
     # points that were chosen empirically (not just evenly sliced) so that
@@ -233,28 +282,30 @@ def main():
     # short the hook text is. Every scene's actual LAST beat below carries
     # the shortest phrase in that scene for the same reason.
     hook = winner.text
-    crisis = "방금 전엔 멀쩡했어요."
+    crisis = "문제는 고무가 아니라, 타이어 아래로 밀려드는 물입니다."
     plans = [
         ("s_hook", [
             phrase("HOOK", hook, winner.strategy),
             phrase("CRISIS", crisis),
         ], [
-            beat(motion["hook_b"], hook, "levitating_result", "hook_diagram", "full_float", "concept",
-                 "a moving cinematic 3D visualization of a car tire fully lifted off a wet road by a layer of water, zero road contact",
-                 "타이어가 물 위에 완전히 떠서 도로와 전혀 닿지 않는 극적인 결과를 먼저 크게 보여주는 모습"),
-            beat(motion["base"], crisis, "normal_contact_maintained", "base", "normal", "concept",
-                 "a moving 3D visualization of a car tire rolling normally on a wet road with a full bright contact patch touching the road and water draining sideways from its grooves",
-                 "같은 타이어가 방금 전에는 도로에 단단히 붙어 정상적으로 구르던 모습과 대비해서 보여주는 장면"),
+            beat(hook_tire_video, hook, "real_tire_rain_hook", "hook_real_tire", "rain_closeup", "concept",
+                 "real cinematic close-up footage of an actual car tire and wheel in rain on wet pavement, visible raindrops and real photographic texture",
+                 "첫 프레임부터 실제 빗속 자동차 타이어를 고해상도 실사 영상으로 보여줘 저예산 CG 느낌 없이 주제를 즉시 인식시키는 장면",
+                 HOOK_TIRE_VIDEO_ATTRIBUTION),
+            beat(hook_road_video, crisis, "real_water_hazard", "hook_real_road", "wet_road", "concept",
+                 "real vertical footage from a moving car on a visibly wet rainy road, real reflections, water and road texture",
+                 "실제 젖은 도로와 빗물을 보여줘 문제의 원인이 물이라는 단서를 실사로 이어주는 장면",
+                 HOOK_ROAD_VIDEO_ATTRIBUTION),
         ]),
         ("s_reveal", [
-            phrase("INVESTIGATION", "실제 트레드입니다."),
-            phrase("INVESTIGATION", "물이 쌓입니다."),
-            phrase("REVEAL", "쐐기처럼 커집니다."),
-            phrase("EXPLANATION", "접촉이 줄어듭니다."),
+            phrase("INVESTIGATION", "트레드 홈은 원래 이 물을 옆으로 빼냅니다."),
+            phrase("INVESTIGATION", "그런데 물이 빠지는 속도보다 쌓이는 속도가 빨라지면,"),
+            phrase("REVEAL", "앞쪽에 물 쐐기가 생기고,"),
+            phrase("EXPLANATION", "도로와 닿는 면이 점점 줄어듭니다."),
         ], [
-            beat(tire_photo, "실제 트레드입니다", "real_tread_grounding", "tread_photo", "real", "concept",
+            beat(tire_photo, "트레드 홈은 원래 이 물을 옆으로 빼냅니다", "real_tread_grounding", "tread_photo", "real", "concept",
                  "a real close-up photograph of an actual car tire's tread and grooves",
-                 "지금까지 보여준 타이어 트레드가 실제로 어떻게 생겼는지 진짜 사진으로 보여주는 장면",
+                 "실제 타이어 트레드 홈을 사진으로 보여주며 물을 옆으로 빼는 구조를 현실 물체로 먼저 이해시키는 장면",
                  TIRE_PHOTO_ATTRIBUTION),
             # wedge1 is NOT this scene's last beat (wedge2/contact1 follow it
             # here too, after merging what used to be a separate s_explain
@@ -263,36 +314,36 @@ def main():
             # observed in run 37081489230), which is exactly what pushed
             # REVEAL's start past the mandatory 8-12s window when it lived
             # in its own scene.
-            beat(motion["wedge1"], "물이 쌓입니다", "drainage_overload", "wedge", "forming", "concept",
+            beat(motion["wedge1"], "그런데 물이 빠지는 속도보다 쌓이는 속도가 빨라지면", "drainage_overload", "wedge", "forming", "concept",
                  "a moving 3D visualization of a water wedge forming at the leading edge of a rolling car tire, its road contact patch visibly dented",
                  "홈이 다 빼내지 못한 물이 타이어 앞쪽에 쌓여 물 쐐기가 생기기 시작하는 모습을 보여주는 장면"),
-            beat(motion["wedge2"], "쐐기처럼 커집니다", "wedge_growing", "wedge", "large", "state",
+            beat(motion["wedge2"], "앞쪽에 물 쐐기가 생기고", "wedge_growing", "wedge", "large", "state",
                  "a moving 3D visualization of a large water wedge in front of a car tire, its road contact patch clearly shrunk compared to a moment ago",
                  "타이어 앞의 물 쐐기가 눈에 띄게 커지고 접촉면이 함께 줄어드는 원인이 드러나는 장면"),
-            beat(motion["contact1"], "접촉이 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
+            beat(motion["contact1"], "도로와 닿는 면이 점점 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
                  "a moving 3D visualization of a car tire's bright road contact patch visibly collapsing while a large water wedge sits ahead of it",
                  "타이어와 도로가 닿는 밝은 접촉면이 눈에 띄게 줄어드는 모습을 보여주는 장면"),
         ]),
         ("s_twist", [
-            phrase("TWIST", "반도 안 남았습니다."),
-            phrase("TWIST", "거의 다 떠올랐습니다."),
-            phrase("PAYOFF", "하이드로플레이닝입니다."),
+            phrase("TWIST", "접촉면이 거의 사라지는 순간,"),
+            phrase("TWIST", "타이어는 도로 대신 물 위를 타기 시작합니다."),
+            phrase("PAYOFF", "이게 하이드로플레이닝입니다."),
         ], [
-            beat(motion["contact2"], "반도 안 남았습니다", "contact_half_gone", "contact", "half_gone", "state",
+            beat(motion["contact2"], "접촉면이 거의 사라지는 순간", "contact_half_gone", "contact", "half_gone", "state",
                  "a moving 3D visualization of a car tire with less than half of its original road contact patch remaining and the tire visibly rising",
                  "접촉면이 절반도 남지 않고 타이어가 눈에 띄게 떠오르는 모습을 보여주는 장면"),
-            beat(motion["contact3"], "거의 다 떠올랐습니다", "contact_almost_gone", "contact", "almost_gone", "state",
+            beat(motion["contact3"], "타이어는 도로 대신 물 위를 타기 시작합니다", "contact_almost_gone", "contact", "almost_gone", "state",
                  "a moving 3D visualization of a car tire almost fully lifted off a wet road, only a sliver of contact patch left",
                  "타이어의 접촉면이 거의 사라지고 거의 다 떠오른 상태를 보여주는 장면"),
-            beat(motion["payoff"], "하이드로플레이닝입니다", "final_hydroplane", "hydroplane", "full_lift", "concept",
+            beat(motion["payoff"], "이게 하이드로플레이닝입니다", "final_hydroplane", "hydroplane", "full_lift", "concept",
                  "a moving cinematic 3D payoff visualization of a car tire fully lifted off a wet road, floating entirely on a layer of water with no road contact left",
                  "타이어가 도로와의 접촉을 완전히 잃고 물 위에 떠 있는 최종 상태를 한 화면에 보여주는 모습"),
         ]),
     ]
 
     production_tags = {
-        ("s_hook", 0): ("hero", "physical_animation"),
-        ("s_hook", 1): ("support", "physical_animation"),
+        ("s_hook", 0): ("hero", "real_footage"),
+        ("s_hook", 1): ("support", "real_footage"),
         ("s_reveal", 0): ("evidence", "real_photo"),
         ("s_reveal", 1): ("support", "physical_animation"),
         ("s_reveal", 2): ("mechanism", "physical_animation"),
@@ -350,9 +401,13 @@ def main():
 
     desc = f"""# 타이어가 도로에서 뜨는 이유 — 출처
 
-대부분의 장면은 실제 좌표의 원기둥·타원체·박스 geometry를 카메라로 투영해 프레임마다 렌더한
-자체 제작 3D 물리 시각화입니다. 실제 타이어 트레드를 보여주는 장면 한 곳에만 아래 CC0 사진을
-사용했습니다: {TIRE_PHOTO_ATTRIBUTION} ({TIRE_PHOTO_PAGE}).
+첫 장면은 실제 촬영 영상을 사용합니다.
+- 타이어 빗속 클로즈업: {HOOK_TIRE_VIDEO_ATTRIBUTION} ({HOOK_TIRE_VIDEO_PAGE})
+- 젖은 도로 주행: {HOOK_ROAD_VIDEO_ATTRIBUTION} ({HOOK_ROAD_VIDEO_PAGE})
+
+이후 원리 설명은 실제 좌표의 원기둥·타원체·박스 geometry를 카메라로 투영해 프레임마다 렌더한
+자체 제작 3D 물리 시각화이며, 실제 트레드 구조 확인에는 아래 CC0 사진을 사용했습니다:
+{TIRE_PHOTO_ATTRIBUTION} ({TIRE_PHOTO_PAGE}).
 
 설명된 물리적 메커니즘(물이 타이어와 노면 사이에 쌓이면 접촉력이 감소할 수 있고, 충분히 심해지면
 완전히 접촉을 잃을 수 있으며, 트레드 홈은 접촉 영역의 물 배출에 도움을 준다는 점)은 미국 도로교통
