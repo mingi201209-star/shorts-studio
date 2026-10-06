@@ -1,0 +1,91 @@
+name: tts-hd-edge-probe
+
+on:
+  push:
+    branches: [exp/tts-hd-voice-probe]
+    paths:
+      - '.github/workflows/tts-hd-edge-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install project
+        run: pip install -e '.[dev]'
+      - name: Probe Korean HD voices through current Edge endpoint
+        run: |
+          python - <<'PY'
+          import asyncio, json
+          from pathlib import Path
+          import edge_tts
+
+          text = (
+              "실은 도로에 닿지 않습니다. 방금 전엔 멀쩡했어요. "
+              "실제 트레드입니다. 물이 쌓입니다. 쐐기처럼 커집니다. "
+              "접촉이 줄어듭니다. 반도 안 남았습니다. 거의 다 떠올랐습니다. "
+              "하이드로플레이닝입니다."
+          )
+          voices = [
+              "ko-KR-Hyunsu:DragonHDLatestNeural",
+              "ko-KR-Junho:MAI-Voice-2",
+              "ko-KR-Junho:MAI-Voice-2-Flash",
+          ]
+          out = Path("hd_probe")
+          out.mkdir()
+          results = {}
+
+          async def one(voice):
+              p = out / (voice.replace(":", "_") + ".mp3")
+              try:
+                  audio = bytearray()
+                  c = edge_tts.Communicate(
+                      text, voice, rate="+8%", pitch="+0Hz", volume="+0%",
+                      boundary="WordBoundary",
+                  )
+                  boundaries = 0
+                  async for chunk in c.stream():
+                      if chunk["type"] == "audio":
+                          audio.extend(chunk["data"])
+                      elif chunk["type"] in {"WordBoundary", "SentenceBoundary"}:
+                          boundaries += 1
+                  if not audio:
+                      raise RuntimeError("provider returned no audio")
+                  p.write_bytes(audio)
+                  results[voice] = {
+                      "status": "SUPPORTED",
+                      "bytes": len(audio),
+                      "boundaries": boundaries,
+                      "file": str(p),
+                  }
+              except Exception as e:
+                  results[voice] = {
+                      "status": "UNAVAILABLE",
+                      "error_type": type(e).__name__,
+                      "error": str(e),
+                  }
+
+          async def main():
+              for voice in voices:
+                  await one(voice)
+          asyncio.run(main())
+
+          (out / "results.json").write_text(
+              json.dumps(results, ensure_ascii=False, indent=2),
+              encoding="utf-8",
+          )
+          print(json.dumps(results, ensure_ascii=False, indent=2))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tts-hd-edge-probe
+          retention-days: 7
+          path: hd_probe/
