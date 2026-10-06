@@ -362,6 +362,12 @@ class Project(BaseModel):
     # why this defaults to False (every manifest written before this
     # existed must keep producing byte-identical narration audio).
     enable_subtle_breaths: bool = False
+    # Opt-in TTS naturalness experiment. The historical/default unitized mode
+    # preserves the existing role-aware synthesis behavior. scene_continuous
+    # sends one entire scene through Edge in a single call so pitch/energy can
+    # flow across adjacent short sentences without a provider reset at every
+    # discourse boundary. It remains off by default until human A/B review.
+    tts_continuity_mode: Literal["unitized", "scene_continuous"] = "unitized"
 
     @model_validator(mode="after")
     def vertical(self):
@@ -369,6 +375,11 @@ class Project(BaseModel):
             raise ValueError("V1 output must be 1080x1920")
         if self.fps < 30:
             raise ValueError("fps must be >=30")
+        if self.tts_continuity_mode == "scene_continuous" and self.enable_subtle_breaths:
+            raise ValueError(
+                "scene_continuous TTS uses the provider's own internal pauses; "
+                "enable_subtle_breaths cannot be combined with it"
+            )
         return self
 
     @model_validator(mode="after")
