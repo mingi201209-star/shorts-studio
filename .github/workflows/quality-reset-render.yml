@@ -9,6 +9,8 @@ on:
       - 'scripts/build_hydroplaning_states.py'
       - '.github/workflows/quality-reset-render.yml'
       - 'pyproject.toml'
+  pull_request:
+    branches: [exp/tts-naturalness-v2]
   workflow_dispatch:
 
 permissions:
