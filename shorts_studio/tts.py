@@ -184,6 +184,123 @@ def _concat_audio(parts: list[Path], out_path: Path) -> Path:
     subprocess.run(["ffmpeg", "-y", "-f", "concat", "-safe", "0", "-i", str(list_file), "-c:a", "libmp3lame", "-q:a", "4", str(out_path)], check=True, capture_output=True)
     return out_path
 
+async def synthesize_continuous_plan(
+    phrases: list[PhraseSpec],
+    audio_path: Path,
+    timing_path: Path,
+    voice: str = DEFAULT_KO_VOICE,
+    rate: str = "+6%",
+    base_pitch: str = DEFAULT_KO_PITCH,
+    volume: str = DEFAULT_KO_VOLUME,
+) -> list[WordTiming]:
+    """Synthesize one whole scene in a single provider call.
+
+    This is an opt-in experiment for narration naturalness. Unlike the
+    unitized path, it deliberately does not restart the TTS model at each
+    strong discourse boundary, so the provider can carry one continuous
+    pitch/energy contour across adjacent short sentences. WordBoundary events
+    still come directly from Edge and are mapped back to the original script,
+    so captions and narration-grounded visual cues remain measured from real
+    speech rather than guessed from character counts.
+
+    No synthetic inter-unit gaps or procedural breaths are inserted in this
+    mode; internal pauses are entirely the provider's own prosody.
+    """
+    audio_path.parent.mkdir(parents=True, exist_ok=True)
+    if not phrases:
+        raise RuntimeError("no narration phrases to synthesize")
+
+    prepared_phrases = [
+        replace(p, text=_prepare_korean_speech(spell_out_numbers(p.text)))
+        for p in phrases
+    ]
+    spoken_text = " ".join(p.text for p in prepared_phrases)
+
+    audio_bytes, boundaries = await _synthesize_sentence(
+        spoken_text, voice, rate, base_pitch, volume
+    )
+    if not boundaries:
+        raise RuntimeError(
+            "TTS returned no timing boundary events for continuous narration; "
+            "do not guess from scene duration"
+        )
+
+    raw_path = audio_path.with_name(audio_path.stem + "_provider_raw" + audio_path.suffix)
+    raw_path.write_bytes(audio_bytes)
+    _, leading_trim = _trim_tts_edge_silence(raw_path, audio_path)
+
+    mapped = _map_boundaries_to_script(spoken_text, boundaries)
+    words = _restore_numeral_captions(spoken_text, list(phrases), mapped)
+    words = [
+        WordTiming(
+            w.text,
+            max(0.0, w.start - leading_trim),
+            max(0.0, w.end - leading_trim),
+        )
+        for w in words
+    ]
+    if not words:
+        raise RuntimeError(
+            "TTS returned no usable word timing events for continuous narration"
+        )
+
+    audio_duration = _ffmpeg_duration_seconds(audio_path)
+    boundary_duration = max(w.end for w in words)
+    if boundary_duration > audio_duration + 1.0:
+        raise RuntimeError(
+            "continuous TTS audio was truncated before the last spoken word: "
+            f"audio={audio_duration:.2f}s boundary={boundary_duration:.2f}s"
+        )
+    if boundary_duration > audio_duration + 0.02:
+        _pad_audio_to_duration(audio_path, boundary_duration)
+
+    # Preserve the narrative-role timing metadata expected by retention QA.
+    # spell_out_numbers replaces a digits+counter span inside one whitespace
+    # token with another single token, so token counts remain stable.
+    unit_meta = []
+    cursor = 0
+    for original_phrase, prepared_phrase in zip(phrases, prepared_phrases):
+        count = len(_tokenize(prepared_phrase.text))
+        phrase_words = words[cursor:cursor + count]
+        if len(phrase_words) != count:
+            raise RuntimeError(
+                "continuous narration word/phrase mapping drifted; "
+                "refusing to invent role timing"
+            )
+        cursor += count
+        features = analyze_unit([prepared_phrase])
+        unit_meta.append({
+            "role": original_phrase.role,
+            "text": prepared_phrase.text,
+            "rate": rate,
+            "base_unit_rate": rate,
+            "boundary": original_phrase.boundary,
+            "focus": original_phrase.focus,
+            "speech_features": features.__dict__,
+            "start": phrase_words[0].start,
+            "end": phrase_words[-1].end,
+        })
+    if cursor != len(words):
+        raise RuntimeError(
+            "continuous narration left unmapped words; refusing approximate "
+            "role timing"
+        )
+
+    timing_path.write_text(json.dumps({
+        "source": "korean-speech-planner-v3-continuous",
+        "voice": voice,
+        "base_rate": rate,
+        "base_pitch": base_pitch,
+        "volume": volume,
+        "units": unit_meta,
+        "gaps_seconds": [],
+        "raw": [[w.__dict__ for w in boundaries]],
+        "words": [w.__dict__ for w in words],
+        "breaths": [],
+    }, ensure_ascii=False, indent=2), encoding="utf-8")
+    return words
+
+
 async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True, enable_subtle_breaths: bool=False, breath_seed: int=0) -> list[WordTiming]:
     """Korean Prosody Planner V1 synthesis engine. Consecutive
     "continuation"-boundary phrases are merged into ONE Edge TTS call (one
