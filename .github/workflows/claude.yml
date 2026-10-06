@@ -40,6 +40,9 @@ jobs:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
             actions: read
+          claude_args: |
+            --max-turns 80
+            --allowedTools "Edit,Write,Replace,Bash(python:*),Bash(python3:*),Bash(pytest:*),Bash(pip:*),Bash(pip3:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git clone:*)"
 
       - name: Run Claude Code with Anthropic API key
         if: ${{ env.CLAUDE_CODE_OAUTH_TOKEN == '' && env.ANTHROPIC_API_KEY != '' }}
@@ -48,6 +51,9 @@ jobs:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           additional_permissions: |
             actions: read
+          claude_args: |
+            --max-turns 80
+            --allowedTools "Edit,Write,Replace,Bash(python:*),Bash(python3:*),Bash(pytest:*),Bash(pip:*),Bash(pip3:*),Bash(ffmpeg:*),Bash(ffprobe:*),Bash(git status:*),Bash(git diff:*),Bash(git log:*),Bash(git show:*),Bash(git clone:*)"
 
       - name: Fail clearly when Claude authentication is missing
         if: ${{ env.CLAUDE_CODE_OAUTH_TOKEN == '' && env.ANTHROPIC_API_KEY == '' }}
