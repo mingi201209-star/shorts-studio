@@ -385,6 +385,10 @@ def main():
         "width": 1080, "height": 1920, "fps": 30,
         "overlay_title": "타이어가 도로에서 뜬다",
         "overlay_title_mode": "first_scene_only",
+        # Keep the less-robotic Edge experiment for this visual prototype,
+        # but this is still NOT the final voice target; production adoption
+        # remains blocked on a true HD/generative Korean TTS backend.
+        "tts_continuity_mode": "scene_continuous",
         "max_visual_recovery_attempts": 2,
         "strict_source_diversity": False,
         "strict_meaningful_visual_changes": True,
