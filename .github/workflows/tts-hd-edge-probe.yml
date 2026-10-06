@@ -5,6 +5,8 @@ on:
     branches: [exp/tts-hd-voice-probe]
     paths:
       - '.github/workflows/tts-hd-edge-probe.yml'
+  pull_request:
+    branches: [exp/tts-naturalness-v2]
   workflow_dispatch:
 
 permissions:
