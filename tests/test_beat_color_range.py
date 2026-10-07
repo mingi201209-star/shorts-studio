@@ -83,3 +83,36 @@ def test_beat_boundaries_do_not_accumulate_frame_rounding():
     for start, n in zip(starts, counts):
         assert abs(edge / 30 - start) <= 0.5 / 30 + 1e-9
         edge += n
+
+
+def _route_beats(tmp_path, monkeypatch, names):
+    """Run _composite_visual_beats with stubbed ffmpeg steps; return which
+    renderer handled each beat."""
+    from types import SimpleNamespace
+    assets = [tmp_path / n for n in names]
+    beats = [SimpleNamespace(start=float(i), asset=str(a), asset_url=None, attribution=None)
+             for i, a in enumerate(assets)]
+    scene = SimpleNamespace(id="s", visual_beats=beats, overlay_title_seconds=None)
+    calls = []
+    monkeypatch.setattr(render, "_resolve_cached_asset", lambda cand, *a, **k: render.Path(cand["asset"]))
+    monkeypatch.setattr(render, "_log_asset_diagnostics", lambda *a, **k: None)
+    monkeypatch.setattr(render, "_render_beat_clip", lambda asset, frames, fps, out: calls.append(("normalised", asset.name)) or out)
+    monkeypatch.setattr(render, "_render_legacy_still_beat_clip", lambda asset, secs, fps, out: calls.append(("legacy", asset.name)) or out)
+    monkeypatch.setattr(render.subprocess, "run", lambda *a, **k: None)
+    monkeypatch.setattr(render, "_media_duration_seconds", lambda p: 1.0)
+    render._composite_visual_beats(scene, tmp_path / "a.mp3", tmp_path / "a.srt", float(len(names)), 30, tmp_path, 0)
+    return calls
+
+
+def test_all_still_scene_keeps_the_verified_legacy_still_render(tmp_path, monkeypatch):
+    # Comet-style scenes: the BT.709 normalisation shifted CLIP margins of
+    # already-verified stills, so all-still scenes must stay on the legacy path.
+    calls = _route_beats(tmp_path, monkeypatch, ["a.jpg", "b.png", "c.jpg"])
+    assert calls == [("legacy", "a.jpg"), ("legacy", "b.png"), ("legacy", "c.jpg")]
+
+
+def test_scene_mixing_stills_and_video_normalises_every_beat(tmp_path, monkeypatch):
+    # One video beat means concat must join uniform colour tags: every beat,
+    # including the stills, goes through the normalised renderer.
+    calls = _route_beats(tmp_path, monkeypatch, ["a.jpg", "b.mp4", "c.png"])
+    assert calls == [("normalised", "a.jpg"), ("normalised", "b.mp4"), ("normalised", "c.png")]

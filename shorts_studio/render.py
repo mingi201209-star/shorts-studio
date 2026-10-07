@@ -354,15 +354,16 @@ def _beat_frame_counts(starts:list[float], duration:float, fps:int)->list[int]:
 def _render_beat_clip(asset:Path, frames:int, fps:int, beat_clip:Path)->Path:
     """Render one beat's moving picture (no captions/audio) into the media box.
 
-    Every beat clip is normalised to the same stream format -- limited
-    ("tv") range, BT.709 matrix and tags -- because the beats are joined
-    with `concat -c copy`, which keeps the FIRST clip's colour tags for the
-    whole scene. Real failures this prevents: a JPEG still (full-range
-    yuvj420p) before a video beat washed out every later beat, and an HLG/
-    BT.2020 clip after a BT.709 one decoded with the wrong matrix; both were
-    caught by the pinned-source check in visual_change.verify_observed_changes.
-    HDR sources must be tone-mapped before they get here (this only converts
-    the matrix/range; it does not tone-map).
+    Used for scenes that contain at least one moving-video beat. Every beat
+    clip is normalised to the same stream format -- limited ("tv") range,
+    BT.709 matrix and tags -- because the beats are joined with
+    `concat -c copy`, which keeps the FIRST clip's colour tags for the whole
+    scene. Real failures this prevents: a JPEG still (full-range yuvj420p)
+    before a video beat washed out every later beat, and an HLG/BT.2020 clip
+    after a BT.709 one decoded with the wrong matrix; both were caught by the
+    pinned-source check in visual_change.verify_observed_changes. HDR sources
+    must be tone-mapped before they get here (this only converts the
+    matrix/range; it does not tone-map).
     """
     vf=(
         f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos:"
@@ -380,6 +381,26 @@ def _render_beat_clip(asset:Path, frames:int, fps:int, beat_clip:Path)->Path:
     subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return beat_clip
 
+def _render_legacy_still_beat_clip(asset:Path, seconds:float, fps:int, beat_clip:Path)->Path:
+    """Exact pre-normalisation still-image beat render, kept for all-still scenes.
+
+    Every existing all-still production (e.g. Comet) was verified with this
+    exact filter chain, and its CLIP semantic margins are sensitive to tiny
+    pixel changes: switching those stills to the BT.709 normalisation above
+    dropped Comet scene_07 beat 1 from a PASS (margin 0.0306) to
+    NOT_EVALUATED (0.0223) in CI with no other change. The concat colour-tag
+    failures the normalisation fixes only occurred when stills were mixed
+    with video beats, so all-still scenes keep this verified path.
+    """
+    vf=(
+        f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
+        f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
+        f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
+    )
+    cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(seconds),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+    subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+    return beat_clip
+
 def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None, asset_cache:dict|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
@@ -388,13 +409,17 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     visual_clips=[]; assets=[]
     asset_cache=asset_cache if asset_cache is not None else {}
     frame_counts=_beat_frame_counts([float(beat.start) for beat,_ in windows],duration,fps)
-    for beat_index,((beat,beat_duration),frames) in enumerate(zip(windows,frame_counts)):
+    for beat_index,(beat,_) in enumerate(windows):
         candidate={"asset":beat.asset,"asset_url":beat.asset_url,"attribution":beat.attribution}
         asset=_resolve_cached_asset(candidate,build,f"{scene.id}_beat{beat_index}",index,asset_cache)
         if asset is None:
             raise RuntimeError(f"{scene.id}: visual beat {beat_index} asset could not be resolved")
         assets.append(asset)
         _log_asset_diagnostics(f"{scene.id}_beat{beat_index}",asset)
+    # Colour/frame-exact normalisation only where stills and video meet; see
+    # _render_beat_clip and _render_legacy_still_beat_clip.
+    normalise=any(_is_moving_visual_asset(a) for a in assets)
+    for beat_index,(((beat,beat_duration),frames),asset) in enumerate(zip(zip(windows,frame_counts),assets)):
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
         # Per-beat zoom/crop framing variation (push_in/pull_out) was tried and
@@ -405,7 +430,10 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         # every beat renders with the same plain, calm contain-fit framing.
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
         try:
-            _render_beat_clip(asset,max(1,frames),fps,beat_clip)
+            if normalise:
+                _render_beat_clip(asset,max(1,frames),fps,beat_clip)
+            else:
+                _render_legacy_still_beat_clip(asset,beat_duration,fps,beat_clip)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"ffmpeg failed visual beat {scene.id}/{beat_index}: {e.stderr[-2000:] if e.stderr else e}") from e
         except subprocess.TimeoutExpired as e:
@@ -550,14 +578,19 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
             if getattr(scene,"visual_beats",None):
                 clip,beat_assets,beat_durations,beat_clips=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title,asset_cache=asset_cache)
                 asset=_representative_visual_asset(beat_assets,beat_durations,_media_duration_seconds(clip))
+                # Provenance must credit the beat whose asset is reported, not
+                # the scene-level (first beat) attribution.
+                beats=[beat for beat,_ in _visual_beat_windows(scene,duration)]
+                attribution=getattr(beats[beat_assets.index(asset)],"attribution",None) if len(beats)==len(beat_assets) else None
             else:
                 asset=_resolve_asset(candidates[index],build,scene.id,index)
                 clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
+                attribution=candidates[index].get("attribution")
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
             continue
-        used={"index":index,"asset":str(asset) if asset else None,"attribution":candidates[index].get("attribution")}
+        used={"index":index,"asset":str(asset) if asset else None,"attribution":attribution}
         if not scene.visual_qa_requirements:
             result={"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
             break
