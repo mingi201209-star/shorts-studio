@@ -1,0 +1,525 @@
+{
+  "title": "타이어가 도로에서 뜨는 이유",
+  "width": 1080,
+  "height": 1920,
+  "fps": 30,
+  "overlay_title": "타이어가 도로에서 뜬다",
+  "overlay_title_mode": "first_scene_only",
+  "tts_continuity_mode": "scene_continuous",
+  "max_visual_recovery_attempts": 2,
+  "strict_source_diversity": false,
+  "strict_meaningful_visual_changes": true,
+  "strict_retention_contract": true,
+  "strict_visual_production_v2": true,
+  "observable_phenomenon": "젖은 도로에서 타이어와 도로 사이로 물이 파고들어 타이어가 물막 위에 올라타 접촉을 잃는다.",
+  "silent_story": "실제 빗길 물보라 → 노면 물막 → 젖은 타이어 → 물 고인 바닥 위 타이어 → 홈 있는 레인 타이어 vs 슬릭 → 빠르게 도는 바퀴 → 단면도: 앞쪽에 밀려드는 물 → 물 쐐기 → 접촉면 축소 → 물막 위 → 실제 운전 시점 → 이름 붙은 payoff",
+  "silent_interest_review": "pending",
+  "strict_entertainment_contract": false,
+  "scenes": [
+    {
+      "id": "s_hook",
+      "narration": "빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. 문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다.",
+      "narration_plan": [
+        {
+          "role": "HOOK",
+          "text": "빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다.",
+          "hook_type": "contradiction"
+        },
+        {
+          "role": "CRISIS",
+          "text": "문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다."
+        }
+      ],
+      "visual_description": "Real footage opening, real tread evidence, then a continuous hydroplaning cross-section matched to narration.",
+      "asset": "assets/hydroplaning/real_suv_spray.mp4",
+      "attribution": "K (@kelly) / Pexels / Pexels License",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset": "assets/hydroplaning/real_suv_spray.mp4",
+          "attribution": "K (@kelly) / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_spray",
+            "state_id": "flooded_road",
+            "narration_cue": "빗길에선 타이어가 돌고 있어도",
+            "added_information": "real_tires_throwing_spray",
+            "source_sha256": "9750645ad5f1cdaeafdd25a304de67e9d54ec6f8613136406b10292edca60b96"
+          },
+          "visual_qa_requirements": [
+            "빗길에선 실제 자동차 타이어가 물보라를 일으키며 젖은 도로를 달리는 실사 영상으로 첫 프레임부터 주제를 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "real footage of a car driving through rain on a flooded road, its tires throwing water spray"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "9750645ad5f1cdaeafdd25a304de67e9d54ec6f8613136406b10292edca60b96"
+          ],
+          "info_role": "real_tires_throwing_spray",
+          "production": {
+            "role": "hero",
+            "visual_mode": "real_footage",
+            "added_information": "real_tires_throwing_spray"
+          }
+        },
+        {
+          "start": 1.0,
+          "asset": "assets/hydroplaning/real_wet_road_surface.mp4",
+          "attribution": "Zero51 / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_surface",
+            "state_id": "water_film",
+            "narration_cue": "실은 도로에 닿지 않을 수 있습니다",
+            "added_information": "real_water_film_on_road",
+            "source_sha256": "78e93864e8b559b1bf7df1d2c1c0353ef7630a70540d23f4477644340aebac44"
+          },
+          "visual_qa_requirements": [
+            "아스팔트 위에 얇게 깔린 실제 빗물 막을 보여줘 타이어와 도로 사이에 무엇이 끼어드는지 암시하는 장면"
+          ],
+          "visual_qa_labels": [
+            "real low footage of a rain-soaked road surface with a shiny film of water on the asphalt"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "78e93864e8b559b1bf7df1d2c1c0353ef7630a70540d23f4477644340aebac44"
+          ],
+          "info_role": "real_water_film_on_road",
+          "production": {
+            "role": "support",
+            "visual_mode": "real_footage",
+            "added_information": "real_water_film_on_road"
+          }
+        },
+        {
+          "start": 2.0,
+          "asset": "assets/hydroplaning/real_tire_rain_closeup.mp4",
+          "attribution": "Erik Mclean / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_tire",
+            "state_id": "rubber_closeup",
+            "narration_cue": "문제는 고무가 아니라",
+            "added_information": "real_tire_rubber_closeup",
+            "source_sha256": "43003652f7769f0a6dae9da4fcf1f923fe66da19d2cf4e8d044732b7af8fecbd"
+          },
+          "visual_qa_requirements": [
+            "실제 젖은 노면 위 자동차 타이어 고무를 가까이 보여주는 실사 장면"
+          ],
+          "visual_qa_labels": [
+            "real close-up footage of a car tire and wheel on wet pavement in the rain"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "43003652f7769f0a6dae9da4fcf1f923fe66da19d2cf4e8d044732b7af8fecbd"
+          ],
+          "info_role": "real_tire_rubber_closeup",
+          "production": {
+            "role": "support",
+            "visual_mode": "real_footage",
+            "added_information": "real_tire_rubber_closeup"
+          }
+        },
+        {
+          "start": 3.0,
+          "asset": "assets/hydroplaning/real_tire_standing_in_rain.mp4",
+          "attribution": "Nothing Ahead / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_rain_tire",
+            "state_id": "puddle",
+            "narration_cue": "타이어 밑으로 파고드는 물입니다",
+            "added_information": "real_water_pooling_under_tire",
+            "source_sha256": "5be350e64fa6e7518263d01dda568221248973733a8a954cac70438d5f438867"
+          },
+          "visual_qa_requirements": [
+            "빗물이 고인 바닥 위 실제 타이어에 비가 떨어지는 장면으로 타이어 밑의 물을 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "real footage of rain falling on a car tire standing in a puddle of water on the ground"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "5be350e64fa6e7518263d01dda568221248973733a8a954cac70438d5f438867"
+          ],
+          "info_role": "real_water_pooling_under_tire",
+          "production": {
+            "role": "support",
+            "visual_mode": "real_footage",
+            "added_information": "real_water_pooling_under_tire"
+          }
+        }
+      ],
+      "visual_qa_requirements": [
+        "각 내레이션 단서에 맞는 하이드로플레이닝 장면이 실제 화면에 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "real footage of a car driving through rain on a flooded road, its tires throwing water spray"
+      ],
+      "visual_qa_negative_labels": [
+        "a photograph of a cat",
+        "a landscape photograph of mountains",
+        "a city skyline"
+      ],
+      "overlay_title": null,
+      "overlay_title_seconds": 2.8
+    },
+    {
+      "id": "s_reveal",
+      "narration": "타이어 홈은 이 물을 옆으로 빼냅니다. 그런데 속도가 빨라지면, 홈이 빼내는 것보다 물이 더 빨리 밀려듭니다. 타이어 앞쪽으로 물이 쐐기처럼 파고들고,",
+      "narration_plan": [
+        {
+          "role": "REVEAL",
+          "text": "타이어 홈은 이 물을 옆으로 빼냅니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그런데 속도가 빨라지면, 홈이 빼내는 것보다 물이 더 빨리 밀려듭니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "타이어 앞쪽으로 물이 쐐기처럼 파고들고,"
+        }
+      ],
+      "visual_description": "Real footage opening, real tread evidence, then a continuous hydroplaning cross-section matched to narration.",
+      "asset": "assets/hydroplaning/real_rain_tyres_grooves.jpg",
+      "attribution": "Ryosuke Yagi / Wikimedia Commons (Flickr) / CC BY 2.0 (cropped)",
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset": "assets/hydroplaning/real_rain_tyres_grooves.jpg",
+          "attribution": "Ryosuke Yagi / Wikimedia Commons (Flickr) / CC BY 2.0 (cropped)",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "tread_photo",
+            "state_id": "grooves",
+            "narration_cue": "타이어 홈은 이 물을 옆으로 빼냅니다",
+            "added_information": "real_tread_grooves_vs_slick",
+            "source_sha256": "ff3ed46494f24b5cb0ff981d3526334d04cf5efaf25e95834751da9232fccbf8"
+          },
+          "visual_qa_requirements": [
+            "깊은 배수 홈이 있는 실제 레인 타이어와 홈 없는 슬릭 타이어를 사진으로 비교해 홈의 역할을 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "a real photograph of stacked racing rain tyres with deep tread grooves next to a smooth slick tyre"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "ff3ed46494f24b5cb0ff981d3526334d04cf5efaf25e95834751da9232fccbf8"
+          ],
+          "info_role": "real_tread_grooves_vs_slick",
+          "production": {
+            "role": "evidence",
+            "visual_mode": "real_photo",
+            "added_information": "real_tread_grooves_vs_slick"
+          }
+        },
+        {
+          "start": 1.0,
+          "asset": "assets/hydroplaning/real_fast_wheel_spin.mp4",
+          "attribution": "Erik Mclean / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_fast_wheel",
+            "state_id": "spinning",
+            "narration_cue": "그런데 속도가 빨라지면",
+            "added_information": "real_wheel_speed_rising",
+            "source_sha256": "b6076837a789c23d86538acef7f2415d57cec0a27765b9b8dd498f794593e99b"
+          },
+          "visual_qa_requirements": [
+            "빠르게 회전하며 달리는 실제 자동차 바퀴를 가까이 보여줘 속도가 빨라지는 상황을 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "real close-up footage of a car wheel spinning fast on a wet road while driving"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "b6076837a789c23d86538acef7f2415d57cec0a27765b9b8dd498f794593e99b"
+          ],
+          "info_role": "real_wheel_speed_rising",
+          "production": {
+            "role": "support",
+            "visual_mode": "real_footage",
+            "added_information": "real_wheel_speed_rising"
+          }
+        },
+        {
+          "start": 2.0,
+          "asset": "assets/hydroplaning/section_bow_wave.mp4",
+          "attribution": null,
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "section",
+            "state_id": "bow_wave",
+            "narration_cue": "물이 더 빨리 밀려듭니다",
+            "added_information": "water_piling_ahead",
+            "source_sha256": "53184b4c39eb893c84eda8a976e1c86b06cf46ba242ad8d5d2f3a92056562e9d"
+          },
+          "visual_qa_requirements": [
+            "타이어 단면도와 접촉 부위 확대 화면으로 빠지지 못한 물이 타이어 앞쪽에 밀려드는 모습을 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "a side-view cross-section diagram of a rolling car tire on a wet road with water piling up in front of it and a magnified inset of its contact patch"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "53184b4c39eb893c84eda8a976e1c86b06cf46ba242ad8d5d2f3a92056562e9d"
+          ],
+          "info_role": "water_piling_ahead",
+          "production": {
+            "role": "mechanism",
+            "visual_mode": "physical_animation",
+            "added_information": "water_piling_ahead"
+          }
+        },
+        {
+          "start": 3.0,
+          "asset": "assets/hydroplaning/section_wedge_entering.mp4",
+          "attribution": null,
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "section",
+            "state_id": "wedge",
+            "narration_cue": "타이어 앞쪽으로 물이 쐐기처럼 파고들고",
+            "added_information": "wedge_entering_contact",
+            "source_sha256": "4171a03fd6def6945a22462a0b54faac574f45d4509ce2290f7128265b61b296"
+          },
+          "visual_qa_requirements": [
+            "물 쐐기가 타이어 접촉면 앞쪽 아래로 파고드는 모습을 확대 화면으로 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "a cross-section diagram of a water wedge pushing under the front of a car tire's contact patch"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "4171a03fd6def6945a22462a0b54faac574f45d4509ce2290f7128265b61b296"
+          ],
+          "info_role": "wedge_entering_contact",
+          "production": {
+            "role": "support",
+            "visual_mode": "physical_animation",
+            "added_information": "wedge_entering_contact"
+          }
+        }
+      ],
+      "visual_qa_requirements": [
+        "각 내레이션 단서에 맞는 하이드로플레이닝 장면이 실제 화면에 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "a real photograph of stacked racing rain tyres with deep tread grooves next to a smooth slick tyre"
+      ],
+      "visual_qa_negative_labels": [
+        "a photograph of a cat",
+        "a landscape photograph of mountains",
+        "a city skyline"
+      ],
+      "overlay_title": null,
+      "overlay_title_seconds": null
+    },
+    {
+      "id": "s_twist",
+      "narration": "도로에 닿아 있던 면이 점점 줄어들다가, 결국 타이어가 물막 위에 올라탑니다. 핸들도 브레이크도 거의 듣지 않습니다. 이게 바로 하이드로플레이닝입니다.",
+      "narration_plan": [
+        {
+          "role": "EXPLANATION",
+          "text": "도로에 닿아 있던 면이 점점 줄어들다가,"
+        },
+        {
+          "role": "TWIST",
+          "text": "결국 타이어가 물막 위에 올라탑니다."
+        },
+        {
+          "role": "CRISIS",
+          "text": "핸들도 브레이크도 거의 듣지 않습니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "이게 바로 하이드로플레이닝입니다."
+        }
+      ],
+      "visual_description": "Real footage opening, real tread evidence, then a continuous hydroplaning cross-section matched to narration.",
+      "asset": "assets/hydroplaning/section_contact_shrinking.mp4",
+      "attribution": null,
+      "visual_beats": [
+        {
+          "start": 0.0,
+          "asset": "assets/hydroplaning/section_contact_shrinking.mp4",
+          "attribution": null,
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "section",
+            "state_id": "shrinking",
+            "narration_cue": "도로에 닿아 있던 면이 점점 줄어들다가",
+            "added_information": "contact_patch_shrinking",
+            "source_sha256": "cd27fe89da5bd2fc2fa58a1588497478853cd1cbbcf8faa7792778a15fd8c3ad"
+          },
+          "visual_qa_requirements": [
+            "도로에 닿아 있던 주황색 접촉면이 점점 짧아지는 모습을 확대 화면으로 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "a cross-section diagram of a car tire whose glowing road contact patch is shrinking as water spreads beneath it"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "cd27fe89da5bd2fc2fa58a1588497478853cd1cbbcf8faa7792778a15fd8c3ad"
+          ],
+          "info_role": "contact_patch_shrinking",
+          "production": {
+            "role": "support",
+            "visual_mode": "physical_animation",
+            "added_information": "contact_patch_shrinking"
+          }
+        },
+        {
+          "start": 1.0,
+          "asset": "assets/hydroplaning/section_riding_film.mp4",
+          "attribution": null,
+          "visual_change": {
+            "kind": "state",
+            "concept_id": "section",
+            "state_id": "riding_film",
+            "narration_cue": "결국 타이어가 물막 위에 올라탑니다",
+            "added_information": "tire_riding_water_film",
+            "source_sha256": "de4921f8378723e5aaee7244aa248bdcadbc8ec08ca684c3fcd81c89def58772"
+          },
+          "visual_qa_requirements": [
+            "접촉면이 사라지고 타이어가 얇은 물막 위에 올라탄 상태를 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "a cross-section diagram of a car tire riding on a continuous thin film of water with no road contact left"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "de4921f8378723e5aaee7244aa248bdcadbc8ec08ca684c3fcd81c89def58772"
+          ],
+          "info_role": "tire_riding_water_film",
+          "production": {
+            "role": "second_peak",
+            "visual_mode": "physical_animation",
+            "added_information": "tire_riding_water_film"
+          }
+        },
+        {
+          "start": 2.0,
+          "asset": "assets/hydroplaning/real_rainy_drive_pov.mp4",
+          "attribution": "Zero51 / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_pov",
+            "state_id": "rainy_drive",
+            "narration_cue": "핸들도 브레이크도 거의 듣지 않습니다",
+            "added_information": "real_driver_pov_consequence",
+            "source_sha256": "38090231c53c068c4805eba07418273b620366cd3e55edf4204372ced582fbd7"
+          },
+          "visual_qa_requirements": [
+            "실제 빗길 운전 시점으로 조향과 제동이 듣지 않는 상황의 위험을 체감시키는 장면"
+          ],
+          "visual_qa_labels": [
+            "real driver point-of-view footage of driving on a wet rainy road"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "38090231c53c068c4805eba07418273b620366cd3e55edf4204372ced582fbd7"
+          ],
+          "info_role": "real_driver_pov_consequence",
+          "production": {
+            "role": "support",
+            "visual_mode": "real_footage",
+            "added_information": "real_driver_pov_consequence"
+          }
+        },
+        {
+          "start": 3.0,
+          "asset": "assets/hydroplaning/section_named_payoff.mp4",
+          "attribution": null,
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "hydroplane_named",
+            "state_id": "full_film",
+            "narration_cue": "이게 바로 하이드로플레이닝입니다",
+            "added_information": "named_full_hydroplane",
+            "source_sha256": "fea5e452e1c2f33704afe26d4b0733f9c662ee6d62025d1d4d50b96f7de2fbb0"
+          },
+          "visual_qa_requirements": [
+            "타이어와 도로 사이가 물막으로 완전히 분리된 하이드로플레이닝 상태를 이름과 함께 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "a labeled cross-section diagram of a car tire fully hydroplaning on a water film, titled hydroplaning"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "fea5e452e1c2f33704afe26d4b0733f9c662ee6d62025d1d4d50b96f7de2fbb0"
+          ],
+          "info_role": "named_full_hydroplane",
+          "production": {
+            "role": "payoff",
+            "visual_mode": "physical_animation",
+            "added_information": "named_full_hydroplane"
+          }
+        }
+      ],
+      "visual_qa_requirements": [
+        "각 내레이션 단서에 맞는 하이드로플레이닝 장면이 실제 화면에 보여야 함"
+      ],
+      "visual_qa_labels": [
+        "a cross-section diagram of a car tire whose glowing road contact patch is shrinking as water spreads beneath it"
+      ],
+      "visual_qa_negative_labels": [
+        "a photograph of a cat",
+        "a landscape photograph of mountains",
+        "a city skyline"
+      ],
+      "overlay_title": null,
+      "overlay_title_seconds": null
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# 타이어가 도로에서 뜨는 이유 — 출처
+
+실제 촬영 영상 (Pexels License, 잘라내기·크기 조정):
+- K (@kelly) / Pexels / Pexels License (https://www.pexels.com/video/car-driving-on-a-rainy-day-3999392/)
+- Erik Mclean / Pexels / Pexels License (https://www.pexels.com/video/close-up-of-car-tyre-in-rain-13891268/)
+- Zero51 / Pexels / Pexels License (https://www.pexels.com/video/wet-road-13908904/)
+- Nothing Ahead / Pexels / Pexels License (https://www.pexels.com/video/rainfall-on-car-tire-detail-cinematic-stock-39810348/)
+- Erik Mclean / Pexels / Pexels License (https://www.pexels.com/video/close-up-of-a-fast-moving-sport-car-wheel-39140749/)
+- Zero51 / Pexels / Pexels License (https://www.pexels.com/video/driving-along-a-wet-road-on-a-rainy-day-13370432/)
+
+레인 타이어 사진: Ryosuke Yagi / Wikimedia Commons (Flickr) / CC BY 2.0 (cropped) (https://commons.wikimedia.org/wiki/File:Michelin_rain_and_intermediate_tyres_2005_United_States_GP_(19889979).jpg),
+라이선스: https://creativecommons.org/licenses/by/2.0/ — 원본에서 잘라내 사용했습니다.
+
+타이어 단면도와 접촉 부위 확대 화면은 이 영상을 위해 직접 렌더링한 설명용 그래픽입니다. 물막 두께는
+이해를 돕기 위해 과장해서 그렸습니다(실제로는 수 밀리미터 수준).
+
+설명된 물리적 메커니즘(물이 타이어와 노면 사이에 쌓이면 접촉력이 감소할 수 있고, 충분히 심해지면
+완전히 접촉을 잃을 수 있으며, 트레드 홈은 접촉 영역의 물 배출에 도움을 주고, 이때 조향과 제동이
+제대로 듣지 않을 수 있다는 점)은 미국 도로교통안전국(NHTSA)의 공개된 하이드로플레이닝 안전 설명을
+참고해 과장 없이 서술했습니다. 정확한 임계 속도나 공식은 조건에 따라 달라지므로 영상에서 보편적
+수치로 제시하지 않았습니다.

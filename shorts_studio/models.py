@@ -368,6 +368,14 @@ class Project(BaseModel):
     # flow across adjacent short sentences without a provider reset at every
     # discourse boundary. It remains off by default until human A/B review.
     tts_continuity_mode: Literal["unitized", "scene_continuous"] = "unitized"
+    # Voice source (see shorts_studio/narration.py). "edge" keeps every
+    # existing manifest byte-identical; "prerendered" reads an external
+    # narration (audio + word timings) from narration_dir; "elevenlabs"
+    # uses the official SDK with narration_voice as the voice id. Env vars
+    # SHORTS_NARRATION_PROVIDER/_DIR/_VOICE override these at render time.
+    narration_provider: Literal["edge", "prerendered", "elevenlabs"] = "edge"
+    narration_dir: str | None = None
+    narration_voice: str | None = None
 
     @model_validator(mode="after")
     def vertical(self):

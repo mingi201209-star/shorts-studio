@@ -1,18 +1,32 @@
 #!/usr/bin/env python3
 """Build the hydroplaning Shorts production.
 
-Quality-reset production: the opening is grounded in real high-resolution
-rain/tire footage so the very first frame does not read as low-budget CG.
-The existing physical animation is demoted to a short mechanism explainer
-later in the story instead of carrying the opening impression. A real tire
-photo still grounds tread geometry before the mechanism sequence.
+Quality-reset production. The first ~9 seconds are four different pieces of
+real, explicitly licensed footage (a car throwing spray on a flooded road,
+a wet road surface, a wet tire close-up, a tire standing in a puddle in the
+rain) so the opening never reads as low-budget CG; the speed line is also
+real footage. A real photo of grooved rain tyres
+next to a slick grounds the tread-drainage clue. The mechanism is then
+shown only where no camera can see it -- the wedge under the contact
+patch -- with a physically faithful side-view cross-section plus a magnified
+contact-zone inset (shorts_studio.hydroplaning_section), replacing the
+earlier flat-shaded 3D cylinder that a frame review judged cheap-looking and
+whose exaggerated lift was misleading. A real driving POV carries the
+consequence line before the payoff.
+
+Every real clip is pinned to a concrete provider MP4 (no search results, no
+rotating CDN queries) and then trimmed/cropped ONCE with FFmpeg to the
+renderer's 980x950 media box, so the picture fills the box instead of being
+letterboxed into a thin strip. Each beat uses a different source; no beat
+is a crop/zoom of a neighbouring beat.
 """
 from __future__ import annotations
 
-import argparse, hashlib, json, time, urllib.parse, urllib.request
+import argparse, hashlib, json, os, subprocess, time, urllib.parse, urllib.request
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
-from shorts_studio.hydroplaning3d import render_motion_clip
+from shorts_studio.hydroplaning_section import render_clip as render_section_clip
 from shorts_studio.hook_studio import (
     HookCandidate, TopicBrief, generate_and_judge,
     build_story_generation_prompt, story_writer_system_prompt,
@@ -20,33 +34,69 @@ from shorts_studio.hook_studio import (
 
 NEG = ["a photograph of a cat", "a landscape photograph of mountains", "a city skyline"]
 
-TIRE_PHOTO_FILE = "The tire wheel of Mercedes-AMG C63 S (W205).JPG"
-TIRE_PHOTO_PAGE = "https://commons.wikimedia.org/wiki/File:The_tire_wheel_of_Mercedes-AMG_C63_S_(W205).JPG"
-TIRE_PHOTO_ATTRIBUTION = "Tokumeigakarinoaoshima / Wikimedia Commons / CC0 1.0 Universal Public Domain Dedication"
+# Picture size inside shorts_studio.render's 980x950 media box. 12 px of black
+# stays above/below so the picture never reaches the title gate's row band
+# (final_video_qa.TITLE_ROW_BAND ends 10 px inside the box), which full-bleed
+# footage otherwise trips once the title window has ended.
+BOX_W, BOX_H = 980, 926
 
-HOOK_TIRE_VIDEO_URL = "https://videos.pexels.com/video-files/13891268/13891268-uhd_4096_2160_24fps.mp4"
-HOOK_TIRE_VIDEO_PAGE = "https://www.pexels.com/video/close-up-of-car-tyre-in-rain-13891268/"
-HOOK_TIRE_VIDEO_ATTRIBUTION = "Erik Mclean / Pexels / Pexels License"
+RAIN_TYRES_PHOTO_FILE = "Michelin rain and intermediate tyres 2005 United States GP (19889979).jpg"
+RAIN_TYRES_PHOTO_PAGE = "https://commons.wikimedia.org/wiki/File:Michelin_rain_and_intermediate_tyres_2005_United_States_GP_(19889979).jpg"
+RAIN_TYRES_PHOTO_ATTRIBUTION = "Ryosuke Yagi / Wikimedia Commons (Flickr) / CC BY 2.0 (cropped)"
 
-HOOK_ROAD_VIDEO_URL = "https://videos.pexels.com/video-files/13370432/13370432-uhd_2160_3840_25fps.mp4"
-HOOK_ROAD_VIDEO_PAGE = "https://www.pexels.com/video/driving-along-a-wet-road-on-a-rainy-day-13370432/"
-HOOK_ROAD_VIDEO_ATTRIBUTION = "Zero51 / Pexels / Pexels License"
+# Pinned provider MP4s: key -> (url, landing page, attribution).
+REAL_SOURCES = {
+    "suv": ("https://videos.pexels.com/video-files/3999392/3999392-hd_1920_1080_24fps.mp4",
+            "https://www.pexels.com/video/car-driving-on-a-rainy-day-3999392/",
+            "K (@kelly) / Pexels / Pexels License"),
+    "tire": ("https://videos.pexels.com/video-files/13891268/13891268-uhd_4096_2160_24fps.mp4",
+             "https://www.pexels.com/video/close-up-of-car-tyre-in-rain-13891268/",
+             "Erik Mclean / Pexels / Pexels License"),
+    "surface": ("https://videos.pexels.com/video-files/13908904/13908904-uhd_1440_2560_50fps.mp4",
+                "https://www.pexels.com/video/wet-road-13908904/",
+                "Zero51 / Pexels / Pexels License"),
+    "rain_tire": ("https://videos.pexels.com/video-files/39810348/16977474_1920_1080_60fps.mp4",
+                  "https://www.pexels.com/video/rainfall-on-car-tire-detail-cinematic-stock-39810348/",
+                  "Nothing Ahead / Pexels / Pexels License"),
+    "wheel": ("https://videos.pexels.com/video-files/39140749/16655563_1440_2560_60fps.mp4",
+              "https://www.pexels.com/video/close-up-of-a-fast-moving-sport-car-wheel-39140749/",
+              "Erik Mclean / Pexels / Pexels License"),
+    "pov": ("https://videos.pexels.com/video-files/13370432/13370432-uhd_2160_3840_25fps.mp4",
+            "https://www.pexels.com/video/driving-along-a-wet-road-on-a-rainy-day-13370432/",
+            "Zero51 / Pexels / Pexels License"),
+}
+
+# Prepared beat clips: key -> (source, local name, trim start s, crop w:h:x:y in source px,
+# output seconds, slow-motion factor). Every clip is steady enough that the rendered beat
+# can be verified frame-for-frame against it (a handheld 60 fps spray clip was tried and
+# dropped: its frame-to-frame change exceeded the pinned-source check's tolerance).
+REAL_CLIPS = {
+    "spray": ("suv", "real_suv_spray", 3.5, "1114:1080:120:0", 6.0, 1.0),
+    "surface": ("surface", "real_wet_road_surface", 0.0, "1440:1396:0:1014", 6.0, 1.0),
+    "tire": ("tire", "real_tire_rain_closeup", 0.0, "2228:2160:800:0", 6.0, 1.0),
+    "rain_tire": ("rain_tire", "real_tire_standing_in_rain", 2.0, "1114:1080:280:0", 6.0, 1.0),
+    "fast_wheel": ("wheel", "real_fast_wheel_spin", 0.0, "1440:1396:0:700", 5.5, 1.0),
+    "pov": ("pov", "real_rainy_drive_pov", 1.0, "2160:2094:0:1300", 6.0, 1.0),
+}
+REAL_CLIP_SECONDS = 6.0
+HDR_TRANSFERS = {"arib-std-b67", "smpte2084"}
+BT709_TAGS = ["-color_range", "tv", "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709"]
 
 
 def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def download_required_photo(out: Path) -> Path:
+def download_required_photo(commons_file: str, out: Path) -> Path:
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.is_file() and out.stat().st_size > 20_000:
         return out
-    encoded = urllib.parse.quote(TIRE_PHOTO_FILE.replace(" ", "_"), safe="._-()")
+    encoded = urllib.parse.quote(commons_file.replace(" ", "_"), safe="._-()")
     url = f"https://commons.wikimedia.org/wiki/Special:Redirect/file/{encoded}"
     last = None
     for attempt in range(4):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": "shorts-studio/0.1 (CC0 production asset)"})
+            req = urllib.request.Request(url, headers={"User-Agent": "shorts-studio/0.1 (CC-licensed production asset)"})
             with urllib.request.urlopen(req, timeout=45) as r:
                 data = r.read()
             if len(data) < 20_000:
@@ -62,8 +112,7 @@ def download_required_photo(out: Path) -> Path:
             out.unlink(missing_ok=True)
             if attempt < 3:
                 time.sleep(5 * (attempt + 1))
-    raise RuntimeError(f"failed to fetch required tire tread photo: {last}")
-
+    raise RuntimeError(f"failed to fetch required photo {commons_file}: {last}")
 
 
 def download_required_video(url: str, out: Path, label: str) -> Path:
@@ -102,16 +151,65 @@ def download_required_video(url: str, out: Path, label: str) -> Path:
     raise RuntimeError(f"failed to fetch required {label} footage: {last}")
 
 
+def prepare_real_clip(src: Path, out: Path, start: float, crop: str, seconds: float = REAL_CLIP_SECONDS,
+                      slowmo: float = 1.0) -> Path:
+    """Trim + crop + scale one real clip to exactly fill the media box.
+
+    One FFmpeg pass (HDR tone-map when the source is HLG/PQ, trim, crop,
+    Lanczos scale, constant 30 fps, H.264 CRF 16, BT.709 tags, no audio).
+    Fails closed if the result is shorter than asked. ``slowmo=2`` plays a
+    60 fps source at half speed into 30 fps: every source frame is kept, no
+    interpolated frames are invented.
+    """
+    if out.is_file() and out.stat().st_size > 1_000_000:
+        return out
+    trc = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=color_transfer",
+                          "-of", "csv=p=0", str(src)], capture_output=True, text=True, check=True).stdout.strip()
+    if trc in HDR_TRANSFERS:
+        # HDR (HLG/PQ) -> SDR BT.709 with FFmpeg's documented zscale+tonemap chain.
+        to_sdr = ("zscale=t=linear:npl=100,format=gbrpf32le,zscale=p=bt709,tonemap=hable:desat=0,"
+                  "zscale=t=bt709:m=bt709:r=tv,format=yuv420p,")
+    else:
+        to_sdr = "scale=out_color_matrix=bt709:out_range=tv,"
+    subprocess.run([
+        "ffmpeg", "-y", "-loglevel", "error", "-ss", f"{start:.3f}", "-t", f"{seconds / slowmo:.3f}", "-i", str(src),
+        "-vf", f"{to_sdr}crop={crop},scale={BOX_W}:{BOX_H}:flags=lanczos,setsar=1,setpts={slowmo}*PTS,fps=30,format=yuv420p",
+        "-an", "-c:v", "libx264", "-preset", "slow", "-crf", "16", *BT709_TAGS, "-movflags", "+faststart", str(out),
+    ], check=True, capture_output=True, timeout=300)
+    probe = json.loads(subprocess.run(
+        ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "json", str(out)],
+        capture_output=True, text=True, check=True).stdout)
+    if float(probe["format"]["duration"]) < seconds - 0.2:
+        raise RuntimeError(f"prepared clip {out} is shorter than {seconds}s")
+    print(f"HYDROPLANING_REAL_CLIP_PREPARED={out} sha256={sha(out)}")
+    return out
+
+
+def prepare_rain_tyres_photo(src: Path, out: Path) -> Path:
+    """Crop the grooved rain tyres plus the slick next to them to the box aspect."""
+    from PIL import Image
+    with Image.open(src) as im:
+        im = im.convert("RGB")
+        w, h = im.size
+        cw = round(h * BOX_W / BOX_H)
+        left = min(max(0, round(w * 0.17)), w - cw)
+        im.crop((left, 0, left + cw, h)).resize((BOX_W * 2, BOX_H * 2), Image.LANCZOS).save(out, "JPEG", quality=93)
+    return out
+
+
 class HydroplaningHookGenerator:
+    """Six strategy-tagged candidates; each carries a real tension marker and
+    keeps the hedge the facts require ("~수 있습니다"). The unchanged
+    RuleBasedHookJudge picks the winner."""
     def generate(self, brief: TopicBrief) -> list[HookCandidate]:
         f = brief.fact_by_strategy()
         texts = {
-            "contradiction": "빗길에선 타이어가 돌고 있어도 도로를 놓칠 수 있습니다.",
-            "surprising_consequence": "빗길에선 멀쩡한 타이어도 도로에서 뜰 수 있습니다.",
-            "counterintuitive_fact": "타이어 홈이 있어도 물을 다 빼내지 못할 수 있습니다.",
-            "visible_anomaly": "빗길에선 타이어가 돌면서도 접촉을 잃을 수 있습니다.",
-            "mistaken_assumption": "타이어가 돌고 있다고 항상 도로를 밟는 건 아닙니다.",
-            "unresolved_cause_effect": "물이 빠지는 것보다 빨리 쌓이면 타이어가 뜹니다.",
+            "contradiction": "빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다.",
+            "surprising_consequence": "놀랍게도 멀쩡한 타이어가 빗길에선 도로와의 접촉을 잃을 수 있습니다.",
+            "counterintuitive_fact": "타이어 홈이 멀쩡해도, 실은 물을 다 빼내지 못할 수 있습니다.",
+            "visible_anomaly": "이상하게도 빗길에선 타이어가 돌면서도 바닥을 밟지 못할 수 있습니다.",
+            "mistaken_assumption": "생각과 달리, 돌고 있는 타이어가 도로를 밟고 있지 않을 수 있습니다.",
+            "unresolved_cause_effect": "타이어 홈이 물을 계속 빼내는데도, 이상하게 접촉을 잃는 순간이 옵니다.",
         }
         return [HookCandidate(strategy=s, text=texts[s], grounded_in=f[s]) for s in texts]
 
@@ -131,6 +229,7 @@ def make_brief() -> TopicBrief:
             "물이 타이어와 노면 사이에 쌓이면 접촉력이 감소할 수 있습니다",
             "충분히 심해지면 타이어가 노면과의 접촉을 완전히 잃을 수 있습니다",
             "타이어 트레드 홈은 접촉 영역의 물 배출에 도움을 줍니다",
+            "하이드로플레이닝이 일어나면 조향과 제동이 제대로 듣지 않을 수 있습니다",
         ],
     )
 
@@ -162,81 +261,41 @@ def beat(asset: Path, cue: str, info_role: str, concept_id: str, state_id: str, 
     }
 
 
+# Cross-section windows over the single global progress g (see
+# shorts_studio.hydroplaning_section). Each clip is a little longer than the
+# beat it serves (measured Edge timing, see docs in the module) so the
+# renderer never has to loop a clip; adjacent windows abut so the physical
+# process reads as continuous across cuts.
+SECTION_CLIPS = {
+    "section_bow_wave": (0.22, 0.46, 2.8, None),
+    "section_wedge_entering": (0.47, 0.68, 3.8, None),
+    "section_contact_shrinking": (0.69, 0.83, 2.8, None),
+    "section_riding_film": (0.84, 0.96, 3.8, None),
+    "section_named_payoff": (0.965, 1.00, 3.6, "하이드로플레이닝"),
+}
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--font", default=None); args = ap.parse_args()
     assets = Path("assets/hydroplaning"); assets.mkdir(parents=True, exist_ok=True)
-    tire_photo = download_required_photo(assets / "tire_tread_photo.jpg")
-    hook_tire_video = download_required_video(
-        HOOK_TIRE_VIDEO_URL, assets / "hook_real_tire_rain.mp4", "real tire-in-rain"
-    )
-    hook_road_video = download_required_video(
-        HOOK_ROAD_VIDEO_URL, assets / "hook_real_wet_road.mp4", "real wet-road"
-    )
+    src_dir = assets / "sources"; src_dir.mkdir(exist_ok=True)
 
-    # Each clip is centered on one of a small set of global-progress anchor
-    # points that were chosen empirically (not just evenly sliced) so that
-    # EVERY pair of anchors -- not just neighbors -- renders a genuinely,
-    # substantially different frame under the engine's own real
-    # equivalent-framing/replay detector (shorts_studio.visual_change).
-    #
-    # Two real CI rounds taught two separate lessons:
-    #  - run 37039874973: finely slicing a near-flat stretch of the physics
-    #    curve into many almost-identical states fails the per-beat
-    #    distinctness check outright. Fix: fewer, well-separated anchors.
-    #  - run 37081489230: even with well-separated anchors, a narrow g
-    #    window around each one (the anchor +/- ~0.01, chosen purely to keep
-    #    the sampled frame close to the verified value) reads as visually
-    #    STATIC to a real viewer and to the engine's real pixel-level cut
-    #    detector once composited into the actual final.mp4 -- direct human
-    #    review of that run's frames at 0.5/1.5/2.5/3.5s confirmed they were
-    #    "almost identical", and visual_activity_real found zero real cuts
-    #    in the first 6s despite three "different" declared beats there.
-    #    Fix here: each window now runs forward a real, substantial fraction
-    #    of the gap to the NEXT anchor (not a tiny slice), so the water and
-    #    tire are visibly, continuously moving for the clip's entire runtime
-    #    -- and the opening uses one single LARGE jump (already-hydroplaning
-    #    straight to the normal baseline) instead of three fine steps, so
-    #    the first real cut is unmistakable rather than subtle.
-    #  - run 37103835807: that fix cleared every gate except
-    #    visual_activity_real, which still found 12.5s of real static picture
-    #    from 6.5s onward (threshold 5.0s) -- direct per-0.5s adjacent-frame
-    #    diffs the user pulled from the real final.mp4 showed 2.5-6.5s well
-    #    above the 12.0 change threshold but 8.5-17.0s consistently under it,
-    #    even though the physics (wedge/contact/lift) kept changing: the
-    #    wedge2/contact1/contact2/payoff windows above were still only
-    #    dg=0.03-0.04 wide, too little real motion to clear a threshold
-    #    measured over the WHOLE padded 1080x950 media box (most of which is
-    #    dark background/road, diluting the mean). Fixed on two fronts:
-    #    (1) widened wedge1/wedge2/contact1/contact2/contact3's windows here
-    #    to use most of the real gap to their next anchor (dg=0.07-0.17
-    #    instead of 0.03-0.04); (2) shorts_studio/hydroplaning3d.py now ties
-    #    a large, high-contrast rotating wheel-spoke pattern, a continuously
-    #    rippling water-flow phase, and a scrolling road texture all directly
-    #    to the tire's own rotation -- a fast, continuous clock (2.2 full
-    #    spins across the whole production) layered on the slow hydroplaning
-    #    state, so every beat stays visibly live regardless of how little the
-    #    slow physics itself moves within its own window. Locally verified
-    #    against a direct reimplementation of the real 2fps/media-box/
-    #    mean-abs-diff>12 check (see shorts_studio.final_video_qa.
-    #    measure_visual_activity) run against the actual rendered clips at
-    #    this run's real measured beat timings: max_static_visual_seconds
-    #    drops to ~2.5s, well under the 5.0s gate, with every beat boundary
-    #    clearing the threshold by a comfortable (12-58) margin, not a
-    #    razor-thin one.
-    clips = {
-        "hook_b": (0.880, 0.935, 2.2),    # cold open: already fully floating
-        "base": (0.000, 0.150, 2.2),      # normal rolling, full contact, draining
-        "wedge1": (0.370, 0.460, 2.2),    # wedge now clearly visible, contact dented
-        "wedge2": (0.470, 0.540, 2.0),    # wedge bigger, contact further reduced -- REVEAL
-        "contact1": (0.550, 0.630, 2.0),  # contact patch visibly collapsing
-        "contact2": (0.640, 0.720, 2.0),  # less than half the patch left
-        "contact3": (0.730, 0.860, 2.2),  # almost fully lifted
-        "payoff": (0.950, 1.000, 2.4),    # final full hydroplaning state
-    }
-    motion = {
-        k: render_motion_clip(assets / f"{k}.mp4", g0, g1, duration=dur, fps=30)
-        for k, (g0, g1, dur) in clips.items()
-    }
+    tyres_src = download_required_photo(RAIN_TYRES_PHOTO_FILE, src_dir / "michelin_rain_tyres_2005.jpg")
+    rain_tyres = prepare_rain_tyres_photo(tyres_src, assets / "real_rain_tyres_grooves.jpg")
+
+    raw = {key: download_required_video(url, src_dir / f"{key}_source.mp4", key)
+           for key, (url, _page, _attr) in REAL_SOURCES.items()}
+    real = {key: prepare_real_clip(raw[src], assets / f"{name}.mp4", start, crop, seconds, slowmo)
+            for key, (src, name, start, crop, seconds, slowmo) in REAL_CLIPS.items()}
+
+    # Independent clips -> render them in parallel worker processes.
+    with ProcessPoolExecutor(max_workers=min(len(SECTION_CLIPS), os.cpu_count() or 1, 4)) as pool:
+        futures = {
+            name: pool.submit(render_section_clip, assets / f"{name}.mp4", g0, g1, duration=dur, fps=30,
+                              font_path=args.font, headline=headline)
+            for name, (g0, g1, dur, headline) in SECTION_CLIPS.items()
+        }
+        section = {name: f.result() for name, f in futures.items()}
 
     brief = make_brief()
     hook_result = generate_and_judge(brief, generator=HydroplaningHookGenerator())
@@ -259,98 +318,90 @@ def main():
         story_writer_system_prompt() + "\n\n" + story_prompt + "\n", encoding="utf-8")
     print("STORY_PROMPT_V3_READY=build/hydroplaning_story_prompt.txt")
 
-    # Story order rebuilt around the real first_10s_retention windows
-    # (0.2-3.0s: a real visual cut proving the HOOK claim; 3-8s: a new
-    # state-change/tension beat; 8-12s: an early REVEAL/PAYOFF) instead of
-    # evenly dividing narration. The opening is now exactly ONE dramatic cut
-    # -- hero (already fully floating) straight to the normal baseline, a
-    # huge pixel jump that a real cut detector cannot miss -- rather than
-    # three fine steps across a narrow g range, which run 37081489230 showed
-    # reads as static to both a human viewer and the engine's real
-    # visual_activity_real detector even though each step was a "different"
-    # declared state. REVEAL is now genuinely the wedge visibly growing
-    # (wedge2), timed via the real measured per-beat rate from that run
-    # (~3.2-4.2 normalized chars/sec within a scene, ~1.3-2.4s crossing a
-    # scene boundary) to land inside the mandatory 8-12s window, not just
-    # relabeled.
-    # hookb is deliberately kept IN THE SAME SCENE as base (not alone in its
-    # own scene) so its hold is pure phrase-length/rate with no risk of
-    # picking up the unpredictable ~1.3-2.4s trailing-silence pad a scene's
-    # OWN last beat pays (observed directly in run 37081489230's real
-    # per-beat timings) -- that pad alone could push the mandatory
-    # 0.2-3.0s opening visual-proof cut outside its window regardless of how
-    # short the hook text is. Every scene's actual LAST beat below carries
-    # the shortest phrase in that scene for the same reason.
+    # Timing plan (measured Edge WordBoundary timing, scene-continuous mode):
+    # every beat stays within the 3.5s cadence limit and above the 1.2s
+    # readability floor; the first real cut lands ~1.8s (inside the 0.2-3.0s
+    # visual-proof window), CRISIS starts ~5s (3-8s window) and REVEAL starts
+    # with s_reveal at ~9.3s (8-12s window).
     hook = winner.text
-    crisis = "문제는 고무가 아니라, 타이어 아래로 밀려드는 물입니다."
+    attr = {k: REAL_SOURCES[v[0]][2] for k, v in REAL_CLIPS.items()}
     plans = [
         ("s_hook", [
             phrase("HOOK", hook, winner.strategy),
-            phrase("CRISIS", crisis),
+            phrase("CRISIS", "문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다."),
         ], [
-            beat(hook_tire_video, hook, "real_tire_rain_hook", "hook_real_tire", "rain_closeup", "concept",
-                 "real cinematic close-up footage of an actual car tire and wheel in rain on wet pavement, visible raindrops and real photographic texture",
-                 "첫 프레임부터 실제 빗속 자동차 타이어를 고해상도 실사 영상으로 보여줘 저예산 CG 느낌 없이 주제를 즉시 인식시키는 장면",
-                 HOOK_TIRE_VIDEO_ATTRIBUTION),
-            beat(hook_road_video, crisis, "real_water_hazard", "hook_real_road", "wet_road", "concept",
-                 "real vertical footage from a moving car on a visibly wet rainy road, real reflections, water and road texture",
-                 "실제 젖은 도로와 빗물을 보여줘 문제의 원인이 물이라는 단서를 실사로 이어주는 장면",
-                 HOOK_ROAD_VIDEO_ATTRIBUTION),
+            beat(real["spray"], "빗길에선 타이어가 돌고 있어도", "real_tires_throwing_spray", "real_spray", "flooded_road", "concept",
+                 "real footage of a car driving through rain on a flooded road, its tires throwing water spray",
+                 "빗길에선 실제 자동차 타이어가 물보라를 일으키며 젖은 도로를 달리는 실사 영상으로 첫 프레임부터 주제를 보여주는 장면",
+                 attr["spray"]),
+            beat(real["surface"], "실은 도로에 닿지 않을 수 있습니다", "real_water_film_on_road", "real_surface", "water_film", "concept",
+                 "real low footage of a rain-soaked road surface with a shiny film of water on the asphalt",
+                 "아스팔트 위에 얇게 깔린 실제 빗물 막을 보여줘 타이어와 도로 사이에 무엇이 끼어드는지 암시하는 장면",
+                 attr["surface"]),
+            beat(real["tire"], "문제는 고무가 아니라", "real_tire_rubber_closeup", "real_tire", "rubber_closeup", "concept",
+                 "real close-up footage of a car tire and wheel on wet pavement in the rain",
+                 "실제 젖은 노면 위 자동차 타이어 고무를 가까이 보여주는 실사 장면",
+                 attr["tire"]),
+            beat(real["rain_tire"], "타이어 밑으로 파고드는 물입니다", "real_water_pooling_under_tire", "real_rain_tire", "puddle", "concept",
+                 "real footage of rain falling on a car tire standing in a puddle of water on the ground",
+                 "빗물이 고인 바닥 위 실제 타이어에 비가 떨어지는 장면으로 타이어 밑의 물을 보여주는 장면",
+                 attr["rain_tire"]),
         ]),
         ("s_reveal", [
-            phrase("INVESTIGATION", "트레드 홈은 원래 이 물을 옆으로 빼냅니다."),
-            phrase("INVESTIGATION", "그런데 물이 빠지는 속도보다 쌓이는 속도가 빨라지면,"),
-            phrase("REVEAL", "앞쪽에 물 쐐기가 생기고,"),
-            phrase("EXPLANATION", "도로와 닿는 면이 점점 줄어듭니다."),
+            phrase("REVEAL", "타이어 홈은 이 물을 옆으로 빼냅니다."),
+            phrase("EXPLANATION", "그런데 속도가 빨라지면, 홈이 빼내는 것보다 물이 더 빨리 밀려듭니다."),
+            phrase("EXPLANATION", "타이어 앞쪽으로 물이 쐐기처럼 파고들고,"),
         ], [
-            beat(tire_photo, "트레드 홈은 원래 이 물을 옆으로 빼냅니다", "real_tread_grounding", "tread_photo", "real", "concept",
-                 "a real close-up photograph of an actual car tire's tread and grooves",
-                 "실제 타이어 트레드 홈을 사진으로 보여주며 물을 옆으로 빼는 구조를 현실 물체로 먼저 이해시키는 장면",
-                 TIRE_PHOTO_ATTRIBUTION),
-            # wedge1 is NOT this scene's last beat (wedge2/contact1 follow it
-            # here too, after merging what used to be a separate s_explain
-            # scene) -- keeping REVEAL inside the SAME scene as the photo
-            # saves one scene-transition trailing-silence pad (~1.3-2.4s
-            # observed in run 37081489230), which is exactly what pushed
-            # REVEAL's start past the mandatory 8-12s window when it lived
-            # in its own scene.
-            beat(motion["wedge1"], "그런데 물이 빠지는 속도보다 쌓이는 속도가 빨라지면", "drainage_overload", "wedge", "forming", "concept",
-                 "a moving 3D visualization of a water wedge forming at the leading edge of a rolling car tire, its road contact patch visibly dented",
-                 "홈이 다 빼내지 못한 물이 타이어 앞쪽에 쌓여 물 쐐기가 생기기 시작하는 모습을 보여주는 장면"),
-            beat(motion["wedge2"], "앞쪽에 물 쐐기가 생기고", "wedge_growing", "wedge", "large", "state",
-                 "a moving 3D visualization of a large water wedge in front of a car tire, its road contact patch clearly shrunk compared to a moment ago",
-                 "타이어 앞의 물 쐐기가 눈에 띄게 커지고 접촉면이 함께 줄어드는 원인이 드러나는 장면"),
-            beat(motion["contact1"], "도로와 닿는 면이 점점 줄어듭니다", "contact_patch_shrinking", "contact", "shrinking", "concept",
-                 "a moving 3D visualization of a car tire's bright road contact patch visibly collapsing while a large water wedge sits ahead of it",
-                 "타이어와 도로가 닿는 밝은 접촉면이 눈에 띄게 줄어드는 모습을 보여주는 장면"),
+            beat(rain_tyres, "타이어 홈은 이 물을 옆으로 빼냅니다", "real_tread_grooves_vs_slick", "tread_photo", "grooves", "concept",
+                 "a real photograph of stacked racing rain tyres with deep tread grooves next to a smooth slick tyre",
+                 "깊은 배수 홈이 있는 실제 레인 타이어와 홈 없는 슬릭 타이어를 사진으로 비교해 홈의 역할을 보여주는 장면",
+                 RAIN_TYRES_PHOTO_ATTRIBUTION),
+            beat(real["fast_wheel"], "그런데 속도가 빨라지면", "real_wheel_speed_rising", "real_fast_wheel", "spinning", "concept",
+                 "real close-up footage of a car wheel spinning fast on a wet road while driving",
+                 "빠르게 회전하며 달리는 실제 자동차 바퀴를 가까이 보여줘 속도가 빨라지는 상황을 보여주는 장면",
+                 attr["fast_wheel"]),
+            beat(section["section_bow_wave"], "물이 더 빨리 밀려듭니다", "water_piling_ahead", "section", "bow_wave", "concept",
+                 "a side-view cross-section diagram of a rolling car tire on a wet road with water piling up in front of it and a magnified inset of its contact patch",
+                 "타이어 단면도와 접촉 부위 확대 화면으로 빠지지 못한 물이 타이어 앞쪽에 밀려드는 모습을 보여주는 장면"),
+            beat(section["section_wedge_entering"], "타이어 앞쪽으로 물이 쐐기처럼 파고들고", "wedge_entering_contact", "section", "wedge", "state",
+                 "a cross-section diagram of a water wedge pushing under the front of a car tire's contact patch",
+                 "물 쐐기가 타이어 접촉면 앞쪽 아래로 파고드는 모습을 확대 화면으로 보여주는 장면"),
         ]),
         ("s_twist", [
-            phrase("TWIST", "접촉면이 거의 사라지는 순간,"),
-            phrase("TWIST", "타이어는 도로 대신 물 위를 타기 시작합니다."),
-            phrase("PAYOFF", "이게 하이드로플레이닝입니다."),
+            phrase("EXPLANATION", "도로에 닿아 있던 면이 점점 줄어들다가,"),
+            phrase("TWIST", "결국 타이어가 물막 위에 올라탑니다."),
+            phrase("CRISIS", "핸들도 브레이크도 거의 듣지 않습니다."),
+            phrase("PAYOFF", "이게 바로 하이드로플레이닝입니다."),
         ], [
-            beat(motion["contact2"], "접촉면이 거의 사라지는 순간", "contact_half_gone", "contact", "half_gone", "state",
-                 "a moving 3D visualization of a car tire with less than half of its original road contact patch remaining and the tire visibly rising",
-                 "접촉면이 절반도 남지 않고 타이어가 눈에 띄게 떠오르는 모습을 보여주는 장면"),
-            beat(motion["contact3"], "타이어는 도로 대신 물 위를 타기 시작합니다", "contact_almost_gone", "contact", "almost_gone", "state",
-                 "a moving 3D visualization of a car tire almost fully lifted off a wet road, only a sliver of contact patch left",
-                 "타이어의 접촉면이 거의 사라지고 거의 다 떠오른 상태를 보여주는 장면"),
-            beat(motion["payoff"], "이게 하이드로플레이닝입니다", "final_hydroplane", "hydroplane", "full_lift", "concept",
-                 "a moving cinematic 3D payoff visualization of a car tire fully lifted off a wet road, floating entirely on a layer of water with no road contact left",
-                 "타이어가 도로와의 접촉을 완전히 잃고 물 위에 떠 있는 최종 상태를 한 화면에 보여주는 모습"),
+            beat(section["section_contact_shrinking"], "도로에 닿아 있던 면이 점점 줄어들다가", "contact_patch_shrinking", "section", "shrinking", "state",
+                 "a cross-section diagram of a car tire whose glowing road contact patch is shrinking as water spreads beneath it",
+                 "도로에 닿아 있던 주황색 접촉면이 점점 짧아지는 모습을 확대 화면으로 보여주는 장면"),
+            beat(section["section_riding_film"], "결국 타이어가 물막 위에 올라탑니다", "tire_riding_water_film", "section", "riding_film", "state",
+                 "a cross-section diagram of a car tire riding on a continuous thin film of water with no road contact left",
+                 "접촉면이 사라지고 타이어가 얇은 물막 위에 올라탄 상태를 보여주는 장면"),
+            beat(real["pov"], "핸들도 브레이크도 거의 듣지 않습니다", "real_driver_pov_consequence", "real_pov", "rainy_drive", "concept",
+                 "real driver point-of-view footage of driving on a wet rainy road",
+                 "실제 빗길 운전 시점으로 조향과 제동이 듣지 않는 상황의 위험을 체감시키는 장면",
+                 attr["pov"]),
+            beat(section["section_named_payoff"], "이게 바로 하이드로플레이닝입니다", "named_full_hydroplane", "hydroplane_named", "full_film", "concept",
+                 "a labeled cross-section diagram of a car tire fully hydroplaning on a water film, titled hydroplaning",
+                 "타이어와 도로 사이가 물막으로 완전히 분리된 하이드로플레이닝 상태를 이름과 함께 보여주는 장면"),
         ]),
     ]
 
     production_tags = {
         ("s_hook", 0): ("hero", "real_footage"),
         ("s_hook", 1): ("support", "real_footage"),
+        ("s_hook", 2): ("support", "real_footage"),
+        ("s_hook", 3): ("support", "real_footage"),
         ("s_reveal", 0): ("evidence", "real_photo"),
-        ("s_reveal", 1): ("support", "physical_animation"),
+        ("s_reveal", 1): ("support", "real_footage"),
         ("s_reveal", 2): ("mechanism", "physical_animation"),
         ("s_reveal", 3): ("support", "physical_animation"),
         ("s_twist", 0): ("support", "physical_animation"),
         ("s_twist", 1): ("second_peak", "physical_animation"),
-        ("s_twist", 2): ("payoff", "physical_animation"),
+        ("s_twist", 2): ("support", "real_footage"),
+        ("s_twist", 3): ("payoff", "physical_animation"),
     }
 
     scenes = []
@@ -365,11 +416,11 @@ def main():
         scenes.append({
             "id": sid, "narration": narration,
             "narration_plan": narr_plan,
-            "visual_description": "Continuous hydroplaning physical sequence matched to narration.",
+            "visual_description": "Real footage opening, real tread evidence, then a continuous hydroplaning cross-section matched to narration.",
             "asset": beats[0]["asset"],
             "attribution": beats[0].get("attribution"),
             "visual_beats": beats,
-            "visual_qa_requirements": ["각 내레이션 단서에 맞는 하이드로플레이닝 물리 상태가 실제 화면에 보여야 함"],
+            "visual_qa_requirements": ["각 내레이션 단서에 맞는 하이드로플레이닝 장면이 실제 화면에 보여야 함"],
             "visual_qa_labels": [beats[0]["visual_qa_labels"][0]],
             "visual_qa_negative_labels": NEG,
             "overlay_title": None,
@@ -385,17 +436,17 @@ def main():
         "width": 1080, "height": 1920, "fps": 30,
         "overlay_title": "타이어가 도로에서 뜬다",
         "overlay_title_mode": "first_scene_only",
-        # Keep the less-robotic Edge experiment for this visual prototype,
-        # but this is still NOT the final voice target; production adoption
-        # remains blocked on a true HD/generative Korean TTS backend.
+        # Scene-continuous synthesis is the least robotic Edge mode; Edge is
+        # still only the dev/fallback voice (see shorts_studio.narration for
+        # the provider abstraction and the pre-rendered narration override).
         "tts_continuity_mode": "scene_continuous",
         "max_visual_recovery_attempts": 2,
         "strict_source_diversity": False,
         "strict_meaningful_visual_changes": True,
         "strict_retention_contract": True,
         "strict_visual_production_v2": True,
-        "observable_phenomenon": "젖은 도로에서 타이어가 물 위로 떠서 도로와의 접촉을 완전히 잃는다.",
-        "silent_story": "결과(타이어가 뜬 모습) 먼저 → 정상 상태 대비 → 홈의 배수 단서 → 과부하로 물 쐐기 성장 → 접촉면 축소 → 완전한 하이드로플레이닝 payoff",
+        "observable_phenomenon": "젖은 도로에서 타이어와 도로 사이로 물이 파고들어 타이어가 물막 위에 올라타 접촉을 잃는다.",
+        "silent_story": "실제 빗길 물보라 → 노면 물막 → 젖은 타이어 → 물 고인 바닥 위 타이어 → 홈 있는 레인 타이어 vs 슬릭 → 빠르게 도는 바퀴 → 단면도: 앞쪽에 밀려드는 물 → 물 쐐기 → 접촉면 축소 → 물막 위 → 실제 운전 시점 → 이름 붙은 payoff",
         "silent_interest_review": "pending",
         "strict_entertainment_contract": False,
         "scenes": scenes,
@@ -403,20 +454,23 @@ def main():
     Path("examples").mkdir(exist_ok=True)
     Path("examples/hydroplaning.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
 
+    real_lines = "\n".join(f"- {v[2]} ({v[1]})" for v in REAL_SOURCES.values())
     desc = f"""# 타이어가 도로에서 뜨는 이유 — 출처
 
-첫 장면은 실제 촬영 영상을 사용합니다.
-- 타이어 빗속 클로즈업: {HOOK_TIRE_VIDEO_ATTRIBUTION} ({HOOK_TIRE_VIDEO_PAGE})
-- 젖은 도로 주행: {HOOK_ROAD_VIDEO_ATTRIBUTION} ({HOOK_ROAD_VIDEO_PAGE})
+실제 촬영 영상 (Pexels License, 잘라내기·크기 조정):
+{real_lines}
 
-이후 원리 설명은 실제 좌표의 원기둥·타원체·박스 geometry를 카메라로 투영해 프레임마다 렌더한
-자체 제작 3D 물리 시각화이며, 실제 트레드 구조 확인에는 아래 CC0 사진을 사용했습니다:
-{TIRE_PHOTO_ATTRIBUTION} ({TIRE_PHOTO_PAGE}).
+레인 타이어 사진: {RAIN_TYRES_PHOTO_ATTRIBUTION} ({RAIN_TYRES_PHOTO_PAGE}),
+라이선스: https://creativecommons.org/licenses/by/2.0/ — 원본에서 잘라내 사용했습니다.
+
+타이어 단면도와 접촉 부위 확대 화면은 이 영상을 위해 직접 렌더링한 설명용 그래픽입니다. 물막 두께는
+이해를 돕기 위해 과장해서 그렸습니다(실제로는 수 밀리미터 수준).
 
 설명된 물리적 메커니즘(물이 타이어와 노면 사이에 쌓이면 접촉력이 감소할 수 있고, 충분히 심해지면
-완전히 접촉을 잃을 수 있으며, 트레드 홈은 접촉 영역의 물 배출에 도움을 준다는 점)은 미국 도로교통
-안전국(NHTSA)의 공개된 하이드로플레이닝 안전 설명을 참고해 과장 없이 서술했습니다. 정확한 임계
-속도나 공식은 조건에 따라 달라지므로 영상에서 보편적 수치로 제시하지 않았습니다.
+완전히 접촉을 잃을 수 있으며, 트레드 홈은 접촉 영역의 물 배출에 도움을 주고, 이때 조향과 제동이
+제대로 듣지 않을 수 있다는 점)은 미국 도로교통안전국(NHTSA)의 공개된 하이드로플레이닝 안전 설명을
+참고해 과장 없이 서술했습니다. 정확한 임계 속도나 공식은 조건에 따라 달라지므로 영상에서 보편적
+수치로 제시하지 않았습니다.
 """
     Path("examples/hydroplaning_upload_description.txt").write_text(desc, encoding="utf-8")
     print("HYDROPLANING_MANIFEST_READY=examples/hydroplaning.json")
