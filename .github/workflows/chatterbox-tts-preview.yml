@@ -27,95 +27,99 @@ jobs:
           sudo apt-get install -y ffmpeg
           pip install 'git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2' edge-tts
 
-      - name: Generate Korean A/B/C narration preview
+      - name: Generate calmer Korean D/E narration preview
         env:
           HF_HUB_DISABLE_TELEMETRY: '1'
         run: |
           python - <<'PY'
           from pathlib import Path
-          import asyncio
-          import json
-          import os
+          import json, os, subprocess
           import torch
           import torchaudio as ta
-          import edge_tts
           from chatterbox.mtl_tts import ChatterboxMultilingualTTS
 
           out = Path('tts_preview')
           out.mkdir(exist_ok=True)
-          text = (
-              '빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. '
-              '문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다.'
-          )
 
-          # Official Resemble AI Chatterbox Multilingual V3 API.
-          # CPU is deliberate here: this preview must require no paid API/GPU service.
+          lines = [
+              '빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다.',
+              '문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다.',
+          ]
+
           torch.set_num_threads(max(1, os.cpu_count() or 1))
           model = ChatterboxMultilingualTTS.from_pretrained(device='cpu', t3_model='v3')
 
-          # B: official defaults.
-          wav = model.generate(
-              text,
-              language_id='ko',
-              exaggeration=0.5,
-              cfg_weight=0.5,
+          def render_segmented(path, *, exaggeration, cfg_weight, temperature, pause_ms, speed):
+              chunks = []
+              for line in lines:
+                  wav = model.generate(
+                      line,
+                      language_id='ko',
+                      exaggeration=exaggeration,
+                      cfg_weight=cfg_weight,
+                      temperature=temperature,
+                      repetition_penalty=1.15,
+                  )
+                  chunks.append(wav)
+              silence = torch.zeros((1, int(model.sr * pause_ms / 1000.0)))
+              joined = torch.cat([chunks[0], silence, chunks[1]], dim=1)
+              raw = path.with_name(path.stem + '_raw.wav')
+              ta.save(str(raw), joined, model.sr)
+              subprocess.run([
+                  'ffmpeg','-y','-loglevel','error','-i',str(raw),
+                  '-af',f'atempo={speed}',str(path)
+              ],check=True)
+              raw.unlink()
+
+          # D: restrained documentary narrator. Less emotional movement and a real
+          # sentence break; only ~7% slower than generated speech.
+          render_segmented(
+              out / 'D_chatterbox_v3_calm_documentary.wav',
+              exaggeration=0.28,
+              cfg_weight=0.55,
+              temperature=0.68,
+              pause_ms=260,
+              speed=0.93,
           )
-          ta.save(str(out / 'B_chatterbox_v3_default.wav'), wav, model.sr)
 
-          # C: official README's more expressive/conversational direction:
-          # lower CFG around 0.3 + higher exaggeration.
-          wav = model.generate(
-              text,
-              language_id='ko',
-              exaggeration=0.7,
-              cfg_weight=0.3,
+          # E: even calmer/slower. This is intentionally NOT chatty: lower
+          # expressiveness, firmer conditioning, longer sentence pause, ~11% slower.
+          render_segmented(
+              out / 'E_chatterbox_v3_slow_documentary.wav',
+              exaggeration=0.20,
+              cfg_weight=0.62,
+              temperature=0.62,
+              pause_ms=360,
+              speed=0.89,
           )
-          ta.save(str(out / 'C_chatterbox_v3_conversational.wav'), wav, model.sr)
-
-          async def edge():
-              c = edge_tts.Communicate(
-                  text,
-                  'ko-KR-HyunsuMultilingualNeural',
-                  rate='+6%',
-                  pitch='+0Hz',
-                  volume='+0%',
-              )
-              await c.save(str(out / 'A_edge_current.mp3'))
-
-          asyncio.run(edge())
 
           (out / 'README.txt').write_text(
-              'A = current Edge baseline\n'
-              'B = official Chatterbox Multilingual V3 defaults (ko)\n'
-              'C = Chatterbox V3, exaggeration=0.7 / cfg_weight=0.3\n'
-              'Text: ' + text + '\n'
-              'No paid TTS API is used. Chatterbox model/code: Resemble AI, MIT license.\n',
+              'D = restrained documentary: exaggeration 0.28, cfg 0.55, temperature 0.68, 260ms sentence pause, 0.93x speed\n'
+              'E = slower documentary: exaggeration 0.20, cfg 0.62, temperature 0.62, 360ms sentence pause, 0.89x speed\n'
+              'Both use official Resemble AI Chatterbox Multilingual V3, Korean, MIT. No paid API.\n',
               encoding='utf-8',
           )
           (out / 'preview.json').write_text(json.dumps({
-              'text': text,
-              'language_id': 'ko',
-              'model': 'Chatterbox Multilingual V3',
-              'source_repo': 'resemble-ai/chatterbox',
-              'license': 'MIT',
-              'variants': {
-                  'A': 'Edge current baseline',
-                  'B': {'exaggeration': 0.5, 'cfg_weight': 0.5},
-                  'C': {'exaggeration': 0.7, 'cfg_weight': 0.3},
-              },
-          }, ensure_ascii=False, indent=2), encoding='utf-8')
+              'language_id':'ko',
+              'model':'Chatterbox Multilingual V3',
+              'source_repo':'resemble-ai/chatterbox',
+              'license':'MIT',
+              'variants':{
+                  'D':{'exaggeration':0.28,'cfg_weight':0.55,'temperature':0.68,'pause_ms':260,'speed':0.93},
+                  'E':{'exaggeration':0.20,'cfg_weight':0.62,'temperature':0.62,'pause_ms':360,'speed':0.89}
+              }
+          },ensure_ascii=False,indent=2),encoding='utf-8')
           PY
-
       - name: Verify generated audio
         run: |
           set -euo pipefail
-          for f in tts_preview/A_edge_current.mp3 tts_preview/B_chatterbox_v3_default.wav tts_preview/C_chatterbox_v3_conversational.wav; do
+          for f in tts_preview/D_chatterbox_v3_calm_documentary.wav tts_preview/E_chatterbox_v3_slow_documentary.wav; do
             test -s "$f"
             ffprobe -v error -show_entries format=duration -of default=nw=1 "$f"
           done
 
       - uses: actions/upload-artifact@v4
         with:
-          name: chatterbox-korean-ab-preview
+          name: chatterbox-korean-calm-preview
           retention-days: 14
           path: tts_preview/
