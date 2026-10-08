@@ -1,0 +1,91 @@
+name: tts-hd-preview
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      SHORTS_NARRATION_PROVIDER: azure_hd
+      SHORTS_NARRATION_VOICE: ko-KR-Hyunsu:DragonHDLatestNeural
+      AZURE_SPEECH_KEY: ${{ secrets.AZURE_SPEECH_KEY }}
+      AZURE_SPEECH_REGION: ${{ secrets.AZURE_SPEECH_REGION }}
+      SHORTS_REQUIRE_SEMANTIC_QA: '1'
+      PYTHONUNBUFFERED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Require Azure Speech credentials
+        run: |
+          test -n "$AZURE_SPEECH_KEY" || { echo "AZURE_SPEECH_KEY secret is missing"; exit 1; }
+          test -n "$AZURE_SPEECH_REGION" || { echo "AZURE_SPEECH_REGION secret is missing"; exit 1; }
+
+      - name: Install render, vision, and HD narration dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-nanum fonts-noto-cjk librsvg2-bin
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -e '.[dev,vision,azure-tts]'
+
+      - name: Build hydroplaning production
+        run: |
+          set -o pipefail
+          python scripts/build_hydroplaning_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee tts-hd-generator.log
+
+      - name: Validate manifest
+        run: python -m shorts_studio validate examples/hydroplaning.json
+
+      - name: Render with Azure Dragon HD narration
+        run: |
+          set -o pipefail
+          python -m shorts_studio render examples/hydroplaning.json 2>&1 | tee tts-hd-render.log
+
+      - name: Verify HD narration really rendered
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          assert q['status']=='PASS',q
+          timing=list(Path('build').glob('*.timing.json'))
+          assert timing, 'no timing files'
+          for path in timing:
+              d=json.loads(path.read_text())
+              assert d.get('source')=='azure-dragon-hd-continuous',(path,d.get('source'))
+              assert d.get('voice')=='ko-KR-Hyunsu:DragonHDLatestNeural',(path,d.get('voice'))
+              assert d.get('words'),path
+          print('AZURE_DRAGON_HD_PRODUCTION_PASS')
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: azure-dragon-hd-production
+          retention-days: 14
+          path: |
+            dist/
+            build/*.timing.json
+            tts-hd-generator.log
+            tts-hd-render.log
+            examples/hydroplaning_upload_description.txt
+
+      - uses: actions/upload-artifact@v4
+        if: failure() || cancelled()
+        with:
+          name: azure-dragon-hd-diagnostics
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            dist/
+            build/
+            tts-hd-generator.log
+            tts-hd-render.log
