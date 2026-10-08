@@ -148,3 +148,81 @@ jobs:
             build/
             quality-reset-generator.log
             quality-reset-render.log
+
+
+  chatterbox_preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install official Chatterbox V3
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install 'git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2'
+      - name: Generate calm Korean documentary variants
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, os, subprocess
+          import torch
+          import torchaudio as ta
+          from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+
+          out=Path('tts_preview'); out.mkdir(exist_ok=True)
+          lines=[
+              '빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다.',
+              '문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다.',
+          ]
+          torch.set_num_threads(max(1, os.cpu_count() or 1))
+          model=ChatterboxMultilingualTTS.from_pretrained(device='cpu', t3_model='v3')
+
+          def render(name, exaggeration, cfg_weight, temperature, pause_ms, speed):
+              chunks=[]
+              for line in lines:
+                  chunks.append(model.generate(
+                      line, language_id='ko',
+                      exaggeration=exaggeration,
+                      cfg_weight=cfg_weight,
+                      temperature=temperature,
+                      repetition_penalty=1.15,
+                  ))
+              silence=torch.zeros((1,int(model.sr*pause_ms/1000)))
+              joined=torch.cat([chunks[0],silence,chunks[1]],dim=1)
+              raw=out/(name+'_raw.wav')
+              dst=out/(name+'.wav')
+              ta.save(str(raw),joined,model.sr)
+              subprocess.run(['ffmpeg','-y','-loglevel','error','-i',str(raw),
+                              '-af',f'atempo={speed}',str(dst)],check=True)
+              raw.unlink()
+
+          render('D_calm_documentary',0.28,0.55,0.68,260,0.93)
+          render('E_slow_documentary',0.20,0.62,0.62,360,0.89)
+
+          (out/'README.txt').write_text(
+              'D: calm documentary, restrained expression, 260ms pause, 0.93x speed\n'
+              'E: slower documentary, lower expression, 360ms pause, 0.89x speed\n'
+              'Official Resemble AI Chatterbox Multilingual V3 / Korean / MIT / no paid TTS API.\n',
+              encoding='utf-8')
+          (out/'preview.json').write_text(json.dumps({
+              'D':{'exaggeration':0.28,'cfg_weight':0.55,'temperature':0.68,'pause_ms':260,'speed':0.93},
+              'E':{'exaggeration':0.20,'cfg_weight':0.62,'temperature':0.62,'pause_ms':360,'speed':0.89}
+          },ensure_ascii=False,indent=2),encoding='utf-8')
+          PY
+      - name: Verify audio
+        run: |
+          set -euo pipefail
+          for f in tts_preview/D_calm_documentary.wav tts_preview/E_slow_documentary.wav; do
+            test -s "$f"
+            ffprobe -v error -show_entries format=duration -of default=nw=1 "$f"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chatterbox-korean-calm-preview
+          retention-days: 14
+          path: tts_preview/
