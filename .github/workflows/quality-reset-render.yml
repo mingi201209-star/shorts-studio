@@ -148,3 +148,156 @@ jobs:
             build/
             quality-reset-generator.log
             quality-reset-render.log
+
+
+  gpt_sovits_male_preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install lightweight client dependencies
+        run: |
+          pip install 'datasets>=3.0' soundfile gradio_client==1.10.4 huggingface_hub
+
+      - name: Select licensed Korean male reference
+        run: |
+          python - <<'PY'
+          from datasets import load_dataset, Audio
+          from pathlib import Path
+          import json
+
+          ds = load_dataset(
+              "yskim3271/Throat_and_Acoustic_Pairing_Speech_Dataset",
+              split="test",
+              streaming=True,
+          )
+          ds = ds.cast_column("audio.acoustic_microphone", Audio(decode=False))
+
+          chosen = None
+          for row in ds:
+              if str(row.get("gender","")).lower() != "male":
+                  continue
+              dur = float(row.get("duration") or 0)
+              text = (row.get("normalized_text") or row.get("text") or "").strip()
+              if not (5.0 <= dur <= 9.5) or not text:
+                  continue
+              audio = row["audio.acoustic_microphone"]
+              if audio and audio.get("bytes"):
+                  chosen = (row, audio["bytes"], text)
+                  break
+
+          if chosen is None:
+              raise RuntimeError("No decodable 5-9.5s male Korean reference found in streamed test split")
+
+          row, audio_bytes, text = chosen
+          Path("gpt_sovits_preview").mkdir(exist_ok=True)
+          Path("gpt_sovits_preview/reference.wav").write_bytes(audio_bytes)
+          Path("gpt_sovits_preview/reference.txt").write_text(text, encoding="utf-8")
+          Path("gpt_sovits_preview/reference_meta.json").write_text(json.dumps({
+              "dataset":"yskim3271/Throat_and_Acoustic_Pairing_Speech_Dataset",
+              "license":"CC BY 4.0",
+              "split":"test",
+              "gender":row["gender"],
+              "speaker_id":row["speaker_id"],
+              "sentence_id":row["sentence_id"],
+              "duration":row["duration"],
+              "text":text,
+          }, ensure_ascii=False, indent=2), encoding="utf-8")
+          print("SELECTED", row["speaker_id"], row["sentence_id"], row["gender"], row["duration"], text)
+          PY
+
+      - name: Generate GPT-SoVITS Korean preview via official public demo
+        run: |
+          python - <<'PY'
+          from gradio_client import Client, handle_file
+          from pathlib import Path
+          import json, shutil
+
+          ref = Path("gpt_sovits_preview/reference.wav")
+          prompt = Path("gpt_sovits_preview/reference.txt").read_text(encoding="utf-8").strip()
+          target = "빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. 문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다."
+
+          client = Client("lj1995/GPT-SoVITS-ProPlus", verbose=False)
+          info = client.view_api(all_endpoints=True, return_format="dict")
+          Path("gpt_sovits_preview/api.json").write_text(json.dumps(info, ensure_ascii=False, indent=2, default=str), encoding="utf-8")
+
+          candidates=[]
+          for name, spec in (info.get("named_endpoints") or {}).items():
+              params=spec.get("parameters") or []
+              if len(params) >= 10:
+                  candidates.append(name)
+          print("ENDPOINTS", candidates)
+
+          args = [
+              handle_file(str(ref)),
+              prompt,
+              "韩文",
+              target,
+              "韩文",
+              "不切",
+              15,
+              1.0,
+              0.9,
+              False,
+              1.0,
+              False,
+              [],
+          ]
+
+          errors=[]
+          result=None
+          used=None
+          for endpoint in candidates + ["/predict"]:
+              try:
+                  result = client.predict(*args, api_name=endpoint)
+                  used=endpoint
+                  break
+              except Exception as e:
+                  errors.append(f"{endpoint}: {type(e).__name__}: {e}")
+
+          if result is None:
+              raise RuntimeError("GPT-SoVITS demo call failed:\n" + "\n".join(errors))
+
+          print("USED_ENDPOINT", used)
+          print("RESULT", result)
+
+          src = None
+          if isinstance(result, str):
+              src = Path(result)
+          elif isinstance(result, (tuple, list)):
+              for x in result:
+                  if isinstance(x, str) and Path(x).exists():
+                      src = Path(x); break
+                  if isinstance(x, dict):
+                      p=x.get("path")
+                      if p and Path(p).exists():
+                          src=Path(p); break
+          elif isinstance(result, dict):
+              p=result.get("path")
+              if p and Path(p).exists(): src=Path(p)
+
+          if not src or not src.exists():
+              raise RuntimeError(f"Could not locate returned audio file: {result!r}")
+
+          shutil.copyfile(src, "gpt_sovits_preview/gpt_sovits_male.wav")
+          PY
+
+      - name: Apply Shorts cadence
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          ffmpeg -y -i gpt_sovits_preview/gpt_sovits_male.wav             -af "atempo=1.04"             gpt_sovits_preview/gpt_sovits_male_shorts.wav
+          test -s gpt_sovits_preview/gpt_sovits_male_shorts.wav
+          ffprobe -v error -show_entries format=duration -of default=nw=1 gpt_sovits_preview/gpt_sovits_male_shorts.wav
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gpt-sovits-korean-male-preview
+          retention-days: 14
+          path: gpt_sovits_preview/
