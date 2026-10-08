@@ -44,7 +44,13 @@ GENERIC_ESTABLISHING_KEYWORDS = [
 # TENSION_MARKERS is the textual evidence that at least one of them is
 # actually present, so a hook can't just claim a type without earning it.
 HOOK_TYPES = ("unexpected_result", "contradiction", "danger", "strong_question",
-              "visible_anomaly", "intuition_reversal")
+              "visible_anomaly", "intuition_reversal",
+              # Prompt V2 (see hook_studio.py): additive, not a replacement --
+              # every manifest declaring one of the original six stays valid.
+              # These four name the remaining "wait, what? then why/how?"
+              # mechanisms Prompt V2's hook generator/judge are built around.
+              "surprising_consequence", "counterintuitive_fact",
+              "mistaken_assumption", "unresolved_cause_effect")
 
 _DANGER_WORDS = ("위험", "죽", "폭발", "무너", "붕괴", "충돌", "재앙", "사망", "실종",
                  "화재", "익사", "추락", "파괴", "폭파", "치명")
@@ -94,6 +100,66 @@ def hook_violation(text: str) -> str | None:
 def is_generic_establishing_text(text: str) -> bool:
     lowered = (text or "").lower()
     return any(kw.lower() in lowered for kw in GENERIC_ESTABLISHING_KEYWORDS)
+
+
+def tension_marker_strength(text: str) -> int:
+    """Count of distinct real tension-marker words found in `text`
+    (danger/contrast/anomaly) -- NOT counting a bare trailing question mark.
+    has_tension_marker treats any question as tension-bearing at all (a
+    deliberately loose Layer-1 rule so a genuinely strong question hook is
+    never rejected); this stricter count exists for callers (Prompt V2's
+    hook judge) that need to compare how STRONGLY multiple candidates signal
+    real tension, not just whether the loose bar is cleared."""
+    t = text or ""
+    return sum(1 for w in _DANGER_WORDS + _CONTRAST_WORDS + _ANOMALY_WORDS if w in t)
+
+
+def is_bare_why_question(text: str) -> bool:
+    """True for a plain '(주제는) 왜 ...까요?' question whose only tension
+    signal is the trailing question mark itself. has_tension_marker (above)
+    deliberately treats ANY question as tension-bearing, which is exactly
+    the loophole real audience data pointed at: a train-wheel-conicity short
+    opened on a bare 왜-question and reached only ~38.8% viewed-vs-swiped
+    with near-zero commenting -- the question announces curiosity about the
+    topic without first creating a concrete information gap (a contradiction,
+    an anomaly, a danger, a surprising consequence) for the viewer to react
+    to. Prompt V2's stricter hook judge (hook_studio.reject_hook_candidate)
+    rejects this shape; the original, looser hook_violation/has_tension_marker
+    contract is left completely unchanged for every existing manifest."""
+    t = (text or "").strip()
+    if not t or "왜" not in t or not t.endswith("?"):
+        return False
+    return tension_marker_strength(t) == 0
+
+
+_GENERIC_CTA_PATTERNS = [
+    re.compile(r"댓글로"), re.compile(r"댓글\s*(을|를)?\s*남겨"),
+    re.compile(r"여러분\s*생각은"), re.compile(r"어떻게\s*생각하"),
+    re.compile(r"구독\s*(과|와)?\s*좋아요"), re.compile(r"좋아요\s*(와|과)?\s*구독"),
+    re.compile(r"알려\s*주세요"),
+]
+
+
+def has_generic_cta(text: str) -> bool:
+    """True if `text` contains a generic, content-free call-to-action
+    ('댓글로 알려주세요', '여러분 생각은 어떠신가요' etc.). Prompt V2's engagement
+    requirement is to earn reaction through the subject/contrast/ending
+    itself, not to append one of these -- see hook_studio's story-ending
+    guidance and its tests for concrete accepted/rejected examples."""
+    t = text or ""
+    return any(p.search(t) for p in _GENERIC_CTA_PATTERNS)
+
+
+def reveals_payoff_prematurely(candidate_text: str, payoff_text: str, threshold: float = 0.6) -> bool:
+    """True if a hook candidate already shares most of the ending payoff's
+    distinctive content -- i.e. it gives the answer away instead of creating
+    an information gap. Reuses the same token-overlap-ratio near-duplicate
+    proxy the rest of the engine already relies on (is_near_duplicate_text),
+    at a lower threshold appropriate for a short hook line compared against
+    a longer payoff sentence."""
+    if not candidate_text or not payoff_text:
+        return False
+    return token_overlap_ratio(candidate_text, payoff_text) >= threshold
 
 
 _WS_RE = re.compile(r"\s+")

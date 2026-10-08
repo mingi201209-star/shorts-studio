@@ -1,0 +1,22 @@
+# 뜨거운 물이 찬물보다 먼저 언다 — 이미지 출처
+
+이 영상은 자체 제작 개념도와 아래 Wikimedia Commons 실사 이미지를 함께 사용합니다.
+아래 3개 실사 이미지는 모두 CC0 또는 퍼블릭 도메인으로 제공된 자료입니다.
+
+1. **Ice crystals on a windowpane (Unsplash).jpg**
+   - 용도: 성에/얼음 결정 확대 장면
+   - 출처: https://commons.wikimedia.org/wiki/File:Ice_crystals_on_a_windowpane_(Unsplash).jpg
+   - 라이선스: CC0 1.0
+
+2. **20250609 steam.jpg**
+   - 용도: 뜨거운 물의 증발/수증기 장면
+   - 출처: https://commons.wikimedia.org/wiki/File:20250609_steam.jpg
+   - 라이선스: CC0 1.0
+
+3. **Bottles of water and a tray of ice cubes inside a fridge freezer.jpg**
+   - 용도: 마지막 직접 실험/냉동실 장면
+   - 출처: https://commons.wikimedia.org/wiki/File:Bottles_of_water_and_a_tray_of_ice_cubes_inside_a_fridge_freezer.jpg
+   - 제작자: Philsacor
+   - 라이선스: CC0 1.0
+
+실사 이미지는 세로형 Shorts 화면에 맞게 잘라내기/프레이밍과 설명 오버레이를 적용했습니다.
