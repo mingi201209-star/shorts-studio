@@ -97,6 +97,13 @@ timings for the scene's own script tokens.
 - `narration_provider: "elevenlabs"` with `narration_voice` calls the official SDK
   (`pip install -e '.[hd-tts]'`, `ELEVENLABS_API_KEY` from the environment only). If the key is
   missing, the render fails; it never quietly switches back to Edge.
+- `narration_provider: "azure_hd"` uses Microsoft's official Azure Speech SDK
+  (`pip install -e '.[azure-tts]'`). The default production voice is
+  `ko-KR-Hyunsu:DragonHDLatestNeural`; override it with `narration_voice` when needed.
+  Credentials come only from `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (or Microsoft's
+  `SPEECH_KEY` + `SPEECH_REGION` names). Provider WordBoundary events are aggregated onto the
+  script's real Korean tokens, so captions and visual-cue timing stay provider-measured. Missing
+  credentials, audio or timing fail closed; Azure HD never silently falls back to Edge.
 
 `SHORTS_NARRATION_PROVIDER`, `SHORTS_NARRATION_DIR` and `SHORTS_NARRATION_VOICE` override the
 manifest at render time.
