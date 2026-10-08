@@ -165,43 +165,16 @@ jobs:
           pip install 'datasets>=3.0' soundfile torchcodec gradio_client==1.10.4 huggingface_hub librosa
 
       - name: Recover fixed p38 Korean male reference
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python - <<'PY'
-          from datasets import load_dataset, Audio
-          from pathlib import Path
-          import json
-
-          ds=load_dataset(
-              "yskim3271/Throat_and_Acoustic_Pairing_Speech_Dataset",
-              split="test", streaming=True
-          )
-          ds=ds.cast_column("audio.acoustic_microphone", Audio(decode=False))
-          ds=ds.cast_column("audio.throat_microphone", Audio(decode=False))
-
-          chosen=None
-          for row in ds:
-              if str(row.get("speaker_id")) != "p38":
-                  continue
-              if str(row.get("gender","")).lower() != "male":
-                  continue
-              dur=float(row.get("duration") or 0)
-              text=(row.get("normalized_text") or row.get("text") or "").strip()
-              aud=row["audio.acoustic_microphone"]
-              if 5.0 <= dur <= 9.5 and text and aud and aud.get("bytes"):
-                  chosen=(row,aud["bytes"],text)
-                  break
-          if not chosen:
-              raise RuntimeError("p38 reference not found")
-          row,b,text=chosen
-          root=Path("gpt_sovits_style_compare"); root.mkdir(exist_ok=True)
-          (root/"reference.wav").write_bytes(b)
-          (root/"reference.txt").write_text(text,encoding="utf-8")
-          (root/"reference_meta.json").write_text(json.dumps({
-              "speaker_id":"p38","gender":"male","duration":row["duration"],
-              "license":"CC BY 4.0","text":text
-          },ensure_ascii=False,indent=2),encoding="utf-8")
-          print("REFERENCE",row["duration"],text)
-          PY
+          mkdir -p gpt_sovits_style_compare prior_timbre
+          gh run download 37847155511 -n gpt-sovits-timbre-screen -D prior_timbre
+          cp prior_timbre/ref_2_p38.wav gpt_sovits_style_compare/reference.wav
+          cp prior_timbre/ref_2_p38.txt gpt_sovits_style_compare/reference.txt
+          cp prior_timbre/ref_2_p38.json gpt_sovits_style_compare/reference_meta.json
+          test -s gpt_sovits_style_compare/reference.wav
+          cat gpt_sovits_style_compare/reference_meta.json
 
       - name: Generate three speaking styles
         run: |
