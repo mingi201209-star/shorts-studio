@@ -266,7 +266,7 @@ jobs:
                   prompt_text,
                   handle_file(str(ref)),
                   None,
-                  "",
+                  "You are a helpful assistant. 请用广东话表达。<|endofprompt|>",
                   20261009,
                   False,
                   "En",
