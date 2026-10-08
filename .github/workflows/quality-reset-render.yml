@@ -153,7 +153,6 @@ jobs:
   # One-time free/open-source TTS audition. This job is intentionally isolated
   # from the production render: it cannot change video/captions/QA output.
   chatterbox_preview:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
