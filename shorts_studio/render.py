@@ -13,7 +13,13 @@ from .captions import merge_scene_srt_files
 from .entertainment_qa import run_entertainment_contract_report
 from .visual_change import audit_visual_changes, resolve_visual_cues
 from .production_v2 import verify_visual_production_structure
-from .narration import NarrationConfig, elevenlabs_synthesizer, load_prerendered_scene, resolve_config
+from .narration import (
+    NarrationConfig,
+    azure_speech_synthesizer,
+    elevenlabs_synthesizer,
+    load_prerendered_scene,
+    resolve_config,
+)
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -540,6 +546,13 @@ def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False,
         words=asyncio.run(synthesize_continuous_plan(plan,audio,timing,voice=narration.voice,
                                                      synthesize=elevenlabs_synthesizer(narration.voice),
                                                      source="elevenlabs-continuous"))
+    elif narration.provider == "azure_hd":
+        if not narration.voice:
+            raise RuntimeError("azure_hd narration requires a voice")
+        print(f"[narration] {scene.id}: Azure Dragon HD scene-continuous call voice={narration.voice}")
+        words=asyncio.run(synthesize_continuous_plan(plan,audio,timing,voice=narration.voice,
+                                                     synthesize=azure_speech_synthesizer(narration.voice),
+                                                     source="azure-dragon-hd-continuous"))
     elif tts_continuity_mode == "scene_continuous":
         print(f"[prosody] {scene.id}: scene-continuous provider call")
         words=asyncio.run(synthesize_continuous_plan(plan,audio,timing))
