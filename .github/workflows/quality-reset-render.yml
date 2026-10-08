@@ -186,7 +186,7 @@ jobs:
 
       - name: Verify preview audio
         run: |
-          python - <<'PY'
+          /tmp/supertonic_tts/.venv/bin/python - <<'PY'
           from pathlib import Path
           import soundfile as sf
           for name in ('M1','M2','M3'):
