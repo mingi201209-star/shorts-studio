@@ -1,0 +1,121 @@
+name: chatterbox-tts-preview
+
+on:
+  push:
+    branches: [exp/quality-reset-v1]
+    paths:
+      - '.github/workflows/chatterbox-tts-preview.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install official Chatterbox and Edge baselines
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+          pip install chatterbox-tts edge-tts
+
+      - name: Generate Korean A/B/C narration preview
+        env:
+          HF_HUB_DISABLE_TELEMETRY: '1'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import asyncio
+          import json
+          import os
+          import torch
+          import torchaudio as ta
+          import edge_tts
+          from chatterbox.mtl_tts import ChatterboxMultilingualTTS
+
+          out = Path('tts_preview')
+          out.mkdir(exist_ok=True)
+          text = (
+              '빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. '
+              '문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다.'
+          )
+
+          # Official Resemble AI Chatterbox Multilingual V3 API.
+          # CPU is deliberate here: this preview must require no paid API/GPU service.
+          torch.set_num_threads(max(1, os.cpu_count() or 1))
+          model = ChatterboxMultilingualTTS.from_pretrained(device='cpu', t3_model='v3')
+
+          # B: official defaults.
+          wav = model.generate(
+              text,
+              language_id='ko',
+              exaggeration=0.5,
+              cfg_weight=0.5,
+          )
+          ta.save(str(out / 'B_chatterbox_v3_default.wav'), wav, model.sr)
+
+          # C: official README's more expressive/conversational direction:
+          # lower CFG around 0.3 + higher exaggeration.
+          wav = model.generate(
+              text,
+              language_id='ko',
+              exaggeration=0.7,
+              cfg_weight=0.3,
+          )
+          ta.save(str(out / 'C_chatterbox_v3_conversational.wav'), wav, model.sr)
+
+          async def edge():
+              c = edge_tts.Communicate(
+                  text,
+                  'ko-KR-HyunsuMultilingualNeural',
+                  rate='+6%',
+                  pitch='+0Hz',
+                  volume='+0%',
+              )
+              await c.save(str(out / 'A_edge_current.mp3'))
+
+          asyncio.run(edge())
+
+          (out / 'README.txt').write_text(
+              'A = current Edge baseline\n'
+              'B = official Chatterbox Multilingual V3 defaults (ko)\n'
+              'C = Chatterbox V3, exaggeration=0.7 / cfg_weight=0.3\n'
+              'Text: ' + text + '\n'
+              'No paid TTS API is used. Chatterbox model/code: Resemble AI, MIT license.\n',
+              encoding='utf-8',
+          )
+          (out / 'preview.json').write_text(json.dumps({
+              'text': text,
+              'language_id': 'ko',
+              'model': 'Chatterbox Multilingual V3',
+              'source_repo': 'resemble-ai/chatterbox',
+              'license': 'MIT',
+              'variants': {
+                  'A': 'Edge current baseline',
+                  'B': {'exaggeration': 0.5, 'cfg_weight': 0.5},
+                  'C': {'exaggeration': 0.7, 'cfg_weight': 0.3},
+              },
+          }, ensure_ascii=False, indent=2), encoding='utf-8')
+          PY
+
+      - name: Verify generated audio
+        run: |
+          set -euo pipefail
+          for f in tts_preview/A_edge_current.mp3 tts_preview/B_chatterbox_v3_default.wav tts_preview/C_chatterbox_v3_conversational.wav; do
+            test -s "$f"
+            ffprobe -v error -show_entries format=duration -of default=nw=1 "$f"
+          done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chatterbox-korean-ab-preview
+          retention-days: 14
+          path: tts_preview/
