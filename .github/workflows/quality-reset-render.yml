@@ -148,3 +148,195 @@ jobs:
             build/
             quality-reset-generator.log
             quality-reset-render.log
+
+
+  gpt_sovits_timbre_screen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install screening and client dependencies
+        run: |
+          pip install 'datasets>=3.0' soundfile torchcodec librosa gradio_client==1.10.4 huggingface_hub
+
+      - name: Screen Korean male references by timbre
+        run: |
+          python - <<'PY'
+          from datasets import load_dataset, Audio
+          from pathlib import Path
+          import librosa, numpy as np, soundfile as sf, json, io
+
+          ds = load_dataset(
+              "yskim3271/Throat_and_Acoustic_Pairing_Speech_Dataset",
+              split="test", streaming=True
+          )
+          ds = ds.cast_column("audio.acoustic_microphone", Audio(decode=False))
+          ds = ds.cast_column("audio.throat_microphone", Audio(decode=False))
+
+          rows=[]
+          seen=set()
+          for row in ds:
+              if str(row.get("gender","")).lower() != "male":
+                  continue
+              spk=str(row.get("speaker_id"))
+              if spk in seen:
+                  continue
+              dur=float(row.get("duration") or 0)
+              txt=(row.get("normalized_text") or row.get("text") or "").strip()
+              aud=row["audio.acoustic_microphone"]
+              if not (5.0 <= dur <= 9.5) or not txt or not aud or not aud.get("bytes"):
+                  continue
+              try:
+                  y,sr=sf.read(io.BytesIO(aud["bytes"]), dtype="float32")
+                  if y.ndim>1: y=y.mean(axis=1)
+                  if sr != 16000:
+                      y=librosa.resample(y, orig_sr=sr, target_sr=16000); sr=16000
+                  f0, voiced_flag, voiced_prob = librosa.pyin(
+                      y, fmin=70, fmax=250, sr=sr,
+                      frame_length=2048, hop_length=256
+                  )
+                  vf0=f0[np.isfinite(f0)]
+                  if len(vf0) < 10: 
+                      continue
+                  f0_med=float(np.median(vf0))
+                  centroid=float(np.mean(librosa.feature.spectral_centroid(y=y, sr=sr)))
+                  flatness=float(np.mean(librosa.feature.spectral_flatness(y=y)))
+                  rms=float(np.mean(librosa.feature.rms(y=y)))
+              except Exception:
+                  continue
+              rows.append({
+                  "speaker_id":spk, "sentence_id":row.get("sentence_id"),
+                  "duration":dur, "text":txt,
+                  "f0_median":f0_med, "centroid":centroid,
+                  "flatness":flatness, "rms":rms,
+                  "bytes":aud["bytes"]
+              })
+              seen.add(spk)
+              if len(rows) >= 12:
+                  break
+
+          if not rows:
+              raise RuntimeError("No male references could be analyzed")
+
+          # Shorts target: solid Korean male mid-low register without excess brightness.
+          def score(r):
+              return (
+                  abs(r["f0_median"]-125)/20
+                  + max(0, r["centroid"]-1800)/700
+                  + max(0, 105-r["f0_median"])/20
+                  + max(0, r["f0_median"]-145)/20
+              )
+
+          ranked=sorted(rows, key=score)
+          chosen=[]
+          used=set()
+          for r in ranked:
+              if 105 <= r["f0_median"] <= 145 and r["centroid"] <= 2200 and r["speaker_id"] not in used:
+                  chosen.append(r); used.add(r["speaker_id"])
+              if len(chosen) == 3: break
+          if len(chosen) < 3:
+              chosen=ranked[:3]
+
+          root=Path("gpt_sovits_timbre_screen")
+          root.mkdir(exist_ok=True)
+          public=[]
+          for i,r in enumerate(chosen,1):
+              wav=root/f"ref_{i}_{r['speaker_id']}.wav"
+              wav.write_bytes(r["bytes"])
+              (root/f"ref_{i}_{r['speaker_id']}.txt").write_text(r["text"],encoding="utf-8")
+              meta={k:v for k,v in r.items() if k!="bytes"}
+              meta["license"]="CC BY 4.0"
+              (root/f"ref_{i}_{r['speaker_id']}.json").write_text(json.dumps(meta,ensure_ascii=False,indent=2),encoding="utf-8")
+              public.append(meta)
+              print(i, meta)
+          (root/"ranking.json").write_text(json.dumps(public,ensure_ascii=False,indent=2),encoding="utf-8")
+          PY
+
+      - name: Generate three GPT-SoVITS previews
+        run: |
+          python - <<'PY'
+          from gradio_client import Client, handle_file
+          from pathlib import Path
+          import json, shutil, re
+
+          root=Path("gpt_sovits_timbre_screen")
+          target="빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. 문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다."
+          client=Client("lj1995/GPT-SoVITS-ProPlus", verbose=False)
+          info=client.view_api(all_endpoints=True, return_format="dict")
+          candidates=[]
+          for name,spec in (info.get("named_endpoints") or {}).items():
+              if len(spec.get("parameters") or []) >= 10:
+                  candidates.append(name)
+
+          refs=sorted(root.glob("ref_*.wav"))
+          for ref in refs:
+              m=re.match(r"ref_(\d+)_", ref.name)
+              idx=m.group(1)
+              txt=next(root.glob(f"ref_{idx}_*.txt")).read_text(encoding="utf-8").strip()
+              args=[
+                  handle_file(str(ref)), txt, "韩文",
+                  target, "韩文", "不切",
+                  15,1.0,0.9,False,1.0,False,[]
+              ]
+              result=None
+              errs=[]
+              for endpoint in candidates+["/predict"]:
+                  try:
+                      result=client.predict(*args,api_name=endpoint)
+                      break
+                  except Exception as e:
+                      errs.append(f"{endpoint}: {e}")
+              if result is None:
+                  raise RuntimeError("\n".join(errs))
+              src=None
+              if isinstance(result,str) and Path(result).exists():
+                  src=Path(result)
+              elif isinstance(result,(tuple,list)):
+                  for x in result:
+                      if isinstance(x,str) and Path(x).exists():
+                          src=Path(x); break
+                      if isinstance(x,dict) and x.get("path") and Path(x["path"]).exists():
+                          src=Path(x["path"]); break
+              elif isinstance(result,dict) and result.get("path") and Path(result["path"]).exists():
+                  src=Path(result["path"])
+              if src is None:
+                  raise RuntimeError(f"No returned audio file: {result!r}")
+              shutil.copyfile(src, root/f"candidate_{idx}.wav")
+          PY
+
+      - name: Verify and report candidate acoustics
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import librosa, numpy as np, soundfile as sf, json
+
+          root=Path("gpt_sovits_timbre_screen")
+          report=[]
+          for p in sorted(root.glob("candidate_*.wav")):
+              y,sr=sf.read(p,dtype="float32")
+              if y.ndim>1:y=y.mean(axis=1)
+              f0,_,_=librosa.pyin(y,fmin=70,fmax=250,sr=sr,frame_length=2048,hop_length=256)
+              vf0=f0[np.isfinite(f0)]
+              report.append({
+                  "file":p.name,
+                  "duration":len(y)/sr,
+                  "f0_median":float(np.median(vf0)) if len(vf0) else None,
+                  "centroid":float(np.mean(librosa.feature.spectral_centroid(y=y,sr=sr))),
+              })
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          (root/"candidate_report.json").write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding="utf-8")
+          if len(report)!=3:
+              raise RuntimeError(f"Expected 3 candidates, got {len(report)}")
+          PY
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gpt-sovits-timbre-screen
+          retention-days: 14
+          path: gpt_sovits_timbre_screen/
