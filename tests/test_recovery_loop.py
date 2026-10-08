@@ -109,6 +109,22 @@ def test_visual_beat_provenance_uses_asset_at_sampled_clip_midpoint(tmp_path,mon
     assert [item[2]["asset_path"] for item in seen]==beat_assets
 
 
+def test_visual_beat_provenance_credits_the_reported_beats_author(tmp_path,monkeypatch):
+    scene=make_scene("s1",["unused.jpg"],["scene must pass"])
+    scene.attribution="opening author"
+    scene.visual_beats=[
+        SimpleNamespace(start=0,attribution="opening author",visual_qa_requirements=["a"],visual_qa_labels=["a"],visual_qa_negative_labels=[]),
+        SimpleNamespace(start=2.2,attribution="reveal author",visual_qa_requirements=["b"],visual_qa_labels=["b"],visual_qa_negative_labels=[]),
+    ]
+    beat_assets=[tmp_path/"opening.mp4",tmp_path/"reveal.mp4"]
+    monkeypatch.setattr(render_mod,"_composite_visual_beats",lambda *a,**k:(tmp_path/"s1.mp4",beat_assets,[2.2,3.8],beat_assets))
+    monkeypatch.setattr(render_mod,"_media_duration_seconds",lambda path:6.0)
+    monkeypatch.setattr(render_mod,"evaluate_scene_semantics",lambda scene,*a,**k:{"scene":scene.id,"status":"PASS"})
+    outcome=render_mod._render_scene_with_recovery(scene,tmp_path/"a.mp3",6.0,tmp_path/"a.srt",30,tmp_path,max_attempts=0,provider=None)
+    assert outcome["source"]["asset"]==str(beat_assets[1])
+    assert outcome["source"]["attribution"]=="reveal author"
+
+
 def test_visual_beat_asset_selection_fails_closed_on_mismatched_metadata():
     from pytest import raises
     with raises(ValueError,match="counts do not match"):

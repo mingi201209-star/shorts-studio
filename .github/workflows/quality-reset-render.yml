@@ -1,0 +1,150 @@
+name: quality-reset-render
+
+on:
+  push:
+    branches: [exp/quality-reset-v1]
+    paths:
+      - 'shorts_studio/**'
+      - 'tests/**'
+      - 'scripts/build_hydroplaning_states.py'
+      - '.github/workflows/quality-reset-render.yml'
+      - 'pyproject.toml'
+  pull_request:
+    branches: [exp/tts-naturalness-v2]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install render and vision dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-nanum fonts-noto-cjk librsvg2-bin
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          pip install -e '.[dev,vision]'
+
+      - name: Full regression
+        run: pytest -q
+
+      - name: Build quality-reset hydroplaning production
+        run: |
+          set -o pipefail
+          python scripts/build_hydroplaning_states.py --font /usr/share/fonts/truetype/nanum/NanumGothic.ttf 2>&1 | tee quality-reset-generator.log
+
+      - name: Verify opening quality reset contract
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+
+          p = json.loads(Path('examples/hydroplaning.json').read_text())
+          hook = p['scenes'][0]['visual_beats']
+          assert len(hook) >= 2
+          assert hook[0]['production']['role'] == 'hero'
+          assert hook[0]['production']['visual_mode'] == 'real_footage'
+          assert hook[1]['production']['visual_mode'] == 'real_footage'
+          assert p['tts_continuity_mode'] == 'scene_continuous'
+
+          for beat in hook[:2]:
+              path = Path(beat['asset'])
+              assert path.is_file() and path.stat().st_size > 1_000_000, path
+              assert path.suffix.lower() == '.mp4', path
+              probe = json.loads(subprocess.run([
+                  'ffprobe','-v','error','-select_streams','v:0',
+                  '-show_entries','stream=codec_name,width,height,r_frame_rate',
+                  '-show_entries','format=duration','-of','json',str(path)
+              ],capture_output=True,text=True,check=True).stdout)
+              assert float(probe['format']['duration']) >= 5.0, probe
+              print('REAL_HOOK_ASSET', path, probe['streams'][0], probe['format']['duration'])
+
+          assert all(
+              beat['production']['visual_mode'] != 'physical_animation'
+              for beat in hook[:2]
+          )
+          print('QUALITY_RESET_OPENING_CONTRACT_PASS')
+          PY
+
+      - name: Validate manifest
+        run: python -m shorts_studio validate examples/hydroplaning.json
+
+      - name: Render real-footage-first prototype
+        env:
+          SHORTS_REQUIRE_SEMANTIC_QA: '1'
+          PYTHONUNBUFFERED: '1'
+        run: |
+          set -o pipefail
+          python -m shorts_studio render examples/hydroplaning.json 2>&1 | tee quality-reset-render.log
+
+      - name: Verify all existing gates stay green
+        run: |
+          python - <<'PY'
+          import json, subprocess
+          from pathlib import Path
+
+          v=Path('dist/final.mp4')
+          assert v.is_file() and v.stat().st_size>0
+          probe=json.loads(subprocess.run([
+              'ffprobe','-v','error','-of','json',
+              '-show_entries','stream=codec_name,width,height,codec_type',
+              '-show_entries','format=duration',str(v)
+          ],capture_output=True,text=True,check=True).stdout)
+          vs=next(s for s in probe['streams'] if s.get('codec_type')=='video')
+          assert (vs['width'],vs['height'])==(1080,1920),vs
+          assert any(s.get('codec_type')=='audio' for s in probe['streams'])
+
+          q=json.loads(Path('dist/qa_report.json').read_text())
+          assert q['status']=='PASS',q
+          assert q['semantic_visual_qa']['status']=='PASS',q['semantic_visual_qa']
+          fv=q['final_video_qa']
+          assert fv['status']=='PASS',fv
+          checks=fv['checks']
+          for key in (
+              'retention_contract','first_10s_retention','meaningful_visual_changes',
+              'visual_production_v2','visual_activity_real','visual_cut_cadence',
+              'captions_visible','safe_area_clean'
+          ):
+              assert checks[key]['status']=='PASS',(key,checks[key])
+          print('QUALITY_RESET_FINAL_PASS duration=',probe['format']['duration'])
+          PY
+
+      - name: Sample first-impression and full-video review frames
+        if: success()
+        run: |
+          mkdir -p review_frames
+          for t in 0.0 0.35 0.8 1.5 2.5 4.0 6.0 9.0 12.0 15.0; do
+            ffmpeg -y -ss "$t" -i dist/final.mp4 -frames:v 1 "review_frames/t_$t.jpg"
+          done
+
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: quality-reset-production
+          retention-days: 14
+          path: |
+            dist/
+            review_frames/
+            quality-reset-generator.log
+            quality-reset-render.log
+            examples/hydroplaning_upload_description.txt
+
+      - uses: actions/upload-artifact@v4
+        if: failure() || cancelled()
+        with:
+          name: quality-reset-diagnostics
+          retention-days: 7
+          if-no-files-found: warn
+          path: |
+            dist/
+            build/
+            quality-reset-generator.log
+            quality-reset-render.log

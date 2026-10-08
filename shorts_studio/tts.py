@@ -192,8 +192,15 @@ async def synthesize_continuous_plan(
     rate: str = "+6%",
     base_pitch: str = DEFAULT_KO_PITCH,
     volume: str = DEFAULT_KO_VOLUME,
+    synthesize=None,
+    source: str = "korean-speech-planner-v3-continuous",
 ) -> list[WordTiming]:
     """Synthesize one whole scene in a single provider call.
+
+    `synthesize` defaults to Edge (_synthesize_sentence); any provider with
+    the same async (text, voice, rate, pitch, volume) -> (audio, words)
+    contract -- e.g. narration.elevenlabs_synthesizer -- reuses the exact
+    same trimming, word mapping and role-timing checks below.
 
     This is an opt-in experiment for narration naturalness. Unlike the
     unitized path, it deliberately does not restart the TTS model at each
@@ -216,7 +223,7 @@ async def synthesize_continuous_plan(
     ]
     spoken_text = " ".join(p.text for p in prepared_phrases)
 
-    audio_bytes, boundaries = await _synthesize_sentence(
+    audio_bytes, boundaries = await (synthesize or _synthesize_sentence)(
         spoken_text, voice, rate, base_pitch, volume
     )
     if not boundaries:
@@ -287,7 +294,7 @@ async def synthesize_continuous_plan(
         )
 
     timing_path.write_text(json.dumps({
-        "source": "korean-speech-planner-v3-continuous",
+        "source": source,
         "voice": voice,
         "base_rate": rate,
         "base_pitch": base_pitch,

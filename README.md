@@ -82,6 +82,32 @@ longer than `max_gap` so a long inter-sentence silence can no longer get merged 
 and then silently clipped out of coverage. `tests/test_tts_timing.py` and
 `tests/test_subtitle_regression.py` cover these regressions directly.
 
+### Narration providers (Edge is the fallback, not the target voice)
+
+`shorts_studio/narration.py` lets a production change the voice without touching captions,
+visual-cue binding or any QA gate. Every provider must deliver scene audio plus real per-word
+timings for the scene's own script tokens.
+
+- `narration_provider: "edge"` (default) is the existing Edge path, so existing manifests are unchanged.
+- `narration_provider: "prerendered"` with `narration_dir` reads `<scene_id>.wav|mp3|m4a|flac` and
+  `<scene_id>.words.json` (`[{"text","start","end"}]`). The source can be a human recording or an
+  HD TTS render produced elsewhere. Word timings can come from the vendor (ElevenLabs/Azure) or from
+  a maintained forced aligner such as WhisperX or stable-ts. Validation fails closed: the words must
+  match the script token-for-token, be monotonic, and fit inside the audio.
+- `narration_provider: "elevenlabs"` with `narration_voice` calls the official SDK
+  (`pip install -e '.[hd-tts]'`, `ELEVENLABS_API_KEY` from the environment only). If the key is
+  missing, the render fails; it never quietly switches back to Edge.
+- `narration_provider: "azure_hd"` uses Microsoft's official Azure Speech SDK
+  (`pip install -e '.[azure-tts]'`). The default production voice is
+  `ko-KR-Hyunsu:DragonHDLatestNeural`; override it with `narration_voice` when needed.
+  Credentials come only from `AZURE_SPEECH_KEY` + `AZURE_SPEECH_REGION` (or Microsoft's
+  `SPEECH_KEY` + `SPEECH_REGION` names). Provider WordBoundary events are aggregated onto the
+  script's real Korean tokens, so captions and visual-cue timing stay provider-measured. Missing
+  credentials, audio or timing fail closed; Azure HD never silently falls back to Edge.
+
+`SHORTS_NARRATION_PROVIDER`, `SHORTS_NARRATION_DIR` and `SHORTS_NARRATION_VOICE` override the
+manifest at render time.
+
 ## Render pipeline
 
 `shorts_studio render` produces `dist/final.mp4` (1080x1920, ≥30fps, H.264/AAC), a

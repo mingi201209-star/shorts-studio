@@ -13,6 +13,13 @@ from .captions import merge_scene_srt_files
 from .entertainment_qa import run_entertainment_contract_report
 from .visual_change import audit_visual_changes, resolve_visual_cues
 from .production_v2 import verify_visual_production_structure
+from .narration import (
+    NarrationConfig,
+    azure_speech_synthesizer,
+    elevenlabs_synthesizer,
+    load_prerendered_scene,
+    resolve_config,
+)
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -337,6 +344,69 @@ def _visual_beat_windows(scene, duration:float)->list[tuple[object,float]]:
             windows.append((beat,length))
     return windows
 
+def _beat_frame_counts(starts:list[float], duration:float, fps:int)->list[int]:
+    """Whole-frame length of each beat from ROUNDED cumulative boundaries.
+
+    Cutting each beat with `-t <seconds>` rounds every beat up to whole
+    frames independently, so later beats in a scene drifted 1-2 frames
+    behind their measured narration cue (seen in a real render as the
+    pinned-source check sampling the wrong source frame). Rounding the
+    boundaries instead keeps every beat start within half a frame of its cue
+    and the frame total equal to the scene's own rounded duration.
+    """
+    edges=[round(t*fps) for t in starts]+[round(duration*fps)]
+    return [b-a for a,b in zip(edges,edges[1:])]
+
+def _render_beat_clip(asset:Path, frames:int, fps:int, beat_clip:Path)->Path:
+    """Render one beat's moving picture (no captions/audio) into the media box.
+
+    Used for scenes that contain at least one moving-video beat. Every beat
+    clip is normalised to the same stream format -- limited ("tv") range,
+    BT.709 matrix and tags -- because the beats are joined with
+    `concat -c copy`, which keeps the FIRST clip's colour tags for the whole
+    scene. Real failures this prevents: a JPEG still (full-range yuvj420p)
+    before a video beat washed out every later beat, and an HLG/BT.2020 clip
+    after a BT.709 one decoded with the wrong matrix; both were caught by the
+    pinned-source check in visual_change.verify_observed_changes. HDR sources
+    must be tone-mapped before they get here (this only converts the
+    matrix/range; it does not tone-map).
+    """
+    vf=(
+        f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos:"
+        f"out_range=tv:out_color_matrix=bt709,"
+        f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
+        f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p,"
+        f"setparams=range=tv:colorspace=bt709:color_primaries=bt709:color_trc=bt709"
+    )
+    tags=["-color_range","tv","-colorspace","bt709","-color_primaries","bt709","-color_trc","bt709"]
+    if _is_moving_visual_asset(asset):
+        cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-frames:v",str(frames),
+             "-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",*tags,str(beat_clip)]
+    else:
+        cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-frames:v",str(frames),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",*tags,str(beat_clip)]
+    subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+    return beat_clip
+
+def _render_legacy_still_beat_clip(asset:Path, seconds:float, fps:int, beat_clip:Path)->Path:
+    """Exact pre-normalisation still-image beat render, kept for all-still scenes.
+
+    Every existing all-still production (e.g. Comet) was verified with this
+    exact filter chain, and its CLIP semantic margins are sensitive to tiny
+    pixel changes: switching those stills to the BT.709 normalisation above
+    dropped Comet scene_07 beat 1 from a PASS (margin 0.0306) to
+    NOT_EVALUATED (0.0223) in CI with no other change. The concat colour-tag
+    failures the normalisation fixes only occurred when stills were mixed
+    with video beats, so all-still scenes keep this verified path.
+    """
+    vf=(
+        f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
+        f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
+        f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
+    )
+    cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(seconds),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
+    subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+    return beat_clip
+
 def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int, build:Path, index:int, title:str|None=None, asset_cache:dict|None=None)->tuple[Path,list[Path],list[float],list[Path]]:
     """Render multiple picture cuts under one untouched narration/caption track."""
     windows=_visual_beat_windows(scene,duration)
@@ -344,13 +414,18 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         raise ValueError("visual beat renderer requires at least one positive-duration beat")
     visual_clips=[]; assets=[]
     asset_cache=asset_cache if asset_cache is not None else {}
-    for beat_index,(beat,beat_duration) in enumerate(windows):
+    frame_counts=_beat_frame_counts([float(beat.start) for beat,_ in windows],duration,fps)
+    for beat_index,(beat,_) in enumerate(windows):
         candidate={"asset":beat.asset,"asset_url":beat.asset_url,"attribution":beat.attribution}
         asset=_resolve_cached_asset(candidate,build,f"{scene.id}_beat{beat_index}",index,asset_cache)
         if asset is None:
             raise RuntimeError(f"{scene.id}: visual beat {beat_index} asset could not be resolved")
         assets.append(asset)
         _log_asset_diagnostics(f"{scene.id}_beat{beat_index}",asset)
+    # Colour/frame-exact normalisation only where stills and video meet; see
+    # _render_beat_clip and _render_legacy_still_beat_clip.
+    normalise=any(_is_moving_visual_asset(a) for a in assets)
+    for beat_index,(((beat,beat_duration),frames),asset) in enumerate(zip(zip(windows,frame_counts),assets)):
         # Render only the moving picture here. Captions/title/audio are applied
         # once after the cuts are joined, so their timing remains scene-global.
         # Per-beat zoom/crop framing variation (push_in/pull_out) was tried and
@@ -359,19 +434,12 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
         # What "그림을 더 자주 바꿔" actually meant was cutting to a genuinely
         # DIFFERENT photo more often, not varying the crop of the same one --
         # every beat renders with the same plain, calm contain-fit framing.
-        vf=(
-            f"scale={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:force_original_aspect_ratio=decrease:flags=lanczos,"
-            f"pad={IMAGE_BOX_WIDTH}:{IMAGE_BOX_HEIGHT}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
-            f"pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,fps={fps},format=yuv420p"
-        )
         beat_clip=build/f"{scene.id}_beat{beat_index}_v.mp4"
-        if _is_moving_visual_asset(asset):
-            cmd=["ffmpeg","-y","-stream_loop","-1","-i",str(asset),"-t",str(beat_duration),
-                 "-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
-        else:
-            cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-t",str(beat_duration),"-vf",vf,"-an","-c:v","libx264","-pix_fmt","yuv420p",str(beat_clip)]
         try:
-            subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
+            if normalise:
+                _render_beat_clip(asset,max(1,frames),fps,beat_clip)
+            else:
+                _render_legacy_still_beat_clip(asset,beat_duration,fps,beat_clip)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"ffmpeg failed visual beat {scene.id}/{beat_index}: {e.stderr[-2000:] if e.stderr else e}") from e
         except subprocess.TimeoutExpired as e:
@@ -463,11 +531,29 @@ def _media_duration_seconds(path:Path)->float:
     ).stdout)
     return float(data["format"]["duration"])
 
-def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False, breath_seed:int=0, tts_continuity_mode:str="unitized")->tuple[Path,float,Path,dict,list,list]:
+def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False, breath_seed:int=0, tts_continuity_mode:str="unitized", narration:NarrationConfig|None=None)->tuple[Path,float,Path,dict,list,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     plan=_narration_plan(scene)
     _log_narration_plan(scene,plan)
-    if tts_continuity_mode == "scene_continuous":
+    narration=narration or NarrationConfig()
+    if narration.provider == "prerendered":
+        print(f"[narration] {scene.id}: pre-rendered narration from {narration.directory}")
+        words=load_prerendered_scene(plan,scene.id,narration.directory,audio,timing)
+    elif narration.provider == "elevenlabs":
+        if not narration.voice:
+            raise RuntimeError("elevenlabs narration requires narration_voice / SHORTS_NARRATION_VOICE")
+        print(f"[narration] {scene.id}: ElevenLabs scene-continuous call")
+        words=asyncio.run(synthesize_continuous_plan(plan,audio,timing,voice=narration.voice,
+                                                     synthesize=elevenlabs_synthesizer(narration.voice),
+                                                     source="elevenlabs-continuous"))
+    elif narration.provider == "azure_hd":
+        if not narration.voice:
+            raise RuntimeError("azure_hd narration requires a voice")
+        print(f"[narration] {scene.id}: Azure Dragon HD scene-continuous call voice={narration.voice}")
+        words=asyncio.run(synthesize_continuous_plan(plan,audio,timing,voice=narration.voice,
+                                                     synthesize=azure_speech_synthesizer(narration.voice),
+                                                     source="azure-dragon-hd-continuous"))
+    elif tts_continuity_mode == "scene_continuous":
         print(f"[prosody] {scene.id}: scene-continuous provider call")
         words=asyncio.run(synthesize_continuous_plan(plan,audio,timing))
     else:
@@ -505,14 +591,19 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
             if getattr(scene,"visual_beats",None):
                 clip,beat_assets,beat_durations,beat_clips=_composite_visual_beats(scene,audio,srt,duration,fps,build,index,title=title,asset_cache=asset_cache)
                 asset=_representative_visual_asset(beat_assets,beat_durations,_media_duration_seconds(clip))
+                # Provenance must credit the beat whose asset is reported, not
+                # the scene-level (first beat) attribution.
+                beats=[beat for beat,_ in _visual_beat_windows(scene,duration)]
+                attribution=getattr(beats[beat_assets.index(asset)],"attribution",None) if len(beats)==len(beat_assets) else None
             else:
                 asset=_resolve_asset(candidates[index],build,scene.id,index)
                 clip=_composite_scene_clip(scene,asset,audio,srt,duration,fps,build,index,title=title)
+                attribution=candidates[index].get("attribution")
         except Exception as e:
             last_error=f"candidate {index} failed to resolve/render: {e}"
             result={"scene":scene.id,"status":"FAIL","reason":last_error}
             continue
-        used={"index":index,"asset":str(asset) if asset else None,"attribution":candidates[index].get("attribution")}
+        used={"index":index,"asset":str(asset) if asset else None,"attribution":attribution}
         if not scene.visual_qa_requirements:
             result={"scene":scene.id,"status":"NOT_EVALUATED","reason":"no visual_qa_requirements declared"}
             break
@@ -570,10 +661,12 @@ def render(manifest:str,dry_run:bool=False)->dict:
         raise RuntimeError("FFmpeg/ffprobe required")
     build=Path("build"); dist=Path("dist"); build.mkdir(exist_ok=True); dist.mkdir(exist_ok=True)
     provider=default_vision_provider()
+    narration=resolve_config(p)
+    print(f"[narration] provider={narration.provider}")
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
     for scene_index, scene in enumerate(p.scenes):
-        audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build,enable_subtle_breaths=p.enable_subtle_breaths,breath_seed=scene_index,tts_continuity_mode=p.tts_continuity_mode)
+        audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build,enable_subtle_breaths=p.enable_subtle_breaths,breath_seed=scene_index,tts_continuity_mode=p.tts_continuity_mode,narration=narration)
         if p.strict_meaningful_visual_changes:
             timing=json.loads((build/f"{scene.id}.timing.json").read_text(encoding="utf-8"))
             resolved=resolve_visual_cues(scene,timing["words"],duration)
