@@ -28,6 +28,10 @@ Providers
                 the same continuous-scene pipeline Edge uses. Needs
                 ELEVENLABS_API_KEY and a voice id; never committed, never
                 silently replaced by Edge if missing.
+``azure_hd``    Microsoft's official Azure Speech SDK using Dragon HD.
+                Korean defaults to ``ko-KR-Hyunsu:DragonHDLatestNeural``.
+                Native WordBoundary events are aggregated to the script tokens;
+                missing credentials/timings fail closed and never fall back.
 
 Environment overrides (so CI/operators can inject a voice without editing a
 manifest): SHORTS_NARRATION_PROVIDER, SHORTS_NARRATION_DIR,
