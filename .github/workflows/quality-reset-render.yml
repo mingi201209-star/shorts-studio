@@ -167,7 +167,7 @@ jobs:
       - name: Generate designed Korean male narration previews
         env:
           PYTHONUNBUFFERED: '1'
-          OMP_NUM_THREADS: '2'
+          OMP_NUM_THREADS: '4'
         run: |
           python - <<'PY'
           import torch
@@ -189,29 +189,19 @@ jobs:
               dtype=torch.bfloat16,
           )
 
-          prompts = {
-              "A_low_documentary": (
-                  "30대 한국 남성. 낮고 안정적인 중저음. 차분한 과학 다큐멘터리 내레이터. "
-                  "과장하거나 연기하지 말고 자연스럽고 절제된 억양으로 말한다. "
-                  "문장 끝을 급하게 올리지 않고 편안하게 내려 마무리한다. "
-                  "뉴스 앵커처럼 딱딱하지 않으며, 호흡과 쉼은 실제 사람이 설명하듯 자연스럽다."
-              ),
-              "B_warm_youtube_doc": (
-                  "20대 후반에서 30대 초반의 한국 남성. 따뜻하고 선명한 중저음. "
-                  "고퀄리티 유튜브 과학 다큐 내레이션. 친근하지만 가볍지 않고, "
-                  "호기심은 느껴지되 쫑알거리거나 과하게 들뜨지 않는다. "
-                  "속도는 보통보다 아주 조금 빠르고 단어 사이 연결은 자연스럽다."
-              ),
-          }
-
-          for name, instruct in prompts.items():
-              wavs, sr = model.generate_voice_design(
-                  text=text,
-                  language="Korean",
-                  instruct=instruct,
-              )
-              sf.write(out / f"{name}.wav", wavs[0], sr)
-              print(name, "sr=", sr, "samples=", len(wavs[0]))
+          instruct = (
+              "30대 한국 남성. 낮고 안정적인 중저음. 차분한 과학 다큐멘터리 내레이터. "
+              "과장하거나 연기하지 말고 자연스럽고 절제된 억양으로 말한다. "
+              "문장 끝을 급하게 올리지 않고 편안하게 내려 마무리한다. "
+              "뉴스 앵커처럼 딱딱하지 않으며, 호흡과 쉼은 실제 사람이 설명하듯 자연스럽다."
+          )
+          wavs, sr = model.generate_voice_design(
+              text=text,
+              language="Korean",
+              instruct=instruct,
+          )
+          sf.write(out / "A_low_documentary.wav", wavs[0], sr)
+          print("A_low_documentary", "sr=", sr, "samples=", len(wavs[0]))
           PY
 
       - name: Verify preview files
