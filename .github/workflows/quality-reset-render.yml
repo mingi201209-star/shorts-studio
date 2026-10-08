@@ -186,11 +186,16 @@ jobs:
 
       - name: Verify preview audio
         run: |
-          set -euo pipefail
-          for f in supertonic_preview/M1.wav supertonic_preview/M2.wav supertonic_preview/M3.wav; do
-            test -s "$f"
-            ffprobe -v error -show_entries format=duration -of default=nw=1 "$f"
-          done
+          python - <<'PY'
+          from pathlib import Path
+          import soundfile as sf
+          for name in ('M1','M2','M3'):
+              p=Path('supertonic_preview')/f'{name}.wav'
+              assert p.is_file() and p.stat().st_size > 0, p
+              info=sf.info(str(p))
+              assert info.frames > 0 and info.samplerate > 0, info
+              print(name, 'duration=', round(info.duration, 3), 'sr=', info.samplerate)
+          PY
 
       - uses: actions/upload-artifact@v4
         with:
