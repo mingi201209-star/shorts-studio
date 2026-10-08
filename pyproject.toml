@@ -17,6 +17,7 @@ vision=["open-clip-torch>=2.24","torch>=2.2"]
 # Optional HD narration provider (official ElevenLabs SDK, MIT); see
 # shorts_studio/narration.py. Edge TTS stays the default dev/fallback voice.
 hd-tts=["elevenlabs>=1.0"]
+azure-tts=["azure-cognitiveservices-speech>=1.41"]
 
 [tool.pytest.ini_options]
 testpaths=["tests"]
