@@ -153,3 +153,101 @@ def test_elevenlabs_adapter_feeds_the_same_continuous_pipeline(tmp_path):
     data = json.loads(timing.read_text(encoding="utf-8"))
     assert data["source"] == "elevenlabs-continuous"
     assert [u["role"] for u in data["units"]] == ["HOOK", "CRISIS"]
+
+
+
+def test_azure_hd_resolves_default_korean_hd_voice(monkeypatch):
+    monkeypatch.setenv("SHORTS_NARRATION_PROVIDER", "azure_hd")
+    monkeypatch.delenv("SHORTS_NARRATION_VOICE", raising=False)
+    cfg = narration.resolve_config(_project())
+    assert cfg.provider == "azure_hd"
+    assert cfg.voice == "ko-KR-Hyunsu:DragonHDLatestNeural"
+
+
+def test_azure_hd_requires_credentials_and_never_falls_back(monkeypatch):
+    for k in ("AZURE_SPEECH_KEY", "AZURE_SPEECH_REGION", "SPEECH_KEY", "SPEECH_REGION"):
+        monkeypatch.delenv(k, raising=False)
+    with pytest.raises(RuntimeError, match="AZURE_SPEECH_KEY"):
+        narration.azure_speech_synthesizer()
+
+
+def test_azure_events_are_aggregated_by_real_script_offsets():
+    text = "물이 쌓입니다."
+    # Azure may report punctuation as a second boundary inside the same
+    # whitespace token. It must remain one caption/script token.
+    events = [
+        {"text": "물이", "text_offset": 0, "start": 0.10, "end": 0.35},
+        {"text": "쌓입니다", "text_offset": 3, "start": 0.45, "end": 0.90},
+        {"text": ".", "text_offset": 7, "start": 0.90, "end": 0.96},
+    ]
+    words = narration.azure_events_to_words(text, events)
+    assert [w.text for w in words] == ["물이", "쌓입니다."]
+    assert words[0].start == pytest.approx(0.10)
+    assert words[1].start == pytest.approx(0.45)
+    assert words[1].end == pytest.approx(0.96)
+
+    with pytest.raises(RuntimeError, match="refusing approximate timing"):
+        narration.azure_events_to_words(text, events[:1])
+
+
+def test_azure_hd_adapter_uses_official_boundary_signal_shape():
+    from types import SimpleNamespace
+
+    class FakeSignal:
+        def __init__(self, owner):
+            self.owner = owner
+        def connect(self, cb):
+            self.owner.callback = cb
+
+    class FakeConfig:
+        def __init__(self, subscription, region):
+            self.subscription = subscription
+            self.region = region
+            self.speech_synthesis_voice_name = None
+            self.output_format = None
+        def set_speech_synthesis_output_format(self, fmt):
+            self.output_format = fmt
+
+    class FakeFuture:
+        def __init__(self, synth, text):
+            self.synth = synth
+            self.text = text
+        def get(self):
+            cursor = 0
+            for i, token in enumerate(self.text.split()):
+                start = self.text.find(token, cursor)
+                cursor = start + len(token)
+                self.synth.callback(SimpleNamespace(
+                    text=token,
+                    text_offset=start,
+                    word_length=len(token),
+                    audio_offset=int(i * 0.30 * 10_000_000),
+                    duration=int(0.24 * 10_000_000),
+                ))
+            return SimpleNamespace(reason="done", audio_data=b"provider-mp3-bytes")
+
+    class FakeSynthesizer:
+        def __init__(self, speech_config, audio_config=None):
+            self.config = speech_config
+            self.callback = None
+            self.synthesis_word_boundary = FakeSignal(self)
+        def speak_text_async(self, text):
+            return FakeFuture(self, text)
+
+    fake_sdk = SimpleNamespace(
+        SpeechConfig=FakeConfig,
+        SpeechSynthesizer=FakeSynthesizer,
+        ResultReason=SimpleNamespace(SynthesizingAudioCompleted="done"),
+        SpeechSynthesisOutputFormat=SimpleNamespace(Audio48Khz192KBitRateMonoMp3="48k-mp3"),
+    )
+    synth = narration.azure_speech_synthesizer(
+        "ko-KR-Hyunsu:DragonHDLatestNeural",
+        speechsdk=fake_sdk,
+        subscription="test-key",
+        region="koreacentral",
+    )
+    text = "빗길에선 타이어가 돌고 있어도"
+    audio, words = asyncio.run(synth(text, "ignored", "+0%", "+0Hz", "+0%"))
+    assert audio == b"provider-mp3-bytes"
+    assert [w.text for w in words] == text.split()
+    assert words[1].start == pytest.approx(0.30)
