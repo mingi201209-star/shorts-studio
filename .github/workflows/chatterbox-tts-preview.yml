@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ffmpeg
-          pip install chatterbox-tts edge-tts
+          pip install 'git+https://github.com/resemble-ai/chatterbox.git@5de7a54aa4e5e2baadb0182dde554908b48b85c2' edge-tts
 
       - name: Generate Korean A/B/C narration preview
         env:
