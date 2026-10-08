@@ -167,7 +167,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           src=Path('/tmp/CosyVoice/requirements.txt').read_text().splitlines()
-          skip=('torch==','torchaudio==','onnxruntime-gpu','tensorrt','deepspeed')
+          skip=('torch==','torchaudio==','onnxruntime-gpu','tensorrt','deepspeed','openai-whisper')
           keep=[x for x in src if x.strip() and not x.startswith('--extra-index-url') and not any(k in x for k in skip)]
           Path('/tmp/cosyvoice-cpu-req.txt').write_text('\n'.join(keep)+'\n')
           PY
