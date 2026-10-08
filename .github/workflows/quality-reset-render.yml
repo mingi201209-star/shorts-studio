@@ -177,6 +177,7 @@ jobs:
               streaming=True,
           )
           ds = ds.cast_column("audio.acoustic_microphone", Audio(decode=False))
+          ds = ds.cast_column("audio.throat_microphone", Audio(decode=False))
 
           chosen = None
           for row in ds:
