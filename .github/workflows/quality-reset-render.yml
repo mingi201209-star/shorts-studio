@@ -193,10 +193,11 @@ jobs:
           export PYTHONPATH="/tmp/CosyVoice:/tmp/CosyVoice/third_party/Matcha-TTS"
           python - <<'PY'
           from pathlib import Path
+          import os
           import torchaudio
           from cosyvoice.cli.cosyvoice import AutoModel
 
-          out=Path('$GITHUB_WORKSPACE')/'cosyvoice_preview'
+          out=Path(os.environ['GITHUB_WORKSPACE'])/'cosyvoice_preview'
           out.mkdir(exist_ok=True)
           text=(
               '빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. '
