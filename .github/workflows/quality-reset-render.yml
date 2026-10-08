@@ -162,7 +162,7 @@ jobs:
 
       - name: Install lightweight client dependencies
         run: |
-          pip install 'datasets>=3.0' soundfile gradio_client==1.10.4 huggingface_hub
+          pip install 'datasets>=3.0' soundfile gradio_client==1.10.4 huggingface_hub torchcodec
 
       - name: Select licensed Korean male reference
         run: |
