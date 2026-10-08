@@ -148,3 +148,76 @@ jobs:
             build/
             quality-reset-generator.log
             quality-reset-render.log
+
+
+  magpie_preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install NVIDIA NeMo-Speech.cpp CPU runtime
+        run: |
+          curl -fsSL https://github.com/NVIDIA/NeMo-Speech.cpp/raw/main/scripts/install.sh | sh -s -- --backend cpu
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Pull MagpieTTS multilingual stack
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          nemo-speech pull magpie
+
+      - name: Start local Magpie TTS server
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          nohup nemo-speech serve --tts-model magpie --host 127.0.0.1 --port 8080 > magpie-server.log 2>&1 &
+          echo $! > magpie-server.pid
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:8080/v1/models >/dev/null 2>&1; then
+              exit 0
+            fi
+            sleep 2
+          done
+          cat magpie-server.log
+          exit 1
+
+      - name: Generate Korean male Magpie previews
+        run: |
+          set -euo pipefail
+          mkdir -p magpie_preview
+          TEXT='빗길에선 타이어가 돌고 있어도, 실은 도로에 닿지 않을 수 있습니다. 문제는 고무가 아니라, 타이어 밑으로 파고드는 물입니다.'
+          for V in Jason John Leo; do
+            curl -fsS http://127.0.0.1:8080/v1/audio/speech \
+              -H 'Content-Type: application/json' \
+              -d "$(python - <<PY
+import json
+print(json.dumps({
+  "model":"default",
+  "voice":"$V",
+  "language":"ko",
+  "input":"$TEXT",
+  "response_format":"wav"
+}, ensure_ascii=False))
+PY
+)" \
+              -o "magpie_preview/${V}.wav"
+          done
+
+      - name: Verify Magpie preview files
+        run: |
+          python - <<'PY'
+          import wave
+          from pathlib import Path
+          for p in sorted(Path("magpie_preview").glob("*.wav")):
+              assert p.stat().st_size > 1000, p
+              with wave.open(str(p), "rb") as w:
+                  assert w.getnframes() > 0
+                  print(p.name, round(w.getnframes()/w.getframerate(), 3), w.getframerate())
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: magpie-korean-male-preview
+          retention-days: 14
+          path: |
+            magpie_preview/
+            magpie-server.log
