@@ -58,19 +58,17 @@ def _split_sentences(text: str) -> list[str]:
 def _tokenize(text:str)->list[str]:
     return re.findall(r"[^\s]+",text)
 
-def _map_boundaries_to_script(text:str, boundaries:list[WordTiming])->list[WordTiming]:
-    tokens=_tokenize(text)
-    if not tokens or not boundaries: return []
-    if len(tokens)==len(boundaries):
-        return [WordTiming(t,b.start,b.end) for t,b in zip(tokens,boundaries)]
-    # Edge may emit sentence/phrase boundary events for Korean rather than whitespace words.
-    start=boundaries[0].start; end=boundaries[-1].end
-    weights=[max(1,len(re.sub(r"\W","",t))) for t in tokens]; total=sum(weights)
-    cursor=start; out=[]
-    for i,(t,w) in enumerate(zip(tokens,weights)):
-        nxt=end if i==len(tokens)-1 else cursor+(end-start)*w/total
-        out.append(WordTiming(t,cursor,nxt)); cursor=nxt
-    return out
+def _map_boundaries_to_script(text: str, boundaries: list[WordTiming]) -> list[WordTiming]:
+    """Use provider-measured word spans for ALL narration modes.
+
+    This default/unitized path must meet the same evidence standard as
+    scene-continuous narration. A missing, coarse or lexically drifting event
+    raises rather than inventing word timestamps from character counts.
+    """
+    if not boundaries:
+        return []
+    return map_measured_words(text, boundaries)
+
 
 def _restore_numeral_captions(spoken_text: str, original_unit: list[PhraseSpec], mapped: list[WordTiming]) -> list[WordTiming]:
     """`mapped` is timed against `spoken_text`, the Sino-Korean-spelled-out
