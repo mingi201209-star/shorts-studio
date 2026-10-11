@@ -2,7 +2,7 @@ from __future__ import annotations
 import json, re, shutil, subprocess
 from dataclasses import replace
 from pathlib import Path
-from .timing import WordTiming
+from .timing import WordTiming, map_measured_words
 from .prosody import PhraseSpec, build_auto_plan, group_into_units, pause_after, rate_for_unit, spell_out_numbers
 from .korean_speech_planner import adjust_rate, analyze_unit
 from .breath import plan_breaths, render_breath_gap_clip, select_breath_gaps
@@ -232,11 +232,13 @@ async def synthesize_continuous_plan(
             "do not guess from scene duration"
         )
 
+    # Validate measured word coverage before writing or transcoding audio.
+    # A sentence-level event cannot establish individual caption/cue timings.
+    mapped = map_measured_words(spoken_text, boundaries)
     raw_path = audio_path.with_name(audio_path.stem + "_provider_raw" + audio_path.suffix)
     raw_path.write_bytes(audio_bytes)
     _, leading_trim = _trim_tts_edge_silence(raw_path, audio_path)
 
-    mapped = _map_boundaries_to_script(spoken_text, boundaries)
     words = _restore_numeral_captions(spoken_text, list(phrases), mapped)
     words = [
         WordTiming(
