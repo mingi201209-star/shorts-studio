@@ -181,7 +181,11 @@ def test_synthesize_plan_merges_continuation_into_a_single_call(tmp_path):
             clip = tmp_path / f"gen_{abs(hash(self.text))}.mp3"
             subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "0.4", "-q:a", "9", str(clip)], check=True, capture_output=True)
             yield {"type": "audio", "data": clip.read_bytes()}
-            yield {"type": "WordBoundary", "text": self.text, "offset": 0, "duration": 4_000_000}
+            words = self.text.split()
+            for i, word in enumerate(words):
+                start = i * 4_000_000 // len(words)
+                end = (i + 1) * 4_000_000 // len(words)
+                yield {"type": "WordBoundary", "text": word, "offset": start, "duration": end - start}
     fake_edge_tts.Communicate = FakeCommunicate
     sys.modules["edge_tts"] = fake_edge_tts
     try:
@@ -223,7 +227,11 @@ def test_synthesize_plan_spells_numbers_before_synthesis(tmp_path):
             clip = tmp_path / "gen.mp3"
             subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "0.3", "-q:a", "9", str(clip)], check=True, capture_output=True)
             yield {"type": "audio", "data": clip.read_bytes()}
-            yield {"type": "WordBoundary", "text": seen_text["text"], "offset": 0, "duration": 3_000_000}
+            words = seen_text["text"].split()
+            for i, word in enumerate(words):
+                start = i * 3_000_000 // len(words)
+                end = (i + 1) * 3_000_000 // len(words)
+                yield {"type": "WordBoundary", "text": word, "offset": start, "duration": end - start}
     fake_edge_tts.Communicate = FakeCommunicate
     sys.modules["edge_tts"] = fake_edge_tts
     try:

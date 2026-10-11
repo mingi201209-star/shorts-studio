@@ -25,17 +25,13 @@ def test_word_count_match_uses_boundaries_directly():
     assert [w.start for w in words] == [0.10, 0.42]
     assert [w.end for w in words] == [0.40, 0.90]
 
-def test_korean_sentence_boundary_interpolation_stays_within_real_measured_span():
+def test_korean_sentence_boundary_cannot_invent_word_timestamps():
+    # A sentence-level timestamp does not identify boundaries for its
+    # individual words. Reject it instead of guessing from character counts.
     text = "안녕하세요 오늘은 날씨가 정말 좋습니다"
-    boundaries = [WordTiming(text, 0.5, 2.5)]  # a single sentence-boundary event
-    words = _map_boundaries_to_script(text, boundaries)
-    assert words, "must produce timings from the real boundary, not skip it"
-    assert words[0].start == pytest.approx(0.5)
-    assert words[-1].end == pytest.approx(2.5)
-    for a, b in zip(words, words[1:]):
-        assert a.end <= b.start + 1e-9
-    assert all(0.5 - 1e-9 <= w.start <= 2.5 + 1e-9 for w in words)
-    assert all(0.5 - 1e-9 <= w.end <= 2.5 + 1e-9 for w in words)
+    boundaries = [WordTiming(text, 0.5, 2.5)]
+    with pytest.raises(ValueError, match="spans multiple script words"):
+        _map_boundaries_to_script(text, boundaries)
 
 def test_empty_boundaries_produce_no_words_never_guessed():
     assert _map_boundaries_to_script("안녕하세요", []) == []
@@ -232,7 +228,13 @@ def test_multi_sentence_fails_closed_if_any_sentence_has_no_boundaries(tmp_path)
             clip = tmp_path / "ok.mp3"
             subprocess.run(["ffmpeg", "-y", "-f", "lavfi", "-i", "anullsrc=r=24000:cl=mono", "-t", "0.5", "-q:a", "9", str(clip)], check=True, capture_output=True)
             yield {"type": "audio", "data": clip.read_bytes()}
-            yield {"type": "WordBoundary", "text": self.text, "offset": 0, "duration": 5_000_000}
+            # First sentence reports real per-word events so the second
+            # sentence's missing events are the only reason for failure.
+            words = self.text.split()
+            for i, word in enumerate(words):
+                start = i * 5_000_000 // len(words)
+                end = (i + 1) * 5_000_000 // len(words)
+                yield {"type": "WordBoundary", "text": word, "offset": start, "duration": end - start}
     fake_edge_tts.Communicate = FakeCommunicate
     import sys as _sys
     _sys.modules["edge_tts"] = fake_edge_tts
