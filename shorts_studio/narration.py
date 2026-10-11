@@ -41,6 +41,7 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 import os
 import re
 import subprocess
@@ -117,6 +118,8 @@ def validate_external_words(phrases: list[PhraseSpec], raw_words: list[dict], au
     mismatched transcript or invented timing would silently break the
     caption/semantic gates; reject instead.
     """
+    if not math.isfinite(audio_seconds) or audio_seconds <= 0:
+        raise ValueError("pre-rendered audio duration must be finite and positive")
     expected = [t for tokens in _script_tokens(phrases) for t in tokens]
     if len(raw_words) != len(expected):
         raise ValueError(f"pre-rendered narration has {len(raw_words)} words, script has {len(expected)}")
@@ -126,7 +129,9 @@ def validate_external_words(phrases: list[PhraseSpec], raw_words: list[dict], au
         if _norm_token(text) != _norm_token(token):
             raise ValueError(f"pre-rendered word {i} {text!r} does not match script token {token!r}")
         start, end = float(raw["start"]), float(raw["end"])
-        if start < 0 or end < start or start < prev_start:
+        if not math.isfinite(start) or not math.isfinite(end):
+            raise ValueError(f"pre-rendered word {i} {text!r} has non-finite timing")
+        if start < 0 or end <= start or start < prev_start:
             raise ValueError(f"pre-rendered word {i} {text!r} has non-monotonic timing {start}-{end}")
         if end > audio_seconds + 0.05:
             raise ValueError(f"pre-rendered word {i} ends at {end:.2f}s after the audio ({audio_seconds:.2f}s)")
@@ -142,13 +147,13 @@ def load_prerendered_scene(phrases: list[PhraseSpec], scene_id: str, directory: 
     words_file = directory / f"{scene_id}.words.json"
     if src is None or not words_file.is_file():
         raise FileNotFoundError(f"pre-rendered narration for {scene_id!r} needs audio + {words_file.name} in {directory}")
+    seconds = _audio_duration(src)
+    words = validate_external_words(phrases, json.loads(words_file.read_text(encoding="utf-8")), seconds)
     audio_path.parent.mkdir(parents=True, exist_ok=True)
     # Re-encode once with FFmpeg so the rest of the pipeline sees the same
     # container it gets from Edge; no trimming -- the timings refer to src.
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-ac", "1", "-ar", "44100",
                     "-c:a", "libmp3lame", "-q:a", "2", str(audio_path)], check=True, capture_output=True, timeout=180)
-    seconds = _audio_duration(src)
-    words = validate_external_words(phrases, json.loads(words_file.read_text(encoding="utf-8")), seconds)
     timing_path.write_text(json.dumps({
         "source": "prerendered", "provider_audio": str(src), "voice": None,
         "units": words_to_units(phrases, words), "gaps_seconds": [], "raw": [],
@@ -159,6 +164,8 @@ def load_prerendered_scene(phrases: list[PhraseSpec], scene_id: str, directory: 
 
 def alignment_to_words(text: str, characters: list[str], starts: list[float], ends: list[float]) -> list[WordTiming]:
     """Map a provider's per-character alignment onto whitespace tokens of `text`."""
+    if not (len(characters) == len(starts) == len(ends)):
+        raise ValueError("provider alignment character/timestamp lengths do not match")
     if "".join(characters) != text:
         raise ValueError("provider alignment characters do not reproduce the requested text")
     words, current, w_start, w_end = [], "", None, None

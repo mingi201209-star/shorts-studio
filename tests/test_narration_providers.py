@@ -251,3 +251,54 @@ def test_azure_hd_adapter_uses_official_boundary_signal_shape():
     assert audio == b"provider-mp3-bytes"
     assert [w.text for w in words] == text.split()
     assert words[1].start == pytest.approx(0.30)
+
+@pytest.mark.parametrize("field", ["start", "end"])
+@pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
+def test_external_words_reject_nonfinite_timestamps(field, value):
+    words = _words()
+    words[2][field] = value
+    with pytest.raises(ValueError, match="non-finite timing"):
+        narration.validate_external_words(_phrases(), words, 3.0)
+
+
+def test_external_words_reject_zero_duration_word():
+    words = _words()
+    words[2]["end"] = words[2]["start"]
+    with pytest.raises(ValueError, match="non-monotonic timing"):
+        narration.validate_external_words(_phrases(), words, 3.0)
+
+
+@pytest.mark.parametrize("duration", [float("nan"), float("inf"), float("-inf"), 0.0, -1.0])
+def test_external_words_reject_invalid_audio_duration(duration):
+    with pytest.raises(ValueError, match="duration must be finite and positive"):
+        narration.validate_external_words(_phrases(), _words(), duration)
+
+
+@pytest.mark.parametrize("starts,ends", [
+    ([0.0], [0.1, 0.2]),
+    ([0.0, 0.1], [0.1]),
+    ([0.0, 0.1, 0.2], [0.1, 0.2, 0.3]),
+])
+def test_character_alignment_rejects_truncated_or_extra_timestamps(starts, ends):
+    with pytest.raises(ValueError, match="character/timestamp lengths"):
+        narration.alignment_to_words("물이", list("물이"), starts, ends)
+
+
+def test_invalid_prerendered_input_does_not_overwrite_existing_audio(monkeypatch, tmp_path):
+    source = tmp_path / "voice"
+    source.mkdir()
+    (source / "s_hook.wav").write_bytes(b"source audio")
+    words = _words()
+    words[0]["start"] = float("nan")
+    (source / "s_hook.words.json").write_text(json.dumps(words), encoding="utf-8")
+    audio, timing = tmp_path / "s_hook.mp3", tmp_path / "s_hook.timing.json"
+    audio.write_bytes(b"previous valid audio")
+    timing.write_text("previous valid timing", encoding="utf-8")
+    monkeypatch.setattr(narration, "_audio_duration", lambda path: 3.0)
+    def refuse_transcode(*args, **kwargs):
+        pytest.fail("invalid input must be rejected before transcoding")
+    monkeypatch.setattr(narration.subprocess, "run", refuse_transcode)
+    with pytest.raises(ValueError, match="non-finite timing"):
+        narration.load_prerendered_scene(_phrases(), "s_hook", source, audio, timing)
+    assert audio.read_bytes() == b"previous valid audio"
+    assert timing.read_text(encoding="utf-8") == "previous valid timing"
