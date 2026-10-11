@@ -9,7 +9,7 @@ requires-python=">=3.11"
 dependencies=["pydantic>=2.7","edge-tts>=7.0","opencv-python-headless>=4.9","pillow>=10.0","numpy>=1.26"]
 
 [project.optional-dependencies]
-dev=["pytest>=8.0","ruff>=0.6"]
+dev=["pytest>=8.0","ruff>=0.6","librosa>=0.10"]
 # Real local zero-shot semantic vision QA (no API key, no payment, runs on-device).
 # Not installed by default: torch is heavy. Without it, ClipSemanticVisionProvider
 # reports NOT_EVALUATED (fail-closed in production) instead of ever faking a PASS.
@@ -18,9 +18,15 @@ vision=["open-clip-torch>=2.24","torch>=2.2"]
 # shorts_studio/narration.py. Edge TTS stays the default dev/fallback voice.
 hd-tts=["elevenlabs>=1.0"]
 azure-tts=["azure-cognitiveservices-speech>=1.41"]
+# scripts/gpt_sovits_narration.py: official GPT-SoVITS Space client, silence
+# detection (librosa) and word anchoring for semantic pauses (faster-whisper).
+narration-tools=["librosa>=0.10","soundfile>=0.12","gradio_client>=1.10","faster-whisper>=1.0"]
+# Exact Korean forced alignment runs separately from render; WhisperX 3.8.6 supports Python 3.10-3.13.
+narration-align=["whisperx==3.8.6; python_version < '3.14'"]
 
 [tool.pytest.ini_options]
 testpaths=["tests"]
+pythonpath=["."]
 
 [tool.ruff]
 line-length=100
