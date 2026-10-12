@@ -1,5 +1,5 @@
 from __future__ import annotations
-import asyncio, json, os, shutil, subprocess, time, urllib.error, urllib.request
+import asyncio, json, os, shutil, subprocess, textwrap, time, unicodedata, urllib.error, urllib.request
 from pathlib import Path
 from types import SimpleNamespace
 from .project import load_project
@@ -134,7 +134,71 @@ _PLAY_RES="PlayResX=1080,PlayResY=1920"
 # comfortably clear of a real YouTube Shorts player's bottom UI overlay.
 CAPTION_GAP_BELOW_IMAGE=20
 CAPTION_MARGIN_TOP=SAFE_BOTTOM_Y+CAPTION_GAP_BELOW_IMAGE
-CAPTION_STYLE=f"Alignment=6,MarginV={CAPTION_MARGIN_TOP},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=0,{_PLAY_RES}"
+CAPTION_STYLE=f"Alignment=6,MarginV={CAPTION_MARGIN_TOP},MarginL=72,MarginR=72,FontSize={CAPTION_FONT_SIZE},Outline={CAPTION_OUTLINE},Shadow=1,Bold=0,WrapStyle=2,{_PLAY_RES}"
+# WrapStyle=2 for the same reason as _TITLE_STYLE below: a real hydroplaning
+# render showed libass's own wrapping cutting caption words in half
+# ("문제는 고무가 아" / "니라 타이어 아래로", "그런데 속도가 빨" / "라지면 홈이
+# 빼내는"). _wrap_caption_safe supplies every line break at a word boundary and
+# libass is no longer allowed to re-wrap on top of it.
+#
+# Line capacity is counted in Hangul-glyph units. Measured with a real libass
+# render at CAPTION_FONT_SIZE=72 (NanumGothic): one Hangul glyph advances
+# ~58.6px, a space ~19px, a digit ~38.6px, a Latin letter ~31px, punctuation
+# ~22.6px, and the 1080px frame minus MarginL/MarginR leaves 936px (~16
+# glyphs). 13 units keeps ~20% headroom for a wider fallback CJK font, since
+# with WrapStyle=2 an over-long line would run off the frame instead of wrap.
+CAPTION_MAX_LINE_UNITS=13.0
+
+def _caption_units(text:str)->float:
+    total=0.0
+    for ch in text:
+        if ch==" ": total+=0.33
+        elif unicodedata.east_asian_width(ch) in ("W","F"): total+=1.0
+        elif ch.isdigit(): total+=0.66
+        elif ch.isalnum(): total+=0.56
+        else: total+=0.4
+    return total
+
+def _wrap_caption_safe(text:str, max_units:float=CAPTION_MAX_LINE_UNITS)->str:
+    """Break one caption into display lines at whitespace only, never inside a
+    word. stdlib textwrap does the word-boundary wrapping (break_long_words and
+    break_on_hyphens off); its width is a character count, so the widest
+    character count whose every line fits max_units is chosen first, then the
+    width is narrowed while the line count stays the same so the lines come out
+    balanced instead of one full line plus an orphan. A single word wider than
+    a line is left whole."""
+    flat=" ".join(text.split())
+    if _caption_units(flat)<=max_units or " " not in flat:
+        return flat
+    def wrap(width:int)->list[str]:
+        return textwrap.wrap(flat,width=width,break_long_words=False,break_on_hyphens=False)
+    def fits(lines:list[str])->bool:
+        return all(_caption_units(line)<=max_units or " " not in line for line in lines)
+    best=None
+    for width in range(len(flat),0,-1):
+        lines=wrap(width)
+        if not fits(lines): continue
+        if best is None: best=lines
+        elif len(lines)==len(best): best=lines
+        else: break
+    return "\n".join(best if best is not None else wrap(1))
+
+def _write_burn_in_srt(srt:Path)->Path:
+    """The scene SRT keeps one unwrapped line per cue because it also feeds the
+    uploadable captions.srt. The burned-in copy gets explicit word-boundary line
+    breaks; cue numbers and timings are copied untouched. A scene SRT that does
+    not exist is passed through so ffmpeg reports the missing file itself."""
+    if not srt.is_file():
+        return srt
+    out=srt.with_name(srt.stem+".burn.srt")
+    blocks=[]
+    for block in srt.read_text(encoding="utf-8").strip().split("\n\n"):
+        lines=block.splitlines()
+        if len(lines)<3:
+            blocks.append(block); continue
+        blocks.append("\n".join(lines[:2]+[_wrap_caption_safe(" ".join(lines[2:]))]))
+    out.write_text("\n\n".join(blocks)+"\n",encoding="utf-8")
+    return out
 CAPTION_MASK_TOP=SAFE_BOTTOM_Y
 CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 
@@ -202,7 +266,7 @@ def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
     return (
         f"{picture},pad=1080:1920:(ow-iw)/2:{IMAGE_TOP_Y}:color=black,"
         f"fps={fps},format=yuv420p,split=2[base][cap];"
-        f"[cap]subtitles={srt.as_posix()}:force_style='{style}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];"
+        f"[cap]subtitles={_write_burn_in_srt(srt).as_posix()}:force_style='{style}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];"
         f"[base][capg]overlay=0:{CAPTION_MASK_TOP}"
         f"{_title_clause(title_srt)}"
     )
@@ -321,7 +385,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
         else:
             cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
-        vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
+        vf=f"split=2[base][cap];[cap]subtitles={_write_burn_in_srt(srt).as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
@@ -452,7 +516,7 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_window=min(duration, scene.overlay_title_seconds) if title and getattr(scene,"overlay_title_seconds",None) else duration
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,title_window) if title else None
-    vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
+    vf=f"split=2[base][cap];[cap]subtitles={_write_burn_in_srt(srt).as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips
 
