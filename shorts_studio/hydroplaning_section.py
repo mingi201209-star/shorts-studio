@@ -116,6 +116,9 @@ class View:
 
 MAIN_VIEW = View(W, H, 0.78, 0.0, 0.0, 490.0, 500.0)
 INSET_BOX = (40, 600, 940, 905)  # screen rectangle of the magnified panel
+LABEL_PX = 44   # callout text height, clip pixels
+TAG_PX = 28     # panel tag text height
+LABEL_TOP = 48  # callout text top, below the panel's top edge
 INSET_VIEW = View(INSET_BOX[2] - INSET_BOX[0], INSET_BOX[3] - INSET_BOX[1],
                   3.4, 10.0, -6.0, (INSET_BOX[2] - INSET_BOX[0]) / 2, 150.0)
 
@@ -409,8 +412,11 @@ def render_frame(g: float, labels: bool = True, font_path: str | None = None,
     _ = half_h_world
 
     if labels:
-        font = _font(30 * SS, font_path)
-        tag = _font(22 * SS, font_path)
+        # Label sizes are in clip pixels (980 wide, shown ~1:1 in the 1080 frame).
+        # 30/22 px read as fine print next to the 72 px captions on a phone, so the
+        # callouts are 44 px and the panel tag 28 px.
+        font = _font(LABEL_PX * SS, font_path)
+        tag = _font(TAG_PX * SS, font_path)
         if font is not None:
             half = contact_half_length()
             front = half
@@ -420,7 +426,7 @@ def render_frame(g: float, labels: bool = True, font_path: str | None = None,
                 sx, sy = INSET_VIEW.to_screen(*world_xy)
                 sx, sy = sx + x0, sy + y0
                 tx, ty = text_xy
-                od.line([(sx * SS, sy * SS), (tx * SS, (ty + 44) * SS)], fill=color + (235,), width=2 * SS)
+                od.line([(sx * SS, sy * SS), (tx * SS, (ty + LABEL_PX + 12) * SS)], fill=color + (235,), width=2 * SS)
                 od.ellipse([(sx - 5) * SS, (sy - 5) * SS, (sx + 5) * SS, (sy + 5) * SS], fill=color + (255,))
                 tw = od.textlength(text, font=font) / SS
                 od.text(((tx - tw / 2) * SS, ty * SS), text, font=font, fill=color + (255,),
@@ -428,13 +434,13 @@ def render_frame(g: float, labels: bool = True, font_path: str | None = None,
 
             amber, blue = (255, 190, 90), (130, 210, 255)
             if st["lift"] < 0.5 and tip + half > 3:
-                callout("접촉면", ((-half + tip) / 2, 0.0), (250, INSET_BOX[1] + 46), amber)
+                callout("접촉면", ((-half + tip) / 2, 0.0), (250, INSET_BOX[1] + LABEL_TOP), amber)
             if st["wedge"] > 0.06:
-                callout("물 쐐기", (tip + (front - tip) * 0.6, -FILM * 0.4), (700, INSET_BOX[1] + 46), blue)
+                callout("물 쐐기", (tip + (front - tip) * 0.6, -FILM * 0.4), (700, INSET_BOX[1] + LABEL_TOP), blue)
             elif st["bow"] > 0.35:
-                callout("밀려드는 물", (front + 40, -FILM - 12 * st["bow"]), (720, INSET_BOX[1] + 46), blue)
+                callout("밀려드는 물", (front + 40, -FILM - 12 * st["bow"]), (700, INSET_BOX[1] + LABEL_TOP), blue)
             if st["lift"] >= 0.5:
-                callout("물막", (-20.0, -st["lift"] / 2), (330, INSET_BOX[1] + 46), blue)
+                callout("물막", (-20.0, -st["lift"] / 2), (300, INSET_BOX[1] + LABEL_TOP), blue)
             od.text(((x0 + 18) * SS, (y0 + 12) * SS), "접촉 부위 확대", font=tag, fill=(170, 205, 230, 230))
             if headline:
                 hf = _font(58 * SS, font_path)

@@ -278,7 +278,7 @@
             "state_id": "bow_wave",
             "narration_cue": "물이 더 빨리 밀려듭니다",
             "added_information": "water_piling_ahead",
-            "source_sha256": "53184b4c39eb893c84eda8a976e1c86b06cf46ba242ad8d5d2f3a92056562e9d"
+            "source_sha256": "0b4f6342e5ea74ea352ff24274d6cc7c887ba05e4a8516567c58225ebe34f28a"
           },
           "visual_qa_requirements": [
             "타이어 단면도와 접촉 부위 확대 화면으로 빠지지 못한 물이 타이어 앞쪽에 밀려드는 모습을 보여주는 장면"
@@ -292,7 +292,7 @@
             "a city skyline"
           ],
           "visual_qa_expected_sha256": [
-            "53184b4c39eb893c84eda8a976e1c86b06cf46ba242ad8d5d2f3a92056562e9d"
+            "0b4f6342e5ea74ea352ff24274d6cc7c887ba05e4a8516567c58225ebe34f28a"
           ],
           "info_role": "water_piling_ahead",
           "production": {
@@ -311,7 +311,7 @@
             "state_id": "wedge",
             "narration_cue": "타이어 앞쪽으로 물이 쐐기처럼 파고들고",
             "added_information": "wedge_entering_contact",
-            "source_sha256": "4171a03fd6def6945a22462a0b54faac574f45d4509ce2290f7128265b61b296"
+            "source_sha256": "7069662158f451fe33ea1b63efd1429864186bb50c09a8408bfac17c177aa79f"
           },
           "visual_qa_requirements": [
             "물 쐐기가 타이어 접촉면 앞쪽 아래로 파고드는 모습을 확대 화면으로 보여주는 장면"
@@ -325,7 +325,7 @@
             "a city skyline"
           ],
           "visual_qa_expected_sha256": [
-            "4171a03fd6def6945a22462a0b54faac574f45d4509ce2290f7128265b61b296"
+            "7069662158f451fe33ea1b63efd1429864186bb50c09a8408bfac17c177aa79f"
           ],
           "info_role": "wedge_entering_contact",
           "production": {
@@ -384,7 +384,7 @@
             "state_id": "shrinking",
             "narration_cue": "도로에 닿아 있던 면이 점점 줄어들다가",
             "added_information": "contact_patch_shrinking",
-            "source_sha256": "cd27fe89da5bd2fc2fa58a1588497478853cd1cbbcf8faa7792778a15fd8c3ad"
+            "source_sha256": "235b23be0472833b7d2af0ff5eaf52fc6b7164ae8a7bf9a0562b7f2f777b3b49"
           },
           "visual_qa_requirements": [
             "도로에 닿아 있던 주황색 접촉면이 점점 짧아지는 모습을 확대 화면으로 보여주는 장면"
@@ -398,7 +398,7 @@
             "a city skyline"
           ],
           "visual_qa_expected_sha256": [
-            "cd27fe89da5bd2fc2fa58a1588497478853cd1cbbcf8faa7792778a15fd8c3ad"
+            "235b23be0472833b7d2af0ff5eaf52fc6b7164ae8a7bf9a0562b7f2f777b3b49"
           ],
           "info_role": "contact_patch_shrinking",
           "production": {
@@ -417,7 +417,7 @@
             "state_id": "riding_film",
             "narration_cue": "결국 타이어가 물막 위에 올라탑니다",
             "added_information": "tire_riding_water_film",
-            "source_sha256": "de4921f8378723e5aaee7244aa248bdcadbc8ec08ca684c3fcd81c89def58772"
+            "source_sha256": "7c654656c3d0dbc14cca3e75ea6095634ffdc67dbcd29c0556f495a5e1ab3c8c"
           },
           "visual_qa_requirements": [
             "접촉면이 사라지고 타이어가 얇은 물막 위에 올라탄 상태를 보여주는 장면"
@@ -431,7 +431,7 @@
             "a city skyline"
           ],
           "visual_qa_expected_sha256": [
-            "de4921f8378723e5aaee7244aa248bdcadbc8ec08ca684c3fcd81c89def58772"
+            "7c654656c3d0dbc14cca3e75ea6095634ffdc67dbcd29c0556f495a5e1ab3c8c"
           ],
           "info_role": "tire_riding_water_film",
           "production": {
@@ -483,7 +483,7 @@
             "state_id": "full_film",
             "narration_cue": "이게 바로 하이드로플레이닝입니다",
             "added_information": "named_full_hydroplane",
-            "source_sha256": "fea5e452e1c2f33704afe26d4b0733f9c662ee6d62025d1d4d50b96f7de2fbb0"
+            "source_sha256": "d7207eb365a2e1a230e739cc9341460601dafaf2ae745e1e715f33247a2ccb61"
           },
           "visual_qa_requirements": [
             "타이어와 도로 사이가 물막으로 완전히 분리된 하이드로플레이닝 상태를 이름과 함께 보여주는 장면"
@@ -497,7 +497,7 @@
             "a city skyline"
           ],
           "visual_qa_expected_sha256": [
-            "fea5e452e1c2f33704afe26d4b0733f9c662ee6d62025d1d4d50b96f7de2fbb0"
+            "d7207eb365a2e1a230e739cc9341460601dafaf2ae745e1e715f33247a2ccb61"
           ],
           "info_role": "named_full_hydroplane",
           "production": {

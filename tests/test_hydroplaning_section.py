@@ -93,3 +93,24 @@ def test_section_windows_abut_and_every_real_clip_is_distinct():
     assert sorted(order) == sorted(mod.REAL_CLIPS)
     for a, b in zip(order, order[1:]):
         assert mod.REAL_CLIPS[a][0] != mod.REAL_CLIPS[b][0]
+
+
+def test_callout_labels_are_large_enough_to_read_on_a_phone():
+    """The clip is shown ~1:1 inside the 1080-wide frame beside 72 px captions.
+    30 px callouts read as fine print in a real render, so the rendered label
+    glyphs themselves (not just the constant) must be at least 36 px tall and
+    stay inside the magnified panel."""
+    if hs._font(hs.LABEL_PX) is None:
+        pytest.skip("no Korean font available")
+    g = 0.3
+    plain = np.asarray(hs.render_frame(g, labels=False), int)
+    labelled = np.asarray(hs.render_frame(g, labels=True), int)
+    changed = np.abs(labelled - plain).sum(axis=2) > 60
+    x0, y0, x1, y1 = hs.INSET_BOX
+    assert not changed[:y0].any() and not changed[y1 + 1:].any()
+    assert not changed[:, :x0].any() and not changed[:, x1 + 1:].any()
+    # Text rows only: the band from the label top down to the text baseline area.
+    band = changed[y0 + hs.LABEL_TOP: y0 + hs.LABEL_TOP + hs.LABEL_PX + 8, 120:420]
+    rows = np.where(band.any(axis=1))[0]
+    assert rows.size and rows[-1] - rows[0] + 1 >= 36
+    assert hs.LABEL_PX >= 40 and hs.TAG_PX >= 26
