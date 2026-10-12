@@ -1,5 +1,5 @@
 from __future__ import annotations
-import json, re, shutil, subprocess
+import asyncio, json, re, shutil, subprocess
 from dataclasses import replace
 from pathlib import Path
 from .timing import WordTiming, map_measured_words
@@ -17,6 +17,40 @@ DEFAULT_KO_VOICE = "ko-KR-HyunsuMultilingualNeural"
 DEFAULT_KO_RATE = "+12%"
 DEFAULT_KO_PITCH = "+0Hz"
 DEFAULT_KO_VOLUME = "+0%"
+
+# Bounded retry for transient Edge websocket failures: 5 attempts, waiting
+# 2, 4, 8, 16 s between them (30 s worst case per sentence).
+_EDGE_MAX_ATTEMPTS = 5
+_EDGE_BACKOFF_BASE_SECONDS = 2.0
+
+# Since 2026-10-10 Microsoft answers the synthesis websocket on the legacy
+# speech.platform.bing.com host with 403 (edge-tts issue #490; it killed the
+# render-smoke job of PR #45 and every local render). Microsoft Edge 155 itself
+# synthesizes through api.msedgeservices.com, which accepts the same client
+# token edge-tts already sends, and returns the same MP3 24 kHz mono audio and
+# WordBoundary events. edge-tts 7.2.8 is the newest release and still points at
+# the legacy host; the fix exists only as the unmerged upstream PR
+# https://github.com/rany2/edge-tts/pull/491. Until a release carries it, apply
+# that PR's one constant here instead of depending on an unreleased fork.
+_EDGE_LEGACY_WSS_HOST = "speech.platform.bing.com"
+_EDGE_CURRENT_WSS_URL = "wss://api.msedgeservices.com/tts/cognitiveservices/websocket/v1?Ocp-Apim-Subscription-Key={token}"
+
+def _use_current_edge_endpoint() -> bool:
+    """Point the installed edge-tts at the endpoint Edge itself now uses, but
+    only while the library still targets the refused legacy host. A release
+    that ships its own fix no longer matches and is left exactly as shipped,
+    so this shim retires itself. Returns whether it changed anything."""
+    try:
+        import edge_tts.communicate as communicate
+        from edge_tts.constants import TRUSTED_CLIENT_TOKEN
+    except ImportError:
+        # A provider object that is not the edge-tts package layout (another
+        # build, or a test double) has no legacy constant to correct.
+        return False
+    if _EDGE_LEGACY_WSS_HOST not in getattr(communicate, "WSS_URL", ""):
+        return False
+    communicate.WSS_URL = _EDGE_CURRENT_WSS_URL.format(token=TRUSTED_CLIENT_TOKEN)
+    return True
 
 _SENTENCE_SPLIT_RE = re.compile(r"(?<=[.!?])\s+")
 
@@ -98,17 +132,36 @@ async def _synthesize_sentence(text: str, voice: str, rate: str, pitch: str, vol
     *within* a multi-word sentence was positioned by linear character-count
     interpolation, which drifts from the real audio -- the root cause of
     captions lingering noticeably after the voice has moved on."""
-    import edge_tts
-    communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch, volume=volume, boundary="WordBoundary")
-    audio = bytearray(); boundaries = []
-    async for chunk in communicate.stream():
-        if chunk["type"] == "audio":
-            audio.extend(chunk["data"])
-        elif chunk["type"] in {"WordBoundary", "SentenceBoundary"}:
-            start = chunk["offset"] / 10_000_000
-            dur = chunk["duration"] / 10_000_000
-            boundaries.append(WordTiming(chunk.get("text", ""), start, start + dur))
-    return bytes(audio), boundaries
+    import aiohttp, edge_tts
+    _use_current_edge_endpoint()
+    # Edge calls fail transiently as well (upstream edge-tts issues #473
+    # "No audio was received", #482 handshake 503), and edge-tts itself only
+    # retries a 403 once (its clock-skew correction). Retry the WHOLE call with
+    # bounded backoff, mirroring render._download: each attempt starts from
+    # empty buffers, so audio and word boundaries always come from one single
+    # real synthesis -- never a stitched or partial one. The last failure is
+    # re-raised unchanged, so a provider that stays down still fails the
+    # render closed. No retry library is a dependency of this project
+    # (edge-tts ships none); this loop is the same shape as the download retry.
+    last_error = None
+    for attempt in range(_EDGE_MAX_ATTEMPTS):
+        communicate = edge_tts.Communicate(text, voice, rate=rate, pitch=pitch, volume=volume, boundary="WordBoundary")
+        audio = bytearray(); boundaries = []
+        try:
+            async for chunk in communicate.stream():
+                if chunk["type"] == "audio":
+                    audio.extend(chunk["data"])
+                elif chunk["type"] in {"WordBoundary", "SentenceBoundary"}:
+                    start = chunk["offset"] / 10_000_000
+                    dur = chunk["duration"] / 10_000_000
+                    boundaries.append(WordTiming(chunk.get("text", ""), start, start + dur))
+            return bytes(audio), boundaries
+        except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+            last_error = e
+            if attempt == _EDGE_MAX_ATTEMPTS - 1:
+                raise
+        await asyncio.sleep(_EDGE_BACKOFF_BASE_SECONDS * 2 ** attempt)
+    raise last_error  # pragma: no cover - loop always returns or raises above
 
 def _ffmpeg_duration_seconds(path: Path) -> float:
     """Probe real audio duration from ffmpeg's own stderr banner -- avoids a
