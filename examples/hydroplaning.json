@@ -12,7 +12,7 @@
   "strict_retention_contract": true,
   "strict_visual_production_v2": true,
   "observable_phenomenon": "젖은 도로에서 타이어와 도로 사이로 물이 파고들어 타이어가 물막 위에 올라타 접촉을 잃는다.",
-  "silent_story": "실제 빗길 물보라 → 노면 물막 → 젖은 타이어 → 물 고인 바닥 위 타이어 → 홈 있는 레인 타이어 vs 슬릭 → 빠르게 도는 바퀴 → 단면도: 앞쪽에 밀려드는 물 → 물 쐐기 → 접촉면 축소 → 물막 위 → 실제 운전 시점 → 이름 붙은 payoff",
+  "silent_story": "실제 빗길 물보라 → 젖은 타이어 → 노면 물막 → 물 고인 바닥 위 타이어 → 홈 있는 레인 타이어 vs 슬릭 → 빠르게 도는 바퀴 → 단면도: 앞쪽에 밀려드는 물 → 물 쐐기 → 접촉면 축소 → 물막 위 → 실제 운전 시점 → 이름 붙은 payoff",
   "silent_interest_review": "pending",
   "strict_entertainment_contract": false,
   "scenes": [
@@ -69,51 +69,18 @@
         },
         {
           "start": 1.0,
-          "asset": "assets/hydroplaning/real_wet_road_surface.mp4",
-          "attribution": "Zero51 / Pexels / Pexels License",
-          "visual_change": {
-            "kind": "concept",
-            "concept_id": "real_surface",
-            "state_id": "water_film",
-            "narration_cue": "실은 도로에 닿지 않을 수 있습니다",
-            "added_information": "real_water_film_on_road",
-            "source_sha256": "78e93864e8b559b1bf7df1d2c1c0353ef7630a70540d23f4477644340aebac44"
-          },
-          "visual_qa_requirements": [
-            "아스팔트 위에 얇게 깔린 실제 빗물 막을 보여줘 타이어와 도로 사이에 무엇이 끼어드는지 암시하는 장면"
-          ],
-          "visual_qa_labels": [
-            "real low footage of a rain-soaked road surface with a shiny film of water on the asphalt"
-          ],
-          "visual_qa_negative_labels": [
-            "a photograph of a cat",
-            "a landscape photograph of mountains",
-            "a city skyline"
-          ],
-          "visual_qa_expected_sha256": [
-            "78e93864e8b559b1bf7df1d2c1c0353ef7630a70540d23f4477644340aebac44"
-          ],
-          "info_role": "real_water_film_on_road",
-          "production": {
-            "role": "support",
-            "visual_mode": "real_footage",
-            "added_information": "real_water_film_on_road"
-          }
-        },
-        {
-          "start": 2.0,
           "asset": "assets/hydroplaning/real_tire_rain_closeup.mp4",
           "attribution": "Erik Mclean / Pexels / Pexels License",
           "visual_change": {
             "kind": "concept",
             "concept_id": "real_tire",
             "state_id": "rubber_closeup",
-            "narration_cue": "문제는 고무가 아니라",
+            "narration_cue": "실은 도로에 닿지 않을 수 있습니다",
             "added_information": "real_tire_rubber_closeup",
             "source_sha256": "43003652f7769f0a6dae9da4fcf1f923fe66da19d2cf4e8d044732b7af8fecbd"
           },
           "visual_qa_requirements": [
-            "실제 젖은 노면 위 자동차 타이어 고무를 가까이 보여주는 실사 장면"
+            "젖은 노면 위 실제 자동차 타이어를 가까이 보여줘 도로에 닿지 않을 수 있다는 그 타이어를 첫 5초 안에 보여주는 실사 장면"
           ],
           "visual_qa_labels": [
             "real close-up footage of a car tire and wheel on wet pavement in the rain"
@@ -131,6 +98,39 @@
             "role": "support",
             "visual_mode": "real_footage",
             "added_information": "real_tire_rubber_closeup"
+          }
+        },
+        {
+          "start": 2.0,
+          "asset": "assets/hydroplaning/real_wet_road_surface.mp4",
+          "attribution": "Zero51 / Pexels / Pexels License",
+          "visual_change": {
+            "kind": "concept",
+            "concept_id": "real_surface",
+            "state_id": "water_film",
+            "narration_cue": "문제는 고무가 아니라",
+            "added_information": "real_water_film_on_road",
+            "source_sha256": "78e93864e8b559b1bf7df1d2c1c0353ef7630a70540d23f4477644340aebac44"
+          },
+          "visual_qa_requirements": [
+            "고무가 아니라 아스팔트 위에 얇게 깔린 실제 빗물 막이 문제임을 보여주는 장면"
+          ],
+          "visual_qa_labels": [
+            "real low footage of a rain-soaked road surface with a shiny film of water on the asphalt"
+          ],
+          "visual_qa_negative_labels": [
+            "a photograph of a cat",
+            "a landscape photograph of mountains",
+            "a city skyline"
+          ],
+          "visual_qa_expected_sha256": [
+            "78e93864e8b559b1bf7df1d2c1c0353ef7630a70540d23f4477644340aebac44"
+          ],
+          "info_role": "real_water_film_on_road",
+          "production": {
+            "role": "support",
+            "visual_mode": "real_footage",
+            "added_information": "real_water_film_on_road"
           }
         },
         {
