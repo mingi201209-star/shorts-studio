@@ -1,0 +1,403 @@
+{
+  "topic_id": "sunset_red",
+  "title": "노을이 붉고 하늘이 파란 이유",
+  "overlay_title": "노을은 왜 붉을까",
+  "brief": {
+    "topic_id": "sunset_red",
+    "familiar_subject": "해 질 녘 붉은 노을",
+    "contradiction_fact": "하늘은 낮에 파랗지만 해 질 녘 노을은 붉게 물듭니다",
+    "surprising_consequence_fact": "노을이 붉은 이유와 하늘이 파란 이유는 같은 현상입니다",
+    "counterintuitive_fact": "노을의 붉은색은 공기가 붉어서가 아니라 파란빛이 흩어져 사라졌기 때문입니다",
+    "anomaly_fact": "화성의 노을은 붉지 않고 파랗게 보입니다",
+    "payoff_text": "햇빛이 공기를 지나는 길이가 길어질수록 파란빛은 흩어져 사라지고 붉은빛만 남아 노을이 붉게 보입니다",
+    "grounded_facts": [
+      "공기 분자는 파란빛을 붉은빛보다 훨씬 잘 흩뜨립니다",
+      "해가 지평선 가까이 있으면 햇빛은 훨씬 두꺼운 공기층을 지나옵니다",
+      "화성의 미세 먼지는 해 주변에서 파란빛을 앞쪽으로 흩뜨립니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "하늘은 낮에 파란데, 해 질 녘 노을은 붉게 물듭니다.",
+    "surprising_consequence": "놀랍게도 노을이 붉은 이유와 하늘이 파란 이유는 같습니다.",
+    "visible_anomaly": "이상하게도 화성의 노을은 붉지 않고 파랗습니다."
+  },
+  "uncertainty_notes": [
+    "노을의 색은 구름, 먼지, 습도에 따라 크게 달라집니다",
+    "화성 노을의 파란빛은 지구와 달리 미세 먼지가 만드는 현상입니다"
+  ],
+  "observable_phenomenon": "공기 분자는 파란빛을 잘 흩뜨려 낮 하늘을 파랗게 만들고, 해가 낮으면 햇빛이 두꺼운 공기층을 지나며 파란빛을 잃어 붉은빛만 남아 노을이 붉게 보인다.",
+  "silent_story": "지평선 위 주황빛 해 → 파란 하늘과 흰 구름 → 금빛 구름 사이 햇빛 → 우주에서 본 노을의 층 → 파란 하늘 → 구름 사이로 퍼지는 빛 → 흩어진 파란빛 이름표 → 우주에서 본 파란 대기 가장자리 → 낮게 내려간 해 → 두꺼운 공기층 이름표 → 주황빛 구름 → 붉게 물든 바위산 → 화성의 파란 노을 → 분홍빛 노을 구름",
+  "visual_description": "Real tripod timelapses of sunsets and blue skies, astronaut photographs of Earth's atmosphere from the ISS, and NASA Curiosity's real photograph of a blue sunset on Mars.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 하늘·노을 장면이 화면에 보여야 함",
+  "sources": {
+    "tokyo": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/52/Sunset_tokyoarea-timelapse-2019-03-17.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Sunset_tokyoarea-timelapse-2019-03-17.webm",
+      "attribution": "Nesnad / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "clouds": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/14/Cloud_timelapse_in_New_Mexico.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Cloud_timelapse_in_New_Mexico.webm",
+      "attribution": "John Fowler / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0/"
+    },
+    "funchal": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e5/Sunset_timelapse_in_Funchal_-_2014.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Sunset_timelapse_in_Funchal_-_2014.webm",
+      "attribution": "valunik / Wikimedia Commons / CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "halfdome": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/4/4c/Sunset_on_Halfdome_timelapse_Yosemite_CA_2023-07-15_20-11-06_1.webm/Sunset_on_Halfdome_timelapse_Yosemite_CA_2023-07-15_20-11-06_1.webm.1080p.vp9.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Sunset_on_Halfdome_timelapse_Yosemite_CA_2023-07-15_20-11-06_1.webm",
+      "attribution": "G. Edward Johnson / Wikimedia Commons / CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "iss_sunset": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/1/13/Sunset_from_the_ISS.JPG",
+      "page": "https://commons.wikimedia.org/wiki/File:Sunset_from_the_ISS.JPG",
+      "attribution": "ISS Expedition 23 crew (NASA) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "iss_limb": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Viewing_Earth%E2%80%99s_Limb_%283338_-_ISS001-421-24_lrg%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Viewing_Earth%E2%80%99s_Limb_(3338_-_ISS001-421-24_lrg).jpg",
+      "attribution": "NASA Earth Observatory (ISS crew) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "mars": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3f/Curiosity_gale_crater_sunset.tif",
+      "page": "https://commons.wikimedia.org/wiki/File:Curiosity_gale_crater_sunset.tif",
+      "attribution": "NASA/JPL-Caltech/MSSS/Texas A&M Univ. (Curiosity) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    }
+  },
+  "clips": {
+    "sun_orange": {
+      "source": "tokyo",
+      "start": 4.5,
+      "seconds": 4.0
+    },
+    "blue_sky": {
+      "source": "clouds",
+      "start": 3.0,
+      "seconds": 4.0
+    },
+    "golden_light": {
+      "source": "funchal",
+      "start": 2.0,
+      "seconds": 4.0
+    },
+    "iss_layers": {
+      "source": "iss_sunset"
+    },
+    "blue_sky_2": {
+      "source": "clouds",
+      "start": 22.0,
+      "seconds": 4.0
+    },
+    "light_spread": {
+      "source": "funchal",
+      "start": 9.0,
+      "seconds": 4.0
+    },
+    "scatter_base": {
+      "source": "clouds",
+      "start": 50.0,
+      "seconds": 4.0
+    },
+    "blue_limb": {
+      "source": "iss_limb"
+    },
+    "sun_low": {
+      "source": "tokyo",
+      "start": 11.0,
+      "seconds": 4.0
+    },
+    "thick_base": {
+      "source": "tokyo",
+      "start": 13.5,
+      "seconds": 4.0
+    },
+    "orange_clouds": {
+      "source": "tokyo",
+      "start": 16.5,
+      "seconds": 4.0
+    },
+    "alpenglow": {
+      "source": "halfdome",
+      "start": 0.5,
+      "seconds": 4.0
+    },
+    "mars_blue": {
+      "source": "mars"
+    },
+    "pink_clouds": {
+      "source": "tokyo",
+      "start": 20.5,
+      "seconds": 4.0
+    }
+  },
+  "overlays": {
+    "scatter_labeled": {
+      "base": "scatter_base",
+      "callouts": [
+        {
+          "text": "흩어진 파란빛",
+          "at": [
+            300,
+            110
+          ],
+          "target": [
+            420,
+            250
+          ],
+          "appear": 0.3,
+          "color": "#9FD8FF"
+        }
+      ]
+    },
+    "thick_labeled": {
+      "base": "thick_base",
+      "callouts": [
+        {
+          "text": "두꺼운 공기층",
+          "at": [
+            300,
+            520
+          ],
+          "target": [
+            420,
+            760
+          ],
+          "appear": 0.3,
+          "color": "#FFC857"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "똑같은 햇빛이 비추는데, 낮과 저녁의 색은 정반대입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "sun_orange",
+          "cue": "놀랍게도 노을이 붉은 이유와",
+          "info_role": "real_orange_sun_setting",
+          "concept_id": "real_orange_sun_setting",
+          "state_id": "sun_orange",
+          "qa_label": "real timelapse footage of a bright orange sun setting over a city skyline with silhouetted trees",
+          "requirement": "노을이 붉게 물드는 실제 해 질 녘 장면이 첫 프레임부터 보임",
+          "role": "hero",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "blue_sky",
+          "cue": "하늘이 파란 이유는 같습니다",
+          "info_role": "real_deep_blue_sky",
+          "concept_id": "real_deep_blue_sky",
+          "state_id": "blue_sky",
+          "qa_label": "real timelapse footage of a deep blue sky with white clouds over a desert landscape",
+          "requirement": "하늘이 파랗게 보이는 실제 낮 하늘",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "golden_light",
+          "cue": "똑같은 햇빛이 비추는데",
+          "info_role": "real_golden_sunlight_through_clouds",
+          "concept_id": "real_golden_sunlight_through_clouds",
+          "state_id": "golden_light",
+          "qa_label": "real timelapse footage of golden sunlight shining through clouds over the sea and a city",
+          "requirement": "같은 햇빛이 구름 사이로 비치는 실제 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "iss_layers",
+          "cue": "낮과 저녁의 색은 정반대입니다",
+          "info_role": "real_orbit_sunset_layers",
+          "concept_id": "real_orbit_sunset_layers",
+          "state_id": "iss_layers",
+          "qa_label": "a real astronaut photograph from orbit of a sunset with orange and blue layers of atmosphere above the earth",
+          "requirement": "우주에서 본 지구 대기에 주황빛과 파란빛 층이 함께 보이는 실제 사진",
+          "role": "evidence",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "햇빛은 공기에 부딪혀 사방으로 흩어집니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "파란빛이 가장 잘 흩어져서, 하늘이 파랗게 보입니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "해가 낮게 지면, 빛은 훨씬 두꺼운 공기층을 지나옵니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "blue_sky_2",
+          "cue": "햇빛은 공기에 부딪혀",
+          "info_role": "real_blue_sky_clouds_moving",
+          "concept_id": "real_blue_sky_clouds_moving",
+          "state_id": "blue_sky_2",
+          "qa_label": "real timelapse footage of white clouds drifting across a bright blue sky",
+          "requirement": "햇빛이 공기에 부딪히는 실제 파란 하늘",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "light_spread",
+          "cue": "사방으로 흩어집니다",
+          "info_role": "real_light_spreading_in_clouds",
+          "concept_id": "real_light_spreading_in_clouds",
+          "state_id": "light_spread",
+          "qa_label": "real timelapse footage of a cloudy evening sky over the sea and a hillside city",
+          "requirement": "하늘 전체로 퍼지는 빛을 보여주는 실제 하늘",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "scatter_labeled",
+          "cue": "파란빛이 가장 잘 흩어져서",
+          "info_role": "labeled_scattered_blue_light",
+          "concept_id": "labeled_scattered_blue_light",
+          "state_id": "scatter_labeled",
+          "qa_label": "real timelapse footage of a blue sky with white clouds over a desert with a text label",
+          "requirement": "하늘을 채운 흩어진 파란빛에 이름표가 붙은 실제 하늘",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "blue_limb",
+          "cue": "하늘이 파랗게 보입니다",
+          "info_role": "real_blue_atmosphere_limb",
+          "concept_id": "real_blue_atmosphere_limb",
+          "state_id": "blue_limb",
+          "qa_label": "a real astronaut photograph from orbit of the thin blue layer of atmosphere along the curved edge of the earth",
+          "requirement": "우주에서 본 지구 가장자리의 얇고 파란 대기층",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "sun_low",
+          "cue": "해가 낮게 지면",
+          "info_role": "real_low_sun_near_horizon",
+          "concept_id": "real_low_sun_near_horizon",
+          "state_id": "sun_low",
+          "qa_label": "real timelapse footage of a low orange sun just above a city horizon at dusk",
+          "requirement": "지평선 가까이 낮게 내려간 실제 해",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "thick_labeled",
+          "cue": "훨씬 두꺼운 공기층을 지나옵니다",
+          "info_role": "labeled_thick_air_near_horizon",
+          "concept_id": "labeled_thick_air_near_horizon",
+          "state_id": "thick_labeled",
+          "qa_label": "real timelapse footage of a red sun at the horizon of a city at dusk with a text label",
+          "requirement": "지평선 근처 두꺼운 공기층에 이름표가 붙은 실제 노을",
+          "role": "support",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "그 사이 파란빛은 다 흩어지고, 붉은빛만 남습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "화성에선 오히려, 노을이 파랗습니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "노을의 색은, 빛이 지나온 길이입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "orange_clouds",
+          "cue": "그 사이 파란빛은 다 흩어지고",
+          "info_role": "real_orange_clouds_dusk",
+          "concept_id": "real_orange_clouds_dusk",
+          "state_id": "orange_clouds",
+          "qa_label": "real timelapse footage of orange and pink clouds glowing in the sky at dusk over a city",
+          "requirement": "파란빛이 사라지고 주황빛만 남은 실제 저녁 구름",
+          "role": "second_peak",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "alpenglow",
+          "cue": "붉은빛만 남습니다",
+          "info_role": "real_red_light_on_mountain",
+          "concept_id": "real_red_light_on_mountain",
+          "state_id": "alpenglow",
+          "qa_label": "real timelapse footage of red evening light glowing on the granite face of a mountain",
+          "requirement": "붉은빛만 남아 산을 물들이는 실제 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "mars_blue",
+          "cue": "화성에선 오히려",
+          "info_role": "real_blue_sunset_on_mars",
+          "concept_id": "real_blue_sunset_on_mars",
+          "state_id": "mars_blue",
+          "qa_label": "a real photograph of a blue glow around the setting sun over the dusty horizon of mars",
+          "requirement": "화성 지평선에서 해 주변이 파랗게 빛나는 실제 사진",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "pink_clouds",
+          "cue": "노을의 색은 빛이 지나온 길이입니다",
+          "info_role": "real_pink_sunset_payoff",
+          "concept_id": "real_pink_sunset_payoff",
+          "state_id": "pink_clouds",
+          "qa_label": "real timelapse footage of pink and orange sunset clouds above a silhouetted city",
+          "requirement": "분홍빛 노을 구름으로 마무리하는 실제 장면",
+          "role": "payoff",
+          "visual_mode": "real_footage"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "NASA Space Place, Why is the sky blue? (https://spaceplace.nasa.gov/blue-sky/)",
+    "NASA JPL, PIA19400: Sunset in Mars' Gale Crater (https://photojournal.jpl.nasa.gov/catalog/PIA19400)"
+  ],
+  "description_notes": [
+    "화성 노을 사진은 NASA 큐리오시티 탐사차가 2015년 촬영한 실제 사진입니다."
+  ]
+}

@@ -89,6 +89,17 @@ def segment(words: list[WordTiming], audio_duration: float, lead: float=.12, tar
         # words from both sides into one group whose natural span exceeded
         # max_duration, then get clamped below its own last word's end.
         if end-start > max_duration: end=max(g[-1].end,min(end,start+max_duration))
+        # Two cues must never be on screen together: libass moves a colliding
+        # cue down a row and keeps it there, so the caption block visibly
+        # jumps (seen in a real hydroplaning render, where a cue starting
+        # `lead` before its first word began 60-120 ms before the previous
+        # cue's last word ended). Give up lead-in first -- the cue still
+        # starts no later than its own first word -- and only when the words
+        # themselves overlap hand the boundary to the later cue.
+        if out and start < out[-1].end:
+            start=max(start,min(out[-1].end,g[0].start))
+            if start < out[-1].end:
+                out[-1]=Caption(out[-1].text,out[-1].start,start)
         out.append(Caption(" ".join(x.text for x in g),start,end))
     return out
 

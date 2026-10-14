@@ -1,0 +1,428 @@
+{
+  "topic_id": "cat_eyes",
+  "title": "고양이 눈이 밤에 빛나는 이유",
+  "overlay_title": "고양이 눈은 왜 빛날까",
+  "brief": {
+    "topic_id": "cat_eyes",
+    "familiar_subject": "밤에 빛나는 고양이 눈",
+    "contradiction_fact": "고양이 눈은 밤에 빛나 보이지만 스스로 빛을 내지 않습니다",
+    "surprising_consequence_fact": "밤에 빛나는 고양이 눈은 눈 속 거울층이 빛을 되돌린 것입니다",
+    "counterintuitive_fact": "고양이 눈의 빛은 눈이 내는 빛이 아니라 들어온 빛이 되돌아 나온 것입니다",
+    "anomaly_fact": "고양이 눈은 사진 속에서 초록빛이나 노란빛으로 빛납니다",
+    "payoff_text": "고양이 망막 뒤의 반사층 타페텀이 들어온 빛을 다시 망막으로 되돌려 어두운 곳에서도 잘 보게 하고 그 빛이 밖으로 새어 나와 눈이 빛나 보입니다",
+    "grounded_facts": [
+      "고양이 망막 뒤에는 타페텀이라는 반사층이 있습니다",
+      "반사층은 빛이 망막을 한 번 더 지나가게 해 어두운 곳에서 더 잘 보게 합니다",
+      "사람의 눈에는 이 반사층이 없습니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "고양이 눈은 밤에 빛나 보이지만, 실은 스스로 빛나지 않습니다.",
+    "surprising_consequence": "놀랍게도 밤에 빛나는 고양이 눈은, 눈 속 거울이 빛을 되돌린 것입니다.",
+    "visible_anomaly": "이상하게도 고양이 눈은 밤 사진 속에서 초록빛으로 빛납니다."
+  },
+  "uncertainty_notes": [
+    "눈빛의 색은 동물과 나이, 빛의 각도에 따라 다릅니다",
+    "일부 고양이는 반사층 색소가 적어 눈이 붉게 찍히기도 합니다"
+  ],
+  "observable_phenomenon": "고양이 망막 뒤의 반사층이 들어온 빛을 망막으로 되돌려 어두운 곳에서도 잘 보게 하고, 되돌아 나온 빛 때문에 밤에 눈이 빛나 보인다.",
+  "silent_story": "밤에 빛나는 고양이 눈 → 또 다른 빛나는 눈 → 어둠 속 고양이 → 되돌아온 빛 이름표 → 고양이 눈 근접 → 반사층 이름표 → 빛나는 사슴 눈 → 지붕 위 담비 → 무인 카메라의 여우 → 사람 눈 → 너구리의 눈빛 → 초록 눈 고양이 → 빛나는 집고양이 눈",
+  "visual_description": "Real photographs only: eyeshine of cats and wild animals at night, close-ups of the reflective tapetum, and a human eye for contrast.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 동물 눈 사진이 화면에 보여야 함",
+  "sources": {
+    "israelcat": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Tapetum_lucidum_effect_of_a_cat_in_Israel.jpg/1920px-Tapetum_lucidum_effect_of_a_cat_in_Israel.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tapetum_lucidum_effect_of_a_cat_in_Israel.jpg",
+      "attribution": "User:Mattes / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "glowcat": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Cat_with_glowing_eyes.JPG/1920px-Cat_with_glowing_eyes.JPG",
+      "page": "https://commons.wikimedia.org/wiki/File:Cat_with_glowing_eyes.JPG",
+      "attribution": "No machine-readable author provided. Imageman~commonswiki as / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "nightcat": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Cat_picture_in_night.jpg/1920px-Cat_picture_in_night.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Cat_picture_in_night.jpg",
+      "attribution": "N.Gavhane / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "gatophoto": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Tapetum_lucidum_gato.jpg/1920px-Tapetum_lucidum_gato.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tapetum_lucidum_gato.jpg",
+      "attribution": "Dropus / Wikimedia Commons / CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0"
+    },
+    "deer": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Night_buck_%2810697138093%29.jpg/1920px-Night_buck_%2810697138093%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Night_buck_(10697138093).jpg",
+      "attribution": "Oregon Department of Transportation / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "marten": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Steinmarder_auf_Dach.jpg/1920px-Steinmarder_auf_Dach.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Steinmarder_auf_Dach.jpg",
+      "attribution": "PaterMcFly / Wikimedia Commons / CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0"
+    },
+    "layerphoto": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Tapetum-lucidum-001.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Tapetum-lucidum-001.jpg",
+      "attribution": "Mdf / Wikimedia Commons / CC BY-SA 3.0",
+      "license_url": "http://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "civet": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Asian_or_Common_Palm_Civet_Paradoxurus_hermaphroditus_Chambal_by_Dr._Raju_Kasambe_%283%29.JPG/1920px-Asian_or_Common_Palm_Civet_Paradoxurus_hermaphroditus_Chambal_by_Dr._Raju_Kasambe_%283%29.JPG",
+      "page": "https://commons.wikimedia.org/wiki/File:Asian_or_Common_Palm_Civet_Paradoxurus_hermaphroditus_Chambal_by_Dr._Raju_Kasambe_(3).JPG",
+      "attribution": "Dr. Raju Kasambe / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "greeneyes": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Cute_Cat_with_Beautiful_Green_Eyes.png/1920px-Cute_Cat_with_Beautiful_Green_Eyes.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Cute_Cat_with_Beautiful_Green_Eyes.png",
+      "attribution": "epSos.de / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "cateyeclose": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Cat%27s_Eye_%28Explored%29_-_Flickr_-_siraf72.jpg/1920px-Cat%27s_Eye_%28Explored%29_-_Flickr_-_siraf72.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Cat%27s_Eye_(Explored)_-_Flickr_-_siraf72.jpg",
+      "attribution": "Faris Algosaibi from Manama, Bahrain / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "humaneye": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Human_eye_close_up%2C_anterior_view.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Human_eye_close_up,_anterior_view.jpg",
+      "attribution": "Rapidreflex / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "housecat": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/a8/Eyeshine_in_Felis_catus_%28domestic_cat%29_2.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Eyeshine_in_Felis_catus_(domestic_cat)_2.jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "eyeshinefour": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/32/Eyeshine_in_Felis_catus_%28domestic_cat%29_4.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Eyeshine_in_Felis_catus_(domestic_cat)_4.jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "newarkcat": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Eyeshine_in_Felis_catus_%28domestic_cat%29_%28Newark%2C_Ohio%2C_USA%29_5_%2847665512152%29.jpg/1920px-Eyeshine_in_Felis_catus_%28domestic_cat%29_%28Newark%2C_Ohio%2C_USA%29_5_%2847665512152%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Eyeshine_in_Felis_catus_(domestic_cat)_(Newark,_Ohio,_USA)_5_(47665512152).jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    }
+  },
+  "clips": {
+    "israelcat": {
+      "source": "israelcat"
+    },
+    "glowcat": {
+      "source": "glowcat"
+    },
+    "nightcat": {
+      "source": "nightcat"
+    },
+    "deer": {
+      "source": "deer"
+    },
+    "marten": {
+      "source": "marten"
+    },
+    "civet": {
+      "source": "civet"
+    },
+    "greeneyes": {
+      "source": "greeneyes"
+    },
+    "cateyeclose": {
+      "source": "cateyeclose"
+    },
+    "humaneye": {
+      "source": "humaneye"
+    },
+    "housecat": {
+      "source": "housecat"
+    },
+    "gatobase": {
+      "source": "gatophoto"
+    },
+    "layerbase": {
+      "source": "layerphoto"
+    },
+    "eyeshinefour": {
+      "source": "eyeshinefour"
+    },
+    "newarkcat": {
+      "source": "newarkcat"
+    }
+  },
+  "overlays": {
+    "gatolabeled": {
+      "base": "gatobase",
+      "callouts": [
+        {
+          "text": "되돌아온 빛",
+          "at": [
+            520,
+            110
+          ],
+          "target": [
+            655,
+            425
+          ],
+          "appear": 0.3,
+          "color": "#9FFFB0"
+        }
+      ]
+    },
+    "layerlabeled": {
+      "base": "layerbase",
+      "callouts": [
+        {
+          "text": "반사층이 비춘 빛",
+          "at": [
+            600,
+            250
+          ],
+          "target": [
+            577,
+            500
+          ],
+          "appear": 0.3,
+          "color": "#9FFFB0"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "눈 속에서 빛이 나오는 게 아니라, 되돌아 나오는 겁니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "israelcat",
+          "cue": "고양이 눈은 밤에 빛나 보이지만",
+          "info_role": "real_cat_eyeshine_night",
+          "concept_id": "real_cat_eyeshine_night",
+          "state_id": "israelcat",
+          "qa_label": "a real photograph of a cat at night with both eyes glowing brightly",
+          "requirement": "밤에 빛나 보이는 실제 고양이 눈이 첫 프레임부터 보임",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "glowcat",
+          "cue": "실은 스스로 빛나지 않습니다",
+          "info_role": "real_cat_glowing_eyes",
+          "concept_id": "real_cat_glowing_eyes",
+          "state_id": "glowcat",
+          "qa_label": "a real photograph of a cat with glowing eyes in a camera flash",
+          "requirement": "스스로 빛나지 않는데 빛나 보이는 실제 고양이 눈",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "nightcat",
+          "cue": "눈 속에서 빛이 나오는 게 아니라",
+          "info_role": "real_cat_in_dark",
+          "concept_id": "real_cat_in_dark",
+          "state_id": "nightcat",
+          "qa_label": "a real photograph of a cat in the dark with shining eyes",
+          "requirement": "어둠 속에서 눈이 빛나는 실제 고양이",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "gatolabeled",
+          "cue": "되돌아 나오는 겁니다",
+          "info_role": "labeled_reflected_light",
+          "concept_id": "labeled_reflected_light",
+          "state_id": "gatolabeled",
+          "qa_label": "a real close-up photograph of a cat eye glowing with reflected light with a text label",
+          "requirement": "눈에서 되돌아온 빛에 이름표가 붙은 실제 사진",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "비밀은 눈 안쪽의 반사층입니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "망막 뒤의 거울 같은 층이, 빛을 한 번 더 통과시킵니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그래서 어두운 곳에서도 더 잘 봅니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "cateyeclose",
+          "cue": "비밀은 눈 안쪽의 반사층입니다",
+          "info_role": "real_cat_eye_closeup",
+          "concept_id": "real_cat_eye_closeup",
+          "state_id": "cateyeclose",
+          "qa_label": "a real close-up photograph of a cat's eye with a vertical slit pupil",
+          "requirement": "고양이 눈 안쪽을 가까이 본 실제 사진",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "layerlabeled",
+          "cue": "망막 뒤의 거울 같은 층이",
+          "info_role": "labeled_tapetum_layer",
+          "concept_id": "labeled_tapetum_layer",
+          "state_id": "layerlabeled",
+          "qa_label": "a real close-up photograph of an animal eye with a shiny reflective layer and a text label",
+          "requirement": "망막 뒤 반사층에 이름표가 붙은 실제 사진",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "deer",
+          "cue": "빛을 한 번 더 통과시킵니다",
+          "info_role": "real_deer_eyeshine",
+          "concept_id": "real_deer_eyeshine",
+          "state_id": "deer",
+          "qa_label": "a real night photograph of a deer with glowing eyes",
+          "requirement": "빛이 되돌아 나와 빛나는 실제 사슴 눈",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "marten",
+          "cue": "그래서 어두운 곳에서도",
+          "info_role": "real_marten_on_roof_night",
+          "concept_id": "real_marten_on_roof_night",
+          "state_id": "marten",
+          "qa_label": "a real night photograph of a small animal on a roof with glowing eyes",
+          "requirement": "어두운 곳에서 눈이 빛나는 실제 동물",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "civet",
+          "cue": "더 잘 봅니다",
+          "info_role": "real_civet_eyeshine",
+          "concept_id": "real_civet_eyeshine",
+          "state_id": "civet",
+          "qa_label": "a real night photograph of a palm civet with glowing eyes",
+          "requirement": "어둠 속에서도 잘 보는 실제 야행성 동물",
+          "role": "support",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "사람 눈에는, 이 거울층이 없습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그래서 밤에는, 고양이가 사람보다 훨씬 잘 봅니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "빛나는 고양이 눈은, 빛을 두 번 쓰는 거울입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "humaneye",
+          "cue": "사람 눈에는 이 거울층이 없습니다",
+          "info_role": "real_human_eye",
+          "concept_id": "real_human_eye",
+          "state_id": "humaneye",
+          "qa_label": "a real close-up photograph of a human eye",
+          "requirement": "거울층이 없는 실제 사람 눈",
+          "role": "second_peak",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "eyeshinefour",
+          "cue": "그래서 밤에는 고양이가",
+          "info_role": "real_maine_coon_eyeshine",
+          "concept_id": "real_maine_coon_eyeshine",
+          "state_id": "obsidian",
+          "qa_label": "a real photograph of a cat at night with both eyes glowing",
+          "requirement": "밤에 눈이 빛나는 실제 고양이",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "greeneyes",
+          "cue": "사람보다 훨씬 잘 봅니다",
+          "info_role": "real_green_eyed_cat",
+          "concept_id": "real_green_eyed_cat",
+          "state_id": "greeneyes",
+          "qa_label": "a real photograph of a cat with bright green eyes",
+          "requirement": "사람보다 잘 보는 실제 고양이 눈",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "housecat",
+          "cue": "빛나는 고양이 눈은",
+          "info_role": "real_house_cat_eyeshine_payoff",
+          "concept_id": "real_house_cat_eyeshine_payoff",
+          "state_id": "housecat",
+          "qa_label": "a real photograph of a domestic cat with eyes shining in the light",
+          "requirement": "빛나는 실제 고양이 눈",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "newarkcat",
+          "cue": "빛을 두 번 쓰는 거울입니다",
+          "info_role": "real_cat_eyeshine_payoff",
+          "concept_id": "real_cat_eyeshine_payoff",
+          "state_id": "paranoia",
+          "qa_label": "a real photograph of a domestic cat at night with glowing eyes",
+          "requirement": "빛을 두 번 쓰는 실제 고양이 눈으로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_photo"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "American Academy of Ophthalmology, Why do animals' eyes glow in the dark? (https://www.aao.org/eye-health/tips-prevention/animal-eyes-glow-dark)",
+    "Ollivier et al., Comparative morphology of the tapetum lucidum, Veterinary Ophthalmology (2004)"
+  ],
+  "description_notes": []
+}

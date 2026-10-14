@@ -1,0 +1,407 @@
+{
+  "topic_id": "honeycomb",
+  "title": "벌집이 육각형인 이유",
+  "overlay_title": "벌집은 왜 육각형일까",
+  "brief": {
+    "topic_id": "honeycomb",
+    "familiar_subject": "꿀벌의 벌집",
+    "contradiction_fact": "꿀벌의 벌집은 정교한 육각형이지만 꿀벌은 도구 없이 만듭니다",
+    "surprising_consequence_fact": "꿀벌의 벌집 육각형은 밀랍을 가장 적게 쓰는 모양입니다",
+    "counterintuitive_fact": "벌집이 육각형인 것은 보기 좋아서가 아니라 밀랍을 아끼는 모양이기 때문입니다",
+    "anomaly_fact": "꿀벌의 벌집은 모든 방이 거의 같은 크기의 육각형입니다",
+    "payoff_text": "육각형은 빈틈 없이 이어 붙으면서 같은 넓이를 가장 짧은 벽으로 나누는 모양이라 귀한 밀랍을 가장 아낄 수 있습니다",
+    "grounded_facts": [
+      "밀랍은 일벌의 배에 있는 밀랍샘에서 나옵니다",
+      "꿀벌은 밀랍을 만들려고 꿀을 많이 먹어야 합니다",
+      "육각형이 평면을 가장 짧은 벽으로 나눈다는 사실은 1999년 토머스 헤일스가 증명했습니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "꿀벌의 벌집은 정교한 육각형이지만, 실은 도구 하나 없이 만듭니다.",
+    "surprising_consequence": "놀랍게도 꿀벌의 벌집 육각형은, 밀랍을 가장 아끼는 모양입니다.",
+    "visible_anomaly": "이상하게도 꿀벌의 벌집은, 방마다 거의 똑같은 육각형입니다."
+  },
+  "uncertainty_notes": [
+    "꿀벌이 육각형을 처음부터 그렇게 짓는지, 밀랍이 굳으며 다듬어지는지는 연구자마다 설명이 다릅니다",
+    "밀랍을 만드는 데 드는 꿀의 양은 조건에 따라 다릅니다"
+  ],
+  "observable_phenomenon": "꿀벌은 몸에서 나오는 귀한 밀랍으로 방을 짓고, 육각형 방은 빈틈 없이 이어지면서 같은 넓이를 가장 짧은 벽으로 나누어 밀랍을 가장 아낀다.",
+  "silent_story": "벌집 위의 꿀벌 → 가지런한 육각형 벌집 → 일하는 꿀벌 → 밀랍 벽 이름표 → 벌집을 든 양봉가 → 동그란 빨대 사이 빈틈 이름표 → 꽃가루가 든 육각형 방 → 꿀이 찬 벌집 → 버려진 벌집 → 거대한 벌집의 벌들 → 벌집 틀을 든 양봉가 → 연구소의 벌집 틀 → 꿀이 흐르는 벌집",
+  "visual_description": "Real photographs only: honey bees on their combs, close-ups of hexagonal cells, beekeepers' frames, and a bundle of round straws for comparison.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 꿀벌·벌집 사진이 화면에 보여야 함",
+  "sources": {
+    "beecomb": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Western_honey_bee_on_a_honeycomb.jpg/1920px-Western_honey_bee_on_a_honeycomb.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Western_honey_bee_on_a_honeycomb.jpg",
+      "attribution": "Matthew T Rader / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "taiwancomb": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9d/Perfect_honeycomb_-_Taiwan.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Perfect_honeycomb_-_Taiwan.jpg",
+      "attribution": "Jidanni / Wikimedia Commons / CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    "apisbee": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/ComputerHotline_-_Apis_mellifera_%28by%29_%281%29.jpg/1920px-ComputerHotline_-_Apis_mellifera_%28by%29_%281%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:ComputerHotline_-_Apis_mellifera_(by)_(1).jpg",
+      "attribution": "Thomas Bresson / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "cappedphoto": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/Honey_comb_with_capped_honey.jpg/1920px-Honey_comb_with_capped_honey.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Honey_comb_with_capped_honey.jpg",
+      "attribution": "Einebillion / Wikimedia Commons / CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0"
+    },
+    "suitkeeper": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Beekeeping_in_a_bee_suit_while_holding_a_honeycomb_from_a_beehive.jpg/1920px-Beekeeping_in_a_bee_suit_while_holding_a_honeycomb_from_a_beehive.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Beekeeping_in_a_bee_suit_while_holding_a_honeycomb_from_a_beehive.jpg",
+      "attribution": "Matthew T Rader / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "strawsphoto": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d2/DSC_9973_A_colorful_bundle_of_neon_plastic_drinking_straws_standing_upright_glowing_in_bright_shades_of_pink_blue_green_and_yellow.jpg/1920px-DSC_9973_A_colorful_bundle_of_neon_plastic_drinking_straws_standing_upright_glowing_in_bright_shades_of_pink_blue_green_and_yellow.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:DSC_9973_A_colorful_bundle_of_neon_plastic_drinking_straws_standing_upright_glowing_in_bright_shades_of_pink_blue_green_and_yellow.jpg",
+      "attribution": "PattayaPatrol / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "pollencells": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/ComputerHotline_-_Alveoles_pleines_de_pollen_%28by%29.jpg/1920px-ComputerHotline_-_Alveoles_pleines_de_pollen_%28by%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:ComputerHotline_-_Alveoles_pleines_de_pollen_(by).jpg",
+      "attribution": "Thomas Bresson / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "joskacomb": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/HoneyComb.jpg/1920px-HoneyComb.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:HoneyComb.jpg",
+      "attribution": "Joska16 / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "abandoned": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Abandoned_bee_honeycomb.jpg/1920px-Abandoned_bee_honeycomb.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Abandoned_bee_honeycomb.jpg",
+      "attribution": "Charles J. Sharp / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "giantbees": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Giant_honey_bees_and_Honeycomb_06.jpg/1920px-Giant_honey_bees_and_Honeycomb_06.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Giant_honey_bees_and_Honeycomb_06.jpg",
+      "attribution": "Pinakpani / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "framekeeper": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Beekeeper_holding_frame_at_El_Sol_Winery.jpg/1920px-Beekeeper_holding_frame_at_El_Sol_Winery.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Beekeeper_holding_frame_at_El_Sol_Winery.jpg",
+      "attribution": "Grendelkhan / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "usdaframe": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/20140910-ARS-LSC-00056_%2815083481970%29.jpg/1920px-20140910-ARS-LSC-00056_%2815083481970%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:20140910-ARS-LSC-00056_(15083481970).jpg",
+      "attribution": "U.S. Department of Agriculture Lance Cheung/Multimedia Photo / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "dripcomb": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Fresh_honeycomb_dripping_honey_India.jpg/1920px-Fresh_honeycomb_dripping_honey_India.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Fresh_honeycomb_dripping_honey_India.jpg",
+      "attribution": "Vraj Acharya / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    }
+  },
+  "clips": {
+    "beecomb": {
+      "source": "beecomb"
+    },
+    "taiwancomb": {
+      "source": "taiwancomb"
+    },
+    "apisbee": {
+      "source": "apisbee"
+    },
+    "suitkeeper": {
+      "source": "suitkeeper"
+    },
+    "joskacomb": {
+      "source": "joskacomb"
+    },
+    "abandoned": {
+      "source": "abandoned"
+    },
+    "giantbees": {
+      "source": "giantbees"
+    },
+    "framekeeper": {
+      "source": "framekeeper"
+    },
+    "usdaframe": {
+      "source": "usdaframe"
+    },
+    "dripcomb": {
+      "source": "dripcomb"
+    },
+    "cappedbase": {
+      "source": "cappedphoto"
+    },
+    "strawsphoto": {
+      "source": "strawsphoto"
+    },
+    "pollenbase": {
+      "source": "pollencells"
+    }
+  },
+  "overlays": {
+    "cappedlabeled": {
+      "base": "cappedbase",
+      "callouts": [
+        {
+          "text": "밀랍",
+          "at": [
+            560,
+            110
+          ],
+          "target": [
+            300,
+            300
+          ],
+          "appear": 0.3,
+          "color": "#FFE066"
+        }
+      ]
+    },
+    "pollenlabeled": {
+      "base": "pollenbase",
+      "callouts": [
+        {
+          "text": "빈틈 없는 육각형",
+          "at": [
+            490,
+            110
+          ],
+          "target": [
+            440,
+            450
+          ],
+          "appear": 0.3,
+          "color": "#FFE066"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "벽은 꿀벌 몸에서 나온, 아주 귀한 밀랍입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "beecomb",
+          "cue": "꿀벌의 벌집은 정교한 육각형이지만",
+          "info_role": "real_bee_on_hexagon_comb",
+          "concept_id": "real_bee_on_hexagon_comb",
+          "state_id": "beecomb",
+          "qa_label": "a real close-up photograph of a honey bee standing on hexagonal honeycomb cells",
+          "requirement": "정교한 육각형 벌집 위의 실제 꿀벌이 첫 프레임부터 보임",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "taiwancomb",
+          "cue": "실은 도구 하나 없이 만듭니다",
+          "info_role": "real_perfect_honeycomb",
+          "concept_id": "real_perfect_honeycomb",
+          "state_id": "taiwancomb",
+          "qa_label": "a real close-up photograph of a perfectly regular hexagonal honeycomb",
+          "requirement": "자 없이 만든 가지런한 실제 육각형 벌집",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "apisbee",
+          "cue": "벽은 꿀벌 몸에서 나온",
+          "info_role": "real_worker_bees_on_comb",
+          "concept_id": "real_worker_bees_on_comb",
+          "state_id": "apisbee",
+          "qa_label": "a real close-up photograph of honey bees working on a wax comb",
+          "requirement": "밀랍을 만드는 실제 일벌",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "cappedlabeled",
+          "cue": "아주 귀한 밀랍입니다",
+          "info_role": "labeled_wax_walls",
+          "concept_id": "labeled_wax_walls",
+          "state_id": "cappedlabeled",
+          "qa_label": "a real close-up photograph of honeycomb cells with wax walls and a text label",
+          "requirement": "밀랍 벽에 이름표가 붙은 실제 벌집",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "그래서 꿀벌은, 벽을 최대한 아껴야 합니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "동그란 방은 붙여도, 빈틈이 생깁니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "육각형은 빈틈 없이 붙고, 벽도 가장 적게 듭니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "suitkeeper",
+          "cue": "그래서 꿀벌은 벽을 최대한 아껴야 합니다",
+          "info_role": "real_beekeeper_holding_comb",
+          "concept_id": "real_beekeeper_holding_comb",
+          "state_id": "suitkeeper",
+          "qa_label": "a real photograph of a beekeeper in a bee suit holding a honeycomb",
+          "requirement": "벽을 아껴 지은 실제 벌집을 든 양봉가",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "strawsphoto",
+          "cue": "동그란 방은 붙여도 빈틈이 생깁니다",
+          "info_role": "labeled_gaps_between_circles",
+          "concept_id": "labeled_gaps_between_circles",
+          "state_id": "strawslabeled",
+          "qa_label": "a real photograph of a bundle of round colorful drinking straws seen from the end",
+          "requirement": "동그란 빨대 사이에 빈틈이 생긴 실제 사진",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "pollenlabeled",
+          "cue": "육각형은 빈틈 없이 붙고",
+          "info_role": "real_hexagon_cells_with_pollen",
+          "concept_id": "real_hexagon_cells_with_pollen",
+          "state_id": "pollencells",
+          "qa_label": "a real close-up photograph of hexagonal honeycomb cells filled with pollen with a text label",
+          "requirement": "빈틈 없이 붙은 육각형 방에 이름표가 붙은 실제 벌집",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "joskacomb",
+          "cue": "벽도 가장 적게 듭니다",
+          "info_role": "real_capped_honeycomb",
+          "concept_id": "real_capped_honeycomb",
+          "state_id": "joskacomb",
+          "qa_label": "a real close-up photograph of a honeycomb with thin wax walls",
+          "requirement": "얇은 벽으로 된 실제 벌집",
+          "role": "support",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "이 답은 1999년에야, 수학으로 증명됐습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "꿀벌은 그보다 훨씬 전부터, 이 모양을 지어 왔습니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "육각형은, 밀랍을 가장 아끼는 모양입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "abandoned",
+          "cue": "이 답은 1999년에야",
+          "info_role": "real_abandoned_honeycomb",
+          "concept_id": "real_abandoned_honeycomb",
+          "state_id": "abandoned",
+          "qa_label": "a real photograph of an old empty honeycomb hanging from a branch",
+          "requirement": "오래된 실제 벌집",
+          "role": "second_peak",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "giantbees",
+          "cue": "수학으로 증명됐습니다",
+          "info_role": "real_giant_bees_on_comb",
+          "concept_id": "real_giant_bees_on_comb",
+          "state_id": "giantbees",
+          "qa_label": "a real photograph of giant honey bees covering a large honeycomb",
+          "requirement": "수학보다 먼저 답을 쓴 실제 꿀벌",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "framekeeper",
+          "cue": "꿀벌은 그보다 훨씬 전부터",
+          "info_role": "real_beekeeper_frame",
+          "concept_id": "real_beekeeper_frame",
+          "state_id": "framekeeper",
+          "qa_label": "a real photograph of a beekeeper holding a wooden frame full of honeycomb",
+          "requirement": "꿀벌이 지은 실제 벌집 틀",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "usdaframe",
+          "cue": "이 모양을 지어 왔습니다",
+          "info_role": "real_comb_frame_research",
+          "concept_id": "real_comb_frame_research",
+          "state_id": "usdaframe",
+          "qa_label": "a real photograph of a honeycomb frame covered with bees",
+          "requirement": "육각형 방을 지어 온 실제 꿀벌",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "dripcomb",
+          "cue": "육각형은 밀랍을 가장 아끼는 모양입니다",
+          "info_role": "real_honey_dripping_comb_payoff",
+          "concept_id": "real_honey_dripping_comb_payoff",
+          "state_id": "dripcomb",
+          "qa_label": "a real photograph of fresh honeycomb dripping golden honey",
+          "requirement": "꿀이 흐르는 실제 벌집으로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_photo"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "T. C. Hales, The Honeycomb Conjecture, Discrete & Computational Geometry 25 (2001) (https://arxiv.org/abs/math/9906042)",
+    "Penn State Extension, Beeswax production (https://extension.psu.edu/)"
+  ],
+  "description_notes": []
+}

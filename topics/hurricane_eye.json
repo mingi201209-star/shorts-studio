@@ -1,0 +1,412 @@
+{
+  "topic_id": "hurricane_eye",
+  "title": "태풍의 눈이 맑고 고요한 이유",
+  "overlay_title": "태풍의 눈은 왜 맑을까",
+  "brief": {
+    "topic_id": "hurricane_eye",
+    "familiar_subject": "태풍의 눈",
+    "contradiction_fact": "태풍의 눈은 폭풍 한가운데 있지만 하늘이 맑습니다",
+    "surprising_consequence_fact": "가장 강한 태풍의 눈 안에서는 파란 하늘과 해가 보입니다",
+    "counterintuitive_fact": "태풍의 눈이 맑은 것은 바람이 없어서가 아니라 공기가 위에서 내려오기 때문입니다",
+    "anomaly_fact": "태풍의 눈은 거센 소용돌이 한가운데서 고요합니다",
+    "payoff_text": "눈 둘레에서 솟아오른 공기 일부가 가운데로 내려오며 데워지고 말라 구름이 사라지기 때문에 태풍의 눈은 맑고 고요합니다",
+    "grounded_facts": [
+      "태풍에서 가장 거센 바람은 눈을 둘러싼 구름벽에서 붑니다",
+      "눈 안에서는 공기가 천천히 내려오며 데워지고 건조해집니다",
+      "허리케인 관측 비행기는 구름벽을 뚫고 눈 안으로 들어갑니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "태풍의 눈은 폭풍 한가운데 있지만, 실은 하늘이 맑습니다.",
+    "surprising_consequence": "놀랍게도 가장 강한 태풍의 눈 안에서는 파란 하늘이 보입니다.",
+    "visible_anomaly": "이상하게도 태풍의 눈은 소용돌이 한가운데서 고요합니다."
+  },
+  "uncertainty_notes": [
+    "눈의 크기와 맑은 정도는 태풍마다 다릅니다",
+    "약한 태풍은 눈이 구름에 가려 잘 보이지 않기도 합니다"
+  ],
+  "observable_phenomenon": "태풍의 눈을 둘러싼 구름벽에서는 따뜻한 공기가 솟구치며 가장 강한 바람이 불고, 솟은 공기 일부가 눈 가운데로 내려오며 데워지고 말라 구름이 사라져 눈 안은 맑고 고요하다.",
+  "silent_story": "우주에서 본 태풍의 눈 → 위성으로 본 눈 근접 → 다른 태풍의 눈 → 눈과 구름벽 이름표 → 우주정거장 아래 태풍 → 관측기 날개 옆 구름 → 솟는 공기와 내려오는 공기 이름표 → 맑게 뚫린 눈 → 구름 사이로 비치는 해 → 우주에서 본 소용돌이 → 관측기 창밖 구름 → 머리 위의 해 → 태풍의 눈으로 마무리",
+  "visual_description": "Real footage only: NOAA hurricane-hunter aircraft flights into the eye, ISS camera views of Hurricane Florence, and GOES satellite close-ups of the eyes of Hurricanes Maria and Irma.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 태풍 장면이 화면에 보여야 함",
+  "sources": {
+    "iss": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Space_Station_Camera_Captures_Views_of_Hurricane_Florence_at_Landfall.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Space_Station_Camera_Captures_Views_of_Hurricane_Florence_at_Landfall.webm",
+      "attribution": "NASA Goddard Space Flight Center / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "maria": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/A_close_look_at_the_eye_of_Category_5_Hurricane_Maria_%28CIRA_2017-09-19%29.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:A_close_look_at_the_eye_of_Category_5_Hurricane_Maria_(CIRA_2017-09-19).webm",
+      "attribution": "GOES imagery: CSU/CIRA & NOAA / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NOAA"
+    },
+    "irma": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c5/A_closeup_look_at_Hurricane_Irma%27s_eye_via_1-min_Band_2_%28CIRA_2017-09-05%29.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:A_closeup_look_at_Hurricane_Irma's_eye_via_1-min_Band_2_(CIRA_2017-09-05).webm",
+      "attribution": "GOES imagery: CSU/CIRA & NOAA / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NOAA"
+    },
+    "patricia": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/cc/Hurricane_Patricia_Seen_from_NOAA_Hurricane_Hunter_Aircraft.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Hurricane_Patricia_Seen_from_NOAA_Hurricane_Hunter_Aircraft.webm",
+      "attribution": "Lonnie Kregelka / NOAA / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NOAA"
+    },
+    "irma_flight": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3d/Although_most_of_our_Hurricane_-Irma_flight_videos_display_the_unique_turbule....webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Although_most_of_our_Hurricane_-Irma_flight_videos_display_the_unique_turbule....webm",
+      "attribution": "The NOAA Hurricane Hunters / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NOAA"
+    }
+  },
+  "clips": {
+    "iss_eye": {
+      "source": "iss",
+      "start": 6.6,
+      "seconds": 4.0,
+      "crop": "700:661:420:50"
+    },
+    "irma_eye": {
+      "source": "irma",
+      "start": 1.0,
+      "seconds": 4.0,
+      "crop": "1000:945:300:60"
+    },
+    "maria_eye": {
+      "source": "maria",
+      "start": 0.5,
+      "seconds": 4.0,
+      "crop": "900:850:470:150"
+    },
+    "iss_wall_base": {
+      "source": "iss",
+      "start": 9.5,
+      "seconds": 4.0,
+      "crop": "700:661:560:40"
+    },
+    "iss_station": {
+      "source": "iss",
+      "start": 37.9,
+      "seconds": 4.0
+    },
+    "wing_clouds": {
+      "source": "patricia",
+      "start": 62.3,
+      "seconds": 4.0
+    },
+    "maria_air_base": {
+      "source": "maria",
+      "start": 7.0,
+      "seconds": 4.0,
+      "crop": "900:850:470:150"
+    },
+    "irma_clear": {
+      "source": "irma",
+      "start": 16.0,
+      "seconds": 4.0,
+      "crop": "1000:945:300:60"
+    },
+    "sun_in_eye": {
+      "source": "irma_flight",
+      "start": 47.0,
+      "seconds": 4.0
+    },
+    "iss_swirl": {
+      "source": "iss",
+      "start": 49.35,
+      "seconds": 4.0
+    },
+    "hunter_clouds": {
+      "source": "patricia",
+      "start": 74.2,
+      "seconds": 4.0
+    },
+    "sun_overhead": {
+      "source": "irma_flight",
+      "start": 12.0,
+      "seconds": 4.0
+    },
+    "maria_payoff": {
+      "source": "maria",
+      "start": 10.3,
+      "seconds": 4.0,
+      "crop": "900:850:470:150"
+    }
+  },
+  "overlays": {
+    "iss_wall_labeled": {
+      "base": "iss_wall_base",
+      "callouts": [
+        {
+          "text": "태풍의 눈",
+          "at": [
+            520,
+            830
+          ],
+          "target": [
+            518,
+            532
+          ],
+          "appear": 0.3,
+          "color": "#9FD8FF"
+        },
+        {
+          "text": "구름벽",
+          "at": [
+            790,
+            170
+          ],
+          "target": [
+            650,
+            440
+          ],
+          "appear": 0.8,
+          "color": "#FFC857"
+        }
+      ]
+    },
+    "maria_air_labeled": {
+      "base": "maria_air_base",
+      "callouts": [
+        {
+          "text": "내려오는 공기",
+          "at": [
+            500,
+            150
+          ],
+          "target": [
+            507,
+            520
+          ],
+          "appear": 0.3,
+          "color": "#9FD8FF"
+        },
+        {
+          "text": "솟는 공기",
+          "at": [
+            760,
+            820
+          ],
+          "target": [
+            640,
+            620
+          ],
+          "appear": 0.8,
+          "color": "#FFC857"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "바로 옆 구름벽에는, 태풍에서 가장 거센 바람이 붑니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "iss_eye",
+          "cue": "태풍의 눈은 폭풍 한가운데 있지만",
+          "info_role": "real_hurricane_eye_from_orbit",
+          "concept_id": "real_hurricane_eye_from_orbit",
+          "state_id": "iss_eye",
+          "qa_label": "real footage from space of a huge hurricane with a clear round eye in the middle of spiraling white clouds",
+          "requirement": "태풍의 눈이 소용돌이 구름 한가운데 실제로 뚫려 있는 모습을 첫 프레임부터 보여줌",
+          "role": "hero",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "irma_eye",
+          "cue": "실은 하늘이 맑습니다",
+          "info_role": "real_satellite_eye_closeup",
+          "concept_id": "real_satellite_eye_closeup",
+          "state_id": "irma_eye",
+          "qa_label": "a real black and white satellite image of a hurricane eye surrounded by a ring of bright clouds",
+          "requirement": "위성으로 가까이 본 태풍의 눈과 둘레의 구름",
+          "role": "evidence",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "maria_eye",
+          "cue": "바로 옆 구름벽에는",
+          "info_role": "real_second_eye_closeup",
+          "concept_id": "real_second_eye_closeup",
+          "state_id": "maria_eye",
+          "qa_label": "a real black and white satellite image of the small round eye of a strong hurricane in spiraling clouds",
+          "requirement": "다른 강한 태풍의 눈과 그 둘레 구름벽",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "iss_wall_labeled",
+          "cue": "태풍에서 가장 거센 바람이 붑니다",
+          "info_role": "labeled_eye_and_eyewall",
+          "concept_id": "labeled_eye_and_eyewall",
+          "state_id": "iss_wall_labeled",
+          "qa_label": "real footage from space of a hurricane eye surrounded by thick clouds with text labels",
+          "requirement": "태풍의 눈과 구름벽에 이름표가 붙은 실제 우주 영상",
+          "role": "support",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "비밀은 공기의 흐름에 있습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "더운 바다 공기는 눈 둘레를 돌며 하늘로 솟구칩니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "일부는 가운데로 내려와 구름을 지웁니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "iss_station",
+          "cue": "비밀은 공기의 흐름에 있습니다",
+          "info_role": "real_storm_below_space_station",
+          "concept_id": "real_storm_below_space_station",
+          "state_id": "iss_station",
+          "qa_label": "real footage from the space station of a large spiral storm over the blue ocean below",
+          "requirement": "우주정거장 아래 바다 위에 펼쳐진 실제 태풍",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "wing_clouds",
+          "cue": "더운 바다 공기는 눈 둘레를 돌며",
+          "info_role": "real_clouds_beside_aircraft_wing",
+          "concept_id": "real_clouds_beside_aircraft_wing",
+          "state_id": "wing_clouds",
+          "qa_label": "real footage from an aircraft window of a wing flying through thick grey storm clouds",
+          "requirement": "관측기 날개 옆을 지나는 실제 태풍 구름",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "maria_air_labeled",
+          "cue": "하늘로 솟구칩니다",
+          "info_role": "labeled_rising_and_sinking_air",
+          "concept_id": "labeled_rising_and_sinking_air",
+          "state_id": "maria_air_labeled",
+          "qa_label": "a real black and white satellite image of a hurricane eye in spiraling clouds with text labels",
+          "requirement": "솟는 공기와 내려오는 공기에 이름표가 붙은 실제 위성 영상",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "irma_clear",
+          "cue": "일부는 가운데로 내려와 구름을 지웁니다",
+          "info_role": "real_eye_open_from_above",
+          "concept_id": "real_eye_open_from_above",
+          "state_id": "irma_clear",
+          "qa_label": "a real black and white satellite image of a wide open hurricane eye with swirling clouds inside its wall",
+          "requirement": "구름이 걷혀 뚫린 실제 태풍의 눈",
+          "role": "support",
+          "visual_mode": "real_footage"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "그래서 눈 안은 바람이 약하고 하늘이 열립니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "관측 비행기가 들어가면, 머리 위로 해가 보입니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "태풍의 눈은, 소용돌이가 만든 빈자리입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "sun_in_eye",
+          "cue": "그래서 눈 안은 바람이 약하고",
+          "info_role": "real_sun_through_eye_clouds",
+          "concept_id": "real_sun_through_eye_clouds",
+          "state_id": "sun_in_eye",
+          "qa_label": "real footage from an aircraft of the sun shining through thin clouds inside a hurricane eye",
+          "requirement": "태풍의 눈 안에서 구름 사이로 해가 비치는 실제 장면",
+          "role": "second_peak",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "iss_swirl",
+          "cue": "하늘이 열립니다",
+          "info_role": "real_swirl_from_orbit",
+          "concept_id": "real_swirl_from_orbit",
+          "state_id": "iss_swirl",
+          "qa_label": "real footage from space of a hurricane's spiral clouds over the ocean beside the space station",
+          "requirement": "우주에서 본 실제 태풍의 소용돌이",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "hunter_clouds",
+          "cue": "관측 비행기가 들어가면",
+          "info_role": "real_hunter_aircraft_in_clouds",
+          "concept_id": "real_hunter_aircraft_in_clouds",
+          "state_id": "hunter_clouds",
+          "qa_label": "real footage from an aircraft window of a propeller plane wing among bright storm clouds",
+          "requirement": "구름 속으로 들어가는 실제 관측 비행기",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "sun_overhead",
+          "cue": "머리 위로 해가 보입니다",
+          "info_role": "real_sun_overhead_in_eye",
+          "concept_id": "real_sun_overhead_in_eye",
+          "state_id": "sun_overhead",
+          "qa_label": "real footage from an aircraft of a bright sun glowing above a wing through hazy clouds",
+          "requirement": "관측기 머리 위로 해가 보이는 실제 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "maria_payoff",
+          "cue": "태풍의 눈은 소용돌이가 만든 빈자리입니다",
+          "info_role": "real_eye_payoff",
+          "concept_id": "real_eye_payoff",
+          "state_id": "maria_payoff",
+          "qa_label": "a real black and white satellite image of a hurricane eye at the center of a vast swirl of clouds",
+          "requirement": "거대한 소용돌이 한가운데 빈자리인 실제 태풍의 눈으로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_footage"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "NOAA National Ocean Service / NHC, Tropical cyclone structure: eye and eyewall (https://www.noaa.gov/jetstream/tropical/tropical-cyclone-structure)",
+    "NOAA Aircraft Operations Center, Hurricane Hunters (https://www.omao.noaa.gov/aircraft-operations)"
+  ],
+  "description_notes": [
+    "위성 영상은 GOES 기상위성의 1분 간격 가시광선 영상이며, 비행 장면은 NOAA 허리케인 관측기에서 촬영한 실제 영상입니다."
+  ]
+}

@@ -128,6 +128,13 @@ def tokenize(text: str) -> list[Token]:
 def _ends_with_any(base: str, suffixes: tuple[str, ...]) -> bool:
     return any(base.endswith(s) for s in suffixes)
 
+def _has_connective_ending(base: str, suffixes: tuple[str, ...]) -> bool:
+    """A connective ending always follows a verb or adjective stem, so a word
+    that IS the suffix (the noun "자" ruler, "면" side) is not a clause
+    connective. Treating it as one inserted a pause inside "도구 하나 없이"-type
+    phrases: "실은 자 하나 없이" was synthesized as "실은 자, 하나 없이"."""
+    return any(base.endswith(s) and len(base) > len(s) for s in suffixes)
+
 def is_sentence_final(tok: Token) -> bool:
     """True when `tok` is grammatically a genuine sentence ending (not just
     a boundary that was floored to STRONG_BOUNDARY for some other reason,
@@ -146,9 +153,9 @@ def classify_pair(prev: Token, nxt: Token | None) -> str:
         return STRONG_BOUNDARY
     if _ends_with_any(prev.base, _SENTENCE_FINAL_SUFFIXES):
         level = STRONG_BOUNDARY
-    elif _ends_with_any(prev.base, _LOOSE_CONNECTIVE_SUFFIXES):
+    elif _has_connective_ending(prev.base, _LOOSE_CONNECTIVE_SUFFIXES):
         level = PHRASE_BOUNDARY
-    elif _ends_with_any(prev.base, _TIGHT_CONNECTIVE_SUFFIXES):
+    elif _has_connective_ending(prev.base, _TIGHT_CONNECTIVE_SUFFIXES):
         level = WEAK_BOUNDARY
     elif prev.base.endswith(_ATTRIBUTIVE_SUFFIX):
         level = CONTINUE

@@ -1,0 +1,418 @@
+{
+  "topic_id": "moon_face",
+  "title": "달이 늘 같은 얼굴만 보여주는 이유",
+  "overlay_title": "달 뒷면은 왜 안 보일까",
+  "brief": {
+    "topic_id": "moon_face",
+    "familiar_subject": "밤하늘의 달",
+    "contradiction_fact": "달은 스스로 돌고 있지만 지구에서는 늘 같은 면만 보입니다",
+    "surprising_consequence_fact": "지구에서는 달의 뒷면을 한 번도 볼 수 없습니다",
+    "counterintuitive_fact": "달이 같은 면만 보이는 것은 달이 돌지 않아서가 아니라 공전과 같은 속도로 돌기 때문입니다",
+    "anomaly_fact": "달의 모양은 매일 바뀌지만 보이는 무늬는 늘 같습니다",
+    "payoff_text": "달은 지구를 한 바퀴 도는 동안 스스로도 한 바퀴 돌기 때문에 늘 같은 면이 지구를 향합니다. 지구의 중력이 달의 자전을 이렇게 맞춰 놓았습니다",
+    "grounded_facts": [
+      "달의 자전 주기와 공전 주기는 약 27.3일로 같습니다",
+      "달의 뒷면은 1959년 우주 탐사선이 처음 촬영했습니다",
+      "DSCOVR 위성은 2015년 지구 앞을 지나가는 달의 뒷면을 촬영했습니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "달은 스스로 돌고 있지만, 우리는 늘 같은 얼굴만 봅니다.",
+    "surprising_consequence": "놀랍게도 지구에서는 달의 뒷면을 한 번도 볼 수 없습니다.",
+    "visible_anomaly": "이상하게도 달의 모양은 매일 바뀌어도, 무늬는 늘 똑같습니다."
+  },
+  "uncertainty_notes": [
+    "달이 조금씩 흔들려 보이는 칭동 때문에 지구에서는 달 표면의 약 59%까지 볼 수 있습니다",
+    "이 영상은 지구에서 끝내 보이지 않는 나머지 뒷면에 집중합니다"
+  ],
+  "observable_phenomenon": "달은 지구를 한 바퀴 공전하는 동안 스스로도 정확히 한 바퀴 자전하므로, 모양은 매일 바뀌어도 지구를 향한 면은 늘 같고 뒷면은 지구에서 보이지 않는다.",
+  "silent_story": "실제 보름달 사진 → 모양이 바뀌어도 같은 무늬의 달 → 달 뒷면 사진 → 지구 앞을 지나는 달 뒷면에 이름표 → 위상이 변하는 달 → 공전과 자전 표시가 붙은 궤도 그림 → 같은 면을 향한 채 도는 달 → 달 앞면 지도 → 자전하지 않는 달 그림 → 뒷면이 지구를 향한다는 표시 → 지구 앞을 지나는 실제 달 뒷면 → 차오르는 달 → 지구를 떠나는 달",
+  "visual_description": "A real photograph of the full Moon, NASA LRO maps of both hemispheres, NASA Scientific Visualization Studio renders of the Moon's phases, a NASA tidal-locking diagram, and real DSCOVR/EPIC footage of the Moon's far side crossing the Earth.",
+  "scene_requirement": "각 내레이션 단서에 맞는 달·지구 장면이 실제 화면에 보여야 함",
+  "sources": {
+    "fullmoon": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:FullMoon2010.jpg",
+      "attribution": "Gregory H. Revera / Wikimedia Commons / CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "farside": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/527006main_farside.1600.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:527006main_farside.1600.jpg",
+      "attribution": "NASA/GSFC/Arizona State University (LRO) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "nearside": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c9/Moon_nearside_LRO_5000.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Moon_nearside_LRO_5000.jpg",
+      "attribution": "NASA/GSFC/Arizona State University (LRO) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "phases": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/2/26/Moon_Phase_and_Libration%2C_2023_%28SVS5048_-_phases_2023_plain_2160p30%29.webm/Moon_Phase_and_Libration%2C_2023_%28SVS5048_-_phases_2023_plain_2160p30%29.webm.1080p.vp9.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Moon_Phase_and_Libration,_2023_(SVS5048_-_phases_2023_plain_2160p30).webm",
+      "attribution": "NASA Scientific Visualization Studio (Ernie Wright) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "tidal": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/4/4e/Simple-tidal-comparison-of-earth-moon.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Simple-tidal-comparison-of-earth-moon.webm",
+      "attribution": "NASA/Vi Nguyen / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "epic": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/8/89/EPIC_View_of_Moon_Transiting_the_Earth.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:EPIC_View_of_Moon_Transiting_the_Earth.webm",
+      "attribution": "NASA/NOAA DSCOVR EPIC / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    }
+  },
+  "clips": {
+    "moon_photo": {
+      "source": "fullmoon"
+    },
+    "farside_photo": {
+      "source": "farside"
+    },
+    "nearside_photo": {
+      "source": "nearside"
+    },
+    "phases_full": {
+      "source": "phases",
+      "start": 2.5,
+      "seconds": 4.0
+    },
+    "phases_change": {
+      "source": "phases",
+      "start": 18.5,
+      "seconds": 4.0
+    },
+    "phases_wax": {
+      "source": "phases",
+      "start": 22.5,
+      "seconds": 4.0
+    },
+    "locked_base": {
+      "source": "tidal",
+      "start": 1.0,
+      "seconds": 4.0,
+      "crop": "560:529:0:40"
+    },
+    "locked_spin": {
+      "source": "tidal",
+      "start": 5.5,
+      "seconds": 4.0,
+      "crop": "390:368:72:48"
+    },
+    "free_base": {
+      "source": "tidal",
+      "start": 3.0,
+      "seconds": 4.0,
+      "crop": "560:529:440:40"
+    },
+    "epic_base": {
+      "source": "epic",
+      "start": 7.5,
+      "seconds": 4.0,
+      "crop": "1000:945:440:68"
+    },
+    "epic_close": {
+      "source": "epic",
+      "start": 10.5,
+      "seconds": 4.0,
+      "crop": "700:661:620:300"
+    },
+    "epic_leave": {
+      "source": "epic",
+      "start": 14.5,
+      "seconds": 4.0,
+      "crop": "1000:945:440:68"
+    },
+    "farside_zoom": {
+      "source": "farside",
+      "crop": "1000:945:300:330"
+    }
+  },
+  "overlays": {
+    "epic_labeled": {
+      "base": "epic_base",
+      "callouts": [
+        {
+          "text": "달의 뒷면",
+          "at": [
+            330,
+            850
+          ],
+          "target": [
+            350,
+            570
+          ],
+          "appear": 0.3,
+          "color": "#FFC857"
+        },
+        {
+          "text": "지구",
+          "at": [
+            820,
+            120
+          ],
+          "target": [
+            760,
+            260
+          ],
+          "appear": 0.8,
+          "color": "#9FD8FF"
+        }
+      ]
+    },
+    "locked_labeled": {
+      "base": "locked_base",
+      "headline": "공전 1바퀴 = 자전 1바퀴",
+      "callouts": [
+        {
+          "text": "지구",
+          "at": [
+            820,
+            560
+          ],
+          "target": [
+            500,
+            360
+          ],
+          "appear": 0.6,
+          "color": "#9FD8FF"
+        }
+      ]
+    },
+    "free_labeled": {
+      "base": "free_base",
+      "headline": "자전하지 않는다면",
+      "callouts": [
+        {
+          "text": "지구",
+          "at": [
+            180,
+            560
+          ],
+          "target": [
+            500,
+            360
+          ],
+          "appear": 0.6,
+          "color": "#9FD8FF"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "지구에서는 달의 뒷면을 한 번도 볼 수 없습니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "moon_photo",
+          "cue": "달은 스스로 돌고 있지만",
+          "info_role": "real_full_moon_photo",
+          "concept_id": "full_moon",
+          "state_id": "photo",
+          "qa_label": "a real telescope photograph of the full moon with dark maria and bright craters",
+          "requirement": "스스로 돌고 있는 달을 실제로 촬영한 보름달 사진이 첫 프레임부터 화면을 가득 채움",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "phases_full",
+          "cue": "우리는 늘 같은 얼굴만 봅니다",
+          "info_role": "same_face_while_phase_changes",
+          "concept_id": "near_side",
+          "state_id": "libration",
+          "qa_label": "a detailed image of the moon with its familiar dark patches against black space",
+          "requirement": "모양이 조금씩 바뀌어도 같은 무늬를 보여주는 달",
+          "role": "support",
+          "visual_mode": "physical_animation"
+        },
+        {
+          "asset": "farside_photo",
+          "cue": "지구에서는 달의 뒷면을",
+          "info_role": "far_side_map_without_dark_patches",
+          "concept_id": "far_side",
+          "state_id": "map",
+          "qa_label": "a spacecraft image of the far side of the moon covered in craters with almost no dark patches",
+          "requirement": "어두운 무늬가 거의 없고 크레이터로 덮인 달 뒷면",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "epic_labeled",
+          "cue": "한 번도 볼 수 없습니다",
+          "info_role": "real_far_side_crossing_earth_labeled",
+          "concept_id": "epic_transit",
+          "state_id": "labeled",
+          "qa_label": "a real satellite image of the moon passing in front of the blue earth with text labels",
+          "requirement": "지구 앞을 지나는 달의 뒷면과 지구에 이름표가 붙은 실제 위성 영상",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "비밀은 달이 도는 속도에 있습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "달은 지구를 한 바퀴 도는 동안, 스스로도 딱 한 바퀴 돕니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그래서 지구를 향한 면이 늘 같습니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "phases_change",
+          "cue": "비밀은 달이 도는 속도에 있습니다",
+          "info_role": "moon_phase_changing",
+          "concept_id": "phases",
+          "state_id": "crescent",
+          "qa_label": "a detailed image of a crescent moon with the dark part faintly visible against black space",
+          "requirement": "모양이 바뀌는 초승달 모습의 달",
+          "role": "support",
+          "visual_mode": "physical_animation"
+        },
+        {
+          "asset": "locked_labeled",
+          "cue": "달은 지구를 한 바퀴 도는 동안",
+          "info_role": "orbit_equals_spin_diagram",
+          "concept_id": "tidal_locking",
+          "state_id": "labeled",
+          "qa_label": "a simple diagram of the moon orbiting the earth on a circular path with text labels",
+          "requirement": "지구를 도는 달의 궤도와 공전·자전이 같다는 표시가 있는 그림",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "locked_spin",
+          "cue": "스스로도 딱 한 바퀴 돕니다",
+          "info_role": "moon_keeps_face_to_earth",
+          "concept_id": "locked_orbit",
+          "state_id": "turning",
+          "qa_label": "a simple diagram of a small moon circling the earth with its face always pointing at the earth",
+          "requirement": "지구를 돌면서 같은 면을 지구로 향한 채 함께 도는 달 그림",
+          "role": "support",
+          "visual_mode": "physical_animation"
+        },
+        {
+          "asset": "nearside_photo",
+          "cue": "그래서 지구를 향한 면이 늘 같습니다",
+          "info_role": "near_side_map",
+          "concept_id": "near_side_map",
+          "state_id": "map",
+          "qa_label": "a detailed spacecraft image of the near side of the moon with large dark maria",
+          "requirement": "지구를 늘 향하는 달 앞면의 실제 지도",
+          "role": "support",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "만약 달이 돌지 않았다면, 뒷면도 보였을 겁니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "실제 뒷면은 우주에서 탐사선이 찍었습니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "달의 한쪽 얼굴은, 지구 중력이 맞춰 놓은 결과입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "free_labeled",
+          "cue": "만약 달이 돌지 않았다면",
+          "info_role": "far_side_would_face_earth",
+          "concept_id": "not_locked_label",
+          "state_id": "labeled",
+          "qa_label": "a simple diagram of the moon orbiting the earth on a circular path with text labels",
+          "requirement": "자전하지 않으면 다른 면이 지구를 향한다는 표시가 있는 그림",
+          "role": "support",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "farside_zoom",
+          "cue": "뒷면도 보였을 겁니다",
+          "info_role": "far_side_craters_close",
+          "concept_id": "far_side_close",
+          "state_id": "craters",
+          "qa_label": "a detailed spacecraft image of heavily cratered grey lunar highlands on the far side of the moon",
+          "requirement": "지구에서는 보이지 않는 달 뒷면의 크레이터 지형",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "epic_close",
+          "cue": "우주에서 탐사선이 찍었습니다",
+          "info_role": "real_far_side_close",
+          "concept_id": "epic_close",
+          "state_id": "close",
+          "qa_label": "a real satellite image of the grey moon in front of the blue earth with white clouds",
+          "requirement": "우주에서 찍은 실제 달 뒷면이 지구 앞에 보이는 장면",
+          "role": "second_peak",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "phases_wax",
+          "cue": "달의 한쪽 얼굴은",
+          "info_role": "moon_face_gibbous",
+          "concept_id": "gibbous",
+          "state_id": "waxing",
+          "qa_label": "a detailed image of a bright gibbous moon with dark patches against black space",
+          "requirement": "차오르는 달의 늘 같은 앞면",
+          "role": "support",
+          "visual_mode": "physical_animation"
+        },
+        {
+          "asset": "epic_leave",
+          "cue": "지구 중력이 맞춰 놓은 결과입니다",
+          "info_role": "real_moon_leaving_earth_payoff",
+          "concept_id": "epic_leave",
+          "state_id": "leaving",
+          "qa_label": "a real satellite image of the blue earth with the grey moon passing in front of it",
+          "requirement": "지구 앞을 지나 떠나는 실제 달로 마무리하는 장면",
+          "role": "payoff",
+          "visual_mode": "real_footage"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "NASA Science, Tidal locking (https://science.nasa.gov/moon/tidal-locking/)",
+    "NASA, DSCOVR EPIC: From a Million Miles Away, NASA Camera Shows Moon Crossing Face of Earth (https://www.nasa.gov/image-article/from-million-miles-away-nasa-camera-shows-moon-crossing-face-of-earth/)"
+  ],
+  "description_notes": [
+    "공전·자전 그림은 NASA의 설명용 도식이며, 달의 위상 영상은 NASA Scientific Visualization Studio가 LRO 자료로 만든 시각화입니다."
+  ]
+}

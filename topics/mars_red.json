@@ -1,0 +1,443 @@
+{
+  "topic_id": "mars_red",
+  "title": "화성이 붉은 진짜 이유",
+  "overlay_title": "화성은 왜 붉을까",
+  "brief": {
+    "topic_id": "mars_red",
+    "familiar_subject": "붉은 행성 화성",
+    "contradiction_fact": "화성은 붉게 보이지만 땅속 바위는 붉지 않습니다",
+    "surprising_consequence_fact": "화성의 붉은색은 녹슨 철이 섞인 먼지 때문입니다",
+    "counterintuitive_fact": "화성이 붉은 것은 행성 전체가 붉은 돌이라서가 아니라 겉을 덮은 얇은 먼지 때문입니다",
+    "anomaly_fact": "붉은 화성의 바위에 구멍을 뚫으면 회색 가루가 나옵니다",
+    "payoff_text": "화성의 붉은색은 산화철이 섞인 고운 먼지가 바람에 실려 표면 전체를 얇게 덮은 색이고 그 아래 바위는 회색입니다",
+    "grounded_facts": [
+      "화성의 먼지에는 녹과 같은 산화철이 들어 있습니다",
+      "화성의 먼지 폭풍은 행성 전체를 덮을 만큼 커지기도 합니다",
+      "큐리오시티가 2013년 처음 뚫은 바위 구멍에서는 회색 가루가 나왔습니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "화성은 붉게 보이지만, 실은 땅속 바위는 붉지 않습니다.",
+    "surprising_consequence": "놀랍게도 화성의 붉은색은 녹슨 먼지 때문입니다.",
+    "visible_anomaly": "이상하게도 붉은 화성에 구멍을 뚫으면, 회색 가루가 나옵니다."
+  },
+  "uncertainty_notes": [
+    "화성 바위의 색은 지역마다 다르며 모든 바위가 회색인 것은 아닙니다",
+    "화성의 산화철이 정확히 어떻게 만들어졌는지는 아직 연구 중입니다"
+  ],
+  "observable_phenomenon": "화성의 표면은 산화철이 섞인 고운 먼지로 얇게 덮여 붉게 보이고, 바람과 먼지 폭풍이 이 먼지를 행성 전체에 퍼뜨리며, 탐사차가 바위를 뚫으면 그 아래에서 회색 가루가 나온다.",
+  "silent_story": "우주에서 본 붉은 화성 → 붉은 땅 위의 탐사차 → 붉은 게일 분화구 → 회색 가루가 나온 드릴 구멍 이름표 → 붉게 녹슨 쇠사슬 → 녹 이름표가 붙은 사슬 → 먼지 폭풍에 덮인 화성 → 먼지 회오리 자국 → 또 다른 먼지 회오리 자국 → 드릴 구멍 옆의 탐사차 → 먼지 폭풍 전의 화성",
+  "visual_description": "Real photographs only: ESA Rosetta OSIRIS true-colour Mars, NASA Curiosity images including its first drill hole, Hubble views of Mars before and during the 2001 global dust storm, orbital images of dust-devil tracks, and photographs of rusted iron on Earth.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 화성·녹 사진이 화면에 보여야 함",
+  "sources": {
+    "globe": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/02/OSIRIS_Mars_true_color.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:OSIRIS_Mars_true_color.jpg",
+      "attribution": "ESA & MPS for OSIRIS Team / Wikimedia Commons / CC BY-SA 3.0 IGO",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/igo/"
+    },
+    "bigsky": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/Curiosity_Self-Portrait_at_%27Big_Sky%27_Drilling_Site.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Curiosity_Self-Portrait_at_'Big_Sky'_Drilling_Site.jpg",
+      "attribution": "NASA/JPL-Caltech/MSSS / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "drill": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3a/PIA16726_-_Curiosity%27s_first_sample_drilling.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:PIA16726_-_Curiosity's_first_sample_drilling.jpg",
+      "attribution": "NASA/JPL-Caltech/MSSS / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "chain": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/63/Rusty_Iron_Chain_-_Kolkata_2011-04-01_0186.JPG",
+      "page": "https://commons.wikimedia.org/wiki/File:Rusty_Iron_Chain_-_Kolkata_2011-04-01_0186.JPG",
+      "attribution": "Biswarup Ganguly / Wikimedia Commons / CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0/"
+    },
+    "chains": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/6/60/Chains_%2814833828988%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Chains_(14833828988).jpg",
+      "attribution": "XoMEoX / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0/"
+    },
+    "storm": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/08/A_Perfect_Storm_%28opo0131a%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:A_Perfect_Storm_(opo0131a).jpg",
+      "attribution": "NASA/ESA, J. Bell (Cornell), M. Wolff (SSI) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "devil": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/e/ea/Martian_Dust_Devil_Trails.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Martian_Dust_Devil_Trails.jpg",
+      "attribution": "NASA/JPL/University of Arizona (HiRISE) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "devil2": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/31/Mars_dust_devil_tracks.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Mars_dust_devil_tracks.jpg",
+      "attribution": "NASA MGS MOC / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "holes36": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/32/PIA25416-Curiosity%E2%80%99s_36_Drill_Holes.jpg/1920px-PIA25416-Curiosity%E2%80%99s_36_Drill_Holes.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:PIA25416-Curiosity’s_36_Drill_Holes.jpg",
+      "attribution": "NASA/JPL-Caltech/MSSS / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "powder": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Preparatory_Test_of_Drilling_on_Mars_Generates_Rock_Powder.jpg/1280px-Preparatory_Test_of_Drilling_on_Mars_Generates_Rock_Powder.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Preparatory_Test_of_Drilling_on_Mars_Generates_Rock_Powder.jpg",
+      "attribution": "NASA/JPL-Caltech/MSSS / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "namib": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Curiosity_rover_selfie_at_Namib_Dune_Sol_1128_%2853678107023%29.jpg/1920px-Curiosity_rover_selfie_at_Namib_Dune_Sol_1128_%2853678107023%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Curiosity_rover_selfie_at_Namib_Dune_Sol_1128_(53678107023).jpg",
+      "attribution": "NASA/JPL-Caltech/MSSS, processed by semeion.photo / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "mojave": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/PIA19142_Curiosity_Self-Portrait_at_%27Mojave%27_Site_on_Mount_Sharp.jpg/1920px-PIA19142_Curiosity_Self-Portrait_at_%27Mojave%27_Site_on_Mount_Sharp.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:PIA19142_Curiosity_Self-Portrait_at_'Mojave'_Site_on_Mount_Sharp.jpg",
+      "attribution": "NASA/JPL-Caltech/MSSS / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "drillbit": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Curiosity_Shakes_Loose_a_Pesky_Rock.png/1920px-Curiosity_Shakes_Loose_a_Pesky_Rock.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Curiosity_Shakes_Loose_a_Pesky_Rock.png",
+      "attribution": "NASA/JPL-Caltech/MSSS / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    }
+  },
+  "clips": {
+    "globe_photo": {
+      "source": "globe"
+    },
+    "rover_top": {
+      "source": "bigsky",
+      "focus": [
+        0.5,
+        0.2
+      ]
+    },
+    "gale_view": {
+      "source": "namib"
+    },
+    "drill_base": {
+      "source": "drill"
+    },
+    "chain_photo": {
+      "source": "chain",
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    "chains_base": {
+      "source": "chains"
+    },
+    "storm_after": {
+      "source": "storm",
+      "crop": "1400:1323:1558:345"
+    },
+    "devil_tracks": {
+      "source": "devil"
+    },
+    "devil_tracks_2": {
+      "source": "devil2"
+    },
+    "rover_holes": {
+      "source": "drillbit"
+    },
+    "storm_before": {
+      "source": "storm",
+      "crop": "1400:1323:120:345"
+    },
+    "gale_right": {
+      "source": "mojave"
+    },
+    "holes_grid": {
+      "source": "holes36"
+    },
+    "powder_test": {
+      "source": "powder"
+    }
+  },
+  "overlays": {
+    "drill_labeled": {
+      "base": "drill_base",
+      "callouts": [
+        {
+          "text": "회색 가루",
+          "at": [
+            490,
+            150
+          ],
+          "target": [
+            600,
+            540
+          ],
+          "appear": 0.3,
+          "color": "#E6E6E6"
+        },
+        {
+          "text": "붉은 먼지",
+          "at": [
+            790,
+            800
+          ],
+          "target": [
+            820,
+            650
+          ],
+          "appear": 0.8,
+          "color": "#FF8A5C"
+        }
+      ]
+    },
+    "chains_labeled": {
+      "base": "chains_base",
+      "callouts": [
+        {
+          "text": "녹 = 산화철",
+          "at": [
+            490,
+            150
+          ],
+          "target": [
+            490,
+            450
+          ],
+          "appear": 0.3,
+          "color": "#FFC857"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "붉은 건, 바위 겉을 덮은 아주 얇은 먼지뿐입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "globe_photo",
+          "cue": "화성은 붉게 보이지만",
+          "info_role": "real_red_mars_globe",
+          "concept_id": "real_red_mars_globe",
+          "state_id": "globe_photo",
+          "qa_label": "a real true colour photograph of the planet mars as a red orange globe in black space",
+          "requirement": "우주에서 붉게 보이는 화성은 실제 사진으로 첫 프레임부터 화면에 보임",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "rover_top",
+          "cue": "실은 땅속 바위는 붉지 않습니다",
+          "info_role": "real_rover_on_red_ground",
+          "concept_id": "real_rover_on_red_ground",
+          "state_id": "rover_top",
+          "qa_label": "a real photograph of the curiosity mars rover standing on reddish brown martian ground",
+          "requirement": "붉은 화성 땅 위의 실제 탐사차",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "gale_view",
+          "cue": "붉은 건 바위 겉을 덮은",
+          "info_role": "real_red_martian_landscape",
+          "concept_id": "real_red_martian_landscape",
+          "state_id": "gale_view",
+          "qa_label": "a real photograph of a rover on a field of reddish brown martian sand dunes",
+          "requirement": "붉은 먼지와 모래로 덮인 실제 화성 땅",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "drill_labeled",
+          "cue": "아주 얇은 먼지뿐입니다",
+          "info_role": "labeled_grey_powder_red_dust",
+          "concept_id": "labeled_grey_powder_red_dust",
+          "state_id": "drill_labeled",
+          "qa_label": "a real close-up photograph of a drilled hole in martian rock with grey powder and text labels",
+          "requirement": "드릴 구멍의 회색 가루와 붉은 먼지에 이름표가 붙은 실제 사진",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "그 먼지에는 녹슨 철, 산화철이 들어 있습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그래서 화성 땅도, 붉은빛을 띱니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그리고 바람이 이 먼지를, 행성 전체에 퍼뜨립니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "chain_photo",
+          "cue": "그 먼지에는 녹슨 철",
+          "info_role": "real_rusted_iron_chain",
+          "concept_id": "real_rusted_iron_chain",
+          "state_id": "chain_photo",
+          "qa_label": "a real close-up photograph of a heavily rusted orange brown iron chain",
+          "requirement": "붉게 녹슨 실제 쇠사슬",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "chains_labeled",
+          "cue": "산화철이 들어 있습니다",
+          "info_role": "labeled_rust_iron_oxide",
+          "concept_id": "labeled_rust_iron_oxide",
+          "state_id": "chains_labeled",
+          "qa_label": "a real photograph of rusty iron chains with a text label",
+          "requirement": "녹이 산화철이라는 이름표가 붙은 실제 녹슨 사슬",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "devil_tracks",
+          "cue": "그래서 화성 땅도",
+          "info_role": "real_dust_devil_tracks",
+          "concept_id": "real_dust_devil_tracks",
+          "state_id": "devil_tracks",
+          "qa_label": "a real satellite photograph of dark winding dust devil tracks across the reddish surface of mars",
+          "requirement": "붉은 먼지 위에 남은 실제 먼지 회오리 자국",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "storm_before",
+          "cue": "붉은빛을 띱니다",
+          "info_role": "real_mars_before_storm",
+          "concept_id": "real_mars_before_storm",
+          "state_id": "storm_before",
+          "qa_label": "a real telescope image of the red planet mars showing dark surface markings",
+          "requirement": "붉은빛을 띠는 실제 화성 전체 모습",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "devil_tracks_2",
+          "cue": "그리고 바람이 이 먼지를",
+          "info_role": "real_dust_devil_tracks_wide",
+          "concept_id": "real_dust_devil_tracks_wide",
+          "state_id": "devil_tracks_2",
+          "qa_label": "a real satellite photograph of many dark streaks left by dust devils on the martian surface",
+          "requirement": "바람이 먼지를 쓸고 간 실제 자국",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "storm_after",
+          "cue": "행성 전체에 퍼뜨립니다",
+          "info_role": "real_mars_dust_storm",
+          "concept_id": "real_mars_dust_storm",
+          "state_id": "storm_after",
+          "qa_label": "a real telescope image of the planet mars covered in a hazy orange dust storm",
+          "requirement": "먼지 폭풍이 행성 전체를 덮은 실제 화성",
+          "role": "support",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "그런데 바위를 뚫자, 회색 가루가 나왔습니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "화성은, 녹슨 먼지를 덮어쓴 회색 바위 행성입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "rover_holes",
+          "cue": "그런데 바위를 뚫자",
+          "info_role": "real_rover_at_drill_site",
+          "concept_id": "real_rover_at_drill_site",
+          "state_id": "rover_holes",
+          "qa_label": "a real photograph of the curiosity rover's robotic arm and drill above reddish martian rock",
+          "requirement": "바위를 뚫는 실제 탐사차의 드릴",
+          "role": "second_peak",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "powder_test",
+          "cue": "회색 가루가 나왔습니다",
+          "info_role": "real_grey_rock_powder",
+          "concept_id": "grey_powder",
+          "state_id": "powder",
+          "qa_label": "a real close-up photograph of grey rock powder around a small drilled hole in martian rock",
+          "requirement": "바위를 뚫자 나온 실제 회색 가루",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "gale_right",
+          "cue": "화성은 녹슨 먼지를 덮어쓴",
+          "info_role": "real_mars_landscape_payoff",
+          "concept_id": "payoff",
+          "state_id": "gale_right",
+          "qa_label": "a real photograph of the curiosity rover on reddish martian rock under a hazy orange sky",
+          "requirement": "녹슨 먼지를 덮어쓴 실제 화성 풍경",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "holes_grid",
+          "cue": "회색 바위 행성입니다",
+          "info_role": "real_grid_of_grey_drill_holes",
+          "concept_id": "grey_planet",
+          "state_id": "holes",
+          "qa_label": "a real grid of close-up photographs of many round drill holes in grey martian rock",
+          "requirement": "탐사차가 뚫은 수많은 회색 드릴 구멍으로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_photo"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "NASA Science, Mars facts: why Mars is red (https://science.nasa.gov/mars/facts/)",
+    "NASA JPL, PIA16726: Curiosity's first sample drilling (https://photojournal.jpl.nasa.gov/catalog/PIA16726)",
+    "NASA/Hubble, Global dust storm 2001 (https://science.nasa.gov/missions/hubble/)"
+  ],
+  "description_notes": [
+    "녹슨 쇠사슬 사진은 지구의 녹을 비교하기 위한 사진입니다."
+  ]
+}

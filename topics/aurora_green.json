@@ -1,0 +1,450 @@
+{
+  "topic_id": "aurora_green",
+  "title": "오로라가 초록색인 이유",
+  "overlay_title": "오로라는 왜 초록색일까",
+  "brief": {
+    "topic_id": "aurora_green",
+    "familiar_subject": "밤하늘에 빛나는 오로라",
+    "contradiction_fact": "오로라는 한밤중에 빛나지만 그 원인은 태양에서 시작됩니다",
+    "surprising_consequence_fact": "태양에서 날아온 입자 때문에 지구의 밤하늘 오로라가 빛납니다",
+    "counterintuitive_fact": "오로라의 초록색은 하늘 자체의 색이 아니라 공기 속 원자가 내는 빛입니다",
+    "anomaly_fact": "오로라는 스스로 빛나는 것처럼 보이지만 밖에서 온 입자가 부딪혀야 빛납니다",
+    "payoff_text": "태양에서 온 입자가 약 100킬로미터 상공의 산소와 부딪히면 산소가 초록빛을 냅니다",
+    "grounded_facts": [
+      "지구 자기장은 태양에서 온 입자 대부분을 막아냅니다",
+      "일부 입자는 자기장을 따라 극지방 상공으로 들어옵니다",
+      "더 높은 고도의 산소는 붉은빛을, 질소는 푸른빛과 보랏빛을 냅니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "오로라는 한밤중에 빛나지만, 실은 태양에서 시작됩니다.",
+    "surprising_consequence": "놀랍게도 밤하늘 오로라는 태양에서 날아온 입자 때문에 빛납니다.",
+    "counterintuitive_fact": "오로라의 초록색은 하늘의 색이 아니라, 실은 공기 속 원자가 내는 빛입니다.",
+    "visible_anomaly": "오로라는 스스로 빛나는 것 같지만, 실은 밖에서 온 입자가 부딪혀야 빛납니다."
+  },
+  "uncertainty_notes": [
+    "오로라의 색과 높이는 입자의 에너지와 대기 조건에 따라 달라집니다",
+    "이 영상은 가장 흔한 초록빛과 붉은빛에 집중합니다"
+  ],
+  "observable_phenomenon": "태양에서 온 입자가 지구 자기장을 따라 극지방 상공으로 들어와 산소와 부딪히고, 산소가 초록빛을 낸다.",
+  "silent_story": "호수 위 초록 오로라 → 태양 표면 폭발 → 태양에서 나오는 입자 → 지구로 날아오는 입자 → 자기장이 막는 모습 → 극지방으로 들어가는 입자 → 우주에서 본 오로라 고리 → 대기 가장자리의 초록 띠 → 초록 커튼 → 붉은 오로라 → 숲 위의 오로라 띠 → 달빛 아래 오로라",
+  "visual_description": "Real aurora footage from the ground and from orbit, real solar imagery, and NASA scientific visualizations of the solar wind and Earth's magnetic field.",
+  "scene_requirement": "각 내레이션 단서에 맞는 오로라·태양·자기장 장면이 실제 화면에 보여야 함",
+  "sources": {
+    "ground": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/df/Aurora_borealis_timelapse.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Aurora_borealis_timelapse.webm",
+      "attribution": "Harriniva Hotels & Safaris / Wikimedia Commons / CC BY 3.0",
+      "license_url": "https://creativecommons.org/licenses/by/3.0/"
+    },
+    "iss": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/9/99/Aurora_Borealis_from_Space_%284K%29.webm/Aurora_Borealis_from_Space_%284K%29.webm.1080p.vp9.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Aurora_Borealis_from_Space_(4K).webm",
+      "attribution": "NASA / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "cme": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Solar_Wind_Animations_%28SVS14892_CMEstrikesEarth_1080%29.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Solar_Wind_Animations_(SVS14892_CMEstrikesEarth_1080).webm",
+      "attribution": "NASA Goddard Scientific Visualization Studio / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "field": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/2/2c/TRACERS_Science_Animations_%28SVS20404_-_Tracers_S1_ProRes%29.webm/TRACERS_Science_Animations_%28SVS20404_-_Tracers_S1_ProRes%29.webm.1080p.vp9.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:TRACERS_Science_Animations_(SVS20404_-_Tracers_S1_ProRes).webm",
+      "attribution": "NASA Scientific Visualization Studio (TRACERS) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "funnel": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/4/44/TRACERS_Science_Animations_%28SVS20404_-_Tracers_S2_ProRes%29.webm/TRACERS_Science_Animations_%28SVS20404_-_Tracers_S2_ProRes%29.webm.1080p.vp9.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:TRACERS_Science_Animations_(SVS20404_-_Tracers_S2_ProRes).webm",
+      "attribution": "NASA Scientific Visualization Studio (TRACERS) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "red": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/transcoded/f/f3/Aurora_Borealis_in_the_steppes_of_Kazakhstan._October_10%2C_2024.webm/Aurora_Borealis_in_the_steppes_of_Kazakhstan._October_10%2C_2024.webm.1080p.vp9.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Aurora_Borealis_in_the_steppes_of_Kazakhstan._October_10,_2024.webm",
+      "attribution": "Astrobond / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "sun": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/c2/Sun_Emits_X5_Flare_on_December_31%2C_2023_%28SVS14497%29.webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Sun_Emits_X5_Flare_on_December_31,_2023_(SVS14497).webm",
+      "attribution": "NASA Scientific Visualization Studio (SDO) / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    }
+  },
+  "clips": {
+    "aurora_lake": {
+      "source": "ground",
+      "start": 100.0,
+      "seconds": 6.0
+    },
+    "sun_flare": {
+      "source": "sun",
+      "start": 0.6,
+      "seconds": 6.0
+    },
+    "particles_leave": {
+      "source": "cme",
+      "start": 13.0,
+      "seconds": 6.0,
+      "focus": [
+        1.0,
+        0.5
+      ]
+    },
+    "particles_arrive": {
+      "source": "field",
+      "start": 0.6,
+      "seconds": 6.0,
+      "focus": [
+        0.1,
+        0.5
+      ]
+    },
+    "field_shield": {
+      "source": "field",
+      "start": 5.0,
+      "seconds": 6.0,
+      "focus": [
+        0.75,
+        0.5
+      ]
+    },
+    "funnel_poles": {
+      "source": "funnel",
+      "start": 4.5,
+      "seconds": 6.0
+    },
+    "orbit_ring": {
+      "source": "iss",
+      "start": 90.0,
+      "seconds": 6.0
+    },
+    "orbit_limb_base": {
+      "source": "iss",
+      "start": 275.0,
+      "seconds": 6.0
+    },
+    "aurora_curtain": {
+      "source": "ground",
+      "start": 38.0,
+      "seconds": 6.0
+    },
+    "aurora_red": {
+      "source": "red",
+      "start": 18.5,
+      "seconds": 6.0
+    },
+    "aurora_moon": {
+      "source": "ground",
+      "start": 70.0,
+      "seconds": 6.0
+    },
+    "aurora_rays": {
+      "source": "ground",
+      "start": 21.0,
+      "seconds": 6.0
+    },
+    "aurora_forest": {
+      "source": "ground",
+      "start": 116.0,
+      "seconds": 6.0
+    }
+  },
+  "overlays": {
+    "field_labeled": {
+      "base": "field_shield",
+      "callouts": [
+        {
+          "text": "지구 자기장",
+          "at": [
+            640,
+            150
+          ],
+          "target": [
+            600,
+            330
+          ],
+          "appear": 0.3,
+          "color": "#9FD8FF"
+        },
+        {
+          "text": "태양 입자",
+          "at": [
+            210,
+            760
+          ],
+          "target": [
+            70,
+            600
+          ],
+          "appear": 0.9,
+          "color": "#FFC857"
+        }
+      ]
+    },
+    "funnel_labeled": {
+      "base": "funnel_poles",
+      "callouts": [
+        {
+          "text": "극지방",
+          "at": [
+            760,
+            200
+          ],
+          "target": [
+            560,
+            420
+          ],
+          "appear": 0.4,
+          "color": "#9FD8FF"
+        }
+      ]
+    },
+    "limb_labeled": {
+      "base": "orbit_limb_base",
+      "callouts": [
+        {
+          "text": "약 100km 상공",
+          "at": [
+            600,
+            470
+          ],
+          "target": [
+            560,
+            235
+          ],
+          "appear": 0.3,
+          "color": "#7CFFB2"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "그런데 빛이 아니라, 태양이 뿜어낸 입자가 날아옵니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "aurora_lake",
+          "cue": "오로라는 한밤중에 빛나지만",
+          "info_role": "real_green_aurora_over_lake",
+          "concept_id": "aurora_ground",
+          "state_id": "lake",
+          "kind": "concept",
+          "qa_label": "real night footage of bright green aurora borealis lights over a lake and forest",
+          "requirement": "오로라는 한밤중에 호수 위에서 실제로 초록빛으로 빛나고 있음을 첫 프레임부터 보여주는 장면",
+          "role": "hero",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "sun_flare",
+          "cue": "실은 태양에서 시작됩니다",
+          "info_role": "real_sun_surface_flare",
+          "concept_id": "sun",
+          "state_id": "flare",
+          "kind": "concept",
+          "qa_label": "a real satellite image of the sun's disk with a bright solar flare",
+          "requirement": "오로라의 출발점인 실제 태양 표면과 플레어를 보여주는 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "particles_leave",
+          "cue": "그런데 빛이 아니라",
+          "info_role": "particles_streaming_from_sun",
+          "concept_id": "solar_wind",
+          "state_id": "leaving",
+          "kind": "concept",
+          "qa_label": "a scientific visualization of streams of particles flowing out from the sun through space",
+          "requirement": "태양에서 빛이 아닌 입자 흐름이 퍼져 나오는 모습을 보여주는 장면",
+          "role": "support",
+          "visual_mode": "physical_animation"
+        },
+        {
+          "asset": "particles_arrive",
+          "cue": "태양이 뿜어낸 입자가 날아옵니다",
+          "info_role": "particles_reaching_earth",
+          "concept_id": "incoming_particles",
+          "state_id": "arriving",
+          "kind": "concept",
+          "qa_label": "a scientific visualization of glowing particles streaking through space toward the earth's magnetic field",
+          "requirement": "태양이 뿜어낸 입자가 지구까지 날아오는 모습을 보여주는 장면",
+          "role": "support",
+          "visual_mode": "physical_animation"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "이 입자들을 지구 자기장이 막아섭니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "하지만 일부는 자기장을 따라 극지방으로 빨려 들어갑니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "그리고 약 100킬로미터 상공에서 산소와 부딪힙니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "field_labeled",
+          "cue": "이 입자들을 지구 자기장이 막아섭니다",
+          "info_role": "magnetic_field_deflects_particles",
+          "concept_id": "magnetosphere",
+          "state_id": "shield",
+          "kind": "concept",
+          "qa_label": "a scientific visualization of the earth surrounded by curved magnetic field lines deflecting incoming particles with text labels",
+          "requirement": "지구를 둘러싼 자기장 선이 날아오는 입자를 막아내는 모습을 보여주는 장면",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "funnel_labeled",
+          "cue": "하지만 일부는 자기장을 따라",
+          "info_role": "particles_follow_field_lines",
+          "concept_id": "funnel",
+          "state_id": "entering",
+          "kind": "concept",
+          "qa_label": "a scientific visualization of the earth with magnetic field lines and glowing particles streaming toward its pole with text labels",
+          "requirement": "일부 입자가 자기장 선을 따라 지구 극지방 쪽으로 흘러드는 모습을 보여주는 장면",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "orbit_ring",
+          "cue": "극지방으로 빨려 들어갑니다",
+          "info_role": "real_aurora_band_from_orbit",
+          "concept_id": "orbit",
+          "state_id": "ring",
+          "kind": "concept",
+          "qa_label": "real footage from orbit of a green aurora band glowing above the clouds of the earth at night",
+          "requirement": "우주에서 내려다본 극지방 상공의 실제 초록 오로라 띠를 보여주는 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "limb_labeled",
+          "cue": "그리고 약 100킬로미터 상공에서",
+          "info_role": "real_thin_green_layer_at_altitude",
+          "concept_id": "orbit_limb",
+          "state_id": "layer",
+          "kind": "concept",
+          "qa_label": "real footage from space of a thin green aurora layer along the curved edge of the earth's atmosphere with text labels",
+          "requirement": "지구 대기 가장자리 높은 곳에 얇게 떠 있는 실제 초록빛 층을 보여주는 장면",
+          "role": "support",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "aurora_rays",
+          "cue": "산소와 부딪힙니다",
+          "info_role": "real_aurora_rays_where_collisions_happen",
+          "concept_id": "aurora_rays",
+          "state_id": "rays",
+          "kind": "concept",
+          "qa_label": "real night footage of bright green aurora rays streaking down the sky above a lake",
+          "requirement": "입자가 산소와 부딪히는 높이에서 빛줄기로 내려오는 실제 오로라를 보여주는 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "충돌한 산소가 초록빛을 내는 겁니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "더 높은 곳의 산소는 붉은빛을 냅니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "오로라는 태양 입자가 그린, 지구 대기의 빛입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "aurora_curtain",
+          "cue": "충돌한 산소가 초록빛을 내는 겁니다",
+          "info_role": "real_green_curtains_close",
+          "concept_id": "aurora_curtain",
+          "state_id": "green",
+          "kind": "concept",
+          "qa_label": "real night footage of vivid green aurora curtains rippling across the sky",
+          "requirement": "산소가 내는 초록빛 오로라 커튼이 하늘에서 일렁이는 실제 장면",
+          "role": "second_peak",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "aurora_red",
+          "cue": "더 높은 곳의 산소는 붉은빛을 냅니다",
+          "info_role": "real_red_aurora_sky",
+          "concept_id": "aurora_red",
+          "state_id": "red",
+          "kind": "concept",
+          "qa_label": "real night footage of a red aurora glowing in the sky above a dark landscape",
+          "requirement": "더 높은 곳의 산소가 내는 실제 붉은 오로라가 하늘을 물들이는 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "aurora_forest",
+          "cue": "오로라는 태양 입자가 그린",
+          "info_role": "real_aurora_bands_over_forest",
+          "concept_id": "aurora_forest",
+          "state_id": "bands",
+          "kind": "concept",
+          "qa_label": "real night footage of green aurora bands glowing above a dark forest",
+          "requirement": "태양 입자가 그려낸 초록 오로라 띠가 숲 위 하늘에 펼쳐진 실제 장면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "aurora_moon",
+          "cue": "지구 대기의 빛입니다",
+          "info_role": "real_aurora_sky_payoff",
+          "concept_id": "aurora_payoff",
+          "state_id": "moonlit",
+          "kind": "concept",
+          "qa_label": "real night footage of green aurora borealis filling the sky above a moonlit lake",
+          "requirement": "달빛이 비치는 호수 위 하늘을 가득 채운 실제 오로라로 마무리하는 장면",
+          "role": "payoff",
+          "visual_mode": "real_footage"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "NASA, Aurora (https://science.nasa.gov/sun/auroras/)",
+    "NOAA Space Weather Prediction Center, Aurora Tutorial (https://www.swpc.noaa.gov/content/aurora-tutorial)"
+  ],
+  "description_notes": [
+    "태양풍과 자기장 장면은 NASA Scientific Visualization Studio의 과학 시각화이며 크기와 밝기는 이해를 돕기 위해 과장되어 있습니다."
+  ]
+}
