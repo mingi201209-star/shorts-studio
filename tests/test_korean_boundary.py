@@ -171,3 +171,12 @@ def test_pause_insertion_cannot_split_protected_spans(text):
 def test_tokenize_never_drops_or_merges_tokens():
     text = "결국 조사팀은 실제 기체를 거대한 물탱크에 넣고 압력을 반복했습니다."
     assert len(tokenize(text)) == len(text.split())
+
+
+# A noun that happens to spell a connective ending ("자" = ruler) is not a
+# clause boundary: no pause may be inserted after it.
+def test_a_noun_spelled_like_a_connective_ending_gets_no_pause():
+    assert _boundary_after("실은 자 하나 없이 만듭니다.", "자") == CONTINUE
+    assert reconstruct_chunks("실은 자 하나 없이 만듭니다.") == ["실은 자 하나 없이 만듭니다."]
+    # the real connective ending still gets its phrase boundary
+    assert _boundary_after("비가 오자 우리는 나갔습니다.", "오자") == PHRASE_BOUNDARY
