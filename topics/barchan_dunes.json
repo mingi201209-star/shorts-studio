@@ -1,0 +1,407 @@
+{
+  "topic_id": "barchan_dunes",
+  "title": "모래언덕이 초승달 모양인 이유",
+  "overlay_title": "모래언덕은 왜 초승달일까",
+  "brief": {
+    "topic_id": "barchan_dunes",
+    "familiar_subject": "사막의 초승달 모래언덕",
+    "contradiction_fact": "모래언덕은 그냥 쌓인 모래처럼 보이지만 바람이 다듬은 초승달 모양입니다",
+    "surprising_consequence_fact": "초승달 모래언덕은 해마다 몇십 미터씩 바람을 따라 움직입니다",
+    "counterintuitive_fact": "초승달 모래언덕의 뿔은 바람이 불어오는 쪽이 아니라 바람이 불어 가는 쪽을 향합니다",
+    "anomaly_fact": "사막의 초승달 모래언덕은 서로 멀리 떨어져 있어도 거의 같은 모양입니다",
+    "payoff_text": "바람은 완만한 비탈로 모래를 밀어 올려 꼭대기 너머로 떨어뜨리고 모래가 적은 양 끝이 더 빨리 나아가 초승달 모양이 됩니다",
+    "grounded_facts": [
+      "바람이 한 방향으로 불고 모래가 적은 곳에서 초승달 모래언덕이 생깁니다",
+      "초승달 모래언덕은 화성에서도 발견됩니다",
+      "모래언덕의 바람 반대쪽에는 모래가 흘러내리는 가파른 비탈이 생깁니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "사막의 모래언덕은 그냥 쌓인 모래 같지만, 실은 바람이 깎은 초승달입니다.",
+    "surprising_consequence": "놀랍게도 사막의 초승달 모래언덕은, 해마다 몇십 미터씩 움직입니다.",
+    "visible_anomaly": "이상하게도 사막의 모래언덕은, 멀리 떨어져도 같은 초승달 모양입니다."
+  },
+  "uncertainty_notes": [
+    "모래언덕이 움직이는 속도는 크기와 바람에 따라 다르며 작은 언덕일수록 빠릅니다",
+    "바람 방향이 자주 바뀌면 다른 모양의 모래언덕이 생깁니다"
+  ],
+  "observable_phenomenon": "한 방향으로 부는 바람이 완만한 비탈로 모래를 밀어 올려 꼭대기 너머로 흘려보내고, 모래가 적은 양 끝이 더 빨리 나아가 뿔이 바람 방향으로 휜 초승달 모래언덕이 생겨 통째로 이동한다.",
+  "silent_story": "위에서 본 초승달 모래언덕 → 다른 각도의 같은 언덕 → 나미브 사막의 초승달 언덕 → 화성의 초승달 언덕 이름표 → 우주에서 본 모래 폭풍 → 바람 물결 무늬 → 흘러내리는 비탈 이름표 → 노을 속 모래언덕 → 뿔이 있는 초승달 언덕 → 뿔 이름표 → 화성 모래언덕의 비탈 → 또 다른 비탈 → 바람 물결 무늬",
+  "visual_description": "Real photographs only: aerial views of a crescent dune in Kazakhstan, a barchan in Namibia, orbital images of barchans on Mars, Curiosity's view of a Martian dune slip face, an ISS view of blowing sand, and Oregon dune ripples and slip faces.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 모래언덕 사진이 화면에 보여야 함",
+  "sources": {
+    "kazakhone": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/%D0%9A%D0%B5%D1%80%D0%B1%D1%83%D0%BB%D0%B0%D0%BA%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%2C_%D0%BF%D0%BE%D1%8E%D1%89%D0%B8%D0%B9_%D0%B1%D0%B0%D1%80%D1%85%D0%B0%D0%BD_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_%281%29.jpg/1920px-%D0%9A%D0%B5%D1%80%D0%B1%D1%83%D0%BB%D0%B0%D0%BA%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%2C_%D0%BF%D0%BE%D1%8E%D1%89%D0%B8%D0%B9_%D0%B1%D0%B0%D1%80%D1%85%D0%B0%D0%BD_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_%281%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%B5%D1%80%D0%B1%D1%83%D0%BB%D0%B0%D0%BA%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD,_%D0%BF%D0%BE%D1%8E%D1%89%D0%B8%D0%B9_%D0%B1%D0%B0%D1%80%D1%85%D0%B0%D0%BD_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_(1).jpg",
+      "attribution": "Nikolai Bulykin / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "kazakhtwo": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/%D0%9A%D0%B5%D1%80%D0%B1%D1%83%D0%BB%D0%B0%D0%BA%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%2C_%D0%BF%D0%BE%D1%8E%D1%89%D0%B8%D0%B9_%D0%B1%D0%B0%D1%80%D1%85%D0%B0%D0%BD_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_%282%29.jpg/1920px-%D0%9A%D0%B5%D1%80%D0%B1%D1%83%D0%BB%D0%B0%D0%BA%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD%2C_%D0%BF%D0%BE%D1%8E%D1%89%D0%B8%D0%B9_%D0%B1%D0%B0%D1%80%D1%85%D0%B0%D0%BD_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_%282%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:%D0%9A%D0%B5%D1%80%D0%B1%D1%83%D0%BB%D0%B0%D0%BA%D1%81%D0%BA%D0%B8%D0%B9_%D1%80%D0%B0%D0%B9%D0%BE%D0%BD,_%D0%BF%D0%BE%D1%8E%D1%89%D0%B8%D0%B9_%D0%B1%D0%B0%D1%80%D1%85%D0%B0%D0%BD_%D1%81%D0%B2%D0%B5%D1%80%D1%85%D1%83_(2).jpg",
+      "attribution": "Nikolai Bulykin / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "hellespontus": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/ff/Eroding_Mesas_Forming_Seif_and_Barchan_Dunes_in_Hellespontus_region.jpg/1920px-Eroding_Mesas_Forming_Seif_and_Barchan_Dunes_in_Hellespontus_region.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Eroding_Mesas_Forming_Seif_and_Barchan_Dunes_in_Hellespontus_region.jpg",
+      "attribution": "NASA/JPL/University of Arizona / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "whitesands": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/ISS-30_Dust_storm%2C_White_Sands_National_Monument%2C_New_Mexico.jpg/1920px-ISS-30_Dust_storm%2C_White_Sands_National_Monument%2C_New_Mexico.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:ISS-30_Dust_storm,_White_Sands_National_Monument,_New_Mexico.jpg",
+      "attribution": "NASA / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "ripplesoregon": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/23/Wind-rippled_sand_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_18.jpg/1920px-Wind-rippled_sand_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_18.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Wind-rippled_sand_(Oregon_Dunes,_Florence,_Oregon,_USA)_18.jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "slipfacephoto": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Dune_slip_face_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_19.jpg/1920px-Dune_slip_face_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_19.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Dune_slip_face_(Oregon_Dunes,_Florence,_Oregon,_USA)_19.jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "bruneau": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/56/Bruneau_Sand_Dune_and_rippled_sand_sunset.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Bruneau_Sand_Dune_and_rippled_sand_sunset.jpg",
+      "attribution": "Charles Knowles from Meridian Idaho, USA / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "namibmars": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/00/PIA20281_Slip_Face_on_Downwind_Side_of_Namib_Sand_Dune.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:PIA20281_Slip_Face_on_Downwind_Side_of_Namib_Sand_Dune.jpg",
+      "attribution": "NASA JPL / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "slipfacetwenty": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Dune_slip_face_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_20.jpg/1920px-Dune_slip_face_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_20.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Dune_slip_face_(Oregon_Dunes,_Florence,_Oregon,_USA)_20.jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "ripplesfifteen": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Wind-rippled_sand_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_15.jpg/1920px-Wind-rippled_sand_%28Oregon_Dunes%2C_Florence%2C_Oregon%2C_USA%29_15.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Wind-rippled_sand_(Oregon_Dunes,_Florence,_Oregon,_USA)_15.jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "brazilbarchans": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/ISS-52_Barchan_Dunes_and_Lagoons%2C_Southern_Brazil.jpg/1920px-ISS-52_Barchan_Dunes_and_Lagoons%2C_Southern_Brazil.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:ISS-52_Barchan_Dunes_and_Lagoons,_Southern_Brazil.jpg",
+      "attribution": "NASA Astronaut photograph from ISS / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "bungedunes": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/5/5c/Bunge_Crater_Dunes_-_Mars_Reconnaissance_Orbiter_%2850664436443%29.png",
+      "page": "https://commons.wikimedia.org/wiki/File:Bunge_Crater_Dunes_-_Mars_Reconnaissance_Orbiter_(50664436443).png",
+      "attribution": "Justin Cowart / Wikimedia Commons / Public domain",
+      "license_url": null
+    },
+    "sperrgebiet": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Barchan_dune_Sperrgebiet.jpg/1920px-Barchan_dune_Sperrgebiet.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Barchan_dune_Sperrgebiet.jpg",
+      "attribution": "Plastic pony / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    }
+  },
+  "clips": {
+    "kazakhone": {
+      "source": "kazakhone"
+    },
+    "kazakhtwo": {
+      "source": "kazakhtwo"
+    },
+    "whitesands": {
+      "source": "whitesands"
+    },
+    "ripplesoregon": {
+      "source": "ripplesoregon"
+    },
+    "bruneau": {
+      "source": "bruneau"
+    },
+    "namibmars": {
+      "source": "namibmars"
+    },
+    "slipfacetwenty": {
+      "source": "slipfacetwenty"
+    },
+    "ripplesfifteen": {
+      "source": "ripplesfifteen"
+    },
+    "marsbase": {
+      "source": "hellespontus"
+    },
+    "slipbase": {
+      "source": "slipfacephoto"
+    },
+    "brazilbarchans": {
+      "source": "brazilbarchans"
+    },
+    "sperrgebiet": {
+      "source": "sperrgebiet"
+    },
+    "bungedunes": {
+      "source": "bungedunes"
+    }
+  },
+  "overlays": {
+    "marslabeled": {
+      "base": "marsbase",
+      "callouts": [
+        {
+          "text": "화성의 초승달 언덕",
+          "at": [
+            490,
+            110
+          ],
+          "target": [
+            490,
+            460
+          ],
+          "appear": 0.3,
+          "color": "#FFE066"
+        }
+      ]
+    },
+    "sliplabeled": {
+      "base": "slipbase",
+      "callouts": [
+        {
+          "text": "흘러내리는 비탈",
+          "at": [
+            490,
+            110
+          ],
+          "target": [
+            490,
+            460
+          ],
+          "appear": 0.3,
+          "color": "#FFE066"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "이 초승달 모양은, 화성에서도 똑같이 생깁니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "brazilbarchans",
+          "cue": "놀랍게도 사막의 초승달 모래언덕은",
+          "info_role": "real_crescent_dune_aerial",
+          "concept_id": "real_crescent_dune_aerial",
+          "state_id": "kazakhone",
+          "qa_label": "a real photograph from space of many crescent shaped sand dunes beside a lagoon",
+          "requirement": "사막의 실제 초승달 모래언덕들이 첫 프레임부터 보임",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "kazakhone",
+          "cue": "해마다 몇십 미터씩 움직입니다",
+          "info_role": "real_crescent_dune_other_angle",
+          "concept_id": "real_crescent_dune_other_angle",
+          "state_id": "kazakhthree",
+          "qa_label": "a real aerial photograph of a large sand dune in a desert valley",
+          "requirement": "해마다 움직이는 실제 모래언덕",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "bungedunes",
+          "cue": "이 초승달 모양은",
+          "info_role": "real_namib_barchan",
+          "concept_id": "real_namib_barchan",
+          "state_id": "sperrgebiet",
+          "qa_label": "a real satellite image of crescent shaped sand dunes on mars",
+          "requirement": "실제 초승달 모양 모래언덕",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "marslabeled",
+          "cue": "화성에서도 똑같이 생깁니다",
+          "info_role": "labeled_barchans_on_mars",
+          "concept_id": "labeled_barchans_on_mars",
+          "state_id": "marslabeled",
+          "qa_label": "a real satellite image of sand dunes on mars with a text label",
+          "requirement": "화성의 초승달 모래언덕에 이름표가 붙은 실제 위성 사진",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "비밀은 바람이 모래를 옮기는 방식입니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "바람은 완만한 비탈로 모래를 밀어 올려, 꼭대기 너머로 떨어뜨립니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "모래가 적은 양 끝은, 가운데보다 빨리 나아갑니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "whitesands",
+          "cue": "비밀은 바람이 모래를 옮기는 방식입니다",
+          "info_role": "real_blowing_sand_from_orbit",
+          "concept_id": "real_blowing_sand_from_orbit",
+          "state_id": "whitesands",
+          "qa_label": "a real photograph from space of a dust storm blowing sand across a desert",
+          "requirement": "바람이 모래를 옮기는 모습을 우주에서 본 실제 사진",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "ripplesoregon",
+          "cue": "바람은 완만한 비탈로 모래를 밀어 올려",
+          "info_role": "real_wind_ripples",
+          "concept_id": "real_wind_ripples",
+          "state_id": "ripplesoregon",
+          "qa_label": "a real photograph of wind ripples on a sand dune",
+          "requirement": "바람이 모래를 밀어 올린 실제 물결 무늬",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "sliplabeled",
+          "cue": "꼭대기 너머로 떨어뜨립니다",
+          "info_role": "labeled_slip_face",
+          "concept_id": "labeled_slip_face",
+          "state_id": "sliplabeled",
+          "qa_label": "a real photograph of the steep slip face of a sand dune with a text label",
+          "requirement": "꼭대기 너머 흘러내리는 비탈에 이름표가 붙은 실제 모래언덕",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "bruneau",
+          "cue": "모래가 적은 양 끝은",
+          "info_role": "real_dune_crest_sunset",
+          "concept_id": "real_dune_crest_sunset",
+          "state_id": "bruneau",
+          "qa_label": "a real photograph of a tall sand dune crest with rippled sand at sunset",
+          "requirement": "모래언덕의 실제 능선",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "kazakhtwo",
+          "cue": "가운데보다 빨리 나아갑니다",
+          "info_role": "real_dune_horns_aerial",
+          "concept_id": "real_dune_horns_aerial",
+          "state_id": "kazakhtwo",
+          "qa_label": "a real aerial photograph of a curved sand dune crest seen from above",
+          "requirement": "양 끝이 앞으로 나간 실제 모래언덕",
+          "role": "second_peak",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "그래서 양 끝이, 뿔처럼 휘어집니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "모래언덕은 이렇게 통째로, 바람을 따라 걸어갑니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "초승달은, 바람이 지나간 발자국입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "sperrgebiet",
+          "cue": "그래서 양 끝이 뿔처럼 휘어집니다",
+          "info_role": "labeled_dune_horns",
+          "concept_id": "labeled_dune_horns",
+          "state_id": "hornlabeled",
+          "qa_label": "a real photograph of a crescent barchan sand dune on a flat desert plain",
+          "requirement": "양 끝이 뿔처럼 휜 실제 초승달 모래언덕",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "namibmars",
+          "cue": "모래언덕은 이렇게 통째로",
+          "info_role": "real_mars_dune_slip_face",
+          "concept_id": "real_mars_dune_slip_face",
+          "state_id": "namibmars",
+          "qa_label": "a real photograph of a steep dark sand dune slope on mars under a hazy sky",
+          "requirement": "통째로 움직이는 화성의 실제 모래언덕",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "slipfacetwenty",
+          "cue": "바람을 따라 걸어갑니다",
+          "info_role": "real_slip_face_oregon",
+          "concept_id": "real_slip_face_oregon",
+          "state_id": "slipfacetwenty",
+          "qa_label": "a real photograph of a sand dune slip face meeting green trees",
+          "requirement": "바람을 따라 나아가는 실제 모래언덕",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "ripplesfifteen",
+          "cue": "초승달은 바람이 지나간 발자국입니다",
+          "info_role": "real_ripples_payoff",
+          "concept_id": "real_ripples_payoff",
+          "state_id": "ripplesfifteen",
+          "qa_label": "a real close-up photograph of wind ripples in sand",
+          "requirement": "바람이 지나간 실제 모래 물결로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_photo"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "USGS, Types of dunes: barchan (https://pubs.usgs.gov/gip/deserts/dunes/)",
+    "NASA JPL, PIA20281: Slip face on downwind side of 'Namib' sand dune on Mars (https://photojournal.jpl.nasa.gov/catalog/PIA20281)"
+  ],
+  "description_notes": []
+}
