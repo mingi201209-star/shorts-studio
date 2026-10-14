@@ -1,0 +1,433 @@
+{
+  "topic_id": "basalt_columns",
+  "title": "주상절리 기둥이 육각형인 이유",
+  "overlay_title": "주상절리는 왜 육각형일까",
+  "brief": {
+    "topic_id": "basalt_columns",
+    "familiar_subject": "제주 주상절리",
+    "contradiction_fact": "제주 주상절리는 사람이 깎은 것처럼 보이지만 저절로 생겼습니다",
+    "surprising_consequence_fact": "제주 주상절리의 육각 기둥은 식어 가던 용암이 만들었습니다",
+    "counterintuitive_fact": "주상절리 기둥은 쌓아 올린 것이 아니라 하나의 용암이 식으며 갈라진 것입니다",
+    "anomaly_fact": "주상절리 기둥의 단면은 대부분 육각형에 가깝습니다",
+    "payoff_text": "두꺼운 용암이 식으며 줄어들 때 표면이 고르게 갈라지고 그 틈이 안쪽으로 뻗어 육각형에 가까운 기둥이 됩니다",
+    "grounded_facts": [
+      "용암은 식으면서 부피가 줄어듭니다",
+      "줄어드는 표면에는 식는 면과 수직으로 균열이 생깁니다",
+      "마른 진흙에도 같은 원리로 다각형 균열이 생깁니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "제주 주상절리는 사람이 깎은 것 같지만, 실은 저절로 생겼습니다.",
+    "surprising_consequence": "놀랍게도 제주 주상절리의 육각 기둥은 식어 가던 용암이 만들었습니다.",
+    "visible_anomaly": "이상하게도 제주 주상절리 기둥은, 대부분 육각형에 가깝습니다."
+  },
+  "uncertainty_notes": [
+    "실제 기둥은 오각형이나 칠각형인 것도 많고 육각형은 가장 흔한 모양입니다",
+    "기둥의 굵기는 용암이 식는 속도에 따라 달라집니다"
+  ],
+  "observable_phenomenon": "두꺼운 용암이 식으며 부피가 줄어들 때 표면이 고르게 갈라지고, 그 틈이 식는 방향을 따라 안쪽으로 뻗어 육각형에 가까운 돌기둥이 만들어진다.",
+  "silent_story": "바다 위 주상절리 절벽 → 가지런한 돌기둥 → 바다로 뻗은 기둥 단면 → 육각형 이름표 → 밤에 흐르는 용암 → 동굴 벽의 기둥 → 굳어 가는 용암 → 틈 이름표가 붙은 기둥 단면 → 절벽 아래로 뻗은 기둥 → 갈라진 진흙 → 또 다른 진흙 균열 → 매끈한 기둥 윗면 → 마지막 주상절리 절벽",
+  "visual_description": "Real photographs of columnar basalt (Jeju Daepo Jusangjeolli, Giant's Causeway, Devils Postpile, Fingal's Cave, Yellowstone), dried mud cracks, and real USGS footage of cooling lava.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 주상절리·용암·균열 장면이 화면에 보여야 함",
+  "sources": {
+    "jeju1": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Daepo_Jusangjeolli_Cliff_01.jpg/1920px-Daepo_Jusangjeolli_Cliff_01.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Daepo_Jusangjeolli_Cliff_01.jpg",
+      "attribution": "Bernard Gagnon / Wikimedia Commons / CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    "jeju4": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Daepo_Jusangjeolli_Cliff_04.jpg/1920px-Daepo_Jusangjeolli_Cliff_04.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Daepo_Jusangjeolli_Cliff_04.jpg",
+      "attribution": "Bernard Gagnon / Wikimedia Commons / CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    "causeway": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Fra_Giant%27sCauseway%2C_N._Irland.jpg/1920px-Fra_Giant%27sCauseway%2C_N._Irland.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Fra_Giant%27sCauseway,_N._Irland.jpg",
+      "attribution": "Bjørn som tegner / Wikimedia Commons / CC BY-SA 3.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/3.0"
+    },
+    "postpile_top": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/California%2C_Devils_Postpile_National_Monument%2C_columns_top.jpg/1920px-California%2C_Devils_Postpile_National_Monument%2C_columns_top.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:California,_Devils_Postpile_National_Monument,_columns_top.jpg",
+      "attribution": "Lucas·G / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "polished": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/The_top_of_the_Devils_Postpile_National_Monument_columns_polished_by_glaciers%21.jpg/1920px-The_top_of_the_Devils_Postpile_National_Monument_columns_polished_by_glaciers%21.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:The_top_of_the_Devils_Postpile_National_Monument_columns_polished_by_glaciers!.jpg",
+      "attribution": "EKH photography / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0"
+    },
+    "fingal": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Basalt_columns%2C_Fingal%27s_Cave_-_geograph.org.uk_-_4575705.jpg/1920px-Basalt_columns%2C_Fingal%27s_Cave_-_geograph.org.uk_-_4575705.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Basalt_columns,_Fingal%27s_Cave_-_geograph.org.uk_-_4575705.jpg",
+      "attribution": "Hugh Venables / Wikimedia Commons / CC BY-SA 2.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0"
+    },
+    "mud": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Mudcracks_around_Mud_Volcano_%2810_August_2011%29_4_%2814516209975%29.jpg/1920px-Mudcracks_around_Mud_Volcano_%2810_August_2011%29_4_%2814516209975%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Mudcracks_around_Mud_Volcano_(10_August_2011)_4_(14516209975).jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "narrows": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Narrows_Basalt_%28Lower_Pleistocene%2C_1.5-1.6_Ma%29_%28Narrows_of_the_Yellowstone_River%2C_northeastern_Yellowstone_National_Park%2C_Wyoming%2C_USA%29_5_%2819510561513%29.jpg/1920px-Narrows_Basalt_%28Lower_Pleistocene%2C_1.5-1.6_Ma%29_%28Narrows_of_the_Yellowstone_River%2C_northeastern_Yellowstone_National_Park%2C_Wyoming%2C_USA%29_5_%2819510561513%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Narrows_Basalt_(Lower_Pleistocene,_1.5-1.6_Ma)_(Narrows_of_the_Yellowstone_River,_northeastern_Yellowstone_National_Park,_Wyoming,_USA)_5_(19510561513).jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "jeju2": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Daepo_Jusangjeolli_Cliff_02.jpg/1920px-Daepo_Jusangjeolli_Cliff_02.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Daepo_Jusangjeolli_Cliff_02.jpg",
+      "attribution": "Bernard Gagnon / Wikimedia Commons / CC0",
+      "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en"
+    },
+    "mud2": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8a/Mudcracks_around_Mud_Volcano_%2829_August_2011%29_2_%2814516259745%29.jpg/1920px-Mudcracks_around_Mud_Volcano_%2829_August_2011%29_2_%2814516259745%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Mudcracks_around_Mud_Volcano_(29_August_2011)_2_(14516259745).jpg",
+      "attribution": "James St. John / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    },
+    "street": {
+      "kind": "video",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/2/25/Fissure_21_p%C4%81hoehoe_lava_flows_ooze_onto_Kaupili_Street%2C_in_the_Leilani_Estat....webm",
+      "page": "https://commons.wikimedia.org/wiki/File:Fissure_21_p%C4%81hoehoe_lava_flows_ooze_onto_Kaupili_Street,_in_the_Leilani_Estat....webm",
+      "attribution": "USGS Hawaiian Volcano Observatory / Wikimedia Commons / Public domain",
+      "license_url": "https://www.usgs.gov/information-policies-and-instructions/copyrights-and-credits"
+    },
+    "causeway3": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3b/The_Giant%27s_Causeway%2C_Northern_Ireland_%288353823473%29.jpg/1920px-The_Giant%27s_Causeway%2C_Northern_Ireland_%288353823473%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:The_Giant%27s_Causeway,_Northern_Ireland_(8353823473).jpg",
+      "attribution": "Dimitry B. from London / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0"
+    }
+  },
+  "clips": {
+    "jeju1": {
+      "source": "jeju1"
+    },
+    "causeway": {
+      "source": "causeway"
+    },
+    "fingal": {
+      "source": "fingal"
+    },
+    "jeju4": {
+      "source": "jeju4"
+    },
+    "mud": {
+      "source": "mud"
+    },
+    "mud2": {
+      "source": "mud2"
+    },
+    "polished": {
+      "source": "polished"
+    },
+    "jeju2": {
+      "source": "jeju2"
+    },
+    "postpile_base": {
+      "source": "postpile_top"
+    },
+    "narrows_base": {
+      "source": "narrows"
+    },
+    "lava_river": {
+      "source": "street",
+      "start": 12.0,
+      "seconds": 6.0,
+      "focus": [
+        0.6,
+        0.5
+      ]
+    },
+    "lava_breakout": {
+      "source": "street",
+      "start": 72.0,
+      "seconds": 6.0,
+      "crop": "760:718:900:300"
+    },
+    "causeway3": {
+      "source": "causeway3",
+      "focus": [
+        0.5,
+        0.5
+      ]
+    },
+    "lava_cracks": {
+      "source": "street",
+      "start": 18.0,
+      "seconds": 6.0,
+      "focus": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "overlays": {
+    "postpile_labeled": {
+      "base": "postpile_base",
+      "callouts": [
+        {
+          "text": "육각형 단면",
+          "at": [
+            490,
+            120
+          ],
+          "target": [
+            490,
+            460
+          ],
+          "appear": 0.3,
+          "color": "#FFC857"
+        }
+      ]
+    },
+    "narrows_labeled": {
+      "base": "narrows_base",
+      "callouts": [
+        {
+          "text": "식으며 생긴 틈",
+          "at": [
+            490,
+            120
+          ],
+          "target": [
+            490,
+            460
+          ],
+          "appear": 0.3,
+          "color": "#FFC857"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "바다로 뻗은 기둥의 단면은, 대부분 육각형에 가깝습니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "jeju1",
+          "cue": "제주 주상절리는 사람이 깎은 것 같지만",
+          "info_role": "real_jeju_columns_cliff",
+          "concept_id": "real_jeju_columns_cliff",
+          "state_id": "jeju1",
+          "qa_label": "a real photograph of a sea cliff made of tall dark basalt columns with waves below",
+          "requirement": "사람이 깎은 것 같은 제주 주상절리 기둥 절벽이 첫 프레임부터 보임",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "jeju4",
+          "cue": "실은 저절로 생겼습니다",
+          "info_role": "real_jeju_columns_from_above",
+          "concept_id": "real_jeju_columns_from_above",
+          "state_id": "jeju4",
+          "qa_label": "a real photograph looking down at basalt column tops beside turquoise sea water",
+          "requirement": "저절로 생긴 실제 주상절리 해안",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "jeju2",
+          "cue": "바다로 뻗은 기둥의 단면은",
+          "info_role": "real_jeju_columns_into_sea",
+          "concept_id": "real_jeju_columns_into_sea",
+          "state_id": "jeju2",
+          "qa_label": "a real photograph of a row of dark basalt columns reaching into the sea with waves",
+          "requirement": "바다로 뻗은 실제 돌기둥",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "postpile_labeled",
+          "cue": "대부분 육각형에 가깝습니다",
+          "info_role": "labeled_hexagonal_tops",
+          "concept_id": "labeled_hexagonal_tops",
+          "state_id": "postpile_labeled",
+          "qa_label": "a real photograph of polygonal basalt column tops seen from above with a text label",
+          "requirement": "육각형 단면에 이름표가 붙은 실제 기둥 윗면",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "비밀은 용암이 식는 방식에 있습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "두꺼운 용암은 겉에서부터 천천히 식으며 줄어듭니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "줄어든 표면은 갈라지고, 그 틈이 아래로 뻗어 기둥이 됩니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "lava_river",
+          "cue": "비밀은 용암이 식는 방식에 있습니다",
+          "info_role": "real_glowing_lava_flow",
+          "concept_id": "real_glowing_lava_flow",
+          "state_id": "lava_river",
+          "qa_label": "real night footage of a river of glowing orange lava flowing between dark trees",
+          "requirement": "실제로 흐르며 식어 가는 용암",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "lava_breakout",
+          "cue": "두꺼운 용암은 겉에서부터",
+          "info_role": "real_lava_cooling_crust",
+          "concept_id": "real_lava_cooling_crust",
+          "state_id": "lava_breakout",
+          "qa_label": "real footage of red molten lava oozing out from under black lava crust beside green bushes",
+          "requirement": "겉부터 굳어 가는 실제 용암",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "lava_cracks",
+          "cue": "천천히 식으며 줄어듭니다",
+          "info_role": "real_cracked_cooling_lava",
+          "concept_id": "real_cracked_cooling_lava",
+          "state_id": "lava_cracks",
+          "qa_label": "real night footage of a lava flow with glowing orange cracks between dark crust",
+          "requirement": "식으며 갈라지는 실제 용암 표면",
+          "role": "support",
+          "visual_mode": "real_footage"
+        },
+        {
+          "asset": "narrows_labeled",
+          "cue": "줄어든 표면은 갈라지고",
+          "info_role": "labeled_cooling_cracks",
+          "concept_id": "labeled_cooling_cracks",
+          "state_id": "narrows_labeled",
+          "qa_label": "a real photograph of rows of basalt columns in a cliff with a text label",
+          "requirement": "식으며 생긴 틈에 이름표가 붙은 실제 기둥",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "fingal",
+          "cue": "그 틈이 아래로 뻗어 기둥이 됩니다",
+          "info_role": "real_column_cave_wall",
+          "concept_id": "real_column_cave_wall",
+          "state_id": "fingal",
+          "qa_label": "a real photograph of tall vertical basalt columns side by side",
+          "requirement": "아래로 길게 뻗은 실제 돌기둥",
+          "role": "support",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "마른 진흙이 갈라질 때도, 같은 일이 일어납니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "줄어드는 힘이 고르게 나뉘면, 육각형에 가까워집니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "주상절리는, 식은 용암의 균열입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "mud",
+          "cue": "마른 진흙이 갈라질 때도",
+          "info_role": "real_dried_mud_cracks",
+          "concept_id": "real_dried_mud_cracks",
+          "state_id": "mud",
+          "qa_label": "a real photograph of dried mud cracked into polygon shapes",
+          "requirement": "실제로 갈라진 마른 진흙",
+          "role": "second_peak",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "mud2",
+          "cue": "같은 일이 일어납니다",
+          "info_role": "real_mud_crack_pattern",
+          "concept_id": "real_mud_crack_pattern",
+          "state_id": "mud2",
+          "qa_label": "a real close-up photograph of a cracked mud surface with polygonal plates",
+          "requirement": "같은 원리로 갈라진 실제 진흙 무늬",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "polished",
+          "cue": "줄어드는 힘이 고르게 나뉘면",
+          "info_role": "real_polished_column_tops",
+          "concept_id": "real_polished_column_tops",
+          "state_id": "polished",
+          "qa_label": "a real photograph of smooth polished basalt column tops with polygon outlines",
+          "requirement": "고르게 나뉜 실제 기둥 윗면",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "causeway",
+          "cue": "육각형에 가까워집니다",
+          "info_role": "real_causeway_column_tops",
+          "concept_id": "real_causeway_column_tops",
+          "state_id": "causeway",
+          "qa_label": "a real photograph of many flat hexagonal stone column tops stepping down to the sea",
+          "requirement": "바다로 뻗은 실제 돌기둥 단면",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "causeway3",
+          "cue": "주상절리는 식은 용암의 균열입니다",
+          "info_role": "real_causeway_payoff",
+          "concept_id": "real_causeway_payoff",
+          "state_id": "causeway3",
+          "qa_label": "a real photograph of a coast covered with hexagonal basalt columns",
+          "requirement": "식은 용암이 남긴 실제 주상절리로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_photo"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "USGS, Columnar jointing (https://www.usgs.gov/)",
+    "National Park Service, Devils Postpile geology (https://www.nps.gov/depo/learn/nature/geologicformations.htm)"
+  ],
+  "description_notes": []
+}

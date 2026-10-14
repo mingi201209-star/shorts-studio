@@ -651,7 +651,7 @@ def check_text_contracts(spec: TopicSpec, hook: HookCandidate) -> None:
     hashes, never written to disk) turns a failure that used to surface
     after the downloads and encodes into one that surfaces in a second. The
     real manifest goes through the same contracts again in ``validate``."""
-    from .final_video_qa import verify_retention_contract
+    from .final_video_qa import compute_source_reuse, verify_retention_contract, verify_source_reuse
     from .models import Project
     from .production_v2 import verify_visual_production_structure
     from .visual_change import audit_visual_changes
@@ -665,6 +665,12 @@ def check_text_contracts(spec: TopicSpec, hook: HookCandidate) -> None:
     structure = verify_visual_production_structure(draft)
     if structure["status"] != "PASS":
         failures.append(f"visual production v2: {structure['reason']}")
+    # The final-video source_reuse gate groups beats into source families by
+    # their asset names, so the draft (named after the same spec keys) gets the
+    # same verdict now that the render would give after ten minutes.
+    reuse = verify_source_reuse(compute_source_reuse(draft))
+    if reuse["status"] != "PASS":
+        failures.append(f"source reuse: {reuse['reason']} -- put a different source between them")
     retention = verify_retention_contract(draft)
     if retention["status"] != "PASS":
         failed = {k: v.get("reason") for k, v in retention["checks"].items() if v.get("status") == "FAIL"}

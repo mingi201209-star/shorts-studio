@@ -381,3 +381,16 @@ def test_labelled_pictures_are_collected_on_one_preview_sheet(built):
     sheet = built["manifest"].parent / "work" / "overlays_preview.jpg"
     assert sheet.is_file()
     assert Image.open(sheet).size == (tb.BOX_W // 2 * len(spec_dict()["overlays"]), tb.BOX_H // 2)
+
+
+def test_back_to_back_beats_from_one_source_fail_before_any_media_work():
+    data = spec_dict()
+    reveal = data["scenes"][1]["beats"]
+    # The gate groups beats by asset name; "wheelclose" inside "wheelclose_b" is one family.
+    data["clips"]["wheelclose"] = data["clips"].pop("grooves") | {"source": "tall"}
+    data["clips"]["wheelclose_b"] = data["clips"].pop("wheel")
+    reveal[0]["asset"], reveal[0]["visual_mode"] = "wheelclose", "real_footage"
+    reveal[1]["asset"] = "wheelclose_b"
+    spec = tb.TopicSpec.model_validate(data)
+    with pytest.raises(ValueError, match="source reuse"):
+        tb.check_text_contracts(spec, tb.select_hook(spec))
