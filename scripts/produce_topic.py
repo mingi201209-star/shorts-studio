@@ -180,6 +180,54 @@ def _frame_at(asset: Path, seconds: float):
     return canvas
 
 
+def steadier_starts(source: Path, clip, window: float = 8.0, keep: int = 3) -> list[float]:
+    """Start times near ``clip.start`` whose opening frames would pass
+    ``opening_motion``, steadiest first.
+
+    The source is decoded once, cropped and scaled as the clip will be, and
+    resampled to the prepared clip's 30 fps; each candidate start is scored
+    exactly like ``opening_motion`` scores a prepared clip."""
+    import cv2
+    import numpy as np
+    from shorts_studio.topic_builder import _probe_video, _resolved_crop
+    info = _probe_video(source)
+    w, h, x, y = (int(v) for v in _resolved_crop(clip, info["width"], info["height"]).split(":"))
+    lo, hi = max(0.0, clip.start - window), clip.start + window + 1.0
+    cap = cv2.VideoCapture(str(source))
+    times, frames = [], []
+    try:
+        cap.set(cv2.CAP_PROP_POS_MSEC, lo * 1000.0)
+        while True:
+            ok, frame = cap.read()
+            when = cap.get(cv2.CAP_PROP_POS_MSEC) / 1000.0
+            if not ok or when > hi:
+                break
+            times.append(when)
+            frames.append(_gate_canvas(cv2.resize(frame[y:y + h, x:x + w], (BOX_W, BOX_H))))
+    finally:
+        cap.release()
+    times = np.array(times)
+    if len(times) < 10:
+        return []
+
+    def at(seconds):
+        return frames[int(np.abs(times - seconds).argmin())]
+    scored = []
+    for start in np.arange(lo, min(hi, times[-1] - clip.seconds / clip.slowmo) + 1e-6, 0.1):
+        shown = int(0.25 * 30)
+        reference = at(start + (shown + 1) / 30 / clip.slowmo)
+        worst = max(float(np.abs(at(start + k / 30 / clip.slowmo) - reference).mean()) for k in (shown - 1, shown))
+        if worst <= RENDERED_STATE_MAX_ERROR - 1.0:
+            scored.append((worst, round(float(start), 1)))
+    picked = []
+    for _, start in sorted(scored):
+        if all(abs(start - other) >= 1.0 for other in picked):
+            picked.append(start)
+        if len(picked) == keep:
+            break
+    return picked
+
+
 def static_runs(beats: list[tuple[str, Path, float]], max_static_seconds: float = 5.0, margin: float = 0.5) -> list[str]:
     """Stretches the real-activity gate would read as one static picture.
 
@@ -533,6 +581,19 @@ def main() -> int:
         if row["risky"]:
             print(f"[prescreen] {row['beat']} {row['asset']}: {row['status']} margin={row['margin']} "
                   f"sharpness={row['sharpness']} {row['reason'] or ''}", flush=True)
+    unsteady = [key for key, m in (report["prescreen"].get("opening_motion") or {}).items() if m["risky"]]
+    if unsteady:
+        # Name a steadier start for each failing clip, so the fix is one edit.
+        by_beat = {f"{scene.id}[{i}]": beat.asset for scene in spec.scenes for i, beat in enumerate(scene.beats)}
+        hints = {}
+        for name in unsteady:
+            key = by_beat[name]
+            key = spec.overlays[key].base if key in spec.overlays else key
+            clip = spec.clips[key]
+            source = next((out / "assets" / spec.topic_id / "sources").glob(f"{clip.source}.*"))
+            hints[key] = timer.run(f"steadier_starts:{key}", steadier_starts, source, clip)
+        report["prescreen"]["steadier_starts"] = hints
+        report["prescreen"]["reason"] += " | steadier starts (seconds): " + ", ".join(f"{k}: {v or 'none within 8 s'}" for k, v in hints.items())
     if report["prescreen"]["status"] != "PASS":
         return finish("FAIL", report["prescreen"].get("reason")
                       or "a prepared picture does not pass the vision provider; fix the picture or its label before rendering")

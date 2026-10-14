@@ -101,3 +101,13 @@ def test_back_to_back_lookalike_beats_are_reported_as_one_static_picture(tmp_pat
     merged = produce_topic.static_runs([("a", calm_a, 2.8), ("b", calm_b, 2.6), ("c", other, 2.0)])
     assert merged == ["a + b read as one 5.4s picture"]
     assert produce_topic.static_runs([("a", calm_a, 2.8), ("c", other, 2.6), ("b", calm_b, 2.0)]) == []
+
+
+def test_steadier_starts_point_to_the_still_part_of_a_source(tmp_path):
+    from shorts_studio.topic_builder import ClipSpec
+    # 3 s of grain (fails the opening-motion check anywhere), then 4 s of a steady test pattern.
+    source = _clip(tmp_path / "mixed.mp4",
+                   "nullsrc=size=980x926:rate=30:duration=3,geq=lum='random(1)*255':cb=128:cr=128[a];"
+                   "testsrc2=size=980x926:rate=30:duration=4[b];[a][b]concat=n=2")
+    starts = produce_topic.steadier_starts(source, ClipSpec(source="s", start=1.0, seconds=2.0))
+    assert starts and all(start >= 2.9 for start in starts)

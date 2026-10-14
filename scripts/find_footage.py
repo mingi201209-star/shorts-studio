@@ -76,6 +76,30 @@ def pick_rendition(original: dict, derivatives: list[dict]) -> dict:
     return {"url": _clean_url(best["src"]), "width": int(best["width"]), "height": int(best["height"])}
 
 
+# Standard thumbnail width Wikimedia serves from its cache
+# (https://www.mediawiki.org/wiki/Common_thumbnail_sizes). Large originals are
+# rate limited per host: a 429 with "Retry-After: 600" stopped a timed
+# production; the 1920 px thumbnail of the same file was served at once.
+THUMB_WIDTH = 1920
+
+
+def photo_rendition(info: dict) -> dict:
+    """The 1920 px standard thumbnail of a large photo, if it still fills the picture.
+
+    Kept at the original when the photo is no wider than the thumbnail, when
+    the thumbnail would be shorter than the 926 px picture box (it would then
+    be upscaled), or for formats whose thumbnails are re-encoded (TIFF)."""
+    url, width, height = _clean_url(info["url"]), int(info.get("width") or 0), int(info.get("height") or 0)
+    marker = "/wikipedia/commons/"
+    name = url.rsplit("/", 1)[-1]
+    if (width <= THUMB_WIDTH or marker not in url or name.lower().endswith((".tif", ".tiff"))
+            or height * THUMB_WIDTH / width < BOX_H):
+        return {"url": url, "width": width, "height": height}
+    head, tail = url.split(marker, 1)
+    return {"url": f"{head}{marker}thumb/{tail}/{THUMB_WIDTH}px-{name}", "width": THUMB_WIDTH,
+            "height": round(height * THUMB_WIDTH / width)}
+
+
 def commons_candidates(query: str, kind: str, limit: int, min_width: int) -> list[dict]:
     video = kind == "video"
     prefix = "vi" if video else "ii"
@@ -94,8 +118,7 @@ def commons_candidates(query: str, kind: str, limit: int, min_width: int) -> lis
         if not info.get("url") or not is_free_licence(licence) or int(info.get("width", 0)) < min_width:
             continue
         artist = _text(meta.get("Artist", {}).get("value", "")) or _text(meta.get("Credit", {}).get("value", ""))
-        chosen = pick_rendition(info, info.get("derivatives") or []) if video else {
-            "url": _clean_url(info["url"]), "width": info.get("width"), "height": info.get("height")}
+        chosen = pick_rendition(info, info.get("derivatives") or []) if video else photo_rendition(info)
         found.append({
             "kind": kind, "url": chosen["url"], "page": info.get("descriptionurl", ""),
             "attribution": f"{artist[:60] or 'Unknown author'} / Wikimedia Commons / {licence}",

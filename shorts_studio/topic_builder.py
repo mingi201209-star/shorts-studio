@@ -564,8 +564,33 @@ def render_overlay_clip(base: Path, overlay: OverlaySpec, out: Path, work: Path,
 
 def render_overlays(spec: TopicSpec, prepared: dict[str, Path], assets: Path, work: Path,
                     font_path: str | None = None) -> dict[str, Path]:
-    return {key: render_overlay_clip(prepared[overlay.base], overlay, assets / f"{key}.mp4", work, font_path)
-            for key, overlay in spec.overlays.items()}
+    rendered = {key: render_overlay_clip(prepared[overlay.base], overlay, assets / f"{key}.mp4", work, font_path)
+                for key, overlay in spec.overlays.items()}
+    if rendered:
+        overlay_preview(rendered, work / "overlays_preview.jpg")
+    return rendered
+
+
+def overlay_preview(rendered: dict[str, Path], out: Path) -> Path:
+    """Every labelled picture at the moment its last label has faded in, side by side.
+
+    A leader line that ends on the wrong thing passes every gate (the gates
+    check that labels are legible and the picture is the pinned source, not
+    that the arrow points at the eye of the storm). This sheet is written
+    before any vision check or render so the author can see it in seconds."""
+    from PIL import Image
+    tiles = []
+    for key, clip in rendered.items():
+        frame = out.with_name(f"{out.stem}_{key}.jpg")
+        seconds = min(2.0, max(0.1, _probe_video(clip)["duration"] - 0.1))
+        subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-ss", f"{seconds:.2f}", "-i", str(clip), "-frames:v", "1",
+                        str(frame)], check=True, capture_output=True, timeout=60)
+        tiles.append(Image.open(frame).convert("RGB").resize((BOX_W // 2, BOX_H // 2)))
+    sheet = Image.new("RGB", (len(tiles) * (BOX_W // 2), BOX_H // 2))
+    for i, tile in enumerate(tiles):
+        sheet.paste(tile, (i * (BOX_W // 2), 0))
+    sheet.save(out, quality=88)
+    return out
 
 
 class _SpecHookGenerator:

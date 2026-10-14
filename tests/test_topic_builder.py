@@ -375,3 +375,9 @@ def test_narration_timing_reports_measured_beats_and_fails_a_long_hold(tmp_path,
     monkeypatch.setattr(renderer, "_synthesize_scene_audio", _fake_synthesis(0.1))
     with pytest.raises(ValueError, match="beats shorter than 1.2s"):
         tb.check_narration_timing(spec, hook, tmp_path / "fast")
+
+
+def test_labelled_pictures_are_collected_on_one_preview_sheet(built):
+    sheet = built["manifest"].parent / "work" / "overlays_preview.jpg"
+    assert sheet.is_file()
+    assert Image.open(sheet).size == (tb.BOX_W // 2 * len(spec_dict()["overlays"]), tb.BOX_H // 2)

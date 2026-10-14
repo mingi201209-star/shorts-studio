@@ -1,0 +1,453 @@
+{
+  "topic_id": "blue_ice",
+  "title": "빙하 얼음이 파란 이유",
+  "overlay_title": "빙하는 왜 파랄까",
+  "brief": {
+    "topic_id": "blue_ice",
+    "familiar_subject": "파랗게 빛나는 빙하 얼음",
+    "contradiction_fact": "눈은 하얗지만 빙하 얼음은 파랗게 보입니다",
+    "surprising_consequence_fact": "빙하 얼음의 파란색은 물감이 아니라 얼음 자체가 빛을 흡수해 생기는 색입니다",
+    "counterintuitive_fact": "빙하가 파란 것은 하늘을 비춰서가 아니라 얼음이 붉은빛을 흡수하기 때문입니다",
+    "anomaly_fact": "같은 물로 된 눈과 빙하 얼음의 색이 다릅니다",
+    "payoff_text": "얼음은 붉은빛을 조금씩 흡수하므로 공기 방울이 적은 두꺼운 빙하 얼음을 오래 지나온 빛은 파란빛만 남습니다",
+    "grounded_facts": [
+      "얼음과 물은 붉은빛을 파란빛보다 더 많이 흡수합니다",
+      "눈은 공기 방울과 결정면이 많아 빛을 모든 색으로 고르게 되돌려 하얗게 보입니다",
+      "빙하 얼음은 쌓인 눈이 눌려 공기가 빠지면서 만들어집니다"
+    ]
+  },
+  "hooks": {
+    "contradiction": "눈은 하얀데, 빙하 얼음은 실은 파랗게 빛납니다.",
+    "surprising_consequence": "놀랍게도 빙하 얼음의 파란색은 물감이 아니라 얼음 자체의 색입니다.",
+    "visible_anomaly": "이상하게도 같은 물인데, 빙하 얼음만 파랗게 빛납니다."
+  },
+  "uncertainty_notes": [
+    "얼음의 파란 정도는 두께, 공기 방울, 빛의 양에 따라 달라집니다",
+    "얇은 얼음 조각은 거의 투명하게 보입니다"
+  ],
+  "observable_phenomenon": "얼음은 붉은빛을 조금씩 흡수해 두꺼운 빙하 얼음을 지나온 빛은 파랗게 보이고, 공기 방울이 많은 눈은 빛을 금방 고르게 되돌려 하얗게 보인다.",
+  "silent_story": "파랗게 빛나는 얼음 동굴 → 파란 빙산 → 하얀 눈길 → 하얀 눈층과 파란 얼음에 이름표 → 파란 크레바스 → 남극 얼음 동굴 → 빙산 속 파란 얼음 → 깊을수록 파란 크레바스 이름표 → 파란 크레바스 들판 → 하얀 서리 결정 → 눈 덮인 호수 → 빙하 끝 절벽 → 무너지는 빙하 단면 → 빙산 → 또 다른 얼음 동굴",
+  "visual_description": "Real photographs only: glacier ice caves, blue icebergs and crevasses, glacier calving fronts, and white snow and hoarfrost for contrast.",
+  "scene_requirement": "각 내레이션 단서에 맞는 실제 얼음·눈 사진이 화면에 보여야 함",
+  "sources": {
+    "cave": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Mendenhall_Ice_Cave_2014_352.jpg/1920px-Mendenhall_Ice_Cave_2014_352.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Mendenhall_Ice_Cave_2014_352.jpg",
+      "attribution": "Gillfoto / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "berg": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/Blue_iceberg.jpg/1920px-Blue_iceberg.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Blue_iceberg.jpg",
+      "attribution": "Doug Knuth / Wikimedia Commons / CC BY-SA 2.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/2.0/"
+    },
+    "trail": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Winter_Hiking_Trail_%2846381326291%29.jpg/1920px-Winter_Hiking_Trail_%2846381326291%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Winter_Hiking_Trail_(46381326291).jpg",
+      "attribution": "U.S. Fish and Wildlife Service Midwest Region / Wikimedia Commons / Public domain",
+      "license_url": "https://en.wikipedia.org/wiki/Public_domain"
+    },
+    "fox": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Crevasses_with_blue_ice_and_glacier_cave_at_terminus_of_Fox_Glacier.jpg/1920px-Crevasses_with_blue_ice_and_glacier_cave_at_terminus_of_Fox_Glacier.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Crevasses_with_blue_ice_and_glacier_cave_at_terminus_of_Fox_Glacier.jpg",
+      "attribution": "Pseudopanax at English Wikipedia / Wikimedia Commons / Public domain",
+      "license_url": "https://en.wikipedia.org/wiki/Public_domain"
+    },
+    "erebus": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Erebus_glacier_cave_NOAA_1978.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Erebus_glacier_cave_NOAA_1978.jpg",
+      "attribution": "NOAA (1978) / Wikimedia Commons / Public domain",
+      "license_url": "https://en.wikipedia.org/wiki/Public_domain"
+    },
+    "inside": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/A_look_inside_an_iceberg_%282%29%2C_Liefdefjord%2C_Svalbard.jpg/1920px-A_look_inside_an_iceberg_%282%29%2C_Liefdefjord%2C_Svalbard.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:A_look_inside_an_iceberg_(2),_Liefdefjord,_Svalbard.jpg",
+      "attribution": "Andreas Weith / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "nps": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Crevasses_glacier_blue_ice_NPS_Photo_%2817314316625%29.jpg/1920px-Crevasses_glacier_blue_ice_NPS_Photo_%2817314316625%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Crevasses_glacier_blue_ice_NPS_Photo_(17314316625).jpg",
+      "attribution": "Olympic National Park (NPS) / Wikimedia Commons / Public domain",
+      "license_url": "https://en.wikipedia.org/wiki/Public_domain"
+    },
+    "kennicott": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Kennicott_Glacier_Crevasses_with_Blackburn_%2821410199718%29.jpg/1920px-Kennicott_Glacier_Crevasses_with_Blackburn_%2821410199718%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Kennicott_Glacier_Crevasses_with_Blackburn_(21410199718).jpg",
+      "attribution": "National Park Service, Alaska Region / Wikimedia Commons / Public domain",
+      "license_url": "https://en.wikipedia.org/wiki/Public_domain"
+    },
+    "lake": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Lake_Helen_in_June_2022-6022.jpg/1920px-Lake_Helen_in_June_2022-6022.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Lake_Helen_in_June_2022-6022.jpg",
+      "attribution": "Frank Schulenburg / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "hubbard": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Glaciar_Hubbard%2C_Alaska%2C_Estados_Unidos%2C_2017-08-20%2C_DD_14.jpg/1920px-Glaciar_Hubbard%2C_Alaska%2C_Estados_Unidos%2C_2017-08-20%2C_DD_14.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Glaciar_Hubbard,_Alaska,_Estados_Unidos,_2017-08-20,_DD_14.jpg",
+      "attribution": "Diego Delso / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "front": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Calving_Front_of_Kangerdlugssup_Glacier.jpg/1920px-Calving_Front_of_Kangerdlugssup_Glacier.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Calving_Front_of_Kangerdlugssup_Glacier.jpg",
+      "attribution": "NASA/Michael Studinger / Wikimedia Commons / Public domain",
+      "license_url": "https://commons.wikimedia.org/wiki/Template:PD-USGov-NASA"
+    },
+    "cave2": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/Ice_Cave_Couple_317.jpg/1920px-Ice_Cave_Couple_317.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Ice_Cave_Couple_317.jpg",
+      "attribution": "Gillfoto / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    },
+    "glacierblue": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Glacier_Blue..._%282571837194%29.jpg/1920px-Glacier_Blue..._%282571837194%29.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Glacier_Blue..._(2571837194).jpg",
+      "attribution": "Barbara Ann Spengler / Wikimedia Commons / CC BY 2.0",
+      "license_url": "https://creativecommons.org/licenses/by/2.0/"
+    },
+    "breida": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/89/Crevasse_at_Brei%C3%B0amerkurj%C3%B6kull%2C_Iceland%2C_20240719_1437_2641.jpg/1920px-Crevasse_at_Brei%C3%B0amerkurj%C3%B6kull%2C_Iceland%2C_20240719_1437_2641.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Crevasse_at_Breiðamerkurjökull,_Iceland,_20240719_1437_2641.jpg",
+      "attribution": "Jakub Hałun / Wikimedia Commons / CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    "growler": {
+      "kind": "photo",
+      "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/114_once_an_iceberg_now_a_Growler_and_a_scupture_V-P.jpg/1920px-114_once_an_iceberg_now_a_Growler_and_a_scupture_V-P.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:114_once_an_iceberg_now_a_Growler_and_a_scupture_V-P.jpg",
+      "attribution": "Virtual-Pano / Wikimedia Commons / CC BY-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-sa/4.0/"
+    }
+  },
+  "clips": {
+    "cave": {
+      "source": "cave"
+    },
+    "berg": {
+      "source": "berg"
+    },
+    "fox": {
+      "source": "fox"
+    },
+    "erebus": {
+      "source": "erebus"
+    },
+    "inside": {
+      "source": "inside"
+    },
+    "kennicott": {
+      "source": "kennicott"
+    },
+    "lake": {
+      "source": "lake"
+    },
+    "hubbard": {
+      "source": "hubbard"
+    },
+    "front": {
+      "source": "front"
+    },
+    "cave2": {
+      "source": "cave2"
+    },
+    "nps_base": {
+      "source": "nps"
+    },
+    "glacierblue": {
+      "source": "glacierblue"
+    },
+    "growler": {
+      "source": "growler"
+    },
+    "breida": {
+      "source": "breida",
+      "focus": [
+        0.5,
+        0.3
+      ]
+    },
+    "trail_base": {
+      "source": "trail"
+    }
+  },
+  "overlays": {
+    "nps_labeled": {
+      "base": "nps_base",
+      "callouts": [
+        {
+          "text": "깊을수록 더 파랗게",
+          "at": [
+            490,
+            120
+          ],
+          "target": [
+            490,
+            500
+          ],
+          "appear": 0.3,
+          "color": "#7FD1FF"
+        }
+      ]
+    },
+    "trail_labeled": {
+      "base": "trail_base",
+      "callouts": [
+        {
+          "text": "하얀 눈",
+          "at": [
+            490,
+            480
+          ],
+          "target": [
+            490,
+            720
+          ],
+          "appear": 0.3,
+          "color": "#FFFFFF"
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "id": "s_hook",
+      "phrases": [
+        {
+          "role": "HOOK",
+          "text": "(판정된 훅)"
+        },
+        {
+          "role": "CRISIS",
+          "text": "그런데 같은 물로 된 눈은, 새하얗습니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "cave",
+          "cue": "놀랍게도 빙하 얼음의 파란색은",
+          "info_role": "real_blue_ice_cave",
+          "concept_id": "real_blue_ice_cave",
+          "state_id": "cave",
+          "qa_label": "a real photograph inside a glacier ice cave with glowing blue ice walls",
+          "requirement": "빙하 얼음의 파란색이 빛나는 실제 얼음 동굴이 첫 프레임부터 보임",
+          "role": "hero",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "berg",
+          "cue": "물감이 아니라 얼음 자체의 색입니다",
+          "info_role": "real_blue_iceberg",
+          "concept_id": "real_blue_iceberg",
+          "state_id": "berg",
+          "qa_label": "a real photograph of a bright blue iceberg floating in dark water",
+          "requirement": "얼음 자체가 파란 실제 빙산",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "lake",
+          "cue": "그런데 같은 물로 된 눈은",
+          "info_role": "real_white_snowy_lake",
+          "concept_id": "real_white_snowy_lake",
+          "state_id": "lake",
+          "qa_label": "a real photograph of a lake surrounded by bright white snow under a blue sky",
+          "requirement": "같은 물로 된 실제 하얀 눈 풍경",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "trail_labeled",
+          "cue": "새하얗습니다",
+          "info_role": "labeled_white_snow",
+          "concept_id": "labeled_white_snow",
+          "state_id": "trail_labeled",
+          "qa_label": "a real photograph of a white snow covered trail through a winter forest with a text label",
+          "requirement": "새하얀 눈에 이름표가 붙은 실제 겨울 길",
+          "role": "evidence",
+          "visual_mode": "mechanism_overlay"
+        }
+      ]
+    },
+    {
+      "id": "s_reveal",
+      "phrases": [
+        {
+          "role": "REVEAL",
+          "text": "비밀은 얼음이 빛을 먹는 방식에 있습니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "얼음은 붉은빛을, 아주 조금씩 흡수합니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "두꺼운 얼음을 지나면, 파란빛만 남습니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "fox",
+          "cue": "비밀은 얼음이 빛을 먹는 방식에 있습니다",
+          "info_role": "real_blue_crevasses_glacier",
+          "concept_id": "real_blue_crevasses_glacier",
+          "state_id": "fox",
+          "qa_label": "a real photograph of a glacier with deep blue crevasses and an ice cave",
+          "requirement": "파란 크레바스가 갈라진 실제 빙하",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "erebus",
+          "cue": "얼음은 붉은빛을",
+          "info_role": "real_antarctic_ice_cave",
+          "concept_id": "real_antarctic_ice_cave",
+          "state_id": "erebus",
+          "qa_label": "a real photograph inside an antarctic ice cave with blue ice walls",
+          "requirement": "남극의 실제 파란 얼음 동굴",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "inside",
+          "cue": "아주 조금씩 흡수합니다",
+          "info_role": "real_inside_iceberg_blue",
+          "concept_id": "real_inside_iceberg_blue",
+          "state_id": "inside",
+          "qa_label": "a real photograph looking into the deep blue ice inside an iceberg",
+          "requirement": "빙산 속 깊은 곳의 실제 파란 얼음",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "nps_labeled",
+          "cue": "두꺼운 얼음을 지나면",
+          "info_role": "labeled_deeper_bluer",
+          "concept_id": "labeled_deeper_bluer",
+          "state_id": "nps_labeled",
+          "qa_label": "a real photograph of deep blue ice in glacier crevasses with a text label",
+          "requirement": "깊을수록 더 파란 크레바스에 이름표가 붙은 실제 빙하",
+          "role": "mechanism",
+          "visual_mode": "mechanism_overlay"
+        },
+        {
+          "asset": "breida",
+          "cue": "파란빛만 남습니다",
+          "info_role": "real_turquoise_glacier_ice",
+          "concept_id": "real_turquoise_glacier_ice",
+          "state_id": "breida",
+          "qa_label": "a real close-up photograph of turquoise blue glacier ice",
+          "requirement": "파란빛만 남은 실제 빙하 얼음",
+          "role": "support",
+          "visual_mode": "real_photo"
+        }
+      ]
+    },
+    {
+      "id": "s_twist",
+      "phrases": [
+        {
+          "role": "TWIST",
+          "text": "눈은 공기 방울이 많아, 빛을 금방 하얗게 되돌립니다."
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "빙하는 눈이 눌려, 공기가 빠진 얼음입니다."
+        },
+        {
+          "role": "PAYOFF",
+          "text": "그래서 빙하의 파란색은, 얼음 속을 오래 지나온 빛입니다."
+        }
+      ],
+      "beats": [
+        {
+          "asset": "front",
+          "cue": "눈은 공기 방울이 많아",
+          "info_role": "real_white_snow_glacier_aerial",
+          "concept_id": "real_white_snow_glacier_aerial",
+          "state_id": "front",
+          "qa_label": "a real aerial photograph of a white snow covered glacier front meeting the sea",
+          "requirement": "공기 방울 많은 눈으로 덮여 하얀 실제 빙하",
+          "role": "second_peak",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "growler",
+          "cue": "빛을 금방 하얗게 되돌립니다",
+          "info_role": "real_white_ice_sculpture",
+          "concept_id": "real_white_ice_sculpture",
+          "state_id": "growler",
+          "qa_label": "a real photograph of a white ice sculpture floating in dark sea water",
+          "requirement": "빛을 하얗게 되돌리는 실제 흰 얼음",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "kennicott",
+          "cue": "빙하는 눈이 눌려",
+          "info_role": "real_glacier_body_crevasses",
+          "concept_id": "real_glacier_body_crevasses",
+          "state_id": "kennicott",
+          "qa_label": "a real photograph of a glacier with tall jagged ice ridges below mountains",
+          "requirement": "눈이 눌려 만들어진 실제 빙하",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "glacierblue",
+          "cue": "공기가 빠진 얼음입니다",
+          "info_role": "real_dense_blue_ice",
+          "concept_id": "real_dense_blue_ice",
+          "state_id": "glacierblue",
+          "qa_label": "a real close-up photograph of a dense blue glacier ice wall with a dark crack",
+          "requirement": "공기가 빠진 단단한 실제 파란 빙하 얼음",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "hubbard",
+          "cue": "그래서 빙하의 파란색은",
+          "info_role": "real_blue_glacier_face",
+          "concept_id": "real_blue_glacier_face",
+          "state_id": "hubbard",
+          "qa_label": "a real photograph of the bright blue ice wall of a glacier calving into the sea",
+          "requirement": "파랗게 빛나는 실제 빙하 절벽",
+          "role": "support",
+          "visual_mode": "real_photo"
+        },
+        {
+          "asset": "cave2",
+          "cue": "얼음 속을 오래 지나온 빛입니다",
+          "info_role": "real_blue_ice_cave_payoff",
+          "concept_id": "real_blue_ice_cave_payoff",
+          "state_id": "cave2",
+          "qa_label": "a real photograph inside a glacier ice cave with blue ice walls glowing with light",
+          "requirement": "얼음 속을 지나온 빛으로 파랗게 빛나는 실제 얼음 동굴로 마무리",
+          "role": "payoff",
+          "visual_mode": "real_photo"
+        }
+      ]
+    }
+  ],
+  "fact_sources": [
+    "NSIDC, Why is glacier ice blue? (https://nsidc.org/learn/ask-scientist)",
+    "USGS, Glaciers and icecaps (https://www.usgs.gov/special-topics/water-science-school/science/glaciers-and-icecaps)"
+  ],
+  "description_notes": []
+}
