@@ -704,6 +704,7 @@ def check_narration_timing(spec: TopicSpec, hook: HookCandidate, work: Path) -> 
     work.mkdir(parents=True, exist_ok=True)
     project = Project.model_validate(build_manifest(spec, None, hook))
     narration = resolve_config(project)
+    renderer.prepare_short_take(project, work, narration)
     windows, beats, cursor = [], [], 0.0
     for index, scene in enumerate(project.scenes):
         _, duration, _, subtitle, _, units = renderer._synthesize_scene_audio(

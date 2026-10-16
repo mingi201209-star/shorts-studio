@@ -367,7 +367,9 @@ class Project(BaseModel):
     # sends one entire scene through Edge in a single call so pitch/energy can
     # flow across adjacent short sentences without a provider reset at every
     # discourse boundary. It remains off by default until human A/B review.
-    tts_continuity_mode: Literal["unitized", "scene_continuous"] = "unitized"
+    # short_continuous synthesizes the whole Short as one take and cuts it at
+    # the scene turns after setting its pauses by meaning (tts.synthesize_short_take).
+    tts_continuity_mode: Literal["unitized", "scene_continuous", "short_continuous"] = "unitized"
     # Voice source (see shorts_studio/narration.py). "edge" keeps every
     # existing manifest byte-identical; "prerendered" reads an external
     # narration (audio + word timings) from narration_dir; "elevenlabs"
@@ -383,9 +385,9 @@ class Project(BaseModel):
             raise ValueError("V1 output must be 1080x1920")
         if self.fps < 30:
             raise ValueError("fps must be >=30")
-        if self.tts_continuity_mode == "scene_continuous" and self.enable_subtle_breaths:
+        if self.tts_continuity_mode != "unitized" and self.enable_subtle_breaths:
             raise ValueError(
-                "scene_continuous TTS uses the provider's own internal pauses; "
+                f"{self.tts_continuity_mode} TTS uses the provider's own internal pauses; "
                 "enable_subtle_breaths cannot be combined with it"
             )
         return self

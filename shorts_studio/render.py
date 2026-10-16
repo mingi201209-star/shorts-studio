@@ -4,7 +4,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from .project import load_project
 from .prosody import PhraseSpec, plan_narration
-from .tts import synthesize_continuous_plan, synthesize_plan
+from .tts import DEFAULT_KO_VOICE, synthesize_continuous_plan, synthesize_plan, synthesize_short_take
 from .subtitles import segment
 from .qa import subtitle_qa, write_report
 from .visual_qa import asset_visual_gate, default_vision_provider, evaluate_scene_semantics, production_semantic_ok
@@ -595,6 +595,20 @@ def _media_duration_seconds(path:Path)->float:
     ).stdout)
     return float(data["format"]["duration"])
 
+SHORT_TAKE_DIR="short_take"
+
+def prepare_short_take(project, build:Path, narration:NarrationConfig|None=None)->dict|None:
+    """Synthesize the one-take narration that short_continuous scenes are cut
+    from. A no-op for any other mode, or when another provider supplies the
+    voice (those branches of _synthesize_scene_audio win)."""
+    narration=narration or NarrationConfig()
+    if project.tts_continuity_mode!="short_continuous" or narration.provider!="edge":
+        return None
+    scenes=[(scene.id,_narration_plan(scene)) for scene in project.scenes]
+    report=asyncio.run(synthesize_short_take(scenes,build/SHORT_TAKE_DIR))
+    print(f"[prosody] one-take narration: {report['take_seconds']}s -> {report['retimed_seconds']}s after pause design")
+    return report
+
 def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False, breath_seed:int=0, tts_continuity_mode:str="unitized", narration:NarrationConfig|None=None)->tuple[Path,float,Path,dict,list,list]:
     audio=build/f"{scene.id}.mp3"; timing=build/f"{scene.id}.timing.json"
     plan=_narration_plan(scene)
@@ -617,6 +631,10 @@ def _synthesize_scene_audio(scene, build:Path, enable_subtle_breaths:bool=False,
         words=asyncio.run(synthesize_continuous_plan(plan,audio,timing,voice=narration.voice,
                                                      synthesize=azure_speech_synthesizer(narration.voice),
                                                      source="azure-dragon-hd-continuous"))
+    elif tts_continuity_mode == "short_continuous":
+        print(f"[prosody] {scene.id}: cut from the one-take Short narration")
+        words=load_prerendered_scene(plan,scene.id,build/SHORT_TAKE_DIR,audio,timing,
+                                     source="edge-short-take",voice=DEFAULT_KO_VOICE)
     elif tts_continuity_mode == "scene_continuous":
         print(f"[prosody] {scene.id}: scene-continuous provider call")
         words=asyncio.run(synthesize_continuous_plan(plan,audio,timing))
@@ -727,6 +745,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     provider=default_vision_provider()
     narration=resolve_config(p)
     print(f"[narration] provider={narration.provider}")
+    prepare_short_take(p,build,narration)
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
     for scene_index, scene in enumerate(p.scenes):
