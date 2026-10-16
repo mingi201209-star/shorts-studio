@@ -270,3 +270,28 @@ def test_new_gate_execution_revokes_previous_approval(tmp_path, monkeypatch):
     current = ns.read_state(path)
     assert current["decision"] == "not_ready"
     assert current["last_verified_sha"] is None
+
+
+def test_review_cannot_approve_stale_render_after_failed_rerun(tmp_path, monkeypatch):
+    """A previous MP4 cannot be approved while the current tests are failing."""
+    path = create_state(tmp_path)
+    state = ns.read_state(path)
+    state["steps"]["tests"] = {"status": "FAIL", "sha": SHA}
+    state["steps"]["render"] = {"status": "PASS", "sha": SHA}
+    state["decision"] = "not_ready"
+    ns.write_state(path, state)
+    monkeypatch.setattr(ns, "current_head", lambda: SHA)
+    with pytest.raises(ns.GateError, match="full regression"):
+        ns.record_review(path, head_sha=SHA, outcome="pass", notes="Old MP4 was okay")
+
+
+def test_review_cannot_approve_old_render_without_pending_review(tmp_path, monkeypatch):
+    path = create_state(tmp_path)
+    state = ns.read_state(path)
+    state["steps"]["tests"] = {"status": "PASS", "sha": SHA}
+    state["steps"]["render"] = {"status": "PASS", "sha": SHA}
+    state["decision"] = "not_ready"
+    ns.write_state(path, state)
+    monkeypatch.setattr(ns, "current_head", lambda: SHA)
+    with pytest.raises(ns.GateError, match="not ready"):
+        ns.record_review(path, head_sha=SHA, outcome="pass", notes="Stale proof")
