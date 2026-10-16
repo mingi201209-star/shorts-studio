@@ -361,6 +361,71 @@ async def synthesize_continuous_plan(
     return words
 
 
+async def synthesize_short_take(
+    scenes: list[tuple[str, list[PhraseSpec]]],
+    take_dir: Path,
+    voice: str = DEFAULT_KO_VOICE,
+    rate: str = "+6%",
+    pauses: dict[str, float] | None = None,
+    clause_max: float | None = None,
+) -> dict:
+    """Synthesize a whole Short as ONE provider take, then cut it per scene.
+
+    The take goes through synthesize_continuous_plan unchanged (one Edge
+    call, measured WordBoundary words mapped to the script, numerals
+    restored), so one pitch/energy contour runs across the scene joins
+    instead of restarting at each scene. Only silences are then retimed by
+    meaning (shorts_studio.pause_plan.plan_take_gaps) and the take is cut at
+    the scene turns. Each scene is written as ``<scene_id>.wav`` +
+    ``<scene_id>.words.json`` -- the pre-rendered narration contract -- so
+    render loads it through narration.load_prerendered_scene and its
+    fail-closed token/timing validation. Returns the pause report.
+    """
+    import librosa
+    import numpy as np
+    import soundfile as sf
+    from . import pause_plan
+    from .narration import _script_tokens
+
+    if not scenes:
+        raise RuntimeError("no scenes to synthesize")
+    if take_dir.exists():
+        shutil.rmtree(take_dir)
+    take_dir.mkdir(parents=True)
+    phrases = [p for _, plan in scenes for p in plan]
+    take_audio = take_dir / "take.mp3"
+    words = await synthesize_continuous_plan(
+        phrases, take_audio, take_dir / "take.timing.json", voice=voice, rate=rate,
+        source="edge-short-take")
+    counts = [sum(len(t) for t in _script_tokens(plan)) for _, plan in scenes]
+    if sum(counts) != len(words):
+        raise RuntimeError(f"take has {len(words)} measured words for {sum(counts)} script tokens")
+    scene_ends = [sum(counts[:k + 1]) - 1 for k in range(len(scenes) - 1)]
+    triples = [(w.text, w.start, w.end) for w in words]
+
+    y, sr = librosa.load(str(take_audio), sr=None, mono=True)
+    silences = pause_plan.detect_silences(y, sr, min_gap=0.12)
+    gaps = pause_plan.plan_take_gaps(
+        silences, triples, scene_ends,
+        targets=pauses or pause_plan.TAKE_PAUSES,
+        clause_max=pause_plan.TAKE_CLAUSE_MAX if clause_max is None else clause_max)
+    out, cut = pause_plan.split_take(np.asarray(y), sr, triples, scene_ends, gaps)
+    report = {"voice": voice, "rate": rate, "sample_rate": sr,
+              "take_seconds": round(len(y) / sr, 3), "retimed_seconds": round(len(out) / sr, 3),
+              "pauses": [{"start": round(a, 3), "was": round(b - a, 3), "now": round(t, 3)} for a, b, t in gaps],
+              "scenes": []}
+    for (scene_id, _plan), scene in zip(scenes, cut):
+        a, b = round(scene.start * sr), round(scene.end * sr)
+        sf.write(str(take_dir / f"{scene_id}.wav"), out[a:b], sr, subtype="PCM_16")
+        (take_dir / f"{scene_id}.words.json").write_text(json.dumps(
+            [{"text": t, "start": round(s, 4), "end": round(e, 4)} for t, s, e in scene.words],
+            ensure_ascii=False, indent=2), encoding="utf-8")
+        report["scenes"].append({"scene": scene_id, "start": round(scene.start, 3), "end": round(scene.end, 3),
+                                 "first_word": round(scene.words[0][1], 3)})
+    (take_dir / "take_report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    return report
+
+
 async def synthesize_plan(phrases: list[PhraseSpec], audio_path: Path, timing_path: Path, voice: str=DEFAULT_KO_VOICE, base_rate: str=DEFAULT_KO_RATE, base_pitch: str=DEFAULT_KO_PITCH, volume: str=DEFAULT_KO_VOLUME, use_role_rates: bool=True, enable_subtle_breaths: bool=False, breath_seed: int=0) -> list[WordTiming]:
     """Korean Prosody Planner V1 synthesis engine. Consecutive
     "continuation"-boundary phrases are merged into ONE Edge TTS call (one

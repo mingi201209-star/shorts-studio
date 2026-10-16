@@ -150,7 +150,9 @@ class TopicSpec(BaseModel):
     scenes: list[SceneSpec] = Field(min_length=2)
     fact_sources: list[str] = Field(min_length=1, description="where the stated facts come from (name + URL)")
     description_notes: list[str] = Field(default_factory=list)
-    tts_continuity_mode: str = "scene_continuous"
+    # One Edge take per Short with meaning-ranked pauses (tts.synthesize_short_take);
+    # a spec may still ask for "scene_continuous" (one call per scene).
+    tts_continuity_mode: str = "short_continuous"
 
     @model_validator(mode="after")
     def _references_resolve(self):
@@ -704,6 +706,7 @@ def check_narration_timing(spec: TopicSpec, hook: HookCandidate, work: Path) -> 
     work.mkdir(parents=True, exist_ok=True)
     project = Project.model_validate(build_manifest(spec, None, hook))
     narration = resolve_config(project)
+    renderer.prepare_short_take(project, work, narration)
     windows, beats, cursor = [], [], 0.0
     for index, scene in enumerate(project.scenes):
         _, duration, _, subtitle, _, units = renderer._synthesize_scene_audio(

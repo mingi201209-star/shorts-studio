@@ -121,3 +121,12 @@ The anonymous quota later allowed one more synthesis. The accepted-for-render ex
 - The larger model resolves the small-model 고무 error and recognizes 들어오는 correctly. Both models misrecognize the new first word 빗길 as 빅딜, so pronunciation is suspect and adoption remains pending actual listening. ASR alone cannot establish perceived voice naturalness.
 - Full regression after finite-timing/quota/report fixes: 548 passed, 1 skipped. Subsequent focused checks including the final noninterpolating WhisperX CLI test: 24 passed.
 - PR #41 existing remote head 327ab707: all five check runs completed successfully at final recheck. These checks do not cover the uncommitted phone changes.
+
+
+## 2026-10-16 one-take production continuation
+
+The topic pipeline now defaults to `short_continuous`: one measured Edge synthesis for the whole Short, silence-only meaning-ranked pause adjustment, then per-scene audio and measured timestamps. Explicit `scene_continuous` remains available for comparison and rollback. This changes the topic-spec default only, not every legacy manifest or provider. No voice cloning, pitch manipulation, fabricated timings, breath effects, or paid provider is introduced.
+
+Earlier same-script comparisons used the existing Hyunsu voice at +6%. Diagnostic ASR and UTMOS improved modestly; UTMOS is an English-model diagnostic. Scene-boundary pitch-step measurements did not support a claim that the mode fixes contour resets. The measured benefit is the pause hierarchy (sentence ~0.50 s, scene ~0.65 s; clauses capped at0.30 s), with speech samples retained. No human preference verdict is claimed.
+
+Existing comparison audio and blue-ice A/C renders are in `/sdcard/Download/claude_narration_test/20261016/`. Honeycomb one-take production passed all existing gates in10.2 machine minutes. The independent barchan render passed production and every final-video gate with semantic QA required in13.8 machine minutes; 31.78 s, -18.9 LUFS, true peak -4.2 dBFS, ASR character match1.0 (diagnostic only). Its actual opening and later frames were inspected. Reports are in `build/tts_default_barchan_20261016/`; regression results are recorded in the associated PR. The previous revision and explicit `scene_continuous` option remain the rollback.

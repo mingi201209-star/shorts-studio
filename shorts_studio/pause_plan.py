@@ -240,3 +240,145 @@ def join_chunks(chunks: list[np.ndarray], sr: int, pauses: list[float], top_db: 
         if i < len(pauses):
             out.append(np.zeros(max(0, round(pauses[i] * sr) - 2 * keep), dtype=np.float32))
     return np.concatenate(out)
+
+
+# --- One take for a whole Short ------------------------------------------
+#
+# Edge synthesizes every sentence end with about the same 0.7-0.9 s pause, and
+# a Short rendered one scene per call starts each scene from a fresh contour
+# with only the scene's own edge trim between them. Measured on the three
+# passing pipeline Shorts of 2026-10-14 (ffmpeg silencedetect, -40 dB), the
+# scene joins -- the largest turns of the story -- got 0.35-0.51 s while the
+# sentence ends inside a scene got 0.72-0.89 s. One call for the whole script
+# keeps one contour; the pauses are then set by meaning: a scene turn is the
+# longest, a sentence end shorter, and a clause pause is only ever capped.
+TAKE_PAUSES = {"sentence": 0.50, "scene": 0.65}
+TAKE_CLAUSE_MAX = 0.30
+# Edge's WordBoundary end of a sentence-final word runs ~0.3 s into the pause
+# that follows it, so a boundary's silence is searched from the word's start.
+_SENTENCE_END = re.compile(r"[.?!…][\"'”’)\]]*$")
+
+
+def is_sentence_end(token: str) -> bool:
+    return bool(_SENTENCE_END.search(token))
+
+
+@dataclass(frozen=True)
+class TakeScene:
+    words: list[tuple[str, float, float]]   # scene-relative (text, start, end)
+    start: float                            # sample-accurate cut in the retimed take
+    end: float
+
+
+def plan_take_gaps(silences: list[tuple[float, float]], words: list[tuple[str, float, float]],
+                   scene_ends: list[int], targets: dict[str, float] = TAKE_PAUSES,
+                   clause_max: float = TAKE_CLAUSE_MAX) -> list[tuple[float, float, float]]:
+    """(start, end, target) for every detected silence of a one-call take.
+
+    A sentence or scene end claims the longest silence that begins between its
+    last word's start and the next word's start (Edge places a word's start
+    ~0.1 s before its audible onset, so the silence may end after it); every other silence is a clause pause
+    and is only shortened, never lengthened. A scene end with no silence fails
+    closed: the scene cut would land in running speech. A sentence end the
+    voice ran through stays connected.
+    """
+    if any(i < 0 or i >= len(words) - 1 for i in scene_ends):
+        raise ValueError(f"scene end indexes {scene_ends} must fall before the last of {len(words)} words")
+    scene_set = set(scene_ends)
+    claimed: dict[int, str] = {}
+    for i in range(len(words) - 1):
+        kind = "scene" if i in scene_set else "sentence" if is_sentence_end(words[i][0]) else None
+        if kind is None:
+            continue
+        lo, hi = words[i][1], words[i + 1][1]
+        inside = [(b - a, k) for k, (a, b) in enumerate(silences)
+                  if k not in claimed and lo <= a < hi]
+        if not inside:
+            if kind == "scene":
+                raise ValueError(f"no pause found at the scene turn after {words[i][0]!r} "
+                                 f"({lo:.2f}-{hi:.2f}s); refusing to cut a scene in running speech")
+            continue
+        claimed[max(inside)[1]] = kind
+    out = []
+    for k, (a, b) in enumerate(silences):
+        kind = claimed.get(k)
+        out.append((a, b, targets[kind] if kind else min(b - a, clause_max)))
+    return out
+
+
+def retime_map(sr: int, gaps: list[tuple[float, float, float]]):
+    """Exact old->new time map of :func:`retime_silences` for the same gaps.
+
+    shift_time() moves a time by whole gaps, which is right for a recogniser's
+    word times that sit on speech. A provider's word times can sit inside a
+    pause (Edge starts a word ~0.1 s before its onset and ends a sentence
+    ~0.3 s into the pause), so this follows the splice itself: the kept onset
+    and decay move with their speech, and the removed middle of a shortened
+    pause collapses to the splice point.
+    """
+    keep = int(EDGE_KEEP * sr)
+    spans, shift = [], 0
+    for a, b, target in sorted(gaps):
+        ia, ib = round(a * sr), round(b * sr)
+        cur, want = ib - ia, max(0, round(target * sr))
+        if want == cur:
+            continue
+        if want < cur:
+            k = min(keep, want // 2, cur // 2)
+            left_end, right_start = ia + k, ib - (want - k)
+        else:
+            left_end = right_start = ia + cur // 2
+        after = shift + (want - cur)
+        spans.append((left_end, right_start, shift, after))
+        shift = after
+
+    def to_new(t: float) -> float:
+        n, moved = t * sr, 0
+        for left_end, right_start, before, after in spans:
+            if n <= left_end:
+                return (n + before) / sr
+            if n < right_start:
+                return (left_end + before) / sr
+            moved = after
+        return (n + moved) / sr
+
+    return to_new
+
+
+def split_take(y: np.ndarray, sr: int, words: list[tuple[str, float, float]], scene_ends: list[int],
+               gaps: list[tuple[float, float, float]], tail: float = 0.08) -> tuple[np.ndarray, list[TakeScene]]:
+    """Retime the take's silences and cut it into scenes.
+
+    Word times are the provider's own, moved only by the silence edits
+    (:func:`retime_map`); an end that ran into a shortened pause is clamped to
+    the next word's start. Each
+    scene ends ``tail`` after its last word end -- the same rule render uses for
+    a scene's length -- and the rest of the turn pause opens the next scene, so
+    the picture changes just before the next sentence is spoken.
+    """
+    out, _ = retime_silences(y, sr, gaps)
+    to_new = retime_map(sr, gaps)
+    starts = [to_new(s) for _, s, _ in words]
+    moved = []
+    for i, (text, _s, e) in enumerate(words):
+        end = to_new(e)
+        if i + 1 < len(words):
+            end = min(end, starts[i + 1])
+        end = min(max(end, starts[i] + 0.01), len(out) / sr)
+        moved.append((text, starts[i], end))
+    cuts = [0]
+    for i in scene_ends:
+        cut = min(moved[i][2] + tail, moved[i + 1][1])
+        cuts.append(round(cut * sr))
+    cuts.append(len(out))
+    scenes, first = [], 0
+    bounds = list(scene_ends) + [len(words) - 1]
+    for k, last in enumerate(bounds):
+        a, b = cuts[k], cuts[k + 1]
+        if b <= a:
+            raise ValueError(f"scene {k} has no audio after retiming")
+        offset = a / sr
+        scene_words = [(t, max(0.0, s - offset), max(0.0, e - offset)) for t, s, e in moved[first:last + 1]]
+        scenes.append(TakeScene(scene_words, offset, b / sr))
+        first = last + 1
+    return out, scenes

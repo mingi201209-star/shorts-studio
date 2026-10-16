@@ -141,7 +141,8 @@ def validate_external_words(phrases: list[PhraseSpec], raw_words: list[dict], au
 
 
 def load_prerendered_scene(phrases: list[PhraseSpec], scene_id: str, directory: str | Path,
-                           audio_path: Path, timing_path: Path) -> list[WordTiming]:
+                           audio_path: Path, timing_path: Path, source: str = "prerendered",
+                           voice: str | None = None) -> list[WordTiming]:
     directory = Path(directory)
     src = next((directory / f"{scene_id}{s}" for s in _AUDIO_SUFFIXES if (directory / f"{scene_id}{s}").is_file()), None)
     words_file = directory / f"{scene_id}.words.json"
@@ -155,7 +156,7 @@ def load_prerendered_scene(phrases: list[PhraseSpec], scene_id: str, directory: 
     subprocess.run(["ffmpeg", "-y", "-loglevel", "error", "-i", str(src), "-ac", "1", "-ar", "44100",
                     "-c:a", "libmp3lame", "-q:a", "2", str(audio_path)], check=True, capture_output=True, timeout=180)
     timing_path.write_text(json.dumps({
-        "source": "prerendered", "provider_audio": str(src), "voice": None,
+        "source": source, "provider_audio": str(src), "voice": voice,
         "units": words_to_units(phrases, words), "gaps_seconds": [], "raw": [],
         "words": [w.__dict__ for w in words], "breaths": [],
     }, ensure_ascii=False, indent=2), encoding="utf-8")
