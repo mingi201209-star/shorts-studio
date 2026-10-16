@@ -185,7 +185,11 @@ def run_stage(
         state["steps"][stage] = {
             "status": "RUNNING", "sha": head_sha, "attempts": attempts + 1,
         }
+        # A new verification run invalidates any earlier acceptance for this SHA.
+        # Preserve external known-good artifacts; only revoke this candidate's approval.
         state["decision"] = "not_ready"
+        if state.get("last_verified_sha") == head_sha:
+            state["last_verified_sha"] = None
         write_state(path, state)
         started = time.time()
         cmd = (
@@ -234,6 +238,10 @@ def record_review(path: Path, *, head_sha: str, outcome: str, notes: str) -> dic
     state["decision"] = "reviewed_pass" if outcome == "pass" else "reviewed_fail"
     if outcome == "pass":
         state["last_verified_sha"] = head_sha
+    elif state.get("last_verified_sha") == head_sha:
+        # A later rejection must revoke approval of this exact candidate.
+        # Otherwise a stale last_verified_sha could authorize a failed video.
+        state["last_verified_sha"] = None
     state["history"].append({"stage": "human_review", "result": outcome, "notes": notes})
     write_state(path, state)
     return state
