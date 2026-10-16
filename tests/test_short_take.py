@@ -156,3 +156,11 @@ def test_provider_times_inside_a_pause_follow_the_splice():
     assert abs((onsets[1] - to_new(words[4][1])) - 0.1) < 0.02
     # speech before any edit is untouched
     assert to_new(words[1][1]) == pytest.approx(words[1][1], abs=1 / SR)
+
+
+def test_topic_pipeline_narrates_one_take_by_default():
+    from pathlib import Path
+    from shorts_studio.topic_builder import load_topic
+    spec = load_topic(Path(__file__).resolve().parents[1] / "topics" / "honeycomb.json")
+    assert spec.tts_continuity_mode == "short_continuous"
+    assert spec.model_copy(update={"tts_continuity_mode": "scene_continuous"}).tts_continuity_mode == "scene_continuous"

@@ -17,3 +17,9 @@
 - Do not enable or perform YouTube upload/publishing.
 - Do not merge pull requests without explicit user approval.
 - If a change regresses quality or reliability, revert that change and continue from the last verified-good state with a different approach.
+
+## Owner TTS direction — 2026-10-16
+- Latest owner instruction (verbatim): Tts는 이제 유튜브에 나오는 tts처럼 바꿔. 걍 듣기좋게
+- Prioritize actual listening comfort and natural Korean explainer delivery: clear consonants and vowels, one consistent voice throughout, fluent sentence context, short meaning-based pauses, modest pace and restrained emphasis. Avoid robotic chopped units, harsh/metallic timbre, overacting or gratuitous breath effects. Do not assume a different speed/pitch alone fixes naturalness.
+- Produce actual same-script candidate audio against the current baseline before adopting a voice/provider. Test the opening plus full paragraph and known 빗길/닿을/파고드는 problem phrases; preserve measured caption alignment. Automated ASR/quality metrics are diagnostics, not evidence of human preference.
+- This explicitly authorizes improving the TTS implementation and choosing among existing available licensed voices, preserving rollback and all quality gates. Do not clone a particular creator, add paid services without authorization, or treat unreviewed output as human-approved. Run regression and real render/CI before claiming completed.
