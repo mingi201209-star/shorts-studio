@@ -193,6 +193,11 @@ def test_human_review_required_for_final_decision(tmp_path, monkeypatch):
     )
     assert state["decision"] == "reviewed_fail"
     assert state["last_verified_sha"] is None
+    with pytest.raises(ns.GateError, match="fresh verified render"):
+        ns.record_review(path, head_sha=SHA, outcome="pass", notes="changed my mind")
+    state = ns.read_state(path)
+    state["decision"] = "awaiting_human_video_review"  # after separate verified rerender
+    ns.write_state(path, state)
     state = ns.record_review(
         path, head_sha=SHA, outcome="pass",
         notes="Listened to narration and compared visual output against baseline",
