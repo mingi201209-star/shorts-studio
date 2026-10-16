@@ -122,7 +122,7 @@ def test_renderer_never_runs_when_test_results_are_from_another_sha(tmp_path, mo
     data["steps"]["tests"] = {"status": "PASS", "sha": "b" * 40}
     ns.write_state(path, data)
     monkeypatch.setattr(ns, "current_head", lambda: SHA)
-    with pytest.raises(ns.GateError, match="same exact HEAD"):
+    with pytest.raises(ns.GateError, match="this exact HEAD"):
         ns.run_stage(path, "render", head_sha=SHA)
 
 
