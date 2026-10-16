@@ -229,6 +229,8 @@ def record_review(path: Path, *, head_sha: str, outcome: str, notes: str) -> dic
         raise GateError("Review SHA does not match the tested baseline")
     if render.get("status") != "PASS" or render.get("sha") != head_sha:
         raise GateError("Cannot review without real passing render evidence")
+    if outcome == "pass" and state["decision"] == "reviewed_fail":
+        raise GateError("Failed human review requires a fresh verified render")
     state["decision"] = "reviewed_pass" if outcome == "pass" else "reviewed_fail"
     if outcome == "pass":
         state["last_verified_sha"] = head_sha
