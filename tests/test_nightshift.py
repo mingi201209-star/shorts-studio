@@ -226,3 +226,47 @@ def test_render_run_honors_strict_semantic_gate_env(tmp_path, monkeypatch):
     assert seen[0][1] == "1"
     assert state["decision"] == "awaiting_human_video_review"
     assert state["last_verified_sha"] is None
+
+def test_rejected_human_review_revokes_prior_approval(tmp_path, monkeypatch):
+    """A previously approved render must stop being eligible after rejection."""
+    path = create_state(tmp_path)
+    state = ns.read_state(path)
+    state["steps"]["tests"] = {"status": "PASS", "sha": SHA}
+    state["steps"]["render"] = {"status": "PASS", "sha": SHA}
+    state["decision"] = "awaiting_human_video_review"
+    ns.write_state(path, state)
+    monkeypatch.setattr(ns, "current_head", lambda: SHA)
+    approved = ns.record_review(
+        path, head_sha=SHA, outcome="pass",
+        notes="Audio and visual output reviewed against baseline",
+    )
+    assert approved["last_verified_sha"] == SHA
+    rejected = ns.record_review(
+        path, head_sha=SHA, outcome="fail",
+        notes="Found an audible pop in the approved video",
+    )
+    assert rejected["decision"] == "reviewed_fail"
+    assert rejected["last_verified_sha"] is None
+    with pytest.raises(ns.GateError, match="fresh verified render"):
+        ns.record_review(path, head_sha=SHA, outcome="pass", notes="Try again")
+
+
+def test_new_gate_execution_revokes_previous_approval(tmp_path, monkeypatch):
+    """A new verification attempt invalidates the previous acceptance."""
+    path = create_state(tmp_path)
+    state = ns.read_state(path)
+    state["steps"]["tests"] = {"status": "PASS", "sha": SHA, "attempts": 0}
+    state["steps"]["render"] = {"status": "PASS", "sha": SHA, "attempts": 0}
+    state["decision"] = "reviewed_pass"
+    state["last_verified_sha"] = SHA
+    ns.write_state(path, state)
+    monkeypatch.setattr(ns, "current_head", lambda: SHA)
+    monkeypatch.setattr(
+        ns.subprocess, "run",
+        lambda *_args, **_kwargs: SimpleNamespace(returncode=1),
+    )
+    with pytest.raises(ns.GateError, match="tests command exited"):
+        ns.run_stage(path, "tests", head_sha=SHA)
+    current = ns.read_state(path)
+    assert current["decision"] == "not_ready"
+    assert current["last_verified_sha"] is None
