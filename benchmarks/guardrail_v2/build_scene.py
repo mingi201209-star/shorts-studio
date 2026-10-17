@@ -227,8 +227,8 @@ sun.rotation_euler=(math.radians(32),math.radians(-30),math.radians(-32))
 
 bpy.ops.object.camera_add(location=(2.4,-7.0,5.2))
 cam=bpy.context.object;cam.name='FIXED hero 3/4 CC0 car + guardrail'
-point(cam,(0,-.1,.72))
-cam.data.type='PERSP';cam.data.lens=43
+point(cam,(-.52,-.1,.72))
+cam.data.type='PERSP';cam.data.lens=22
 cam.data.sensor_fit='VERTICAL'
 scene.camera=cam
 scene.render.image_settings.color_mode='RGBA'
