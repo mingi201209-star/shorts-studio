@@ -8,13 +8,14 @@ Make W-beam **side-face deformation visually obvious** from a fixed camera. V2 a
 Technical acceptance includes:
 - True rendered source resolution 1080×1920 at 100%, Cycles 16 samples and denoising
 - Camera unanimated and unparented
+- All sedan mesh bounding boxes remain within a 5% camera margin at frames 1, 22 and 40 (not merely the car origin)
 - Reference rail guide exists
 - Rail world-space shape changes from frame 1 to 40 and camera-space projected displacement **>=40px** (an experimental visibility threshold, not a physical dimension)
 - Full-native images at frames 1 (before), 22 (contact) and 40 (peak)
 - Same 3 frames distinctive and individually SHA checked for artifact integrity
 - Editorial review **not** replaced by these numeric gates
 
-Measured on phone with Blender 5.0.1 ARM64 prior to first CI: fixed camera and native resolution passed, projected rail motion **100.6px** (frame 1 vs 40). This was a *geometry QA pass only*.
+Measured on phone with Blender 5.0.1 ARM64: the initial 43mm camera yielded projected rail motion **100.6px** but visibly cropped the sedan. This visual-QA finding caused a camera framing revision (22mm and leftward fixed aim). After revision, projected rail displacement remained **51.7px**, and full vehicle bounding boxes remained inside 5% frame margins at frames 1,22,40. This is a *geometry and framing QA pass only*, not editorial realism acceptance.
 
 ## Reproduce
 From the repository root with official Blender 5.0.1 and the CC0 Sedan already available:
