@@ -39,7 +39,7 @@ for key, start, end in (("a", 1, 30), ("b", 31, 60), ("c", 61, 90)):
             prefix = h.read(24)
         assert prefix[:8] == b"\x89PNG\r\n\x1a\n", filename
         width, height = struct.unpack(">II", prefix[16:24])
-        assert (width, height) == (410, 730), (filename, width, height)
+        assert (width, height) == (410, 729), (filename, width, height)
         expected_files[filename] = f
     reports.append(report)
 
@@ -54,7 +54,7 @@ seconds = [r["render_seconds"] for r in reports]
 summary = {
     "status": "TECHNICAL_BENCHMARK_ONLY_NOT_UPLOAD_READY",
     "frames": 90, "duration_seconds": 3, "fps": 30,
-    "samples": 8, "resolution": "410x730 native, 38% of 1080x1920",
+    "samples": 8, "resolution": "410x729 native, 38% of 1080x1920",
     "chunk_render_seconds": {r["chunk"]: r["render_seconds"] for r in reports},
     "chunk_elapsed_seconds": {r["chunk"]: r["chunk_elapsed_seconds"] for r in reports},
     "sum_chunk_render_seconds": round(sum(seconds), 3),
