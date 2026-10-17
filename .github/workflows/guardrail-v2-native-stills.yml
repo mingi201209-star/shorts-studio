@@ -63,12 +63,18 @@ jobs:
     timeout-minutes: 25
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 9
       matrix:
         include:
-          - {start: 1, end: 30}
-          - {start: 31, end: 60}
-          - {start: 61, end: 90}
+          - {start: 1, end: 10}
+          - {start: 11, end: 20}
+          - {start: 21, end: 30}
+          - {start: 31, end: 40}
+          - {start: 41, end: 50}
+          - {start: 51, end: 60}
+          - {start: 61, end: 70}
+          - {start: 71, end: 80}
+          - {start: 81, end: 90}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093

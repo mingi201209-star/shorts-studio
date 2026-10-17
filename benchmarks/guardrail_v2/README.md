@@ -106,7 +106,7 @@ the underlying implementations. Custom code is limited to this authored
 scene's mesh naming, contact illustration and failure checks; a general crash
 solver would not certify this uncalibrated asset or its material response.
 
-CI now gates the scene before rendering three contiguous 30-frame native
+CI now gates the scene before rendering nine contiguous 10-frame native
 ranges (1080x1920, Cycles 32 samples), validates all 90 PNGs including original
 proof frames 1/22/40, encodes H.264 at CRF17, and verifies dimensions, frame count,
 30 fps and 3.0 s duration. The resulting clip is **visual-only development
@@ -117,3 +117,5 @@ Neither geometric PASS, denoising nor a higher sample count proves premium
 appearance, scientific crash fidelity or viewer satisfaction. Review the full
 motion and the final native frames before deciding whether to expand the film.
 Keep the PR draft. No merge, publishing, paid API or new cloud service.
+
+Continuous renders retain Cycles persistent data (official Blender 5 performance option). This changes cache lifetime, not resolution, samples or QA floors. Ten-frame CI shards avoid the prior 30-frame timeout risk.

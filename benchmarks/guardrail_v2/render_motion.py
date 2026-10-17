@@ -9,6 +9,7 @@ preview=os.environ.get('MOTION_PREVIEW','0')=='1'
 s.render.resolution_percentage=20 if preview else 100
 s.cycles.samples=2 if preview else 32
 s.cycles.use_denoising=True
+s.render.use_persistent_data=True  # Official Cycles cache; no quality-setting change.
 s.render.image_settings.file_format='PNG';s.render.image_settings.color_mode='RGB'
 for f in range(start,end+1):
  s.frame_set(f);s.render.filepath=str(out/f'frame_{f:04d}.png')
