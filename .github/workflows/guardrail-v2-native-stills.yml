@@ -1,0 +1,152 @@
+name: Guardrail V2 native visual proof (draft PR only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/guardrail-v2-native-stills.yml"
+      - "benchmarks/guardrail_v2/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-proof-stills:
+    name: 1080p frame ${{ matrix.frame }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        frame: [1, 22, 40]
+    steps:
+      - name: Checkout isolated V2 code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Download checksum-verified official Blender 5.0.1 x64
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/blender"
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 20 --max-time 200 \
+            'https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz' \
+            -o "$RUNNER_TEMP/blender/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender/blender.tar.xz" -C "$RUNNER_TEMP/blender"
+          B="$(find "$RUNNER_TEMP/blender" -maxdepth 3 -type f -name blender | head -1)"
+          test -n "$B" && test -x "$B"
+          echo "BLENDER_EXE=$B" >> "$GITHUB_ENV"
+          "$B" -b -t 4 --python-expr 'import bpy; print("BLENDER_VERSION",bpy.app.version_string)'
+
+      - name: Acquire and verify CC0 car model
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/guardrail_v2"
+          curl --fail --silent --show-error --location --retry 2 --connect-timeout 15 --max-time 100 \
+            'https://www.innerscene.com/api/library/sedan-car-42109739/download' \
+            -o "$RUNNER_TEMP/guardrail_v2/sedan-original.glb"
+          echo "4cb896f740de4da871c1d87c4af2b734db3d1e8fac852e308f1fca03a63b25d3  $RUNNER_TEMP/guardrail_v2/sedan-original.glb" | sha256sum -c -
+
+      - name: Generate native Blender scene (no render during build)
+        env:
+          VISUAL_V2_OUTPUT: ${{ runner.temp }}/guardrail_v2/out
+          VISUAL_V2_ASSET: ${{ runner.temp }}/guardrail_v2/sedan-original.glb
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$VISUAL_V2_OUTPUT"
+          "$BLENDER_EXE" -b -t 4 --python benchmarks/guardrail_v2/build_scene.py -- scene 100 16
+          test -s "$VISUAL_V2_OUTPUT/guardrail_v2_local.blend"
+
+      - name: Gate native resolution, fixed camera, projected rail deflection
+        env:
+          VISUAL_V2_OUTPUT: ${{ runner.temp }}/guardrail_v2/out
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$BLENDER_EXE" -b -t 4 "$VISUAL_V2_OUTPUT/guardrail_v2_local.blend" \
+            --python benchmarks/guardrail_v2/validate_scene.py
+          test -s "$VISUAL_V2_OUTPUT/v2_validation.json"
+
+      - name: Render one exact native 1080x1920 Cycles frame
+        env:
+          VISUAL_V2_OUTPUT: ${{ runner.temp }}/guardrail_v2/out
+          PROOF_FRAME: ${{ matrix.frame }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          /usr/bin/time -f 'NATIVE_PROOF_FRAME_RENDER_SECONDS %e' \
+            "$BLENDER_EXE" -b -t 4 "$VISUAL_V2_OUTPUT/guardrail_v2_local.blend" \
+            --python-expr 'import bpy,os; s=bpy.context.scene; f=int(os.environ["PROOF_FRAME"]); s.frame_set(f); assert (s.render.resolution_x,s.render.resolution_y,s.render.resolution_percentage,s.cycles.samples)==(1080,1920,100,16); s.render.filepath=os.path.join(os.environ["VISUAL_V2_OUTPUT"],f"native_frame_{f:04d}.png"); bpy.ops.render.render(write_still=True)'
+          test -s "$VISUAL_V2_OUTPUT/native_frame_$(printf '%04d' "$PROOF_FRAME").png"
+          python3 - <<'PY'
+          import os,struct,hashlib,pathlib
+          p=pathlib.Path(os.environ['VISUAL_V2_OUTPUT'])/f"native_frame_{int(os.environ['PROOF_FRAME']):04d}.png"
+          b=p.read_bytes()
+          assert b[:8]==b'\x89PNG\r\n\x1a\n'
+          assert struct.unpack('>II',b[16:24])==(1080,1920)
+          print('NATIVE_FRAME_QA_PASS',p.name,len(b),hashlib.sha256(b).hexdigest())
+          PY
+
+      - name: Archive development-only still and geometry QA
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: v2-native-frame-${{ matrix.frame }}
+          path: |
+            ${{ runner.temp }}/guardrail_v2/out/native_frame_*.png
+            ${{ runner.temp }}/guardrail_v2/out/v2_validation.json
+          if-no-files-found: warn
+          retention-days: 3
+
+  check-storyboard:
+    name: Native 3-frame storyboard artifact
+    needs: native-proof-stills
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Download all native proof images
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: v2-native-frame-*
+          path: ${{ runner.temp }}/proofs
+
+      - name: Validate three unique full-native frames and produce montage
+        shell: bash
+        env:
+          PROOF_DIR: ${{ runner.temp }}/proofs
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib,struct,hashlib,os
+          d=pathlib.Path(os.environ['PROOF_DIR'])
+          paths=[d/f'v2-native-frame-{i}'/f'native_frame_{i:04}.png' for i in [1,22,40]]
+          hashes=[]
+          for p in paths:
+              assert p.is_file(),p
+              b=p.read_bytes()
+              assert b[:8]==b'\x89PNG\r\n\x1a\n'
+              assert struct.unpack('>II',b[16:24])==(1080,1920)
+              hashes.append(hashlib.sha256(b).hexdigest())
+          assert len(set(hashes))==3,'Three frames identical; no actual animation'
+          print('NATIVE_STORYBOARD_HASH_QA_PASS',list(zip(map(str,paths),hashes)))
+          PY
+          if ! command -v ffmpeg >/dev/null; then sudo apt-get update -qq && sudo apt-get install -y ffmpeg; fi
+          ffmpeg -nostdin -hide_banner -loglevel error -y \
+            -i "$PROOF_DIR/v2-native-frame-1/native_frame_0001.png" \
+            -i "$PROOF_DIR/v2-native-frame-22/native_frame_0022.png" \
+            -i "$PROOF_DIR/v2-native-frame-40/native_frame_0040.png" \
+            -filter_complex '[0:v]scale=360:640[a];[1:v]scale=360:640[b];[2:v]scale=360:640[c];[a][b][c]hstack=inputs=3[out]' \
+            -map '[out]' -frames:v 1 "$RUNNER_TEMP/guardrail_v2_storyboard.png"
+          test -s "$RUNNER_TEMP/guardrail_v2_storyboard.png"
+          echo 'Quality acceptance remains HUMAN-REVIEW PENDING; this is not upload-ready.'
+
+      - name: Upload storyboard for review
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: guardrail-v2-native-storyboard
+          path: ${{ runner.temp }}/guardrail_v2_storyboard.png
+          if-no-files-found: error
+          retention-days: 3
