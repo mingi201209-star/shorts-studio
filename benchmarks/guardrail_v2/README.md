@@ -48,3 +48,72 @@ Sources: [FHWA Guardrail 101](https://highways.dot.gov/safety/rwd/reduce-crash-s
 
 ## Release gates still missing
 Physical-motion fidelity, premium PBR look, body/rail contact credibility, 0–5s actual visual hook from a full 3s video, no misleading crash-test implication, correct subtitle-safe composition, voice human audition. Do **not** convert this PR to production until those have been demonstrated. If native stills are disappointing, keep the branch draft and iterate without modifying `main`.
+
+## 2026-10-18 continuous-motion implementation
+
+The imported CC0 sedan already exists; this revision does not rebuild a car.
+The owner's uncommitted two-mirror repair was preserved before editing in a
+separate worktree and backup patch. Both assemblies are anchored to the cabin;
+all mesh children retain constant parent-relative transforms during animation.
+
+Four measured tyre-centre pivots reuse the imported tyre/rim/spoke meshes.
+Their angle follows accumulated path distance divided by the measured wheel
+radius. The rigid car no longer rolls through the road; suspension/body
+deformation is outside this illustrative model. The fixed lens widens from
+22 to 20 mm to keep the exit in frame. Relative shape keys use Blender 5 action
+channel bags with linear interpolation, preserving a partition of unity at
+half frames. Posts use linear interpolation too.
+
+The initial full-frame audit found failures missed by the 1/22/40 still checks:
+45 tyre-ground violations, 10 late-frame margin violations, and an incorrectly
+interpreted contact-push field. That field measures encroachment beyond the
+original rail line; it is not proof of ongoing contact with the deformed rail.
+The declared primary contact interval is frames 12–48. All frames still check
+penetration, and every new rail displacement peak requires actual nearby
+contact, including after that interval. This caught three phantom-load frames
+52–54. The solver now iterates the car envelope against the actual sagged beam
+height band instead of taking vertices above the beam as a load source.
+
+`validate_motion.py` fails closed on:
+- all 90 vehicle bounds inside the existing 5% margin;
+- both mirror stalk/shell gaps and every mesh part's relative matrix;
+- four tyre-ground gaps (-5 to +15 mm visual tolerance);
+- wheel angle versus measured travel;
+- actual beam/car gap, including the original -25/+30 mm contact criteria;
+- primary contact, and new deformation peaks without contact;
+- car/frame displacement <=120 mm, rotation <=3 degrees/frame, and rail
+  displacement <=120 mm/frame (continuity diagnostics, not crash limits);
+- shape-key unity/positivity at every half frame.
+
+The original native resolution, >=16 sample scene setting, fixed camera,
+>=40 px projected displacement and >=0.35 m deflection gates remain.
+`check_motion_regressions.py` injects disconnected mirror and displaced rail
+geometry into separate temporary in-memory scenes and requires rejection.
+No production engine, TTS, caption, semantic, retention or safe-area gate changed.
+
+Look development reuses CC0 Poly Haven assets: suburban_field_01 HDRI for
+illumination/reflections only and asphalt_01 diffuse. All external assets use
+exact SHA-256 checks in both CI and look application; images are packed into
+the transferable .blend. The visible sky is synthetic. Sources:
+https://polyhaven.com/license
+https://polyhaven.com/a/suburban_field_01
+https://polyhaven.com/a/asphalt_01
+https://docs.blender.org/api/5.0/bpy.types.Object.html
+https://mwrsf.unl.edu/reportResult.php?reportId=499
+
+Blender's maintained import, matrix, keyframe, node and rendering APIs supply
+the underlying implementations. Custom code is limited to this authored
+scene's mesh naming, contact illustration and failure checks; a general crash
+solver would not certify this uncalibrated asset or its material response.
+
+CI now gates the scene before rendering three contiguous 30-frame native
+ranges (1080x1920, Cycles 32 samples), validates all 90 PNGs including original
+proof frames 1/22/40, encodes H.264 at CRF17, and verifies dimensions, frame count,
+30 fps and 3.0 s duration. The resulting clip is **visual-only development
+evidence**, not an uploadable narrated Short.
+
+Editorial status remains separate: the car silhouette is visibly low-poly.
+Neither geometric PASS, denoising nor a higher sample count proves premium
+appearance, scientific crash fidelity or viewer satisfaction. Review the full
+motion and the final native frames before deciding whether to expand the film.
+Keep the PR draft. No merge, publishing, paid API or new cloud service.

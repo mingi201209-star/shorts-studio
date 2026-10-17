@@ -4,6 +4,7 @@ Requires Blender 5.0+, Cycles CPU. Assets and geometry created procedurally.
 """
 import bpy, math, sys, os
 from mathutils import Vector, Matrix
+from mathutils.kdtree import KDTree
 from pathlib import Path
 
 OUT=Path(os.environ.get('VISUAL_V2_OUTPUT', '/tmp/guardrail_v2_out'))
@@ -142,6 +143,41 @@ for o in added:
   o.matrix_parent_inverse.identity()
 print('IMPORTED_CC0_CAR_PARTS',len(added),flush=True)
 bpy.context.view_layer.update()
+
+# The CC0 sedan GLB has detached mirror shells/stalks. Anchor BOTH side
+# assemblies to the cabin and connect their shells before generating motion.
+# Do not hide stray parts: preserve full car geometry and prove attachment.
+def closest_vertex_pair(source,target):
+ pts=[target.matrix_world@v.co for v in target.data.vertices]
+ tree=KDTree(len(pts))
+ for idx,pt in enumerate(pts):tree.insert(pt,idx)
+ tree.balance()
+ best=None
+ for vertex in source.data.vertices:
+  p=source.matrix_world@vertex.co
+  q,_,distance=tree.find(p)
+  if best is None or distance<best[0]:best=(distance,p.copy(),q.copy())
+ return best
+def offset_mesh_instance(obj,delta):
+ transform=obj.matrix_world.copy()
+ transform.translation+=delta
+ obj.matrix_world=transform
+ bpy.context.view_layer.update()
+for side in ('','.001'):
+ arm=bpy.data.objects['Mirror arm'+side]
+ shell=bpy.data.objects['Mirror shell'+side]
+ body=bpy.data.objects['Cab and roof']
+ distance,p,q=closest_vertex_pair(arm,body)
+ assert distance>.05,('UNEXPECTED_MIRROR_IMPORT_GEOMETRY',side,distance)
+ shift=.95*(q-p)
+ offset_mesh_instance(arm,shift)
+ offset_mesh_instance(shell,shift)
+ _,p,q=closest_vertex_pair(shell,arm)
+ offset_mesh_instance(shell,.93*(q-p))
+ assert closest_vertex_pair(arm,body)[0]<.025,('MIRROR_STALK_DETACHED',side)
+ assert closest_vertex_pair(shell,arm)[0]<.02,('MIRROR_SHELL_DETACHED',side)
+print('MIRRORS_GEOMETRY_ANCHORED',flush=True)
+
 car_meshes=[o for o in car.children_recursive if o.type=='MESH']
 car_inv=car.matrix_world.inverted()
 local_pts=[]
@@ -185,7 +221,7 @@ def pose(f):
    h=math.radians(25-33*e**float(os.environ.get("V3_POW","3")))  # rail resistance turns the car parallel
    v=.070-.020*smooth(e)
    x+=v*math.cos(h);y+=v*math.sin(h)
-  roll=math.radians(3.2)*math.sin(math.pi*min(max((k-12)/50,0),1))
+  roll=0.0  # Rigid wheelbase: avoid driving the near tyres below the road.
   out.append((x,y,h,roll))
  return out
 POSES=pose(FRAMES)
@@ -193,6 +229,34 @@ def car_matrix(p):
  x,y,h,roll=p
  return (Matrix.Translation((x,y,GROUND+.002))@Matrix.Rotation(math.pi/2+h,4,'Z')
   @Matrix.Rotation(-roll,4,'Y')@Matrix.Diagonal((CAR_SCALE,CAR_SCALE,CAR_SCALE,1)))
+# Reuse the imported wheel meshes. Each axle-side assembly rotates about its
+# measured tyre centre; preserve every child's existing car-local transform.
+wheel_pivots=[]
+for axle in ('Front','Rear'):
+ for suffix in ('','.001'):
+  tyre=bpy.data.objects[axle+'_tire'+suffix]
+  bounds=[tyre.matrix_local@Vector(v) for v in tyre.bound_box]
+  centre=sum(bounds,Vector())/len(bounds)
+  radius=(max(v.z for v in bounds)-min(v.z for v in bounds))/2
+  bpy.ops.object.empty_add(type='PLAIN_AXES')
+  pivot=bpy.context.object; pivot.name='WheelPivot_'+axle+suffix
+  pivot.parent=car;pivot.location=centre
+  pivot['rolling_radius_local']=radius
+  for ob in car_meshes:
+   if not ob.name.startswith(axle+'_'):continue
+   bb=[ob.matrix_local@Vector(v) for v in ob.bound_box]
+   mid=sum(bb,Vector())/len(bb)
+   if mid.x*centre.x<=0:continue
+   old=ob.matrix_local.copy()
+   ob.parent=pivot;ob.matrix_parent_inverse.identity()
+   ob.matrix_basis=Matrix.Translation(-centre)@old
+  wheel_pivots.append(pivot)
+distance=0.
+for f,p in enumerate(POSES,1):
+ if f>1:distance+=math.hypot(p[0]-POSES[f-2][0],p[1]-POSES[f-2][1])
+ for pivot in wheel_pivots:
+  pivot.rotation_euler[0]=distance/(pivot['rolling_radius_local']*CAR_SCALE)
+  pivot.keyframe_insert('rotation_euler',frame=f)
 car.rotation_mode='XYZ'
 for f,p in enumerate(POSES,1):
  car.matrix_world=car_matrix(p)
@@ -219,7 +283,20 @@ for f,p in enumerate(POSES,1):
  hit=[i for i in range(NX) if push[i]>0]
  d=[max([push[k]*math.exp(-((xs[i]-xs[k])/SPREAD)**2) for k in hit] or [0.]) for i in range(NX)]
  # Plastic residual: once loaded the beam relaxes only to 70% of its peak.
- d=[max(d[i],.70*peak[i]+(prev[i]-.70*peak[i])*.86) for i in range(NX)]
+ residual=[.70*peak[i]+(prev[i]-.70*peak[i])*.86 for i in range(NX)]
+ d=[max(d[i],residual[i]) for i in range(NX)]
+ # Match the actual sagged beam band, rather than letting vertices above
+ # the beam create phantom contact as the rear of the car passes.
+ world_points=[M@lp for lp in local_pts]
+ for iteration in range(3):
+  envelope=[-9.]*NX
+  for w in world_points:
+   i=int(round((w.x-X0)/dx))
+   if 0<=i<NX and RAIL_Z-RAIL_H/2-.07*d[i]-.01<=w.z<=RAIL_Z+RAIL_H/2-.07*d[i]+.01:
+    envelope[i]=max(envelope[i],w.y)
+  actual_push=[max(0.,e+.008-RAIL_FACE) for e in envelope]
+  loaded=[i for i in range(NX) if actual_push[i]>residual[i]]
+  d=[max(residual[i],max([actual_push[k]*math.exp(-((xs[i]-xs[k])/SPREAD)**2) for k in loaded] or [0.])) for i in range(NX)]
  peak=[max(a,b) for a,b in zip(peak,d)]
  prev=d;deflect.append(d);contact.append(round(max(push),4))
 
@@ -251,8 +328,19 @@ for f,d in enumerate(deflect,1):
  for fr,val in ((f-1,0.),(f,1.),(f+1,0.)):
   if 1<=fr<=FRAMES:
    key.value=val;key.keyframe_insert('value',frame=fr)
-for fc in rail.data.shape_keys.animation_data.action.fcurves if hasattr(rail.data.shape_keys.animation_data.action,'fcurves') else []:
- for kp in fc.keyframe_points:kp.interpolation='CONSTANT'
+def linear_animation(id_block):
+ anim=id_block.animation_data
+ if not anim or not anim.action:return
+ action=anim.action
+ if hasattr(action,'layers'):
+  curves=[fc for layer in action.layers for strip in layer.strips
+          for bag in strip.channelbags for fc in bag.fcurves]
+ else:curves=action.fcurves
+ for fc in curves:
+  for kp in fc.keyframe_points:kp.interpolation='LINEAR'
+linear_animation(rail.data.shape_keys)
+linear_animation(car)
+for pivot in wheel_pivots:linear_animation(pivot)
 
 far=[]
 for i in range(121):
@@ -338,15 +426,18 @@ cam_tgt=Vector(tuple(float(v) for v in os.environ.get('V3_TGT','-1.9,-.2,.35').s
 bpy.ops.object.camera_add(location=cam_loc)
 cam=bpy.context.object;cam.name='FIXED hero 3/4 CC0 car + guardrail'
 point(cam,cam_tgt)
-cam.data.type='PERSP';cam.data.lens=float(os.environ.get('V3_LENS','22'))
+cam.data.type='PERSP';cam.data.lens=float(os.environ.get('V3_LENS','20'))
 cam.data.sensor_fit='VERTICAL'
 scene.camera=cam
+scene['primary_contact_frames']=[12,48]
 scene['v3_contact_push_m']=contact
 scene['v3_peak_deflection_m']=round(max(peak),3)
 print('V3_CONTACT_PUSH',contact,flush=True)
 print('V3_GAP',gapdiag[::3],flush=True)
 print('V3_POSE',[tuple(round(v,2) for v in POSES[f-1]) for f in (1,14,22,40,60,90)],flush=True)
 print('V3_PEAK_DEFLECTION_M',round(max(peak),3),'RESIDUAL_M',round(max(deflect[-1]),3),flush=True)
+for obj in scene.objects:
+ if obj.name.startswith('Post soil pivot'):linear_animation(obj)
 scene.render.filepath=str(OUT/'frame_')
 scene.frame_set(1 if mode=='scene' else 40)
 blend=OUT/'guardrail_v2_local.blend'
