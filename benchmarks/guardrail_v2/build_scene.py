@@ -3,7 +3,7 @@
 Requires Blender 5.0+, Cycles CPU. Assets and geometry created procedurally.
 """
 import bpy, math, sys, os
-from mathutils import Vector
+from mathutils import Vector, Matrix
 from pathlib import Path
 
 OUT=Path(os.environ.get('VISUAL_V2_OUTPUT', '/tmp/guardrail_v2_out'))
@@ -47,6 +47,8 @@ def mat(name,color,metallic=0,rough=.5,noise_scale=0,bump=.07):
  p.inputs['Roughness'].default_value=rough
  if noise_scale:
   n=nodes.new('ShaderNodeTexNoise');n.inputs['Scale'].default_value=noise_scale
+  tc=nodes.new('ShaderNodeTexCoord');links.new(tc.outputs['Object'],n.inputs['Vector'])
+  n.inputs['Scale'].default_value=noise_scale/40
   n.inputs['Detail'].default_value=3
   b=nodes.new('ShaderNodeBump')
   b.inputs['Strength'].default_value=.20
@@ -54,7 +56,7 @@ def mat(name,color,metallic=0,rough=.5,noise_scale=0,bump=.07):
   links.new(n.outputs['Fac'],b.inputs['Height'])
   links.new(b.outputs['Normal'],p.inputs['Normal'])
  return m
-metal=mat('ZINC - galvanized W-beam steel',(0.43,.48,.50),.85,.30,125,.014)
+metal=mat('ZINC - galvanized W-beam steel',(0.50,.53,.54),.80,.36)
 postmat=mat('Posts - hot dipped galvanized steel',(.29,.33,.35),.83,.37,140,.012)
 darkmetal=mat('Black underbody metal',(.11,.14,.17),.7,.26)
 paint=mat('Blue teal metallic car paint',(.028,.28,.35),.67,.21)
@@ -62,7 +64,7 @@ glass=mat('Tinted glass',(.055,.13,.17),.6,.14)
 rubber=mat('Soft black tire rubber',(.013,.016,.018),.02,.86,38,.02)
 road=mat('Fine gritty black asphalt',(.075,.075,.070),.0,.94,240,.025)
 shoulder=mat('Dry rocky soil',(.24,.19,.125),0,.96,170,.04)
-grass=mat('Muted roadside vegetation',(.09,.14,.06),0,.95,115,.05)
+grass=mat('Muted roadside vegetation',(.12,.17,.07),0,.95,115,.05)
 white=mat('Off-white lane marking',(.75,.75,.65),0,.76,80,.015)
 rim=mat('Machined aluminum wheels',(.52,.54,.54),.88,.27,82,.004)
 orange=mat('Amber lamp reflectors',(.95,.39,.07),.2,.30)
@@ -91,95 +93,37 @@ def point(obj,xyz):
  direction=Vector(xyz)-obj.location
  obj.rotation_euler=direction.to_track_quat('-Z','Y').to_euler()
 
-# Road surface and shoulder -- physically separated materials.
-box('dark fine-grain asphalt roadway',(0,-2.3,-.18),(22,6.0,.27),road,.035)
-box('gritty soil shoulder',(0,1.85,-.23),(22,2.6,.37),shoulder,.055)
-box('green grass at back',(0,3.6,-.23),(22,1.6,.35),grass,.05)
-box('white road edge marking',(0,-.53,-.027),(22,.092,.006),white,.004)
-for i in range(-7,8,2):
- box('intermittent dashed line', (i,-3.66,-.021),(1.05,.095,.004),white,.005)
+# Road surface and shoulder -- separated so the two top faces never z-fight.
+GROUND=-.045
+box('dark fine-grain asphalt roadway',(0,-30.9,-.18),(240,60.9,.27),road,.035)
+box('gritty soil shoulder',(0,1.37,-.23),(240,3.6,.37),shoulder,.055)
+box('green grass at back',(0,30.7,-.22),(240,55.2,.35),grass,.05)
+box('white road edge marking',(0,-.62,-.027),(240,.12,.006),white,.004)
+for i in range(-117,118,3):
+ box('intermittent dashed line', (i,-3.66,-.021),(1.6,.11,.004),white,.005)
 
-# Guardrail W-beam: true 3D corrugated profile with Solidify and shape-key deformation.
-# W-beam face lies along X and is vertically corrugated in cross-section.
-NX=88; NZ=24
-X0,X1=-7.1,7.1
-vertices=[]; faces=[]
-for i in range(NX):
- x=X0+(X1-X0)*i/(NX-1)
- for j in range(NZ):
-  u=j/(NZ-1)
-  z=.80+(u-.5)*.33
-  # Four distinct longitudinal folds; sheet is thin steel rather than generic ribbon.
-  y=.70 + .060*math.cos((u-.5)*4*math.pi) + .018*math.cos((u-.5)*8*math.pi)
-  vertices.append((x,y,z))
-for i in range(NX-1):
- for j in range(NZ-1):
-  a=i*NZ+j;faces.append((a,a+NZ,a+NZ+1,a+1))
-mesh=bpy.data.meshes.new('corrugated galvanized steel W-beam surface')
-mesh.from_pydata(vertices,[],faces);mesh.update()
-rail=bpy.data.objects.new('Real 3D W-beam rail with elastic/plastic proxy deflection',mesh)
-bpy.context.collection.objects.link(rail)
-rail.data.materials.append(metal)
-for p in rail.data.polygons:p.use_smooth=True
-solid=rail.modifiers.new('steel sheet thickness','SOLIDIFY');solid.thickness=.010
-bev=rail.modifiers.new('Fold edge rounding','BEVEL');bev.width=.008;bev.segments=2
-rail.modifiers.new('Smooth normal interpolation','WEIGHTED_NORMAL')
-basekey=rail.shape_key_add(name='undeformed')
-deform=rail.shape_key_add(name='impact deflection - CONCEPTUAL')
-for v,vert in zip(deform.data,vertices):
- x,y,z=vert
- amp=.52*math.exp(-((x-0.0)/1.45)**2)
- v.co.y=y+amp
-for fr,value in [(1,0),(9,0),(21,.55),(40,1.0),(53,.92),(75,.66),(90,.58)]:
- deform.value=value;deform.keyframe_insert(data_path='value',frame=fr)
+# ---------------------------------------------------------------------------
+# V3 contact model. The car follows an explicit kinematic redirection path
+# (25 degree encroachment, the NCHRP 350 / MASH test angle). The rail is not a
+# hand-placed bulge: on every frame its deflection is solved from the car's own
+# world-space mesh points inside the rail height band, so the rail face sits on
+# the car body (no gap, no interpenetration), spreads along the beam like a
+# tensioned W-beam, and keeps a plastic residual after the car leaves.
+# Still a CONCEPTUAL illustration, not a finite-element crash simulation.
+# ---------------------------------------------------------------------------
+FRAMES=90
+CAR_SCALE=.85
+RAIL_Z=.56; RAIL_H=.31            # W-beam 12.25in tall, top ~0.71 m like MGS 31in
+RAIL_Y=.72                        # rail centreline, posts/blockouts behind (+Y)
+NX=241; NZ=24
+X0,X1=-16.0,8.0
+SPREAD=1.9                        # beam tension spreads the pocket over posts
 
-# Five steel posts embedded in shoulder. Each pivots about a below-surface origin.
-for k,x in enumerate([-5.4,-3.25,-1.1,1.1,3.25,5.4]):
- b=box('Steel support post %d'%k,(x,.85,.16),(.16,.16,1.87),postmat,.018)
- b.data.materials[0]=postmat
- # Rotate about lower/soil base, not center: location parented to empty.
- bpy.ops.object.empty_add(type='PLAIN_AXES',location=(x,.85,-.45))
- pivot=bpy.context.object;pivot.name='Post soil pivot %d'%k
- b.parent=pivot;b.matrix_parent_inverse.identity();b.location=(0,0,.90)
- influence=math.exp(-(x/2.1)**2)
- for fr,ang in [(1,0),(10,0),(40,-.18*influence),(55,-.16*influence),(90,-.11*influence)]:
-  pivot.rotation_euler[0]=ang
-  pivot.keyframe_insert('rotation_euler',frame=fr)
- # Bolt and washer on rail face front (toward moving car).
- for dz in [-.08,.08]:
-  cylinder('W-beam bolt head', (x,.56,.80+dz),.046,.026,rim,(math.pi/2,0,0),16)
- # At the soil surface (small anchor shadow ring, physically illustrative).
- cylinder('post ground contact ring',(x,.85,-.01),.17,.032,shoulder)
+def rail_profile(u):
+ return .060*math.cos((u-.5)*4*math.pi)+.018*math.cos((u-.5)*8*math.pi)
+PMIN=min(rail_profile(j/(NZ-1)) for j in range(NZ))
+RAIL_FACE=RAIL_Y+PMIN-.005
 
-# Fixed world-space pale cyan ghost contour = undeformed rail reference, used only to
-# communicate relative movement. NOT a physical duplicate guardrail in the roadway.
-glow=bpy.data.materials.new('SCREEN GUIDE - cyan reference, not real guardrail')
-glow.use_nodes=True
-gn=glow.node_tree.nodes
-gn.clear()
-go=gn.new('ShaderNodeOutputMaterial')
-em=gn.new('ShaderNodeEmission')
-em.inputs['Color'].default_value=(.035,.48,.62,1)
-em.inputs['Strength'].default_value=.35
-glow.node_tree.links.new(em.outputs['Emission'],go.inputs['Surface'])
-curve=bpy.data.curves.new('Undeformed rail reference contour','CURVE')
-curve.dimensions='3D'
-curve.resolution_u=12
-curve.bevel_depth=.009
-curve.resolution_u=24
-curve.bevel_resolution=3
-spline=curve.splines.new('POLY')
-spline.points.add(71)
-for i,pt in enumerate(spline.points):
- x=-3.5+i*7.0/71
- pt.co=(x,.615,1.062,1)
-guide=bpy.data.objects.new('UNDISTORTED_REFERENCE_RAIL_CONTOUR_CYAN',curve)
-bpy.context.collection.objects.link(guide)
-guide.data.materials.append(glow)
-
-# High-detail unbranded CC0 sedan: real Blender mesh with doors, glass, wheels, lamps.
-# Verified original: https://www.innerscene.com/tools/library/3d-parts/sedan-car-42109739
-# GLB metadata: "Sedan car" original Innerscene, CC0-1.0, sha256 4cb896f...b25d3.
 asset=os.environ['VISUAL_V2_ASSET']
 assert os.path.isfile(asset)
 before=set(bpy.context.scene.objects)
@@ -196,56 +140,224 @@ for o in added:
  if o.parent is None or o.parent not in added:
   o.parent=car
   o.matrix_parent_inverse.identity()
-# Original GLB front points along negative Y; rotate 90 degrees to positive X.
-car.scale=(.75,.75,.75)
-for frame,x,y,heading in [(1,-.68,-.43,.12),(12,-.52,-.28,.10),(23,-.35,-.10,.06),
- (35,-.10,-.05,.03),(55,.29,-.33,-.06),(74,.59,-.52,-.09),(90,.94,-.70,-.10)]:
- car.location=(x,y,0)
- car.rotation_euler[2]=math.pi/2+heading
- car.keyframe_insert('location',frame=frame)
- car.keyframe_insert('rotation_euler',frame=frame)
 print('IMPORTED_CC0_CAR_PARTS',len(added),flush=True)
+bpy.context.view_layer.update()
+car_meshes=[o for o in car.children_recursive if o.type=='MESH']
+car_inv=car.matrix_world.inverted()
+local_pts=[]
+for o in car_meshes:
+ m=car_inv@o.matrix_world
+ local_pts+=[m@v.co for v in o.data.vertices]
 
-# Reused photorealistic lighting stage, fixed deliberate composition.
-world=bpy.data.worlds.new('neutral blue-grey outdoor skylight')
+# Look development of the CC0 sedan: replace toy-flat GLB materials with a
+# coated metallic paint, real glass, rubber and machined metal.
+def principled(m,color,metal,rough,coat=0,coat_rough=.05,spec=.5,trans=0):
+ m.use_nodes=True
+ p=next(n for n in m.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
+ p.inputs['Base Color'].default_value=(*color,1)
+ p.inputs['Metallic'].default_value=metal
+ p.inputs['Roughness'].default_value=rough
+ p.inputs['Coat Weight'].default_value=coat
+ p.inputs['Coat Roughness'].default_value=coat_rough
+ p.inputs['Specular IOR Level'].default_value=spec
+ p.inputs['Transmission Weight'].default_value=trans
+ return p
+looks={'blue':((.26,.29,.32),.55,.38,.7,.04),'black':((.012,.013,.014),.0,.55,.3,.2),
+ 'chrome':((.80,.80,.80),1.0,.12,0,.05),'steel':((.20,.21,.22),.9,.38,0,.05),
+ 'rubber':((.018,.018,.019),.0,.82,0,.05),'glass':((.010,.013,.016),.0,.03,1.0,.0),
+ 'lamp':((.85,.86,.85),.0,.08,1.0,.02),'tail':((.45,.01,.01),.0,.12,1.0,.02),
+ 'white':((.75,.75,.72),.0,.5,0,.05)}
+seen=set()
+for o in car_meshes:
+ for m in o.data.materials:
+  if m and m.name in looks and m.name not in seen:
+   seen.add(m.name);principled(m,*looks[m.name])
+
+def smooth(e):
+ e=min(max(e,0.),1.);return e*e*(3-2*e)
+def pose(f):
+ """Kinematic path: 25deg approach, contact, redirection parallel, exit."""
+ x,y,h=float(os.environ.get('V3_X0','-2.95')),float(os.environ.get("V3_Y0","-1.10")),math.radians(25)
+ out=[]
+ for k in range(1,f+1):
+  if k>1:
+   e=min(max((k-12)/float(os.environ.get("V3_REDIR","48")),0.),1.)
+   h=math.radians(25-33*e**float(os.environ.get("V3_POW","3")))  # rail resistance turns the car parallel
+   v=.070-.020*smooth(e)
+   x+=v*math.cos(h);y+=v*math.sin(h)
+  roll=math.radians(3.2)*math.sin(math.pi*min(max((k-12)/50,0),1))
+  out.append((x,y,h,roll))
+ return out
+POSES=pose(FRAMES)
+def car_matrix(p):
+ x,y,h,roll=p
+ return (Matrix.Translation((x,y,GROUND+.002))@Matrix.Rotation(math.pi/2+h,4,'Z')
+  @Matrix.Rotation(-roll,4,'Y')@Matrix.Diagonal((CAR_SCALE,CAR_SCALE,CAR_SCALE,1)))
+car.rotation_mode='XYZ'
+for f,p in enumerate(POSES,1):
+ car.matrix_world=car_matrix(p)
+ car.keyframe_insert('location',frame=f)
+ car.keyframe_insert('rotation_euler',frame=f)
+ car.keyframe_insert('scale',frame=f)
+
+# Contact solve per frame.
+xs=[X0+(X1-X0)*i/(NX-1) for i in range(NX)]
+dx=(X1-X0)/(NX-1)
+zlo=RAIL_Z-RAIL_H/2-.03; zhi=RAIL_Z+RAIL_H/2+.03
+gapdiag=[]
+deflect=[]; contact=[]; prev=[0.]*NX; peak=[0.]*NX
+for f,p in enumerate(POSES,1):
+ M=car_matrix(p)
+ env=[-9.]*NX
+ for lp in local_pts:
+  w=M@lp
+  if zlo<=w.z<=zhi:
+   i=int(round((w.x-X0)/dx))
+   if 0<=i<NX and w.y>env[i]:env[i]=w.y
+ push=[max(0.,e+.008-RAIL_FACE) for e in env]
+ gapdiag.append(round(RAIL_FACE-max(env),3))
+ hit=[i for i in range(NX) if push[i]>0]
+ d=[max([push[k]*math.exp(-((xs[i]-xs[k])/SPREAD)**2) for k in hit] or [0.]) for i in range(NX)]
+ # Plastic residual: once loaded the beam relaxes only to 70% of its peak.
+ d=[max(d[i],.70*peak[i]+(prev[i]-.70*peak[i])*.86) for i in range(NX)]
+ peak=[max(a,b) for a,b in zip(peak,d)]
+ prev=d;deflect.append(d);contact.append(round(max(push),4))
+
+vertices=[]; faces=[]
+for i in range(NX):
+ for j in range(NZ):
+  u=j/(NZ-1)
+  vertices.append((xs[i],RAIL_Y+rail_profile(u),RAIL_Z+(u-.5)*RAIL_H))
+for i in range(NX-1):
+ for j in range(NZ-1):
+  a=i*NZ+j;faces.append((a,a+NZ,a+NZ+1,a+1))
+mesh=bpy.data.meshes.new('corrugated galvanized steel W-beam surface')
+mesh.from_pydata(vertices,[],faces);mesh.update()
+rail=bpy.data.objects.new('Real 3D W-beam rail with car-contact solved deflection',mesh)
+bpy.context.collection.objects.link(rail)
+rail.data.materials.append(metal)
+for p in rail.data.polygons:p.use_smooth=True
+solid=rail.modifiers.new('steel sheet thickness','SOLIDIFY');solid.thickness=.010;solid.offset=1
+bev=rail.modifiers.new('Fold edge rounding','BEVEL');bev.width=.006;bev.segments=2
+rail.modifiers.new('Smooth normal interpolation','WEIGHTED_NORMAL')
+rail.shape_key_add(name='undeformed')
+for f,d in enumerate(deflect,1):
+ key=rail.shape_key_add(name='contact frame %02d'%f)
+ for i in range(NX):
+  flat=1-.45*min(d[i]/.6,1)       # corrugation flattens under tension
+  for j in range(NZ):
+   u=j/(NZ-1)
+   key.data[i*NZ+j].co=(xs[i],RAIL_Y+PMIN+(rail_profile(u)-PMIN)*flat+d[i],RAIL_Z+(u-.5)*RAIL_H-.07*d[i])
+ for fr,val in ((f-1,0.),(f,1.),(f+1,0.)):
+  if 1<=fr<=FRAMES:
+   key.value=val;key.keyframe_insert('value',frame=fr)
+for fc in rail.data.shape_keys.animation_data.action.fcurves if hasattr(rail.data.shape_keys.animation_data.action,'fcurves') else []:
+ for kp in fc.keyframe_points:kp.interpolation='CONSTANT'
+
+far=[]
+for i in range(121):
+ for j in range(NZ):
+  u=j/(NZ-1)
+  far.append((X0-60+60*i/120,RAIL_Y+rail_profile(u),RAIL_Z+(u-.5)*RAIL_H))
+ff=[(i*NZ+j,(i+1)*NZ+j,(i+1)*NZ+j+1,i*NZ+j+1) for i in range(120) for j in range(NZ-1)]
+fm=bpy.data.meshes.new('upstream W-beam continuation');fm.from_pydata(far,[],ff);fm.update()
+farrail=bpy.data.objects.new('Upstream undisturbed W-beam run',fm)
+bpy.context.collection.objects.link(farrail);farrail.data.materials.append(metal)
+for p in fm.polygons:p.use_smooth=True
+fs=farrail.modifiers.new('steel sheet thickness','SOLIDIFY');fs.thickness=.010;fs.offset=1
+for x in [X0-1.1-1.9*n for n in range(32)]:
+ b=box('Upstream steel post',(x,1.02,.11),(.15,.10,1.32),postmat,.012)
+ box('Upstream blockout',(x,.85,RAIL_Z),(.15,.24,.30),darkmetal,.01)
+
+def rail_d(f,x):
+ d=deflect[f-1];t=(x-X0)/dx;i=min(int(t),NX-2);a=t-i
+ return d[i]*(1-a)+d[i+1]*a
+
+# Steel posts on 1.9 m (6 ft 3 in) spacing with blockouts, rotating about the
+# soil pivot so their top follows the rail.
+for k,x in enumerate([round(-15.2+1.9*n,2) for n in range(12)]):
+ bpy.ops.object.empty_add(type='PLAIN_AXES',location=(x,1.02,-.55))
+ pivot=bpy.context.object;pivot.name='Post soil pivot %d'%k
+ b=box('Steel support post %d'%k,(0,0,0),(.15,.10,1.32),postmat,.012)
+ b.parent=pivot;b.location=(0,0,.66)
+ blk=box('Blockout %d'%k,(0,0,0),(.15,.24,.30),darkmetal,.01)
+ blk.parent=pivot
+ blk.location=(0,-.17,RAIL_Z+.55)
+ for dz in (-.08,.08):
+  c=cylinder('W-beam splice bolt head',(0,0,0),.022,.03,rim,(math.pi/2,0,0),16)
+  c.parent=pivot;c.location=(0,RAIL_Y-.075-1.02,RAIL_Z+.55+dz)
+ lever=RAIL_Z+.55
+ for f in range(1,FRAMES+1):
+  pivot.rotation_euler[0]=-math.atan2(rail_d(f,x),lever)
+  pivot.keyframe_insert('rotation_euler',frame=f)
+ cylinder('post ground contact ring',(x,1.02,GROUND+.01),.15,.03,shoulder)
+
+# Fixed world-space pale cyan contour = undeformed rail top edge, used only to
+# communicate relative movement. NOT a physical duplicate guardrail.
+glow=bpy.data.materials.new('SCREEN GUIDE - cyan reference, not real guardrail')
+glow.use_nodes=True
+gn=glow.node_tree.nodes
+gn.clear()
+go=gn.new('ShaderNodeOutputMaterial')
+em=gn.new('ShaderNodeEmission')
+em.inputs['Color'].default_value=(.035,.48,.62,1)
+em.inputs['Strength'].default_value=.6
+glow.node_tree.links.new(em.outputs['Emission'],go.inputs['Surface'])
+curve=bpy.data.curves.new('Undeformed rail reference contour','CURVE')
+curve.dimensions='3D'
+curve.bevel_depth=.012
+curve.bevel_resolution=3
+spline=curve.splines.new('POLY')
+spline.points.add(71)
+for i,pt in enumerate(spline.points):
+ pt.co=(-6.5+i*11.0/71,RAIL_FACE,GROUND+.004,1)
+guide=bpy.data.objects.new('UNDISTORTED_REFERENCE_RAIL_CONTOUR_CYAN',curve)
+bpy.context.collection.objects.link(guide)
+guide.data.materials.append(glow)
+
+# Physical daylight: procedural sky for real reflections on paint and steel.
+world=bpy.data.worlds.new('procedural daylight sky')
 scene.world=world;world.use_nodes=True
-world.node_tree.nodes['Background'].inputs['Color'].default_value=(.28,.37,.45,1)
-world.node_tree.nodes['Background'].inputs['Strength'].default_value=.65
-def area(name,loc,energy,color,size,target=(0,0,.75)):
- bpy.ops.object.light_add(type='AREA',location=loc)
- lamp=bpy.context.object;lamp.name=name;lamp.data.energy=energy;lamp.data.color=color
- lamp.data.shape='DISK';lamp.data.size=size
- point(lamp,target)
- return lamp
-area('giant soft cinematic daylight',(-1.5,-2.8,7.5),900,(1.0,.9,.78),6.0)
-area('metal rim highlight',(1.0,2.8,5.0),1300,(.70,.83,1.0),4.5)
-area('front vehicle body fill',(4.0,-4.0,3.7),750,(.78,.90,1.0),4.0)
+wn=world.node_tree.nodes
+wn['Background'].inputs['Color'].default_value=(.42,.52,.62,1)
+wn['Background'].inputs['Strength'].default_value=.55
 bpy.ops.object.light_add(type='SUN',location=(0,0,7))
-sun=bpy.context.object;sun.name='long golden sun';sun.data.energy=1.2
-sun.data.angle=math.radians(7)
-sun.rotation_euler=(math.radians(32),math.radians(-30),math.radians(-32))
+sun=bpy.context.object;sun.name='key sun';sun.data.energy=3.2
+sun.data.angle=math.radians(1.2)
+sun.rotation_euler=(math.radians(52),0,math.radians(205-180))
+def area(name,loc,energy,size,target):
+ bpy.ops.object.light_add(type='AREA',location=loc)
+ lamp=bpy.context.object;lamp.name=name;lamp.data.energy=energy
+ lamp.data.shape='DISK';lamp.data.size=size;point(lamp,target)
+area('soft paint highlight card',(-3,-6,6),900,6.0,(0,0,.5))
+scene.view_settings.look='AgX - Medium High Contrast'
+scene.view_settings.exposure=float(os.environ.get('V3_EXPOSURE','-1.0'))
 
-bpy.ops.object.camera_add(location=(2.4,-7.0,5.2))
+cam_loc=Vector(tuple(float(v) for v in os.environ.get('V3_CAM','7.5,-2.4,6.2').split(',')))
+cam_tgt=Vector(tuple(float(v) for v in os.environ.get('V3_TGT','-1.9,-.2,.35').split(',')))
+bpy.ops.object.camera_add(location=cam_loc)
 cam=bpy.context.object;cam.name='FIXED hero 3/4 CC0 car + guardrail'
-point(cam,(-.52,-.1,.72))
-cam.data.type='PERSP';cam.data.lens=22
+point(cam,cam_tgt)
+cam.data.type='PERSP';cam.data.lens=float(os.environ.get('V3_LENS','22'))
 cam.data.sensor_fit='VERTICAL'
 scene.camera=cam
-scene.render.image_settings.color_mode='RGBA'
+scene['v3_contact_push_m']=contact
+scene['v3_peak_deflection_m']=round(max(peak),3)
+print('V3_CONTACT_PUSH',contact,flush=True)
+print('V3_GAP',gapdiag[::3],flush=True)
+print('V3_POSE',[tuple(round(v,2) for v in POSES[f-1]) for f in (1,14,22,40,60,90)],flush=True)
+print('V3_PEAK_DEFLECTION_M',round(max(peak),3),'RESIDUAL_M',round(max(deflect[-1]),3),flush=True)
 scene.render.filepath=str(OUT/'frame_')
-scene.render.image_settings.file_format='PNG'
-scene.frame_set(1 if mode=='scene' else 40 if mode=='still' else 1)
+scene.frame_set(1 if mode=='scene' else 40)
 blend=OUT/'guardrail_v2_local.blend'
 bpy.ops.wm.save_as_mainfile(filepath=str(blend))
 if mode=='scene':
  print('SAVED_SCENE_ONLY_NO_RENDER',blend,flush=True)
-elif mode=='still':
- scene.render.filepath=str(OUT/'cc0_lookdev_frame_0042.png')
- print('RENDER_STILL',res,samples,flush=True)
- bpy.ops.render.render(write_still=True)
 else:
- scene.render.filepath=str(OUT/'seq_')
- print('RENDER_ANIMATION',res,samples,flush=True)
- bpy.ops.render.render(animation=True)
+ scene.render.resolution_percentage=res
+ scene.cycles.samples=samples
+ for f in (1,22,40):
+  scene.frame_set(f)
+  scene.render.filepath=str(OUT/('preview_%02d.png'%f))
+  bpy.ops.render.render(write_still=True)
 print('BLENDER_DONE',mode,flush=True)
-

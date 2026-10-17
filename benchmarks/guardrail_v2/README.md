@@ -17,6 +17,22 @@ Technical acceptance includes:
 
 Measured on phone with Blender 5.0.1 ARM64: the initial 43mm camera yielded projected rail motion **100.6px** but visibly cropped the sedan. This visual-QA finding caused a camera framing revision (22mm and leftward fixed aim). After revision, projected rail displacement remained **51.7px**, and full vehicle bounding boxes remained inside 5% frame margins at frames 1,22,40. This is a *geometry and framing QA pass only*, not editorial realism acceptance.
 
+## V3 contact-solved revision (editorial QA response)
+Editorial review of CI run 39006222977 failed V2 for a toy-looking sedan, understated rail deflection and a car that never touched the rail. Measured with the new gate, the V2 scene left a **146 mm** car-to-rail gap at frame 22 and **212 mm** at frame 40, so the rail bulged on its own.
+
+V3 changes:
+- The sedan follows an explicit 25° encroachment (the NCHRP 350 / MASH test angle), is redirected parallel to the rail, then tail-slaps and exits. It is scaled so the 0.71 m W-beam top sits at a realistic height relative to the car.
+- Rail deflection is **solved per frame from the car's own world-space mesh points** inside the rail height band, not hand-placed. The deflection spreads along the tensioned beam, the corrugation flattens under load, and a plastic residual remains (peak 0.53 m, residual 0.37 m). The rail is one shape key per frame with constant interpolation.
+- Posts (1.9 m spacing) carry blockouts and bolts and rotate about the soil pivot so their top follows the solved rail. Bolts no longer float when the rail moves.
+- The undisturbed W-beam continues upstream, the ground is long enough to hide its end, and texture noise uses object coordinates, so nothing stretches.
+- Car materials changed to coated metallic paint, glass, rubber and machined metal. The camera is fixed, elevated and front three-quarter, so the nose-into-rail contact is visible instead of hidden behind the body.
+
+New fail-closed gates (all V2 gates kept):
+- Car/rail contact gap per rail column at frames 22 and 40 must be within −25…+30 mm (touching, not penetrating). Frame 1 must show an approach gap above 100 mm.
+- World-space rail deflection at frame 40 must be ≥ 0.35 m. Projected displacement ≥ 40 px (V3 measures 97.5 px).
+
+Local measurement (Blender 5.0.1 ARM64): contact gap 0.323 / 0.013 / 0.013 m at frames 1/22/40, car bounds inside 5% margins at all three frames. Still a **conceptual illustration, not a crash simulation**. The CC0 sedan geometry itself remains low-poly, and a better licensed vehicle asset is still an open editorial item.
+
 ## Reproduce
 From the repository root with official Blender 5.0.1 and the CC0 Sedan already available:
 ```bash
