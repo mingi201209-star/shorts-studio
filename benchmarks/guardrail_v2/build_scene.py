@@ -125,7 +125,11 @@ def rail_profile(u):
 PMIN=min(rail_profile(j/(NZ-1)) for j in range(NZ))
 RAIL_FACE=RAIL_Y+PMIN-.005
 
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from vehicle_geometry import verify_asset,prepare_graphite,legacy_metadata,make_wheels
+variant=os.environ.get('VISUAL_VEHICLE_VARIANT','legacy')
 asset=os.environ['VISUAL_V2_ASSET']
+verify_asset(asset,variant)
 assert os.path.isfile(asset)
 before=set(bpy.context.scene.objects)
 bpy.ops.import_scene.gltf(filepath=asset)
@@ -163,19 +167,23 @@ def offset_mesh_instance(obj,delta):
  transform.translation+=delta
  obj.matrix_world=transform
  bpy.context.view_layer.update()
-for side in ('','.001'):
- arm=bpy.data.objects['Mirror arm'+side]
- shell=bpy.data.objects['Mirror shell'+side]
- body=bpy.data.objects['Cab and roof']
- distance,p,q=closest_vertex_pair(arm,body)
- assert distance>.05,('UNEXPECTED_MIRROR_IMPORT_GEOMETRY',side,distance)
- shift=.95*(q-p)
- offset_mesh_instance(arm,shift)
- offset_mesh_instance(shell,shift)
- _,p,q=closest_vertex_pair(shell,arm)
- offset_mesh_instance(shell,.93*(q-p))
- assert closest_vertex_pair(arm,body)[0]<.025,('MIRROR_STALK_DETACHED',side)
- assert closest_vertex_pair(shell,arm)[0]<.02,('MIRROR_SHELL_DETACHED',side)
+if variant=='graphite':
+ prepare_graphite(car)
+else:
+ for side in ('','.001'):
+  arm=bpy.data.objects['Mirror arm'+side]
+  shell=bpy.data.objects['Mirror shell'+side]
+  body=bpy.data.objects['Cab and roof']
+  distance,p,q=closest_vertex_pair(arm,body)
+  assert distance>.05,('UNEXPECTED_MIRROR_IMPORT_GEOMETRY',side,distance)
+  shift=.95*(q-p)
+  offset_mesh_instance(arm,shift)
+  offset_mesh_instance(shell,shift)
+  _,p,q=closest_vertex_pair(shell,arm)
+  offset_mesh_instance(shell,.93*(q-p))
+  assert closest_vertex_pair(arm,body)[0]<.025,('MIRROR_STALK_DETACHED',side)
+  assert closest_vertex_pair(shell,arm)[0]<.02,('MIRROR_SHELL_DETACHED',side)
+ legacy_metadata(car)
 print('MIRRORS_GEOMETRY_ANCHORED',flush=True)
 
 car_meshes=[o for o in car.children_recursive if o.type=='MESH']
@@ -231,26 +239,7 @@ def car_matrix(p):
   @Matrix.Rotation(-roll,4,'Y')@Matrix.Diagonal((CAR_SCALE,CAR_SCALE,CAR_SCALE,1)))
 # Reuse the imported wheel meshes. Each axle-side assembly rotates about its
 # measured tyre centre; preserve every child's existing car-local transform.
-wheel_pivots=[]
-for axle in ('Front','Rear'):
- for suffix in ('','.001'):
-  tyre=bpy.data.objects[axle+'_tire'+suffix]
-  bounds=[tyre.matrix_local@Vector(v) for v in tyre.bound_box]
-  centre=sum(bounds,Vector())/len(bounds)
-  radius=(max(v.z for v in bounds)-min(v.z for v in bounds))/2
-  bpy.ops.object.empty_add(type='PLAIN_AXES')
-  pivot=bpy.context.object; pivot.name='WheelPivot_'+axle+suffix
-  pivot.parent=car;pivot.location=centre
-  pivot['rolling_radius_local']=radius
-  for ob in car_meshes:
-   if not ob.name.startswith(axle+'_'):continue
-   bb=[ob.matrix_local@Vector(v) for v in ob.bound_box]
-   mid=sum(bb,Vector())/len(bb)
-   if mid.x*centre.x<=0:continue
-   old=ob.matrix_local.copy()
-   ob.parent=pivot;ob.matrix_parent_inverse.identity()
-   ob.matrix_basis=Matrix.Translation(-centre)@old
-  wheel_pivots.append(pivot)
+wheel_pivots=make_wheels(car)
 distance=0.
 for f,p in enumerate(POSES,1):
  if f>1:distance+=math.hypot(p[0]-POSES[f-2][0],p[1]-POSES[f-2][1])
@@ -426,7 +415,7 @@ cam_tgt=Vector(tuple(float(v) for v in os.environ.get('V3_TGT','-1.9,-.2,.35').s
 bpy.ops.object.camera_add(location=cam_loc)
 cam=bpy.context.object;cam.name='FIXED hero 3/4 CC0 car + guardrail'
 point(cam,cam_tgt)
-cam.data.type='PERSP';cam.data.lens=float(os.environ.get('V3_LENS','20'))
+cam.data.type='PERSP';cam.data.lens=float(os.environ.get('V3_LENS','19.3' if variant=='graphite' else '20'))
 cam.data.sensor_fit='VERTICAL'
 scene.camera=cam
 scene['primary_contact_frames']=[12,48]

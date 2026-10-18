@@ -119,3 +119,7 @@ motion and the final native frames before deciding whether to expand the film.
 Keep the PR draft. No merge, publishing, paid API or new cloud service.
 
 Continuous renders retain Cycles persistent data (official Blender 5 performance option). This changes cache lifetime, not resolution, samples or QA floors. Ten-frame CI shards avoid the prior 30-frame timeout risk.
+
+## Graphite visual-quality iteration
+
+Set VISUAL_VEHICLE_VARIANT=graphite and supply the pinned graphite GLB in VISUAL_V2_ASSET. The legacy default and its same-frame gates are preserved. See [ASSETS.md](ASSETS.md) for licensing, axes, wheel/attachment mapping and the restrained roadside geometry. CI checks both variants before rendering the graphite clip.

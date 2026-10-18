@@ -9,7 +9,9 @@ for case,expected in cases:
  bpy.ops.wm.open_mainfile(filepath=source)
  s=bpy.context.scene;s.frame_set(1);bpy.context.view_layer.update()
  if case=='detached_mirror':
-  ob=bpy.data.objects['Mirror shell']
+  car=bpy.data.objects['CC0 detailed sedan animated as a rigid car']
+  connections=json.loads(car['mirror_connections_json'])
+  ob=bpy.data.objects[connections[0][0]]
   ob.location.x+=.5
  else:
   rail=next(o for o in s.objects if o.name.startswith('Real 3D W-beam rail'))

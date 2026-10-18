@@ -1,9 +1,12 @@
-import bpy,json,math,os
+import bpy,json,math,os,sys
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from vehicle_geometry import mirror_connections,tyre_objects
 from mathutils import Vector
 from mathutils.kdtree import KDTree
 from bpy_extras.object_utils import world_to_camera_view
 d=Path(os.environ.get('VISUAL_V2_OUTPUT','/tmp/guardrail_v2_out'))
+d.mkdir(parents=True,exist_ok=True)
 scene=bpy.context.scene
 cam=scene.camera
 assert cam is not None and cam.type=='CAMERA'
@@ -50,13 +53,10 @@ mirror_gaps={}
 for fr in (1,22,40,45):
  scene.frame_set(fr)
  bpy.context.view_layer.update()
- for side in ('','.001'):
-  arm=bpy.data.objects['Mirror arm'+side]
-  shell=bpy.data.objects['Mirror shell'+side]
-  body=bpy.data.objects['Cab and roof']
-  aa=mesh_gap(arm,body);ss=mesh_gap(shell,arm)
-  mirror_gaps[str(fr)+':'+(side or 'left')]=[round(aa,4),round(ss,4)]
-  assert aa<.025 and ss<.02,('DETACHED_MIRROR_PIECES',fr,side,aa,ss)
+ for a,b,limit in mirror_connections(car):
+  distance=mesh_gap(bpy.data.objects[a],bpy.data.objects[b])
+  mirror_gaps[str(fr)+':'+a]=round(distance,5)
+  assert distance<limit,('DETACHED_MIRROR_PIECES',fr,a,b,distance)
 print('MIRROR_ATTACHMENT_QA_PASS',mirror_gaps,flush=True)
 car_bounds={};contact={}
 xs=sorted({round(p.x,4) for p in base})
@@ -96,7 +96,7 @@ assert contact['1'] is not None and contact['1']>.10,('NO_VISIBLE_APPROACH_GAP',
 for fr in ('22','40'):
  assert contact[fr] is not None and -.025<=contact[fr]<=.03,('CAR_RAIL_NOT_IN_CONTACT_OR_PENETRATING',fr,contact)
 scene.frame_set(1)
-out={'scene':'Guardrail V3 contact-solved isolated development','quality_gate':'UNASSESSED','camera_static':True,'native_resolution':[width,height],'samples':scene.cycles.samples,'frame1':screen_base,'frame40':screen_peak,'projected_delta_px':round(delta,2),'world_deflection_m':world_deflection,'rail_vertex_index':idx,'car_bbox_normalized':car_bounds,'car_rail_contact_gap_m':contact,'mirror_attachment_gaps_m':mirror_gaps,'has_reference_guide':bool(guide),'editorial_flag':'CONCEPTUAL animation, NOT crash-test validated'}
+out={'vehicle_variant':car.get('vehicle_variant','legacy'),'scene':'Guardrail V3 contact-solved isolated development','quality_gate':'UNASSESSED','camera_static':True,'native_resolution':[width,height],'samples':scene.cycles.samples,'frame1':screen_base,'frame40':screen_peak,'projected_delta_px':round(delta,2),'world_deflection_m':world_deflection,'rail_vertex_index':idx,'car_bbox_normalized':car_bounds,'car_rail_contact_gap_m':contact,'mirror_attachment_gaps_m':mirror_gaps,'has_reference_guide':bool(guide),'editorial_flag':'CONCEPTUAL animation, NOT crash-test validated'}
 d.joinpath('v2_validation.json').write_text(json.dumps(out,indent=2))
 print('RENDER_QA_REPORT',json.dumps(out),flush=True)
 assert delta>=40,'insufficient visible rail displacement'

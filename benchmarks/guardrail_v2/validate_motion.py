@@ -1,6 +1,8 @@
 """Full-frame visual continuity audit; not an engineering crash certification."""
-import bpy, json, math, os
+import bpy, json, math, os, sys
 from pathlib import Path
+sys.path.insert(0,str(Path(__file__).resolve().parent))
+from vehicle_geometry import mirror_connections,tyre_objects
 from mathutils import Vector
 from mathutils.kdtree import KDTree
 from bpy_extras.object_utils import world_to_camera_view
@@ -14,7 +16,7 @@ s.frame_set(1);bpy.context.view_layer.update()
 # Parent-relative matrices must stay fixed, including spokes under wheel pivots.
 reference={o.name:o.matrix_local.copy() for o in parts}
 camera=s.camera.matrix_world.copy()
-tyres=[o for o in parts if '_tire' in o.name]
+tyres=tyre_objects(car)
 errors=[]; frames=[]
 def require(ok,label,frame,value):
  if not ok:errors.append({'frame':frame,'check':label,'value':value})
@@ -44,10 +46,10 @@ for f in range(s.frame_start,s.frame_end+1):
  bounds=[min(p.x for p in screen),max(p.x for p in screen),min(p.y for p in screen),max(p.y for p in screen)]
  require(min(p.z for p in screen)>0 and bounds[0]>=.05 and bounds[1]<=.95 and bounds[2]>=.05 and bounds[3]<=.95,'CAR_FRAME_MARGIN',f,bounds)
  gaps=[]
- for suffix in ('','.001'):
-  arm=bpy.data.objects['Mirror arm'+suffix];shell=bpy.data.objects['Mirror shell'+suffix]
-  gaps.append([meshgap(arm,bpy.data.objects['Cab and roof']),meshgap(shell,arm)])
- require(all(a<.025 and b<.02 for a,b in gaps),'MIRROR_DETACHED',f,gaps)
+ for a,b,limit in mirror_connections(car):
+  mirror_distance=meshgap(bpy.data.objects[a],bpy.data.objects[b])
+  gaps.append([a,b,mirror_distance])
+  require(mirror_distance<limit,'MIRROR_DETACHED',f,[a,b,mirror_distance])
  tyre_ground=[min((o.matrix_world@v.co).z for v in o.data.vertices)-(-.045) for o in tyres]
  require(all(-.005<=g<=.015 for g in tyre_ground),'TYRE_GROUND',f,tyre_ground)
  # Evaluate actual shape-key weights at this frame, independent of stored contact metadata.
@@ -95,7 +97,7 @@ for f in range(s.frame_start,s.frame_end):
  s.frame_set(f,subframe=.5)
  weights=[key.value for key in keys[1:]]
  require(abs(sum(weights)-1)<1e-5 and min(weights)>=-1e-6,'SHAPE_KEY_BLEND',f+.5,sum(weights))
-report={'status':'FAIL' if errors else 'PASS','frames_checked':len(frames),'mesh_parts':len(parts),'errors':errors,'frames':frames,'editorial_quality':'UNASSESSED','physical_validation':False}
+report={'vehicle_variant':car.get('vehicle_variant','legacy'),'status':'FAIL' if errors else 'PASS','frames_checked':len(frames),'mesh_parts':len(parts),'errors':errors,'frames':frames,'editorial_quality':'UNASSESSED','physical_validation':False}
 (out/'motion_validation.json').write_text(json.dumps(report,indent=2))
 print('FULL_FRAME_AUDIT',json.dumps({k:v for k,v in report.items() if k!='frames'}),flush=True)
 assert not errors,('MOTION_AUDIT_FAILED',len(errors))

@@ -1,5 +1,5 @@
 """Reuse verified CC0 Poly Haven lighting/asphalt, keeping the fixed motion camera."""
-import bpy,os,hashlib
+import bpy,os,hashlib,sys
 from pathlib import Path
 s=bpy.context.scene
 Path(os.environ['VISUAL_V2_OUTPUT']).mkdir(parents=True,exist_ok=True)
@@ -36,10 +36,34 @@ tex=n.new('ShaderNodeTexImage');tex.extension='REPEAT'
 tex.image=bpy.data.images.load(str(assets/'asphalt_01_diff_1k.jpg'),check_existing=True)
 l.new(scale.outputs['Vector'],tex.inputs['Vector']);l.new(tex.outputs['Color'],p.inputs['Base Color'])
 p.inputs['Roughness'].default_value=.9
-paint=bpy.data.materials['blue'];p=next(n for n in paint.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
+paint=bpy.data.materials.get('paint') or bpy.data.materials['blue'];p=next(n for n in paint.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
 p.inputs['Base Color'].default_value=(.045,.13,.23,1)
 p.inputs['Metallic'].default_value=.6;p.inputs['Roughness'].default_value=.25;p.inputs['Coat Weight'].default_value=.65
-# Guide retained for the existing geometry gate; render it as an explicit comparison aid.
+car=bpy.data.objects['CC0 detailed sedan animated as a rigid car']
+if car.get('vehicle_variant')=='graphite':
+ # The reused source glass is named glass.001 and carries 94% transmission.
+ # Use deliberate opaque tinted explainer glazing, matching the legacy look.
+ glazing=[]
+ for material in bpy.data.materials:
+  if material.name.split('.')[0]!='glass' or not material.users:continue
+  pp=next(n for n in material.node_tree.nodes if n.type=='BSDF_PRINCIPLED')
+  pp.inputs['Base Color'].default_value=(.015,.025,.035,1)
+  pp.inputs['Alpha'].default_value=1
+  pp.inputs['Transmission Weight'].default_value=0
+  pp.inputs['Metallic'].default_value=0
+  pp.inputs['Roughness'].default_value=.12
+  pp.inputs['Coat Weight'].default_value=.25
+  pp.inputs['Specular IOR Level'].default_value=.35
+  glazing.append(material.name)
+ assert glazing,'GRAPHITE_GLAZING_NOT_FOUND'
+ s['glazing_style']='opaque_tint_no_transmission'
+ print('GRAPHITE_GLAZING_NORMALIZED',glazing,flush=True)
+
+ sys.path.insert(0,str(Path(__file__).resolve().parent))
+ from landscape import apply_landscape
+ apply_landscape(s)
+# The undeformed guide remains in geometry QA; the new styled view hides it.
+
 bpy.ops.file.pack_all()
 s.frame_set(1)
 bpy.ops.wm.save_as_mainfile(filepath=str(Path(os.environ['VISUAL_V2_OUTPUT'])/'guardrail_v2_local.blend'))

@@ -13,7 +13,11 @@ permissions:
 jobs:
   motion-preflight:
     runs-on: ubuntu-24.04
-    timeout-minutes: 12
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [legacy, graphite]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install pinned Blender
@@ -31,15 +35,19 @@ jobs:
           curl -fLsS --retry 2 --max-time 120 https://dl.polyhaven.org/file/ph-assets/HDRIs/hdr/1k/suburban_field_01_1k.hdr -o "$RUNNER_TEMP/assets/suburban_field_01_1k.hdr"
           curl -fLsS --retry 2 --max-time 120 https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/asphalt_01/asphalt_01_diff_1k.jpg -o "$RUNNER_TEMP/assets/asphalt_01_diff_1k.jpg"
           echo "4cb896f740de4da871c1d87c4af2b734db3d1e8fac852e308f1fca03a63b25d3  $RUNNER_TEMP/assets/sedan-original.glb" | sha256sum -c -
+          curl -fLsS --retry 2 --max-time 120 https://www.innerscene.com/api/library/graphite-four-door-sedan-eed96d12/download -o "$RUNNER_TEMP/assets/graphite.glb"
+          echo "feb0be31d153ddb42dc15ae52a651e214e85ab67e31bec4282b00f9d47c9b597  $RUNNER_TEMP/assets/graphite.glb" | sha256sum -c -
           echo "785278f45fbe4714782d7f291e6abc9e58f1d705c2c2fe3743d11eee63f34ea5  $RUNNER_TEMP/assets/suburban_field_01_1k.hdr" | sha256sum -c -
           echo "99b6f6bdfbd09279f3f550ac9593336df541aa2319537566eeb3e737d8512010  $RUNNER_TEMP/assets/asphalt_01_diff_1k.jpg" | sha256sum -c -
       - name: Build scene and validate all 90 frames
         env:
           VISUAL_V2_OUTPUT: ${{ runner.temp }}/motion
-          VISUAL_V2_ASSET: ${{ runner.temp }}/assets/sedan-original.glb
+          VISUAL_V2_ASSET: ${{ runner.temp }}/assets/graphite.glb
+          VISUAL_VEHICLE_VARIANT: ${{ matrix.variant }}
           VISUAL_LOOK_ASSETS: ${{ runner.temp }}/assets
         run: |
           set -euo pipefail
+          if [ "$VISUAL_VEHICLE_VARIANT" = legacy ]; then export VISUAL_V2_ASSET="$RUNNER_TEMP/assets/sedan-original.glb"; fi
           "$BLENDER_EXE" -b -t 4 --python-exit-code 1 --python benchmarks/guardrail_v2/build_scene.py -- scene 100 16
           "$BLENDER_EXE" -b -t 4 "$VISUAL_V2_OUTPUT/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_v2/apply_look.py
           "$BLENDER_EXE" -b -t 4 "$VISUAL_V2_OUTPUT/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_v2/validate_scene.py --python benchmarks/guardrail_v2/validate_motion.py
@@ -50,7 +58,7 @@ jobs:
           "$BLENDER_EXE" -b -t 4 "$VISUAL_V2_OUTPUT/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_v2/check_motion_regressions.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: guardrail-motion-scene
+          name: guardrail-motion-scene-${{ matrix.variant }}
           path: |
             ${{ runner.temp }}/motion/guardrail_v2_local.blend
             ${{ runner.temp }}/motion/*validation.json
@@ -79,7 +87,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: guardrail-motion-scene
+          name: guardrail-motion-scene-graphite
           path: ${{ runner.temp }}/motion
       - name: Install pinned Blender
         run: |
@@ -95,8 +103,10 @@ jobs:
         run: |
           "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 "$RUNNER_TEMP/motion/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_v2/render_motion.py
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
         with:
           name: native-motion-${{ matrix.start }}
+          overwrite: true
           path: ${{ runner.temp }}/frames/frame_*.png
           if-no-files-found: error
           retention-days: 3
