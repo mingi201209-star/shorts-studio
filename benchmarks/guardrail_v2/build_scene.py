@@ -226,7 +226,7 @@ def pose(f):
  for k in range(1,f+1):
   if k>1:
    e=min(max((k-12)/float(os.environ.get("V3_REDIR","48")),0.),1.)
-   h=math.radians(25-33*e**float(os.environ.get("V3_POW","3")))  # rail resistance turns the car parallel
+   h=math.radians(25-33*e**float(os.environ.get("V3_POW","2.3" if variant=="graphite" else "3")))  # rail resistance turns the car parallel
    v=.070-.020*smooth(e)
    x+=v*math.cos(h);y+=v*math.sin(h)
   roll=0.0  # Rigid wheelbase: avoid driving the near tyres below the road.
@@ -240,6 +240,28 @@ def car_matrix(p):
 # Reuse the imported wheel meshes. Each axle-side assembly rotates about its
 # measured tyre centre; preserve every child's existing car-local transform.
 wheel_pivots=make_wheels(car)
+# Keep wheels, tread, rotor assemblies and calipers on the unsprung chassis.
+# Only the sprung assembly reacts; derive onset from geometric approach,
+# then use the exact same body transform in both the rail solve and Blender.
+body_pivot=None
+body_local_points=[];unsprung_local_points=[]
+from body_response import attach_body,local_matrix
+if variant=='graphite':
+ wheel_parts={ob for pivot in wheel_pivots for ob in pivot.children_recursive}
+ for ob in car_meshes:
+  target=unsprung_local_points if ob in wheel_parts or ob.name.startswith('Brake caliper') else body_local_points
+  m=car.matrix_world.inverted()@ob.matrix_world
+  target.extend(m@v.co for v in ob.data.vertices)
+ onset=FRAMES
+ for f,p in enumerate(POSES,1):
+  M=car_matrix(p)
+  rigid_world=[M@lp for lp in local_pts]
+  envelope=[w.y for w in rigid_world if RAIL_Z-RAIL_H/2-.03<=w.z<=RAIL_Z+RAIL_H/2+.03]
+  if envelope and RAIL_FACE-max(envelope)<=.03:
+   onset=f;break
+ assert onset<FRAMES,'BODY_CONTACT_ONSET_MISSING'
+ body_pivot=attach_body(car,wheel_pivots,onset,FRAMES)
+ print('BODY_RESPONSE_ONSET',onset,flush=True)
 distance=0.
 for f,p in enumerate(POSES,1):
  if f>1:distance+=math.hypot(p[0]-POSES[f-2][0],p[1]-POSES[f-2][1])
@@ -261,8 +283,10 @@ gapdiag=[]
 deflect=[]; contact=[]; prev=[0.]*NX; peak=[0.]*NX
 for f,p in enumerate(POSES,1):
  M=car_matrix(p)
+ body_transform=local_matrix(f,onset) if body_pivot else None
+ frame_points=([body_transform@lp for lp in body_local_points]+unsprung_local_points) if body_pivot else local_pts
  env=[-9.]*NX
- for lp in local_pts:
+ for lp in frame_points:
   w=M@lp
   if zlo<=w.z<=zhi:
    i=int(round((w.x-X0)/dx))
@@ -276,7 +300,7 @@ for f,p in enumerate(POSES,1):
  d=[max(d[i],residual[i]) for i in range(NX)]
  # Match the actual sagged beam band, rather than letting vertices above
  # the beam create phantom contact as the rear of the car passes.
- world_points=[M@lp for lp in local_pts]
+ world_points=[M@lp for lp in frame_points]
  for iteration in range(3):
   envelope=[-9.]*NX
   for w in world_points:
@@ -329,6 +353,7 @@ def linear_animation(id_block):
   for kp in fc.keyframe_points:kp.interpolation='LINEAR'
 linear_animation(rail.data.shape_keys)
 linear_animation(car)
+if body_pivot:linear_animation(body_pivot)
 for pivot in wheel_pivots:linear_animation(pivot)
 
 far=[]

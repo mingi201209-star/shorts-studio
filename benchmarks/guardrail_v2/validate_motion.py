@@ -103,7 +103,10 @@ for f in range(s.frame_start,s.frame_end):
 from validate_supports import support_errors
 support_failures,support_frames=support_errors(s,rail)
 errors.extend(support_failures)
-report={'support_frames':support_frames,'vehicle_variant':car.get('vehicle_variant','legacy'),'status':'FAIL' if errors else 'PASS','frames_checked':len(frames),'mesh_parts':len(parts),'errors':errors,'frames':frames,'editorial_quality':'UNASSESSED','physical_validation':False}
+from validate_body import body_errors
+body_failures,body_frames=body_errors(s,car,frames)
+errors.extend(body_failures)
+report={'body_frames':body_frames,'support_frames':support_frames,'vehicle_variant':car.get('vehicle_variant','legacy'),'status':'FAIL' if errors else 'PASS','frames_checked':len(frames),'mesh_parts':len(parts),'errors':errors,'frames':frames,'editorial_quality':'UNASSESSED','physical_validation':False}
 (out/'motion_validation.json').write_text(json.dumps(report,indent=2))
-print('FULL_FRAME_AUDIT',json.dumps({k:v for k,v in report.items() if k not in ('frames','support_frames')}),flush=True)
+print('FULL_FRAME_AUDIT',json.dumps({k:v for k,v in report.items() if k not in ('frames','support_frames','body_frames')}),flush=True)
 assert not errors,('MOTION_AUDIT_FAILED',len(errors))

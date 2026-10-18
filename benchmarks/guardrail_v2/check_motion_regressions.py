@@ -5,6 +5,8 @@ source=bpy.data.filepath
 root=Path(os.environ['VISUAL_V2_OUTPUT'])
 audit=Path(__file__).with_name('validate_motion.py')
 cases=[('detached_mirror','MIRROR_DETACHED'),('missing_contact','CONTACT_LOST'),('detached_splice_bolt','SUPPORT_BOLT_DETACHED')]
+if bpy.data.objects.get('SprungBody_contact_response'):
+ cases.append(('frozen_body','BODY_RESPONSE_ABSENT'))
 for case,expected in cases:
  bpy.ops.wm.open_mainfile(filepath=source)
  s=bpy.context.scene;s.frame_set(1);bpy.context.view_layer.update()
@@ -13,6 +15,9 @@ for case,expected in cases:
   connections=json.loads(car['mirror_connections_json'])
   ob=bpy.data.objects[connections[0][0]]
   ob.location.x+=.5
+ elif case=='frozen_body':
+  body=bpy.data.objects['SprungBody_contact_response'];body.animation_data_clear()
+  body.rotation_euler=(0,0,0);body.location.z=.45
  elif case=='detached_splice_bolt':
   bolt=next(o for o in s.objects if o.name.startswith('W-beam splice bolt head'))
   for vertex in bolt.data.vertices:vertex.co.z+=.15

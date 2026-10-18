@@ -150,3 +150,24 @@ and visual-displacement thresholds are unchanged.
 Editorial acceptance remains pending until the exact-head rendered frames
 and video have been reviewed. The previous revision remains available on
 the backup branch; this PR stays draft.
+
+## Contact-triggered sprung-body iteration
+
+The graphite body is carried on a separate sprung assembly. Its bounded roll,
+pitch and 12 mm heave start at geometrically detected contact and settle before
+exit; the wheel pivots and calipers remain on the unsprung chassis. Tread blocks,
+ventilated rotors and rotor drill meshes now rotate with their measured wheel
+centres rather than remaining on the body. Mirror assemblies, glazing and cabin
+parts retain their transforms within the sprung assembly.
+
+The rail solver uses the same per-frame sprung-body transform as the Blender
+animation. Graphite redirection begins more promptly (the heading easing power
+changes from 3 to 2.3), while the legacy trajectory remains the rollback control.
+All existing contact, tyre, camera, attachment, support and continuity limits
+remain in force.
+
+The independent motion gate additionally requires no body response before actual
+contact, a visible but bounded response, limited angular steps, a settled tail
+and intact wheel assemblies. A frozen-body mutation must be rejected for graphite.
+This remains authored kinematic motion, not calibrated suspension/crash physics.
+Editorial acceptance requires inspection of the exact-head rendered sequence.

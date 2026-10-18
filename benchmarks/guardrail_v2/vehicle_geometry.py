@@ -83,7 +83,7 @@ def make_wheels(car):
   bounds=[tyre.matrix_local@Vector(v) for v in tyre.bound_box]
   centres[tyre.name]=sum(bounds,Vector())/len(bounds)
  if car['vehicle_variant']=='graphite':
-  moving=[o for o in meshes if o.name.startswith('107 reused ') or o.name.startswith('Brake rotor')]
+  moving=[o for o in meshes if o.name.startswith('107 reused ') or o.name.startswith(('Brake rotor','Ventilated brake rotor','Rotor drill recess','Siped tread blocks'))]
  else:moving=[o for o in meshes if o.name.startswith(('Front_','Rear_'))]
  assert all(o in moving for o in tyres)
  assigned={name:[] for name in centres}
