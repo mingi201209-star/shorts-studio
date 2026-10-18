@@ -161,8 +161,8 @@ centres rather than remaining on the body. Mirror assemblies, glazing and cabin
 parts retain their transforms within the sprung assembly.
 
 The rail solver uses the same per-frame sprung-body transform as the Blender
-animation. Graphite redirection begins more promptly (the heading easing power
-changes from 3 to 2.3), while the legacy trajectory remains the rollback control.
+animation. Both variants retain the previous heading trajectory: an earlier-turn
+candidate lost contact at frame 48 and was reverted, retaining the 30 mm gate.
 All existing contact, tyre, camera, attachment, support and continuity limits
 remain in force.
 

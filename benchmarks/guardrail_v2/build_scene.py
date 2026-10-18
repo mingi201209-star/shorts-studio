@@ -226,7 +226,7 @@ def pose(f):
  for k in range(1,f+1):
   if k>1:
    e=min(max((k-12)/float(os.environ.get("V3_REDIR","48")),0.),1.)
-   h=math.radians(25-33*e**float(os.environ.get("V3_POW","2.3" if variant=="graphite" else "3")))  # rail resistance turns the car parallel
+   h=math.radians(25-33*e**float(os.environ.get("V3_POW","3")))  # rail resistance turns the car parallel
    v=.070-.020*smooth(e)
    x+=v*math.cos(h);y+=v*math.sin(h)
   roll=0.0  # Rigid wheelbase: avoid driving the near tyres below the road.
