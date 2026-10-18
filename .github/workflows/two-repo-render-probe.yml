@@ -1,0 +1,55 @@
+name: Two-repo Blender A-B render probe
+on:
+  push:
+    branches:
+      - 'render-farm/single-20261018'
+      - 'render-farm/multi-20261018'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  baseline:
+    if: github.ref == 'refs/heads/render-farm/single-20261018'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [0, 1]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Native preview test shard
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y blender
+          mkdir -p "$RUNNER_TEMP/probe"
+          blender -b -noaudio -t 2 --python-exit-code 1 -P benchmarks/render_farm/probe_scene.py -- --shard ${{ matrix.shard }} --out "$RUNNER_TEMP/probe"
+          python3 benchmarks/render_farm/verify_probe.py --folder "$RUNNER_TEMP/probe" --shard ${{ matrix.shard }} --script benchmarks/render_farm/probe_scene.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: single-shard-${{ matrix.shard }}
+          path: |
+            ${{ runner.temp }}/probe/proof.json
+            ${{ runner.temp }}/probe/frame_*.png
+          retention-days: 1
+  distributed:
+    if: github.ref == 'refs/heads/render-farm/multi-20261018'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Native preview test shard
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq && sudo apt-get install -y blender
+          mkdir -p "$RUNNER_TEMP/probe"
+          blender -b -noaudio -t 2 --python-exit-code 1 -P benchmarks/render_farm/probe_scene.py -- --shard 0 --out "$RUNNER_TEMP/probe"
+          python3 benchmarks/render_farm/verify_probe.py --folder "$RUNNER_TEMP/probe" --shard 0 --script benchmarks/render_farm/probe_scene.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: multi-coordinator-shard-0
+          path: |
+            ${{ runner.temp }}/probe/proof.json
+            ${{ runner.temp }}/probe/frame_*.png
+          retention-days: 1
