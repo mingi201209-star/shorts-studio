@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from PIL import Image
 
-from benchmarks.factory_perf.benchmark import compare_frames
+from shorts_studio.factory.render_benchmark import compare_frames
 
 
 def put(root: Path, frames: list[tuple[int,int,int]]):

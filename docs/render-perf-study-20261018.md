@@ -32,3 +32,5 @@ A/B/A steady-frame speedup = **1.010×** (about 1%). RGB frames were **pixel-exa
 - Prioritize provenance-verified reuse of valid native shots, shared 3D car/road asset construction, and separate speech/subtitle assembly across the planned seven road-safety episodes.
 - Validate **another topic's actual moving 3D footage** before claiming the Factory can produce another video in minutes.
 - Pilot rumble strip geometry is visually BELOW the existing floor and remains held; it is not to be surfaced as ready or uploaded.
+
+Reproduce with `python -m shorts_studio.factory.render_benchmark --repo . --out /tmp/new-test-path --mode preview --frames 4`. The benchmarking command is installed alongside the app to avoid test-time source-root import assumptions.
