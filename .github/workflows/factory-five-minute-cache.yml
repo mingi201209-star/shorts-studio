@@ -17,6 +17,12 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.11'
+      - name: Checkout audited English script, TTS captures and existing native QA
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ef56839e706f55fbc7f3513edc9acec0d254a981
+          path: audited-english-source
+          persist-credentials: false
       - name: Install assembly requirements
         run: |
           set -euo pipefail
@@ -42,12 +48,12 @@ jobs:
       - name: Synthesize expanded English narration from checked script
         env:
           FILM_OUT: ${{ runner.temp }}/expanded
-        run: python3 benchmarks/guardrail_expanded/assemble.py speech
+        run: python3 "$GITHUB_WORKSPACE/audited-english-source/benchmarks/guardrail_expanded/assemble.py" speech
       - name: Full 900-frame source QA, caption alignment, silence, and film assembly
         env:
           FILM_OUT: ${{ runner.temp }}/expanded
           EXPANDED_SOURCE_PROOF: ${{ runner.temp }}/source-proof/director_validation.json
-        run: python3 benchmarks/guardrail_expanded/assemble.py assemble
+        run: python3 "$GITHUB_WORKSPACE/audited-english-source/benchmarks/guardrail_expanded/assemble.py" assemble
       - name: Assert 5-minute cached native delivery without lowering quality
         env:
           FILM_OUT: ${{ runner.temp }}/expanded
