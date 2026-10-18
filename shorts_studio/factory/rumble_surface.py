@@ -9,6 +9,7 @@ import argparse
 import json
 import math
 import sys
+import time
 from pathlib import Path
 
 import bpy
@@ -21,6 +22,7 @@ def arg_parser():
     p.add_argument("--shot", required=True)
     p.add_argument("--out", required=True)
     p.add_argument("--preview", action="store_true")
+    p.add_argument("--persistent-data", action="store_true", help="Experimental Cycles acceleration; no visual changes")
     p.add_argument("--frames", type=int, default=None)
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
@@ -131,6 +133,7 @@ def main():
     sc.render.engine = "CYCLES"
     sc.cycles.samples = sample
     sc.cycles.use_denoising = True
+    sc.render.use_persistent_data = args.persistent_data
     sc.render.resolution_x = width
     sc.render.resolution_y = height
     sc.render.resolution_percentage = 100
@@ -187,6 +190,7 @@ def main():
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     paths = []
+    render_seconds = []
     for f in range(frames):
         t = f / (frames - 1)
         x = start_x + (end_x - start_x) * t
@@ -197,7 +201,9 @@ def main():
         fixed_car.location.z = tire_z + .42
         sc.frame_set(f + 1)
         sc.render.filepath = str(out / f"frame_{f+1:04d}.png")
+        start_time = time.perf_counter()
         bpy.ops.render.render(write_still=True)
+        render_seconds.append(round(time.perf_counter() - start_time, 3))
         paths.append(sc.render.filepath)
         print(f"NATIVE_FRAME_COMPLETE {f+1}/{frames}", flush=True)
 
@@ -210,6 +216,8 @@ def main():
         "groove_depth_mm": groove_mm,
         "fixed_camera": True,
         "samples": sample,
+        "persistent_data": bool(args.persistent_data),
+        "render_seconds_per_frame": render_seconds,
         "note": "Demonstration kinematics only, not impact or suspension measurements",
     }
     (out / "motion-metadata.json").write_text(json.dumps(metadata, indent=2), encoding="utf8")
