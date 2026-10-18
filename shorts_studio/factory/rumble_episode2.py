@@ -1,0 +1,116 @@
+"""Hard-gated 30s English shoulder-rumble episode timeline.
+
+Pure Python: can run without Blender and cannot publish or relax visual QA.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+APPROVED_SERIES = "hidden-engineering-american-roads"
+APPROVED_EPISODE = "rumble-strip-alerts"
+PINNED_ASSET = "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877"
+SHOT_IDS = (
+    "hook_warning", "road_cut", "tire_contact", "rumble_mechanism",
+    "shoulder_location", "driver_response",
+)
+VIEWS = {"hero", "contact", "roadside", "payoff"}
+
+
+def validate_episode(value: dict) -> dict:
+    if not isinstance(value, dict) or set(value) != {
+        "version", "series_id", "episode_id", "language",
+        "audio_target_seconds", "fps", "resolution", "cycles_samples",
+        "total_frames", "source_scene_sha256", "physics_disclosure",
+        "editorial_status", "reference_urls", "shots",
+    }:
+        raise ValueError("episode manifest schema differs from approved production plan")
+    fields = {
+        "version": 1, "series_id": APPROVED_SERIES, "episode_id": APPROVED_EPISODE,
+        "language": "en-US", "audio_target_seconds": 30, "fps": 30,
+        "resolution": [1080, 1920], "cycles_samples": 32,
+        "total_frames": 900, "source_scene_sha256": PINNED_ASSET,
+        "editorial_status": "HOLD_UNTIL_FINAL_QA",
+    }
+    for key, expected in fields.items():
+        if value.get(key) != expected:
+            raise ValueError(f"production setting cannot change: {key}")
+    if "not a calibrated" not in value["physics_disclosure"]:
+        raise ValueError("physics disclosure missing")
+    if not value["reference_urls"] or not all(
+        url.startswith("https://") for url in value["reference_urls"]
+    ):
+        raise ValueError("no verifiable public road-safety evidence")
+    shots = value["shots"]
+    if len(shots) != 6 or tuple(s.get("id") for s in shots) != SHOT_IDS:
+        raise ValueError("all six story beats are required")
+    previous = 0
+    for shot in shots:
+        if set(shot) != {
+            "id", "start", "end", "view", "narration_en",
+            "visual_proof", "mechanism_change",
+        }:
+            raise ValueError("invalid shot content")
+        if (shot["view"] not in VIEWS or shot["start"] != previous + 1
+                or type(shot["end"]) is not int or shot["end"] - shot["start"] != 149):
+            raise ValueError("missing/overlapping/shortened native motion shot")
+        if not 8 <= len(shot["narration_en"].split()) <= 17:
+            raise ValueError("shot narration too short/long for five seconds")
+        if len(shot["visual_proof"]) < 18 or len(shot["mechanism_change"]) < 18:
+            raise ValueError("visual change or mechanism proof insufficient")
+        previous = shot["end"]
+    if previous != 900:
+        raise ValueError("native 900-frame ending missing")
+    if len({s["narration_en"] for s in shots}) != 6:
+        raise ValueError("repeated narration prohibited")
+    return value
+
+
+def load_episode(path: Path) -> dict:
+    return validate_episode(json.loads(path.read_text(encoding="utf8")))
+
+
+def shot_for_frame(episode: dict, frame: int) -> dict:
+    if type(frame) is not int or not 1 <= frame <= 900:
+        raise ValueError("frame outside the one real 30s film")
+    return next(s for s in episode["shots"] if s["start"] <= frame <= s["end"])
+
+
+def travel_x(frame: int) -> float:
+    """Global monotonic trajectory shared by ALL independently rendered shards."""
+    if type(frame) is not int or not 1 <= frame <= 900:
+        raise ValueError("invalid absolute movie frame")
+    return -2.3 + 4.6 * (frame - 1) / 899
+
+
+def render_slice(start: int, end: int) -> list[int]:
+    if (type(start) is not int or type(end) is not int
+            or start < 1 or end > 900 or end < start or end - start > 29):
+        raise ValueError("up to 30 contiguous authored frames per shard")
+    return list(range(start, end + 1))
+
+
+def main():
+    p = argparse.ArgumentParser()
+    p.add_argument("--manifest", type=Path, required=True)
+    p.add_argument("--start", type=int, required=True)
+    p.add_argument("--end", type=int, required=True)
+    args = p.parse_args()
+    episode = load_episode(args.manifest)
+    frames = render_slice(args.start, args.end)
+    print(json.dumps({
+        "status": "PLANNED_NOT_RENDERED",
+        "episode": episode["episode_id"],
+        "frame_count": len(frames),
+        "first_frame": frames[0],
+        "last_frame": frames[-1],
+        "first_shot": shot_for_frame(episode, frames[0])["id"],
+        "last_shot": shot_for_frame(episode, frames[-1])["id"],
+        "editorial_status": episode["editorial_status"],
+        "production_approved": False,
+    }, indent=2))
+
+
+if __name__ == "__main__":
+    main()

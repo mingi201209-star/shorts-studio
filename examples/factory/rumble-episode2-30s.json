@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "series_id": "hidden-engineering-american-roads",
+  "episode_id": "rumble-strip-alerts",
+  "language": "en-US",
+  "audio_target_seconds": 30,
+  "fps": 30,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "cycles_samples": 32,
+  "total_frames": 900,
+  "source_scene_sha256": "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877",
+  "physics_disclosure": "Stylized time-slowed 3D demonstration of tire-road contact; not a calibrated tire, vehicle dynamics or crash test",
+  "editorial_status": "HOLD_UNTIL_FINAL_QA",
+  "reference_urls": [
+    "https://highways.dot.gov/safety/proven-safety-countermeasures/longitudinal-rumble-strips-and-stripes"
+  ],
+  "shots": [
+    {
+      "id": "hook_warning",
+      "start": 1,
+      "end": 150,
+      "view": "hero",
+      "narration_en": "Those grooves can warn you before your car leaves the road.",
+      "visual_proof": "Detailed entire sedan enters milled shoulder groove strip",
+      "mechanism_change": "Vehicle travels forward toward recessed shoulder grooves"
+    },
+    {
+      "id": "road_cut",
+      "start": 151,
+      "end": 300,
+      "view": "contact",
+      "narration_en": "They are carved into the shoulder, not painted onto it.",
+      "visual_proof": "Actual depressed milling pockets with near-side front tyre visibly above",
+      "mechanism_change": "Tire approaches multiple genuinely recessed asphalt cuts"
+    },
+    {
+      "id": "tire_contact",
+      "start": 301,
+      "end": 450,
+      "view": "contact",
+      "narration_en": "As a tire crosses the cuts, its contact with the road changes.",
+      "visual_proof": "Wheel rotates and road geometry passes below the tire",
+      "mechanism_change": "Wheel rotates based on absolute travelled distance; road contact oscillates"
+    },
+    {
+      "id": "rumble_mechanism",
+      "start": 451,
+      "end": 600,
+      "view": "contact",
+      "narration_en": "That makes a loud rumble and a vibration you can feel.",
+      "visual_proof": "Road pockets and moving tyre with small kinematic vertical response",
+      "mechanism_change": "Wheel passage drives a small vertical body vibration without fake sound-wave physics"
+    },
+    {
+      "id": "shoulder_location",
+      "start": 601,
+      "end": 750,
+      "view": "roadside",
+      "narration_en": "The warning is meant to catch a drifting or drowsy driver's attention.",
+      "visual_proof": "Car, edge stripe and grooved shoulder are present together",
+      "mechanism_change": "Car continues across the shoulder groove zone"
+    },
+    {
+      "id": "driver_response",
+      "start": 751,
+      "end": 900,
+      "view": "payoff",
+      "narration_en": "But it won't steer for you. The driver still has to react.",
+      "visual_proof": "Whole vehicle continues; grooves do not forcibly control steering",
+      "mechanism_change": "No automatic steering implied; continuous native motion ends safely"
+    }
+  ]
+}
