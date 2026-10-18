@@ -1,0 +1,57 @@
+name: Guardrail director native preview
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/guardrail-director-preview.yml"
+      - "benchmarks/guardrail_director/**"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Obtain exact audited scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          test "$(gh api repos/$GH_REPO/actions/runs/39100332936 --jq .head_sha)" = cbd575cf598dd71f786a6b2a65838de22b0350c5
+          gh run download 39100332936 -n guardrail-motion-scene-graphite -D "$RUNNER_TEMP/source"
+      - name: Install pinned Blender
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Validate 900 fixed-camera poses and contact framing
+        env:
+          FILM_OUT: ${{ runner.temp }}/preview
+          DIRECTOR_SOURCE_AUDIT: ${{ runner.temp }}/source/motion_validation.json
+          FILM_START: '1'
+          FILM_END: '900'
+          FILM_CHECK_ONLY: '1'
+        run: |
+          "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 "$RUNNER_TEMP/source/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_director/render.py
+      - name: Render actual native EEVEE candidate frames
+        env:
+          FILM_OUT: ${{ runner.temp }}/preview
+          DIRECTOR_SOURCE_AUDIT: ${{ runner.temp }}/source/motion_validation.json
+          DIRECTOR_FRAMES: '45,330,500'
+          DIRECTOR_ENGINE: BLENDER_EEVEE
+          LP_NUM_THREADS: '4'
+        run: |
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 "$RUNNER_TEMP/source/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_director/render.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: guardrail-director-native-preview
+          path: ${{ runner.temp }}/preview/
+          if-no-files-found: error
+          retention-days: 7

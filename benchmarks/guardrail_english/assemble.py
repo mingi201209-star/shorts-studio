@@ -77,15 +77,9 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     from PIL import ImageFont
     font_path='/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
     assert Path(font_path).is_file(), 'LATIN_FONT_MISSING'
-    for shot in film['shots']:
-        assert ImageFont.truetype(font_path.replace(".ttf","-Bold.ttf"),68).getlength(shot['title'])<=950, ('TITLE_TOO_WIDE',shot['id'])
-        assert ImageFont.truetype(font_path,40).getlength(shot['caption'])<=950, ('LABEL_TOO_WIDE',shot['id'])
     assert all(a['end']<=b['start'] for a,b in zip(all_cues,all_cues[1:])), 'OVERLAPPING_CUES'
     events=[]
-    events.append(f"Dialogue: 0,0:00:00.00,0:00:30.00,Disclosure,,0,0,0,,{film['disclosure']}")
-    for shot in film['shots']:
-        a=(shot['start']-1)/30;b=shot['end']/30
-        for style,key in [('Title','title'),('Label','caption')]:events.append(f"Dialogue: 1,{stamp(a)},{stamp(b)},{style},,0,0,0,,{{\\fad(100,100)}}{shot[key]}")
+    # Owner direction: no upper title, label or disclosure overlay.
     for q in all_cues:
         assert q['end']<=30 and q['start']<q['end']
         # Keep the existing 31-character ceiling and measure English glyph widths.
