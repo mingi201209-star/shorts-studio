@@ -1,0 +1,141 @@
+{
+  "source": "real Edge WordBoundary capture",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "raw": [
+    [
+      {
+        "text": "Protection",
+        "start": 0.107125,
+        "end": 0.5
+      },
+      {
+        "text": "has",
+        "start": 0.511916,
+        "end": 0.678582
+      },
+      {
+        "text": "limits",
+        "start": 0.690458,
+        "end": 1.178541
+      },
+      {
+        "text": "Vehicle",
+        "start": 1.571416,
+        "end": 1.9404569999999999
+      },
+      {
+        "text": "size",
+        "start": 1.952375,
+        "end": 2.428583
+      },
+      {
+        "text": "speed",
+        "start": 2.607125,
+        "end": 3.071416
+      },
+      {
+        "text": "and",
+        "start": 3.321416,
+        "end": 3.4642910000000002
+      },
+      {
+        "text": "impact",
+        "start": 3.476208,
+        "end": 3.9524160000000004
+      },
+      {
+        "text": "angle",
+        "start": 3.964291,
+        "end": 4.345249
+      },
+      {
+        "text": "all",
+        "start": 4.428583,
+        "end": 4.583333
+      },
+      {
+        "text": "change",
+        "start": 4.59525,
+        "end": 4.904791
+      },
+      {
+        "text": "the",
+        "start": 4.916666,
+        "end": 5.011916
+      },
+      {
+        "text": "outcome",
+        "start": 5.023791,
+        "end": 5.440457
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "Protection",
+      "start": 0.107125,
+      "end": 0.5
+    },
+    {
+      "text": "has",
+      "start": 0.511916,
+      "end": 0.678582
+    },
+    {
+      "text": "limits.",
+      "start": 0.690458,
+      "end": 1.178541
+    },
+    {
+      "text": "Vehicle",
+      "start": 1.571416,
+      "end": 1.9404569999999999
+    },
+    {
+      "text": "size,",
+      "start": 1.952375,
+      "end": 2.428583
+    },
+    {
+      "text": "speed,",
+      "start": 2.607125,
+      "end": 3.071416
+    },
+    {
+      "text": "and",
+      "start": 3.321416,
+      "end": 3.4642910000000002
+    },
+    {
+      "text": "impact",
+      "start": 3.476208,
+      "end": 3.9524160000000004
+    },
+    {
+      "text": "angle",
+      "start": 3.964291,
+      "end": 4.345249
+    },
+    {
+      "text": "all",
+      "start": 4.428583,
+      "end": 4.583333
+    },
+    {
+      "text": "change",
+      "start": 4.59525,
+      "end": 4.904791
+    },
+    {
+      "text": "the",
+      "start": 4.916666,
+      "end": 5.011916
+    },
+    {
+      "text": "outcome.",
+      "start": 5.023791,
+      "end": 5.440457
+    }
+  ]
+}
