@@ -18,6 +18,12 @@ parts=[o for o in car.children_recursive if o.type=='MESH']
 original_visibility={o.name:o.hide_render for o in parts}
 hero=(cam.location.copy(),cam.rotation_euler.copy(),cam.data.lens)
 
+def car_bounds():
+    points=[o.matrix_world@Vector(p) for o in parts for p in o.bound_box]
+    lo=tuple(min(p[k] for p in points) for k in range(3))
+    hi=tuple(max(p[k] for p in points) for k in range(3))
+    return [Vector((x,y,z)) for x in (lo[0],hi[0]) for y in (lo[1],hi[1]) for z in (lo[2],hi[2])]
+
 def set_frame(f):
     n=math.floor(f);s.frame_set(n,subframe=f-n);bpy.context.view_layer.update()
 
@@ -34,7 +40,7 @@ for shot in film['shots'][1:]:
     points=[]
     for i in range(21):
         set_frame(a+(b-a)*i/20)
-        points.extend(o.matrix_world@Vector(p) for o in parts for p in o.bound_box)
+        points.extend(car_bounds())
     lo=Vector(tuple(min(p[k] for p in points) for k in range(3)))
     hi=Vector(tuple(max(p[k] for p in points) for k in range(3)))
     target=(lo+hi)/2;target.z=.55
@@ -71,7 +77,7 @@ for frame in range(start,end+1):
         loc,target,lens=views[v];aim(loc,target,lens)
     bpy.context.view_layer.update()
     if not hidden:
-        projected=[world_to_camera_view(s,cam,o.matrix_world@Vector(p)) for o in parts for p in o.bound_box]
+        projected=[world_to_camera_view(s,cam,p) for p in car_bounds()]
         assert all(.05<=p.x<=.95 and .2<=p.y<=.8 and p.z>0 for p in projected),('FILM_CAR_CROPPED',frame)
     if os.environ.get('FILM_CHECK_ONLY')=='1':continue
     p=out/f'frame_{frame:04d}.png';s.render.filepath=str(p)

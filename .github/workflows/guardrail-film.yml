@@ -30,8 +30,12 @@ jobs:
           from pathlib import Path
           p=Path(os.environ['RUNNER_TEMP'])/'scene'
           assert (p/'guardrail_v2_local.blend').stat().st_size>100000
-          for name in ['v2_validation.json','motion_validation.json']:
-              r=json.loads((p/name).read_text());assert r['status']=='PASS',(name,r)
+          r=json.loads((p/'motion_validation.json').read_text())
+          assert r['status']=='PASS' and not r['errors'] and r['frames_checked']==90,r
+          r=json.loads((p/'v2_validation.json').read_text())
+          assert r['camera_static'] and r['native_resolution']==[1080,1920] and r['samples']>=16,r
+          assert r['projected_delta_px']>=40 and r['world_deflection_m']>=.35,r
+          assert all(-.025<=r['car_rail_contact_gap_m'][str(f)]<=.03 for f in (22,40)),r
           CHECK
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

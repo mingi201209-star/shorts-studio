@@ -14,13 +14,18 @@ def stamp(t):
 def srt_time(t):return '0'+stamp(t).replace('.',',')+'0'
 
 def make_speech():
-    from shorts_studio.tts import edge_tts_with_boundaries
+    from shorts_studio.tts import edge_tts_with_boundaries, _pad_audio_to_duration
     from shorts_studio.timing import validate_timings
     all_cues=[];pieces=[];audio_reports=[]
     for shot in film['shots']:
         i=shot['id'];audio=out/f'voice_{i:02d}.mp3';timing=out/f'voice_{i:02d}.timing.json'
         words=asyncio.run(edge_tts_with_boundaries(shot['narration'],audio,timing))
-        duration=float(probe(audio)['format']['duration']);slot=(shot['end']-shot['start']+1)/30
+        duration=float(probe(audio)['format']['duration'])
+        boundary_end=max((w.end for w in words),default=0.)
+        if boundary_end>duration:
+            _pad_audio_to_duration(audio,boundary_end+.05)
+            duration=float(probe(audio)['format']['duration'])
+        slot=(shot['end']-shot['start']+1)/30
         assert duration<=slot-.25,('NARRATION_TOO_LONG',i,duration,slot)
         validate_timings(words,duration)
         assert words and all(w.text.strip() for w in words)
