@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "series_id": "hidden-engineering-american-roads",
+  "ordered_topic_ids": [
+    "guardrail-deflection",
+    "rumble-strip-alerts",
+    "breakaway-signposts",
+    "crash-cushion-barrels",
+    "runaway-truck-ramps",
+    "retroreflective-road-paint",
+    "bridge-expansion-joints"
+  ]
+}
