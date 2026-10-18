@@ -13,3 +13,5 @@ returned HTTP403. No production dependency or engine defaults were changed.
 Source explanation: https://highways.dot.gov/safety/rwd/reduce-crash-severity/guardrail-101
 This is a rigid-vehicle kinematic explanation, not validated crash physics.
 Keep PR draft; no merge or YouTube upload.
+
+Processed speech is lossless PCM WAV so exact sample duration is consistent across ffmpeg versions. Original provider MP3 bytes and hashes are retained. MP3 encoder-padding differences were caught by the strict slot gate; that gate was not relaxed.

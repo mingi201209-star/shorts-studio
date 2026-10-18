@@ -25,6 +25,8 @@ def make_speech():
         assert (provenance['voice'],provenance['rate'])==(film['voice'],film['rate'])
         record=next(x for x in provenance['shots'] if x['id']==i)
         assert record['narration']==shot['narration'], 'CAPTURE_SCRIPT_DRIFT'
+        if Path(record['audio']).suffix.lower()!='.mp3':
+            audio=out/f"captured_voice_{i:02d}{Path(record['audio']).suffix}"
         for key,destination in [('audio',audio),('timing',timing)]:
             source=capture/record[key]
             assert hashlib.sha256(source.read_bytes()).hexdigest()==record[key+'_sha256'], 'CAPTURE_HASH_MISMATCH'
