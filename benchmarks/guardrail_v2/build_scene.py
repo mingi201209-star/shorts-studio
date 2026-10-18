@@ -126,7 +126,7 @@ PMIN=min(rail_profile(j/(NZ-1)) for j in range(NZ))
 RAIL_FACE=RAIL_Y+PMIN-.005
 
 sys.path.insert(0,str(Path(__file__).resolve().parent))
-from vehicle_geometry import verify_asset,prepare_graphite,legacy_metadata,make_wheels
+from vehicle_geometry import verify_asset,prepare_graphite,legacy_metadata,make_wheels,clear_wheelhouse_liners
 variant=os.environ.get('VISUAL_VEHICLE_VARIANT','legacy')
 asset=os.environ['VISUAL_V2_ASSET']
 verify_asset(asset,variant)
@@ -169,6 +169,7 @@ def offset_mesh_instance(obj,delta):
  bpy.context.view_layer.update()
 if variant=='graphite':
  prepare_graphite(car)
+ clear_wheelhouse_liners(car)
 else:
  for side in ('','.001'):
   arm=bpy.data.objects['Mirror arm'+side]

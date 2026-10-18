@@ -171,3 +171,5 @@ contact, a visible but bounded response, limited angular steps, a settled tail
 and intact wheel assemblies. A frozen-body mutation must be rejected for graphite.
 This remains authored kinematic motion, not calibrated suspension/crash physics.
 Editorial acceptance requires inspection of the exact-head rendered sequence.
+
+Wheelhouse clearance: keep the imported outer silhouette, reduce only inner liner wall thickness to 12 mm, and reject any tyre/tread versus wheel-arch triangle intersection over all 90 frames. A restored thick-liner mutation must fail this gate. Native rendering remains the full 90-frame 1080p sequence.

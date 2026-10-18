@@ -107,3 +107,28 @@ def make_wheels(car):
   assert tyre.parent==pivot
   pivots.append(pivot)
  return pivots
+
+
+def clear_wheelhouse_liners(car):
+ """Retain the imported outer arch; thin its inward-facing lining for travel."""
+ tyres=tyre_objects(car)
+ inv_car=car.matrix_world.inverted()
+ def transform(ob):return inv_car@ob.matrix_world
+ def centre(ob):return sum((transform(ob)@Vector(p) for p in ob.bound_box),Vector())/8
+ centres={t.name:centre(t) for t in tyres}
+ liners=[o for o in car.children_recursive if o.name.startswith('Wheelhouse inner liner')]
+ assert len(liners)==4,'FOUR_WHEELHOUSE_LINERS_REQUIRED'
+ for ob in liners:
+  mid=centre(ob);c=min(centres.values(),key=lambda p:(p-mid).length)
+  m=transform(ob);inv=m.inverted()
+  points=[m@v.co for v in ob.data.vertices]
+  radii=[math.hypot(p.y-c.y,p.z-c.z) for p in points]
+  inner,outer=min(radii),max(radii)
+  assert .3<inner<outer<.5 and outer-inner>.012,('UNEXPECTED_LINER_PROFILE',ob.name,inner,outer)
+  for vertex,p,radius in zip(ob.data.vertices,points,radii):
+   cleared=outer-.012*(outer-radius)/(outer-inner)
+   p.y=c.y+(p.y-c.y)*cleared/radius;p.z=c.z+(p.z-c.z)*cleared/radius
+   vertex.co=inv@p
+  ob.data.update()
+  ob['source_inner_radius_m']=inner;ob['preserved_outer_radius_m']=outer
+  print('WHEELHOUSE_LINER_CLEARANCE',ob.name,round(inner,5),round(outer-.012,5),round(outer,5),flush=True)
