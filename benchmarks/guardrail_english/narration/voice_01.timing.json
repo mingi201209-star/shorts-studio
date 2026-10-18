@@ -1,0 +1,85 @@
+{
+  "source": "korean-speech-planner-v3",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "base_pitch": "+0Hz",
+  "volume": "+0%",
+  "units": [
+    {
+      "role": "SETUP",
+      "text": "This rail bends on purpose.",
+      "rate": "+5%",
+      "base_unit_rate": "+5%",
+      "boundary": "strong_boundary",
+      "focus": false,
+      "speech_features": {
+        "syllables": 0,
+        "eojeol": 5,
+        "focus": false,
+        "phrase_final_lengthening": 1.04,
+        "rate_delta_pct": 0,
+        "f0_intent": "continuation_or_terminal"
+      },
+      "start": 0.0,
+      "end": 1.4523739999999998
+    }
+  ],
+  "gaps_seconds": [],
+  "raw": [
+    [
+      {
+        "text": "This",
+        "start": 0.09525,
+        "end": 0.25
+      },
+      {
+        "text": "rail",
+        "start": 0.261916,
+        "end": 0.523832
+      },
+      {
+        "text": "bends",
+        "start": 0.535708,
+        "end": 0.785708
+      },
+      {
+        "text": "on",
+        "start": 0.797625,
+        "end": 0.90475
+      },
+      {
+        "text": "purpose",
+        "start": 0.916666,
+        "end": 1.4523739999999998
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "This",
+      "start": 0.09525,
+      "end": 0.25
+    },
+    {
+      "text": "rail",
+      "start": 0.261916,
+      "end": 0.523832
+    },
+    {
+      "text": "bends",
+      "start": 0.535708,
+      "end": 0.785708
+    },
+    {
+      "text": "on",
+      "start": 0.797625,
+      "end": 0.90475
+    },
+    {
+      "text": "purpose.",
+      "start": 0.916666,
+      "end": 1.4523739999999998
+    }
+  ],
+  "breaths": []
+}

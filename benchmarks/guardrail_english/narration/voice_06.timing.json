@@ -1,0 +1,177 @@
+{
+  "source": "korean-speech-planner-v3",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "base_pitch": "+0Hz",
+  "volume": "+0%",
+  "units": [
+    {
+      "role": "SETUP",
+      "text": "But protection has limits.",
+      "rate": "+5%",
+      "base_unit_rate": "+5%",
+      "boundary": "strong_boundary",
+      "focus": false,
+      "speech_features": {
+        "syllables": 0,
+        "eojeol": 4,
+        "focus": false,
+        "phrase_final_lengthening": 1.04,
+        "rate_delta_pct": 0,
+        "f0_intent": "continuation_or_terminal"
+      },
+      "start": 0.0,
+      "end": 1.27
+    },
+    {
+      "role": "SETUP",
+      "text": "The vehicle speed and impact angle all matter.",
+      "rate": "+5%",
+      "base_unit_rate": "+5%",
+      "boundary": "strong_boundary",
+      "focus": false,
+      "speech_features": {
+        "syllables": 0,
+        "eojeol": 8,
+        "focus": false,
+        "phrase_final_lengthening": 1.04,
+        "rate_delta_pct": 0,
+        "f0_intent": "continuation_or_terminal"
+      },
+      "start": 1.75,
+      "end": 4.301624
+    }
+  ],
+  "gaps_seconds": [
+    0.48
+  ],
+  "raw": [
+    [
+      {
+        "text": "But",
+        "start": 0.107125,
+        "end": 0.19045800000000002
+      },
+      {
+        "text": "protection",
+        "start": 0.202375,
+        "end": 0.726166
+      },
+      {
+        "text": "has",
+        "start": 0.738083,
+        "end": 0.904749
+      },
+      {
+        "text": "limits",
+        "start": 0.916666,
+        "end": 1.416666
+      }
+    ],
+    [
+      {
+        "text": "The",
+        "start": 0.107125,
+        "end": 0.16666599999999998
+      },
+      {
+        "text": "vehicle",
+        "start": 0.178583,
+        "end": 0.5357080000000001
+      },
+      {
+        "text": "speed",
+        "start": 0.547625,
+        "end": 0.916666
+      },
+      {
+        "text": "and",
+        "start": 1.071416,
+        "end": 1.1904569999999999
+      },
+      {
+        "text": "impact",
+        "start": 1.202375,
+        "end": 1.678583
+      },
+      {
+        "text": "angle",
+        "start": 1.690458,
+        "end": 2.011874
+      },
+      {
+        "text": "all",
+        "start": 2.130958,
+        "end": 2.3095410000000003
+      },
+      {
+        "text": "matter",
+        "start": 2.321416,
+        "end": 2.7023740000000003
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "But",
+      "start": 0.0,
+      "end": 0.04075000000000001
+    },
+    {
+      "text": "protection",
+      "start": 0.05266699999999999,
+      "end": 0.5764579999999999
+    },
+    {
+      "text": "has",
+      "start": 0.5883750000000001,
+      "end": 0.7550410000000001
+    },
+    {
+      "text": "limits.",
+      "start": 0.766958,
+      "end": 1.266958
+    },
+    {
+      "text": "The",
+      "start": 1.75,
+      "end": 1.765916
+    },
+    {
+      "text": "vehicle",
+      "start": 1.777833,
+      "end": 2.134958
+    },
+    {
+      "text": "speed",
+      "start": 2.146875,
+      "end": 2.515916
+    },
+    {
+      "text": "and",
+      "start": 2.6706659999999998,
+      "end": 2.789707
+    },
+    {
+      "text": "impact",
+      "start": 2.801625,
+      "end": 3.277833
+    },
+    {
+      "text": "angle",
+      "start": 3.289708,
+      "end": 3.6111240000000002
+    },
+    {
+      "text": "all",
+      "start": 3.730208,
+      "end": 3.9087910000000003
+    },
+    {
+      "text": "matter.",
+      "start": 3.920666,
+      "end": 4.301624
+    }
+  ],
+  "breaths": []
+}
