@@ -123,3 +123,30 @@ Continuous renders retain Cycles persistent data (official Blender 5 performance
 ## Graphite visual-quality iteration
 
 Set VISUAL_VEHICLE_VARIANT=graphite and supply the pinned graphite GLB in VISUAL_V2_ASSET. The legacy default and its same-frame gates are preserved. See [ASSETS.md](ASSETS.md) for licensing, axes, wheel/attachment mapping and the restrained roadside geometry. CI checks both variants before rendering the graphite clip.
+
+## Splice hardware continuity correction
+
+The new independent surface audit rejects the previous graphite scene: the
+24 splice-bolt centres can be as far as 86.1 mm from the actual deformed beam
+surface. The old fixed local bolt offset was already separated from its
+corrugation row; rotating the entire support about its soil pivot introduced
+further vertical and horizontal mismatch under load.
+
+Each bolt now follows its own corrugation row, including flattening, with an
+8 mm outward centre offset. Blockouts translate with the beam centre. Post
+geometry shears above the buried foot to meet the beam displacement and sag,
+while the soil footprint stays fixed. This is authored geometric motion,
+not calibrated steel deformation or a crash simulation.
+
+The full-motion gate now measures all 24 bolt centres against interpolated
+beam-surface segments at every frame (25 mm maximum) and requires all 12
+post footprints to remain within 1 mm of their initial positions. A real
+displaced-bolt mesh mutation must fail, alongside the existing detached
+mirror and lost-contact cases. Car contact reports include the witness mesh
+and world position so approach, strike, peak, redirection and exit can be
+reviewed reproducibly. Existing car, tyre, camera, continuity, resolution
+and visual-displacement thresholds are unchanged.
+
+Editorial acceptance remains pending until the exact-head rendered frames
+and video have been reviewed. The previous revision remains available on
+the backup branch; this PR stays draft.

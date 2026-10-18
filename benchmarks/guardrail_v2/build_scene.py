@@ -360,13 +360,40 @@ for k,x in enumerate([round(-15.2+1.9*n,2) for n in range(12)]):
  blk=box('Blockout %d'%k,(0,0,0),(.15,.24,.30),darkmetal,.01)
  blk.parent=pivot
  blk.location=(0,-.17,RAIL_Z+.55)
+ # Keep the buried foot fixed and shear the post above it to the solved
+ # beam displacement. The former rigid pivot shortened the horizontal
+ # travel and dropped the bolt row below the sagged beam at peak load.
+ # This remains geometric illustration, not a calibrated steel response.
+ lever=RAIL_Z+.55
+ b.shape_key_add(name='buried post basis')
+ for f in range(1,FRAMES+1):
+  d=rail_d(f,x)
+  key=b.shape_key_add(name='post contact %02d'%f)
+  for v,original in zip(key.data,b.data.vertices):
+   weight=max(0.,(original.co.z+b.location.z)/lever)
+   v.co=original.co+Vector((0,d*weight,-.07*d*weight))
+  for fr,val in ((f-1,0.),(f,1.),(f+1,0.)):
+   if 1<=fr<=FRAMES:
+    key.value=val;key.keyframe_insert('value',frame=fr)
+ linear_animation(b.data.shape_keys)
+ for f in range(1,FRAMES+1):
+  d=rail_d(f,x)
+  blk.location=(0,-.17+d,lever-.07*d)
+  blk.keyframe_insert('location',frame=f)
+ linear_animation(blk)
  for dz in (-.08,.08):
   c=cylinder('W-beam splice bolt head',(0,0,0),.022,.03,rim,(math.pi/2,0,0),16)
-  c.parent=pivot;c.location=(0,RAIL_Y-.075-1.02,RAIL_Z+.55+dz)
- lever=RAIL_Z+.55
- for f in range(1,FRAMES+1):
-  pivot.rotation_euler[0]=-math.atan2(rail_d(f,x),lever)
-  pivot.keyframe_insert('rotation_euler',frame=f)
+  c.parent=pivot
+  u=(dz/RAIL_H)+.5
+  for f in range(1,FRAMES+1):
+   d=rail_d(f,x)
+   flat=1-.45*min(d/.6,1)
+   # The corrugation flattens as well as translating: carry each bolt
+   # with its own row on the beam, rather than moving a rigid bolt group.
+   face=RAIL_Y+PMIN+(rail_profile(u)-PMIN)*flat
+   c.location=(0,face-.008-1.02+d,lever+dz-.07*d)
+   c.keyframe_insert('location',frame=f)
+  linear_animation(c)
  cylinder('post ground contact ring',(x,1.02,GROUND+.01),.15,.03,shoulder)
 
 # Fixed world-space pale cyan contour = undeformed rail top edge, used only to
@@ -418,6 +445,7 @@ point(cam,cam_tgt)
 cam.data.type='PERSP';cam.data.lens=float(os.environ.get('V3_LENS','19.3' if variant=='graphite' else '20'))
 cam.data.sensor_fit='VERTICAL'
 scene.camera=cam
+scene['support_motion_style']='buried-foot shear with corrugation-following bolts'
 scene['primary_contact_frames']=[12,48]
 scene['v3_contact_push_m']=contact
 scene['v3_peak_deflection_m']=round(max(peak),3)

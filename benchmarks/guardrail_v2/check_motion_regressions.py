@@ -4,7 +4,7 @@ from pathlib import Path
 source=bpy.data.filepath
 root=Path(os.environ['VISUAL_V2_OUTPUT'])
 audit=Path(__file__).with_name('validate_motion.py')
-cases=[('detached_mirror','MIRROR_DETACHED'),('missing_contact','CONTACT_LOST')]
+cases=[('detached_mirror','MIRROR_DETACHED'),('missing_contact','CONTACT_LOST'),('detached_splice_bolt','SUPPORT_BOLT_DETACHED')]
 for case,expected in cases:
  bpy.ops.wm.open_mainfile(filepath=source)
  s=bpy.context.scene;s.frame_set(1);bpy.context.view_layer.update()
@@ -13,6 +13,9 @@ for case,expected in cases:
   connections=json.loads(car['mirror_connections_json'])
   ob=bpy.data.objects[connections[0][0]]
   ob.location.x+=.5
+ elif case=='detached_splice_bolt':
+  bolt=next(o for o in s.objects if o.name.startswith('W-beam splice bolt head'))
+  for vertex in bolt.data.vertices:vertex.co.z+=.15
  else:
   rail=next(o for o in s.objects if o.name.startswith('Real 3D W-beam rail'))
   rail.location.y+=.2

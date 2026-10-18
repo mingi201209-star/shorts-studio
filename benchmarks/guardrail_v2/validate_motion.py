@@ -62,7 +62,7 @@ for f in range(s.frame_start,s.frame_end+1):
  for p in rv:
   c=cols.setdefault(round(p.x,4),[float('inf'),float('-inf'),float('inf')])
   c[0]=min(c[0],p.y);c[1]=max(c[1],p.z);c[2]=min(c[2],p.z)
- env={}
+ env={};witnesses={}
  for ob in parts:
   m=ob.matrix_world
   for vertex in ob.data.vertices:
@@ -70,8 +70,11 @@ for f in range(s.frame_start,s.frame_end+1):
    index=round((w.x-xs[0])/dx)
    if not 0<=index<len(xs):continue
    k=xs[index];c=cols[k]
-   if c[2]-.01<=w.z<=c[1]+.01:env[k]=max(env.get(k,-9),w.y)
- contact_gap=min((cols[k][0]-y for k,y in env.items()),default=None)
+   if c[2]-.01<=w.z<=c[1]+.01 and w.y>env.get(k,-9):
+    env[k]=w.y;witnesses[k]={'part':ob.name,'car_point_m':[round(v,5) for v in w],'rail_column_x_m':k}
+ contact_key=min(env,key=lambda k:cols[k][0]-env[k]) if env else None
+ contact_gap=cols[contact_key][0]-env[contact_key] if contact_key is not None else None
+ witness=witnesses.get(contact_key)
  require(contact_gap is not None and contact_gap>=-.025,'RAIL_PENETRATION',f,contact_gap)
  if window[0]<=f<=window[1]:
   require(contact_gap is not None and contact_gap<=.03,'CONTACT_LOST',f,contact_gap)
@@ -91,13 +94,16 @@ for f in range(s.frame_start,s.frame_end+1):
  require(step<=.12,'CAR_POSITION_JUMP',f,step)
  require(turn<=math.radians(3),'CAR_ROTATION_JUMP',f,math.degrees(turn))
  require(railstep<=.12,'RAIL_POSITION_JUMP',f,railstep)
- frames.append({'frame':f,'bounds':[round(v,5) for v in bounds],'contact_gap_m':None if contact_gap is None else round(contact_gap,5),'tyre_ground_m':[round(g,5) for g in tyre_ground],'car_step_m':round(step,5),'turn_degrees':round(math.degrees(turn),5),'rail_step_m':round(railstep,5),'relative_transform_error':rigid_error})
+ frames.append({'frame':f,'bounds':[round(v,5) for v in bounds],'contact_witness':witness,'contact_gap_m':None if contact_gap is None else round(contact_gap,5),'tyre_ground_m':[round(g,5) for g in tyre_ground],'car_step_m':round(step,5),'turn_degrees':round(math.degrees(turn),5),'rail_step_m':round(railstep,5),'relative_transform_error':rigid_error})
  last_pos=pos;last_rot=rot;last_rail=rv
 for f in range(s.frame_start,s.frame_end):
  s.frame_set(f,subframe=.5)
  weights=[key.value for key in keys[1:]]
  require(abs(sum(weights)-1)<1e-5 and min(weights)>=-1e-6,'SHAPE_KEY_BLEND',f+.5,sum(weights))
-report={'vehicle_variant':car.get('vehicle_variant','legacy'),'status':'FAIL' if errors else 'PASS','frames_checked':len(frames),'mesh_parts':len(parts),'errors':errors,'frames':frames,'editorial_quality':'UNASSESSED','physical_validation':False}
+from validate_supports import support_errors
+support_failures,support_frames=support_errors(s,rail)
+errors.extend(support_failures)
+report={'support_frames':support_frames,'vehicle_variant':car.get('vehicle_variant','legacy'),'status':'FAIL' if errors else 'PASS','frames_checked':len(frames),'mesh_parts':len(parts),'errors':errors,'frames':frames,'editorial_quality':'UNASSESSED','physical_validation':False}
 (out/'motion_validation.json').write_text(json.dumps(report,indent=2))
-print('FULL_FRAME_AUDIT',json.dumps({k:v for k,v in report.items() if k!='frames'}),flush=True)
+print('FULL_FRAME_AUDIT',json.dumps({k:v for k,v in report.items() if k not in ('frames','support_frames')}),flush=True)
 assert not errors,('MOTION_AUDIT_FAILED',len(errors))
