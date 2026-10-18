@@ -6,7 +6,7 @@ Repositories:
 - Primary: `mingi201209-star/shorts-studio`, branch `render-farm/single-20261018` (2 GitHub-hosted runner matrix jobs) or `render-farm/multi-20261018` (shard 0).
 - Independent public worker: `mingi201209-star/shorts-render-worker`, branch `render-farm/multi-20261018` (shard 1).
 
-The **same** Blender road-rumble procedural scene and verifier files are SHA-identical in both repositories. There are 6 authored native moving frames split into two shards, each 3 frames. Both modes use the same Ubuntu 24.04 runner class, apt Blender, 2 render threads, Cycles 6 samples, 320x576, and fixed camera. This is deliberately a short low-cost infrastructure probe, **not a Shorts quality benchmark or production change**.
+The **same** Blender road-rumble procedural scene and verifier files are SHA-identical in both repositories. There are 6 authored native moving frames split into two shards, each 3 frames. Both modes use the same Ubuntu 24.04 runner class, apt Blender, 2 render threads, Cycles 6 samples, **test-only denoising disabled** (Ubuntu apt Blender 4 does not provide OpenImageDenoiser), 320x576, and fixed camera. This is deliberately a short low-cost infrastructure probe, **not a Shorts quality benchmark or production change**.
 
 Procedure:
 1. Push the coordinator commit on branch `render-farm/single-20261018`; wait for the complete workflow.

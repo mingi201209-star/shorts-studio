@@ -68,7 +68,7 @@ def build_scene():
     sc.cycles.device="CPU"
     sc.cycles.samples=6
     sc.cycles.seed=12
-    sc.cycles.use_denoising=True
+    sc.cycles.use_denoising=False  # Ubuntu apt Blender 4 lacks OpenImageDenoiser; probe ONLY
     sc.render.resolution_x=320
     sc.render.resolution_y=576
     sc.render.resolution_percentage=100

@@ -1,11 +1,17 @@
 """Synthetic Blender render farm integrity contract tests. No production release."""
 import hashlib
+import importlib.util
 import json
 from pathlib import Path
 
 import pytest
 
-from benchmarks.render_farm.verify_probe import verify_folder
+_SOURCE = Path(__file__).resolve().parents[1] / "benchmarks" / "render_farm" / "verify_probe.py"
+_SPEC = importlib.util.spec_from_file_location("render_farm_probe_verifier", _SOURCE)
+assert _SPEC is not None and _SPEC.loader is not None
+_MODULE = importlib.util.module_from_spec(_SPEC)
+_SPEC.loader.exec_module(_MODULE)
+verify_folder = _MODULE.verify_folder
 
 
 def sample(tmp_path: Path, shard: int=0):
