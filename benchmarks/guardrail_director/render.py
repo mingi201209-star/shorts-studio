@@ -8,12 +8,9 @@ film=json.loads((ROOT/'film.json').read_text());s=bpy.context.scene;cam=s.camera
 out=Path(os.environ['FILM_OUT']);out.mkdir(parents=True,exist_ok=True)
 s.render.resolution_x=1080;s.render.resolution_y=1920;s.render.resolution_percentage=100
 engine=os.environ.get('DIRECTOR_ENGINE','CYCLES')
-assert engine in ('BLENDER_EEVEE','CYCLES')
+assert engine=='CYCLES', 'UNAPPROVED_RENDERER'
 s.render.engine=engine
-if engine=='BLENDER_EEVEE':
-    s.eevee.taa_render_samples=64;s.eevee.taa_samples=64
-else:
-    s.cycles.samples=32;s.cycles.use_denoising=True
+s.cycles.samples=32;s.cycles.use_denoising=True
 s.render.use_persistent_data=True
 s.render.image_settings.file_format='PNG';s.render.image_settings.color_mode='RGB'
 car=bpy.data.objects['CC0 detailed sedan animated as a rigid car']
@@ -58,6 +55,20 @@ for shot in film['shots']:
     hi=Vector(tuple(max(p[k] for p in pts) for k in range(3)))
     target=(lo+hi)/2
     if v!='contact':target.z=.58
+    if shot.get('reuse_baseline'):
+        # Exact pinned baseline camera formula for the unchanged last two shots.
+        target=(lo+hi)/2;target.z=.55
+        pts.extend(Vector((x,1.7,z)) for x in (lo.x,hi.x) for z in (.2,.9))
+        direction={'redirect':Vector((.15,-.45,1.2)),'closing':Vector((1,-.8,.7))}[v].normalized()
+        distance=8.
+        for _ in range(100):
+            aim(target+direction*distance,target,30);bpy.context.view_layer.update()
+            projected=[world_to_camera_view(s,cam,p) for p in pts]
+            if all(.08<=p.x<=.92 and .24<=p.y<=.76 and p.z>0 for p in projected):break
+            distance*=1.04
+        else:raise AssertionError(('BASELINE_CAMERA_FIT_FAILED',v))
+        views[v]=(cam.location.copy(),target.copy(),30)
+        continue
     # View impact from the rail/shoulder side, so contact is not hidden behind the car.
     direction={'hero':Vector((1.0,.45,.42)),'contact':Vector((1.0,.65,.48)),
                'redirect':Vector((.15,-.4,1.15)),'closing':Vector((1,-.8,.7))}[v].normalized()
@@ -65,7 +76,7 @@ for shot in film['shots']:
     for _ in range(100):
         aim(target+direction*distance,target,36);bpy.context.view_layer.update()
         projected=[world_to_camera_view(s,cam,p) for p in pts]
-        if all(.07<=p.x<=.93 and .20<=p.y<=.90 and p.z>0 for p in projected):break
+        if all(.07<=p.x<=.93 and .24<=p.y<=.90 and p.z>0 for p in projected):break
         distance*=1.04
     else:raise AssertionError(('FIXED_CAMERA_FIT_FAILED',v))
     views[v]=(cam.location.copy(),target.copy(),36)
@@ -85,22 +96,22 @@ for frame in frames:
     if not hidden:
         projected=[world_to_camera_view(s,cam,p) for p in bounds()]
         if v!='contact':
-            assert all(.045<=p.x<=.955 and .18<=p.y<=.92 and p.z>0 for p in projected),('CAR_CROPPED',frame)
+            assert all(.045<=p.x<=.955 and .22<=p.y<=.92 and p.z>0 for p in projected),('CAR_CROPPED',frame)
         else:
             roi=[world_to_camera_view(s,cam,p) for p in detail_rois[v]]
-            assert all(.045<=p.x<=.955 and .18<=p.y<=.92 and p.z>0 for p in roi),('CONTACT_ROI_CROPPED',frame)
+            assert all(.045<=p.x<=.955 and .22<=p.y<=.92 and p.z>0 for p in roi),('CONTACT_ROI_CROPPED',frame)
         footprint=[min(p.x for p in projected),max(p.x for p in projected),min(p.y for p in projected),max(p.y for p in projected)]
     witness=audit['frames'][min(89,max(0,round(source)-1))].get('contact_witness')
     contact=None
     if witness and not hidden:
         p=world_to_camera_view(s,cam,Vector(witness['car_point_m']))
         contact=[p.x,p.y,p.z]
-        assert .04<p.x<.96 and .18<p.y<.92 and p.z>0,('CONTACT_OUT_OF_FRAME',frame)
+        assert .04<p.x<.96 and .22<p.y<.92 and p.z>0,('CONTACT_OUT_OF_FRAME',frame)
     if os.environ.get('FILM_CHECK_ONLY')=='1':continue
     path=out/f'frame_{frame:04d}.png';s.render.filepath=str(path)
     begin=time.monotonic();bpy.ops.render.render(write_still=True);elapsed=time.monotonic()-begin
     data=path.read_bytes();assert data[:8]==b'\x89PNG\r\n\x1a\n' and struct.unpack('>II',data[16:24])==(1080,1920)
-    records.append({'frame':frame,'shot':shot['id'],'source_frame':round(source,6),'sha256':hashlib.sha256(data).hexdigest(),'width':1080,'height':1920,'samples':64 if engine=='BLENDER_EEVEE' else 32,'renderer':engine,'camera':camera,'car_bounds':footprint,'contact_projection':contact,'framing':shot.get('framing','full_subject'),'render_seconds':round(elapsed,3)})
+    records.append({'frame':frame,'shot':shot['id'],'source_frame':round(source,6),'sha256':hashlib.sha256(data).hexdigest(),'width':1080,'height':1920,'samples':int(s.cycles.samples),'renderer':engine,'camera':camera,'car_bounds':footprint,'contact_projection':contact,'framing':shot.get('framing','full_subject'),'render_seconds':round(elapsed,3)})
     print('NATIVE_DIRECTOR_FRAME',frame,'seconds',round(elapsed,3),flush=True)
 if os.environ.get('FILM_CHECK_ONLY')=='1':
     print('FIXED_CAMERA_AND_CONTACT_AUDIT_PASS',len(frames),flush=True);raise SystemExit(0)

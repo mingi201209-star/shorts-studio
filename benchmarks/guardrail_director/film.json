@@ -67,7 +67,8 @@
         35,
         90
       ],
-      "view": "redirect"
+      "view": "redirect",
+      "reuse_baseline": true
     },
     {
       "id": 6,
@@ -80,7 +81,8 @@
         60,
         90
       ],
-      "view": "closing"
+      "view": "closing",
+      "reuse_baseline": true
     }
   ],
   "source": "https://highways.dot.gov/safety/rwd/reduce-crash-severity/guardrail-101",

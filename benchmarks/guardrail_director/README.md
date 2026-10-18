@@ -1,19 +1,14 @@
-# Guardrail director candidate
-Owner instruction: remove all upper text; improve staging.
-English speech/captions stay. Native 1080x1920. Camera fixed within every shot.
-Opening/contact views move to the shoulder side so contact is not behind the car.
-The car can occupy y .20-.90 with no upper titles. Structure/supports replay actual
-beam motion with fixed cameras, replacing old orbital/drifting cameras.
-Vehicle/rail geometry and source animation remain unchanged and independently audited.
-EEVEE 64-sample candidate must be compared with actual Cycles baseline images before
-production. It is a rendering alternative, not a physical-validation claim.
-No crop/zoom cadence substitutions, interpolation, still-frame stretching, gate relaxation,
-merge, paid resources or YouTube upload.
+# Guardrail director review
+Remove all upper text; retain captured English speech and measured captions.
+Render first 570 frames natively at 1080x1920 with baseline Cycles32.
+Reuse unchanged redirection/closing native frames571..900 from pinned run39101075134;
+all900 native hashes/count/resolution remain checked. No interpolation or still extension.
 
-The first EEVEE preview was rejected: harsh shadows and insufficient contact scale.
-Current candidate returns to baseline Cycles32. The hero looks along the road,
-and the contact insert is a declared native 3D macro shot (the rear car may be out
-of frame intentionally). Independent contact-ROI projection replaces full-car
-fit only for that explanatory insert; hero/redirection/closing retain full-car checks.
-No production quality gate was relaxed and no engine/TTS default was changed.
-Full-render workflow remains unlaunched until native pixels pass review.
+Hero looks along the road. The contact insert is a genuine fixed-camera 3D close-up:
+the rear car may intentionally be out of frame, while the entire contact witness ROI
+must fit. Full-car framing remains required for hero/redirection/closing.
+Structure/supports replay actual beam deformation with fixed cameras.
+Vehicle/rail geometry and source animation are unchanged and independently audited.
+The first EEVEE preview was rejected for harsh shading and insufficient contact scale.
+The current renderer returns to baseline Cycles32; no production gates/defaults change.
+Full-film rendering waits for native candidate pixel review. Main/merge/upload untouched.
