@@ -90,7 +90,7 @@ class FactoryManifest(StrictModel):
         return self
 
     @classmethod
-    def load(cls, path: str | Path) -> "FactoryManifest":
+    def load(cls, path: str | Path) -> FactoryManifest:
         return cls.model_validate(json.loads(Path(path).read_text(encoding="utf8")))
 
     @property
@@ -125,5 +125,5 @@ class TemplateRegistry(StrictModel):
         return self
 
     @classmethod
-    def load(cls, path: str | Path) -> "TemplateRegistry":
+    def load(cls, path: str | Path) -> TemplateRegistry:
         return cls.model_validate(json.loads(Path(path).read_text(encoding="utf8")))
