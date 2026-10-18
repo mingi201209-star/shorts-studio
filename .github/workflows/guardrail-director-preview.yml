@@ -39,12 +39,12 @@ jobs:
           FILM_CHECK_ONLY: '1'
         run: |
           "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 "$RUNNER_TEMP/source/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_director/render.py
-      - name: Render actual native EEVEE candidate frames
+      - name: Render actual native Cycles contact detail frames
         env:
           FILM_OUT: ${{ runner.temp }}/preview
           DIRECTOR_SOURCE_AUDIT: ${{ runner.temp }}/source/motion_validation.json
           DIRECTOR_FRAMES: '45,330,500'
-          DIRECTOR_ENGINE: BLENDER_EEVEE
+          DIRECTOR_ENGINE: CYCLES
           LP_NUM_THREADS: '4'
         run: |
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 "$RUNNER_TEMP/source/guardrail_v2_local.blend" --python-exit-code 1 --python benchmarks/guardrail_director/render.py

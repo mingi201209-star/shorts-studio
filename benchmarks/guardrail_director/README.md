@@ -9,3 +9,11 @@ EEVEE 64-sample candidate must be compared with actual Cycles baseline images be
 production. It is a rendering alternative, not a physical-validation claim.
 No crop/zoom cadence substitutions, interpolation, still-frame stretching, gate relaxation,
 merge, paid resources or YouTube upload.
+
+The first EEVEE preview was rejected: harsh shadows and insufficient contact scale.
+Current candidate returns to baseline Cycles32. The hero looks along the road,
+and the contact insert is a declared native 3D macro shot (the rear car may be out
+of frame intentionally). Independent contact-ROI projection replaces full-car
+fit only for that explanatory insert; hero/redirection/closing retain full-car checks.
+No production quality gate was relaxed and no engine/TTS default was changed.
+Full-render workflow remains unlaunched until native pixels pass review.

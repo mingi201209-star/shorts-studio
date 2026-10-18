@@ -7,7 +7,7 @@ ROOT=Path(__file__).resolve().parent
 film=json.loads((ROOT/'film.json').read_text());s=bpy.context.scene;cam=s.camera
 out=Path(os.environ['FILM_OUT']);out.mkdir(parents=True,exist_ok=True)
 s.render.resolution_x=1080;s.render.resolution_y=1920;s.render.resolution_percentage=100
-engine=os.environ.get('DIRECTOR_ENGINE','BLENDER_EEVEE')
+engine=os.environ.get('DIRECTOR_ENGINE','CYCLES')
 assert engine in ('BLENDER_EEVEE','CYCLES')
 s.render.engine=engine
 if engine=='BLENDER_EEVEE':
@@ -34,20 +34,32 @@ def aim(loc,target,lens):
     cam.location=Vector(loc);cam.rotation_euler=(Vector(target)-cam.location).to_track_quat('-Z','Y').to_euler()
     cam.data.type='PERSP';cam.data.lens=lens;cam.data.sensor_fit='VERTICAL'
 views={}
+detail_rois={}
 for shot in film['shots']:
     v=shot['view'];a,b=shot['source']
     if v=='structure':
         views[v]=(Vector((1.6,-2.5,1.75)),Vector((-.6,.9,.55)),36);continue
     if v=='supports':
         views[v]=(Vector((1.8,3.8,1.65)),Vector((-.5,1.0,.44)),36);continue
-    pts=[]
-    for n in range(21):
-        set_frame(a+(b-a)*n/20);pts+=bounds()
+    if v=='contact':
+        # A genuine 3D contact insert, not a crop/zoom of the earlier image.
+        witnesses=[Vector(row['contact_witness']['car_point_m']) for row in audit['frames']
+                   if a<=row['frame']<=b and row.get('contact_witness')]
+        assert witnesses, 'NO_CONTACT_WITNESSES'
+        pts=[p+Vector((dx,dy,dz)) for p in witnesses for dx in (-.4,.4)
+             for dy in (-.22,.22) for dz in (-.28,.48)]
+        detail_rois[v]=pts
+    else:
+        pts=[]
+    if v!='contact':
+        for n in range(21):
+            set_frame(a+(b-a)*n/20);pts+=bounds()
     lo=Vector(tuple(min(p[k] for p in pts) for k in range(3)))
     hi=Vector(tuple(max(p[k] for p in pts) for k in range(3)))
-    target=(lo+hi)/2;target.z=.58
+    target=(lo+hi)/2
+    if v!='contact':target.z=.58
     # View impact from the rail/shoulder side, so contact is not hidden behind the car.
-    direction={'hero':Vector((.8,1.0,.8)),'contact':Vector((.45,1.0,.72)),
+    direction={'hero':Vector((1.0,.45,.42)),'contact':Vector((1.0,.65,.48)),
                'redirect':Vector((.15,-.4,1.15)),'closing':Vector((1,-.8,.7))}[v].normalized()
     distance=4.
     for _ in range(100):
@@ -72,7 +84,11 @@ for frame in frames:
     footprint=None
     if not hidden:
         projected=[world_to_camera_view(s,cam,p) for p in bounds()]
-        assert all(.045<=p.x<=.955 and .18<=p.y<=.92 and p.z>0 for p in projected),('CAR_CROPPED',frame)
+        if v!='contact':
+            assert all(.045<=p.x<=.955 and .18<=p.y<=.92 and p.z>0 for p in projected),('CAR_CROPPED',frame)
+        else:
+            roi=[world_to_camera_view(s,cam,p) for p in detail_rois[v]]
+            assert all(.045<=p.x<=.955 and .18<=p.y<=.92 and p.z>0 for p in roi),('CONTACT_ROI_CROPPED',frame)
         footprint=[min(p.x for p in projected),max(p.x for p in projected),min(p.y for p in projected),max(p.y for p in projected)]
     witness=audit['frames'][min(89,max(0,round(source)-1))].get('contact_witness')
     contact=None
@@ -84,7 +100,7 @@ for frame in frames:
     path=out/f'frame_{frame:04d}.png';s.render.filepath=str(path)
     begin=time.monotonic();bpy.ops.render.render(write_still=True);elapsed=time.monotonic()-begin
     data=path.read_bytes();assert data[:8]==b'\x89PNG\r\n\x1a\n' and struct.unpack('>II',data[16:24])==(1080,1920)
-    records.append({'frame':frame,'shot':shot['id'],'source_frame':round(source,6),'sha256':hashlib.sha256(data).hexdigest(),'width':1080,'height':1920,'samples':64 if engine=='BLENDER_EEVEE' else 32,'renderer':engine,'camera':camera,'car_bounds':footprint,'contact_projection':contact,'render_seconds':round(elapsed,3)})
+    records.append({'frame':frame,'shot':shot['id'],'source_frame':round(source,6),'sha256':hashlib.sha256(data).hexdigest(),'width':1080,'height':1920,'samples':64 if engine=='BLENDER_EEVEE' else 32,'renderer':engine,'camera':camera,'car_bounds':footprint,'contact_projection':contact,'framing':shot.get('framing','full_subject'),'render_seconds':round(elapsed,3)})
     print('NATIVE_DIRECTOR_FRAME',frame,'seconds',round(elapsed,3),flush=True)
 if os.environ.get('FILM_CHECK_ONLY')=='1':
     print('FIXED_CAMERA_AND_CONTACT_AUDIT_PASS',len(frames),flush=True);raise SystemExit(0)

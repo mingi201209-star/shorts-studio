@@ -11,8 +11,8 @@
       "caption": "A flexible barrier",
       "narration": "This rail bends on purpose.",
       "source": [
-        1,
-        60
+        8,
+        50
       ],
       "view": "hero"
     },
@@ -38,9 +38,10 @@
       "narration": "When a car strikes, the beam bends, absorbing some of its energy.",
       "source": [
         8,
-        60
+        50
       ],
-      "view": "contact"
+      "view": "contact",
+      "framing": "contact_detail"
     },
     {
       "id": 4,
