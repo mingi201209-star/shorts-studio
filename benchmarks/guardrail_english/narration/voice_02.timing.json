@@ -1,0 +1,135 @@
+{
+  "source": "korean-speech-planner-v3",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "base_pitch": "+0Hz",
+  "volume": "+0%",
+  "units": [
+    {
+      "role": "SETUP",
+      "text": "The corrugated steel beam connects to posts along the road.",
+      "rate": "+5%",
+      "base_unit_rate": "+5%",
+      "boundary": "strong_boundary",
+      "focus": false,
+      "speech_features": {
+        "syllables": 0,
+        "eojeol": 10,
+        "focus": false,
+        "phrase_final_lengthening": 1.04,
+        "rate_delta_pct": 0,
+        "f0_intent": "continuation_or_terminal"
+      },
+      "start": 0.0,
+      "end": 3.059541
+    }
+  ],
+  "gaps_seconds": [],
+  "raw": [
+    [
+      {
+        "text": "The",
+        "start": 0.107125,
+        "end": 0.16666599999999998
+      },
+      {
+        "text": "corrugated",
+        "start": 0.178583,
+        "end": 0.702374
+      },
+      {
+        "text": "steel",
+        "start": 0.714291,
+        "end": 1.023832
+      },
+      {
+        "text": "beam",
+        "start": 1.035708,
+        "end": 1.3452490000000001
+      },
+      {
+        "text": "connects",
+        "start": 1.357125,
+        "end": 1.773791
+      },
+      {
+        "text": "to",
+        "start": 1.785708,
+        "end": 1.8809580000000001
+      },
+      {
+        "text": "posts",
+        "start": 1.892875,
+        "end": 2.3214580000000002
+      },
+      {
+        "text": "along",
+        "start": 2.333333,
+        "end": 2.630958
+      },
+      {
+        "text": "the",
+        "start": 2.642875,
+        "end": 2.702416
+      },
+      {
+        "text": "road",
+        "start": 2.714291,
+        "end": 3.059541
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "The",
+      "start": 0.107125,
+      "end": 0.16666599999999998
+    },
+    {
+      "text": "corrugated",
+      "start": 0.178583,
+      "end": 0.702374
+    },
+    {
+      "text": "steel",
+      "start": 0.714291,
+      "end": 1.023832
+    },
+    {
+      "text": "beam",
+      "start": 1.035708,
+      "end": 1.3452490000000001
+    },
+    {
+      "text": "connects",
+      "start": 1.357125,
+      "end": 1.773791
+    },
+    {
+      "text": "to",
+      "start": 1.785708,
+      "end": 1.8809580000000001
+    },
+    {
+      "text": "posts",
+      "start": 1.892875,
+      "end": 2.3214580000000002
+    },
+    {
+      "text": "along",
+      "start": 2.333333,
+      "end": 2.630958
+    },
+    {
+      "text": "the",
+      "start": 2.642875,
+      "end": 2.702416
+    },
+    {
+      "text": "road.",
+      "start": 2.714291,
+      "end": 3.059541
+    }
+  ],
+  "breaths": []
+}

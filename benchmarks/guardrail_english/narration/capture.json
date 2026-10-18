@@ -1,0 +1,56 @@
+{
+  "language": "en-US",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "origin": "Actual Edge provider responses captured 2026-10-18; preserve measured word boundaries",
+  "shots": [
+    {
+      "id": 1,
+      "narration": "This rail bends on purpose.",
+      "audio": "voice_01.mp3",
+      "timing": "voice_01.timing.json",
+      "audio_sha256": "27a4135e7c8f4f81f1167997b809cb925452366b3cf157f780cc0b1e41c7d2ca",
+      "timing_sha256": "e83a9f622fb2b9bc42134abd17a8fd17d202f4122059eed5b20fa906a310402c"
+    },
+    {
+      "id": 2,
+      "narration": "The corrugated steel beam connects to posts along the road.",
+      "audio": "voice_02.mp3",
+      "timing": "voice_02.timing.json",
+      "audio_sha256": "b2613c23e5c5224c209f61a35ed902036b354b7de84116f6bac563d5ac4911b8",
+      "timing_sha256": "2a9023776d531b12accbd0e68d3f2152bdc8166aabcae3b3746372b2b6acbc5e"
+    },
+    {
+      "id": 3,
+      "narration": "When a car strikes, the beam bends, absorbing some of its energy.",
+      "audio": "voice_03.mp3",
+      "timing": "voice_03.timing.json",
+      "audio_sha256": "74d0ca8c6ea265737efe68d730bdbaa62d386c5bae64a5d4ee6374dfd600b7d7",
+      "timing_sha256": "cee8af675223e6b1c8172b235cd38a0d6578b61b0b9ca9f2e6d08eb4c109e8f2"
+    },
+    {
+      "id": 4,
+      "narration": "The posts rotate in the soil as the connections carry the load.",
+      "audio": "voice_04.mp3",
+      "timing": "voice_04.timing.json",
+      "audio_sha256": "7b3e3deab4d51472cdb1f489400a1413373e2982d6656f72ab2ad81210c9866a",
+      "timing_sha256": "aa50c62330b9bca7f94dd77d71239ae3da8a82ebac50c3eefa1227c34135c666"
+    },
+    {
+      "id": 5,
+      "narration": "Together, they help redirect the car along the road.",
+      "audio": "voice_05.mp3",
+      "timing": "voice_05.timing.json",
+      "audio_sha256": "5a54fb40fa52def04d66a8ac228ce691a986d299294d9206ddab5fa7258c76f1",
+      "timing_sha256": "76fc60be7f8f1f370cb83551698a149281760d317bcc736cd074e58fc63082ee"
+    },
+    {
+      "id": 6,
+      "narration": "But protection has limits. The vehicle, speed, and impact angle all matter.",
+      "audio": "voice_06.mp3",
+      "timing": "voice_06.timing.json",
+      "audio_sha256": "418a968aeb9abd32893e3dd89cbf8a49415b4a5467d6c41e76fec08140bc9419",
+      "timing_sha256": "600216e0f00679889a6411a32ed5862b8762862b7d3d419eca11382562dafa3d"
+    }
+  ]
+}

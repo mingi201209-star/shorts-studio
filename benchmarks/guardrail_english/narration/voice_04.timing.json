@@ -1,0 +1,155 @@
+{
+  "source": "korean-speech-planner-v3",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "base_pitch": "+0Hz",
+  "volume": "+0%",
+  "units": [
+    {
+      "role": "SETUP",
+      "text": "The posts rotate in the soil as the connections carry the load.",
+      "rate": "+5%",
+      "base_unit_rate": "+5%",
+      "boundary": "strong_boundary",
+      "focus": false,
+      "speech_features": {
+        "syllables": 0,
+        "eojeol": 12,
+        "focus": false,
+        "phrase_final_lengthening": 1.04,
+        "rate_delta_pct": 0,
+        "f0_intent": "continuation_or_terminal"
+      },
+      "start": 0.0,
+      "end": 3.333333
+    }
+  ],
+  "gaps_seconds": [],
+  "raw": [
+    [
+      {
+        "text": "The",
+        "start": 0.107125,
+        "end": 0.16666599999999998
+      },
+      {
+        "text": "posts",
+        "start": 0.178583,
+        "end": 0.547624
+      },
+      {
+        "text": "rotate",
+        "start": 0.559541,
+        "end": 1.0476239999999999
+      },
+      {
+        "text": "in",
+        "start": 1.059541,
+        "end": 1.166666
+      },
+      {
+        "text": "the",
+        "start": 1.178583,
+        "end": 1.2499989999999999
+      },
+      {
+        "text": "soil",
+        "start": 1.261916,
+        "end": 1.738124
+      },
+      {
+        "text": "as",
+        "start": 1.857125,
+        "end": 1.9642499999999998
+      },
+      {
+        "text": "the",
+        "start": 1.976208,
+        "end": 2.059541
+      },
+      {
+        "text": "connections",
+        "start": 2.071416,
+        "end": 2.607124
+      },
+      {
+        "text": "carry",
+        "start": 2.619041,
+        "end": 2.869041
+      },
+      {
+        "text": "the",
+        "start": 2.880958,
+        "end": 2.976208
+      },
+      {
+        "text": "load",
+        "start": 2.988083,
+        "end": 3.333333
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "The",
+      "start": 0.107125,
+      "end": 0.16666599999999998
+    },
+    {
+      "text": "posts",
+      "start": 0.178583,
+      "end": 0.547624
+    },
+    {
+      "text": "rotate",
+      "start": 0.559541,
+      "end": 1.0476239999999999
+    },
+    {
+      "text": "in",
+      "start": 1.059541,
+      "end": 1.166666
+    },
+    {
+      "text": "the",
+      "start": 1.178583,
+      "end": 1.2499989999999999
+    },
+    {
+      "text": "soil",
+      "start": 1.261916,
+      "end": 1.738124
+    },
+    {
+      "text": "as",
+      "start": 1.857125,
+      "end": 1.9642499999999998
+    },
+    {
+      "text": "the",
+      "start": 1.976208,
+      "end": 2.059541
+    },
+    {
+      "text": "connections",
+      "start": 2.071416,
+      "end": 2.607124
+    },
+    {
+      "text": "carry",
+      "start": 2.619041,
+      "end": 2.869041
+    },
+    {
+      "text": "the",
+      "start": 2.880958,
+      "end": 2.976208
+    },
+    {
+      "text": "load.",
+      "start": 2.988083,
+      "end": 3.333333
+    }
+  ],
+  "breaths": []
+}

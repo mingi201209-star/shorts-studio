@@ -1,0 +1,141 @@
+{
+  "source": "real Edge WordBoundary capture",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "raw": [
+    [
+      {
+        "text": "Together",
+        "start": 0.09525,
+        "end": 0.523833
+      },
+      {
+        "text": "they",
+        "start": 0.785708,
+        "end": 0.8809579999999999
+      },
+      {
+        "text": "redirect",
+        "start": 0.892875,
+        "end": 1.392875
+      },
+      {
+        "text": "the",
+        "start": 1.40475,
+        "end": 1.488083
+      },
+      {
+        "text": "car",
+        "start": 1.5,
+        "end": 1.809541
+      },
+      {
+        "text": "along",
+        "start": 1.821416,
+        "end": 2.1071239999999998
+      },
+      {
+        "text": "the",
+        "start": 2.119041,
+        "end": 2.1904570000000003
+      },
+      {
+        "text": "road",
+        "start": 2.202375,
+        "end": 2.571416
+      },
+      {
+        "text": "away",
+        "start": 2.940458,
+        "end": 3.238083
+      },
+      {
+        "text": "from",
+        "start": 3.25,
+        "end": 3.392875
+      },
+      {
+        "text": "the",
+        "start": 3.40475,
+        "end": 3.464291
+      },
+      {
+        "text": "hazards",
+        "start": 3.476208,
+        "end": 3.940499
+      },
+      {
+        "text": "beyond",
+        "start": 3.952375,
+        "end": 4.452375
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "Together,",
+      "start": 0.09525,
+      "end": 0.523833
+    },
+    {
+      "text": "they",
+      "start": 0.785708,
+      "end": 0.8809579999999999
+    },
+    {
+      "text": "redirect",
+      "start": 0.892875,
+      "end": 1.392875
+    },
+    {
+      "text": "the",
+      "start": 1.40475,
+      "end": 1.488083
+    },
+    {
+      "text": "car",
+      "start": 1.5,
+      "end": 1.809541
+    },
+    {
+      "text": "along",
+      "start": 1.821416,
+      "end": 2.1071239999999998
+    },
+    {
+      "text": "the",
+      "start": 2.119041,
+      "end": 2.1904570000000003
+    },
+    {
+      "text": "road,",
+      "start": 2.202375,
+      "end": 2.571416
+    },
+    {
+      "text": "away",
+      "start": 2.940458,
+      "end": 3.238083
+    },
+    {
+      "text": "from",
+      "start": 3.25,
+      "end": 3.392875
+    },
+    {
+      "text": "the",
+      "start": 3.40475,
+      "end": 3.464291
+    },
+    {
+      "text": "hazards",
+      "start": 3.476208,
+      "end": 3.940499
+    },
+    {
+      "text": "beyond.",
+      "start": 3.952375,
+      "end": 4.452375
+    }
+  ]
+}

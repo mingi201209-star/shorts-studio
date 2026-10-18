@@ -1,0 +1,76 @@
+{
+  "language": "en-US",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "origin": "Actual provider audio and word boundaries, 2026-10-18 expanded script",
+  "capture_client_version": "7.3.1",
+  "audio_edit": "Lossless PCM WAV, trailing padding only; no voice speed change",
+  "shots": [
+    {
+      "id": 1,
+      "narration": "This steel rail bends to soften a car crash.",
+      "audio": "voice_01.wav",
+      "timing": "voice_01.timing.json",
+      "audio_sha256": "6a1c6eb7f04ab7f04844187e5e1c092b6837c2939bb10449644327f1c36eee18",
+      "raw_audio": "raw_voice_01.mp3",
+      "raw_audio_sha256": "3d3dc9822bf4279e1d038c6443fcb3eb3ddee97512dc7e939cf3df514ef21fbe",
+      "tail_trim_end_s": 2.661916,
+      "timing_sha256": "613ec7bb0657a4761b11a5b6a6c84411c3a28904844122451c83201d8e386442"
+    },
+    {
+      "id": 2,
+      "narration": "The steel beam joins posts, spreading the crash force along connected sections.",
+      "audio": "voice_02.wav",
+      "timing": "voice_02.timing.json",
+      "audio_sha256": "b51ed3866edfc515257c776c47bb694fedcc6c91869d4291be90bb95c1893480",
+      "raw_audio": "raw_voice_02.mp3",
+      "raw_audio_sha256": "d4e96c257500ca15b8532a9764359c7d513de828563fab6815b3ebb2c765d58d",
+      "tail_trim_end_s": 4.739041,
+      "timing_sha256": "6a956aaa7819f84bf71f45ba210274bd66c34c72b4efe6446c86dd675f0c9e4e"
+    },
+    {
+      "id": 3,
+      "narration": "The beam bends under the car, absorbing energy as the impact spreads along the whole barrier.",
+      "audio": "voice_03.wav",
+      "timing": "voice_03.timing.json",
+      "audio_sha256": "528c7bb46a5e7563f826aa1cd43f5aea8ea4e21b6299db1fb01eff06edd37ebc",
+      "raw_audio": "raw_voice_03.mp3",
+      "raw_audio_sha256": "06625185b658e167088c8fdad845bcdcb7a1f95f32abd732d1c4179ac688ff88",
+      "tail_trim_end_s": 5.507124,
+      "timing_sha256": "fffcc87c4eda7a07af6a1a2e1f1c8851d632fa1c7bfc149fa887574b0d06e293"
+    },
+    {
+      "id": 4,
+      "narration": "The posts rotate in the soil, and their connections help share the crash load between them.",
+      "audio": "voice_04.wav",
+      "timing": "voice_04.timing.json",
+      "audio_sha256": "97cf1767cdcd396916e16050f30fa2f3590fb31c1bab0f59846f423f02b4e0fc",
+      "raw_audio": "raw_voice_04.mp3",
+      "raw_audio_sha256": "88ab8770db9377a5f0d1e7fb1b207da2c997058ab0e58bf2fff46b642b96a8f0",
+      "tail_trim_end_s": 4.572375,
+      "timing_sha256": "393a26da7ee06aedbe570548ddb2859fca8dd90cbde2e1d5d2920286c99dcebf"
+    },
+    {
+      "id": 5,
+      "narration": "Together, they redirect the car along the road, away from the hazards beyond.",
+      "audio": "voice_05.wav",
+      "timing": "voice_05.timing.json",
+      "audio_sha256": "1ae650e5863911cdacd87cb8e66c659dc9af387fcd6a1477975433d02302582d",
+      "raw_audio": "raw_voice_05.mp3",
+      "raw_audio_sha256": "4a9f2f92f67aad8b82e47a6bc42395169ab397fe7939d1aba8970affdc786624",
+      "tail_trim_end_s": 4.602375,
+      "timing_sha256": "5554e1dd7382303a00c6b8971f3b01871aecefaef8599b93e807a89fb726529b"
+    },
+    {
+      "id": 6,
+      "narration": "Protection has limits. Vehicle size, speed, and impact angle all change the outcome.",
+      "audio": "voice_06.wav",
+      "timing": "voice_06.timing.json",
+      "audio_sha256": "a9f41c97ceadc0035692b6cc1874bf3ebea45a587d25a53b8e5420064c7066e2",
+      "raw_audio": "raw_voice_06.mp3",
+      "raw_audio_sha256": "8f78dd02de26c491f77c56d888b80c53505bad2f0eb6c372935933847e8fda34",
+      "tail_trim_end_s": 5.590457000000001,
+      "timing_sha256": "22dec528788187b5b74e448af5c14d35400e218b37cc7736159fa1741e49f14a"
+    }
+  ]
+}

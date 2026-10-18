@@ -1,0 +1,131 @@
+{
+  "source": "real Edge WordBoundary capture",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "raw": [
+    [
+      {
+        "text": "The",
+        "start": 0.107125,
+        "end": 0.15475
+      },
+      {
+        "text": "steel",
+        "start": 0.166666,
+        "end": 0.511916
+      },
+      {
+        "text": "beam",
+        "start": 0.523791,
+        "end": 0.7857069999999999
+      },
+      {
+        "text": "joins",
+        "start": 0.797625,
+        "end": 1.166666
+      },
+      {
+        "text": "posts",
+        "start": 1.178583,
+        "end": 1.7738329999999998
+      },
+      {
+        "text": "spreading",
+        "start": 1.976208,
+        "end": 2.285749
+      },
+      {
+        "text": "the",
+        "start": 2.297625,
+        "end": 2.369041
+      },
+      {
+        "text": "crash",
+        "start": 2.380958,
+        "end": 2.7499990000000003
+      },
+      {
+        "text": "force",
+        "start": 2.761916,
+        "end": 3.142874
+      },
+      {
+        "text": "along",
+        "start": 3.202375,
+        "end": 3.571416
+      },
+      {
+        "text": "connected",
+        "start": 3.583333,
+        "end": 3.999999
+      },
+      {
+        "text": "sections",
+        "start": 4.011916,
+        "end": 4.619041
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "The",
+      "start": 0.107125,
+      "end": 0.15475
+    },
+    {
+      "text": "steel",
+      "start": 0.166666,
+      "end": 0.511916
+    },
+    {
+      "text": "beam",
+      "start": 0.523791,
+      "end": 0.7857069999999999
+    },
+    {
+      "text": "joins",
+      "start": 0.797625,
+      "end": 1.166666
+    },
+    {
+      "text": "posts,",
+      "start": 1.178583,
+      "end": 1.7738329999999998
+    },
+    {
+      "text": "spreading",
+      "start": 1.976208,
+      "end": 2.285749
+    },
+    {
+      "text": "the",
+      "start": 2.297625,
+      "end": 2.369041
+    },
+    {
+      "text": "crash",
+      "start": 2.380958,
+      "end": 2.7499990000000003
+    },
+    {
+      "text": "force",
+      "start": 2.761916,
+      "end": 3.142874
+    },
+    {
+      "text": "along",
+      "start": 3.202375,
+      "end": 3.571416
+    },
+    {
+      "text": "connected",
+      "start": 3.583333,
+      "end": 3.999999
+    },
+    {
+      "text": "sections.",
+      "start": 4.011916,
+      "end": 4.619041
+    }
+  ]
+}

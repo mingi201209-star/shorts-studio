@@ -1,0 +1,171 @@
+{
+  "source": "real Edge WordBoundary capture",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "raw": [
+    [
+      {
+        "text": "The",
+        "start": 0.107125,
+        "end": 0.16666599999999998
+      },
+      {
+        "text": "posts",
+        "start": 0.178583,
+        "end": 0.5595410000000001
+      },
+      {
+        "text": "rotate",
+        "start": 0.571416,
+        "end": 1.047624
+      },
+      {
+        "text": "in",
+        "start": 1.059541,
+        "end": 1.1428740000000002
+      },
+      {
+        "text": "the",
+        "start": 1.15475,
+        "end": 1.2261659999999999
+      },
+      {
+        "text": "soil",
+        "start": 1.238083,
+        "end": 1.702374
+      },
+      {
+        "text": "and",
+        "start": 2.0,
+        "end": 2.047625
+      },
+      {
+        "text": "their",
+        "start": 2.059541,
+        "end": 2.202416
+      },
+      {
+        "text": "connections",
+        "start": 2.214291,
+        "end": 2.738082
+      },
+      {
+        "text": "help",
+        "start": 2.75,
+        "end": 2.940458
+      },
+      {
+        "text": "share",
+        "start": 2.952375,
+        "end": 3.190458
+      },
+      {
+        "text": "the",
+        "start": 3.202375,
+        "end": 3.273791
+      },
+      {
+        "text": "crash",
+        "start": 3.285708,
+        "end": 3.6547490000000002
+      },
+      {
+        "text": "load",
+        "start": 3.666666,
+        "end": 3.916666
+      },
+      {
+        "text": "between",
+        "start": 3.928583,
+        "end": 4.2857080000000005
+      },
+      {
+        "text": "them",
+        "start": 4.297625,
+        "end": 4.452375
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "The",
+      "start": 0.107125,
+      "end": 0.16666599999999998
+    },
+    {
+      "text": "posts",
+      "start": 0.178583,
+      "end": 0.5595410000000001
+    },
+    {
+      "text": "rotate",
+      "start": 0.571416,
+      "end": 1.047624
+    },
+    {
+      "text": "in",
+      "start": 1.059541,
+      "end": 1.1428740000000002
+    },
+    {
+      "text": "the",
+      "start": 1.15475,
+      "end": 1.2261659999999999
+    },
+    {
+      "text": "soil,",
+      "start": 1.238083,
+      "end": 1.702374
+    },
+    {
+      "text": "and",
+      "start": 2.0,
+      "end": 2.047625
+    },
+    {
+      "text": "their",
+      "start": 2.059541,
+      "end": 2.202416
+    },
+    {
+      "text": "connections",
+      "start": 2.214291,
+      "end": 2.738082
+    },
+    {
+      "text": "help",
+      "start": 2.75,
+      "end": 2.940458
+    },
+    {
+      "text": "share",
+      "start": 2.952375,
+      "end": 3.190458
+    },
+    {
+      "text": "the",
+      "start": 3.202375,
+      "end": 3.273791
+    },
+    {
+      "text": "crash",
+      "start": 3.285708,
+      "end": 3.6547490000000002
+    },
+    {
+      "text": "load",
+      "start": 3.666666,
+      "end": 3.916666
+    },
+    {
+      "text": "between",
+      "start": 3.928583,
+      "end": 4.2857080000000005
+    },
+    {
+      "text": "them.",
+      "start": 4.297625,
+      "end": 4.452375
+    }
+  ]
+}

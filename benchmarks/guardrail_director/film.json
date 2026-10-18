@@ -1,0 +1,96 @@
+{
+  "scene_run_id": 39100332936,
+  "scene_sha": "cbd575cf598dd71f786a6b2a65838de22b0350c5",
+  "fps": 30,
+  "shots": [
+    {
+      "id": 1,
+      "start": 1,
+      "end": 90,
+      "title": "IT BENDS ON PURPOSE",
+      "caption": "A flexible barrier",
+      "narration": "This rail bends on purpose.",
+      "source": [
+        8,
+        50
+      ],
+      "view": "hero"
+    },
+    {
+      "id": 2,
+      "start": 91,
+      "end": 240,
+      "title": "ONE CONNECTED BEAM",
+      "caption": "Beam + posts + soil",
+      "narration": "The corrugated steel beam connects to posts along the road.",
+      "source": [
+        12,
+        55
+      ],
+      "view": "structure"
+    },
+    {
+      "id": 3,
+      "start": 241,
+      "end": 420,
+      "title": "THE BEAM BENDS",
+      "caption": "The beam absorbs energy",
+      "narration": "When a car strikes, the beam bends, absorbing some of its energy.",
+      "source": [
+        8,
+        50
+      ],
+      "view": "contact",
+      "framing": "contact_detail"
+    },
+    {
+      "id": 4,
+      "start": 421,
+      "end": 570,
+      "title": "POSTS SHARE THE LOAD",
+      "caption": "Connections transfer forces",
+      "narration": "The posts rotate in the soil as the connections carry the load.",
+      "source": [
+        12,
+        50
+      ],
+      "view": "supports"
+    },
+    {
+      "id": 5,
+      "start": 571,
+      "end": 720,
+      "title": "REDIRECTING THE CAR",
+      "caption": "Along the road",
+      "narration": "Together, they help redirect the car along the road.",
+      "source": [
+        35,
+        90
+      ],
+      "view": "redirect",
+      "reuse_baseline": true
+    },
+    {
+      "id": 6,
+      "start": 721,
+      "end": 900,
+      "title": "IT HAS LIMITS",
+      "caption": "Vehicle + speed + impact angle",
+      "narration": "But protection has limits. The vehicle, speed, and impact angle all matter.",
+      "source": [
+        60,
+        90
+      ],
+      "view": "closing",
+      "reuse_baseline": true
+    }
+  ],
+  "source": "https://highways.dot.gov/safety/rwd/reduce-crash-severity/guardrail-101",
+  "disclosure": "3D explanation - not a crash test",
+  "language": "en-US",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "footage_run_id": 39101075134,
+  "footage_sha": "c19904ab5650993bee3d19613ebab25e81f4e844",
+  "upper_overlays": false
+}

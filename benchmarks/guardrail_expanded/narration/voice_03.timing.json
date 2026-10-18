@@ -1,0 +1,171 @@
+{
+  "source": "real Edge WordBoundary capture",
+  "voice": "en-US-AndrewNeural",
+  "base_rate": "+5%",
+  "raw": [
+    [
+      {
+        "text": "The",
+        "start": 0.09525,
+        "end": 0.178583
+      },
+      {
+        "text": "beam",
+        "start": 0.190458,
+        "end": 0.48808299999999993
+      },
+      {
+        "text": "bends",
+        "start": 0.5,
+        "end": 0.869041
+      },
+      {
+        "text": "under",
+        "start": 0.880958,
+        "end": 1.059541
+      },
+      {
+        "text": "the",
+        "start": 1.071416,
+        "end": 1.154749
+      },
+      {
+        "text": "car",
+        "start": 1.166666,
+        "end": 1.571416
+      },
+      {
+        "text": "absorbing",
+        "start": 1.940458,
+        "end": 2.488083
+      },
+      {
+        "text": "energy",
+        "start": 2.5,
+        "end": 2.940458
+      },
+      {
+        "text": "as",
+        "start": 2.952375,
+        "end": 3.083333
+      },
+      {
+        "text": "the",
+        "start": 3.09525,
+        "end": 3.178583
+      },
+      {
+        "text": "impact",
+        "start": 3.25,
+        "end": 3.7142910000000002
+      },
+      {
+        "text": "spreads",
+        "start": 3.726208,
+        "end": 4.226208
+      },
+      {
+        "text": "along",
+        "start": 4.238083,
+        "end": 4.535708
+      },
+      {
+        "text": "the",
+        "start": 4.547625,
+        "end": 4.607166
+      },
+      {
+        "text": "whole",
+        "start": 4.619041,
+        "end": 4.857124
+      },
+      {
+        "text": "barrier",
+        "start": 4.869041,
+        "end": 5.357124
+      }
+    ]
+  ],
+  "words": [
+    {
+      "text": "The",
+      "start": 0.09525,
+      "end": 0.178583
+    },
+    {
+      "text": "beam",
+      "start": 0.190458,
+      "end": 0.48808299999999993
+    },
+    {
+      "text": "bends",
+      "start": 0.5,
+      "end": 0.869041
+    },
+    {
+      "text": "under",
+      "start": 0.880958,
+      "end": 1.059541
+    },
+    {
+      "text": "the",
+      "start": 1.071416,
+      "end": 1.154749
+    },
+    {
+      "text": "car,",
+      "start": 1.166666,
+      "end": 1.571416
+    },
+    {
+      "text": "absorbing",
+      "start": 1.940458,
+      "end": 2.488083
+    },
+    {
+      "text": "energy",
+      "start": 2.5,
+      "end": 2.940458
+    },
+    {
+      "text": "as",
+      "start": 2.952375,
+      "end": 3.083333
+    },
+    {
+      "text": "the",
+      "start": 3.09525,
+      "end": 3.178583
+    },
+    {
+      "text": "impact",
+      "start": 3.25,
+      "end": 3.7142910000000002
+    },
+    {
+      "text": "spreads",
+      "start": 3.726208,
+      "end": 4.226208
+    },
+    {
+      "text": "along",
+      "start": 4.238083,
+      "end": 4.535708
+    },
+    {
+      "text": "the",
+      "start": 4.547625,
+      "end": 4.607166
+    },
+    {
+      "text": "whole",
+      "start": 4.619041,
+      "end": 4.857124
+    },
+    {
+      "text": "barrier.",
+      "start": 4.869041,
+      "end": 5.357124
+    }
+  ]
+}
