@@ -51,3 +51,14 @@ English narration uses six real en-US-AndrewNeural +5% captures, raw provider MP
 Custom code is episode-specific integration of existing factory source/timeline/shard QA, timing types/validation, prior audited English-caption layout, FFmpeg FFV1/libx264/ASS and Pillow font measurements; no alternative media engine or provider is introduced. Source reference was repaired from404 to the current official FHWA two-lane-roads page in the manifest. No physical tire solver or upload approval is claimed.
 
 Full workflow writes native frame render times and final encode time. They measure stages, not a proven five-minute total. A managed worker cannot resume this completed campaign or configure a different root through the installed manager API; the authorized operator is working in this isolated PR56 worktree. Manager state/policy/root were not modified.
+
+
+## Recovery from measured native job timeouts
+
+Original run39211610129 produced real accepted30-frame shards, but eight slow ranges(151,181,391,421,481,511,541,571) reached the45-minute runner limit. Frame151-job logs show roughly102seconds/frame, stopping after176of180. These partial unexported images are not counted as accepted footage. Other original ranges continue independently and are preserved.
+
+Recovery renders ONLY those terminal failed ranges as24ten-frame jobs after a live job/artifact nonoverlap guard. It does not restart source jobs that are still active. After initial recovery, a planning job waits for the original run to become terminal, unions old30/new10 artifact coverage, and schedules any remaining truly missing ten-frame blocks. Independent accepted shards are retained even if a different job fails; no continue-on-error or quality-gate bypass is used.
+
+Assembly still requires exactglobal1..900, unchanged renderer/source hashes, native1080x1920/Cycles32, unique original/decodedRGB frames, all6fixed shot cameras, source mesh/wheel gates, measured English captions and original AAC silence gates. Mixed FFV1 segment timestamps are normalized to the authored global30fps clock with setpts=N/(30*TB), without creating or dropping source frames. Report records reused/new counts and the original cache run.
+
+Regression:31focused tests pass, including missing/overlapping/partial/oversized/mismatched mixed-span rejection; Ruff clean. Workflow YAML and embedded Python parsed; isolated coordinator fixtures verified zero-missing and late-missing paths and rejected overlapping or absent artifacts. Fixtures test scheduling only, not production rendering or user acceptance. Original production and new recovery outcomes must still be checked live.

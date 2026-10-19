@@ -1,4 +1,4 @@
-name: Rumble episode 2 full native English film
+name: Rumble episode 2 native recovery and English film
 on:
   push:
     branches: [feat/rumble-episode2-production-20261018]
@@ -11,6 +11,7 @@ on:
       - "shorts_studio/factory/rumble_*"
 permissions:
   contents: read
+  actions: read
 jobs:
   speech:
     runs-on: ubuntu-24.04
@@ -29,15 +30,40 @@ jobs:
           name: rumble-english-speech-preflight
           path: build/speech-preflight/
           retention-days: 7
+  recovery_guard:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require terminated failed ranges and preserve different live ranges
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json,os,subprocess
+          def api(route):
+              return json.loads(subprocess.check_output(['gh','api','repos/'+os.environ['GH_REPO']+'/actions/'+route],text=True))
+          old=api('runs/39211610129')
+          assert old['head_sha']=='485b8a0e57038f35c3c07dcbccd8fba182563099'
+          jobs=api('runs/39211610129/jobs?per_page=100')['jobs']
+          artifacts=api('runs/39211610129/artifacts?per_page=100')['artifacts']
+          names={a['name'] for a in artifacts if not a['expired']}
+          failed=[151,181,391,421,481,511,541,571]
+          for first in failed:
+              job=next(j for j in jobs if j['name']==f'native ({first})')
+              assert job['status']=='completed' and job['conclusion']=='cancelled'
+              assert f'rumble-native-{first}' not in names
+          print('NONOVERLAP_GUARD_PASS: only eight terminal failed30-frame ranges; other source jobs preserved')
+          PY
   native:
-    needs: speech
+    needs: [speech, recovery_guard]
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
-      fail-fast: true
+      fail-fast: false
       max-parallel: 20
       matrix:
-        frame: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271, 301, 331, 361, 391, 421, 451, 481, 511, 541, 571, 601, 631, 661, 691, 721, 751, 781, 811, 841, 871]
+        frame: [151, 161, 171, 181, 191, 201, 391, 401, 411, 421, 431, 441, 481, 491, 501, 511, 521, 531, 541, 551, 561, 571, 581, 591]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -61,11 +87,129 @@ jobs:
           mkdir -p "$RUNNER_TEMP/source"
           gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
           echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
-      - name: Render 30 contiguous absolute original frames
+      - name: Render 10 contiguous absolute original frames
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/rumble"
-          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_rumble_episode2.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/factory/rumble-episode2-30s.json --start ${{ matrix.frame }} --end $(( ${{ matrix.frame }} + 29 )) --out "$RUNNER_TEMP/rumble"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_rumble_episode2.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/factory/rumble-episode2-30s.json --start ${{ matrix.frame }} --end $(( ${{ matrix.frame }} + 9 )) --out "$RUNNER_TEMP/rumble"
+      - name: Verify native resolution samples 3D motion and source provenance
+        run: |
+          PYTHONPATH="$PWD" python benchmarks/road_safety/episode2_film.py shard --out "$RUNNER_TEMP/rumble"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rumble-native-${{ matrix.frame }}
+          path: |
+            ${{ runner.temp }}/rumble/episode-proof.json
+            ${{ runner.temp }}/rumble/native-lossless.mkv
+          if-no-files-found: error
+          retention-days: 7
+
+  late_plan:
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    outputs:
+      frames: ${{ steps.plan.outputs.frames }}
+      has_missing: ${{ steps.plan.outputs.has_missing }}
+      cache_starts: ${{ steps.plan.outputs.cache_starts }}
+    steps:
+      - name: Wait for original source jobs and plan only remaining missing frames
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          python3 - <<'PY'
+          import json,os,re,subprocess,time
+          from pathlib import Path
+          def api(route):
+              return json.loads(subprocess.check_output(['gh','api','repos/'+os.environ['GH_REPO']+'/actions/'+route],text=True))
+          deadline=time.monotonic()+4800
+          while True:
+              old=api('runs/39211610129')
+              assert old['head_sha']=='485b8a0e57038f35c3c07dcbccd8fba182563099'
+              if old['status']=='completed':break
+              assert time.monotonic()<deadline,'original source job outcome still pending; no duplicate retry'
+              print('WAIT_ORIGINAL_SOURCE_JOBS '+old['status'],flush=True)
+              time.sleep(30)
+          def starts(run):
+              result=api(f'runs/{run}/artifacts?per_page=100')
+              assert result['total_count']<=100
+              return sorted(int(m.group(1)) for a in result['artifacts'] if not a['expired']
+                            for m in [re.fullmatch(r'rumble-native-(\d+)',a['name'])] if m)
+          cached=starts(39211610129)
+          current=starts(os.environ['GITHUB_RUN_ID'])
+          failed=[151,181,391,421,481,511,541,571]
+          initial=[n+d for n in failed for d in (0,10,20)]
+          assert current==initial,'first recovery artifacts missing or unexpected'
+          covered=set()
+          for first in cached:
+              assert first in range(1,901,30)
+              block=set(range(first,first+30))
+              assert not covered & block
+              covered.update(block)
+          for first in current:
+              block=set(range(first,first+10))
+              assert not covered & block,'overlapping source/recovery ranges'
+              covered.update(block)
+          missing=[]
+          for first in range(1,901,10):
+              block=set(range(first,first+10))
+              if not block<=covered:
+                  assert not block & covered,'partial cache block'
+                  missing.append(first)
+          assert len(covered)+10*len(missing)==900
+          report={'old_run':39211610129,'cached30_starts':cached,'new10_starts':current,'late10_starts':missing,'covered_frames':len(covered)}
+          Path('recovery-plan.json').write_text(json.dumps(report,indent=2))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('frames='+json.dumps(missing or [1])+'\n')
+              f.write('has_missing='+('true' if missing else 'false')+'\n')
+              f.write('cache_starts='+json.dumps(cached)+'\n')
+          print(json.dumps(report),flush=True)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rumble-recovery-plan
+          path: recovery-plan.json
+          retention-days: 14
+  native_late:
+    needs: late_plan
+    if: ${{ needs.late_plan.outputs.has_missing == 'true' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        frame: ${{ fromJSON(needs.late_plan.outputs.frames) }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install hash-pinned Blender 5.0.1 and QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6 ffmpeg
+          python -m pip install Pillow pydantic
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Fetch exact CC0 production scene without binary commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/source"
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render 10 contiguous absolute original frames
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rumble"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_rumble_episode2.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/factory/rumble-episode2-30s.json --start ${{ matrix.frame }} --end $(( ${{ matrix.frame }} + 9 )) --out "$RUNNER_TEMP/rumble"
       - name: Verify native resolution samples 3D motion and source provenance
         run: |
           PYTHONPATH="$PWD" python benchmarks/road_safety/episode2_film.py shard --out "$RUNNER_TEMP/rumble"
@@ -79,7 +223,11 @@ jobs:
           retention-days: 7
 
   assemble:
-    needs: native
+    needs: [native, late_plan, native_late]
+    if: ${{ always() && needs.native.result == 'success' && needs.late_plan.result == 'success' && (needs.native_late.result == 'success' || needs.native_late.result == 'skipped') }}
+    env:
+      RUMBLE_CACHE_RUN_ID: '39211610129'
+      RUMBLE_CACHE_STARTS: ${{ needs.late_plan.outputs.cache_starts }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -89,6 +237,13 @@ jobs:
           python-version: '3.11'
       - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
       - run: python -m pip install Pillow pydantic
+      - name: Download verified original native30-frame cache
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 39211610129
+          pattern: rumble-native-*
+          path: build/native-chunks
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: rumble-native-*

@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import re
 import subprocess
 import time
@@ -128,7 +129,7 @@ def shard(out):
     qa = verify(out, MANIFEST, RENDERER)
     proof = json.loads((out / "episode-proof.json").read_text())
     first, count = proof["first_frame"], proof["frames"]
-    assert count == 30 and first in range(1, 901, 30)
+    assert count in (10, 30) and first in range(1, 901, 10)
     clip = out / "native-lossless.mkv"
     run(["ffmpeg", "-v", "error", "-y", "-framerate", "30", "-start_number", first,
          "-i", out / "frame_%04d.png", "-frames:v", count, "-c:v", "ffv1", "-level", "3",
@@ -152,24 +153,44 @@ def run_rgb(path):
         return image.convert("RGB").tobytes()
 
 
+def validate_shard_layout(proofs):
+    """Allow exact old30/new10 spans, while preserving the complete900-frame gate."""
+    expected = 1
+    for proof in proofs:
+        first, last, count = proof["first_frame"], proof["last_frame"], proof["frames"]
+        assert type(first) is type(last) is type(count) is int
+        assert first == expected and first in range(1, 901, 10), "GAP_OR_OVERLAP"
+        assert count in (10, 30) and last == first + count - 1 and last <= 900
+        assert proof["frame_numbers"] == list(range(first, last + 1))
+        assert [r["frame"] for r in proof["original_frame_records"]] == proof["frame_numbers"]
+        expected = last + 1
+    assert expected == 901, "MISSING_NATIVE_FRAMES"
+
+
 def assemble(out, chunks):
     episode = load_episode(MANIFEST)
     records, files, cameras, durations = [], [], {}, []
     dirs = sorted(chunks.glob("rumble-native-*"), key=lambda p: int(p.name.rsplit("-", 1)[-1]))
-    assert len(dirs) == 30, ("MISSING_SHARDS", len(dirs))
-    for expected, directory in zip(range(1, 901, 30), dirs):
-        proof = json.loads((directory / "episode-proof.json").read_text())
+    proofs = [json.loads((directory / "episode-proof.json").read_text()) for directory in dirs]
+    validate_shard_layout(proofs)
+    reused_starts = set(json.loads(os.environ.get("RUMBLE_CACHE_STARTS", "[]")))
+    assert reused_starts <= {p["first_frame"] for p in proofs}
+    reused_frames = sum(p["frames"] for p in proofs if p["first_frame"] in reused_starts)
+    for directory, proof in zip(dirs, proofs):
+        count = proof["frames"]
         clip = directory / "native-lossless.mkv"
-        assert proof["first_frame"] == expected and proof["last_frame"] == expected + 29
         assert proof["renderer_source_sha256"] == digest(RENDERER)
         assert proof["source_sha256"] == episode["source_scene_sha256"]
         assert proof["resolution"] == [1080, 1920] and proof["cycles_samples"] == 32
         assert proof["renderer"] == "CYCLES" and proof["fps"] == 30 and not proof["preview_only"]
         assert proof["native_qa"]["status"] == "PASS_NATIVE_ORIGINAL_SHARD"
+        assert proof["native_qa"]["frames"] == count
+        assert proof["car_mesh_parts"] >= 65 and proof["rotating_wheel_pivots"] == 4
+        assert proof["physically_calibrated"] is False and proof["upload_ready"] is False
         assert proof["lossless_clip_sha256"] == digest(clip)
         video = next(s for s in probe(clip)["streams"] if s["codec_type"] == "video")
         assert (video["width"], video["height"], video["r_frame_rate"],
-                int(video["nb_read_frames"]), video["codec_name"]) == (1080, 1920, "30/1", 30, "ffv1")
+                int(video["nb_read_frames"]), video["codec_name"]) == (1080, 1920, "30/1", count, "ffv1")
         hashes = run(["ffmpeg", "-v", "error", "-i", clip, "-pix_fmt", "rgb24", "-f",
                       "framehash", "-hash", "sha256", "-"]).stdout
         hashes = [s.split(",")[-1].strip() for s in hashes.splitlines() if not s.startswith("#")]
@@ -192,7 +213,7 @@ def assemble(out, chunks):
     final = out / "rumble-strips-english-30s-1080p.mp4"
     start = time.perf_counter()
     run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", concat,
-         "-i", out / "narration.wav", "-vf", f"ass={out / 'film.ass'}", "-map", "0:v:0",
+         "-i", out / "narration.wav", "-vf", f"setpts=N/(30*TB),ass={out / 'film.ass'}", "-map", "0:v:0",
          "-map", "1:a:0", "-t", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "17",
          "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", final])
     elapsed = time.perf_counter() - start
@@ -219,6 +240,8 @@ def assemble(out, chunks):
               "resolution": [1080, 1920], "samples": 32, "native_frames": records,
               "source_sha256": episode["source_scene_sha256"], "camera_by_shot": cameras,
               "lossless_intermediate": True, "decoded_unique_video_frames": len(set(hashes)),
+              "reused_native_frames": reused_frames, "new_native_frames": 900 - reused_frames,
+              "cache_source_run_id": os.environ.get("RUMBLE_CACHE_RUN_ID"),
               "silence_seconds": gaps, "maximum_silence_seconds": max(gaps, default=0),
               "total_silence_seconds": sum(gaps), "upper_overlays": False,
               "render_frame_seconds": durations, "sum_native_render_seconds": sum(durations),
