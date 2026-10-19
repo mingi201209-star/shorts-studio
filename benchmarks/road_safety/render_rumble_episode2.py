@@ -174,6 +174,21 @@ def main():
             # out-of-scope crash animation from a different topic.
             ob.animation_data_clear()
 
+    # Reuse all original CC0 body meshes, but give their existing blue material
+    # readable sapphire paint. Tyres/glass/chrome stay on their source materials.
+    body_paint=bpy.data.materials.get("blue")
+    if body_paint is None:
+        raise ValueError("missing original CC0 blue body material")
+    body_paint.use_nodes=True
+    paint_shader=body_paint.node_tree.nodes.get("Principled BSDF")
+    if paint_shader is None:
+        raise ValueError("source body material has no Principled BSDF")
+    paint_color=(.018,.16,.51,1)
+    paint_shader.inputs["Base Color"].default_value=paint_color
+    paint_shader.inputs["Metallic"].default_value=.25
+    paint_shader.inputs["Roughness"].default_value=.32
+    body_paint.diffuse_color=paint_color
+
     # Group every tyre, rim and wheel spoke beneath its true local wheel hub.
     # The entire wheel assembly must rotate; the car body must NOT rotate.
     wheels = [o for o in car.children_recursive
@@ -286,7 +301,8 @@ def main():
         shot=module.shot_for_frame(episode,absolute_frame)
         x=module.travel_x(absolute_frame)
         # Motion is a global deterministic x coordinate, not a per-shard reset.
-        car.location=(x,-.30,.03+.004*math.sin(x/.34*math.tau))
+        car.location=(x,-.30+module.lane_return_offset(absolute_frame),.03+module.rumble_displacement(absolute_frame))
+        car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
         for pivot,radius in pivots:
             pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
         scene.frame_set(absolute_frame)
@@ -296,7 +312,8 @@ def main():
             # whether this worker renders its first/middle/last 30 frames.
             middle=(shot["start"]+shot["end"])//2
             centre_x=module.travel_x(middle)
-            car.location=(centre_x,-.30,.03)
+            car.location=(centre_x,-.30+module.lane_return_offset(middle),.03)
+            car.rotation_euler[2]=math.pi/2+module.lane_return_heading(middle)
             bpy.context.view_layer.update()
             front=bpy.data.objects["Front_tire"]
             rear=bpy.data.objects["Rear_tire"]
@@ -304,29 +321,32 @@ def main():
             points=[obj.matrix_world@Vector(v) for v in obj.bound_box]
             wheel=sum(points,Vector())/len(points)
             if shot["id"]=="hook_warning":
-                target=Vector((centre_x,-.25,.55))
-                offset=Vector((2.2,-8.2,5.9))
-                scale=9.2
+                # Opening shows physical impact, not another distant moving car.
+                target=wheel+Vector((0,0,-.11))
+                offset=Vector((1.55,-3.2,2.2))
+                scale=3.95
             elif shot["id"]=="road_cut":
+                # From above, real grooves contrast with the adjacent flat lane.
                 target=wheel+Vector((0,0,-.18))
-                offset=Vector((1.0,-3.7,3.25))
-                scale=2.8
+                offset=Vector((.1,-3.4,4.15))
+                scale=4.15
             elif shot["id"]=="tire_contact":
+                # Low profile exposes tire and recessed contact change.
                 target=wheel+Vector((0,0,-.08))
-                offset=Vector((1.7,-3.2,2.2))
-                scale=2.85
+                offset=Vector((2.5,-2.1,1.4))
+                scale=3.95
             elif shot["id"]=="rumble_mechanism":
                 target=wheel+Vector((0,0,-.13))
                 offset=Vector((-1.2,-3.4,1.9))
-                scale=3.05
+                scale=4.15
             elif shot["id"]=="shoulder_location":
                 target=Vector((centre_x,-.1,.45))
                 offset=Vector((.7,-5.3,8.2))
-                scale=9.1
+                scale=11.0
             else:
                 target=Vector((centre_x,-.25,.55))
                 offset=Vector((4.0,-7.7,5.4))
-                scale=9.4
+                scale=11.6
             cam.location=target+offset
             cam.rotation_euler=(target-cam.location).to_track_quat("-Z","Y").to_euler()
             cam.data.ortho_scale=scale
@@ -337,7 +357,8 @@ def main():
                 round(cam.data.ortho_scale,6),
             ]
             previous_shot=shot["id"]
-            car.location=(x,-.30,.03+.004*math.sin(x/.34*math.tau))
+            car.location=(x,-.30+module.lane_return_offset(absolute_frame),.03+module.rumble_displacement(absolute_frame))
+            car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
             bpy.context.view_layer.update()
         frame_path=out/f"frame_{absolute_frame:04d}.png"
         scene.render.filepath=str(frame_path)

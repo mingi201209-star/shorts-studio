@@ -62,3 +62,32 @@ Recovery renders ONLY those terminal failed ranges as24ten-frame jobs after a li
 Assembly still requires exactglobal1..900, unchanged renderer/source hashes, native1080x1920/Cycles32, unique original/decodedRGB frames, all6fixed shot cameras, source mesh/wheel gates, measured English captions and original AAC silence gates. Mixed FFV1 segment timestamps are normalized to the authored global30fps clock with setpts=N/(30*TB), without creating or dropping source frames. Report records reused/new counts and the original cache run.
 
 Regression:31focused tests pass, including missing/overlapping/partial/oversized/mismatched mixed-span rejection; Ruff clean. Workflow YAML and embedded Python parsed; isolated coordinator fixtures verified zero-missing and late-missing paths and rejected overlapping or absent artifacts. Fixtures test scheduling only, not production rendering or user acceptance. Original production and new recovery outcomes must still be checked live.
+
+
+## Editorial redesign after owner rejected moving-car-only film
+
+Owner reviewed the complete old 30s English film and rejected its visual pacing.
+The prior file remains a technically verified artifact, but NOT an editorially
+accepted upload candidate. On the existing draft PR branch, the new candidate:
+
+- Speeds up actual global tyre/groove crossings (8.4m vs prior 4.6m over 900
+  frames), while keeping all 900 independently computed native frames.
+- Begins with a fixed-camera tyre/groove detail and uses distinct contact
+  angles before the wide road/driver shots.
+- Adds a bounded 8mm uncalibrated illustrative vibration and a partial manual
+  lateral lane correction with matching vehicle heading; NO road autosteering.
+- Reuses the hash-pinned CC0 vehicle, but paints only its original blue body
+  material sapphire; leaves wheel, glass and chrome materials untouched.
+- Preserves six real five-second English narration captures, measured lower
+  captions, original 1080x1920 Cycles32 production settings and all QA gates.
+
+Evidence: focused test 14 PASS, full existing tests 479 PASS/1 SKIP,
+Blender5.0.1 source SHA a82e0582... verified; FIVE 450x800/Cycles7
+old-framing sparse images and THREE revised-color sparse preview images rendered
+and visually inspected. Preview QA is NOT full native-quality approval.
+
+The prior 900-frame artifact was produced by the OLD renderer/source timeline.
+**Never reuse its native frames under the changed renderer SHA** and never claim
+this redesign has a new completed 30-second MP4. A new full original-frame
+render, audio/video/caption QA and subjective editorial check are still pending.
+Keep PR draft; do not merge, upload, spend or downgrade QA.

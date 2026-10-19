@@ -1,5 +1,6 @@
 """No reusable cached film may masquerade as a freshly rendered new episode."""
 import copy
+from itertools import pairwise
 from pathlib import Path
 
 import pytest
@@ -84,3 +85,25 @@ def test_narration_english_and_no_fake_upload_authorization():
     spoken=" ".join(s["narration_en"] for s in ep["shots"])
     assert 60 <= len(spoken.split()) <= 100
     assert "doesn't" not in spoken
+
+
+def test_visual_contact_cadence_and_manual_lane_return():
+    from shorts_studio.factory.rumble_episode2 import (
+        lane_return_heading,
+        lane_return_offset,
+        rumble_displacement,
+    )
+    # A 30-second shot must show repeated road contact, not one slowly moving car.
+    assert travel_x(900) - travel_x(1) >= 8.0
+    # No fake autonomous steering: vehicle keeps its line until the response beat.
+    assert lane_return_offset(1) == lane_return_offset(750) == 0.0
+    assert lane_return_heading(750) == 0.0
+    values = [lane_return_offset(i) for i in range(750, 901)]
+    assert all(a <= b for a,b in pairwise(values))
+    assert 0.25 <= values[-1] <= 0.40
+    assert 0 < lane_return_heading(825) < 0.4
+    assert lane_return_heading(900) == 0.0
+    # Actual contact vibration changes with world distance; never huge bouncing.
+    heights = [rumble_displacement(i) for i in range(1,901)]
+    assert len({round(z, 5) for z in heights}) > 200
+    assert max(abs(z) for z in heights) <= 0.012

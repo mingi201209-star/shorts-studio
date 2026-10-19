@@ -24,8 +24,8 @@
       "end": 150,
       "view": "hero",
       "narration_en": "Those shallow grooves beside the lane warn you early when your car drifts toward the shoulder.",
-      "visual_proof": "Detailed entire sedan enters milled shoulder groove strip",
-      "mechanism_change": "Vehicle travels forward toward recessed shoulder grooves"
+      "visual_proof": "Original front tyre immediately above recessed groove in a tight native 3D opening",
+      "mechanism_change": "Tyre repeatedly crosses true milling pockets while the nearby body undergoes bounded vibration"
     },
     {
       "id": "road_cut",
@@ -34,7 +34,7 @@
       "view": "contact",
       "narration_en": "These are shallow cuts milled into the shoulder, rather than lines painted on top.",
       "visual_proof": "Actual depressed milling pockets with near-side front tyre visibly above",
-      "mechanism_change": "Tire approaches multiple genuinely recessed asphalt cuts"
+      "mechanism_change": "High-angle comparison reveals smooth adjoining lane and actual recessed shoulder cuts"
     },
     {
       "id": "tire_contact",
@@ -43,7 +43,7 @@
       "view": "contact",
       "narration_en": "As a tire rolls across each groove, its contact with the road keeps changing.",
       "visual_proof": "Wheel rotates and road geometry passes below the tire",
-      "mechanism_change": "Wheel rotates based on absolute travelled distance; road contact oscillates"
+      "mechanism_change": "Low side-on angle reveals genuine wheel rotation and successive milling depressions"
     },
     {
       "id": "rumble_mechanism",
@@ -52,7 +52,7 @@
       "view": "contact",
       "narration_en": "That repeated contact creates a rumbling sound and sends vibration through the car.",
       "visual_proof": "Road pockets and moving tyre with small kinematic vertical response",
-      "mechanism_change": "Wheel passage drives a small vertical body vibration without fake sound-wave physics"
+      "mechanism_change": "Actual wheel-pocket passage produces groove-synchronous non-calibrated vehicle vibration"
     },
     {
       "id": "shoulder_location",
@@ -69,8 +69,8 @@
       "end": 900,
       "view": "payoff",
       "narration_en": "These grooves cannot steer your car for you. The driver still needs to react in time.",
-      "visual_proof": "Whole vehicle continues; grooves do not forcibly control steering",
-      "mechanism_change": "No automatic steering implied; continuous native motion ends safely"
+      "visual_proof": "Car visibly begins a driver-initiated lane correction and points toward the smooth lane",
+      "mechanism_change": "Smooth bounded lateral movement and matching heading begin only after driver warning"
     }
   ]
 }

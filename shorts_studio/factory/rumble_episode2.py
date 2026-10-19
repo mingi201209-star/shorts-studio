@@ -6,6 +6,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 APPROVED_SERIES = "hidden-engineering-american-roads"
@@ -81,7 +82,31 @@ def travel_x(frame: int) -> float:
     """Global monotonic trajectory shared by ALL independently rendered shards."""
     if type(frame) is not int or not 1 <= frame <= 900:
         raise ValueError("invalid absolute movie frame")
-    return -2.3 + 4.6 * (frame - 1) / 899
+    return -4.2 + 8.4 * (frame - 1) / 899
+
+
+
+def lane_return_offset(frame: int) -> float:
+    """Human-initiated partial lane correction only in the final beat."""
+    travel_x(frame)
+    t = max(0.0, min(1.0, (frame - 750) / 150))
+    return 0.32 * t * t * (3 - 2 * t)
+
+
+def lane_return_heading(frame: int) -> float:
+    """Bounded heading follows the actual lateral path derivative."""
+    travel_x(frame)
+    if frame <= 750 or frame >= 900:
+        return 0.0
+    t = (frame - 750) / 150
+    dy = 0.32 * 6 * t * (1 - t) / 150
+    dx = 8.4 / 899
+    return math.atan2(dy, dx)
+
+
+def rumble_displacement(frame: int) -> float:
+    """Uncalibrated groove-synchronous demo, below physical cut depth."""
+    return 0.008 * math.sin(travel_x(frame) / 0.34 * math.tau)
 
 
 def render_slice(start: int, end: int) -> list[int]:
