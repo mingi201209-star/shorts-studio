@@ -1,0 +1,77 @@
+{
+  "words": [
+    {
+      "text": "As",
+      "start": 0.09525,
+      "end": 0.1905
+    },
+    {
+      "text": "a",
+      "start": 0.202375,
+      "end": 0.25
+    },
+    {
+      "text": "tire",
+      "start": 0.261916,
+      "end": 0.619041
+    },
+    {
+      "text": "rolls",
+      "start": 0.630958,
+      "end": 0.904749
+    },
+    {
+      "text": "across",
+      "start": 0.916666,
+      "end": 1.369041
+    },
+    {
+      "text": "each",
+      "start": 1.464291,
+      "end": 1.678582
+    },
+    {
+      "text": "groove",
+      "start": 1.690458,
+      "end": 2.119041
+    },
+    {
+      "text": "its",
+      "start": 2.40475,
+      "end": 2.5
+    },
+    {
+      "text": "contact",
+      "start": 2.511916,
+      "end": 3.011916
+    },
+    {
+      "text": "with",
+      "start": 3.023791,
+      "end": 3.130916
+    },
+    {
+      "text": "the",
+      "start": 3.142875,
+      "end": 3.202416
+    },
+    {
+      "text": "road",
+      "start": 3.214291,
+      "end": 3.642874
+    },
+    {
+      "text": "keeps",
+      "start": 3.726208,
+      "end": 4.035749
+    },
+    {
+      "text": "changing",
+      "start": 4.047625,
+      "end": 4.511916
+    }
+  ],
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "text": "As a tire rolls across each groove, its contact with the road keeps changing."
+}

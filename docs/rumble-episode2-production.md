@@ -38,3 +38,16 @@ https://github.com/mingi201209-star/shorts-studio/releases/tag/rumble-episode2-s
 The native render smoke uses the exact hash-pinned Blender 5.0.1 executable, the source asset with SHA-256 a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877, fixed native 1080x1920/Cycles32, and two separately calculated moving frames. No new footage uses preview/upscaling/interpolation. QA checks exact numbered PNGs, image decode, each frame hash, absolute trajectory, original model, camera evidence, and no upload authorization.
 
 The earlier six 450x800/Cycles7 storyboard frames passed creation but FAILED editorial expectations (too much zebra-striping). The final revised narrow shoulder rumble groove geometry keeps the rest of the driving lane level. This is still not a release-ready 30-second film; final TTS, safe subtitles, source evidence review, edit pacing and 900 unique native frames are outstanding.
+
+
+## Full-film implementation — 2026-10-19
+
+All six native Cycles32 storyboard cameras were rendered in run39210381736 at f307f067a424c9b97cb85f729348155d9c9308d8 and visually inspected. Existing test/smoke checks also passed. This remains editorial review, not approval.
+
+The isolated full-film workflow uses thirty contiguous 30-frame shards with absolute global indices1..900. Existing native/source/camera QA remains intact. FFV1 carries every source RGB pixel losslessly; each shard and final assembly independently compare decoded RGB SHA256 values. The final H264 encode happens once after caption compositing. Missing/duplicate frames, changed shot cameras at shard joins, different source hashes or reduced Cycles/resolution fail the assembly.
+
+English narration uses six real en-US-AndrewNeural +5% captures, raw provider MP3 provenance plus exact PCM tails and genuine word boundaries. The script is88words with32measured caption cues. No speech acceleration, invented alignment or upper overlays. Local AAC preflight maximum detected silence0.710708s,total4.839603s at-35dB,d0.3; original <=0.9s/max and <=5s/total gates retained. Comfort still needs subjective listening.
+
+Custom code is episode-specific integration of existing factory source/timeline/shard QA, timing types/validation, prior audited English-caption layout, FFmpeg FFV1/libx264/ASS and Pillow font measurements; no alternative media engine or provider is introduced. Source reference was repaired from404 to the current official FHWA two-lane-roads page in the manifest. No physical tire solver or upload approval is claimed.
+
+Full workflow writes native frame render times and final encode time. They measure stages, not a proven five-minute total. A managed worker cannot resume this completed campaign or configure a different root through the installed manager API; the authorized operator is working in this isolated PR56 worktree. Manager state/policy/root were not modified.

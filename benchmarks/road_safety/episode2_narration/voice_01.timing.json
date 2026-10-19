@@ -1,0 +1,87 @@
+{
+  "words": [
+    {
+      "text": "Those",
+      "start": 0.09525,
+      "end": 0.285708
+    },
+    {
+      "text": "shallow",
+      "start": 0.297625,
+      "end": 0.678583
+    },
+    {
+      "text": "grooves",
+      "start": 0.690458,
+      "end": 1.023791
+    },
+    {
+      "text": "beside",
+      "start": 1.035708,
+      "end": 1.499999
+    },
+    {
+      "text": "the",
+      "start": 1.511916,
+      "end": 1.583332
+    },
+    {
+      "text": "lane",
+      "start": 1.59525,
+      "end": 1.904791
+    },
+    {
+      "text": "warn",
+      "start": 1.916666,
+      "end": 2.142874
+    },
+    {
+      "text": "you",
+      "start": 2.15475,
+      "end": 2.285708
+    },
+    {
+      "text": "early",
+      "start": 2.297625,
+      "end": 2.630958
+    },
+    {
+      "text": "when",
+      "start": 2.642875,
+      "end": 2.773833
+    },
+    {
+      "text": "your",
+      "start": 2.785708,
+      "end": 2.892833
+    },
+    {
+      "text": "car",
+      "start": 2.90475,
+      "end": 3.178541
+    },
+    {
+      "text": "drifts",
+      "start": 3.190458,
+      "end": 3.654749
+    },
+    {
+      "text": "toward",
+      "start": 3.666666,
+      "end": 3.869041
+    },
+    {
+      "text": "the",
+      "start": 3.880958,
+      "end": 3.928583
+    },
+    {
+      "text": "shoulder",
+      "start": 3.940458,
+      "end": 4.416666
+    }
+  ],
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "text": "Those shallow grooves beside the lane warn you early when your car drifts toward the shoulder."
+}
