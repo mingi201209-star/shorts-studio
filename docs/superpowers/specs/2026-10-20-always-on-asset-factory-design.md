@@ -84,6 +84,38 @@ Claude, Codex and optional third provider may work on scoped modeling/planning s
 
 **Milestone D — 24-hour soak:** On provisioned server, run a 24-hour bounded resilience experiment with a finite useful backlog. Force daemon restart, simulated quota unavailability, canceled/uncertain render, stale worker lease, storage pressure and CI error. Every job must resume or remain explicitly blocked with durable evidence; no duplicate native shards or unauthorized charges.
 
-## 7. Hand-off rules
+## 7. Concrete controller-and-storage pilot (2026-10-21 design addendum)
+
+This is an **unfunded, design-only** refinement of the agreed control-plane architecture, not permission to provision or deploy servers, create cloud accounts, generate paid API traffic, or operate a new rendering fleet.
+
+### Proposed components
+
+- **Controller:** OVHcloud VPS-1 (published from USD 4.54/month; 2 vCores, 4 GiB RAM, 40 GiB NVMe). Use an x86-64 Ubuntu LTS server when available. Host only systemd-managed orchestration, SQLite WAL job state, manifests, bounded workspaces and monitoring. The local boot disk must never act as an unlimited high-resolution frame archive. Final price, tax, payment cadence and regional availability require checkout review. The included daily backup of the preceding 24 hours is **not** sufficient to protect long-lived checkpoint history.
+- **Durable objects:** Backblaze B2 private bucket using an S3-compatible endpoint and separate limited-scope application keys; published starting price USD 6.95/TB-month with the first 10GB free, and published free monthly egress up to 3x average stored volume. The billable amount depends on average stored byte-hours, region, egress and eligible operations. No promise that a 100GB cap will accommodate three months of original frames.
+- **Workers:** GPU/CPU render nodes are independently allocated only when expressly funded and policy-compatible; GitHub Actions continues to host bounded software development validation and quality proofs, not an assumed 24x7 commercial fleet. Workers fetch immutable input digests, render assigned native ranges, upload staged shards, and submit signed or hash-verified receipts.
+- **Budget reference:** at 100GB average retained B2 storage, approximately 90GB billable after the first 10GB (about USD 0.63/month at $6.95/TB-month); together with VPS advertised starting price, the illustrative monthly subtotal is about USD 5.17 before tax, API/egress overages, exchange rate variability and worker rentals. The owner's roughly KRW 20,000/month exploration figure is a **planning target**, not spending permission. Require an independent account-side spend notification/limit where available; warn and pause when the forecast crosses the approved ceiling.
+
+### Persistent control flow
+
+`approved_episode -> deterministic backlog -> SQLite state claim + lease/fencing -> asset/provenance check -> worker allocation -> original-frame render -> verify native QA -> upload immutable B2 objects -> atomic completion receipt -> final audio/film QA -> release candidate`.
+
+The VPS persists `job_id`, episode, priority, exact source/render/manifest digests, attempt number, lease owner/expiry, frame range, artifact checksums, estimated cost, approved budget and terminal outcome. Files are staged locally and **verified remotely** (size, digest, complete range and manifest provenance) before a job is marked durable; cleanup must not remove a sole good copy. On restart, reconcile remote receipts and any external worker state before rescheduling. A stale heartbeat alone never licenses duplicate paid work.
+
+### Security and operations
+
+- SSH keys only; firewall deny by default; no public unauthenticated job-dispatch endpoint. Store provider tokens and B2 keys in root/service-owned secret files outside the repository, with least privilege, private bucket/prefix limits and no delete right on production source masters. Rotate compromised keys. Logs scrub keys and URLs containing credentials.
+- Keep the SQLite checkpoint database on local NVMe and write encrypted, checksum-verified off-host snapshots to a protected B2 prefix with an independent restore mechanism. Restore is tested; simply having daily VPS snapshots does not count as validated recovery.
+- Monitor disk pressure, state DB integrity, stuck leases, outstanding unverified uploads, queued work, unusual worker charges and last verified complete video. Stop dispatch when storage headroom or billing evidence is inadequate. Reject SHA drift and incompatible stale frames.
+- Keep a small temporary download/render staging area with a hard quota. Preserve original 3D models, exact provenance records and accepted source frames unless retention requirements and redundant verified copies justify deletion. Monthly stored bytes and estimated bills are reported.
+
+### Pilot acceptance before any recurring commitment
+
+1. Confirm the actual provider checkout total, regional CPU architecture, month-to-month availability and any storage/network add-ons, then get **specific owner authorization** for VPS and B2 accounts and spending cap.
+2. With test/mock workers and without paid render compute, demonstrate a single durable job from queue to complete B2 receipt; verify the exact digest on upload and on download.
+3. Simulate network loss, duplicate submissions, daemon restart, expired lease, storage 95% full and quota exhaustion. Jobs either recover once or remain visibly blocked, with no duplicate dispatch, data loss, silent source downgrade or unapproved charge.
+4. Reboot the controller, restore its SQLite state from B2, reconcile external artifacts and prove that a 30-second native frame manifest rejects any missing or foreign frames.
+5. Only then test a production episode with the existing exact-head GitHub verification and quality gates. No automatic PR merge, YouTube publish, large render fleet, or month-two charge is authorized by a successful pilot.
+
+## 8. Hand-off rules
 
 This specification is a design artifact, not a running process or a request to dispatch a worker. User reviews/approves spec, then author a stepwise implementation plan and execute in an isolated branch. Never use this design to claim the server exists, the 24-hour loop runs, or that PR #56/episode 2 is done.
