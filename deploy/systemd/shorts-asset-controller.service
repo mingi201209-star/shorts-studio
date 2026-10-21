@@ -1,0 +1,43 @@
+# INERT TEMPLATE ONLY. Do not install or enable during this pilot implementation.
+# Separate owner approval is required for installation and a finite 24-hour soak.
+# No install target; an operator must separately review activation.
+[Unit]
+Description=Shorts asset controller local mock-only pilot
+ConditionPathExists=/etc/shorts-asset-controller/approved-mock-service
+After=local-fs.target
+
+[Service]
+Type=simple
+User=shorts-asset-controller
+Group=shorts-asset-controller
+WorkingDirectory=/opt/shorts-studio
+ExecStart=/opt/shorts-studio/.venv/bin/python -m shorts_studio.asset_factory.controller serve --db /var/lib/shorts-asset-controller/controller.db --storage /var/lib/shorts-asset-controller/objects --mock-only --poll-seconds 60
+Restart=on-failure
+RestartSec=15
+TimeoutStopSec=30
+StateDirectory=shorts-asset-controller
+StateDirectoryMode=0700
+UMask=0077
+Environment=HOME=/var/empty
+UnsetEnvironment=OPENAI_API_KEY ANTHROPIC_API_KEY CODEX_HOME
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateNetwork=true
+RestrictAddressFamilies=AF_UNIX
+ReadWritePaths=/var/lib/shorts-asset-controller
+CapabilityBoundingSet=
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=512M
+CPUQuota=50%
+TasksMax=16
+LimitNOFILE=256
+StandardOutput=journal
+StandardError=journal
+LogRateLimitIntervalSec=60s
+LogRateLimitBurst=30
