@@ -34,6 +34,8 @@ class FakeProcess:
                 out = 'quota exceeded Bearer secret-token'
             elif self.mode != 'empty':
                 (self.root / 'proof.py').write_text('answer = 42\n')
+                if self.mode == 'ignored':
+                    (self.root / 'ignored.txt').write_text('tampered')
         elif args[0] == sys.executable:
             out = '1 passed in 0.01s'
             if self.mode == 'testfail':
@@ -174,3 +176,13 @@ def test_error_details_are_redacted(tmp_path):
     assert result.status == 'blocked'
     assert 'private-token' not in repr(result)
     assert 'password' not in repr(result)
+
+
+def test_codex_ignored_file_edit_blocks_even_with_expected_output(tmp_path):
+    (tmp_path / '.gitignore').write_text('ignored.txt\n')
+    (tmp_path / 'ignored.txt').write_text('original')
+    result, fake = probe(tmp_path, 'ignored')
+    assert fake.executed
+    assert (tmp_path / 'proof.py').is_file()
+    assert result.status == 'blocked'
+    assert result.output_sha256 is None

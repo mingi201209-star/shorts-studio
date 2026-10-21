@@ -3,6 +3,7 @@
 import hashlib
 import os
 import sqlite3
+import subprocess
 import tempfile
 from collections.abc import Callable
 from dataclasses import fields
@@ -10,7 +11,7 @@ from pathlib import Path
 
 from .artifacts import LocalArtifactStore
 from .contracts import ArtifactReceipt, Claim, JobSpec, _digest
-from .database import open_controller_db
+from .database import maintenance_lock, open_controller_db
 from .queue import _event, _finish, _time, _write
 
 _JOB_COLUMNS = ', '.join('j.' + f.name for f in fields(JobSpec))
@@ -100,10 +101,10 @@ def _validate(conn: sqlite3.Connection) -> None:
 
 
 def _offline(path: Path) -> None:
-    """Offline guard: refuse WAL sidecars and this process's open database handles.
+    """Offline guard: refuse sidecars and open database handles across processes.
 
-    Restore is an operator offline operation: callers must prevent concurrent opens.
-    SQLite locks additionally protect the final replacement against active writers.
+    Controller handles coordinate with the maintenance lock. Uninspectable process
+    handles fail closed; unmanaged clients must remain stopped during maintenance.
     """
     if path.is_symlink():
         raise ValueError('database must not be a symlink')
@@ -111,23 +112,20 @@ def _offline(path: Path) -> None:
         raise ValueError('database has live or uncheckpointed sidecars')
     if not path.exists():
         return
-    target = path.stat()
-    for process in (Path('/proc/self'),):
-        try:
-            descriptors = list((process / 'fd').iterdir())
-        except FileNotFoundError:
-            continue
-        except PermissionError as exc:
-            raise ValueError('cannot establish offline destination') from exc
-        for descriptor in descriptors:
-            try:
-                info = descriptor.stat()
-            except FileNotFoundError:
-                continue
-            except PermissionError as exc:
-                raise ValueError('cannot establish offline destination') from exc
-            if (info.st_dev, info.st_ino) == (target.st_dev, target.st_ino):
-                raise ValueError('database destination is open')
+    # Linux psmisc fuser finds open descriptors belonging to this service
+    # owner without requiring ptrace access to unrelated root-owned services.
+    # Missing/broken inspection fails closed. Cooperative controller opens
+    # are independently fenced by the maintenance lock.
+    try:
+        result = subprocess.run(["fuser", "-s", str(path)],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                                timeout=5, check=False)
+    except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+        raise ValueError("cannot establish offline destination") from exc
+    if result.returncode == 0:
+        raise ValueError("database destination is open")
+    if result.returncode != 1:
+        raise ValueError("cannot establish offline destination")
 
 
 def _temporary(dest: Path) -> Path:
@@ -181,6 +179,17 @@ def snapshot_db(conn: sqlite3.Connection, dest: Path) -> str:
 
 
 def restore_db(src: Path, dest: Path, expected_sha256: str) -> None:
+    """Exclude coordinated opens throughout offline validation and publication.
+
+    Managed SQLite connections share a maintenance lock; the operator-only
+    restore also checks uncoordinated opens using Linux psmisc fuser.
+    Services and unknown privileged clients must be stopped before restore.
+    """
+    with maintenance_lock(Path(dest), exclusive=True):
+        _restore_db(src, dest, expected_sha256)
+
+
+def _restore_db(src: Path, dest: Path, expected_sha256: str) -> None:
     """Validate private snapshot bytes before touching an offline destination.
 
     Never copy a live WAL database: source must itself be an offline snapshot.

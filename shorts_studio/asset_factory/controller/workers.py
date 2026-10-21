@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -56,6 +57,62 @@ def _probe_path(root: Path, name: str) -> Path:
     if any(parent.is_symlink() for parent in (path, *path.parents) if parent != root):
         raise _ProbeBlocked('symlink path refused')
     return path
+
+
+def _workspace_snapshot(root: Path) -> dict:
+    """Hash all non-Git entries, including ignored files, within finite bounds.
+
+    Refuse symlinks/special files and races rather than following workspace paths.
+    Git metadata is checked separately by the exact-HEAD and status audits.
+    """
+    result = {}
+    total = 0
+    def visit(directory_fd, prefix=''):
+        nonlocal total
+        with os.scandir(directory_fd) as entries:
+            for entry in entries:
+                name = prefix + entry.name
+                if name == '.git':
+                    continue
+                if len(result) >= 10000:
+                    raise _ProbeBlocked('workspace snapshot entry limit')
+                info = entry.stat(follow_symlinks=False)
+                if stat.S_ISDIR(info.st_mode):
+                    result[name] = ('directory', info.st_mode)
+                    fd = os.open(entry.name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW,
+                                 dir_fd=directory_fd)
+                    try:
+                        visit(fd, name + '/')
+                    finally:
+                        os.close(fd)
+                elif stat.S_ISREG(info.st_mode):
+                    total += info.st_size
+                    if total > 64 * 1024 * 1024:
+                        raise _ProbeBlocked('workspace snapshot byte limit')
+                    fd = os.open(entry.name, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK,
+                                 dir_fd=directory_fd)
+                    with os.fdopen(fd, 'rb') as stream:
+                        opened = os.fstat(stream.fileno())
+                        if (opened.st_dev, opened.st_ino, opened.st_mode, opened.st_size) != (
+                                info.st_dev, info.st_ino, info.st_mode, info.st_size):
+                            raise _ProbeBlocked('workspace changed during snapshot')
+                        content = stream.read(info.st_size + 1)
+                        after = os.fstat(stream.fileno())
+                    # Reading a file may advance atime without modifying data.
+                    identity = lambda v: (v.st_dev, v.st_ino, v.st_mode, v.st_size,
+                                          v.st_mtime_ns, v.st_ctime_ns)
+                    if len(content) != info.st_size or identity(after) != identity(opened):
+                        raise _ProbeBlocked('workspace changed during snapshot')
+                    result[name] = (info.st_mode, hashlib.sha256(content).hexdigest())
+                else:
+                    raise _ProbeBlocked('workspace symlink or special file refused')
+
+    fd = os.open(root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        visit(fd)
+    finally:
+        os.close(fd)
+    return result
 
 
 class CodexWorker:
@@ -114,7 +171,8 @@ class CodexWorker:
             deadline = time.monotonic() + timeout_seconds
             env = {key: os.environ[key] for key in ('PATH', 'HOME', 'LANG') if key in os.environ}
             env.update(GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull,
-                       GIT_TERMINAL_PROMPT='0', PYTEST_DISABLE_PLUGIN_AUTOLOAD='1')
+                       GIT_TERMINAL_PROMPT='0', PYTEST_DISABLE_PLUGIN_AUTOLOAD='1',
+                       PYTHONDONTWRITEBYTECODE='1')
 
             def execute(args, allowed=(0,)):
                 remaining = deadline - time.monotonic()
@@ -143,6 +201,7 @@ class CodexWorker:
                 raise _ProbeBlocked('workspace must be the repository root')
             if git('status', '--porcelain=v1', '-z', '--untracked-files=all'):
                 raise _ProbeBlocked('fresh clean worktree required')
+            baseline = _workspace_snapshot(root)
             with tempfile.TemporaryDirectory(prefix='codex-probe-') as diagnostic:
                 prompt = (f'Scratch probe only. Edit only {json.dumps(expected_files)}. '
                           'Do not commit, publish, push, upload, use paid APIs, access secrets, '
@@ -153,6 +212,11 @@ class CodexWorker:
                          '--', prompt])
 
             def audit():
+                snapshot = _workspace_snapshot(root)
+                edits = {name for name in baseline.keys() | snapshot.keys()
+                         if baseline.get(name) != snapshot.get(name)}
+                if edits != set(expected_files):
+                    raise _ProbeBlocked('workspace edits outside expected scope')
                 head()
                 status = git('status', '--porcelain=v1', '-z', '--untracked-files=all')
                 entries = status.split('\0')
@@ -188,7 +252,7 @@ class CodexWorker:
 
             before = audit()
             output = execute([*test_command[:3], '-c', os.devnull, '--noconftest',
-                              '--override-ini=addopts=', *test_command[3:]])
+                              '--override-ini=addopts=', '-p', 'no:cacheprovider', *test_command[3:]])
             if not re.search(r'\b[1-9][0-9]* passed\b', output):
                 raise _ProbeBlocked('required tests did not report passing tests')
             if audit() != before:

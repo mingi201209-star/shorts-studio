@@ -38,7 +38,8 @@ def tick(setup, worker=None, **kwargs):
     conn, store = setup
     return runner.run_once(conn, store, worker=worker or MockWorker(),
                            now=kwargs.pop('now', 10),
-                           disk_free_ratio=kwargs.pop('disk_free_ratio', .5), **kwargs)
+                           disk_free_ratio=kwargs.pop('disk_free_ratio', .5),
+                           monotonic=kwargs.pop('monotonic', lambda: 0), **kwargs)
 
 
 def test_mock_job_finishes_with_verified_receipt(setup, monkeypatch):
@@ -159,3 +160,19 @@ def test_invalid_disk_ratio_rejected(setup, ratio):
 def test_invalid_approved_budget_rejected(setup, budget):
     with pytest.raises(ValueError):
         tick(setup, approved_budget_usd=budget)
+
+
+def test_worker_elapsed_time_expires_claim_before_completion(setup):
+    conn, _ = setup
+    enqueue(conn, job())
+    clock = [100.0]
+
+    class Slow(MockWorker):
+        def run(self, spec):
+            clock[0] += 61
+            return super().run(spec)
+
+    assert tick(setup, Slow(), monotonic=lambda: clock[0]) == 'blocked'
+    assert conn.execute('SELECT count(*) FROM receipts').fetchone() == (0,)
+    assert conn.execute('SELECT state FROM jobs').fetchone() == ('blocked',)
+    assert conn.execute('SELECT finished_at FROM attempts').fetchone() == (71,)

@@ -175,3 +175,26 @@ def test_serve_invalid_bounds_fail_before_work(tmp_path, flag, value):
                  flag, value)
     assert result.returncode != 0
     assert json.loads(ok('status', '--db', db, '--json'))['queued'] == 1
+
+
+def test_restart_tick_blocks_persisted_expired_lease(tmp_path):
+    from shorts_studio.asset_factory.controller.queue import claim_next
+
+    db = tmp_path / 'state.db'
+    seed(db)
+    conn = open_controller_db(db)
+    assert claim_next(conn, 'dead-process', 1, 1) is not None
+    conn.close()  # Simulate persisted claim left by a killed worker.
+    report = json.loads(ok('status', '--db', db, '--json'))
+    before = report
+    ok('step', '--db', db, '--storage', tmp_path / 'objects', '--mock-only')
+    report = json.loads(ok('status', '--db', db, '--json'))
+    assert report['blocked'] == 1
+    assert before['running'] == before['expired_leases'] == 1
+    assert report['running'] == report['expired_leases'] == report['receipts'] == 0
+    conn = open_controller_db(db)
+    try:
+        assert conn.execute('SELECT attempt_count FROM jobs').fetchone() == (1,)
+        assert conn.execute('SELECT outcome FROM attempts').fetchone() == ('blocked',)
+    finally:
+        conn.close()

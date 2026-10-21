@@ -219,3 +219,33 @@ def test_snapshot_rejects_caller_transaction(setup, tmp_path):
         snapshot_db(conn, tmp_path / "snapshot.db")
     assert conn.in_transaction
     conn.rollback()
+
+
+def test_restore_blocks_subprocess_open_handle_without_wal(setup, tmp_path):
+    import subprocess
+    import sys
+
+    conn, job, _ = setup
+    source, dest = tmp_path / 'snapshot.db', tmp_path / 'dest.db'
+    digest = snapshot_db(conn, source)
+    live = open_controller_db(dest)
+    enqueue(live, job)
+    live.close()
+    before, inode = dest.read_bytes(), dest.stat().st_ino
+    process = subprocess.Popen(
+        [sys.executable, '-c',
+         ('import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); '
+         'c.execute("PRAGMA journal_mode=DELETE"); '
+         'c.execute("SELECT * FROM jobs").fetchall(); '
+         'print("ready",flush=True); sys.stdin.readline(); c.close()'), str(dest)],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
+    try:
+        assert process.stdout.readline().strip() == 'ready'
+        before = dest.read_bytes()
+        assert not dest.with_name(dest.name + '-wal').exists()
+        with pytest.raises(ValueError):
+            restore_db(source, dest, digest)
+        assert dest.stat().st_ino == inode
+        assert dest.read_bytes() == before
+    finally:
+        process.communicate('\n', timeout=5)

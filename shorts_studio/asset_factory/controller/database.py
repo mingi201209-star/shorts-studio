@@ -1,6 +1,9 @@
 """SQLite schema version 1; future versions require explicit migrations."""
 
+import fcntl
+import os
 import sqlite3
+import stat
 from pathlib import Path
 
 _SCHEMA_V1 = (
@@ -35,9 +38,49 @@ _SCHEMA_V1 = (
 )
 
 
+class CoordinatedConnection(sqlite3.Connection):
+    """Hold a shared maintenance lock until the SQLite handle closes."""
+
+    def close(self):
+        try:
+            super().close()
+        finally:
+            lock = getattr(self, '_maintenance_lock', None)
+            if lock is not None:
+                lock.close()
+                self._maintenance_lock = None
+
+
+def maintenance_lock(path: Path, *, exclusive: bool = False):
+    fd = os.open(str(path.resolve()) + '.maintenance.lock',
+                 os.O_CREAT | os.O_RDWR | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+    lock = os.fdopen(fd, 'r+b')
+    if not stat.S_ISREG(os.fstat(fd).st_mode):
+        lock.close()
+        raise ValueError('regular maintenance lock required')
+    try:
+        fcntl.flock(lock, (fcntl.LOCK_EX if exclusive else fcntl.LOCK_SH) | fcntl.LOCK_NB)
+    except OSError as exc:
+        lock.close()
+        raise ValueError('database maintenance or open handles present') from exc
+    return lock
+
+
+def coordinated_connect(path: Path, **kwargs) -> sqlite3.Connection:
+    lock = None if str(path) == ':memory:' else maintenance_lock(path)
+    try:
+        conn = sqlite3.connect(path, factory=CoordinatedConnection, **kwargs)
+        conn._maintenance_lock = lock
+        return conn
+    except BaseException:
+        if lock is not None:
+            lock.close()
+        raise
+
+
 def open_controller_db(path: Path) -> sqlite3.Connection:
     """Open a durable database, initializing only an empty version-zero database."""
-    conn = sqlite3.connect(path, timeout=5)
+    conn = coordinated_connect(path, timeout=5)
     try:
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute("PRAGMA busy_timeout=5000")

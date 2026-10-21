@@ -13,9 +13,9 @@ from pathlib import Path
 
 from .artifacts import LocalArtifactStore
 from .contracts import JobSpec
-from .database import open_controller_db
+from .database import CoordinatedConnection, maintenance_lock, open_controller_db
 from .queue import enqueue
-from .recovery import _validate, restore_db, snapshot_db
+from .recovery import _validate, reconcile_expired, restore_db, snapshot_db
 from .runner import run_once
 from .workers import MockWorker
 
@@ -65,7 +65,14 @@ def _open_existing(path: Path, *, readonly: bool = False) -> sqlite3.Connection:
     if path.is_symlink() or not path.is_file():
         raise ValueError('existing regular database required')
     mode = 'ro' if readonly else 'rw'
-    conn = sqlite3.connect(f'{path.resolve().as_uri()}?mode={mode}', uri=True, timeout=5)
+    lock = maintenance_lock(path)
+    try:
+        conn = sqlite3.connect(f'{path.resolve().as_uri()}?mode={mode}', uri=True, timeout=5,
+                               factory=CoordinatedConnection)
+        conn._maintenance_lock = lock
+    except BaseException:
+        lock.close()
+        raise
     try:
         _validate(conn)
         conn.execute('PRAGMA foreign_keys=ON')
@@ -87,7 +94,10 @@ def _status(conn: sqlite3.Connection) -> dict:
         ).fetchone()
         # Never echo free-form job identifiers, event kinds/details or payloads.
         return {
-            **{state: counts.get(state, 0) for state in ('queued', 'blocked', 'completed_mock')},
+            **{state: counts.get(state, 0) for state in ('queued', 'running', 'blocked', 'completed_mock')},
+            'expired_leases': conn.execute(
+                'SELECT count(*) FROM leases WHERE lease_until<=?', (time.time(),)
+            ).fetchone()[0],
             'receipts': conn.execute('SELECT count(*) FROM receipts').fetchone()[0],
             'last_event': {'event_id': row[0], 'created_at': row[1]} if row else None,
             'schema_version': conn.execute('PRAGMA user_version').fetchone()[0],
@@ -97,11 +107,13 @@ def _status(conn: sqlite3.Connection) -> dict:
 
 
 def _tick(conn: sqlite3.Connection, store: LocalArtifactStore) -> None:
+    now = time.time()
+    reconcile_expired(conn, store, now, lambda claim: 'unknown')
     probe = store.root
     while not probe.exists():
         probe = probe.parent
     usage = shutil.disk_usage(probe)
-    print(run_once(conn, store, worker=MockWorker(), now=time.time(),
+    print(run_once(conn, store, worker=MockWorker(), now=now,
                    disk_free_ratio=usage.free / usage.total), flush=True)
 
 

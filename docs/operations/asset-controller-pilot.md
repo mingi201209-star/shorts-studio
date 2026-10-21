@@ -76,8 +76,12 @@ audio and caption quality gates. No interpolation or filler substitutes.
 Recovery verifies checksum and schema before replacement and refuses live/locked
 or uncheckpointed destinations. On rejection, preserve the original database and
 inspect the cause offline. Do not delete WAL/SHM files to force recovery. Prevent
-concurrent opens throughout restore; the offline guard is not a cross-process
-maintenance coordinator. Retain earlier known-good snapshots and source masters.
+concurrent opens throughout restore. Managed controller connections hold a
+shared advisory maintenance lock and restore holds its exclusive counterpart.
+Linux psmisc fuser is required for the additional same-owner open-handle
+check; if unavailable, restore refuses to proceed. An administrator must
+still stop every unmanaged or privileged database client before offline
+recovery. Retain earlier known-good snapshots and source masters.
 
 ## Incident handling and approval boundaries
 

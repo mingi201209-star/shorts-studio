@@ -2,18 +2,22 @@
 
 import math
 import sqlite3
+import time
+from collections.abc import Callable
 from dataclasses import fields
 from decimal import Decimal, InvalidOperation
 
 from .artifacts import LocalArtifactStore
 from .contracts import JobSpec
 from .queue import _event, _time, _write, block_claim, claim_next, complete_claim
+from .recovery import reconcile_expired
 from .workers import MockWorker
 
 
 def run_once(
     conn: sqlite3.Connection, store: LocalArtifactStore, *, worker: MockWorker,
     now: float, disk_free_ratio: float, approved_budget_usd: str = "0",
+    monotonic: Callable[[], float] = time.monotonic,
 ) -> str:
     """Admit at most one free mock; approval never enables other worker kinds.
 
@@ -22,6 +26,13 @@ def run_once(
     timeout/error is checkpointed; no subprocess or external timeout worker exists.
     """
     _time(now)
+    started = monotonic()
+
+    def fresh_time():
+        elapsed = monotonic() - started
+        _time(elapsed)
+        return now + elapsed
+
     if (type(disk_free_ratio) not in (int, float)
             or not math.isfinite(disk_free_ratio) or not 0 <= disk_free_ratio <= 1):
         raise ValueError('disk_free_ratio must be finite and between zero and one')
@@ -73,10 +84,14 @@ def run_once(
         receipt = store.put(job, content)
         if not store.verify(job, receipt):
             raise ValueError('local artifact verification failed')
-        if complete_claim(conn, claim, receipt, now):
+        finished = fresh_time()
+        if complete_claim(conn, claim, receipt, finished):
             return 'completed_mock'
-        block_claim(conn, claim, 'completion rejected; preserve local evidence', now)
+        reconcile_expired(conn, store, finished, lambda c: 'unknown')
+        block_claim(conn, claim, 'completion rejected; preserve local evidence', finished)
     except Exception as exc:  # noqa: BLE001 - checkpoint every worker/storage failure
         # Persist only the exception type: arbitrary messages may contain secrets.
-        block_claim(conn, claim, f'mock worker/storage error: {type(exc).__name__}', now)
+        finished = fresh_time()
+        reconcile_expired(conn, store, finished, lambda c: 'unknown')
+        block_claim(conn, claim, f'mock worker/storage error: {type(exc).__name__}', finished)
     return 'blocked'
