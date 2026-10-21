@@ -118,3 +118,11 @@ def test_fake_codex_zero_exit_does_not_grant_mock_completion(setup):
     assert fake_codex_status == "success"
     assert inspect_result(ledger, controller, store, p.intent_id).status == "queued"
     assert not inspect_result(ledger, controller, store, p.intent_id).video_qa_pass
+
+
+
+def test_public_projection_refuses_unverified_hash_even_on_claimed_success():
+    report = PilotReport("pilot-001", "proof_verified_mock", "Authorization: secret-value")
+    public = report_public(report)
+    assert public["proof_sha256"] is None
+    assert public["status"] != "proof_verified_mock"

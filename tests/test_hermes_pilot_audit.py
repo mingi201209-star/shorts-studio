@@ -143,3 +143,58 @@ def test_mark_submitted_repeat_does_not_flood_audit_events(tmp_path):
         "SELECT count(*) FROM audit_events WHERE kind='submitted'"
     ).fetchone() == (1,)
     c.close()
+
+
+
+def test_pending_proposals_cap_blocks_21st_without_erasing_existing(tmp_path):
+    c = make_ledger(tmp_path)
+    ledger = Ledger(c)
+    for number in range(20):
+        item = intent(intent_id=f"pilot-{number:03d}", origin_task_id=f"kanban-{number}")
+        assert ledger.propose(item) == "proposed"
+    with pytest.raises(ValueError, match="capacity"):
+        ledger.propose(intent(intent_id="pilot-021", origin_task_id="kanban-21"))
+    assert c.execute("SELECT count(*) FROM proposals").fetchone() == (20,)
+    assert ledger.propose(intent(intent_id="pilot-000", origin_task_id="kanban-0")) == (
+        "already_proposed"
+    )
+    c.close()
+
+
+def test_schema_init_rolls_back_all_ddl_if_interrupted(tmp_path, monkeypatch):
+    from shorts_studio.asset_factory.integrations.hermes_pilot import audit
+
+    folder = tmp_path / "secure"
+    folder.mkdir(mode=0o700)
+    target = folder / "ledger.db"
+    native = sqlite3.connect
+
+    class FaultyConnection(sqlite3.Connection):
+        def execute(self, sql, parameters=(), /):
+            if str(sql).lstrip().startswith("CREATE TABLE approvals"):
+                raise OSError("injected second-DDL failure")
+            return super().execute(sql, parameters)
+
+        def executescript(self, script, /):
+            # Legacy implementation commits on executescript before finishing
+            # schema creation; leave a partial CREATE then raise.
+            first = script.split(";", 1)[0]
+            super().executescript(first + ";")
+            raise OSError("injected interrupted executescript")
+
+    def patched_connect(*args, **kwargs):
+        return native(*args, factory=FaultyConnection, **kwargs)
+
+    monkeypatch.setattr(audit.sqlite3, "connect", patched_connect)
+    with pytest.raises(OSError, match="injected"):
+        open_ledger(target)
+    # Use saved original factory; tests must not depend on patched connect.
+    inspection = native(target)
+    try:
+        tables = inspection.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'"
+        ).fetchall()
+        assert tables == [], "schema initialization must be atomic"
+        assert inspection.execute("PRAGMA user_version").fetchone() == (0,)
+    finally:
+        inspection.close()

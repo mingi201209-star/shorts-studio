@@ -72,6 +72,10 @@ def submit_intent(
         entry = _entry(ledger, parsed.intent_id)
         _check_entry(entry, parsed, expected_head)
         found = _same_controller_job(controller_conn, job)
+        if found is None and entry.state == "submitted":
+            # An absent, formerly submitted job after a controller restore is
+            # ambiguous. Never silently perform the side effect again.
+            raise BridgeRejected("controller_job_missing")
         if found is None:
             # Counters from the trusted caller cannot understate this ledger's
             # authoritative cumulative P0 session limits or active mock work.
@@ -88,7 +92,9 @@ def submit_intent(
             ).fetchone()[0]
             current = replace(
                 resources,
-                pending_proposals=max(resources.pending_proposals, pending),
+                # This request is already in the proposal backlog. Moving it
+                # to Controller drains one slot, rather than adding another.
+                pending_proposals=max(0, max(resources.pending_proposals, pending) - 1),
                 accepted_this_session=max(resources.accepted_this_session, submitted),
                 active_mock_workers=max(resources.active_mock_workers, active),
             )

@@ -19,13 +19,19 @@ VPS에서 이 브랜치가 검증된 다음 운영자가 단발성으로 다음 
 실제로 사용 중인 정확한 Git HEAD는 git rev-parse HEAD로 확인하고, CI도 반드시
 동일 커밋에서 확인한다. .superpowers/sdd/ 실행 작업 기록은 git-ignored 상태로 유지한다.
 
-P0 계약: Hermione 대신 비신뢰 JSON 제안만 전달, UTF-8 4KiB 상한, mock_proof만
+P0 계약: Hermes 대신 비신뢰 JSON 제안만 전달, UTF-8 4KiB 상한, mock_proof만
 허용, 정확한 SHA/해시와 운영자 capability 확인 후 enqueue. API와 외부 프로세스 없음.
 Controller 실행 상태/receipt는 SQLite 단일 진실 공급원이며 Hermes Kanban 완료는 증거가 아니다.
 3개의 서로 다른 mock intent → 개별 승인 → 기존 queue → MockWorker → 로컬 파일
 SHA256 검증 → proof_verified_mock. 네 번째 제출은 거부한다.
 현 구현에서는 **실험 전용 사설 감사 DB당 총 3개 제출** 한도이며, 재시험은 새로운
 격리 디렉터리/데이터베이스를 만들어야 한다. 기존 실험 기록을 덮어쓰지 않는다.
+새 제안은 승인·미승인 합계 20개까지 저장하며, 21번째 새 제안은 거부한다.
+20개가 찬 뒤에도 기존 승인된 제안 하나를 Controller 큐로 이동하는 행위는
+대기 슬롯을 비우므로 허용한다(단, 기존 3회 실행 상한과 자원 게이트 유지).
+이미 submitted 상태인 작업이 Controller DB에서 사라졌다면 복원 과정에서
+실행 여부가 불분명하므로 **자동 재제출하지 않고 검토 요청으로 차단**한다.
+최초 감사 DB 스키마 생성은 단일 SQLite 트랜잭션으로 유지되어야 한다.
 
 상태만 보고 완료를 인정하지 않는다. 반드시 Controller의 특정 job_id, source_sha,
 input_digest, fencing_token, receipt, 실제 로컬 객체 바이트가 일치해야 한다.

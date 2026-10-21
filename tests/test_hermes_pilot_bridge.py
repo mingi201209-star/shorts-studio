@@ -190,3 +190,39 @@ def test_forged_parsed_intent_canonical_bytes_cannot_inherit_approval(setup):
                       resources=healthy())
     assert exc.value.reason_code == "invalid_proposal"
     assert controller.execute("SELECT count(*) FROM jobs").fetchone() == (0,)
+
+
+
+def test_full_pending_queue_still_allows_an_approved_proposal_to_drain(setup):
+    from dataclasses import replace
+    ledger, controller = setup
+    items = [parsed(intent_id=f"pilot-{i:03d}", origin=f"kanban-{i}") for i in range(20)]
+    for item in items:
+        ledger.propose(item)
+    owner_approve(ledger, items[0])
+    current = replace(healthy(), pending_proposals=20)
+    assert submit_intent(ledger, controller, items[0], expected_head=HEAD,
+                         resources=current) == "submitted"
+    assert ledger.lookup(items[0].intent_id).state == "submitted"
+    assert controller.execute("SELECT count(*) FROM jobs").fetchone() == (1,)
+
+
+
+def test_previously_submitted_job_missing_after_db_restore_blocks_resubmission(setup, tmp_path):
+    ledger, original_controller = setup
+    item = parsed()
+    owner_approve(ledger, item)
+    assert submit_intent(ledger, original_controller, item, expected_head=HEAD,
+                         resources=healthy()) == "submitted"
+    # Restore/replace controller DB while retaining the separate approval ledger.
+    # An already-submitted external side effect cannot be safely rescheduled.
+    other_controller = open_controller_db(tmp_path / "restored_empty.db")
+    try:
+        with pytest.raises(BridgeRejected) as exc:
+            submit_intent(ledger, other_controller, item, expected_head=HEAD,
+                          resources=healthy())
+        assert exc.value.reason_code == "controller_job_missing"
+        assert other_controller.execute("SELECT count(*) FROM jobs").fetchone() == (0,)
+        assert ledger.lookup(item.intent_id).state == "submitted"
+    finally:
+        other_controller.close()

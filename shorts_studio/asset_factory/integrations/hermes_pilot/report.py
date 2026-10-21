@@ -1,5 +1,6 @@
 """Proof-of-bytes projection; an AI's claim of success has no authority."""
 
+import re
 import sqlite3
 from dataclasses import astuple, dataclass, fields
 
@@ -76,6 +77,11 @@ def inspect_result(
 def report_public(report: PilotReport) -> dict[str, str | bool | None]:
     """Return only a bounded enum, digest, and explicit non-production flags."""
     status = report.status if report.status in _STATUSES else "review_required"
+    if status == "proof_verified_mock" and (
+        type(report.proof_sha256) is not str
+        or re.fullmatch(r"[0-9a-f]{64}", report.proof_sha256) is None
+    ):
+        status = "review_required"
     return {
         "status": status,
         "proof_sha256": report.proof_sha256 if status == "proof_verified_mock" else None,

@@ -89,19 +89,23 @@ def open_ledger(path: Path) -> sqlite3.Connection:
         conn.execute("PRAGMA synchronous=FULL")
         with transaction(conn):
             if version == 0:
-                conn.executescript(
+                # executescript() commits any open transaction first: each
+                # CREATE would otherwise persist on its own, leaving a broken
+                # version-0 DB after an interrupted first initialization.
+                for ddl in (
                     """CREATE TABLE proposals (
                         intent_id TEXT PRIMARY KEY, origin_task_id TEXT NOT NULL,
                         digest TEXT NOT NULL, source_sha TEXT NOT NULL,
-                        job_id TEXT NOT NULL, state TEXT NOT NULL);
-                       CREATE TABLE approvals (
+                        job_id TEXT NOT NULL, state TEXT NOT NULL)""",
+                    """CREATE TABLE approvals (
                         intent_id TEXT PRIMARY KEY REFERENCES proposals(intent_id),
                         digest TEXT NOT NULL, approved_at REAL NOT NULL,
-                        consumed INTEGER NOT NULL DEFAULT 0);
-                       CREATE TABLE audit_events (
+                        consumed INTEGER NOT NULL DEFAULT 0)""",
+                    """CREATE TABLE audit_events (
                         id INTEGER PRIMARY KEY, intent_id TEXT NOT NULL,
-                        kind TEXT NOT NULL, created_at REAL NOT NULL);"""
-                )
+                        kind TEXT NOT NULL, created_at REAL NOT NULL)""",
+                ):
+                    conn.execute(ddl)
                 conn.execute("PRAGMA user_version=1")
             else:
                 expected = {"proposals", "approvals", "audit_events"}
@@ -136,6 +140,13 @@ class Ledger:
                 if row != identity:
                     raise ValueError("intent identity conflict")
                 return "already_proposed"
+            # Enforce the backlog limit at the proposal entrypoint. Applying
+            # it only at Controller submission permits unbounded new intents.
+            pending = self.conn.execute(
+                "SELECT count(*) FROM proposals WHERE state IN ('proposed', 'approved')"
+            ).fetchone()[0]
+            if pending >= 20:
+                raise ValueError("proposal capacity reached")
             self.conn.execute(
                 """INSERT INTO proposals(intent_id,origin_task_id,digest,source_sha,job_id,state)
                    VALUES(?,?,?,?,?,'proposed')""",
