@@ -108,13 +108,13 @@ The VPS persists `job_id`, episode, priority, exact source/render/manifest diges
 - Monitor disk pressure, state DB integrity, stuck leases, outstanding unverified uploads, queued work, unusual worker charges and last verified complete video. Stop dispatch when storage headroom or billing evidence is inadequate. Reject SHA drift and incompatible stale frames.
 - Keep a small temporary download/render staging area with a hard quota. Preserve original 3D models, exact provenance records and accepted source frames unless retention requirements and redundant verified copies justify deletion. Monthly stored bytes and estimated bills are reported.
 
-### Pilot acceptance before any recurring commitment
+### Pilot acceptance before new storage or worker commitments
 
 1. **VPS preflight completed:** user purchased VPS-1 at displayed USD 5.35/month in Singapore and SSH access is verified. Confirm actual contract/renewal terms from billing records; **B2 account and spending ceiling require separate explicit authorization**. No new VPS order is needed for the controller pilot.
-2. With test/mock workers and without paid render compute, demonstrate a single durable job from queue to complete B2 receipt; verify the exact digest on upload and on download.
+2. With test/mock workers and without paid render compute, demonstrate a single durable job from queue to complete **local test storage receipt**; verify the exact digest on upload and on download. Repeat against real B2 **only after B2 approval and credential provisioning**.
 3. Simulate network loss, duplicate submissions, daemon restart, expired lease, storage 95% full and quota exhaustion. Jobs either recover once or remain visibly blocked, with no duplicate dispatch, data loss, silent source downgrade or unapproved charge.
-4. Reboot the controller, restore its SQLite state from B2, reconcile external artifacts and prove that a 30-second native frame manifest rejects any missing or foreign frames.
-5. Only then test a production episode with the existing exact-head GitHub verification and quality gates. No automatic PR merge, YouTube publish, large render fleet, or month-two charge is authorized by a successful pilot.
+4. Reboot the controller, restore its SQLite state from an independently verified **local pilot snapshot** and prove that a 30-second native frame manifest rejects any missing or foreign frames. Test encrypted **off-host** snapshot and B2 recovery only after the storage destination is explicitly approved and provisioned.
+5. Only after independent approval, test a production episode with the existing exact-head GitHub verification and quality gates. No automatic PR merge, YouTube publish, additional render fleet or new charge is authorized by a successful pilot. **Existing VPS auto-renewal terms must be checked in the billing console**, independently of this document.
 
 
 ## 8. Verified controller readiness and bounded deployment design (2026-10-21)
@@ -154,7 +154,7 @@ E. **Storage staging:** keep controller WAL DB, event receipts and bounded cache
 1. In a newly approved isolated branch, unit tests pass for enqueue idempotency, correct lease ownership/fencing, worker timeout, restart recovery and failed SHA-identity checks. No duplicate execution of an ambiguous external job.
 2. Start/stop the mock manager using a temporary test service; restart it and verify SQLite WAL state and deterministic receipts survived without missing or repeated work.
 3. A **bounded** Codex scratch task can produce an audited diff and tests under the real sandbox; quota-unavailable and authentication-expired simulations lead to a safe blocked state.
-4. Simulate disk at/above policy threshold, network interruption and B2-unavailable status. Confirm that unverified artifacts remain protected and no remote spending or dispatch occurs.
+4. Simulate disk at/above policy threshold, network interruption and **storage-backend-unavailable** status using a local filesystem double. Confirm that unverified artifacts remain protected and no external spending or dispatch occurs.
 5. Verify `main` and stacked PRs unchanged, no private credentials in commits/logs and existing native 1080x1920/Cycles32 video/audio/subtitle gates remain intact. Production film is not claimed unless exact-head, full real-source QA separately passes.
 6. Only after the above, a finite 24-hour soak with approved useful work and tested restore procedure; this is **not** implied by the successful scratch coding proof.
 
