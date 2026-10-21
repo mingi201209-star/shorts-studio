@@ -1,13 +1,14 @@
 """Validated, operator-mediated single mock queue ingress; no external worker."""
 
 import sqlite3
-from dataclasses import astuple, fields
+from dataclasses import astuple, fields, replace
 
 from shorts_studio.asset_factory.controller.contracts import JobSpec
 from shorts_studio.asset_factory.controller.queue import enqueue
 
 from .audit import Ledger, LedgerEntry, transaction
 from .contracts import ParsedIntent, to_mock_job
+from .policy import ResourceView, assess_ingress
 
 _JOB_COLUMNS = tuple(field.name for field in fields(JobSpec))
 
@@ -52,7 +53,7 @@ def _check_entry(entry: LedgerEntry, parsed: ParsedIntent, expected_head: str) -
 
 def submit_intent(
     ledger: Ledger, controller_conn: sqlite3.Connection, parsed: ParsedIntent, *,
-    expected_head: str,
+    expected_head: str, resources: ResourceView | None = None,
 ) -> str:
     """Submit one approved, exact-SHA mock job; no promotion to native render."""
     if not isinstance(parsed, ParsedIntent):
@@ -62,6 +63,32 @@ def submit_intent(
         entry = _entry(ledger, parsed.intent_id)
         _check_entry(entry, parsed, expected_head)
         found = _same_controller_job(controller_conn, job)
+        if found is None:
+            # Counters from the trusted caller cannot understate this ledger's
+            # authoritative cumulative P0 session limits or active mock work.
+            if resources is None:
+                raise BridgeRejected("resource_metrics_unavailable")
+            pending = ledger.conn.execute(
+                "SELECT count(*) FROM proposals WHERE state IN ('proposed','approved')"
+            ).fetchone()[0]
+            submitted = ledger.conn.execute(
+                "SELECT count(*) FROM proposals WHERE state='submitted'"
+            ).fetchone()[0]
+            active = controller_conn.execute(
+                "SELECT count(*) FROM jobs WHERE state='running'"
+            ).fetchone()[0]
+            current = replace(
+                resources,
+                pending_proposals=max(resources.pending_proposals, pending),
+                accepted_this_session=max(resources.accepted_this_session, submitted),
+                active_mock_workers=max(resources.active_mock_workers, active),
+            )
+            try:
+                admissible = assess_ingress(current)
+            except ValueError as exc:
+                raise BridgeRejected("resource_metrics_unavailable") from exc
+            if admissible not in ("allow", "warn_memory"):
+                raise BridgeRejected(admissible)
         if found is False:
             raise BridgeRejected("foreign_controller_job")
         if found is None:

@@ -15,6 +15,7 @@ from shorts_studio.asset_factory.integrations.hermes_pilot.audit import (
 )
 from shorts_studio.asset_factory.integrations.hermes_pilot.bridge import submit_intent
 from shorts_studio.asset_factory.integrations.hermes_pilot.contracts import parse_intent
+from shorts_studio.asset_factory.integrations.hermes_pilot.policy import ResourceView
 from shorts_studio.asset_factory.integrations.hermes_pilot.report import (
     PilotReport,
     inspect_result,
@@ -45,7 +46,7 @@ def setup(tmp_path):
 def submit(setup):
     ledger, controller, _, item = setup
     ledger.approve_operator(item.intent_id, item.input_digest, authority=OperatorAuthority())
-    assert submit_intent(ledger, controller, item, expected_head=HEAD) == "submitted"
+    assert submit_intent(ledger, controller, item, expected_head=HEAD, resources=ResourceView(2*1024**3, .5, 0, 0, 0, 0)) == "submitted"
 
 
 def finish(setup):
