@@ -193,3 +193,56 @@ def test_rejects_sneaky_untrusted_command_payload():
     }
     with pytest.raises(ValueError):
         parse_intent(json.dumps(payload).encode(), expected_head=HEAD)
+
+
+def test_fake_hermes_cannot_directly_approve_or_modify_controller_sqlite(state):
+    """P0 wire-boundary only; real Hermes UID separation is deferred to P1."""
+    ledger, controller, store, _, _ = state
+    p = FakeHermes().propose("pilot-001", "kanban-1")
+    ledger.propose(p)
+    malicious = {
+        "schema": "hermes-controller-pilot/v1", "intent_id": "pilot-001",
+        "origin_task_id": "kanban-1", "source_sha": HEAD, "kind": "mock_proof",
+        "requested_by": "owner-reviewed", "payload": {},
+    }
+    with pytest.raises(ValueError):
+        parse_intent(json.dumps(malicious).encode(), expected_head=HEAD)
+    with pytest.raises(ValueError):
+        ledger.approve_operator(p.intent_id, p.input_digest, authority=malicious)
+    with pytest.raises(BridgeRejected):
+        submit_intent(ledger, controller, p, expected_head=HEAD, resources=resources())
+    assert controller.execute("SELECT count(*) FROM jobs").fetchone() == (0,)
+    assert run_once(controller, store, worker=MockWorker(), now=10,
+                    disk_free_ratio=.5, monotonic=lambda: 0) == "idle"
+
+
+def test_runbook_has_separate_p1_p2_authorization():
+    from pathlib import Path
+    doc = Path(__file__).resolve().parents[1] / "docs/operations/hermes-controller-pilot.md"
+    text = doc.read_text(encoding="utf-8")
+    assert "P0" in text and "P1" in text and "P2" in text
+    assert "별도 승인" in text
+    assert "auth.adopt_external_logins=false" in text
+    assert "UID" in text
+    assert "24시간" in text
+
+
+def test_bridge_does_not_dispatch_codex_or_paid_provider(state, monkeypatch):
+    import subprocess
+
+    from shorts_studio.asset_factory.integrations.hermes_pilot import bridge
+    assert not hasattr(bridge, "CodexWorker")
+    calls = []
+    def deny_any_subprocess(*args, **kwargs):
+        calls.append((args, kwargs))
+        raise AssertionError("an external subprocess would violate P0")
+    monkeypatch.setattr(subprocess, "run", deny_any_subprocess)
+    ledger, controller, store, _, _ = state
+    p = FakeHermes().propose("pilot-001", "kanban-1")
+    ledger.propose(p)
+    FakeOwnerApproval.approve(ledger, p)
+    assert submit_intent(ledger, controller, p, expected_head=HEAD,
+                         resources=resources()) == "submitted"
+    assert run_once(controller, store, worker=MockWorker(), now=10,
+                    disk_free_ratio=.5, monotonic=lambda: 0) == "completed_mock"
+    assert calls == []
