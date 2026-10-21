@@ -1,4 +1,4 @@
-# Always-on 3D Asset Factory — design (2026-10-20)
+# Always-on 3D Asset Factory — design (2026-10-20, updated 2026-10-21)
 
 Status: **DESIGN ONLY — implementation is not authorized by this document.**  
 Repository: `mingi201209-star/shorts-studio`. Base `main` at `fcd20fd78851b18c550b1e433bee46ee34313c1d`.  
@@ -18,7 +18,7 @@ Purpose: continuously prepare reusable **native 3D models and meaningful shot as
 
 - Main is clean at `fcd20fd` and remains unchanged; PR #51 introduced `shorts_studio/factory/contracts.py` and `planner.py` on a separate unmerged branch. This planner already fingerprints output profile, rig, visual parameters, and asset provenance and requires complete matching cache sidecars. **Reuse, do not duplicate it.**
 - PR #52 fixes the seven approved topics. PR #56 is an unmerged **draft** for rumble strips; its older 30-second product was rejected as visually repetitive and must not be repackaged as new output.
-- First-stage controller uses a small CPU VPS. A $12/month 1-vCPU 2-GiB VM is an orchestration host, **not** a high-throughput Cycles32 rendering host.
+- The controller VPS-1 is **already purchased and running** at the owner's initiative (2026-10-21). Its 2-vCore/4-GiB/40-GiB configuration is for orchestration and bounded Codex tasks, **not** a high-throughput native Cycles32 rendering host.
 - No paid GPU running 24/7. GitHub Actions remains for bounded project CI/proof where compliant with its terms and quotas, **not** an assumed unlimited render farm.
 - No new general-purpose project, public download site, data collection, unsupported third-party authentication, or change to the Shorts publishing policy.
 
@@ -70,7 +70,7 @@ Claude, Codex and optional third provider may work on scoped modeling/planning s
 - Always-on means **continuous scheduling/recovery**, not infinite free AI thinking, guaranteed 100% rendering utilization, or a full-time dedicated GPU.
 - A worker heartbeat without actual per-job progress is considered stalled. Recover by lease and exact external run inspection before *any* retry. Recover interrupted original render ranges; never launch duplicate renders after uncertain results.
 - Start with one native render concurrency slot for the asset factory and isolate it from approved episode delivery or CI. Increasing concurrency requires measured speed/quality and explicit resource approval.
-- Budget starts with current subscriptions only and no additional model API or GPU charges. The separate cloud VPS is provisioned only after the account's creation restriction is resolved and its recurring cost is approved.
+- The owner has purchased **one** OVHcloud VPS-1 at a displayed USD 5.35/month; this existing charge is the baseline. There is no new authorization for paid Anthropic/OpenAI APIs, B2 storage, render hosts, a second VPS, or contract upgrades. Record actual invoice terms and guard future renewal risk separately.
 - High render backlogs require a separate price/performance evaluation of CPU, GPU rental and storage. Do not treat public GitHub-hosted runners as an unlimited 24-hour commercial renderer.
 - Pause work on an approval denial, unknown billable resource, unsafe storage pressure, missing provenance, production gate failure, or source drift. Continue safe independent tasks where possible.
 
@@ -86,14 +86,14 @@ Claude, Codex and optional third provider may work on scoped modeling/planning s
 
 ## 7. Concrete controller-and-storage pilot (2026-10-21 design addendum)
 
-This is an **unfunded, design-only** refinement of the agreed control-plane architecture, not permission to provision or deploy servers, create cloud accounts, generate paid API traffic, or operate a new rendering fleet.
+This remains **design-only for future deployment**, but the one VPS-1 controller host has already been provisioned and paid for by the owner. The design does not authorize new cloud accounts, services, paid API traffic, B2 buckets, additional hosts, or an unattended execution loop.
 
 ### Proposed components
 
-- **Controller:** OVHcloud VPS-1 (published from USD 4.54/month; 2 vCores, 4 GiB RAM, 40 GiB NVMe). Use an x86-64 Ubuntu LTS server when available. Host only systemd-managed orchestration, SQLite WAL job state, manifests, bounded workspaces and monitoring. The local boot disk must never act as an unlimited high-resolution frame archive. Final price, tax, payment cadence and regional availability require checkout review. The included daily backup of the preceding 24 hours is **not** sufficient to protect long-lived checkpoint history.
+- **Controller (already installed):** OVHcloud VPS-1 2027, Singapore region; x86-64 Ubuntu 24.04 LTS, 2 vCore, 4 GiB RAM, 40 GiB NVMe, displayed **USD 5.35/month**. Measured about 35 GiB free after installation on 2026-10-21. Future service design: systemd-managed orchestration, SQLite WAL job state, manifests, bounded workspaces and monitoring. The local disk must not become a high-resolution frame archive. Promotional automated backup availability was displayed during checkout but must not be assumed sufficient, retained, or restore-tested.
 - **Durable objects:** Backblaze B2 private bucket using an S3-compatible endpoint and separate limited-scope application keys; published starting price USD 6.95/TB-month with the first 10GB free, and published free monthly egress up to 3x average stored volume. The billable amount depends on average stored byte-hours, region, egress and eligible operations. No promise that a 100GB cap will accommodate three months of original frames.
 - **Workers:** GPU/CPU render nodes are independently allocated only when expressly funded and policy-compatible; GitHub Actions continues to host bounded software development validation and quality proofs, not an assumed 24x7 commercial fleet. Workers fetch immutable input digests, render assigned native ranges, upload staged shards, and submit signed or hash-verified receipts.
-- **Budget reference:** at 100GB average retained B2 storage, approximately 90GB billable after the first 10GB (about USD 0.63/month at $6.95/TB-month); together with VPS advertised starting price, the illustrative monthly subtotal is about USD 5.17 before tax, API/egress overages, exchange rate variability and worker rentals. The owner's roughly KRW 20,000/month exploration figure is a **planning target**, not spending permission. Require an independent account-side spend notification/limit where available; warn and pause when the forecast crosses the approved ceiling.
+- **Budget reference:** the **actual VPS order displayed USD 5.35/month**, not an advertised lower-region starting price. Future B2 storage is not yet provisioned or charged; when approved, meter exact retained bytes, operations, and egress. The owner's earlier KRW 20,000/month baseline and potential KRW 50,000/month after a *hypothetical* Claude Pro cancellation are planning scenarios, **not** blanket spend authorization. Do not cancel Claude Pro until a sustained alternative is verified and the owner chooses to do so. Require per-provider approved ceiling and independent billing alerts.
 
 ### Persistent control flow
 
@@ -110,12 +110,58 @@ The VPS persists `job_id`, episode, priority, exact source/render/manifest diges
 
 ### Pilot acceptance before any recurring commitment
 
-1. Confirm the actual provider checkout total, regional CPU architecture, month-to-month availability and any storage/network add-ons, then get **specific owner authorization** for VPS and B2 accounts and spending cap.
+1. **VPS preflight completed:** user purchased VPS-1 at displayed USD 5.35/month in Singapore and SSH access is verified. Confirm actual contract/renewal terms from billing records; **B2 account and spending ceiling require separate explicit authorization**. No new VPS order is needed for the controller pilot.
 2. With test/mock workers and without paid render compute, demonstrate a single durable job from queue to complete B2 receipt; verify the exact digest on upload and on download.
 3. Simulate network loss, duplicate submissions, daemon restart, expired lease, storage 95% full and quota exhaustion. Jobs either recover once or remain visibly blocked, with no duplicate dispatch, data loss, silent source downgrade or unapproved charge.
 4. Reboot the controller, restore its SQLite state from B2, reconcile external artifacts and prove that a 30-second native frame manifest rejects any missing or foreign frames.
 5. Only then test a production episode with the existing exact-head GitHub verification and quality gates. No automatic PR merge, YouTube publish, large render fleet, or month-two charge is authorized by a successful pilot.
 
-## 8. Hand-off rules
 
-This specification is a design artifact, not a running process or a request to dispatch a worker. User reviews/approves spec, then author a stepwise implementation plan and execute in an isolated branch. Never use this design to claim the server exists, the 24-hour loop runs, or that PR #56/episode 2 is done.
+## 8. Verified controller readiness and bounded deployment design (2026-10-21)
+
+### 8.1 Verified facts versus remaining gaps
+
+2026-10-21 operator checks establish the following **on the owner's provisioned VPS**:
+
+| Component | Observed evidence | Meaning |
+| --- | --- | --- |
+| OS/compute | Ubuntu 24.04.5 LTS, x86-64, 2 vCPU, 4 GiB RAM, about 35 GiB available disk | Suitable as control plane, not proven for Blender render throughput |
+| Access | `ubuntu` SSH public-key authentication from Termux; password and root SSH logins disabled; UFW active, only 22/tcp allowed | Secure remote shell was tested; keep original emergency access and key recovery plan |
+| Codex | `codex-cli 0.163.0`, `codex login status` reported `Logged in using ChatGPT` | Subscription login works now, but unattended quotas/refresh are **not** guaranteed |
+| Sandbox | Installed Ubuntu `apparmor-profiles` and applied distro `bwrap-userns-restrict` profile; `bwrap --unshare-user --unshare-net --ro-bind / / /bin/true` passed with global AppArmor restriction still enabled | Retain enforced sandbox; no `dangerously-bypass-approvals-and-sandbox` or global userns restriction disabling |
+| Actual coding | Codex used file editing tools to write `~/codex-test/hello.txt`, then wrote `frame_jobs.py` and `test_frame_jobs.py`; four Python unittest cases and separate 900-frame continuity/parameter checks passed | Proves bounded scratch code-edit/test feasibility only |
+| Existing product | `shorts-studio` is **not yet cloned to VPS**; root `main` and draft PR #56 remain unmodified | Product integration, permissions, CI and full regressions not yet tested |
+| Storage / fleet | B2 not connected; no renderer worker purchased or allocated; no resident Nightshift controller service | Future milestones, not current working features |
+
+Private host/IP, account, passwords, tokens, personal email, SSH key and one-time sign-in codes must **not** appear in public GitHub docs or git history. Phone-to-VPS SSH through a passphrase-protected, time-limited local `ssh-agent` enables operator access **during this chat**, but is not an always-on VPS control channel. Do not copy an unlocked SSH private key or ChatGPT credential from the phone to VPS.
+
+### 8.2 Pilot scope and low-risk rollout
+
+**Option selected:** continue the existing repo's controller concept in an isolated branch, deploy *only after plan approval*, and validate with mock workers. This is preferred to either (a) moving the Android Nightshift supervisor wholesale, with environment-dependent stale checkpoints, or (b) building a larger multi-provider scheduler or commercial render farm immediately.
+
+A. **Repository topology and read-only sync:** verify GitHub's current `main`, PR #51-56 dependency chain, source hashes and CI; clone the repo on VPS under a dedicated workspace without changing upstream branches. Record and respect user-defined instructions. Prepare a distinct development worktree/branch *only when the implementation plan is approved*. Never rely on the Android Nightshift's stale checkpoint as a queue to replay blindly.
+
+B. **Local persistent manager:** minimal `shorts_studio/asset_factory/controller/`-compatible Python code (subject to branch inspection), SQLite WAL on local NVMe; explicit `jobs`, `attempts`, `leases`, `receipts` and `events` tables. Public job status contains no secrets. Fixed `job_id` + input SHA + source/renderer digest define uniqueness. Run one exclusive manager instance with systemd `Restart=on-failure`, service-user isolation, journal limits, database checkpoint and disk headroom checks.
+
+C. **Permission-aware worker adapter:** start with deterministic fake/dry-run workers. After approval and successful tests, a Codex adapter may execute narrowly scoped `codex exec` in a clean worktree using `--sandbox workspace-write`, an explicit task spec, bounded timeout, finite concurrency, and a receipt verified by independent commands. Never interpret Codex exit code 0 as successful work without checking expected files, `git diff`, test output and exact head. If login/session quotas fail, checkpoint as `blocked` instead of attempting unauthorized API fallback or launching another paid agent.
+
+D. **Approval boundary and external effects:** allowed mock jobs only until explicit next-stage approval. No unattended `workflow_dispatch`, automatic PR merges, pushes to `main`, YouTube uploads, third-party auth, external renderer procurement, or permanent user instructions to run new paid AI services. If planned real production jobs need money, user approval or source licensing that is not documented, halt that job with evidence.
+
+E. **Storage staging:** keep controller WAL DB, event receipts and bounded cache locally with daily off-host backup requirement noted as **not yet satisfied**; design a B2 adapter with private bucket, least-privilege keys, checksum verification and safe retention, but test it with a local filesystem double until an account and charges are separately approved. No deletion of source masters or last known good frame versions.
+
+### 8.3 Pilot acceptance and evidence
+
+1. In a newly approved isolated branch, unit tests pass for enqueue idempotency, correct lease ownership/fencing, worker timeout, restart recovery and failed SHA-identity checks. No duplicate execution of an ambiguous external job.
+2. Start/stop the mock manager using a temporary test service; restart it and verify SQLite WAL state and deterministic receipts survived without missing or repeated work.
+3. A **bounded** Codex scratch task can produce an audited diff and tests under the real sandbox; quota-unavailable and authentication-expired simulations lead to a safe blocked state.
+4. Simulate disk at/above policy threshold, network interruption and B2-unavailable status. Confirm that unverified artifacts remain protected and no remote spending or dispatch occurs.
+5. Verify `main` and stacked PRs unchanged, no private credentials in commits/logs and existing native 1080x1920/Cycles32 video/audio/subtitle gates remain intact. Production film is not claimed unless exact-head, full real-source QA separately passes.
+6. Only after the above, a finite 24-hour soak with approved useful work and tested restore procedure; this is **not** implied by the successful scratch coding proof.
+
+### 8.4 Design review decision still required
+
+Review this **updated specification** and approve it explicitly before writing the implementation plan under `docs/superpowers/plans/`. The plan must separate no-spend mocked persistence tasks, optional Codex integration, and later B2/renderer procurement into independently testable gates. The owner then reviews that plan and selects how it will be executed. A spec approval is not automatic permission for unattended live jobs or new cloud purchases.
+
+## 9. Hand-off rules
+
+This specification is a design artifact, not a running process or a request to dispatch a worker. The **host exists**, but a running 24-hour orchestration service does not. The user reviews this updated spec, then a stepwise implementation plan is written and reviewed before isolated-branch implementation. Never use this design to claim the 24-hour loop runs, B2 is live, or PR #56/episode 2 is complete.
