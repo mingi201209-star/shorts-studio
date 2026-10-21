@@ -129,3 +129,17 @@ def test_two_connections_cannot_change_approved_intent(tmp_path):
     assert second.lookup(p.intent_id).approved
     c.close()
     d.close()
+
+
+def test_mark_submitted_repeat_does_not_flood_audit_events(tmp_path):
+    c = make_ledger(tmp_path)
+    p = intent()
+    ledger = Ledger(c)
+    ledger.propose(p)
+    ledger.approve_operator(p.intent_id, p.input_digest, authority=OperatorAuthority())
+    ledger.mark_submitted(p.intent_id, p.job_id)
+    ledger.mark_submitted(p.intent_id, p.job_id)
+    assert c.execute(
+        "SELECT count(*) FROM audit_events WHERE kind='submitted'"
+    ).fetchone() == (1,)
+    c.close()

@@ -200,6 +200,8 @@ class Ledger:
         ).fetchone()
         if row is None or row[0] != job_id or row[1] not in ("approved", "submitted"):
             raise ValueError("not approved or wrong job")
+        if row[1] == "submitted":
+            return  # Idempotent replay must not grow unbounded event history.
         self.conn.execute("UPDATE proposals SET state='submitted' WHERE intent_id=?",
                           (intent_id,))
         self.conn.execute(

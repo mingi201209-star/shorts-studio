@@ -83,3 +83,10 @@ def test_reordered_fields_do_not_change_hash_and_origin_change_does():
         parse_intent(proposal(), expected_head=HEAD).input_digest)
     assert parse_intent(proposal(origin_task_id="kanban-2"), expected_head=HEAD).input_digest != (
         parse_intent(proposal(), expected_head=HEAD).input_digest)
+
+
+def test_bad_expected_head_type_is_rejected_as_validation_error():
+    with pytest.raises(ValueError):
+        parse_intent(proposal(), expected_head=b"a" * 40)
+    with pytest.raises(ValueError):
+        parse_intent(proposal(), expected_head=None)

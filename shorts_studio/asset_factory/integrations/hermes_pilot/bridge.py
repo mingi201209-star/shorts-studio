@@ -7,7 +7,7 @@ from shorts_studio.asset_factory.controller.contracts import JobSpec
 from shorts_studio.asset_factory.controller.queue import enqueue
 
 from .audit import Ledger, LedgerEntry, transaction
-from .contracts import ParsedIntent, to_mock_job
+from .contracts import ParsedIntent, parse_intent, to_mock_job
 from .policy import ResourceView, assess_ingress
 
 _JOB_COLUMNS = tuple(field.name for field in fields(JobSpec))
@@ -58,7 +58,16 @@ def submit_intent(
     """Submit one approved, exact-SHA mock job; no promotion to native render."""
     if not isinstance(parsed, ParsedIntent):
         raise BridgeRejected("invalid_proposal")
-    job = to_mock_job(parsed)
+    # Even a frozen dataclass can be forged by another in-process caller.
+    # The bridge must verify the raw canonical wire document and recompute
+    # the identity, never merely trust fields supplied on ParsedIntent.
+    try:
+        checked = parse_intent(parsed.canonical_bytes, expected_head=expected_head)
+    except (ValueError, TypeError) as exc:
+        raise BridgeRejected("invalid_proposal") from exc
+    if checked != parsed:
+        raise BridgeRejected("invalid_proposal")
+    job = to_mock_job(checked)
     with transaction(ledger.conn):
         entry = _entry(ledger, parsed.intent_id)
         _check_entry(entry, parsed, expected_head)

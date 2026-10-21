@@ -62,7 +62,7 @@ def parse_intent(raw: bytes, *, expected_head: str) -> ParsedIntent:
         value = item[name]
         if type(value) is not str or pattern.fullmatch(value) is None:
             raise ValueError("invalid proposal identifier")
-    if (_SHA.fullmatch(expected_head or "") is None
+    if (type(expected_head) is not str or _SHA.fullmatch(expected_head) is None
             or item["source_sha"] != expected_head):
         raise ValueError("source HEAD mismatch")
     canonical = json.dumps(item, sort_keys=True, separators=(",", ":"),

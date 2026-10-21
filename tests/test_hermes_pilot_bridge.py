@@ -177,3 +177,16 @@ def test_no_enqueue_when_disk_low_or_fourth_request(setup):
     assert exc.value.reason_code == "blocked_capacity"
     assert controller.execute("SELECT count(*) FROM jobs").fetchone() == (3,)
     assert ledger.lookup(fourth.intent_id).state == "approved"
+
+
+def test_forged_parsed_intent_canonical_bytes_cannot_inherit_approval(setup):
+    from dataclasses import replace
+    ledger, controller = setup
+    item = parsed()
+    owner_approve(ledger, item)
+    forged = replace(item, canonical_bytes=b'{"command":"sudo reboot"}')
+    with pytest.raises(BridgeRejected) as exc:
+        submit_intent(ledger, controller, forged, expected_head=HEAD,
+                      resources=healthy())
+    assert exc.value.reason_code == "invalid_proposal"
+    assert controller.execute("SELECT count(*) FROM jobs").fetchone() == (0,)
