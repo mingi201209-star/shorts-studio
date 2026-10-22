@@ -1,14 +1,10 @@
 name: Rumble episode 2 native recovery and English film
+# Deprecated recovery uses native artifacts generated from an earlier renderer.
+# Never start it on a source-changing push or mix those frames with new scenes.
 on:
-  push:
-    branches: [feat/rumble-episode2-production-20261018]
-    paths:
-      - ".github/workflows/rumble-episode2-film.yml"
-      - "benchmarks/road_safety/episode2_film.py"
-      - "benchmarks/road_safety/episode2_narration/**"
-      - "benchmarks/road_safety/render_rumble_episode2.py"
-      - "examples/factory/rumble-episode2-30s.json"
-      - "shorts_studio/factory/rumble_*"
+  workflow_dispatch:
+env:
+  LEGACY_RENDERER_SHA: 485b8a0e57038f35c3c07dcbccd8fba182563099
 permissions:
   contents: read
   actions: read
@@ -39,6 +35,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          test "$GITHUB_SHA" = "$LEGACY_RENDERER_SHA" || {
+            echo "Legacy recovery blocked: source SHA differs; never mix native frames"
+            exit 1
+          }
           python3 - <<'PY'
           import json,os,subprocess
           def api(route):

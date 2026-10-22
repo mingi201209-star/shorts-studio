@@ -107,3 +107,12 @@ def test_visual_contact_cadence_and_manual_lane_return():
     heights = [rumble_displacement(i) for i in range(1,901)]
     assert len({round(z, 5) for z in heights}) > 200
     assert max(abs(z) for z in heights) <= 0.012
+
+
+def test_legacy_recovery_does_not_autorun_on_new_renderer_commits():
+    workflow = (ROOT / ".github/workflows/rumble-episode2-film.yml").read_text()
+    event_header = workflow.split("jobs:", 1)[0]
+    assert "workflow_dispatch:" in event_header
+    assert "  push:" not in event_header
+    assert "LEGACY_RENDERER_SHA" in workflow
+    assert 'test "$GITHUB_SHA" = "$LEGACY_RENDERER_SHA"' in workflow
