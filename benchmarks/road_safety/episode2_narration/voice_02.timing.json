@@ -1,0 +1,77 @@
+{
+  "words": [
+    {
+      "text": "These",
+      "start": 0.107125,
+      "end": 0.285708
+    },
+    {
+      "text": "are",
+      "start": 0.297625,
+      "end": 0.392875
+    },
+    {
+      "text": "shallow",
+      "start": 0.40475,
+      "end": 0.869041
+    },
+    {
+      "text": "cuts",
+      "start": 0.880958,
+      "end": 1.202374
+    },
+    {
+      "text": "milled",
+      "start": 1.214291,
+      "end": 1.666666
+    },
+    {
+      "text": "into",
+      "start": 1.678583,
+      "end": 1.833333
+    },
+    {
+      "text": "the",
+      "start": 1.84525,
+      "end": 1.916666
+    },
+    {
+      "text": "shoulder",
+      "start": 1.928583,
+      "end": 2.416666
+    },
+    {
+      "text": "rather",
+      "start": 2.785708,
+      "end": 3.023791
+    },
+    {
+      "text": "than",
+      "start": 3.035708,
+      "end": 3.190458
+    },
+    {
+      "text": "lines",
+      "start": 3.202375,
+      "end": 3.547625
+    },
+    {
+      "text": "painted",
+      "start": 3.559541,
+      "end": 3.880957
+    },
+    {
+      "text": "on",
+      "start": 3.892875,
+      "end": 4.03575
+    },
+    {
+      "text": "top",
+      "start": 4.047625,
+      "end": 4.428583
+    }
+  ],
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "text": "These are shallow cuts milled into the shoulder, rather than lines painted on top."
+}

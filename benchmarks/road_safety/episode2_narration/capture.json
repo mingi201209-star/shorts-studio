@@ -1,0 +1,72 @@
+{
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "shots": [
+    {
+      "id": 1,
+      "text": "Those shallow grooves beside the lane warn you early when your car drifts toward the shoulder.",
+      "audio": "voice_01.wav",
+      "raw_audio": "raw_voice_01.mp3",
+      "timing": "voice_01.timing.json",
+      "duration": 4.566667,
+      "audio_sha256": "bd3632e1eb40548862b0f62f953bf2eb921bcf34a983860ad4c358cdbbd0f6ad",
+      "raw_audio_sha256": "7861b7ba83408f6f7c11ee431780771e50ac9400d36027163e790cc7bec5f80d",
+      "timing_sha256": "e459020f7e48ef155725bbd6fbaa08d1c702888995923a477de61a9dc9e800a6"
+    },
+    {
+      "id": 2,
+      "text": "These are shallow cuts milled into the shoulder, rather than lines painted on top.",
+      "audio": "voice_02.wav",
+      "raw_audio": "raw_voice_02.mp3",
+      "timing": "voice_02.timing.json",
+      "duration": 4.578583,
+      "audio_sha256": "21b4123c985443d9d85bc58b300a9b6feae1d98841e6f8a0cf0db872baafb98b",
+      "raw_audio_sha256": "184f74bd725a1e8ab55852501f66138fbc784af1fcbf8336d714b6861cdaf7f5",
+      "timing_sha256": "bee1e3f0eb14b8c0386cb51f94cfc1dc10dbbbdd43466768aed6144d41abe5aa"
+    },
+    {
+      "id": 3,
+      "text": "As a tire rolls across each groove, its contact with the road keeps changing.",
+      "audio": "voice_03.wav",
+      "raw_audio": "raw_voice_03.mp3",
+      "timing": "voice_03.timing.json",
+      "duration": 4.661917,
+      "audio_sha256": "285c171a8bbd2602fbc2cda732d4dc94741381c10c580b9bf5e846436657e3d2",
+      "raw_audio_sha256": "08741df2215138a2007d6879e64ae30b948f3a396d8ce433977f6671ea1b239c",
+      "timing_sha256": "43901a0ede9f2f95605eec967f9ded3f19a6858dbb1d71098c8262b5f2e924fe"
+    },
+    {
+      "id": 4,
+      "text": "That repeated contact creates a rumbling sound and sends vibration through the car.",
+      "audio": "voice_04.wav",
+      "raw_audio": "raw_voice_04.mp3",
+      "timing": "voice_04.timing.json",
+      "duration": 4.661917,
+      "audio_sha256": "0f3f06cbb6c837d55c4201d06e8cdc6e95ea16bb842a71b499967830bfeb287d",
+      "raw_audio_sha256": "e57393874ec428f0e308f2af6b8d2103d8bbe602b7795eb9c581a1839bbae3d4",
+      "timing_sha256": "b8cd16aca2fbee34cc4d05de98d63c38f4b444c0816fbcaeae20ce3c813f3f67"
+    },
+    {
+      "id": 5,
+      "text": "The noise and shaking can quickly alert a distracted or drowsy driver leaving the lane.",
+      "audio": "voice_05.wav",
+      "raw_audio": "raw_voice_05.mp3",
+      "timing": "voice_05.timing.json",
+      "duration": 4.721417,
+      "audio_sha256": "88ef8e99269d9564b7ca5af4d265c488a3ac09914ed2d2b0e362a4db11a69439",
+      "raw_audio_sha256": "f9a6465e24fa089dd8703fecabe87a07795e61d95fbc471e3a8353ce58c15f31",
+      "timing_sha256": "7244a33326f108805994199f72448fea83783bf5dbe6c4a2d15dcf67377e120c"
+    },
+    {
+      "id": 6,
+      "text": "These grooves cannot steer your car for you. The driver still needs to react in time.",
+      "audio": "voice_06.wav",
+      "raw_audio": "raw_voice_06.mp3",
+      "timing": "voice_06.timing.json",
+      "duration": 4.435708,
+      "audio_sha256": "5201b2c598f29557ab8380aea0bde25a59f5b04c0e749f16574b9b2ebc4236a3",
+      "raw_audio_sha256": "49f84d75433aee1e86e1cc12a73b707ddbb8b83b4fc04411227deb2b8f2013eb",
+      "timing_sha256": "60cd2c55f4051e9cae6d04359d68dc786f0c7cbad23598a4d55b1370be68dc26"
+    }
+  ]
+}
