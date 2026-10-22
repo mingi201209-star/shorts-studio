@@ -157,3 +157,18 @@ def test_hook_camera_preserves_tire_contact_through_entire_five_seconds():
     # Lower, contact-focused fixed viewpoint instead of a hood-dominated hero.
     assert 1.2 <= view["offset"][2] <= 1.9
     assert view["target_z"] <= -0.18
+
+
+def test_opening_is_a_side_on_tire_contact_view_not_hood_hero():
+    """The opening must prove tire/groove contact instead of foregrounding hood."""
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+
+    shot = fresh()["shots"][0]
+    camera = camera_layout(shot)
+    offset_x, offset_y, offset_z = camera["offset"]
+    assert -0.45 <= offset_x <= 0.45, "front-quarter view exposes oversized hood"
+    assert offset_y < -2.0, "camera must stay outside roadside wheel"
+    assert 1.15 <= offset_z <= 1.8
+    assert 3.5 <= camera["scale"] <= 4.0
+    assert camera["anchor_frame"] == (shot["start"] + shot["end"]) // 2
+    assert camera["target"] == "wheel"
