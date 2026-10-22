@@ -18,6 +18,31 @@ SHOT_IDS = (
 )
 VIEWS = {"hero", "contact", "roadside", "payoff"}
 
+# Real road/soil must cover the whole fixed 9:16 camera frustum.
+ROAD_X_HALF_SPAN = 13.0
+ROAD_Y_NEAR_EDGE = -8.0
+DIRT_Y_FAR_EDGE = 14.0
+
+
+def camera_layout(shot: dict) -> dict:
+    """Fixed camera per 5s beat. Aim early during the hook to show first contact."""
+    ident = shot["id"]
+    if ident not in SHOT_IDS:
+        raise ValueError("unknown camera shot")
+    middle = (shot["start"] + shot["end"]) // 2
+    # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
+    layouts = {
+        "hook_warning": ("wheel", shot["start"] + 24, (1.2, -2.5, 1.6), 3.2, 0.0, -0.12),
+        "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
+        "tire_contact": ("wheel", middle, (2.5, -2.1, 1.4), 3.95, 0.0, -0.08),
+        "rumble_mechanism": ("wheel", middle, (-1.2, -3.4, 1.9), 4.15, 0.0, -0.13),
+        "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
+        "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
+    }
+    target, frame, offset, scale, target_y, target_z = layouts[ident]
+    return {"target": target, "anchor_frame": frame, "offset": offset,
+            "scale": scale, "target_y": target_y, "target_z": target_z}
+
 
 def validate_episode(value: dict) -> dict:
     if not isinstance(value, dict) or set(value) != {

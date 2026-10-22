@@ -77,26 +77,26 @@ def bump_road(mat):
     links.new(bump.outputs["Normal"], s.inputs["Normal"])
 
 
-def railbed_road(asphalt, groove, depth=.016):
+def railbed_road(asphalt, groove, depth=.016, x_extent=13.0, road_y_near=-8.0):
     # Cut an actual mesh profile. Grooves lie below grade, not above it.
     def top(x):
-        for i in range(-14, 15):
+        for i in range(-math.ceil(x_extent/.34), math.ceil(x_extent/.34)+1):
             p = abs(x - i*.34)
             if p < .085:
                 return -depth
             if p < .115:
                 return -depth * (.115-p)/.03
         return 0.
-    cuts = {-7.0, 7.0}
-    for i in range(-14,15):
+    cuts = {-x_extent, x_extent}
+    for i in range(-math.ceil(x_extent/.34), math.ceil(x_extent/.34)+1):
         c = i*.34
         for v in (-.116,-.115,-.086,-.085,-.04,0,.04,.085,.086,.115,.116):
             cuts.add(c+v)
-    xs = sorted(x for x in cuts if -7 <= x <= 7)
+    xs = sorted(x for x in cuts if -x_extent <= x <= x_extent)
     # FHWA-style longitudinal shoulder rumble: the driver-side lanes stay
     # smooth, while ONLY the near-side tyre crosses a narrow milled band.
     # A full-lane dark stripe pattern is NOT a rumble strip.
-    y_positions=(-3.2,-1.35,-1.3499,-.7001,-.70,2.4)
+    y_positions=(road_y_near,-1.35,-1.3499,-.7001,-.70,2.4)
     cross_count=len(y_positions)
     vertices=[(x,y,top(x) if -1.3499<=y<=-.7001 else 0.0)
               for x in xs for y in y_positions]
@@ -238,11 +238,16 @@ def main():
     groove = grey_mat("recessed dark groove", (.060,.062,.065))
     background = grey_mat("shoulder gravel", (.19,.16,.12))
     yellow = grey_mat("road shoulder stripe", (.73,.68,.49))
-    railbed_road(asphalt,groove)
-    # Keep the underlying slab BELOW the deepest cut, never occluding the groove.
-    cube("road substrate", (0,0,-.27), (14,7,.44), asphalt)
-    cube("lane edge marking",(0,-.53,.007),(14,.060,.006),yellow)
-    cube("dry roadside earth",(0,3.18,-.12),(14,2.5,.19),background)
+    half_x=module.ROAD_X_HALF_SPAN
+    near_y=module.ROAD_Y_NEAR_EDGE
+    far_y=module.DIRT_Y_FAR_EDGE
+    railbed_road(asphalt,groove,x_extent=half_x,road_y_near=near_y)
+    # Extend physical ground to the full fixed camera view (no world void).
+    # Keep substrate BELOW the deepest milled cut so the groove stays visible.
+    cube("road substrate", (0,0,-.27), (2*half_x,2*abs(near_y),.44), asphalt)
+    cube("lane edge marking",(0,-.53,.007),(2*half_x,.060,.006),yellow)
+    cube("dry roadside earth",(0,(2.4+far_y)/2,-.12),
+         (2*half_x,far_y-2.4,.19),background)
 
     bpy.ops.object.camera_add(location=(2.1,-8.4,5.9))
     cam=bpy.context.object
@@ -310,7 +315,8 @@ def main():
         if shot["id"]!=previous_shot:
             # Camera is fitted to a shot's *global* midpoint, regardless of
             # whether this worker renders its first/middle/last 30 frames.
-            middle=(shot["start"]+shot["end"])//2
+            layout=module.camera_layout(shot)
+            middle=layout["anchor_frame"]
             centre_x=module.travel_x(middle)
             car.location=(centre_x,-.30+module.lane_return_offset(middle),.03)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(middle)
@@ -320,33 +326,12 @@ def main():
             obj=front if shot["id"]!="rumble_mechanism" else rear
             points=[obj.matrix_world@Vector(v) for v in obj.bound_box]
             wheel=sum(points,Vector())/len(points)
-            if shot["id"]=="hook_warning":
-                # Opening shows physical impact, not another distant moving car.
-                target=wheel+Vector((0,0,-.11))
-                offset=Vector((1.55,-3.2,2.2))
-                scale=3.95
-            elif shot["id"]=="road_cut":
-                # From above, real grooves contrast with the adjacent flat lane.
-                target=wheel+Vector((0,0,-.18))
-                offset=Vector((.1,-3.4,4.15))
-                scale=4.15
-            elif shot["id"]=="tire_contact":
-                # Low profile exposes tire and recessed contact change.
-                target=wheel+Vector((0,0,-.08))
-                offset=Vector((2.5,-2.1,1.4))
-                scale=3.95
-            elif shot["id"]=="rumble_mechanism":
-                target=wheel+Vector((0,0,-.13))
-                offset=Vector((-1.2,-3.4,1.9))
-                scale=4.15
-            elif shot["id"]=="shoulder_location":
-                target=Vector((centre_x,-.1,.45))
-                offset=Vector((.7,-5.3,8.2))
-                scale=11.0
+            if layout["target"]=="wheel":
+                target=wheel+Vector((0,0,layout["target_z"]))
             else:
-                target=Vector((centre_x,-.25,.55))
-                offset=Vector((4.0,-7.7,5.4))
-                scale=11.6
+                target=Vector((centre_x,layout["target_y"],layout["target_z"]))
+            offset=Vector(layout["offset"])
+            scale=layout["scale"]
             cam.location=target+offset
             cam.rotation_euler=(target-cam.location).to_track_quat("-Z","Y").to_euler()
             cam.data.ortho_scale=scale

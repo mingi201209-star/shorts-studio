@@ -116,3 +116,31 @@ def test_legacy_recovery_does_not_autorun_on_new_renderer_commits():
     assert "  push:" not in event_header
     assert "LEGACY_RENDERER_SHA" in workflow
     assert 'test "$GITHUB_SHA" = "$LEGACY_RENDERER_SHA"' in workflow
+
+
+def test_static_camera_layout_prioritizes_opening_contact_and_readable_context():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+
+    shot = {s["id"]: s for s in fresh()["shots"]}
+    hook = camera_layout(shot["hook_warning"])
+    assert hook["anchor_frame"] <= 30
+    assert hook["target"] == "wheel"
+    assert hook["scale"] <= 3.4
+    assert hook["offset"][2] <= 1.8
+    for ident in ("shoulder_location", "driver_response"):
+        layout = camera_layout(shot[ident])
+        assert layout["target"] == "car"
+        assert 7.5 <= layout["scale"] <= 9.2
+        assert layout["anchor_frame"] == (shot[ident]["start"] + shot[ident]["end"]) // 2
+    for s in shot.values():
+        layout = camera_layout(s)
+        assert layout["scale"] > 0
+        assert len(layout["offset"]) == 3
+
+
+def test_environment_extent_covers_long_shots_without_black_void():
+    from shorts_studio.factory import rumble_episode2 as plan
+
+    assert plan.ROAD_X_HALF_SPAN >= 13
+    assert plan.ROAD_Y_NEAR_EDGE <= -8
+    assert plan.DIRT_Y_FAR_EDGE >= 14
