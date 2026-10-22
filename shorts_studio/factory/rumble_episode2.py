@@ -32,7 +32,7 @@ def camera_layout(shot: dict) -> dict:
     middle = (shot["start"] + shot["end"]) // 2
     # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
     layouts = {
-        "hook_warning": ("wheel", shot["start"] + 24, (1.2, -2.5, 1.6), 3.2, 0.0, -0.12),
+        "hook_warning": ("wheel", middle, (1.15, -2.7, 1.75), 3.8, 0.0, -0.25),
         "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
         "tire_contact": ("wheel", middle, (2.5, -2.1, 1.4), 3.95, 0.0, -0.08),
         "rumble_mechanism": ("wheel", middle, (-1.2, -3.4, 1.9), 4.15, 0.0, -0.13),

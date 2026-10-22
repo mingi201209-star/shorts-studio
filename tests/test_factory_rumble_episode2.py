@@ -123,9 +123,9 @@ def test_static_camera_layout_prioritizes_opening_contact_and_readable_context()
 
     shot = {s["id"]: s for s in fresh()["shots"]}
     hook = camera_layout(shot["hook_warning"])
-    assert hook["anchor_frame"] <= 30
+    assert hook["anchor_frame"] == (shot["hook_warning"]["start"] + shot["hook_warning"]["end"]) // 2
     assert hook["target"] == "wheel"
-    assert hook["scale"] <= 3.4
+    assert hook["scale"] <= 4.0
     assert hook["offset"][2] <= 1.8
     for ident in ("shoulder_location", "driver_response"):
         layout = camera_layout(shot[ident])
@@ -144,3 +144,16 @@ def test_environment_extent_covers_long_shots_without_black_void():
     assert plan.ROAD_X_HALF_SPAN >= 13
     assert plan.ROAD_Y_NEAR_EDGE <= -8
     assert plan.DIRT_Y_FAR_EDGE >= 14
+
+
+def test_hook_camera_preserves_tire_contact_through_entire_five_seconds():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+    hook = fresh()["shots"][0]
+    view = camera_layout(hook)
+    # An early absolute-frame camera anchor lets the tire leave the shot.
+    assert view["anchor_frame"] == (hook["start"] + hook["end"]) // 2
+    assert view["target"] == "wheel"
+    assert 3.5 <= view["scale"] <= 4.0
+    # Lower, contact-focused fixed viewpoint instead of a hood-dominated hero.
+    assert 1.2 <= view["offset"][2] <= 1.9
+    assert view["target_z"] <= -0.18
