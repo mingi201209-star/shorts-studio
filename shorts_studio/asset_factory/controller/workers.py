@@ -181,10 +181,16 @@ class CodexWorker:
                 result = run_process(args, cwd=root, shell=False, capture_output=True,
                                      text=True, timeout=remaining, env=env.copy())
                 output = (result.stdout or '') + '\n' + (result.stderr or '')
-                if re.search(r'quota|rate.?limit|usage.?limit|unauthorized|'
-                             r'authentication|login required|session expired', output, re.IGNORECASE):
-                    raise _ProbeBlocked('provider unavailable; checkpoint retained')
+                # Progress telemetry may include rate_limit or auth status
+                # fields on a normally completed Codex session. Treat only
+                # failed process exits as provider errors. A zero-exit Codex
+                # still cannot succeed without exact audited files and tests.
                 if result.returncode not in allowed:
+                    if (args[0] == 'codex'
+                            and re.search(r'quota|rate.?limit|usage.?limit|unauthorized|'
+                                          r'authentication|login required|session expired',
+                                          output, re.IGNORECASE)):
+                        raise _ProbeBlocked('provider unavailable; checkpoint retained')
                     raise _ProbeBlocked('process failed; checkpoint retained')
                 return result.stdout or ''
 

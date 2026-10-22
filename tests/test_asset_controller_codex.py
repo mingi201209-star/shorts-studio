@@ -30,8 +30,20 @@ class FakeProcess:
             assert args[1:5] == ['exec', '--sandbox', 'workspace-write', '--ephemeral']
             if self.mode == 'timeout':
                 raise subprocess.TimeoutExpired(args, 1, output='sk-secret-token')
-            if self.mode == 'quota':
+            if self.mode in ('quota', 'quota-failed'):
                 out = 'quota exceeded Bearer secret-token'
+                if self.mode == 'quota-failed':
+                    code = 1
+            elif self.mode == 'generic-failed':
+                out, code = 'generic failure', 1
+            elif self.mode == 'benign-auth-telemetry':
+                out = 'task complete; login required: false; authenticated: true'
+                (self.root / 'proof.py').write_text('answer = 42\n')
+            elif self.mode == 'benign-usage-telemetry':
+                # Codex prints rate_limit status as normal session telemetry,
+                # even when the model finished and modified the correct file.
+                out = 'task complete; usage info: {"rate_limit": {"remaining": 80}}'
+                (self.root / 'proof.py').write_text('answer = 42\n')
             elif self.mode != 'empty':
                 (self.root / 'proof.py').write_text('answer = 42\n')
                 if self.mode == 'ignored':
@@ -186,3 +198,38 @@ def test_codex_ignored_file_edit_blocks_even_with_expected_output(tmp_path):
     assert (tmp_path / 'proof.py').is_file()
     assert result.status == 'blocked'
     assert result.output_sha256 is None
+
+
+
+def test_codex_completed_with_normal_rate_limit_metadata_still_requires_real_proof(
+    tmp_path,
+):
+    result, fake = probe(tmp_path, 'benign-usage-telemetry')
+    assert fake.executed
+    assert result.status == 'success', result.reason
+    assert result.tests_passed
+    assert result.changed_files == ('proof.py',)
+    assert len(result.output_sha256 or '') == 64
+
+
+@pytest.mark.parametrize(
+    ('mode', 'reason'),
+    [('quota-failed', 'provider unavailable'),
+     ('generic-failed', 'process failed')],
+)
+def test_nonzero_codex_exit_stays_blocked_even_without_file_changes(tmp_path, mode, reason):
+    result, fake = probe(tmp_path, mode)
+    assert fake.executed
+    assert result.status == 'blocked'
+    assert result.reason == f'{reason}; checkpoint retained'
+    assert result.output_sha256 is None
+    assert not any(call[0] == sys.executable for call in fake.calls)
+
+
+def test_successful_codex_with_benign_auth_metadata_still_needs_verified_diff(tmp_path):
+    result, fake = probe(tmp_path, 'benign-auth-telemetry')
+    assert fake.executed
+    assert result.status == 'success', result.reason
+    assert result.tests_passed
+    assert result.changed_files == ('proof.py',)
+    assert len(result.output_sha256 or '') == 64
