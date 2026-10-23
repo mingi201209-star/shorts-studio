@@ -949,3 +949,21 @@ It is workflow_dispatch only and is NOT authorized to run yet.
 The six-shot proof workflow previously ran only on PR56's branch; it now also
 runs on pushes to nightshift/episode2-editorial-20261022, so pushing this
 branch yields the exact-head Cycles32 proof. Full suite: 565 passed, 1 skipped.
+
+## Narration loudness gate — 2026-10-23
+
+The speech and final-film QA checked silence but never measured the loudness
+they normalise to. Measured the real speech-stage output (EBU R128, ffmpeg
+ebur128 with true peak): narration.wav and the AAC preflight both read
+-16.4 LUFS integrated, LRA 2.9 LU, true peak -1.5 dBFS; per-shot 5 s windows
+-16.7 / -16.6 / -17.0 / -16.6 / -16.1 / -15.1 LUFS (spread 1.9 LU).
+
+New gate in episode2_film.py (speech preflight and final MP4): integrated
+-17.5..-14.5 LUFS, true peak <= -1.0 dBFS, six shot windows within 3 LU. The
+measurements are written to narration_validation.json and film_validation.json.
+Pure parser/checker unit tests (CI test job has no ffmpeg); the ffmpeg path
+was exercised locally: /tmp/rumble-measure/speech3/narration_validation.json
+SHA256 8880a9f2.... Assembler SHA256
+48c28600cdf8e4d46b3fe1e1753f19c12e1782b6036eba6b045f88828291d319.
+Trigger audit: test and render-smoke run on every push; the six-shot proof now
+includes this branch. Full suite: 571 passed, 1 skipped.

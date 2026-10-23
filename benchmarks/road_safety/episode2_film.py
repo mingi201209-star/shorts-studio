@@ -60,6 +60,40 @@ def silence(path):
     return gaps
 
 
+def parse_ebur128(stderr):
+    summary = stderr.rsplit("Summary:", 1)
+    if len(summary) != 2:
+        raise ValueError("ebur128 summary missing")
+    values = {}
+    for key, pattern in (("integrated_lufs", r"I:\s+(-?[0-9.]+) LUFS"),
+                         ("loudness_range_lu", r"LRA:\s+(-?[0-9.]+) LU"),
+                         ("true_peak_dbfs", r"Peak:\s+(-?[0-9.]+) dBFS")):
+        match = re.search(pattern, summary[1])
+        if not match:
+            raise ValueError(f"ebur128 {key} missing")
+        values[key] = float(match.group(1))
+    return values
+
+
+def loudness(path):
+    def measure(*window):
+        return parse_ebur128(run(["ffmpeg", "-hide_banner", "-nostats", *window, "-i", path,
+                                  "-af", "ebur128=peak=true", "-vn", "-f", "null", "-"]).stderr)
+    report = measure()
+    report["shot_integrated_lufs"] = [
+        measure("-ss", str(5 * i), "-t", "5")["integrated_lufs"] for i in range(6)]
+    return report
+
+
+def check_loudness(report):
+    """One warm narrator at Shorts loudness: no clipping, no quiet or loud beat."""
+    assert -17.5 <= report["integrated_lufs"] <= -14.5, ("NARRATION_LOUDNESS", report)
+    assert report["true_peak_dbfs"] <= -1.0, ("NARRATION_TRUE_PEAK", report)
+    shots = report["shot_integrated_lufs"]
+    assert len(shots) == 6 and max(shots) - min(shots) <= 3, ("UNEVEN_SHOT_LOUDNESS", report)
+    return report
+
+
 def speech(out):
     episode = load_episode(MANIFEST)
     capture = ROOT / "episode2_narration"
@@ -99,6 +133,7 @@ def speech(out):
     run(["ffmpeg", "-v", "error", "-y", "-i", out / "narration.wav", "-c:a", "aac",
          "-b:a", "192k", out / "audio-preflight.m4a"])
     gaps = silence(out / "audio-preflight.m4a")
+    level = check_loudness(loudness(out / "audio-preflight.m4a"))
     font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 62)
     events = []
     assert all(a["end"] <= b["start"] for a, b in pairwise(cues))
@@ -130,7 +165,8 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     (out / "narration_validation.json").write_text(json.dumps({
         "status": "PASS", "voice": provenance["voice"], "rate": provenance["rate"],
         "timing_source": "provider-word-boundaries", "shots": reports, "cues": cues,
-        "silence_seconds": gaps, "upper_overlays": False, "human_approved": False}, indent=2))
+        "silence_seconds": gaps, "loudness": level, "upper_overlays": False,
+        "human_approved": False}, indent=2))
     print("MEASURED_ENGLISH_SPEECH_PASS", len(cues), gaps, flush=True)
 
 
@@ -246,6 +282,7 @@ def assemble(out, chunks):
                  "blackdetect=d=0.15:pix_th=0.06", "-an", "-f", "null", "-"]).stderr
     assert "black_start:" not in black, "BLACK_FRAME_RUN"
     gaps = silence(final)
+    level = check_loudness(loudness(final))
     for i, second in enumerate([.5, 4.4, 5.5, 9.4, 10.5, 14.4, 15.5, 19.4, 20.5, 24.4, 25.5, 29.4]):
         run(["ffmpeg", "-v", "error", "-y", "-ss", second, "-i", final, "-frames:v", "1",
              out / f"review_{i:02d}.jpg"])
@@ -261,7 +298,7 @@ def assemble(out, chunks):
               "reused_native_frames": reused_frames, "new_native_frames": 900 - reused_frames,
               "cache_source_run_id": os.environ.get("RUMBLE_CACHE_RUN_ID"),
               "silence_seconds": gaps, "maximum_silence_seconds": max(gaps, default=0),
-              "total_silence_seconds": sum(gaps), "upper_overlays": False,
+              "total_silence_seconds": sum(gaps), "loudness": level, "upper_overlays": False,
               "render_frame_seconds": durations, "sum_native_render_seconds": sum(durations),
               "encode_seconds": elapsed, "sha256": digest(final), "physics_validated": False,
               "editorial_status": "REQUIRES_HUMAN_REVIEW", "upload_authorized": False}
