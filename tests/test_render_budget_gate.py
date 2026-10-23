@@ -11,6 +11,8 @@ NOW = datetime(2026, 10, 23, 7, 0, tzinfo=timezone.utc)
 def good_quote():
     return {
         "quoted_at_utc": (NOW - timedelta(minutes=1)).isoformat(),
+        "billing_month_utc": "2026-10",
+        "gpu_pending_reserved_krw_this_month": "0",
         "gpu_usd_per_hour": "0.24",
         "instance_storage_usd_per_hour": "0.03",
         "transfer_usd_per_gb": "0.10",
@@ -110,4 +112,42 @@ def test_missing_timezone_is_rejected():
     q = good_quote()
     q["quoted_at_utc"] = "2026-10-23T06:59:00"
     with pytest.raises(ValueError, match="timezone"):
+        estimate_gpu_lease(q, now=NOW)
+
+
+def test_pending_gpu_reservations_reduce_available_monthly_budget():
+    q = good_quote()
+    q["billing_month_utc"] = "2026-10"
+    q["gpu_pending_reserved_krw_this_month"] = "28500"
+    result = estimate_gpu_lease(q, now=NOW)
+    assert result["remaining_allowed_gpu_krw"] == 500
+    assert result["within_planned_budget"] is False
+
+
+def test_pending_reservations_count_toward_combined_monthly_ceiling():
+    q = good_quote()
+    q["billing_month_utc"] = "2026-10"
+    q["gpu_pending_reserved_krw_this_month"] = "6000"
+    q["vps_cost_krw_this_month"] = "8000"
+    q["r2_cost_krw_this_month"] = "3000"
+    result = estimate_gpu_lease(q, now=NOW)
+    assert result["remaining_allowed_gpu_krw"] == 23000
+    assert result["within_planned_budget"] is True
+
+
+def test_previous_month_quote_rejected_even_within_fifteen_minutes():
+    boundary = datetime(2026, 11, 1, 0, 5, tzinfo=timezone.utc)
+    q = good_quote()
+    q["quoted_at_utc"] = (boundary - timedelta(minutes=10)).isoformat()
+    q["billing_month_utc"] = "2026-11"
+    q["gpu_pending_reserved_krw_this_month"] = "0"
+    with pytest.raises(ValueError, match="billing month"):
+        estimate_gpu_lease(q, now=boundary)
+
+
+def test_reported_billing_month_must_match_current_utc_month():
+    q = good_quote()
+    q["billing_month_utc"] = "2026-09"
+    q["gpu_pending_reserved_krw_this_month"] = "0"
+    with pytest.raises(ValueError, match="billing month"):
         estimate_gpu_lease(q, now=NOW)
