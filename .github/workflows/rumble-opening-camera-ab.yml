@@ -1,0 +1,89 @@
+name: Episode 2 A/B opening native camera review (ephemeral)
+on:
+  push:
+    branches: [research/rumble-opening-ab-20261023]
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 28
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - candidate: pr56-side-on
+            source_sha: 82af1a3103325229f524f392637bd8d82d902fa4
+          - candidate: nightshift-low-chase
+            source_sha: 79719d49850246451e71945b45e1eb0291e2e58d
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          ref: ${{ matrix.source_sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install pinned Blender plus original QA prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          python -m pip install Pillow pydantic
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Fetch exact CC0 sedan scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/source"
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render three native 1080x1920 Cycles32 opening frames and apply original shard QA
+        env:
+          CANDIDATE: ${{ matrix.candidate }}
+          SOURCE_SHA: ${{ matrix.source_sha }}
+        run: |
+          set -euo pipefail
+          echo "CANDIDATE=$CANDIDATE SOURCE_SHA=$SOURCE_SHA"
+          sha256sum benchmarks/road_safety/render_rumble_episode2.py shorts_studio/factory/rumble_episode2.py
+          for frame in 1 75 150; do
+            dir="$RUNNER_TEMP/proof-$frame"
+            mkdir -p "$dir"
+            xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_rumble_episode2.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/factory/rumble-episode2-30s.json --start "$frame" --end "$frame" --out "$dir"
+            PYTHONPATH="$PWD" python -m shorts_studio.factory.rumble_native_shard_qa --out "$dir" --manifest examples/factory/rumble-episode2-30s.json --renderer benchmarks/road_safety/render_rumble_episode2.py
+          done
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image, ImageDraw
+          import os, io, base64, json
+          base=Path(os.environ["RUNNER_TEMP"])
+          output=Image.new("RGB",(750,490),"white")
+          draw=ImageDraw.Draw(output)
+          print("REVIEW_CANDIDATE",os.environ["CANDIDATE"],os.environ["SOURCE_SHA"])
+          for idx,frame in enumerate((1,75,150)):
+              folder=base/f"proof-{frame}"
+              proof=json.loads((folder/"episode-proof.json").read_text())
+              assert proof["first_frame"]==frame and proof["last_frame"]==frame
+              assert proof["renderer"]=="CYCLES" and proof["cycles_samples"]==32
+              assert proof["resolution"]==[1080,1920] and not proof["preview_only"]
+              with Image.open(folder/f"frame_{frame:04d}.png") as img:
+                  sample=img.convert("RGB")
+                  sample.thumbnail((250,444))
+              output.paste(sample,(250*idx,25))
+              draw.text((250*idx+4,4),f"{os.environ['CANDIDATE']} / frame {frame}",fill="black")
+              print("REVIEW_FRAME",frame,proof["renderer_source_sha256"],proof["source_sha256"])
+          buf=io.BytesIO()
+          output.save(buf,format="JPEG",quality=65,optimize=True)
+          print("REVIEW_JPEG_BYTES",len(buf.getvalue()))
+          print("REVIEW_JPEG_BASE64_BEGIN")
+          print(base64.b64encode(buf.getvalue()).decode())
+          print("REVIEW_JPEG_BASE64_END")
+          print("QA_NATIVE_A_B_PASS_NO_ARTIFACT_UPLOAD")
+          PY
+      - name: Confirm no artifact upload
+        if: always()
+        run: echo "Both variants rendered on ephemeral public GitHub runners. No blob uploaded or kept."
