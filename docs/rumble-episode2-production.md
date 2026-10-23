@@ -816,3 +816,28 @@ fixed hook 1/75/150: 0.104/0.172/0.245, tyre visible in all; bottom rows
 min mean 104..130 (baseline 375: rows at 0). Black ratio 0.018..0.029.
 Previews: /tmp/rumble-measure/fixed (local, non-durable). Preview-only; this is
 not a Cycles32 1080x1920 proof and does not authorize the 900-frame render.
+
+## Tyre road contact fix — 2026-10-23
+
+Closes the floating-tyre item above. The renderer no longer lifts the car by
++0.03 m: the body carries the uncalibrated groove-synchronous bounce, and all
+four wheel hubs are counter-offset so tyres stay on the road land (a sprung
+body over unsprung wheels, still not a suspension solver). At each shot's
+camera anchor the hubs are reset to rest, so the fixed camera does not depend
+on which frame a shard starts at.
+
+Every frame record now carries `near_tyre_min_z_m` (world z of the lowest
+evaluated vertex of Front_tire and Rear_tire). Native shard QA rejects a
+missing, non-finite, floating (>4 mm) or penetrating (<-1 mm) value.
+physically_calibrated stays false.
+
+Preview evidence (450x800, 7 samples; local, non-durable):
+/tmp/rumble-measure/contact frames 1,75,150,375,525,825, proof SHA256
+dac14159be540e6a180ec7af5139f80db0bbb1d1be52dafd0d81cb556aaeed4f.
+Recorded near-tyre minimum z: 0.0 / 0.00002 / 0.00027 / 0.00001 / 0.00006 /
+0.00023 m (before: 0.022..0.038 m). Viewing: contact shadow now attached; no
+black bands or other regressions; hook tyre visible at 1/75/150.
+Renderer SHA256 8ae5d131ba39868b013e3f7e69bde1175e7c81ff390dfaa41170fde7a1fff132,
+QA SHA256 458a354dada0e7e76f4c9394b44e22fda9cc22a1916a7835df411feed52e231e.
+Full suite: 560 passed, 1 skipped. Not a Cycles32 1080x1920 proof; does not
+authorize the 900-frame render.

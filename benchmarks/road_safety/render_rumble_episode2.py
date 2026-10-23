@@ -300,16 +300,21 @@ def main():
     checksums=[]
     camera_proofs={}
     previous_shot=None
+    near_tyres=[bpy.data.objects[n] for n in ("Front_tire","Rear_tire")]
+    hub_rest={pivot:pivot.location.copy() for pivot,_ in pivots}
     for i, absolute_frame in enumerate(absolute_frames):
         # Over the longer real pilot, one tire traverses several physical grooves.
         # Small displacement only, not a realistic tire/suspension solver.
         shot=module.shot_for_frame(episode,absolute_frame)
         x=module.travel_x(absolute_frame)
+        bounce=module.rumble_displacement(absolute_frame)
         # Motion is a global deterministic x coordinate, not a per-shard reset.
-        car.location=(x,-.30+module.lane_return_offset(absolute_frame),.03+module.rumble_displacement(absolute_frame))
+        # Tyres rest on the road; only the sprung body carries the vibration.
+        car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
         car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
         for pivot,radius in pivots:
             pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
+            pivot.location=hub_rest[pivot]-Vector((0,0,bounce/car.scale[2]))
         scene.frame_set(absolute_frame)
         bpy.context.view_layer.update()
         if shot["id"]!=previous_shot:
@@ -318,7 +323,9 @@ def main():
             layout=module.camera_layout(shot)
             middle=layout["anchor_frame"]
             centre_x=module.travel_x(middle)
-            car.location=(centre_x,-.30+module.lane_return_offset(middle),.03)
+            car.location=(centre_x,-.30+module.lane_return_offset(middle),0.)
+            for pivot in hub_rest:
+                pivot.location=hub_rest[pivot]
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(middle)
             bpy.context.view_layer.update()
             front=bpy.data.objects["Front_tire"]
@@ -342,9 +349,13 @@ def main():
                 round(cam.data.ortho_scale,6),
             ]
             previous_shot=shot["id"]
-            car.location=(x,-.30+module.lane_return_offset(absolute_frame),.03+module.rumble_displacement(absolute_frame))
+            car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
+            for pivot in hub_rest:
+                pivot.location=hub_rest[pivot]-Vector((0,0,bounce/car.scale[2]))
             bpy.context.view_layer.update()
+        contact={o.name:round(min((o.matrix_world@v.co).z for v in o.data.vertices),5)
+                 for o in near_tyres}
         frame_path=out/f"frame_{absolute_frame:04d}.png"
         scene.render.filepath=str(frame_path)
         start=time.perf_counter()
@@ -353,7 +364,8 @@ def main():
         sha=hashlib.sha256(frame_path.read_bytes()).hexdigest()
         checksums.append({"frame":absolute_frame,"shot_id":shot["id"],
                           "absolute_x_m":round(x,7),"sha256":sha,
-                          "render_seconds":elapsed})
+                          "render_seconds":elapsed,
+                          "near_tyre_min_z_m":contact})
         all_times.append(elapsed)
         print(f"RUMBLE_EPISODE2_NATIVE_FRAME {absolute_frame}/900",flush=True)
     if len({x["sha256"] for x in checksums})!=len(checksums):

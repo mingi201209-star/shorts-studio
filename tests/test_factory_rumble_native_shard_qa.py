@@ -19,7 +19,8 @@ def make(tmp_path, frames=(1, 2)):
         Image.new("RGB",(1080,1920),(40+i,50,60)).save(p)
         records.append({"frame":i,"shot_id":"hook_warning",
                         "absolute_x_m":round(travel_x(i),7),
-                        "sha256":digest(p),"render_seconds":1.25})
+                        "sha256":digest(p),"render_seconds":1.25,
+                        "near_tyre_min_z_m":{"Front_tire":0.0004,"Rear_tire":0.0004}})
     proof={"episode_id":"rumble-strip-alerts","source_sha256":
         "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877",
         "renderer_source_sha256":digest(SCRIPT),"renderer":"CYCLES",
@@ -240,3 +241,21 @@ def test_full_width_black_edge_band_is_a_camera_clip_void(tmp_path, edge, width,
             verify(tmp_path, MANIFEST, SCRIPT)
     else:
         assert verify(tmp_path, MANIFEST, SCRIPT)["status"] == "PASS_NATIVE_ORIGINAL_SHARD"
+
+
+@pytest.mark.parametrize("contact", [
+    {"Front_tire": 0.024, "Rear_tire": 0.0004},   # visibly floating (old +3 cm lift)
+    {"Front_tire": 0.0004, "Rear_tire": -0.004},  # sinks through the flat land
+    {"Front_tire": 0.0004},                       # rear contact unmeasured
+    {"Front_tire": float("nan"), "Rear_tire": 0.0004},
+    None,
+])
+def test_near_side_tyres_must_rest_on_the_road(tmp_path, contact):
+    doc = make(tmp_path)
+    if contact is None:
+        del doc["original_frame_records"][1]["near_tyre_min_z_m"]
+    else:
+        doc["original_frame_records"][1]["near_tyre_min_z_m"] = contact
+    (tmp_path / "episode-proof.json").write_text(json.dumps(doc))
+    with pytest.raises(ValueError, match="tyre contact"):
+        verify(tmp_path, MANIFEST, SCRIPT)

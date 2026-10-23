@@ -11,6 +11,10 @@ from PIL import Image, ImageChops, ImageStat
 
 from .rumble_episode2 import PINNED_ASSET, load_episode, shot_for_frame, travel_x
 
+NEAR_TYRES = ("Front_tire", "Rear_tire")
+# Metres relative to the flat road land (z=0); grooves are cut 16 mm below it.
+TYRE_CONTACT_Z = (-0.001, 0.004)
+
 
 def digest(p: Path) -> str:
     return hashlib.sha256(p.read_bytes()).hexdigest()
@@ -85,6 +89,13 @@ def verify(out: Path, manifest: Path, renderer: Path) -> dict:
         position = record.get("absolute_x_m")
         if not finite_number(position) or abs(position - travel_x(frame)) > 0.000001:
             raise ValueError("global position changed on shard boundary")
+        # Near-side tyres must sit on the flat land between milled grooves:
+        # no visible floating gap and no sinking through the road surface.
+        contact = record.get("near_tyre_min_z_m")
+        if (not isinstance(contact, dict) or set(contact) != set(NEAR_TYRES)
+                or not all(finite_number(z) and TYRE_CONTACT_Z[0] <= z <= TYRE_CONTACT_Z[1]
+                           for z in contact.values())):
+            raise ValueError(f"missing, floating or penetrating tyre contact: frame {frame}")
         path = out / f"frame_{frame:04d}.png"
         if not path.exists() or path.stat().st_size < 10000:
             raise ValueError("no complete real image")
