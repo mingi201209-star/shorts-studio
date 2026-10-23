@@ -1072,3 +1072,10 @@ ffmpeg version (CI 6.1 vs local 8.0). Parked for the owner: give the hook
 more genuine in-shot motion (no zoom/fake change) before the 900-frame
 dispatch, or accept the risk that the final assemble fails this gate.
 Assembler SHA256 d370743e.... Full suite: 582 passed, 1 skipped.
+
+Rehearsal re-run with the original final-video checks (synthetic frames now
+step tone every 0.5 s): REHEARSAL_DONE PASS; original_video_qa visual_activity
+/ black_opening / captions_visible all PASS (9 changes in the first 5 s, max
+hold 0.5 s), proving the wiring end to end. film_validation.json SHA256
+db35abc03c89b127b84e1b12570a99c89835572457697a40682fb186f78f290c (synthetic,
+never evidence about the real hook).

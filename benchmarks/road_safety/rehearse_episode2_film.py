@@ -37,7 +37,9 @@ for first in range(1, 901, 30):
     records = []
     for n in range(first, first + 30):
         rng = random.Random(n)
-        im = Image.new("RGB", (1080, 1920), (110, 112, 108))
+        # Tone steps every 0.5 s so the original visual-activity check sees change.
+        tone = 90 + 40 * ((n // 15) % 2)
+        im = Image.new("RGB", (1080, 1920), (tone, tone + 2, tone - 2))
         draw = ImageDraw.Draw(im)
         x = int(n * 1.1) % 900
         draw.rectangle((x, 600, x + 180, 900), fill=(30, 70, 160))
