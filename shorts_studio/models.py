@@ -312,6 +312,18 @@ class Project(BaseModel):
     # prove entertainment success on its own.
     strict_entertainment_contract: bool = False
     event_graph: DeclaredEventGraph | None = None
+    # Opt-in, off by default. When True, render() stages every scene's
+    # finished clip through shorts_studio.scene_r2_staging right after it is
+    # produced: a local, hash-verified, no-network staging step (see that
+    # module's docstring) built on top of the already-reviewed R2
+    # verified-handoff primitives (shorts_studio/r2_handoff/). This never
+    # uploads anything by itself -- real upload is a separate, manual,
+    # human-audited CLI step (python -m shorts_studio.r2_handoff apply
+    # --apply) that this flag does not trigger or bypass. Requires
+    # SHORTS_R2_ACCOUNT_ID/SHORTS_R2_BUCKET to be set in the environment;
+    # render() fails closed (raises) rather than silently skipping if this
+    # is True but that configuration is missing.
+    enable_r2_scene_staging: bool = False
 
     @model_validator(mode="after")
     def vertical(self):
