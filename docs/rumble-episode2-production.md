@@ -1079,3 +1079,28 @@ step tone every 0.5 s): REHEARSAL_DONE PASS; original_video_qa visual_activity
 hold 0.5 s), proving the wiring end to end. film_validation.json SHA256
 db35abc03c89b127b84e1b12570a99c89835572457697a40682fb186f78f290c (synthetic,
 never evidence about the real hook).
+
+## Hook speed-ramp candidate (prepared, not applied) and PR56 divergence — 2026-10-23
+
+Candidate for the knife-edge hook visual activity, kept out of production because
+it changes pacing: the car travels 1.6x faster during the hook (frames 1..150) and
+then at the existing time-slowed speed (total travel 9.24 m, still monotonic and
+shard-global); hook camera (-5.8, -1.9, 2.4), scale 3.2, target_z -0.30, same
+21.5 deg elevation. All 135 episode/QA/film tests pass with it in a throwaway
+worktree (tyre in frame: horizontal 0.801, vertical 0.673; contact rows 739..1203).
+Real original check on H.264 preview hook frames: PASS with 6 changes in the first
+5 s (current: 2), step diffs 9.0, 9.2, 10.1, 12.1, 13.3, 14.1, 16.7, 17.2, 18.2.
+Viewing: tyre in frame throughout and the milled band leads ahead as a long
+diagonal; trade-off: more trunk/rear body by the end of the hook.
+Patch (local, untracked): .nightshift/staging/episode2-hook-speed-ramp.patch
+SHA256 61b232e9...; comparison image /tmp/hookcand-act/compare.png.
+
+PR56 moved on independently since this branch was cut: 2fb9fc6 and 82af1a3
+(hook side-on (0.25, -2.7, 1.75), scale 3.8, mid-shot anchor; tests, render-smoke
+39868832593 and native proof 39868832483 SUCCESS). Scored against this branch's
+geometric gates: tyre horizontal ratio 1.037 (gate <= 1.0 at 90% of half-width;
+the tyre stays in frame but reaches ~93% of the edge), camera-plane bottom 0.184 m
+(gate >= 0.25; no void), contact rows 988..1023. PR56 still has the tire_contact
+camera-plane void, the 22..38 mm floating tyres and none of this branch's caption,
+gutter, loudness, semantic or original video gates. The two hook designs conflict;
+reconciling them is an owner decision (this branch was not rebased or merged).
