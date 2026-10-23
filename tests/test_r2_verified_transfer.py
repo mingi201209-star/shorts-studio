@@ -124,6 +124,45 @@ def test_corrupt_readback_never_claims_verified_or_deletes_local(tmp_path):
     assert source.read_bytes() == b"real" * 20
 
 
+def test_reject_symlink_swap_before_put(tmp_path):
+    """A file replaced after hashing must never be uploaded by following a link."""
+    source = tmp_path / "sample.mkv"
+    secret = tmp_path / "private.bin"
+    source.write_bytes(b"original-data")
+    secret.write_bytes(b"must-never-leave-the-host")
+
+    class SwappingR2(MemoryR2):
+        def head_bucket(self, **kwargs):
+            super().head_bucket(**kwargs)
+            source.unlink()
+            source.symlink_to(secret)
+
+    cloud = SwappingR2()
+    with pytest.raises((IntegrityError, ValueError, OSError)):
+        upload_verified(cloud, source, bucket="shorts-studio-media",
+                        prefix="episode2", max_bytes=4096, apply=True)
+    assert "put_object" not in cloud.calls
+    assert cloud.objects == {}
+
+
+def test_reject_changed_bytes_before_put(tmp_path):
+    """Never PUT a source that changed after local content-addressing."""
+    source = tmp_path / "sample.mkv"
+    source.write_bytes(b"original-data")
+
+    class MutatingR2(MemoryR2):
+        def head_bucket(self, **kwargs):
+            super().head_bucket(**kwargs)
+            source.write_bytes(b"different-bytes")
+
+    cloud = MutatingR2()
+    with pytest.raises(IntegrityError):
+        upload_verified(cloud, source, bucket="shorts-studio-media",
+                        prefix="episode2", max_bytes=4096, apply=True)
+    assert "put_object" not in cloud.calls
+    assert cloud.objects == {}
+
+
 def test_permission_error_does_not_trigger_new_bucket_or_upload(tmp_path):
     source = tmp_path / "sample.mkv"
     source.write_bytes(b"hi")
