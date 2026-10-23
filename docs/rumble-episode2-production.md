@@ -967,3 +967,22 @@ SHA256 8880a9f2.... Assembler SHA256
 48c28600cdf8e4d46b3fe1e1753f19c12e1782b6036eba6b045f88828291d319.
 Trigger audit: test and render-smoke run on every push; the six-shot proof now
 includes this branch. Full suite: 571 passed, 1 skipped.
+
+## End-to-end pipeline rehearsal on synthetic frames — 2026-10-23
+
+Before any 20-runner-hour dispatch, the real `episode2_film.py shard` and
+`assemble` code was run locally on 900 synthetic 1080x1920 frames (flat grey,
+moving block, per-frame noise patch; QA-valid proofs bound to renderer
+8ae5d131): 30/30 shards LOSSLESS_NATIVE_SHARD_PASS (FFV1 RGB hash match), speech
+PASS, EPISODE2_30S_900_NATIVE_TECHNICAL_PASS. film_validation.json: 900 frames,
+30.000 s, 900 unique decoded frames, 0 reused / 900 new, max silence 0.711 s,
+loudness -16.4 LUFS / -1.5 dBFS / shots -17.0..-15.1, encode 93.6 s locally,
+upload_authorized false. Review frames show the black gutter with synchronized
+captions ("Those shallow grooves" at 0.5 s, "keeps changing" at 14.4 s).
+Synthetic MP4 SHA256 95fca573... is a pipeline rehearsal, never a candidate.
+Evidence (local): /tmp/rumble-rehearsal/review/film_validation.json SHA256
+6585cf64..., /tmp/rumble-rehearsal/review_strip.png.
+
+The rehearsal is now a manual tool: benchmarks/road_safety/rehearse_episode2_film.py
+(SHA256 77dc7058...; about 35 min on the phone, ~105 MB). Not run in CI.
+Full suite: 571 passed, 1 skipped.
