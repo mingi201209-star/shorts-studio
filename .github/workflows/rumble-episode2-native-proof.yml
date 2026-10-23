@@ -1,7 +1,7 @@
 name: Road rumble episode 2 six-shot native Cycles32 proof
 on:
   push:
-    branches: [feat/rumble-episode2-production-20261018]
+    branches: [feat/rumble-episode2-production-20261018, nightshift/episode2-editorial-20261022]
 permissions:
   contents: read
 jobs:

@@ -929,3 +929,23 @@ Plan for the separate, not-yet-authorized 900-frame operation:
   legacy-workflow shards must never be mixed in.
 - Preconditions: push of this branch, green tests, a fresh six-shot Cycles32
   proof on the exact head with viewing, then explicit owner authorization.
+
+## Fresh 900-frame workflow prepared (not dispatched) — 2026-10-23
+
+Added .github/workflows/rumble-episode2-native-film.yml (SHA256 7d0712b24868d9e4cdaef45842d30736524ccb8328b4de9ed7e1b95305b6e52f).
+It is workflow_dispatch only and is NOT authorized to run yet.
+- Guard: the dispatcher must type the exact head (`GITHUB_SHA == expected_head`)
+  and the renderer must hash to the pinned RENDERER_SOURCE_SHA256
+  8ae5d131ba39868b013e3f7e69bde1175e7c81ff390dfaa41170fde7a1fff132 (checked in
+  the guard and again in every render job).
+- 30 shards x 30 contiguous frames (1..900, 75 min timeout, max 20 parallel,
+  fail-fast) render fresh, then pass episode2_film.py shard (native QA incl.
+  tyre contact and edge-band gates, FFV1 lossless) and assemble (900 unique
+  decoded frames, 30 s, black gutter captions, silence, black-run checks).
+- No frames are downloaded from any other run; no cache, legacy run or legacy
+  renderer is referenced. Tests enforce all of the above, and the pinned hash
+  must match the committed renderer, so a renderer edit forces a deliberate pin.
+
+The six-shot proof workflow previously ran only on PR56's branch; it now also
+runs on pushes to nightshift/episode2-editorial-20261022, so pushing this
+branch yields the exact-head Cycles32 proof. Full suite: 565 passed, 1 skipped.

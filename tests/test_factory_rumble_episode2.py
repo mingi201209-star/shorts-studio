@@ -378,3 +378,37 @@ def test_captions_sit_in_a_black_gutter_below_the_tyre_contact():
             centre_v = sum(d * w for d, w in zip(delta, up))
             contact_row = 960 - (centre_v - TYRE_RADIUS) * 1920 / layout["scale"]
             assert contact_row <= gutter_top - 150, (shot["id"], frame, contact_row)
+
+
+FILM = ROOT / ".github/workflows/rumble-episode2-native-film.yml"
+
+
+def test_fresh_900_frame_film_is_manual_pinned_and_never_reuses_frames():
+    workflow = FILM.read_text()
+    header = workflow.split("jobs:", 1)[0]
+    assert "workflow_dispatch:" in header and "push:" not in header
+    assert "pull_request" not in header and "schedule" not in header
+    # Exact head typed by the dispatcher, and the exact renderer source.
+    assert 'test "$GITHUB_SHA" = "$EXPECTED_HEAD"' in workflow
+    renderer = ROOT / "benchmarks/road_safety/render_rumble_episode2.py"
+    pinned = re.search(r"RENDERER_SOURCE_SHA256: ([0-9a-f]{64})", workflow).group(1)
+    assert pinned == hashlib.sha256(renderer.read_bytes()).hexdigest()
+    assert "sha256sum -c" in workflow and "$RENDERER_SOURCE_SHA256" in workflow
+    # 30 fresh contiguous 30-frame shards cover 1..900 exactly once.
+    starts = json.loads(re.search(r"frame: (\[[0-9, ]+\])", workflow).group(1))
+    assert starts == list(range(1, 901, 30))
+    assert "--end $(( ${{ matrix.frame }} + 29 ))" in workflow
+    assert "episode2_film.py shard" in workflow and "episode2_film.py assemble" in workflow
+    # No frames from any other run, cache or legacy renderer.
+    for forbidden in ("run-id:", "RUMBLE_CACHE", "39211610129", "LEGACY_RENDERER_SHA"):
+        assert forbidden not in workflow
+    minutes = [int(m) for m in re.findall(r"timeout-minutes: (\d+)", workflow)]
+    assert max(minutes) >= 75 and max(minutes) <= 360
+    assert "max-parallel: 20" in workflow
+
+
+def test_six_shot_proof_runs_on_this_editorial_branch():
+    proof = (ROOT / ".github/workflows/rumble-episode2-native-proof.yml").read_text()
+    header = proof.split("jobs:", 1)[0]
+    assert "nightshift/episode2-editorial-20261022" in header
+    assert "workflow_dispatch" not in header
