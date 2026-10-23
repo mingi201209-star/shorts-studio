@@ -1104,3 +1104,13 @@ the tyre stays in frame but reaches ~93% of the edge), camera-plane bottom 0.184
 camera-plane void, the 22..38 mm floating tyres and none of this branch's caption,
 gutter, loudness, semantic or original video gates. The two hook designs conflict;
 reconciling them is an owner decision (this branch was not rebased or merged).
+
+Native Cycles32 check of the speed-ramp candidate (patch applied in a throwaway
+worktree; frames rendered with --start N --end N, 425.5 s / 424.0 s on the phone):
+frames 121 and 136 both PASS_NATIVE_ORIGINAL_SHARD. Hook step 121->136 through the
+real original check (H.264 + its 2 fps JPEG sampling): 16.65 (raw 15.14) versus
+12.69 (raw 11.14) for the current hook, i.e. margin over 12.0 rises from 0.69 to
+4.65. Viewing: both near-side tyres on the milled band, which runs as a long
+diagonal; clean contact shadows. SHA256 1886ee77... (121), a8c3cc1f... (136);
+/tmp/hookcand2-native, /tmp/hookcand2-act/pair.png. Still not applied: pacing
+change awaits the owner.
