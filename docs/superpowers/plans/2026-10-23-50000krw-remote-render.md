@@ -33,6 +33,15 @@
 - [x] Add `python -m shorts_studio.render_budget_gate --quote <local-json>` dry-run CLI; exit 0 for an in-budget estimate, exit 2 for block, regardless of actual authorization.
 - [ ] Verify full pytest, Ruff and independent head-pinned CI after the branch is pushed. Do not claim verified without terminal CI evidence.
 
+### Task 1b: R2 Standard storage forecast (inert only)
+
+**Files:** `shorts_studio/r2_storage_estimate.py`; `tests/test_r2_storage_estimate.py`; the linked spec.
+
+- [x] RED test import + scenarios against measured six-shot CI zipped artifact sizes, 900 original frames, 28 films, 2x headroom, R2 10 GB-month free, Class A/B requests, missing/invalid input, and no provisioning authority.
+- [x] Implement conservative full-month storage cost and operations pricing with Decimal arithmetic and 25% planning buffer. No credentials, S3/SDK or writes.
+- [ ] Verify exact-head pytest and render-smoke terminal success after commit; update evidence before claiming completion.
+- [ ] Separate owner approval before binding any actual R2 account or GPU.
+
 ### Task 2: Controller/operator rollout plan (NOT AUTHORIZED for execution)
 
 - [ ] Review PR57–60 controller branch dependencies; avoid cherry-picking mock worker code as real dispatch.

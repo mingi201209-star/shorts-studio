@@ -30,6 +30,34 @@ When the actual OVH or R2 projected bill exceeds its envelope, fail closed pendi
 
 R2 Standard pricing: free 10 GB-month and operation quotas; paid storage $0.015/GB-month (subject to live terms). Class A/B requests, billing rounding and any extra billable operations count toward envelope. Use R2 Standard, not Infrequent Access, for active native frames. Avoid storing 900 raw 1080×1920 frames longer than needed; ensure verified lossless shard and exact content SHA before deleting any transient copy. Keep source masters, QA and provenance. Object keys are immutable hashes scoped to source SHA/renderer SHA/manifest SHA and job ID.
 
+### R2 Standard storage volume planning (inert pilot)
+
+\`shorts_studio.r2_storage_estimate.forecast_r2_standard\` is a **pure estimate**, not a
+storage account, bucket, account-usage read, upload client, retention controller, or
+billing cap. Operator supplies measured sample GitHub artifact sizes, expected frame
+count, retained film count, prior R2 bytes/requests, non-frame object bytes, this
+month's previously committed R2 charges and FX. It uses the largest observed
+per-frame artifact size with **2x planning headroom** and conservatively treats
+all forecast bytes as stored for an entire billing month; therefore it may
+overestimate short-lived shards. The 2x factor is a heuristic, **never proof** that
+all frames fit; direct provider usage telemetry is required before spending.
+
+Rates verified from Cloudflare's Oct 1, 2026 official R2 pricing: Standard
+storage **10 GB-month free**, thereafter $0.015/GB-month; Class A 1m operations
+free then $4.50/million; Class B 10m free then $0.36/million. Billable GB and
+request blocks are conservatively rounded upward and 25% currency/fee buffer
+applies to computed USD. Provider free tier is **shared by the account**, not
+dedicated to this project, so all existing storage/ops must be included.
+
+The calculator is fully inert; \`within_r2_allocation\` is a *budget planning*
+signal (KRW 3k allowance), **not proof that all unmeasured cloud fees, operations
+or all 900 PNG frame sizes have been accounted for** and never authorization
+to create a bucket. R2 Standard egress is currently free on R2's side, but the
+GPU host's network traffic may be billable and belongs in the independent GPU
+quote. A live paid plan requires current provider prices, actual statement,
+separate owner authorization and server-to-R2 SHA256 read-back without Android
+as a transit disk.
+
 ## 4. Immutable render handoff
 
 1. Existing controller records approved intent SHA, source/renderer/Blender version (5.0.1 for current pilot), manifest, frame range, CPU/GPU device, exact scene profile and estimated billable wall time; state stays BLOCKED without a recent complete quote and independent owner approval for *actual spending*.
