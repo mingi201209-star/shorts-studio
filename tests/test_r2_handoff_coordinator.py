@@ -69,11 +69,14 @@ def harness(tmp_path, *, existing=False, phase=None):
             opid = hashlib.sha256(op.encode()).hexdigest()
             for kind in ("data", "token"):
                 store.reserve(job_id, kind=kind, operation_id=opid,
-                              utc_now=datetime.now(UTC), monotonic_now=time.monotonic())
+                              utc_now=coordinator.utc_clock(),
+                              monotonic_now=coordinator.monotonic_clock())
         return WranglerBackend(Path("fixture-wrangler"), account_id=ACCOUNT,
             bucket="shorts-studio-media", home=tmp_path,
             acquire=lambda: OAuthGrant("test",datetime(2099,1,1,tzinfo=UTC)),
-            before_call=reserve, runner=cloud, missing_key_verified=True)
+            before_call=reserve, runner=cloud, missing_key_verified=True,
+            remaining=lambda:store.remaining(job_id,utc_now=coordinator.utc_clock(),
+                                            monotonic_now=coordinator.monotonic_clock()))
     coordinator = Coordinator(store, factory, lock_root=tmp_path / "locks",
                               utc_clock=lambda: datetime.now(UTC),
                               monotonic_clock=time.monotonic)

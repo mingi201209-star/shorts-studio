@@ -29,6 +29,7 @@ class Coordinator:
         self.utc_clock, self.monotonic_clock = utc_clock, monotonic_clock
 
     def _failure(self, job, error):
+        error.job_id = job
         if self.store.status(job)["state"] == "SOURCE_CHANGED":
             return
         state = error.code if error.code in SIDE else "INTEGRITY_FAILED"
@@ -97,19 +98,34 @@ class Coordinator:
                       scope=f"reconstruct-{chunk.index}")
         restore_file(m, destination=destination, fetch=fetch)
 
+    def _start(self, job, limits, reason, entry):
+        if limits is not None:
+            self.store.extend_limits(job, limits=limits, operator_reason=reason)
+        elif reason is not None:
+            raise HandoffError("INVALID_EXTENSION")
+        self.store.start_run(job, utc_now=entry[0], monotonic_now=entry[1])
+        return self.store.limits_for(job)
+
     def apply(self, job_id: str):
+        require(self.store.status(job_id)["kind"] == "upload", "READ_ONLY_JOB")
         return self.resume(job_id)
 
     def resume(self, job_id: str, *, limits=None, operator_reason=None):
-        staged, _previous_limits = self.store.load_job(job_id)
+        entry = self.utc_clock(), self.monotonic_clock()
+        if self.store.status(job_id)["kind"] == "verify":
+            request, _ = self.store.load_verify_job(job_id)
+            with bucket_lock(self.lock_root, account_id=request.account_id, bucket=request.bucket):
+                try:
+                    current = self._start(job_id, limits, operator_reason, entry)
+                    return self._verify_locked(job_id, request, current)
+                except HandoffError as error:
+                    self._failure(job_id, error)
+                    raise
+        staged, _ = self.store.load_job(job_id)
         m = staged.manifest
         with bucket_lock(self.lock_root, account_id=m.account_id, bucket=m.bucket):
             try:
-                if limits is not None:
-                    self.store.extend_limits(job_id, limits=limits, operator_reason=operator_reason)
-                elif operator_reason is not None:
-                    raise HandoffError("INVALID_EXTENSION")
-                limits = self.store.limits_for(job_id)
+                limits = self._start(job_id, limits, operator_reason, entry)
                 require(m.size_bytes <= limits.max_bytes, "LIMIT_REACHED")
                 limits.validate_for(len(m.chunks), mode="upload")
                 try:
@@ -139,36 +155,43 @@ class Coordinator:
                 except OSError:
                     raise HandoffError("SOURCE_CHANGED") from None
                 self.store.transition(job_id, "REMOTE_VERIFIED")
-                return Receipt("REMOTE_VERIFIED", job_id, manifest_key(m), m.sha256, m.size_bytes)
+                return Receipt("REMOTE_VERIFIED", job_id, manifest_key(m), m.sha256, m.size_bytes,
+                               job_id=job_id)
             except HandoffError as error:
                 self._failure(job_id, error)
                 raise
 
+    def _verify_locked(self, job, request, limits):
+        self.store.transition(job, "TRANSFERRING")
+        backend = self.backend_factory(job)
+        root = private_dir(self.store.path.parent / "verify-spool")
+        raw = self._manifest(backend, request.manifest_key, request.expected_manifest_sha256,
+                             root=root, limits=limits)
+        m = parse_manifest(raw, account_id=request.account_id, bucket=request.bucket,
+                           namespace=request.namespace)
+        require(raw == canonical_manifest(m) and m.size_bytes <= limits.max_bytes,
+                "INTEGRITY_FAILED")
+        limits.validate_for(len(m.chunks), mode="verify")
+        used = self.store.status(job)
+        require(limits.max_data_ops-used["data_used"] >= len(m.chunks) and
+                limits.max_token_fetches-used["token_used"] >= len(m.chunks), "LIMIT_REACHED")
+        self.store.transition(job, "MANIFEST_VERIFIED")
+        self.store.transition(job, "RECONSTRUCTING")
+        self._restore(backend, m, request.destination, limits=limits)
+        self.store.transition(job, "DOWNLOAD_VERIFIED")
+        return Receipt("DOWNLOAD_VERIFIED", None, request.manifest_key, m.sha256, m.size_bytes,
+                       job_id=job)
+
     def verify(self, *, account_id, bucket, namespace, manifest_key: str,
                expected_manifest_sha256: str, destination: Path, limits):
+        entry = self.utc_clock(), self.monotonic_clock()
         request = RestoreRequest(account_id, bucket, namespace, manifest_key,
                                  expected_manifest_sha256, Path(destination).absolute())
         with bucket_lock(self.lock_root, account_id=account_id, bucket=bucket):
             job = self.store.create_verify_job(request, limits)
             try:
-                limits = self.store.limits_for(job)
-                self.store.transition(job, "TRANSFERRING")
-                backend = self.backend_factory(job)
-                root = private_dir(self.store.path.parent / "verify-spool")
-                raw = self._manifest(backend, manifest_key, expected_manifest_sha256,
-                                     root=root, limits=limits)
-                m = parse_manifest(raw, account_id=account_id, bucket=bucket, namespace=namespace)
-                require(raw == canonical_manifest(m) and m.size_bytes <= limits.max_bytes,
-                        "INTEGRITY_FAILED")
-                limits.validate_for(len(m.chunks), mode="verify")
-                used = self.store.status(job)
-                require(limits.max_data_ops-used["data_used"] >= len(m.chunks) and
-                        limits.max_token_fetches-used["token_used"] >= len(m.chunks), "LIMIT_REACHED")
-                self.store.transition(job, "MANIFEST_VERIFIED")
-                self.store.transition(job, "RECONSTRUCTING")
-                self._restore(backend, m, request.destination, limits=limits)
-                self.store.transition(job, "DOWNLOAD_VERIFIED")
-                return Receipt("DOWNLOAD_VERIFIED", None, manifest_key, m.sha256, m.size_bytes)
+                current = self._start(job, None, None, entry)
+                return self._verify_locked(job, request, current)
             except HandoffError as error:
                 self._failure(job, error)
                 raise

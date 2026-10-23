@@ -20,6 +20,7 @@ SUFFIXES = {".json", ".mkv", ".mp4", ".png", ".blend", ".zip", ".wav", ".ass", "
 class HandoffError(RuntimeError):
     def __init__(self, code: str):
         self.code = code
+        self.job_id = None
         super().__init__(code)
 
 
@@ -140,6 +141,7 @@ class Receipt:
     production_concurrent_writes_allowed: Literal[False] = False
     provider_spend_cap_enforced: Literal[False] = False
     upload_authorized: Literal[False] = False
+    job_id: str | None = None
 
 
 def chunk_key(namespace: str, digest: str) -> str:
@@ -203,8 +205,10 @@ def manifest_key(m: Manifest) -> str:
 
 def source_handle(source: Path):
     try:
-        handle = os.fdopen(os.open(source, os.O_RDONLY | os.O_NOFOLLOW), "rb")
-        require(stat.S_ISREG(os.fstat(handle.fileno()).st_mode), "UNSAFE_SOURCE")
+        handle = os.fdopen(os.open(source, os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK), "rb")
+        if not stat.S_ISREG(os.fstat(handle.fileno()).st_mode):
+            handle.close()
+            raise HandoffError("UNSAFE_SOURCE")
         return handle
     except OSError:
         raise HandoffError("UNSAFE_SOURCE") from None
@@ -223,12 +227,16 @@ def plan_source(source: Path, *, account_id: str, bucket: str, namespace: str,
         digest = hashlib.sha256()
         chunks = []
         offset = 0
-        while block := handle.read(limits.chunk_bytes):
+        while offset < before.size_bytes:
+            length = min(limits.chunk_bytes, before.size_bytes-offset)
+            block = handle.read(length)
+            require(len(block) == length and len(chunks) < 64 and
+                    Fingerprint.of(os.fstat(handle.fileno())) == before, "SOURCE_CHANGED")
             digest.update(block)
             sha = hashlib.sha256(block).hexdigest()
             chunks.append(Chunk(len(chunks), offset, len(block), sha, chunk_key(namespace, sha)))
             offset += len(block)
-        require(Fingerprint.of(os.fstat(handle.fileno())) == before and
+        require(not handle.read(1) and Fingerprint.of(os.fstat(handle.fileno())) == before and
                 Fingerprint.of(source.stat(follow_symlinks=False)) == before, "SOURCE_CHANGED")
     require(expected_sha256 is None or digest.hexdigest() == expected_sha256, "SOURCE_CHANGED")
     result = Manifest(1, account_id, bucket, namespace, source.name, source.suffix.lower(),

@@ -77,10 +77,10 @@ def _config(config: OAuthConfig):
 
 
 def obtain_grant(config: OAuthConfig, *, now: datetime, operation_seconds: int = 90,
-                 runner=bounded_run) -> OAuthGrant:
+                 runner=bounded_run, timeout_seconds: float = 30) -> OAuthGrant:
     try:
         require(now.tzinfo is not None and type(operation_seconds) is int and
-                0 < operation_seconds <= 90, "AUTH_REQUIRED")
+                0 < operation_seconds <= 90 and 0 < timeout_seconds <= 30, "AUTH_REQUIRED")
         private_dir(config.home)
         with profile_lock(config.lock_root, profile=config.profile):
             _config(config)
@@ -97,7 +97,7 @@ def obtain_grant(config: OAuthConfig, *, now: datetime, operation_seconds: int =
             argv = [str(config.wrangler), "auth", "token", "--json"]
             if config.profile != "default":
                 argv.extend(["--profile", config.profile])
-            result = runner(argv, env=base_environment(config.home), timeout=30,
+            result = runner(argv, env=base_environment(config.home), timeout=timeout_seconds,
                             capture_output=True, text=True)
             require(result.returncode == 0 and len(result.stdout) <= 2**20 and
                     len(result.stderr) <= 2**20, "AUTH_REQUIRED")

@@ -101,14 +101,17 @@ def _coordinator(store, args, locks):
             for kind in ("data", "token"):
                 store.reserve(job, kind=kind, operation_id=opid,
                               utc_now=datetime.now(UTC), monotonic_now=time.monotonic())
+        def remaining():
+            return store.remaining(job, utc_now=datetime.now(UTC), monotonic_now=time.monotonic())
         try:
             audit = json.loads(_private_read(args.audit_file, home))
             missing_verified = audit.get("missing_key_message_verified") is True
         except (HandoffError, OSError, ValueError):
             missing_verified = False
         return WranglerBackend(args.wrangler, account_id=account, bucket=bucket, home=home,
-            acquire=lambda: obtain_grant(config, now=datetime.now(UTC)),
-            before_call=reserve, missing_key_verified=missing_verified)
+            acquire=lambda: obtain_grant(config, now=datetime.now(UTC),
+                                         timeout_seconds=min(30, remaining())),
+            before_call=reserve, missing_key_verified=missing_verified, remaining=remaining)
     return Coordinator(store, factory, lock_root=locks)
 
 
@@ -191,6 +194,8 @@ def main(argv: list[str] | None = None) -> int:
         return 4
     except HandoffError as error:
         print("BLOCKED:"+error.code, file=sys.stderr)
+        if error.job_id is not None:
+            _emit({"status": "BLOCKED", "code": error.code, "job_id": error.job_id})
         return 3 if error.code == "BUSY" else 4 if error.code == "FAILED_RETRYABLE" else 2
     except Exception:  # noqa: BLE001 - unexpected dependency errors must never expose secrets
         print("BLOCKED:INTERNAL_ERROR", file=sys.stderr)

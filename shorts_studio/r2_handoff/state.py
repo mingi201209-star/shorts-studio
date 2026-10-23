@@ -52,11 +52,15 @@ def _lock(root: Path, name: str, rank: int):
         except BlockingIOError:
             raise HandoffError("BUSY") from None
         _held.ranks = ranks + [rank]
+        fds = getattr(_held, "fds", ())
+        _held.fds = (*fds, fd)
         try:
             yield
         finally:
             _held.ranks = ranks
-            fcntl.flock(fd, fcntl.LOCK_UN)
+            _held.fds = fds
+            # Closing only: a supervising child inherits this open-file lock
+            # and retains ownership until its entire request group has stopped.
     finally:
         os.close(fd)
 
@@ -69,6 +73,10 @@ def bucket_lock(root: Path, *, account_id: str, bucket: str):
 def profile_lock(root: Path, *, profile: str):
     require(isinstance(profile, str) and re.fullmatch(r"[a-zA-Z0-9_-]{1,64}", profile) is not None)
     return _lock(root, f"profile-{profile}.lock", 20)
+
+
+def held_lock_fds() -> tuple[int, ...]:
+    return getattr(_held, "fds", ())
 
 
 def _limits(raw: str) -> Limits:
@@ -194,6 +202,16 @@ class StateStore:
     def limits_for(self, job_id: str) -> Limits:
         return _limits(self._row(job_id)["limits_json"])
 
+    def start_run(self, job_id: str, *, utc_now: datetime, monotonic_now: float):
+        self.remaining(job_id, utc_now=utc_now, monotonic_now=monotonic_now)
+
+    def remaining(self, job_id: str, *, utc_now: datetime, monotonic_now: float) -> float:
+        remaining = (self.limits_for(job_id).deadline_utc-utc_now).total_seconds()
+        end = min(self._ends.get(job_id, float("inf")), monotonic_now+remaining)
+        self._ends[job_id] = end
+        require(remaining > 0 and monotonic_now < end, "LIMIT_REACHED")
+        return min(remaining, end-monotonic_now)
+
     def reserve(self, job_id: str, *, kind: str, operation_id: str,
                 utc_now: datetime, monotonic_now: float) -> None:
         require(kind in {"data", "token"} and utc_now.tzinfo is not None and
@@ -203,10 +221,7 @@ class StateStore:
             self.db.execute("BEGIN IMMEDIATE")
             row = self._row(job_id)
             limits = _limits(row["limits_json"])
-            remaining = (limits.deadline_utc - utc_now).total_seconds()
-            end = min(self._ends.get(job_id, float("inf")), monotonic_now + remaining)
-            self._ends[job_id] = end
-            require(remaining > 0 and monotonic_now < end, "LIMIT_REACHED")
+            self.remaining(job_id, utc_now=utc_now, monotonic_now=monotonic_now)
             ceiling = limits.max_data_ops if kind == "data" else limits.max_token_fetches
             require(row[column] < ceiling, "LIMIT_REACHED")
             attempt = self.db.execute("SELECT n FROM attempts WHERE job=? AND kind=? AND op=?",

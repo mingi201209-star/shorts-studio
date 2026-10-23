@@ -22,6 +22,8 @@ python -m shorts_studio.r2_handoff plan \
 
 `apply` and `resume` require an existing recorded job, `--apply` and an absolute `--wrangler` path. They do not start just because a job exists. `verify` requires account/bucket/namespace, manifest key plus expected manifest SHA, destination and explicit limits; without `--read-remote` it is a local preview. With that flag it is GET-only, needs no original file/spool, and returns DOWNLOAD_VERIFIED only after complete reconstruction; it never promotes an upload job or a film into production readiness. Existing destinations, including raced-in files or symlinks, are never replaced.
 
+GET-only verification returns its durable job ID in success and blocked receipts. Resume that same ID with `resume --job <id> --apply`; it stays GET-only and retains consumed counters.
+
 An explicit resume extension supplies all four new byte/data/token/deadline bounds plus `--reason`; immutable identity, consumed counters and per-operation retry history remain. No counter is refunded for a command whose execution is uncertain. A changed original source requires a new plan; remote wrong bytes block rather than overwrite as repair.
 
 Initial limits: 32 MiB chunks, up to 64 chunks and 2 GiB per job, 128 MiB hard object ceiling and 1 MiB manifest ceiling. Explicit maximum data/token operations each <=1,024; 320 is the proposed initial data budget. Upload minimum is 4N+4 data/token calls; GET-only verification minimum is N+1. Retry attempts are included in budgets, never additional free calls. Logical read attempts are separated by preflight/readback/reconstruction stage, and stage retry limits persist through restart. Local limits do not include other actors' requests and are not a provider billing cap.
@@ -39,6 +41,10 @@ The private OAuth TOML must live at `~/.config/.wrangler/config/<profile>.toml`,
 AUTH_REQUIRED means stop for operator inspection/re-authentication, not repeated login. WAIT_AUTH_WINDOW means the official command returned a token with less than 120 seconds left; the job checkpoints and releases locks. Resume explicitly later so an actually expired token may refresh; do not edit expiration timestamps. Perform any manual Wrangler login/logout only with the coordinator stopped, respecting the same profile lock ownership rule. No browser opens automatically. Android is rejected for all media commands.
 
 ## Failure, recovery and retention
+
+The deadline clock starts before source validation. OAuth acquisition is bounded by the remaining time, and the deadline is checked again before starting data commands. Every remote GET/PUT checks the local disk floor before credential acquisition or reserving remote work. Source planning rejects FIFOs without waiting and stops if the sealed source grows.
+
+Each request runs under a private supervisor holding inherited account/profile lock descriptors. Coordinator death closes a lifeline; the supervisor terminates the request process group before releasing ownership. If a kernel-blocked child cannot terminate, ownership stays held rather than permitting an overlapping writer. This is Linux host-local cooperation, not protection against another host or malicious same-UID code.
 
 Every PUT timeout/unknown outcome is reconciled by GET before another PUT. HEAD, ETag, local success flags and manifest existence are insufficient. Every resume checks source and staged hashes and re-fetches previously verified chunks. A manifest is uploaded last, and independently downloaded/reconstructed before REMOTE_VERIFIED. Disk shortages, deadlines, corrupted/newer SQLite schemas, permission errors or wrong remote bytes leave source and durable evidence intact. Temporary per-request readbacks can be discarded; original sources, staged chunks and saved reconstruction spools have no automatic cleanup command. Report orphan spools for separate owner review.
 
