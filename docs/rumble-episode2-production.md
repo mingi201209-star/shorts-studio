@@ -1024,3 +1024,19 @@ the same frame rendered inside a multi-frame session differed in 1141 of
 across different shard boundaries.
 Assembler SHA256 53fb406b...; workflow SHA256 14345b99.... Full suite: 577
 passed, 1 skipped.
+
+## Rehearsal re-run after the semantic gate — 2026-10-23
+
+Committed tool `rehearse_episode2_film.py --out /tmp/rumble-rehearsal` re-run
+through the updated assembler (renderer pin 5e52499a, assembler 53fb406b):
+30/30 shards PASS, speech PASS, EPISODE2_30S_900_NATIVE_TECHNICAL_PASS, 900
+unique decoded frames; semantic_visual_qa ran for all six beats in order and
+records provider RehearsalStubProvider (never evidence). Final synthetic MP4
+SHA256 95fca573... is identical to the first rehearsal (deterministic encode).
+film_validation.json SHA256 b6f094ee26793cf0325821c985f8551ae5f3a9575c8d20a7b94f7661cae5a44c.
+
+Push-time risk to confirm, not yet observed in CI: tests/test_factory_rumble_episode2.py
+loads /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf, and test.yml installs no
+fonts. GitHub ubuntu images normally carry fonts-dejavu-core via fontconfig;
+if the first push fails on that file, install the package in the test job
+rather than skipping the caption-width test.
