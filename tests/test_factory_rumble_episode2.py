@@ -307,3 +307,47 @@ def test_orthographic_camera_plane_never_starts_below_the_road():
         camera_z = _target(shot, layout)[2] + layout["offset"][2]
         # Rays from a plane edge below grade render as a black void band.
         assert camera_z - layout["scale"] / 2 * up[2] >= .25, shot["id"]
+
+
+def test_lower_captions_never_cover_the_tyre_road_contact():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+
+    film = (ROOT / "benchmarks/road_safety/episode2_film.py").read_text()
+    style = re.search(r"^Style: Caption,([^\n]*)$", film, re.MULTILINE).group(1).split(",")
+    font_size, alignment, margin_v = int(style[1]), int(style[17]), int(style[20])
+    assert alignment == 2, "bottom-anchored lower captions"
+    # Two lines at most (the assembler splits cues longer than 24 chars).
+    caption_top = 1920 - margin_v - 2 * font_size * 1.2
+    for shot in fresh()["shots"]:
+        layout = camera_layout(shot)
+        if layout["target"] != "wheel":
+            continue
+        tyre = "Rear_tire" if shot["id"] == "rumble_mechanism" else "Front_tire"
+        target = _target(shot, layout)
+        _, up = _camera_axes(layout["offset"])
+        pixels_per_metre = 1920 / layout["scale"]
+        for frame in range(shot["start"], shot["end"] + 1):
+            delta = [a - b for a, b in zip(_tyre_world(frame, tyre), target)]
+            centre_v = sum(d * w for d, w in zip(delta, up))
+            contact_row = 960 - (centre_v - TYRE_RADIUS) * pixels_per_metre
+            assert contact_row <= caption_top - 100, (shot["id"], frame, contact_row)
+
+
+def test_caption_groups_respect_sentences_and_avoid_orphan_words():
+    from shorts_studio.factory.rumble_episode2 import caption_groups
+
+    assert caption_groups("These grooves cannot steer your car for you. "
+                          "The driver still needs to react in time.") == [
+        (0, 3), (3, 6), (6, 8), (8, 11), (11, 14), (14, 16)]
+    assert caption_groups("Stop.") == [(0, 1)]
+    for shot in fresh()["shots"]:
+        text = shot["narration_en"]
+        tokens = text.split()
+        groups = caption_groups(text)
+        assert [g[0] for g in groups][1:] == [g[1] for g in groups][:-1]
+        assert groups[0][0] == 0 and groups[-1][1] == len(tokens)
+        for start, end in groups:
+            words = tokens[start:end]
+            assert 2 <= len(words) <= 3, words
+            # A sentence may only end on a group's last word.
+            assert not any(w[-1] in ".!?" for w in words[:-1]), words

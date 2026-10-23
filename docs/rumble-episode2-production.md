@@ -841,3 +841,37 @@ Renderer SHA256 8ae5d131ba39868b013e3f7e69bde1175e7c81ff390dfaa41170fde7a1fff132
 QA SHA256 458a354dada0e7e76f4c9394b44e22fda9cc22a1916a7835df411feed52e231e.
 Full suite: 560 passed, 1 skipped. Not a Cycles32 1080x1920 proof; does not
 authorize the 900-frame render.
+
+## Production caption grouping and caption/tyre clearance — 2026-10-23
+
+Running the real assembler speech stage locally (`episode2_film.py speech`,
+PASS, 32 cues, max silence 0.711 s) showed the production captions differed
+from the reviewed candidate above: fixed 3-word chunks produced the cue
+"for you The" across the shot-6 sentence end and an orphan cue "time".
+
+Change: `rumble_episode2.caption_groups` splits each sentence (narration
+punctuation) into balanced groups of at most three words; the assembler uses
+it and asserts narration tokens match provider word timings 1:1. Shot 6 now
+reads "These grooves cannot / steer your car / for you / The driver still /
+needs to react / in time". Every cue is 2-3 words within one sentence; timing
+still comes from provider word boundaries. The doc candidate (31 cues) remains
+a separate hand-grouped alternative; neither is human-approved.
+
+New regression test: projected near-tyre contact rows (930..1190 px of 1920)
+stay at least 100 px above the top of a two-line caption parsed from the real
+ASS style (MarginV 325, 62 px), for every frame of every wheel shot.
+
+Evidence (local, non-durable, /tmp/rumble-measure/speech2): captions.srt
+a8a1b272..., film.ass b9544ae4..., narration.wav 01dc1fd8...; composite check
+/tmp/rumble-measure/cap_pair.png (upscaled previews, layout only).
+Assembler SHA256 98f37c800386982c0aa88131d68f4cdcc45fb1637a36f5d2d476907a1681e4e9.
+Full suite: 562 passed, 1 skipped.
+
+Pending owner decisions (not changed):
+- Captions overlay the full-bleed native picture (outline style). The main
+  pipeline's convention is captions in a black gutter outside the picture;
+  meeting that here needs either an opaque black caption box or letterboxing
+  the native frames. White-on-asphalt contrast is only moderate on viewing.
+- driver_response peaks at ~19 deg yaw because the time-slowed car moves
+  0.32 m sideways over 1.4 m of travel; the manifest asks it to visibly point
+  toward the lane. Realistic yaw (~1 deg) would make the correction invisible.

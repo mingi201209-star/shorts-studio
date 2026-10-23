@@ -17,7 +17,12 @@ from pathlib import Path
 
 from PIL import ImageFont
 
-from shorts_studio.factory.rumble_episode2 import load_episode, shot_for_frame, travel_x
+from shorts_studio.factory.rumble_episode2 import (
+    caption_groups,
+    load_episode,
+    shot_for_frame,
+    travel_x,
+)
 from shorts_studio.factory.rumble_native_shard_qa import verify
 from shorts_studio.timing import WordTiming, validate_timings
 
@@ -73,8 +78,10 @@ def speech(out):
         validate_timings(words, duration)
         assert 0 < duration <= 4.75 and max(w.end for w in words) + .1 <= duration
         offset = (i - 1) * 5 + .1
-        for j in range(0, len(words), 3):
-            group = words[j:j + 3]
+        tokens = rec["text"].split()
+        assert [normalize(t) for t in tokens] == [normalize(w.text) for w in words]
+        for j, k in caption_groups(rec["text"]):
+            group = words[j:k]
             cues.append({"start": offset + group[0].start, "end": offset + group[-1].end,
                          "text": " ".join(w.text for w in group), "shot": shot["id"]})
         wav = out / f"voice_{i:02}.wav"

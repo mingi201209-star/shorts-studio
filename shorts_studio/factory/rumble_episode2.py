@@ -49,6 +49,22 @@ def camera_layout(shot: dict) -> dict:
             "scale": scale, "target_y": target_y, "target_z": target_z}
 
 
+def caption_groups(text: str) -> list[tuple[int, int]]:
+    """Word-index spans for lower captions: at most three words, balanced
+    within each sentence, never crossing a sentence end."""
+    tokens = text.split()
+    groups, start = [], 0
+    for index, token in enumerate(tokens):
+        if token[-1] in ".!?" or index == len(tokens) - 1:
+            count = index + 1 - start
+            parts = math.ceil(count / 3)
+            for part in range(parts):
+                size = count // parts + (part < count % parts)
+                groups.append((start, start + size))
+                start += size
+    return groups
+
+
 def validate_episode(value: dict) -> dict:
     if not isinstance(value, dict) or set(value) != {
         "version", "series_id", "episode_id", "language",
