@@ -351,3 +351,30 @@ def test_caption_groups_respect_sentences_and_avoid_orphan_words():
             assert 2 <= len(words) <= 3, words
             # A sentence may only end on a group's last word.
             assert not any(w[-1] in ".!?" for w in words[:-1]), words
+
+
+def test_captions_sit_in_a_black_gutter_below_the_tyre_contact():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+
+    film = (ROOT / "benchmarks/road_safety/episode2_film.py").read_text()
+    gutter_top = int(re.search(r"^CAPTION_GUTTER_TOP = (\d+)$", film, re.MULTILINE).group(1))
+    assert "drawbox=x=0:y={CAPTION_GUTTER_TOP}:w=1080" in film
+    assert "color=black:t=fill" in film
+    style = re.search(r"^Style: Caption,([^\n]*)$", film, re.MULTILINE).group(1).split(",")
+    font_size, margin_v = int(style[1]), int(style[20])
+    # Both caption lines stay inside the gutter, clear of the Shorts UI edge.
+    assert 1920 - margin_v - 2 * font_size * 1.2 >= gutter_top + 20
+    assert margin_v >= 250
+    # The native picture above the gutter still contains every tyre contact.
+    for shot in fresh()["shots"]:
+        layout = camera_layout(shot)
+        if layout["target"] != "wheel":
+            continue
+        tyre = "Rear_tire" if shot["id"] == "rumble_mechanism" else "Front_tire"
+        target = _target(shot, layout)
+        _, up = _camera_axes(layout["offset"])
+        for frame in range(shot["start"], shot["end"] + 1):
+            delta = [a - b for a, b in zip(_tyre_world(frame, tyre), target)]
+            centre_v = sum(d * w for d, w in zip(delta, up))
+            contact_row = 960 - (centre_v - TYRE_RADIUS) * 1920 / layout["scale"]
+            assert contact_row <= gutter_top - 150, (shot["id"], frame, contact_row)

@@ -875,3 +875,28 @@ Pending owner decisions (not changed):
 - driver_response peaks at ~19 deg yaw because the time-slowed car moves
   0.32 m sideways over 1.4 m of travel; the manifest asks it to visibly point
   toward the lane. Realistic yaw (~1 deg) would make the correction invisible.
+
+## Black caption gutter below the native picture — 2026-10-23
+
+Resolves the caption-background item above in favour of the owner spec
+("thin lower captions with black background outside actual picture") and the
+main pipeline's black-gutter convention. Compared on upscaled previews
+(/tmp/rumble-measure/capmock/compare.png, SHA256 5b3665d3...): C current
+outline-over-asphalt (moderate contrast), A per-cue opaque box (text still on
+the picture), B full-width black gutter (chosen).
+
+Change (assembler only; native frames, renderer and QA unchanged):
+- Final encode draws solid black over rows 1400..1919 before the ASS captions
+  (`CAPTION_GUTTER_TOP = 1400`). The 1080-wide native picture above is not
+  scaled or cropped; caption style, MarginV 325 and cue timing are unchanged.
+- Final MP4 review frames now assert the gutter is black (luma max <= 24 over
+  rows 1400..1439) and the picture above is not (mean >= 25).
+- Test: both caption lines fit inside the gutter, MarginV stays >= 250 for the
+  Shorts UI, and every projected tyre contact row in every wheel shot stays at
+  least 150 px above the gutter.
+
+Local end-to-end check of the real filter (2 s clip from the hook preview,
+H.264): gutter luma 0..1, picture mean 112.0, caption text rows 1542..1582.
+/tmp/rumble-measure/gutter/review.jpg SHA256 fc06992d.... Layout evidence only.
+Assembler SHA256 1a159ad540643e39f84690fd5c4ad82341d2d726e15e00c3395941c7789c0c2e.
+Full suite: 563 passed, 1 skipped. Reversible: revert this commit for full-bleed.

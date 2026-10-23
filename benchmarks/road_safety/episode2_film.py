@@ -15,7 +15,7 @@ import time
 from itertools import pairwise
 from pathlib import Path
 
-from PIL import ImageFont
+from PIL import Image, ImageFont, ImageStat
 
 from shorts_studio.factory.rumble_episode2 import (
     caption_groups,
@@ -29,6 +29,8 @@ from shorts_studio.timing import WordTiming, validate_timings
 ROOT = Path(__file__).resolve().parent
 MANIFEST = Path("examples/factory/rumble-episode2-30s.json")
 RENDERER = ROOT / "render_rumble_episode2.py"
+# Lower captions sit on solid black below the native picture (rows 0..1399).
+CAPTION_GUTTER_TOP = 1400
 
 
 def run(args):
@@ -154,8 +156,12 @@ def shard(out):
     print("LOSSLESS_NATIVE_SHARD_PASS", first, count, flush=True)
 
 
+def caption_filter(out):
+    return (f"setpts=N/(30*TB),drawbox=x=0:y={CAPTION_GUTTER_TOP}:w=1080:"
+            f"h={1920 - CAPTION_GUTTER_TOP}:color=black:t=fill,ass={out / 'film.ass'}")
+
+
 def run_rgb(path):
-    from PIL import Image
     with Image.open(path) as image:
         return image.convert("RGB").tobytes()
 
@@ -220,7 +226,7 @@ def assemble(out, chunks):
     final = out / "rumble-strips-english-30s-1080p.mp4"
     start = time.perf_counter()
     run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", concat,
-         "-i", out / "narration.wav", "-vf", f"setpts=N/(30*TB),ass={out / 'film.ass'}", "-map", "0:v:0",
+         "-i", out / "narration.wav", "-vf", caption_filter(out), "-map", "0:v:0",
          "-map", "1:a:0", "-t", "30", "-c:v", "libx264", "-preset", "slow", "-crf", "17",
          "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", final])
     elapsed = time.perf_counter() - start
@@ -243,6 +249,11 @@ def assemble(out, chunks):
     for i, second in enumerate([.5, 4.4, 5.5, 9.4, 10.5, 14.4, 15.5, 19.4, 20.5, 24.4, 25.5, 29.4]):
         run(["ffmpeg", "-v", "error", "-y", "-ss", second, "-i", final, "-frames:v", "1",
              out / f"review_{i:02d}.jpg"])
+        with Image.open(out / f"review_{i:02d}.jpg") as review:
+            gutter = review.convert("L").crop((0, CAPTION_GUTTER_TOP, 1080, CAPTION_GUTTER_TOP + 40))
+            picture = review.convert("L").crop((0, 0, 1080, CAPTION_GUTTER_TOP))
+            assert max(gutter.getextrema()) <= 24, "CAPTION_GUTTER_NOT_BLACK"
+            assert ImageStat.Stat(picture).mean[0] >= 25, "PICTURE_ABOVE_GUTTER_BLACK"
     report = {"technical_status": "PASS", "frames": 900, "duration": 30,
               "resolution": [1080, 1920], "samples": 32, "native_frames": records,
               "source_sha256": episode["source_scene_sha256"], "camera_by_shot": cameras,
