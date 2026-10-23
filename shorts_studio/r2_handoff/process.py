@@ -2,21 +2,26 @@
 from __future__ import annotations
 
 import os
-import resource
 import selectors
 import signal
 import subprocess
+import sys
 import time
 
 from .contracts import HandoffError
 
 
 def bounded_run(argv, *, env, timeout, capture_output=True, text=True, max_file_bytes=None):
-    def file_limit():
-        resource.setrlimit(resource.RLIMIT_FSIZE, (max_file_bytes, max_file_bytes))
-    p = subprocess.Popen(argv, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                         stdin=subprocess.DEVNULL, start_new_session=True,
-                         preexec_fn=file_limit if max_file_bytes is not None else None)
+    command = argv
+    if max_file_bytes is not None:
+        # Set the limit before exec in a fresh Python child, avoiding preexec_fn's
+        # inherited-lock deadlock risk when the parent happens to have threads.
+        launcher = ("import os,resource,sys; n=int(sys.argv[1]); "
+                    "resource.setrlimit(resource.RLIMIT_FSIZE,(n,n)); "
+                    "os.execvpe(sys.argv[2],sys.argv[2:],os.environ)")
+        command = [sys.executable, "-c", launcher, str(max_file_bytes), *argv]
+    p = subprocess.Popen(command, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                         stdin=subprocess.DEVNULL, start_new_session=True)
     buffers = [bytearray(), bytearray()]
     end = time.monotonic() + timeout
     try:

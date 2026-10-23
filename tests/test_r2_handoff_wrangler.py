@@ -1,18 +1,17 @@
 """Wrangler boundary rejects ambiguous errors, oversized files and changed snapshots."""
-from datetime import datetime, timezone
 import hashlib
-import os
-from pathlib import Path
 import subprocess
 import sys
+from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
+from test_r2_handoff_contracts import ACCOUNT, SHA_ABC
 
 from shorts_studio.r2_handoff.contracts import HandoffError
 from shorts_studio.r2_handoff.oauth import OAuthGrant
 from shorts_studio.r2_handoff.process import bounded_run
 from shorts_studio.r2_handoff.wrangler import RemoteMissing, WranglerBackend
-from test_r2_handoff_contracts import ACCOUNT, SHA_ABC
 
 KEY = f"shorts-studio/episode2/v1/chunks/{SHA_ABC}.bin"
 
@@ -20,7 +19,7 @@ KEY = f"shorts-studio/episode2/v1/chunks/{SHA_ABC}.bin"
 def backend(tmp_path, runner, **kw):
     return WranglerBackend(Path("/usr/bin/wrangler"), account_id=ACCOUNT,
         bucket="shorts-studio-media", home=tmp_path,
-        acquire=lambda: OAuthGrant("never-in-argv", datetime(2099,1,1,tzinfo=timezone.utc)),
+        acquire=lambda: OAuthGrant("never-in-argv", datetime(2099,1,1,tzinfo=UTC)),
         before_call=lambda op: None, runner=runner, **kw)
 
 

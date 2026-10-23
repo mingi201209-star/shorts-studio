@@ -1,12 +1,11 @@
 """Secret sentinels stay inside a bounded, owner-only OAuth subprocess boundary."""
-from dataclasses import asdict
-from datetime import datetime, timedelta, timezone
 import hashlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from dataclasses import asdict
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -15,7 +14,7 @@ from shorts_studio.r2_handoff.oauth import OAuthConfig, data_environment, obtain
 from shorts_studio.r2_handoff.process import bounded_run
 
 TOKEN = "private-test-sentinel"
-NOW = datetime(2026, 10, 24, tzinfo=timezone.utc)
+NOW = datetime(2026, 10, 24, tzinfo=UTC)
 
 
 def config(tmp_path, *, seconds=3600):
@@ -34,9 +33,9 @@ def config(tmp_path, *, seconds=3600):
     binary.write_text("fixture tool, never executed")
     binary.chmod(0o700)
     audit = home / "audit.json"
-    audit.write_text(json.dumps(dict(version="4.152.0",
-        entrypoint_sha256=hashlib.sha256(binary.read_bytes()).hexdigest(),
-        credentials_write_private=True, secrets_logging_safe=True)))
+    audit.write_text(json.dumps({"version": "4.152.0",
+        "entrypoint_sha256": hashlib.sha256(binary.read_bytes()).hexdigest(),
+        "credentials_write_private": True, "secrets_logging_safe": True}))
     audit.chmod(0o600)
     return OAuthConfig(home, f, home / "locks", "default", binary, audit)
 

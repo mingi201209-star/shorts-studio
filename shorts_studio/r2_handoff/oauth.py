@@ -1,13 +1,13 @@
 """Pinned Wrangler OAuth acquisition. Never implement token rotation ourselves."""
 from __future__ import annotations
 
-from dataclasses import dataclass
-from datetime import datetime
 import json
 import os
-from pathlib import Path
 import stat
 import tomllib
+from dataclasses import dataclass
+from datetime import datetime
+from pathlib import Path
 
 from .contracts import HandoffError, _unique_pairs, require
 from .process import bounded_run
@@ -107,7 +107,7 @@ def obtain_grant(config: OAuthConfig, *, now: datetime, operation_seconds: int =
             require(data.get("type") == "oauth" and type(token) is str and
                     0 < len(token) <= 8192 and all(ord(c) >= 33 for c in token) and
                     fresh.get("oauth_token") == token, "AUTH_REQUIRED")
-            expiry = datetime.fromisoformat(fresh["expiration_time"].replace("Z", "+00:00"))
+            expiry = datetime.fromisoformat(fresh["expiration_time"])
             require(expiry.tzinfo is not None, "AUTH_REQUIRED")
             require((expiry-now).total_seconds() >= operation_seconds+30, "WAIT_AUTH_WINDOW")
             return OAuthGrant(token, expiry)

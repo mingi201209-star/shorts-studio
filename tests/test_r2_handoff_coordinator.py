@@ -1,13 +1,14 @@
 """Coordinator + real state/adapter with filesystem-backed cloud boundary."""
-from datetime import datetime, timezone
 import hashlib
 import os
-from pathlib import Path
 import subprocess
 import sys
 import time
+from datetime import UTC, datetime
+from pathlib import Path
 
 import pytest
+from test_r2_handoff_contracts import ACCOUNT, limits, plan
 
 from shorts_studio.r2_handoff.contracts import HandoffError, manifest_key, plan_id
 from shorts_studio.r2_handoff.coordinator import Coordinator
@@ -15,7 +16,6 @@ from shorts_studio.r2_handoff.oauth import OAuthGrant
 from shorts_studio.r2_handoff.staging import stage_source
 from shorts_studio.r2_handoff.state import StateStore, bucket_lock
 from shorts_studio.r2_handoff.wrangler import WranglerBackend
-from test_r2_handoff_contracts import ACCOUNT, limits, plan
 
 
 class DiskCloud:
@@ -69,13 +69,13 @@ def harness(tmp_path, *, existing=False, phase=None):
             opid = hashlib.sha256(op.encode()).hexdigest()
             for kind in ("data", "token"):
                 store.reserve(job_id, kind=kind, operation_id=opid,
-                              utc_now=datetime.now(timezone.utc), monotonic_now=time.monotonic())
+                              utc_now=datetime.now(UTC), monotonic_now=time.monotonic())
         return WranglerBackend(Path("fixture-wrangler"), account_id=ACCOUNT,
             bucket="shorts-studio-media", home=tmp_path,
-            acquire=lambda: OAuthGrant("test",datetime(2099,1,1,tzinfo=timezone.utc)),
+            acquire=lambda: OAuthGrant("test",datetime(2099,1,1,tzinfo=UTC)),
             before_call=reserve, runner=cloud, missing_key_verified=True)
     coordinator = Coordinator(store, factory, lock_root=tmp_path / "locks",
-                              utc_clock=lambda: datetime.now(timezone.utc),
+                              utc_clock=lambda: datetime.now(UTC),
                               monotonic_clock=time.monotonic)
     return coordinator, store, job, staged, cloud
 
@@ -132,7 +132,7 @@ def test_uncertain_put_reconciles_before_retry(tmp_path):
 
 
 def test_source_changes_on_existing_object_path_never_return_success(tmp_path):
-    c,s,job,staged,remote = harness(tmp_path)
+    c,s,job,_staged,_remote = harness(tmp_path)
     with s:
         c.apply(job)
         (tmp_path / "sample.json").write_bytes(b"changed")
@@ -157,7 +157,7 @@ def test_verify_without_original_is_get_only_download_verified(tmp_path):
 
 
 def test_limit_or_auth_side_state_releases_locks_and_keeps_checkpoint(tmp_path):
-    c,s,job,staged,remote = harness(tmp_path)
+    c,s,job,staged,_remote = harness(tmp_path)
     def blocked(job_id):
         raise HandoffError("AUTH_REQUIRED")
     c.backend_factory = blocked
@@ -172,7 +172,7 @@ def test_limit_or_auth_side_state_releases_locks_and_keeps_checkpoint(tmp_path):
 @pytest.mark.parametrize("phase", ["before_put", "after_put", "after_readback", "before_commit",
                                     "after_manifest", "during_reconstruction"])
 def test_kill_and_resume_at_each_persistence_boundary(tmp_path, phase):
-    c,s,job,staged,remote = harness(tmp_path)
+    c,s,job,staged,_remote = harness(tmp_path)
     s.close()
     code = '''import os,sys
 from pathlib import Path
@@ -191,9 +191,10 @@ if sys.argv[2]=='before_commit':
 c.apply(job)
 '''
     p = subprocess.run([sys.executable,"-c",code,str(tmp_path),phase],
-                       env=dict(os.environ, PYTHONPATH=str(Path(__file__).parent)), timeout=15)
+                       check=False, env=dict(os.environ, PYTHONPATH=str(Path(__file__).parent)),
+                       timeout=15)
     assert p.returncode == 27
-    c,s,job,staged,remote = harness(tmp_path,existing=True)
+    c,s,job,staged,_remote = harness(tmp_path,existing=True)
     with s:
         before = s.status(job)["data_used"]
         assert before > 0

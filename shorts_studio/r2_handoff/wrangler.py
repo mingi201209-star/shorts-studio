@@ -1,11 +1,11 @@
 """Pinned private CLI boundary. Ambiguous remote errors never imply absence."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
-from pathlib import Path
 import re
+from datetime import UTC, datetime
+from pathlib import Path
 
-from .contracts import HandoffError, MAX_OBJECT, count, identity, require
+from .contracts import MAX_OBJECT, HandoffError, count, identity, require
 from .oauth import data_environment
 from .process import bounded_run
 from .staging import digest_file, private_dir
@@ -19,7 +19,7 @@ class RemoteMissing(HandoffError):
 class WranglerBackend:
     def __init__(self, wrangler: Path, *, acquire, before_call, account_id: str, bucket: str,
                  home: Path, runner=bounded_run, missing_key_verified: bool = False,
-                 clock=lambda: datetime.now(timezone.utc)):
+                 clock=lambda: datetime.now(UTC)):
         identity(account_id, bucket, "lock")
         self.wrangler, self.acquire, self.before_call = Path(wrangler), acquire, before_call
         self.account_id, self.bucket, self.home = account_id, bucket, Path(home)

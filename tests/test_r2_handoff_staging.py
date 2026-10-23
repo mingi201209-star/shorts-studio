@@ -1,17 +1,19 @@
 """Real files and a competing process exercise preservation and installation."""
 import hashlib
 import os
-from pathlib import Path
 import subprocess
 import sys
 
 import pytest
+from test_r2_handoff_contracts import plan
 
 from shorts_studio.r2_handoff.contracts import HandoffError
 from shorts_studio.r2_handoff.staging import (
-    restore_file, stage_source, validate_original, validate_staged,
+    restore_file,
+    stage_source,
+    validate_original,
+    validate_staged,
 )
-from test_r2_handoff_contracts import plan
 
 
 def test_chunk_snapshot_and_full_digest_agree(tmp_path):
@@ -57,8 +59,8 @@ def test_restore_existing_or_raced_destination_is_never_replaced(tmp_path, monke
         out.write_bytes(b"owner-data")
     original_link = os.link
     def racing_link(src, dst, **kw):
-        subprocess.run([sys.executable, "-c", "from pathlib import Path; import sys; "
-                        "Path(sys.argv[1]).write_bytes(b'owner-data')", str(dst)], check=True)
+        subprocess.run([sys.executable, "-c", ("from pathlib import Path; import sys; "
+                        "Path(sys.argv[1]).write_bytes(b'owner-data')"), str(dst)], check=True)
         original_link(src, dst, **kw)
     if race:
         monkeypatch.setattr(os, "link", racing_link)
@@ -68,8 +70,8 @@ def test_restore_existing_or_raced_destination_is_never_replaced(tmp_path, monke
 
 
 def test_disk_floor_blocks_before_staging_or_readback(tmp_path, monkeypatch):
-    from collections import namedtuple
     import shutil
+    from collections import namedtuple
     m = plan(tmp_path)
     disk = namedtuple("disk", "total used free")(100, 99, 1)
     monkeypatch.setattr(shutil, "disk_usage", lambda p: disk)

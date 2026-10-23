@@ -1,12 +1,17 @@
 """Reject noncanonical identities, unsafe sources and insufficient transfer budgets."""
-from dataclasses import replace
-from datetime import datetime, timedelta, timezone
 import json
+from dataclasses import replace
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
 from shorts_studio.r2_handoff.contracts import (
-    HandoffError, Limits, canonical_manifest, manifest_key, parse_manifest, plan_source,
+    HandoffError,
+    Limits,
+    canonical_manifest,
+    manifest_key,
+    parse_manifest,
+    plan_source,
 )
 
 ACCOUNT = "a" * 32
@@ -14,8 +19,8 @@ SHA_ABC = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
 
 
 def limits(**kw):
-    values = dict(max_bytes=1024, max_data_ops=320, max_token_fetches=320,
-                  deadline_utc=datetime.now(timezone.utc) + timedelta(minutes=30))
+    values = {"max_bytes": 1024, "max_data_ops": 320, "max_token_fetches": 320,
+                  "deadline_utc": datetime.now(UTC) + timedelta(minutes=30)}
     return Limits(**(values | kw))
 
 
@@ -36,8 +41,8 @@ def test_manifest_is_canonical_and_has_gap_free_offsets(tmp_path):
            bucket=m.bucket, namespace=m.namespace)) == raw
     assert b"created_at" not in raw
     assert manifest_key(m).startswith("shorts-studio/episode2/v1/manifests/")
-    for change in [dict(offset=1), dict(index=1), dict(size_bytes=0), dict(key="other"),
-                   dict(sha256="bad")]:
+    for change in [{"offset": 1}, {"index": 1}, {"size_bytes": 0}, {"key": "other"},
+                   {"sha256": "bad"}]:
         with pytest.raises(HandoffError):
             canonical_manifest(replace(m, chunks=(replace(m.chunks[0], **change),)))
     multi = plan(tmp_path, raw=b"abc", chunk_bytes=1)
@@ -50,7 +55,7 @@ def test_manifest_is_canonical_and_has_gap_free_offsets(tmp_path):
                                          ("namespace", "other")])
 def test_cross_namespace_manifest_is_rejected(tmp_path, field, value):
     m = plan(tmp_path)
-    args = dict(account_id=ACCOUNT, bucket=m.bucket, namespace=m.namespace)
+    args = {"account_id": ACCOUNT, "bucket": m.bucket, "namespace": m.namespace}
     args[field] = value
     with pytest.raises(HandoffError):
         parse_manifest(canonical_manifest(m), **args)
@@ -65,11 +70,11 @@ def test_plan_is_offline_and_enforces_v1_limits(tmp_path, monkeypatch):
     limits(max_data_ops=65).validate_for(64, mode="verify")
     with pytest.raises(HandoffError):
         limits(max_data_ops=259).validate_for(64, mode="upload")
-    for kw in [dict(max_bytes=2**31+1), dict(max_bytes=True), dict(max_data_ops=1025),
-               dict(max_token_fetches=0), dict(chunk_bytes=2**27+1), dict(max_retries=3)]:
+    for kw in [{"max_bytes": 2**31+1}, {"max_bytes": True}, {"max_data_ops": 1025},
+               {"max_token_fetches": 0}, {"chunk_bytes": 2**27+1}, {"max_retries": 3}]:
         with pytest.raises(HandoffError):
             limits(**kw)
-    for raw, kw in [(b"", {}), (b"a"*65, dict(chunk_bytes=1))]:
+    for raw, kw in [(b"", {}), (b"a"*65, {"chunk_bytes": 1})]:
         with pytest.raises(HandoffError):
             plan(tmp_path, raw=raw, **kw)
     f = tmp_path / "huge.json"
@@ -82,7 +87,7 @@ def test_plan_is_offline_and_enforces_v1_limits(tmp_path, monkeypatch):
 
 def test_manifest_rejects_unknown_oversized_or_duplicate_json(tmp_path):
     m = plan(tmp_path)
-    args = dict(account_id=ACCOUNT, bucket=m.bucket, namespace=m.namespace)
+    args = {"account_id": ACCOUNT, "bucket": m.bucket, "namespace": m.namespace}
     data = json.loads(canonical_manifest(m))
     for raw in [b"x"*(2**20+1), b'{"a":1,"a":2}',
                 json.dumps(data | {"unexpected": True}).encode()]:

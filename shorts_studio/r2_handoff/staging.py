@@ -3,13 +3,20 @@ from __future__ import annotations
 
 import hashlib
 import os
-from pathlib import Path
 import shutil
 import stat
 import tempfile
+from pathlib import Path
 
 from .contracts import (
-    Fingerprint, HandoffError, Manifest, Staged, canonical_manifest, plan_id, require, source_handle,
+    Fingerprint,
+    HandoffError,
+    Manifest,
+    Staged,
+    canonical_manifest,
+    plan_id,
+    require,
+    source_handle,
 )
 
 

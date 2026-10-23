@@ -1,22 +1,30 @@
 """Stable host locks and crash-durable, conservative operation accounting."""
 from __future__ import annotations
 
-from contextlib import contextmanager
-from dataclasses import asdict
-from datetime import datetime
 import fcntl
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import sqlite3
 import stat
 import threading
+from contextlib import contextmanager
+from dataclasses import asdict
+from datetime import datetime
+from pathlib import Path
 
 from .contracts import (
-    Fingerprint, HandoffError, Limits, RestoreRequest, Staged, canonical_manifest, identity,
-    parse_manifest, plan_id, require,
+    Fingerprint,
+    HandoffError,
+    Limits,
+    RestoreRequest,
+    Staged,
+    canonical_manifest,
+    identity,
+    parse_manifest,
+    plan_id,
+    require,
 )
 from .staging import private_dir
 
@@ -74,21 +82,25 @@ def _json(value) -> str:
 
 
 class StateStore:
-    def __init__(self, path: Path):
+    def __init__(self, path: Path, *, readonly: bool = False):
         self.path = Path(path).absolute()
+        require(not readonly or self.path.is_file(), "UNKNOWN_JOB")
         private_dir(self.path.parent)
         self._ends = {}
         new = False
-        try:
-            fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_RDWR | os.O_NOFOLLOW, 0o600)
-            os.close(fd)
-            new = True
-        except FileExistsError:
-            require(not self.path.is_symlink(), "STATE_INVALID")
+        if not readonly:
+            try:
+                fd = os.open(self.path, os.O_CREAT | os.O_EXCL | os.O_RDWR | os.O_NOFOLLOW, 0o600)
+                os.close(fd)
+                new = True
+            except FileExistsError:
+                require(not self.path.is_symlink(), "STATE_INVALID")
+        require(not self.path.is_symlink(), "STATE_INVALID")
         info = self.path.stat()
         require(stat.S_ISREG(info.st_mode) and info.st_uid == os.getuid() and
                 not info.st_mode & 0o077, "STATE_INVALID")
-        self.db = sqlite3.connect(self.path, timeout=5)
+        self.db = (sqlite3.connect(self.path.as_uri()+"?mode=ro", uri=True, timeout=5)
+                   if readonly else sqlite3.connect(self.path, timeout=5))
         self.db.row_factory = sqlite3.Row
         try:
             if not new:
@@ -96,8 +108,9 @@ class StateStore:
                         "STATE_INVALID")
                 require(self.db.execute("PRAGMA quick_check").fetchone()[0] == "ok",
                         "STATE_INVALID")
-            self.db.execute("PRAGMA journal_mode=WAL")
-            self.db.execute("PRAGMA synchronous=FULL")
+            if not readonly:
+                self.db.execute("PRAGMA journal_mode=WAL")
+                self.db.execute("PRAGMA synchronous=FULL")
             if new:
                 with self.db:
                     self.db.executescript('''
@@ -170,6 +183,13 @@ class StateStore:
     def status(self, job_id: str) -> dict[str, object]:
         row = self._row(job_id)
         return {k: row[k] for k in ("id", "kind", "state", "data_used", "token_used")}
+
+    def load_verify_job(self, job_id: str):
+        row = self._row(job_id)
+        require(row["kind"] == "verify", "INVALID_JOB_KIND")
+        data = json.loads(row["payload"])
+        data["destination"] = Path(data["destination"])
+        return RestoreRequest(**data), _limits(row["limits_json"])
 
     def limits_for(self, job_id: str) -> Limits:
         return _limits(self._row(job_id)["limits_json"])

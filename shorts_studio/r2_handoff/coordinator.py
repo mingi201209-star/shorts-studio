@@ -1,15 +1,21 @@
 """Host-serialized, crash-resumable handoff; only whole-byte proof yields success."""
 from __future__ import annotations
 
-from datetime import datetime, timezone
-import hashlib
-from pathlib import Path
 import tempfile
 import time
+from datetime import UTC, datetime
+from pathlib import Path
 
 from .contracts import (
-    HandoffError, MAX_MANIFEST, Receipt, RestoreRequest, canonical_manifest, manifest_key,
-    parse_manifest, plan_id, require,
+    MAX_MANIFEST,
+    HandoffError,
+    Receipt,
+    RestoreRequest,
+    canonical_manifest,
+    manifest_key,
+    parse_manifest,
+    plan_id,
+    require,
 )
 from .staging import digest_file, private_dir, restore_file, validate_original, validate_staged
 from .state import SIDE, bucket_lock
@@ -18,7 +24,7 @@ from .wrangler import RemoteMissing
 
 class Coordinator:
     def __init__(self, store, backend_factory, *, lock_root: Path,
-                 utc_clock=lambda: datetime.now(timezone.utc), monotonic_clock=time.monotonic):
+                 utc_clock=lambda: datetime.now(UTC), monotonic_clock=time.monotonic):
         self.store, self.backend_factory, self.lock_root = store, backend_factory, lock_root
         self.utc_clock, self.monotonic_clock = utc_clock, monotonic_clock
 
@@ -95,7 +101,7 @@ class Coordinator:
         return self.resume(job_id)
 
     def resume(self, job_id: str, *, limits=None, operator_reason=None):
-        staged, previous_limits = self.store.load_job(job_id)
+        staged, _previous_limits = self.store.load_job(job_id)
         m = staged.manifest
         with bucket_lock(self.lock_root, account_id=m.account_id, bucket=m.bucket):
             try:
