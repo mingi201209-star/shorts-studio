@@ -1040,3 +1040,35 @@ loads /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf, and test.yml installs no
 fonts. GitHub ubuntu images normally carry fonts-dejavu-core via fontconfig;
 if the first push fails on that file, install the package in the test job
 rather than skipping the caption-width test.
+
+## Original final-video checks wired in; hook visual-activity margin — 2026-10-23
+
+episode2_film.py now also runs the shared `final_video_qa` checks that fit this
+layout, with their default thresholds untouched (a test forbids overriding
+them): measure_visual_activity + verify_visual_activity on the picture box
+(rows 0..1399; change = mean abs diff >= 12.0 between 2 fps samples, no static
+span > 5 s, >= 1 change inside the first 5 s), verify_no_black_opening on the
+same box, and verify_captions_visible at every cue midpoint in the gutter band
+(1400..1919). All must PASS (fail closed); results go to film_validation.json
+as original_video_qa. Not applied: verify_title_visible (top titles forbidden),
+verify_picture_caption_gutter (hard-coded main-pipeline box 280..1230) and the
+stock-source reuse/novelty checks (single 3D source).
+
+First genuine Cycles32 1080x1920 frames from the new renderer (renderer
+5e52499a, rendered locally with --start N --end N): frame 121 and 136 both
+PASS_NATIVE_ORIGINAL_SHARD, including the tyre-contact and edge-band gates;
+433.7 s and 433.3 s each on the phone. Viewing: tyre seated on the milled band
+with contact shadow, grooves read as recessed, tyre in frame.
+SHA256 157500e8... (121), cace7737... (136); /tmp/rumble-measure/native_*.
+
+Hook risk (measured, not yet a CI failure): with one fixed camera and the
+time-slowed car, 0.5 s steps inside the hook differ by 6.7..11.5 (preview,
+raw). The decisive native pair 121->136 differs by 11.14 raw and 12.69 after
+H.264 + the check's own JPEG sampling, i.e. 0.69 above the 12.0 threshold.
+Through the real check on preview pixels the hook yields changes at 4.0 s and
+4.5 s and a 5.0 s maximum hold (limit 5.05). The film therefore passes the
+original hook rule only by a knife-edge margin that may flip with encoder or
+ffmpeg version (CI 6.1 vs local 8.0). Parked for the owner: give the hook
+more genuine in-shot motion (no zoom/fake change) before the 900-frame
+dispatch, or accept the risk that the final assemble fails this gate.
+Assembler SHA256 d370743e.... Full suite: 582 passed, 1 skipped.

@@ -127,6 +127,38 @@ def semantic(final, out, provider=None):
     return check_semantic(results)
 
 
+ORIGINAL_VIDEO_CHECKS = ("visual_activity", "black_opening", "captions_visible")
+
+
+def check_original_video_qa(results):
+    """Shared final_video_qa checks that fit this layout must all PASS."""
+    assert set(results) == set(ORIGINAL_VIDEO_CHECKS), ("ORIGINAL_VIDEO_QA", results)
+    failing = [name for name in ORIGINAL_VIDEO_CHECKS if results[name]["status"] != "PASS"]
+    assert not failing, ("ORIGINAL_VIDEO_QA", failing, results)
+    return {"status": "PASS", "results": results}
+
+
+def original_video_qa(final, out, cues):
+    """Original viewer-facing checks, mapped to the native picture above the gutter.
+
+    verify_title_visible is not applied: this episode forbids top titles.
+    """
+    from shorts_studio.final_video_qa import (
+        measure_visual_activity,
+        verify_captions_visible,
+        verify_no_black_opening,
+        verify_visual_activity,
+    )
+    picture = (0, CAPTION_GUTTER_TOP)
+    band = (CAPTION_GUTTER_TOP, 1919)
+    return check_original_video_qa({
+        "visual_activity": verify_visual_activity(measure_visual_activity(final, picture, out)),
+        "black_opening": verify_no_black_opening(final, picture, out),
+        "captions_visible": verify_captions_visible(
+            final, [((c["start"] + c["end"]) / 2, band) for c in cues], out),
+    })
+
+
 def speech(out):
     episode = load_episode(MANIFEST)
     capture = ROOT / "episode2_narration"
@@ -317,6 +349,8 @@ def assemble(out, chunks, semantic_provider=None):
     gaps = silence(final)
     level = check_loudness(loudness(final))
     meaning = semantic(final, out, semantic_provider)
+    cues = json.loads((out / "narration_validation.json").read_text())["cues"]
+    viewer = original_video_qa(final, out, cues)
     for i, second in enumerate([.5, 4.4, 5.5, 9.4, 10.5, 14.4, 15.5, 19.4, 20.5, 24.4, 25.5, 29.4]):
         run(["ffmpeg", "-v", "error", "-y", "-ss", second, "-i", final, "-frames:v", "1",
              out / f"review_{i:02d}.jpg"])
@@ -333,7 +367,8 @@ def assemble(out, chunks, semantic_provider=None):
               "cache_source_run_id": os.environ.get("RUMBLE_CACHE_RUN_ID"),
               "silence_seconds": gaps, "maximum_silence_seconds": max(gaps, default=0),
               "total_silence_seconds": sum(gaps), "loudness": level,
-              "semantic_visual_qa": meaning, "upper_overlays": False,
+              "semantic_visual_qa": meaning, "original_video_qa": viewer,
+              "upper_overlays": False,
               "render_frame_seconds": durations, "sum_native_render_seconds": sum(durations),
               "encode_seconds": elapsed, "sha256": digest(final), "physics_validated": False,
               "editorial_status": "REQUIRES_HUMAN_REVIEW", "upload_authorized": False}

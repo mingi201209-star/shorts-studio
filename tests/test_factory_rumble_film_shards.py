@@ -136,3 +136,30 @@ def test_fresh_film_assembler_installs_real_local_clip():
     assemble = workflow.split('  assemble:', 1)[1]
     assert '--index-url https://download.pytorch.org/whl/cpu' in assemble
     assert "pip install -e '.[vision]'" in assemble
+
+
+@pytest.mark.parametrize('failing', [None, 'visual_activity', 'black_opening', 'captions_visible'])
+def test_original_final_video_checks_fail_closed(failing):
+    check = film_module().check_original_video_qa
+    results = {name: {"status": "FAIL" if name == failing else "PASS"}
+               for name in ("visual_activity", "black_opening", "captions_visible")}
+    if failing is None:
+        assert check(results)["status"] == "PASS"
+    else:
+        with pytest.raises(AssertionError, match="ORIGINAL_VIDEO_QA"):
+            check(results)
+    with pytest.raises(AssertionError, match="ORIGINAL_VIDEO_QA"):
+        check({"visual_activity": {"status": "PASS"}})
+
+
+def test_assembler_runs_original_checks_with_unchanged_thresholds():
+    source = (Path(__file__).resolve().parents[1]
+              / 'benchmarks/road_safety/episode2_film.py').read_text()
+    for name in ("measure_visual_activity", "verify_visual_activity",
+                 "verify_no_black_opening", "verify_captions_visible"):
+        assert f"{name}(" in source
+    # The originals' defaults (12.0 change, 5 s hold, >=1 change in first 5 s)
+    # must not be overridden for this episode.
+    assert "change_threshold=" not in source
+    assert "max_static_seconds=" not in source
+    assert "min_first_5s_changes=" not in source
