@@ -62,5 +62,13 @@ for first in range(1, 901, 30):
     for p in d.glob("frame_*.png"):
         p.unlink()   # the CI artifact carries only proof + lossless clip
 out.mkdir(parents=True)
-film.assemble(out, chunks)
+
+
+class RehearsalStubProvider:
+    """Synthetic frames rightly FAIL CLIP; the report names this stub, never evidence."""
+    def evaluate(self, image, requirements, **context):
+        return {"status": "PASS", "reason": "rehearsal stub, not semantic evidence"}
+
+
+film.assemble(out, chunks, semantic_provider=RehearsalStubProvider())
 print("REHEARSAL_DONE", json.loads((out / "film_validation.json").read_text())["technical_status"])

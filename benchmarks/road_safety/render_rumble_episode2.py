@@ -324,8 +324,8 @@ def main():
             middle=layout["anchor_frame"]
             centre_x=module.travel_x(middle)
             car.location=(centre_x,-.30+module.lane_return_offset(middle),0.)
-            for pivot in hub_rest:
-                pivot.location=hub_rest[pivot]
+            for pivot,rest in hub_rest.items():
+                pivot.location=rest
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(middle)
             bpy.context.view_layer.update()
             front=bpy.data.objects["Front_tire"]
@@ -351,8 +351,8 @@ def main():
             previous_shot=shot["id"]
             car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
-            for pivot in hub_rest:
-                pivot.location=hub_rest[pivot]-Vector((0,0,bounce/car.scale[2]))
+            for pivot,rest in hub_rest.items():
+                pivot.location=rest-Vector((0,0,bounce/car.scale[2]))
             bpy.context.view_layer.update()
         contact={o.name:round(min((o.matrix_world@v.co).z for v in o.data.vertices),5)
                  for o in near_tyres}

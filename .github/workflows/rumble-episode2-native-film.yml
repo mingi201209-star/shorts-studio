@@ -8,7 +8,7 @@ on:
         description: Exact 40-character commit SHA being dispatched
         required: true
 env:
-  RENDERER_SOURCE_SHA256: 8ae5d131ba39868b013e3f7e69bde1175e7c81ff390dfaa41170fde7a1fff132
+  RENDERER_SOURCE_SHA256: 5e52499a7e048f254bbfe30a017c6d4e48cb6cb203fbdbd3b14b183629d173d3
 permissions:
   contents: read
 jobs:
@@ -95,7 +95,10 @@ jobs:
         with:
           python-version: '3.11'
       - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
-      - run: python -m pip install Pillow pydantic
+      - name: Install real local semantic vision QA dependencies (no API key, no payment)
+        run: |
+          python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[vision]'
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           pattern: rumble-native-*

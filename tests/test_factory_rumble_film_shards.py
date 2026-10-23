@@ -89,3 +89,50 @@ def test_narration_loudness_gate(field, value, reason):
     module.check_loudness(MEASURED)
     with pytest.raises(AssertionError, match=reason):
         module.check_loudness({**MEASURED, field: value})
+
+
+def test_every_shot_declares_semantic_labels_against_wrong_domains():
+    from shorts_studio.factory.rumble_episode2 import (
+        SEMANTIC_NEGATIVE_LABELS,
+        SHOT_IDS,
+        semantic_labels,
+    )
+
+    assert len(SEMANTIC_NEGATIVE_LABELS) >= 4
+    for shot in SHOT_IDS:
+        positive = semantic_labels(shot)
+        assert len(positive) >= 2
+        assert not set(positive) & set(SEMANTIC_NEGATIVE_LABELS)
+        assert any(word in " ".join(positive) for word in ("tire", "wheel", "car"))
+    with pytest.raises(ValueError):
+        semantic_labels("title_card")
+
+
+def semantic_result(status):
+    return {"status": status, "margin": 0.08 if status == "PASS" else 0.01}
+
+
+@pytest.mark.parametrize('statuses,expected', [
+    (['PASS'] * 6, 'PASS'),
+    (['PASS'] * 5 + ['NOT_EVALUATED'], 'SEMANTIC_VISUAL_QA'),
+    (['FAIL'] + ['PASS'] * 5, 'SEMANTIC_VISUAL_QA'),
+    (['PASS'] * 5, 'SEMANTIC_VISUAL_QA'),
+])
+def test_semantic_gate_fails_closed_on_any_non_pass_shot(statuses, expected):
+    from shorts_studio.factory.rumble_episode2 import SHOT_IDS
+
+    check = film_module().check_semantic
+    results = [{"shot": shot, **semantic_result(s)} for shot, s in zip(SHOT_IDS, statuses)]
+    if expected == 'PASS':
+        assert check(results)['status'] == 'PASS'
+    else:
+        with pytest.raises(AssertionError, match=expected):
+            check(results)
+
+
+def test_fresh_film_assembler_installs_real_local_clip():
+    workflow = (Path(__file__).resolve().parents[1]
+                / '.github/workflows/rumble-episode2-native-film.yml').read_text()
+    assemble = workflow.split('  assemble:', 1)[1]
+    assert '--index-url https://download.pytorch.org/whl/cpu' in assemble
+    assert "pip install -e '.[vision]'" in assemble

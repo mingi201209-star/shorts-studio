@@ -18,8 +18,11 @@ from pathlib import Path
 from PIL import Image, ImageFont, ImageStat
 
 from shorts_studio.factory.rumble_episode2 import (
+    SEMANTIC_NEGATIVE_LABELS,
+    SHOT_IDS,
     caption_groups,
     load_episode,
+    semantic_labels,
     shot_for_frame,
     travel_x,
 )
@@ -92,6 +95,36 @@ def check_loudness(report):
     shots = report["shot_integrated_lufs"]
     assert len(shots) == 6 and max(shots) - min(shots) <= 3, ("UNEVEN_SHOT_LOUDNESS", report)
     return report
+
+
+def check_semantic(results):
+    """Production fails closed: every one of the six beats must be a CLIP PASS."""
+    assert [r["shot"] for r in results] == list(SHOT_IDS), ("SEMANTIC_VISUAL_QA", results)
+    assert all(r["status"] == "PASS" for r in results), ("SEMANTIC_VISUAL_QA", results)
+    return {"status": "PASS", "results": results}
+
+
+def semantic(final, out, provider=None):
+    """Original local CLIP gate on each beat's mid frame, picture box only."""
+    if provider is None:
+        from shorts_studio.visual_qa import ClipSemanticVisionProvider
+        provider = ClipSemanticVisionProvider()
+    episode = load_episode(MANIFEST)
+    results = []
+    for shot in episode["shots"]:
+        frame = out / f"semantic_{shot['id']}.png"
+        middle = ((shot["start"] + shot["end"]) / 2 - 1) / 30
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{middle:.3f}", "-i", final,
+             "-frames:v", "1", frame])
+        with Image.open(frame) as image:
+            image.convert("RGB").crop((0, 0, 1080, CAPTION_GUTTER_TOP)).save(frame)
+        verdict = provider.evaluate(str(frame), shot["visual_proof"],
+                                    narration=shot["narration_en"],
+                                    positive_labels=list(semantic_labels(shot["id"])),
+                                    negative_labels=list(SEMANTIC_NEGATIVE_LABELS),
+                                    media_box_applied=True)
+        results.append({"shot": shot["id"], "provider": type(provider).__name__, **verdict})
+    return check_semantic(results)
 
 
 def speech(out):
@@ -216,7 +249,7 @@ def validate_shard_layout(proofs):
     assert expected == 901, "MISSING_NATIVE_FRAMES"
 
 
-def assemble(out, chunks):
+def assemble(out, chunks, semantic_provider=None):
     episode = load_episode(MANIFEST)
     records, files, cameras, durations = [], [], {}, []
     dirs = sorted(chunks.glob("rumble-native-*"), key=lambda p: int(p.name.rsplit("-", 1)[-1]))
@@ -283,6 +316,7 @@ def assemble(out, chunks):
     assert "black_start:" not in black, "BLACK_FRAME_RUN"
     gaps = silence(final)
     level = check_loudness(loudness(final))
+    meaning = semantic(final, out, semantic_provider)
     for i, second in enumerate([.5, 4.4, 5.5, 9.4, 10.5, 14.4, 15.5, 19.4, 20.5, 24.4, 25.5, 29.4]):
         run(["ffmpeg", "-v", "error", "-y", "-ss", second, "-i", final, "-frames:v", "1",
              out / f"review_{i:02d}.jpg"])
@@ -298,7 +332,8 @@ def assemble(out, chunks):
               "reused_native_frames": reused_frames, "new_native_frames": 900 - reused_frames,
               "cache_source_run_id": os.environ.get("RUMBLE_CACHE_RUN_ID"),
               "silence_seconds": gaps, "maximum_silence_seconds": max(gaps, default=0),
-              "total_silence_seconds": sum(gaps), "loudness": level, "upper_overlays": False,
+              "total_silence_seconds": sum(gaps), "loudness": level,
+              "semantic_visual_qa": meaning, "upper_overlays": False,
               "render_frame_seconds": durations, "sum_native_render_seconds": sum(durations),
               "encode_seconds": elapsed, "sha256": digest(final), "physics_validated": False,
               "editorial_status": "REQUIRES_HUMAN_REVIEW", "upload_authorized": False}

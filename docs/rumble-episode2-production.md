@@ -986,3 +986,41 @@ Evidence (local): /tmp/rumble-rehearsal/review/film_validation.json SHA256
 The rehearsal is now a manual tool: benchmarks/road_safety/rehearse_episode2_film.py
 (SHA256 77dc7058...; about 35 min on the phone, ~105 MB). Not run in CI.
 Full suite: 571 passed, 1 skipped.
+
+## Original semantic visual QA wired into the film assembler — 2026-10-23
+
+Closes the gap recorded at the top of this document: episode2_film.py now
+runs the original `shorts_studio.visual_qa.ClipSemanticVisionProvider` (local
+CLIP ViT-B-32, MIN_ABS 0.18 and MIN_MARGIN 0.03 unchanged) on every beat of
+the final MP4. Each beat's mid frame is cropped to the picture box above the
+caption gutter (rows 0..1399, the original media_box path) and must PASS;
+NOT_EVALUATED or FAIL on any beat fails the film (fail closed). Per-shot
+positive labels and a shared wrong-domain negative set live in
+rumble_episode2 (SEMANTIC_NEGATIVE_LABELS, semantic_labels). Results go into
+film_validation.json as semantic_visual_qa. The fresh-film assemble job
+installs the same CPU torch + `.[vision]` extra that render-smoke uses.
+
+Evidence (local, real CLIP):
+- Calibration on the six preview frames (picture box): margins
+  0.091 / 0.066 / 0.079 / 0.085 / 0.067 / 0.084, all PASS (2-3x MIN_MARGIN).
+- Negative control: synthetic rehearsal frames FAIL for hook and tire_contact
+  labels (margins -0.009..-0.016), so the gate bites.
+- Integration through the real path (30 s H.264 MP4 of the six preview frames
+  with gutter -> mid-frame extraction -> crop -> provider): all PASS, margins
+  0.090 / 0.060 / 0.076 / 0.086 / 0.063 / 0.082;
+  /tmp/rumble-sem/mp4/semantic_report.json SHA256 aef3a2cc....
+Not yet applicable from the shared final_video_qa: verify_title_visible (this
+episode forbids top titles); other layout checks assume the main pipeline's
+picture box. Preview frames are 7-sample upscales; CI Cycles32 frames still
+need the gate on the real film.
+
+The rehearsal tool passes a named RehearsalStubProvider (synthetic frames
+rightly fail CLIP); its report names the stub, so it is never evidence.
+Renderer lint (dict .items()) re-pinned: render_rumble_episode2.py SHA256
+5e52499a7e048f254bbfe30a017c6d4e48cb6cb203fbdbd3b14b183629d173d3; single-frame
+75 is pixel-identical to the previous renderer (0 differing pixels). Note:
+the same frame rendered inside a multi-frame session differed in 1141 of
+360000 preview pixels, so frames are deterministic per session layout, not
+across different shard boundaries.
+Assembler SHA256 53fb406b...; workflow SHA256 14345b99.... Full suite: 577
+passed, 1 skipped.

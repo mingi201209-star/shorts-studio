@@ -24,6 +24,31 @@ ROAD_Y_NEAR_EDGE = -8.0
 DIRT_Y_FAR_EDGE = 14.0
 
 
+# Original CLIP semantic gate inputs (shorts_studio.visual_qa thresholds unchanged).
+# Negatives are wrong-domain content; positives describe what each beat shows.
+SEMANTIC_NEGATIVE_LABELS = (
+    "a kitchen interior", "a portrait of a person's face", "a page of printed text",
+    "a forest landscape with trees", "an animated cartoon character", "food on a plate",
+)
+_SEMANTIC_POSITIVE_LABELS = {
+    "hook_warning": ("a car tire on an asphalt road",
+                     "a blue car wheel beside grooves in the road"),
+    "road_cut": ("grooves cut into an asphalt road shoulder", "a blue car on an asphalt road"),
+    "tire_contact": ("a car tire rolling over grooves in the road",
+                     "a blue car driving on asphalt"),
+    "rumble_mechanism": ("a car wheel on a grooved road surface", "a blue car on a road"),
+    "shoulder_location": ("a blue car beside the edge line of a road",
+                          "a car on a road near the shoulder"),
+    "driver_response": ("a blue car steering back into its lane", "a car on an asphalt road"),
+}
+
+
+def semantic_labels(shot_id: str) -> tuple[str, ...]:
+    if shot_id not in SHOT_IDS:
+        raise ValueError("unknown semantic shot")
+    return _SEMANTIC_POSITIVE_LABELS[shot_id]
+
+
 def camera_layout(shot: dict) -> dict:
     """Fixed camera per 5s beat; wheel shots keep the tyre in frame throughout.
 
