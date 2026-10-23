@@ -14,6 +14,7 @@ import os
 from pathlib import Path
 import re
 import sys
+import stat
 
 _CHUNK = 1024 * 1024
 _MAX_OBJECT_BYTES = 128 * 1024 * 1024  # Bounded initial pilot; no multipart.
@@ -102,6 +103,33 @@ def _verify_remote(client, bucket: str, key: str, expected_sha: str, size: int) 
         raise IntegrityError("remote SHA-256 or byte count differs")
 
 
+def _open_verified_source_for_put(source: Path, expected_sha: str, size: int):
+    """Pin an unlinked-safe local fd and verify its bytes before any remote PUT.
+
+    The path may be replaced after plan_upload() hashes it. Never open a
+    substitute symlink or transmit bytes inconsistent with the planned key.
+    """
+    try:
+        fd = os.open(source, os.O_RDONLY | os.O_NOFOLLOW)
+    except OSError as error:
+        raise IntegrityError("upload source no longer safe to open") from error
+    body = os.fdopen(fd, "rb")
+    try:
+        current = os.fstat(body.fileno())
+        if not stat.S_ISREG(current.st_mode) or current.st_size != size:
+            raise IntegrityError("upload source changed size or type")
+        digest = hashlib.sha256()
+        for chunk in iter(lambda: body.read(_CHUNK), b""):
+            digest.update(chunk)
+        if digest.hexdigest() != expected_sha:
+            raise IntegrityError("upload source changed since planning")
+        body.seek(0)
+        return body
+    except BaseException:
+        body.close()
+        raise
+
+
 def upload_verified(
     client,
     source: Path,
@@ -141,7 +169,7 @@ def upload_verified(
         }
 
     try:
-        with Path(source).open("rb") as body:
+        with _open_verified_source_for_put(Path(source), sha, size) as body:
             client.put_object(
                 Bucket=bucket,
                 Key=key,
