@@ -28,7 +28,7 @@
 
 **Files:** `shorts_studio/render_budget_gate.py`; `tests/test_render_budget_gate.py`
 
-- [x] Add tests for valid/manual complete quote, malformed fields, timestamp, spent-to-date, external fees, lease-duration cap and no authority to provision.
+- [x] Add tests for valid/manual complete quote, malformed fields, timestamp, spent-to-date plus pending reservations and UTC billing-month rollover, external fees, lease-duration cap and no authority to provision.
 - [x] Implement `estimate_gpu_lease(quote: dict, *, now: datetime|None = None) -> dict` with Decimal; no provider clients and no stdout secrets.
 - [x] Add `python -m shorts_studio.render_budget_gate --quote <local-json>` dry-run CLI; exit 0 for an in-budget estimate, exit 2 for block, regardless of actual authorization.
 - [ ] Verify full pytest, Ruff and independent head-pinned CI after the branch is pushed. Do not claim verified without terminal CI evidence.

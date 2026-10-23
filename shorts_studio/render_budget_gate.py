@@ -21,6 +21,8 @@ MAX_SINGLE_LEASE_HOURS = Decimal("2")
 UNCERTAINTY_FACTOR = Decimal("1.25")
 FIELDS = frozenset({
     "quoted_at_utc",
+    "billing_month_utc",
+    "gpu_pending_reserved_krw_this_month",
     "gpu_usd_per_hour",
     "instance_storage_usd_per_hour",
     "transfer_usd_per_gb",
@@ -67,7 +69,15 @@ def estimate_gpu_lease(quote: dict, *, now: datetime | None = None) -> dict:
     if not timedelta(0) <= age <= MAX_QUOTED_AGE:
         raise ValueError("GPU quote is future-dated or older than fifteen minutes")
 
-    fields = {k: _money(v, k) for k, v in quote.items() if k != "quoted_at_utc"}
+    current_month = now.astimezone(timezone.utc).strftime("%Y-%m")
+    quoted_month = quoted.astimezone(timezone.utc).strftime("%Y-%m")
+    if quote["billing_month_utc"] != current_month or quoted_month != current_month:
+        raise ValueError("billing month mismatch or quote crosses a UTC month boundary")
+
+    fields = {
+        k: _money(v, k) for k, v in quote.items()
+        if k not in {"quoted_at_utc", "billing_month_utc"}
+    }
     hours = fields["billable_hours"]
     fx = fields["usd_to_krw"]
     if not 0 < hours <= MAX_SINGLE_LEASE_HOURS or fx <= 0:
@@ -76,6 +86,8 @@ def estimate_gpu_lease(quote: dict, *, now: datetime | None = None) -> dict:
     vps = fields["vps_cost_krw_this_month"]
     r2 = fields["r2_cost_krw_this_month"]
     spent_gpu = fields["gpu_spent_krw_this_month"]
+    pending_gpu = fields["gpu_pending_reserved_krw_this_month"]
+    committed_gpu = spent_gpu + pending_gpu
     other = fields["other_committed_krw_this_month"]
 
     usd_estimate = (
@@ -87,16 +99,16 @@ def estimate_gpu_lease(quote: dict, *, now: datetime | None = None) -> dict:
             rounding=ROUND_CEILING
         )
     )
-    remaining_gpu = max(0, GPU_ALLOCATION_KRW - spent_gpu)
+    remaining_gpu = max(0, GPU_ALLOCATION_KRW - committed_gpu)
     remaining_total = max(
-        0, MONTHLY_CEILING_KRW - CONTINGENCY_KRW - vps - r2 - other - spent_gpu
+        0, MONTHLY_CEILING_KRW - CONTINGENCY_KRW - vps - r2 - other - committed_gpu
     )
     available = min(remaining_gpu, remaining_total)
     within_budget = (
         vps <= VPS_ALLOCATION_KRW
         and r2 <= R2_ALLOCATION_KRW
         and other == 0
-        and spent_gpu < GPU_ALLOCATION_KRW
+        and committed_gpu < GPU_ALLOCATION_KRW
         and reserved_krw > 0
         and reserved_krw <= available
     )
@@ -105,6 +117,8 @@ def estimate_gpu_lease(quote: dict, *, now: datetime | None = None) -> dict:
         "within_planned_budget": bool(within_budget),
         "projected_gpu_krw_with_25pct_margin": reserved_krw,
         "remaining_allowed_gpu_krw": int(available),
+        "pending_gpu_reserved_krw_this_month": int(pending_gpu),
+        "billing_month_utc": current_month,
         "total_monthly_ceiling_krw": MONTHLY_CEILING_KRW,
         "provider_spend_cap_enforced": False,
         "authorized_to_provision": False,
