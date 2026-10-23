@@ -25,17 +25,22 @@ DIRT_Y_FAR_EDGE = 14.0
 
 
 def camera_layout(shot: dict) -> dict:
-    """Fixed camera per 5s beat. Aim early during the hook to show first contact."""
+    """Fixed camera per 5s beat; wheel shots keep the tyre in frame throughout.
+
+    Orthographic framing depends only on offset direction and scale. Offsets
+    are long enough that the camera plane stays above the road (no black void).
+    """
     ident = shot["id"]
     if ident not in SHOT_IDS:
         raise ValueError("unknown camera shot")
     middle = (shot["start"] + shot["end"]) // 2
     # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
     layouts = {
-        "hook_warning": ("wheel", shot["start"] + 24, (1.2, -2.5, 1.6), 3.2, 0.0, -0.12),
+        # Low chase view along the milled band: tyre, grooves ahead, little body.
+        "hook_warning": ("wheel", middle, (-5.2, -3.2, 2.4), 3.2, 0.0, -0.12),
         "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
-        "tire_contact": ("wheel", middle, (2.5, -2.1, 1.4), 3.95, 0.0, -0.08),
-        "rumble_mechanism": ("wheel", middle, (-1.2, -3.4, 1.9), 4.15, 0.0, -0.13),
+        "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.95, 0.0, -0.08),
+        "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
         "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
         "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
     }
