@@ -900,3 +900,32 @@ H.264): gutter luma 0..1, picture mean 112.0, caption text rows 1542..1582.
 /tmp/rumble-measure/gutter/review.jpg SHA256 fc06992d.... Layout evidence only.
 Assembler SHA256 1a159ad540643e39f84690fd5c4ad82341d2d726e15e00c3395941c7789c0c2e.
 Full suite: 563 passed, 1 skipped. Reversible: revert this commit for full-bleed.
+
+## Six-shot storyboard and measured 900-frame cost plan — 2026-10-23
+
+Storyboard (preview renderer 8ae5d131 + assembler gutter/captions, frames
+40,225,375,525,675,840; /tmp/rumble-measure/story/storyboard.png, local):
+every shot keeps its subject above the 1400 px gutter; wide shots 5-6 keep the
+whole car, edge stripe and grooved shoulder in the picture. Tyre centres in the
+wheel shots sit at rows 762..1027 of the 1400-row visible picture. Framing kept:
+panning down would trade the grooves ahead of the hook tyre for road behind it.
+
+Full-resolution confirmation of the fixed void: PR56 native proof run
+39792010470 (renderer 1f6ceb69, reported SUCCESS) frame_0301.png has 118
+full-width black rows at the bottom (6.1%); the new edge-band gate rejects it
+(bottom 40-row band extrema 0,0). Other shots: no black rows.
+
+Measured Cycles32 1080x1920 cost on GitHub ubuntu-24.04 (-t 4), same run:
+82.35 / 99.99 / 79.07 / 69.76 / 92.32 / 68.90 s per frame (mean 82.07 s).
+Plan for the separate, not-yet-authorized 900-frame operation:
+- 900 x 82 s ~= 20.5 runner-hours. Repository is PUBLIC, so standard hosted
+  runners add no spend (zero new cost).
+- 30 shards x 30 contiguous frames (render_slice limit) ~= 41 min render + ~3
+  min setup per job; with 20 concurrent jobs ~= 2 waves, ~1.5 h wall clock.
+  Each job is far below the 6 h job limit; the proof workflow's 15 min
+  timeout must not be reused for 30-frame shards.
+- Frame reuse: none available. Every committed change since 82647f3 (camera,
+  tyre contact, renderer SHA 8ae5d131) changes pixels or proof schema, and old
+  legacy-workflow shards must never be mixed in.
+- Preconditions: push of this branch, green tests, a fresh six-shot Cycles32
+  proof on the exact head with viewing, then explicit owner authorization.
