@@ -24,6 +24,7 @@ class WranglerBackend:
         self.wrangler, self.acquire, self.before_call = Path(wrangler), acquire, before_call
         self.account_id, self.bucket, self.home = account_id, bucket, Path(home)
         self.runner, self.missing_key_verified, self.clock = runner, missing_key_verified, clock
+        self.scope = ""
 
     def _key(self, key: str):
         require(isinstance(key, str) and len(key) <= 200 and re.fullmatch(
@@ -31,7 +32,7 @@ class WranglerBackend:
             r"(?:chunks/[0-9a-f]{64}\.bin|manifests/[0-9a-f]{64}\.json)", key) is not None)
 
     def _call(self, operation: str, key: str, path: Path, size: int):
-        self.before_call(operation + ":" + key)
+        self.before_call(self.scope + ":" + operation + ":" + key)
         grant = self.acquire()
         require((grant.expiry-self.clock()).total_seconds() >= 120, "WAIT_AUTH_WINDOW")
         env = data_environment(grant, home=self.home)

@@ -171,6 +171,9 @@ class StateStore:
         row = self._row(job_id)
         return {k: row[k] for k in ("id", "kind", "state", "data_used", "token_used")}
 
+    def limits_for(self, job_id: str) -> Limits:
+        return _limits(self._row(job_id)["limits_json"])
+
     def reserve(self, job_id: str, *, kind: str, operation_id: str,
                 utc_now: datetime, monotonic_now: float) -> None:
         require(kind in {"data", "token"} and utc_now.tzinfo is not None and
