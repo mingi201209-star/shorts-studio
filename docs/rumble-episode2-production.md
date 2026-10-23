@@ -1114,3 +1114,8 @@ real original check (H.264 + its 2 fps JPEG sampling): 16.65 (raw 15.14) versus
 diagonal; clean contact shadows. SHA256 1886ee77... (121), a8c3cc1f... (136);
 /tmp/hookcand2-native, /tmp/hookcand2-act/pair.png. Still not applied: pacing
 change awaits the owner.
+
+Semantic gate on genuine Cycles32 hook frames (picture box, unchanged CLIP
+provider and labels): current 121 / 136 PASS margins 0.0781 / 0.0727; speed-ramp
+candidate 121 / 136 PASS 0.0727 / 0.0763 (2.4-2.6x MIN_MARGIN 0.03). The preview
+calibration holds at native quality; the candidate does not reduce semantic fit.
