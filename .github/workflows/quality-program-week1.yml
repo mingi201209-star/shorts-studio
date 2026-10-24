@@ -2,7 +2,10 @@ name: Quality-first W1 scorecard fail-closed
 on:
   push:
     branches: [plan/2026-10-24-eight-week-quality]
-    paths: [.github/workflows/quality-program-week1.yml]
+    paths:
+      - .github/workflows/quality-program-week1.yml
+      - shorts_studio/quality_program.py
+      - tests/test_quality_program.py
 permissions:
   contents: read
 jobs:
