@@ -95,10 +95,15 @@ def railbed_road(asphalt, groove, section_face, module,
     vertices=[(x,y,top(x) if -1.3499<=y<=-.7001 else 0.0)
               for x in xs for y in y_positions]
     faces=[]
+    near_faces=[]
     for k in range(len(xs)-1):
         for j in range(cross_count-1):
-            faces.append((cross_count*k+j,cross_count*(k+1)+j,
-                          cross_count*(k+1)+j+1,cross_count*k+j+1))
+            face=(cross_count*k+j,cross_count*(k+1)+j,
+                  cross_count*(k+1)+j+1,cross_count*k+j+1)
+            if j == 0:
+                near_faces.append(face)
+            else:
+                faces.append(face)
     mesh=bpy.data.meshes.new("Narrow actual milling grooves only under shoulder tyre")
     mesh.from_pydata(vertices,[],faces)
     mesh.materials.append(asphalt)
@@ -108,9 +113,18 @@ def railbed_road(asphalt, groove, section_face, module,
     bpy.context.collection.objects.link(ob)
     for k in range(len(xs)-1):
         mid=(xs[k]+xs[k+1])/2
-        for j in range(cross_count-1):
-            poly=mesh.polygons[k*(cross_count-1)+j]
+        for j in range(1,cross_count-1):
+            poly=mesh.polygons[k*(cross_count-2)+(j-1)]
             poly.material_index=int(j==2 and top(mid)<-depth*.6)
+    # The flat foreground asphalt is its own genuine surface so it can be
+    # removed only for the educational road_section view. It is not replaced
+    # with drawn-on bars or a fake section.
+    near_mesh=bpy.data.meshes.new("Actual near-shoulder top surface")
+    near_mesh.from_pydata(vertices, [], near_faces)
+    near_mesh.materials.append(asphalt)
+    near_mesh.update()
+    near_shoulder=bpy.data.objects.new("Real near shoulder foreground",near_mesh)
+    bpy.context.collection.objects.link(near_shoulder)
     # A cut face on the *real shoulder milling edge* at y=-1.3499.
     # Each upper vertex is the exact road surface z above a solid -8cm
     # substrate. Only displayed in the road_cut shot; not a floating prop.
@@ -125,7 +139,7 @@ def railbed_road(asphalt, groove, section_face, module,
     section_wall = bpy.data.objects.new("Exposed physical asphalt cut at shoulder edge", wall_mesh)
     bpy.context.collection.objects.link(section_wall)
     section_wall.hide_render = True
-    return ob, section_wall
+    return ob, section_wall, near_shoulder
 
 
 def main():
@@ -240,6 +254,15 @@ def main():
     if len(pivots)!=4:
         raise ValueError("lost wheel pivots")
 
+    wheel_explainer_meshes = set(groups["Front_tire"])
+    # The real audited source wheel, rim and spokes are the only car
+    # sub-meshes retained in the explanatory macro shots.
+    if len(wheel_explainer_meshes) < 5:
+        raise ValueError("missing original close-up wheel components")
+    body_and_other_wheel_meshes=[
+        ob for ob in car.children_recursive
+        if ob.type == "MESH" and ob not in wheel_explainer_meshes
+    ]
 
     asphalt = grey_mat("dark real-grain asphalt", (.09,.091,.087))
     bump_road(asphalt)
@@ -250,11 +273,19 @@ def main():
     half_x=module.ROAD_X_HALF_SPAN
     near_y=module.ROAD_Y_NEAR_EDGE
     far_y=module.DIRT_Y_FAR_EDGE
-    _, section_wall = railbed_road(asphalt, groove, section_face, module,
-                                   x_extent=half_x, road_y_near=near_y)
-    # Extend physical ground to the full fixed camera view (no world void).
-    # Keep substrate BELOW the deepest milled cut so the groove stays visible.
-    cube("road substrate", (0,0,-.27), (2*half_x,2*abs(near_y),.44), asphalt)
+    _, section_wall, near_shoulder = railbed_road(
+        asphalt, groove, section_face, module,
+        x_extent=half_x, road_y_near=near_y
+    )
+    # Original cut-support remains for every normal shot. For a truthful
+    # educational section, replace only the foreground with earth 9 cm below
+    # grade; expose the actual real milled face, never floating geometry.
+    road_substrate=cube("road substrate", (0,0,-.27),
+                        (2*half_x,2*abs(near_y),.44), asphalt)
+    exposed_bank=cube("earth lowered to expose actual milling face",
+                      (0,(near_y-1.35)/2,-.31),
+                      (2*half_x,-1.35-near_y,.44),background)
+    exposed_bank.hide_render=True
     cube("lane edge marking",(0,-.53,.007),(2*half_x,.060,.006),yellow)
     cube("dry roadside earth",(0,(2.4+far_y)/2,-.12),
          (2*half_x,far_y-2.4,.19),background)
@@ -341,9 +372,15 @@ def main():
             # Camera is fitted to a shot's *global* midpoint, regardless of
             # whether this worker renders its first/middle/last 30 frames.
             layout=module.camera_layout(shot)
-            # Optical detail follows the actual six-beat storyboard, with
-            # one fixed camera per shot and no changed physical motion.
-            section_wall.hide_render = (module.detail_stage(shot["id"]) != "road_section")
+            # A cutaway hides only original full-vehicle meshes from view.
+            # World trajectory and wheel rotation remain completely unchanged.
+            visibility = module.detail_visibility(shot["id"])
+            for ob in body_and_other_wheel_meshes:
+                ob.hide_render = not visibility["body_visible"]
+            near_shoulder.hide_render = not visibility["near_shoulder_visible"]
+            exposed_bank.hide_render = not visibility["exposed_bank_visible"]
+            section_wall.hide_render = not visibility["section_face_visible"]
+            road_substrate.hide_render = visibility["section_face_visible"]
             contact_rim.hide_render = not (
                 module.detail_stage(shot["id"]) == "rolling_contact"
                 or module.detail_stage(shot["id"]) == "road_section"
