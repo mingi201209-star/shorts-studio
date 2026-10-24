@@ -141,7 +141,7 @@ def test_mechanism_isolates_genuine_wheel_and_road_only_in_detail_beats():
     """Meaningful component close-ups, not a full car hiding the contact area."""
     from shorts_studio.factory.rumble_episode2 import detail_visibility
     cases = {
-        "hook_warning": (True, True, False, False),
+        "hook_warning": (False, True, False, False),
         "road_cut": (False, False, True, True),
         "tire_contact": (False, True, False, False),
         "rumble_mechanism": (True, True, False, False),
