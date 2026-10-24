@@ -284,3 +284,22 @@ def test_new_macro_cameras_still_preserve_caption_picture_band_and_fixed_frame_l
             assert contact_row < 1250, (name, frame, contact_row)
         camera_z = .28 + view["target_z"] + view["offset"][2]
         assert camera_z - view["scale"]/2*up[2] >= .25
+
+
+def test_opening_fender_is_cropped_from_original_cc0_mesh_not_new_geometry():
+    """Original low-poly sedan must not fill the hook, wheel gets real body context."""
+    from shorts_studio.factory.rumble_episode2 import detail_visibility
+    assert detail_visibility("hook_warning")["body_visible"] is False
+    renderer=(EPISODE.parents[2] /
+              "benchmarks/road_safety/render_rumble_episode2.py").read_text()
+    assert "Original CC0 wheel-attached fender crop" in renderer
+    assert "ShaderNodeTexCoord" in renderer
+    assert "ShaderNodeVectorMath" in renderer
+    assert "ShaderNodeMapRange" in renderer
+    assert "ShaderNodeBsdfTransparent" in renderer
+    assert "Original CC0 mesh only: fender preview" in renderer
+    assert 'fender_proxies.hide_render' not in renderer  # collection, not fake single cube
+    assert 'ob.hide_render = not visibility["body_visible"]' in renderer
+    # The same source chassis remains intact/visible later in the story.
+    assert 'for proxy in opening_fender_proxies:' in renderer
+    assert 'proxy.hide_render = shot["id"] != "hook_warning"' in renderer
