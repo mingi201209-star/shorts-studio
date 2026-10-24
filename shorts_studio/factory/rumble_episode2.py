@@ -115,6 +115,23 @@ def detail_stage(shot_id: str) -> str:
         raise ValueError("unknown detail shot") from None
 
 
+def detail_visibility(shot_id: str) -> dict[str, bool]:
+    """Truthful per-beat visibility of the *original* meshes, never substitutes.
+
+    Isolate the audited CC0 front wheel and excavate the true 16 mm road edge
+    only during explanatory inserts. Other beats retain the original sedan.
+    """
+    stage = detail_stage(shot_id)
+    is_section = stage == "road_section"
+    is_closeup = stage in ("road_section", "rolling_contact")
+    return {
+        "body_visible": not is_closeup,
+        "near_shoulder_visible": not is_section,
+        "exposed_bank_visible": is_section,
+        "section_face_visible": is_section,
+    }
+
+
 def camera_layout(shot: dict) -> dict:
     """Fixed camera per 5s beat; wheel shots keep the tyre in frame throughout.
 

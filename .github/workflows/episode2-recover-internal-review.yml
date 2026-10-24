@@ -1,0 +1,110 @@
+name: Episode 2 recover MP4 for editorial review (FAIL-CLOSED)
+# One-shot on this draft branch. Never a publish-ready build or a new render.
+on:
+  push:
+    branches: [feat/episode2-isolated-tyre-cutaway-20261024]
+    paths: [.github/workflows/episode2-recover-internal-review.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  recovery:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      ORIGINAL_RUN: '40061429787'
+      SOURCE_HEAD: '8943f776fc4bde83ff595786bd1668f41d43eab1'
+      ORIGINAL_RENDERER: '8c3a05328ae789d68dafa4ada7a256ffc1db7cac8a6fe62c7cb023feca372ad5'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Assert exact original renderer and 30 existing successful native shards
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          echo "$ORIGINAL_RENDERER  benchmarks/road_safety/render_rumble_episode2.py" | sha256sum -c -
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_RUN" --jq .head_sha)" = "$SOURCE_HEAD"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_RUN/jobs?per_page=100" --jq '[.jobs[] | select((.name | startswith("native (")) and .conclusion == "success")] | length')" = "30"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_RUN/artifacts?per_page=100" --jq '[.artifacts[] | select((.name | startswith("rumble-native-")) and (.expired == false))] | length')" = "30"
+      - name: Install original final-review QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install Pillow pydantic
+          python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[vision]'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 40061429787
+          pattern: rumble-native-*
+          path: build/native-chunks
+      - name: Rerun unmodified strict original assembly and save its evidence
+        id: strict_qa
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          mkdir -p build/episode2-review
+          PYTHONPATH=. python benchmarks/road_safety/episode2_film.py assemble --chunks build/native-chunks --out build/episode2-review 2>&1 | tee build/episode2-review/strict-qa.log
+      - name: Create clearly quarantined preview only if original semantic QA rejects it
+        if: steps.strict_qa.outcome == 'failure'
+        run: |
+          PYTHONPATH=. python - <<'PY'
+          import json,hashlib,subprocess
+          from pathlib import Path
+          from PIL import Image,ImageDraw
+          out=Path('build/episode2-review')
+          log=(out/'strict-qa.log').read_text()
+          assert "AssertionError: ('SEMANTIC_VISUAL_QA'" in log, "Unexpected failure: never re-label as review"
+          movie=out/'rumble-strips-english-30s-1080p.mp4'
+          assert movie.exists() and movie.stat().st_size>100000
+          info=json.loads(subprocess.check_output(['ffprobe','-v','error','-count_frames','-show_streams','-of','json',str(movie)]))
+          v=next(s for s in info['streams'] if s['codec_type']=='video')
+          assert (int(v['width']),int(v['height']),int(v['nb_read_frames']),v['codec_name']) == (1080,1920,900,'h264')
+          times=[.5,4.4,5.5,9.4,10.5,14.4,15.5,19.4,20.5,24.4,25.5,29.4]
+          board=Image.new('RGB',(1620,1020),'#eeeeee')
+          draw=ImageDraw.Draw(board)
+          for i,t in enumerate(times):
+              p=out/f'review_{i:02}.jpg'
+              subprocess.run(['ffmpeg','-v','error','-y','-ss',str(t),'-i',str(movie),'-frames:v','1',str(p)],check=True)
+              with Image.open(p) as img:
+                  board.paste(img.convert('RGB').resize((270,480)),((i%6)*270,(i//6)*510+26))
+              draw.text(((i%6)*270+8,(i//6)*510+5),str(t)+'s',fill='black')
+          board.save(out/'12-frame-review-board.jpg',quality=85)
+          report={
+              'technical_status':'REJECTED_BY_ORIGINAL_SEMANTIC_QA',
+              'editorial_status':'HOLD_UNTIL_FINAL_QA',
+              'upload_authorized':False,'publishable':False,
+              'original_native_run':40061429787,
+              'original_native_frames':900,'shards':30,
+              'original_renderer_sha256':'8c3a05328ae789d68dafa4ada7a256ffc1db7cac8a6fe62c7cb023feca372ad5',
+              'mp4_sha256':hashlib.sha256(movie.read_bytes()).hexdigest(),
+              'reason':'One semantic-visual beat not confidently evaluated; original fail-closed gate remains failed.',
+              'note':'For private creative review only; MUST NOT be published or identified as QA PASS.'
+          }
+          (out/'REVIEW_ONLY_QA_FAILED.json').write_text(json.dumps(report,indent=2))
+          print('REVIEW_MP4_EXISTS_BUT_SEMANTIC_QA_FAILED',report['mp4_sha256'],flush=True)
+          PY
+      - name: Preserve internal review MP4 and failed gate evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: episode2-900-original-frames-EDITORIAL-HOLD
+          path: |
+            build/episode2-review/rumble-strips-english-30s-1080p.mp4
+            build/episode2-review/12-frame-review-board.jpg
+            build/episode2-review/review_*.jpg
+            build/episode2-review/REVIEW_ONLY_QA_FAILED.json
+            build/episode2-review/strict-qa.log
+          retention-days: 5
+          if-no-files-found: error
+      - name: Fail closed if any original QA failed
+        if: steps.strict_qa.outcome == 'failure'
+        run: |
+          echo 'Original semantic QA failed. Internal review MP4 is NOT approved for upload.'
+          exit 1
