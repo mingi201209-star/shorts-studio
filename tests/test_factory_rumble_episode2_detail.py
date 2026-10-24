@@ -112,8 +112,8 @@ def test_road_cut_and_contact_camera_are_tighter_with_full_tyre_safety():
     shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
     cut = camera_layout(shots["road_cut"])
     contact = camera_layout(shots["tire_contact"])
-    assert 2.35 <= cut["scale"] <= 2.85
-    assert 2.35 <= contact["scale"] <= 2.85
+    assert 1.85 <= cut["scale"] <= 2.10
+    assert 1.85 <= contact["scale"] <= 2.10
     assert cut["target"] == contact["target"] == "wheel"
     assert cut["anchor_frame"] == 225 and contact["anchor_frame"] == 375
     for shot, view in ((shots["road_cut"], cut), (shots["tire_contact"], contact)):
@@ -195,9 +195,9 @@ def test_first_15_seconds_use_a_grounded_true_tyre_macro_and_keep_late_shots():
         cam = camera_layout(shots[name])
         # The longitudinal view foreshortens 5 seconds of world-X travel
         # without altering actual fixed 3D camera or car trajectory.
-        assert cam["offset"][0] >= 4.0
+        assert abs(cam["offset"][0]) >= 8.0
         assert cam["offset"][1] <= -1.5
-        assert 2.35 <= cam["scale"] <= 2.85
+        assert 1.85 <= cam["scale"] <= 2.10
         assert cam["target"] == "wheel"
         right, up = _up_and_right(cam["offset"])
         max_x = max(abs(travel_x(frame) - travel_x(cam["anchor_frame"]))
