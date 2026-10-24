@@ -32,10 +32,36 @@ jobs:
           assert data['render_metrics'] is None
           print('WEEK1_BASELINE_EVIDENCE_PENDING_NO_FALSE_PASS')
           PY
-      - name: Preserve quality baseline
+      - name: Record actual Episode 2 native runner wall time separately from video QA
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GH_REPO/actions/runs/40084843910" > build/quality/episode2-run.json
+          gh api "repos/$GH_REPO/actions/runs/40084843910/jobs?per_page=100" > build/quality/episode2-jobs.json
+          python -S -m shorts_studio.quality_program --out build/quality/week01.json \
+            --workflow-run-json build/quality/episode2-run.json \
+            --workflow-jobs-json build/quality/episode2-jobs.json \
+            --workflow-out build/quality/episode2-run-timing.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          timing=json.loads(Path('build/quality/episode2-run-timing.json').read_text())
+          assert timing['status'] in ('IN_PROGRESS', 'PASS_WORKFLOW', 'FAILED')
+          assert timing['native']['total']==30
+          assert timing['upload_authorized'] is False
+          if timing['status']=='IN_PROGRESS':
+              assert timing['workflow_elapsed_seconds'] is None
+          print('WEEK1_REAL_JOB_TIMING_RECORD', timing['status'],
+                timing['native']['success'])
+          PY
+      - name: Preserve quality baseline and factual job timing
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: eight-week-quality-W1-evidence-pending
-          path: build/quality/week01.json
+          path: |
+            build/quality/week01.json
+            build/quality/episode2-run-timing.json
           retention-days: 14
           if-no-files-found: error
