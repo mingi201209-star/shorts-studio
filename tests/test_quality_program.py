@@ -143,3 +143,88 @@ def test_scorecard_shot_ids_match_authoritative_episode_contract():
     from shorts_studio.quality_program import SHOT_IDS
     from shorts_studio.factory.rumble_episode2 import SHOT_IDS as AUTHORITATIVE
     assert SHOT_IDS == AUTHORITATIVE
+
+
+def _job(name, start, end, *, status="completed", conclusion="success"):
+    return {
+        "name": name, "status": status, "conclusion": conclusion,
+        "started_at": start, "completed_at": end,
+    }
+
+
+def test_real_workflow_job_summary_rejects_premature_completion():
+    from shorts_studio.quality_program import summarize_workflow_jobs
+    jobs = [
+        _job("guard", "2026-10-24T10:10:20Z", "2026-10-24T10:10:30Z"),
+        _job("speech", "2026-10-24T10:10:30Z", "2026-10-24T10:11:00Z"),
+    ] + [
+        _job(f"native ({1 + 30 * i})", "2026-10-24T10:11:00Z",
+             "2026-10-24T10:13:00Z") for i in range(25)
+    ] + [
+        _job(f"native ({1 + 30 * i})", "2026-10-24T10:15:00Z", None,
+             status="in_progress", conclusion=None) for i in range(25, 30)
+    ]
+    data = summarize_workflow_jobs({"id": 40084843910, "status": "in_progress"}, jobs)
+    assert data["native"]["success"] == 25
+    assert data["native"]["in_progress"] == 5
+    assert data["native"]["total"] == 30
+    assert data["workflow_elapsed_seconds"] is None
+    assert data["native"]["measured_p50_completed_job_seconds"] == 120.0
+    assert data["upload_authorized"] is False
+    assert data["status"] == "IN_PROGRESS"
+    assert data["native"]["mean_real_render_seconds"] is None  # includes setup
+
+
+def test_completed_workflow_timing_is_wall_clock_not_sum_of_parallel_jobs():
+    from shorts_studio.quality_program import summarize_workflow_jobs
+    jobs = [
+        _job("guard", "2026-10-24T10:00:00Z", "2026-10-24T10:00:10Z"),
+        _job("speech", "2026-10-24T10:00:10Z", "2026-10-24T10:00:20Z"),
+    ] + [
+        _job(f"native ({1 + 30 * i})", "2026-10-24T10:01:00Z",
+             "2026-10-24T10:03:00Z") for i in range(30)
+    ] + [_job("assemble", "2026-10-24T10:03:00Z", "2026-10-24T10:04:00Z")]
+    data = summarize_workflow_jobs({"id": 1, "status": "completed", "conclusion": "success"}, jobs)
+    assert data["status"] == "PASS_WORKFLOW"
+    assert data["workflow_elapsed_seconds"] == 240.0
+    assert data["native"]["sum_completed_job_seconds"] == 3600.0
+    assert data["native"]["wall_clock_span_seconds"] == 120.0
+    assert data["native"]["peak_parallel_jobs"] == 30
+    assert data["stages"]["speech_seconds"] == 10.0
+    assert data["stages"]["assemble_seconds"] == 60.0
+    assert data["upload_authorized"] is False
+
+
+def test_workflow_timing_fails_closed_on_missing_shards_failing_jobs_and_invalid_times():
+    from shorts_studio.quality_program import summarize_workflow_jobs
+    completed = [_job(f"native ({1 + 30 * i})",
+                       "2026-10-24T10:00:00Z", "2026-10-24T10:05:00Z")
+                 for i in range(30)]
+    assert summarize_workflow_jobs(
+        {"status": "completed", "conclusion": "success"}, completed
+    )["status"] == "INVALID_EVIDENCE"  # missing assembler/guard/speech
+    jobs = completed + [
+        _job("guard", "2026-10-24T09:59:00Z", "2026-10-24T09:59:10Z"),
+        _job("speech", "2026-10-24T09:59:10Z", "2026-10-24T09:59:30Z"),
+        _job("assemble", "2026-10-24T10:05:00Z", "2026-10-24T10:06:00Z"),
+    ]
+    failing = [*jobs[:-1], {**jobs[-1], "conclusion": "failure"}]
+    assert summarize_workflow_jobs(
+        {"status": "completed", "conclusion": "failure"}, failing
+    )["status"] == "FAILED"
+    wrong = [*jobs[:-1], {**jobs[-1], "completed_at": "2026-10-24T09:59:00Z"}]
+    assert summarize_workflow_jobs(
+        {"status": "completed", "conclusion": "success"}, wrong
+    )["status"] == "INVALID_EVIDENCE"
+
+
+def test_workflow_timing_duplicate_native_names_and_empty_jobs_are_not_valid():
+    from shorts_studio.quality_program import summarize_workflow_jobs
+    assert summarize_workflow_jobs({"status": "completed", "conclusion": "success"}, [])["status"] == "INVALID_EVIDENCE"
+    duplicates = [
+        _job("native (1)", "2026-10-24T10:00:00Z", "2026-10-24T10:00:02Z"),
+        _job("native (1)", "2026-10-24T10:00:00Z", "2026-10-24T10:00:04Z"),
+    ]
+    assert summarize_workflow_jobs(
+        {"status": "completed", "conclusion": "success"}, duplicates
+    )["status"] == "INVALID_EVIDENCE"
