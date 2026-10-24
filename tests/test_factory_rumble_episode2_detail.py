@@ -134,7 +134,7 @@ def test_native_renderer_uses_shared_geometry_for_section_and_tyre_contact():
                 / "benchmarks/road_safety/render_rumble_episode2.py").read_text()
     assert "module.groove_height(" in renderer
     assert "module.road_section_profile(" in renderer
-    assert 'section_wall.hide_render = (module.detail_stage(shot["id"]) != "road_section")' in renderer
+    assert 'section_wall.hide_render = not visibility["section_face_visible"]' in renderer
     assert 'module.detail_stage(shot["id"]) == "rolling_contact"' in renderer
 
 def test_mechanism_isolates_genuine_wheel_and_road_only_in_detail_beats():
