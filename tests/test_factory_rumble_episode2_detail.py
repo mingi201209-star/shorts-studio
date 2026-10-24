@@ -284,3 +284,11 @@ def test_new_macro_cameras_still_preserve_caption_picture_band_and_fixed_frame_l
             assert contact_row < 1250, (name, frame, contact_row)
         camera_z = .28 + view["target_z"] + view["offset"][2]
         assert camera_z - view["scale"]/2*up[2] >= .25
+
+
+def test_hook_is_original_car_connected_to_tyre_not_a_free_floating_wheel():
+    """Authentic CC0 source body in opening; only cutaway inserts isolate tyre."""
+    from shorts_studio.factory.rumble_episode2 import detail_visibility
+    assert detail_visibility("hook_warning")["body_visible"] is True
+    assert detail_visibility("road_cut")["body_visible"] is False
+    assert detail_visibility("tire_contact")["body_visible"] is False
