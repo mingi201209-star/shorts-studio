@@ -257,7 +257,7 @@ def summarize_workflow_jobs(run: dict, jobs: list) -> dict:
         if name in all_by_name:
             return result
         all_by_name[name] = job
-        match = re.fullmatch(r"native \\((\\d+)\\)", name)
+        match = re.fullmatch(r"native \((\d+)\)", name)
         if match:
             number = int(match.group(1))
             if number not in range(1, 901, 30):
