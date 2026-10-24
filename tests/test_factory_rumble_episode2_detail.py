@@ -219,3 +219,66 @@ def test_renderer_uses_a_single_true_band_for_groove_section_and_lane_stripe():
     assert "section_wall.hide_render = not visibility[\"section_face_visible\"]" in code
     assert 'wheel_explainer_meshes = set(groups["Front_tire"])' in code
     assert "scene.cycles.samples=7 if args.preview else 32" in code
+
+
+# Cinematic Cycles32 acceptance criteria from REAL baseline frames 1/151/301.
+# Existing projection/safe-area tests still guard all 150 frames per shot.
+def test_first_15s_wheel_is_large_enough_for_mobile_and_framed_down_the_road():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+    shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
+    for name in ("hook_warning", "road_cut", "tire_contact"):
+        camera = camera_layout(shots[name])
+        assert camera["target"] == "wheel"
+        assert 1.85 <= camera["scale"] <= 2.10, (name, camera)
+        assert abs(camera["offset"][0]) >= 8.0, (name, camera)
+        assert camera["offset"][1] <= -2.0, (name, camera)
+        # Real near-side CC0 tyre diameter ~0.6m: at least 28% of picture height.
+        assert .6 / camera["scale"] >= .28
+    # A distinct reverse-angle contact shot avoids three identical inserts.
+    assert camera_layout(shots["tire_contact"])["offset"][0] < 0
+
+
+def test_isolated_wheel_semantic_labels_do_not_require_hidden_blue_car():
+    from shorts_studio.factory.rumble_episode2 import semantic_labels, detail_visibility
+    for name in ("hook_warning", "road_cut", "tire_contact"):
+        assert detail_visibility(name)["body_visible"] is False
+        labels = semantic_labels(name)
+        assert len(labels) == 2
+        assert all("blue car" not in label and "car driving" not in label
+                   for label in labels), (name, labels)
+        assert all(("tyre" in label or "tire" in label or "groove" in label)
+                   for label in labels)
+
+
+def test_native_milled_road_material_uses_world_scale_procedural_grain_and_real_grazing_light():
+    """Material realism on real mesh, not painted fake groove or changed physical depth."""
+    source = (EPISODE.parents[2] /
+              "benchmarks/road_safety/render_rumble_episode2.py").read_text()
+    assert "ShaderNodeNewGeometry" in source
+    assert "ShaderNodeTexNoise" in source
+    assert "ShaderNodeValToRGB" in source
+    assert "ShaderNodeBump" in source
+    assert "rough tire rubber microtexture" in source
+    assert "Milled asphalt raking key" in source
+    assert "module.groove_height(" in source
+    assert "module.road_section_profile(" in source
+
+
+def test_new_macro_cameras_still_preserve_caption_picture_band_and_fixed_frame_limits():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+    shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
+    for name in ("hook_warning", "road_cut", "tire_contact"):
+        shot = shots[name]
+        view = camera_layout(shot)
+        right, up = _up_and_right(view["offset"])
+        half_w = .9 * view["scale"] * 9 / 32
+        half_h = .9 * view["scale"] / 2
+        for frame in range(shot["start"], shot["end"]+1):
+            dx = travel_x(frame) - travel_x(view["anchor_frame"])
+            assert abs(dx * right[0]) + .30 < half_w
+            assert abs(dx * up[0]) + .30 < half_h
+            centre_v = dx * up[0] - view["target_z"] * up[2]
+            contact_row = 960 - (centre_v - .30) * 1920 / view["scale"]
+            assert contact_row < 1250, (name, frame, contact_row)
+        camera_z = .28 + view["target_z"] + view["offset"][2]
+        assert camera_z - view["scale"]/2*up[2] >= .25
