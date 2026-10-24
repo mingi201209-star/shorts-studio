@@ -8,6 +8,7 @@ on:
       - tests/test_quality_program.py
 permissions:
   contents: read
+  actions: read
 jobs:
   week1-baseline:
     runs-on: ubuntu-24.04
