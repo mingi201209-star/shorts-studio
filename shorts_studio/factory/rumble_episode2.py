@@ -63,8 +63,8 @@ def camera_layout(shot: dict) -> dict:
     layouts = {
         "hook_warning": ("wheel", middle, (0.25, -2.7, 1.75), 3.8, 0.0, -0.25),
         "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
-        "tire_contact": ("wheel", middle, (2.5, -2.1, 1.4), 3.95, 0.0, -0.08),
-        "rumble_mechanism": ("wheel", middle, (-1.2, -3.4, 1.9), 4.15, 0.0, -0.13),
+        "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.95, 0.0, -0.08),
+        "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
         "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
         "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
     }
