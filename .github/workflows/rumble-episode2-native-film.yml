@@ -1,12 +1,7 @@
 name: Rumble episode 2 fresh 900-frame native Cycles32 English film
 # Manual only. Renders all 900 original frames from the exact pinned renderer
 # in this run; never downloads frames from any other run, cache or renderer.
-# Temporary bootstrap: register this feature-branch-only manual workflow.
-# The push event SKIPS every job (guard-only if below); it must be removed
-# before any approved 900-frame workflow_dispatch.
 on:
-  push:
-    branches: [feat/episode2-isolated-tyre-cutaway-20261024]
   workflow_dispatch:
     inputs:
       expected_head:
@@ -18,7 +13,6 @@ permissions:
   contents: read
 jobs:
   guard:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -90,7 +84,7 @@ jobs:
             ${{ runner.temp }}/rumble/episode-proof.json
             ${{ runner.temp }}/rumble/native-lossless.mkv
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 2
   assemble:
     needs: native
     runs-on: ubuntu-24.04
@@ -115,4 +109,4 @@ jobs:
           name: rumble-episode2-fresh-english-review
           path: build/episode2-review/
           if-no-files-found: error
-          retention-days: 14
+          retention-days: 7
