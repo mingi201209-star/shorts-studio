@@ -64,17 +64,45 @@ def cube(name, center, size, mat):
     return ob
 
 
-def bump_road(mat):
-    s = mat.node_tree.nodes.get("Principled BSDF")
+def world_grain(mat, dark, light, coarse=55, fine=270, height=.0014):
+    """World-metre procedural microtexture on real mesh; never substitutes grooves.
+
+    No UV assets or false painted rumble bars. One centimetre-scale albedo
+    variation and millimetre surface roughness catch the actual grazing light.
+    Shader bump is visual micro-roughness only, not physical groove depth.
+    """
     nodes, links = mat.node_tree.nodes, mat.node_tree.links
-    noise = nodes.new("ShaderNodeTexNoise")
-    noise.inputs["Scale"].default_value = 120
-    noise.inputs["Detail"].default_value = 3
+    shader = nodes.get("Principled BSDF")
+    assert shader is not None
+    shader.inputs["Roughness"].default_value = .94
+    geometry = nodes.new("ShaderNodeNewGeometry")
+    coarse_noise = nodes.new("ShaderNodeTexNoise")
+    coarse_noise.inputs["Scale"].default_value = coarse
+    coarse_noise.inputs["Detail"].default_value = 3
+    coarse_noise.inputs["Roughness"].default_value = .7
+    fine_noise = nodes.new("ShaderNodeTexNoise")
+    fine_noise.inputs["Scale"].default_value = fine
+    fine_noise.inputs["Detail"].default_value = 2
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = .18
+    ramp.color_ramp.elements[0].color = (*dark, 1)
+    ramp.color_ramp.elements[1].position = .82
+    ramp.color_ramp.elements[1].color = (*light, 1)
     bump = nodes.new("ShaderNodeBump")
-    bump.inputs["Strength"].default_value = .11
-    bump.inputs["Distance"].default_value = .006
-    links.new(noise.outputs["Fac"], bump.inputs["Height"])
-    links.new(bump.outputs["Normal"], s.inputs["Normal"])
+    bump.inputs["Strength"].default_value = .22
+    bump.inputs["Distance"].default_value = height
+    links.new(geometry.outputs["Position"], coarse_noise.inputs["Vector"])
+    links.new(geometry.outputs["Position"], fine_noise.inputs["Vector"])
+    links.new(coarse_noise.outputs["Fac"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], shader.inputs["Base Color"])
+    links.new(fine_noise.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], shader.inputs["Normal"])
+
+
+def bump_road(mat):
+    # The full-scale milled geometry is unchanged, and all colour variation is
+    # driven by TRUE world-space rock grain rather than fake painted stripes.
+    world_grain(mat, (.027, .029, .030), (.092, .086, .073))
 
 
 def railbed_road(asphalt, groove, section_face, module,
@@ -269,12 +297,31 @@ def main():
         if ob.type == "MESH" and ob not in wheel_explainer_meshes
     ]
 
-    asphalt = grey_mat("dark real-grain asphalt", (.09,.091,.087))
+    asphalt = grey_mat("dark real-grain asphalt", (.055, .052, .048))
     bump_road(asphalt)
-    groove = grey_mat("recessed dark groove", (.060,.062,.065))
-    section_face = grey_mat("solid asphalt milled cut material", (.19,.17,.15))
-    background = grey_mat("shoulder gravel", (.19,.16,.12))
-    yellow = grey_mat("road shoulder stripe", (.73,.68,.49))
+    groove = grey_mat("recessed dark groove", (.035, .035, .034))
+    world_grain(groove, (.018, .021, .022), (.070, .069, .065),
+                coarse=75, fine=370, height=.0008)
+    section_face = grey_mat("solid asphalt milled cut material", (.16, .12, .090))
+    world_grain(section_face, (.075, .060, .043), (.24, .17, .115),
+                coarse=84, fine=310, height=.0011)
+    background = grey_mat("shoulder gravel", (.14, .11, .085))
+    world_grain(background, (.095, .073, .053), (.23, .19, .135),
+                coarse=27, fine=175, height=.0019)
+    yellow = grey_mat("weathered white road shoulder stripe", (.51, .48, .40))
+    world_grain(yellow, (.36, .35, .30), (.73, .70, .58),
+                coarse=98, fine=350, height=.0005)
+    rubber = grey_mat("rough tire rubber microtexture", (.024, .025, .026))
+    world_grain(rubber, (.013, .015, .017), (.055, .060, .066),
+                coarse=210, fine=530, height=.0005)
+    for source_name in ("Front_tire", "Front_tire.001",
+                        "Rear_tire", "Rear_tire.001"):
+        source_mesh = bpy.data.objects[source_name]
+        assert source_mesh.type == "MESH"
+        # Original audited tyre geometry is preserved exactly; only rubber
+        # shading is refreshed on the dedicated CC0 tyre objects.
+        source_mesh.data.materials.clear()
+        source_mesh.data.materials.append(rubber)
     half_x=module.ROAD_X_HALF_SPAN
     near_y=module.ROAD_Y_NEAR_EDGE
     far_y=module.DIRT_Y_FAR_EDGE
@@ -321,21 +368,31 @@ def main():
             if bg: bg.inputs["Color"].default_value=(.028,.030,.032,1)
     bpy.ops.object.light_add(type="AREA",location=(-4,-5,8))
     ob=bpy.context.object
-    ob.data.energy=1650
+    ob.data.energy=1040
     ob.data.shape="DISK"
-    ob.data.size=6
+    ob.data.size=5
     bpy.ops.object.light_add(type="AREA",location=(3,2,6))
-    bpy.context.object.data.energy=950
+    bpy.context.object.data.energy=490
     bpy.context.object.data.size=5
+    # Directed low-angle area key casts real shadows from the 16mm milled
+    # geometry and original rubber onto the genuinely sculpted asphalt.
+    bpy.ops.object.light_add(type="AREA", location=(-1.0, -1.9, 1.10))
+    raking_key = bpy.context.object
+    raking_key.name = "Milled asphalt raking key"
+    raking_key.data.shape = "RECTANGLE"
+    raking_key.data.size = 1.15
+    raking_key.data.size_y = .32
+    raking_key.data.energy = 265
+    raking_key.hide_render = True
     # Restrained grazing illumination reveals the REAL recess and rotating
     # tyre without widening groove depth or inventing a physics effect.
     bpy.ops.object.light_add(type="AREA", location=(-1.0, -1.8, 1.65))
     contact_rim = bpy.context.object
     contact_rim.name = "Road-cut and rolling-contact surface light"
-    contact_rim.data.energy = 440
+    contact_rim.data.energy = 225
     contact_rim.data.shape = "RECTANGLE"
-    contact_rim.data.size = 2.4
-    contact_rim.data.size_y = 0.45
+    contact_rim.data.size = 1.8
+    contact_rim.data.size_y = 0.42
     contact_rim.hide_render = True
 
     scene.render.engine="CYCLES"
@@ -387,9 +444,12 @@ def main():
             exposed_bank.hide_render = not visibility["exposed_bank_visible"]
             section_wall.hide_render = not visibility["section_face_visible"]
             road_substrate.hide_render = visibility["section_face_visible"]
-            contact_rim.hide_render = not (
-                module.detail_stage(shot["id"]) == "rolling_contact"
-                or module.detail_stage(shot["id"]) == "road_section"
+            detail_stage = module.detail_stage(shot["id"])
+            raking_key.hide_render = detail_stage not in (
+                "macro_warning", "rolling_contact", "road_section"
+            )
+            contact_rim.hide_render = detail_stage not in (
+                "rolling_contact", "road_section"
             )
             middle=layout["anchor_frame"]
             centre_x=module.travel_x(middle)
@@ -403,6 +463,16 @@ def main():
             obj=front if shot["id"]!="rumble_mechanism" else rear
             points=[obj.matrix_world@Vector(v) for v in obj.bound_box]
             wheel=sum(points,Vector())/len(points)
+            # Reposition these real lights ONCE per shot, never tracking the
+            # moving wheel per frame. Camera also stays absolutely fixed.
+            raking_key.location = wheel + Vector((-.6, -1.25, .84))
+            raking_key.rotation_euler = (
+                wheel + Vector((0, 0, -.12)) - raking_key.location
+            ).to_track_quat("-Z", "Y").to_euler()
+            contact_rim.location = wheel + Vector((.35, -1.1, 1.6))
+            contact_rim.rotation_euler = (
+                wheel + Vector((0, 0, -.08)) - contact_rim.location
+            ).to_track_quat("-Z", "Y").to_euler()
             if layout["target"]=="wheel":
                 target=wheel+Vector((0,0,layout["target_z"]))
             else:
