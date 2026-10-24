@@ -24,8 +24,37 @@ ROAD_Y_NEAR_EDGE = -8.0
 DIRT_Y_FAR_EDGE = 14.0
 
 
+# Original CLIP semantic gate inputs (shorts_studio.visual_qa thresholds unchanged).
+# Negatives are wrong-domain content; positives describe what each beat shows.
+SEMANTIC_NEGATIVE_LABELS = (
+    "a kitchen interior", "a portrait of a person's face", "a page of printed text",
+    "a forest landscape with trees", "an animated cartoon character", "food on a plate",
+)
+_SEMANTIC_POSITIVE_LABELS = {
+    "hook_warning": ("a car tire on an asphalt road",
+                     "a blue car wheel beside grooves in the road"),
+    "road_cut": ("grooves cut into an asphalt road shoulder", "a blue car on an asphalt road"),
+    "tire_contact": ("a car tire rolling over grooves in the road",
+                     "a blue car driving on asphalt"),
+    "rumble_mechanism": ("a car wheel on a grooved road surface", "a blue car on a road"),
+    "shoulder_location": ("a blue car beside the edge line of a road",
+                          "a car on a road near the shoulder"),
+    "driver_response": ("a blue car steering back into its lane", "a car on an asphalt road"),
+}
+
+
+def semantic_labels(shot_id: str) -> tuple[str, ...]:
+    if shot_id not in SHOT_IDS:
+        raise ValueError("unknown semantic shot")
+    return _SEMANTIC_POSITIVE_LABELS[shot_id]
+
+
 def camera_layout(shot: dict) -> dict:
-    """Fixed camera per 5s beat. Aim early during the hook to show first contact."""
+    """Fixed camera per 5s beat; wheel shots keep the tyre in frame throughout.
+
+    Orthographic framing depends only on offset direction and scale. Offsets
+    are long enough that the camera plane stays above the road (no black void).
+    """
     ident = shot["id"]
     if ident not in SHOT_IDS:
         raise ValueError("unknown camera shot")
@@ -34,14 +63,30 @@ def camera_layout(shot: dict) -> dict:
     layouts = {
         "hook_warning": ("wheel", middle, (0.25, -2.7, 1.75), 3.8, 0.0, -0.25),
         "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
-        "tire_contact": ("wheel", middle, (2.5, -2.1, 1.4), 3.95, 0.0, -0.08),
-        "rumble_mechanism": ("wheel", middle, (-1.2, -3.4, 1.9), 4.15, 0.0, -0.13),
+        "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.95, 0.0, -0.08),
+        "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
         "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
         "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
     }
     target, frame, offset, scale, target_y, target_z = layouts[ident]
     return {"target": target, "anchor_frame": frame, "offset": offset,
             "scale": scale, "target_y": target_y, "target_z": target_z}
+
+
+def caption_groups(text: str) -> list[tuple[int, int]]:
+    """Word-index spans for lower captions: at most three words, balanced
+    within each sentence, never crossing a sentence end."""
+    tokens = text.split()
+    groups, start = [], 0
+    for index, token in enumerate(tokens):
+        if token[-1] in ".!?" or index == len(tokens) - 1:
+            count = index + 1 - start
+            parts = math.ceil(count / 3)
+            for part in range(parts):
+                size = count // parts + (part < count % parts)
+                groups.append((start, start + size))
+                start += size
+    return groups
 
 
 def validate_episode(value: dict) -> dict:
