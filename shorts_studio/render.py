@@ -12,6 +12,7 @@ from .final_video_qa import run_final_video_qa, verify_source_budget, verify_ret
 from .captions import merge_scene_srt_files
 from .entertainment_qa import run_entertainment_contract_report
 from .visual_change import audit_visual_changes, resolve_visual_cues
+from .scene_r2_staging import config_from_env, slugify_namespace, stage_scene_clip
 
 def _srt_time(x:float)->str:
     ms=round(x*1000); h,ms=divmod(ms,3600000); m,ms=divmod(ms,60000); s,ms=divmod(ms,1000)
@@ -395,6 +396,17 @@ def _log_narration_plan(scene, plan:list[PhraseSpec])->None:
     for i,p in enumerate(plan):
         print(f"[prosody]   unit {i}: role={p.role} boundary={p.boundary} focus={p.focus} text={p.text!r}")
 
+def _stage_scene_clip_for_project(clip:Path, scene_id:str, project)->dict:
+    """Opt-in hook: see Project.enable_r2_scene_staging in models.py and
+    shorts_studio/scene_r2_staging.py's module docstring for exactly what
+    this does and does not do (local hash-verified staging only, no
+    network, no credential -- never an upload by itself)."""
+    namespace=slugify_namespace(project.title)
+    config=config_from_env(namespace=namespace)
+    result=stage_scene_clip(clip,config=config)
+    print(f"[r2-staging] {scene_id}: job_id={result['job_id']} sha256={result['sha256']}")
+    return result
+
 def _media_duration_seconds(path:Path)->float:
     """Return the duration of the artifact that will actually be concatenated.
 
@@ -503,6 +515,7 @@ def render(manifest:str,dry_run:bool=False)->dict:
     build=Path("build"); dist=Path("dist"); build.mkdir(exist_ok=True); dist.mkdir(exist_ok=True)
     provider=default_vision_provider()
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
+    r2_staging=[]
     asset_cache={}
     for scene in p.scenes:
         audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
@@ -519,6 +532,8 @@ def render(manifest:str,dry_run:bool=False)->dict:
         if outcome["clip"] is None:
             raise RuntimeError(f"scene {scene.id}: no asset candidate could be rendered: {outcome['semantic'].get('reason')}")
         concat.append(outcome["clip"])
+        if getattr(p,"enable_r2_scene_staging",False):
+            r2_staging.append(_stage_scene_clip_for_project(outcome["clip"],scene.id,p))
         sources.append({"scene":scene.id,"asset":outcome["source"]["asset"] if outcome["source"] else None,"attribution":outcome["source"]["attribution"] if outcome["source"] else None,"candidate_index":outcome["source"]["index"] if outcome["source"] else None,"recovery_attempts":outcome["semantic"].get("recovery_attempts",0)})
         if scene.visual_qa_requirements:
             semantic_results.append(outcome["semantic"])
@@ -540,6 +555,8 @@ def render(manifest:str,dry_run:bool=False)->dict:
     final_video=run_final_video_qa(final,p,sources,semantic_results,probe,scene_windows,build)
     overall="PASS" if visual["structural_status"]=="PASS" and semantic_ok and all(x["status"]=="PASS" for x in subtitle_reports) and final_video["status"]=="PASS" else "FAIL"
     report={"status":overall,"subtitle_reports":subtitle_reports,"visual_qa":visual,"semantic_visual_qa":semantic,"semantic_required":require_semantic,"final_video_qa":final_video,"sources":sources,"probe":probe,"captions":caption_result,"output":str(final)}
+    if r2_staging:
+        report["r2_staging"]=r2_staging
     # Psychological Entertainment Contract (Layer 2): report-only,
     # deliberately a SIBLING key to final_video_qa, never folded into its
     # `checks` dict or the `overall` computation above -- see
