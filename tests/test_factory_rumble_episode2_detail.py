@@ -170,3 +170,52 @@ def test_native_renderer_reveals_actual_wheel_components_not_fake_cutouts():
     assert 'section_wall.hide_render = not visibility["section_face_visible"]' in code
     assert "if j == 0:" in code and "near_faces.append(face)" in code
     assert "car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)" in code
+
+
+# 2026-10-24 native 900-frame editorial QA: no fake/generic grey background.
+def test_real_milling_band_is_under_original_near_front_tyre_not_at_its_edge():
+    from shorts_studio.factory.rumble_episode2 import (
+        MILLED_BAND_NEAR_Y, MILLED_BAND_FAR_Y, SHOULDER_LINE_Y,
+    )
+    source_tyre_centre = -0.709
+    assert MILLED_BAND_NEAR_Y < source_tyre_centre - 0.12
+    assert MILLED_BAND_FAR_Y > source_tyre_centre + 0.12
+    # The line is in the smooth lane immediately next to, not over, the cuts.
+    assert SHOULDER_LINE_Y - 0.03 >= MILLED_BAND_FAR_Y + 0.02
+
+
+def test_first_15_seconds_use_a_grounded_true_tyre_macro_and_keep_late_shots():
+    from shorts_studio.factory.rumble_episode2 import camera_layout, detail_visibility
+
+    shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
+    hook = camera_layout(shots["hook_warning"])
+    assert not detail_visibility("hook_warning")["body_visible"]
+    assert hook["offset"][1] < -2.0 and hook["offset"][2] <= 1.8
+    for name in ("road_cut", "tire_contact"):
+        cam = camera_layout(shots[name])
+        # The longitudinal view foreshortens 5 seconds of world-X travel
+        # without altering actual fixed 3D camera or car trajectory.
+        assert cam["offset"][0] >= 4.0
+        assert cam["offset"][1] <= -1.5
+        assert 2.35 <= cam["scale"] <= 2.85
+        assert cam["target"] == "wheel"
+        right, up = _up_and_right(cam["offset"])
+        max_x = max(abs(travel_x(frame) - travel_x(cam["anchor_frame"]))
+                    for frame in range(shots[name]["start"], shots[name]["end"]+1))
+        assert max_x * abs(right[0]) + .30 <= .9 * cam["scale"] * 9/32
+        assert max_x * abs(up[0]) + .30 <= .9 * cam["scale"] / 2
+        floor = .28 + cam["target_z"] + cam["offset"][2] - cam["scale"]/2 * up[2]
+        assert floor >= .25
+    assert camera_layout(shots["shoulder_location"])["scale"] == 8.8
+    assert camera_layout(shots["driver_response"])["scale"] == 8.4
+
+
+def test_renderer_uses_a_single_true_band_for_groove_section_and_lane_stripe():
+    code = (EPISODE.parents[2] /
+            "benchmarks/road_safety/render_rumble_episode2.py").read_text()
+    assert "module.MILLED_BAND_NEAR_Y" in code
+    assert "module.MILLED_BAND_FAR_Y" in code
+    assert "module.SHOULDER_LINE_Y" in code
+    assert "section_wall.hide_render = not visibility[\"section_face_visible\"]" in code
+    assert 'wheel_explainer_meshes = set(groups["Front_tire"])' in code
+    assert "scene.cycles.samples=7 if args.preview else 32" in code
