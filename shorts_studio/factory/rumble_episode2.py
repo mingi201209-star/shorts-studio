@@ -49,6 +49,26 @@ def semantic_labels(shot_id: str) -> tuple[str, ...]:
     return _SEMANTIC_POSITIVE_LABELS[shot_id]
 
 
+def detail_stage(shot_id: str) -> str:
+    """Named native 3D mechanism treatment for each existing five-second beat.
+
+    This is an editorial/renderer contract, not a claim that all six native
+    detail shots have already been built or visually approved.
+    """
+    stages = {
+        "hook_warning": "macro_warning",
+        "road_cut": "road_section",
+        "tire_contact": "rolling_contact",
+        "rumble_mechanism": "wheel_body_vibration",
+        "shoulder_location": "shoulder_context",
+        "driver_response": "human_response",
+    }
+    try:
+        return stages[shot_id]
+    except KeyError:
+        raise ValueError("unknown detail shot") from None
+
+
 def camera_layout(shot: dict) -> dict:
     """Fixed camera per 5s beat; wheel shots keep the tyre in frame throughout.
 
@@ -61,7 +81,7 @@ def camera_layout(shot: dict) -> dict:
     middle = (shot["start"] + shot["end"]) // 2
     # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
     layouts = {
-        "hook_warning": ("wheel", middle, (0.25, -2.7, 1.75), 3.8, 0.0, -0.25),
+        "hook_warning": ("wheel", middle, (0.25, -2.25, 1.75), 3.95, 0.0, -0.18),
         "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
         "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.95, 0.0, -0.08),
         "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
