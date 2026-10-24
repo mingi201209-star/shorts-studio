@@ -14,7 +14,13 @@ import statistics
 from collections.abc import Mapping
 from pathlib import Path
 
-from .factory.rumble_episode2 import SHOT_IDS
+# Snapshot is intentionally stdlib-only, including on a clean GitHub runner.
+# A regression test checks these stable episode-2 IDs against the canonical
+# factory contract so drift fails CI instead of silently changing QA evidence.
+SHOT_IDS = (
+    "hook_warning", "road_cut", "tire_contact",
+    "rumble_mechanism", "shoulder_location", "driver_response",
+)
 
 EDITORIAL_AXES = (
     "subject_legibility",
