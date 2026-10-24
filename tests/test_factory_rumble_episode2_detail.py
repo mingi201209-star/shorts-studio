@@ -135,7 +135,9 @@ def test_native_renderer_uses_shared_geometry_for_section_and_tyre_contact():
     assert "module.groove_height(" in renderer
     assert "module.road_section_profile(" in renderer
     assert 'section_wall.hide_render = not visibility["section_face_visible"]' in renderer
-    assert 'module.detail_stage(shot["id"]) == "rolling_contact"' in renderer
+    assert 'detail_stage = module.detail_stage(shot["id"])' in renderer
+    assert 'raking_key.hide_render = detail_stage not in (' in renderer
+    assert '"rolling_contact", "road_section"' in renderer
 
 def test_mechanism_isolates_genuine_wheel_and_road_only_in_detail_beats():
     """Meaningful component close-ups, not a full car hiding the contact area."""
