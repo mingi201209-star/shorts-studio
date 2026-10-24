@@ -105,6 +105,51 @@ def bump_road(mat):
     world_grain(mat, (.027, .029, .030), (.092, .086, .073))
 
 
+def masked_original_fender_material(original, wheel_anchor):
+    """Fade ORIGINAL source metal/glass around CC0 wheel, not replacement mesh.
+
+    Local coordinates follow the wheel attached to the original vehicle root.
+    This avoids a full blue low-poly body covering the opening contact point.
+    All other shots retain their untouched original materials.
+    """
+    mat = original.copy()
+    mat.name = "Original CC0 wheel-attached fender crop: " + original.name
+    mat.use_nodes = True
+    nodes, links = mat.node_tree.nodes, mat.node_tree.links
+    output = next((n for n in nodes if n.type == "OUTPUT_MATERIAL"
+                   and n.is_active_output), None)
+    if output is None:
+        output = next((n for n in nodes if n.type == "OUTPUT_MATERIAL"), None)
+    if output is None:
+        raise ValueError("original body material missing surface output")
+    surface = output.inputs["Surface"]
+    if not surface.is_linked:
+        shader = nodes.get("Principled BSDF")
+        if shader is None:
+            raise ValueError("no original source shader")
+        previous = shader.outputs["BSDF"]
+    else:
+        previous = surface.links[0].from_socket
+    texture = nodes.new("ShaderNodeTexCoord")
+    texture.object = wheel_anchor
+    distance = nodes.new("ShaderNodeVectorMath")
+    distance.operation = "LENGTH"
+    ramp = nodes.new("ShaderNodeMapRange")
+    ramp.inputs["From Min"].default_value = .57
+    ramp.inputs["From Max"].default_value = 1.03
+    ramp.inputs["To Min"].default_value = 0.0
+    ramp.inputs["To Max"].default_value = 1.0
+    transparent = nodes.new("ShaderNodeBsdfTransparent")
+    mixed = nodes.new("ShaderNodeMixShader")
+    links.new(texture.outputs["Object"], distance.inputs[0])
+    links.new(distance.outputs["Value"], ramp.inputs["Value"])
+    links.new(ramp.outputs["Result"], mixed.inputs[0])
+    links.new(previous, mixed.inputs[1])
+    links.new(transparent.outputs["BSDF"], mixed.inputs[2])
+    links.new(mixed.outputs[0], surface)
+    return mat
+
+
 def railbed_road(asphalt, groove, section_face, module,
                  depth=.016, x_extent=13.0, road_y_near=-8.0):
     # ONE genuine below-grade milled geometry definition powers the surface
@@ -297,6 +342,48 @@ def main():
         if ob.type == "MESH" and ob not in wheel_explainer_meshes
     ]
 
+    # Select TRUE original body/fender meshes (not wheels or manufactured props).
+    # Copy only source geometry close to its already-authenticated front wheel.
+    # The whole source sedan remains untouched and returns intact in shots 4-6.
+    wheel_meshes = set().union(*(set(assembly) for assembly in groups.values()))
+    fender_anchor = bpy.data.objects.new("Original CC0 front tyre fender anchor", None)
+    bpy.context.collection.objects.link(fender_anchor)
+    fender_anchor.parent = car
+    fender_anchor.location = centers["Front_tire"]
+    fender_anchor.matrix_parent_inverse.identity()
+    bpy.context.view_layer.update()
+    anchor_world = fender_anchor.matrix_world.translation.copy()
+    opening_fender_proxies = []
+    fender_material_cache = {}
+    for source_ob in body_and_other_wheel_meshes:
+        if source_ob in wheel_meshes:
+            continue
+        corners = [source_ob.matrix_world @ Vector(v) for v in source_ob.bound_box]
+        if (max(v.x for v in corners) < anchor_world.x - 1.15
+                or min(v.x for v in corners) > anchor_world.x + 1.15
+                or max(v.y for v in corners) < anchor_world.y - 1.15
+                or min(v.y for v in corners) > anchor_world.y + 1.15
+                or max(v.z for v in corners) < anchor_world.z - .85
+                or min(v.z for v in corners) > anchor_world.z + 1.15):
+            continue
+        proxy = source_ob.copy()
+        proxy.data = source_ob.data.copy()
+        proxy.name = "Original CC0 mesh only: fender preview " + source_ob.name
+        bpy.context.collection.objects.link(proxy)
+        proxy.hide_render = True
+        for index, slot in enumerate(source_ob.material_slots):
+            original = slot.material
+            if original is None:
+                continue
+            if original.name not in fender_material_cache:
+                fender_material_cache[original.name] = masked_original_fender_material(
+                    original, fender_anchor
+                )
+            proxy.data.materials[index] = fender_material_cache[original.name]
+        opening_fender_proxies.append(proxy)
+    if not opening_fender_proxies:
+        raise ValueError("original CC0 fender not found within real tyre bounds")
+
     asphalt = grey_mat("dark real-grain asphalt", (.055, .052, .048))
     bump_road(asphalt)
     groove = grey_mat("recessed dark groove", (.035, .035, .034))
@@ -440,6 +527,8 @@ def main():
             visibility = module.detail_visibility(shot["id"])
             for ob in body_and_other_wheel_meshes:
                 ob.hide_render = not visibility["body_visible"]
+            for proxy in opening_fender_proxies:
+                proxy.hide_render = shot["id"] != "hook_warning"
             near_shoulder.hide_render = not visibility["near_shoulder_visible"]
             exposed_bank.hide_render = not visibility["exposed_bank_visible"]
             section_wall.hide_render = not visibility["section_face_visible"]
