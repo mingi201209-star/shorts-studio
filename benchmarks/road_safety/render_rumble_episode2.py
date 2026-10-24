@@ -77,22 +77,16 @@ def bump_road(mat):
     links.new(bump.outputs["Normal"], s.inputs["Normal"])
 
 
-def railbed_road(asphalt, groove, depth=.016, x_extent=13.0, road_y_near=-8.0):
-    # Cut an actual mesh profile. Grooves lie below grade, not above it.
+def railbed_road(asphalt, groove, section_face, module,
+                 depth=.016, x_extent=13.0, road_y_near=-8.0):
+    # ONE genuine below-grade milled geometry definition powers the surface
+    # and the cut-face. Never substitute dark painted bars or fake depth.
+    profile = module.road_section_profile(x_extent=x_extent, depth=depth)
+    xs = [x for x, top, bottom in profile]
+
     def top(x):
-        for i in range(-math.ceil(x_extent/.34), math.ceil(x_extent/.34)+1):
-            p = abs(x - i*.34)
-            if p < .085:
-                return -depth
-            if p < .115:
-                return -depth * (.115-p)/.03
-        return 0.
-    cuts = {-x_extent, x_extent}
-    for i in range(-math.ceil(x_extent/.34), math.ceil(x_extent/.34)+1):
-        c = i*.34
-        for v in (-.116,-.115,-.086,-.085,-.04,0,.04,.085,.086,.115,.116):
-            cuts.add(c+v)
-    xs = sorted(x for x in cuts if -x_extent <= x <= x_extent)
+        return module.groove_height(x, depth=depth)
+
     # FHWA-style longitudinal shoulder rumble: the driver-side lanes stay
     # smooth, while ONLY the near-side tyre crosses a narrow milled band.
     # A full-lane dark stripe pattern is NOT a rumble strip.
@@ -117,7 +111,21 @@ def railbed_road(asphalt, groove, depth=.016, x_extent=13.0, road_y_near=-8.0):
         for j in range(cross_count-1):
             poly=mesh.polygons[k*(cross_count-1)+j]
             poly.material_index=int(j==2 and top(mid)<-depth*.6)
-    return ob
+    # A cut face on the *real shoulder milling edge* at y=-1.3499.
+    # Each upper vertex is the exact road surface z above a solid -8cm
+    # substrate. Only displayed in the road_cut shot; not a floating prop.
+    n = len(profile)
+    vertices = [(x, -1.3499, upper) for x, upper, lower in profile]
+    vertices += [(x, -1.3499, lower) for x, upper, lower in profile]
+    wall_faces = [(i, i+1, n+i+1, n+i) for i in range(n-1)]
+    wall_mesh = bpy.data.meshes.new("Actual 16mm groove cross-section face")
+    wall_mesh.from_pydata(vertices, [], wall_faces)
+    wall_mesh.materials.append(section_face)
+    wall_mesh.update()
+    section_wall = bpy.data.objects.new("Exposed physical asphalt cut at shoulder edge", wall_mesh)
+    bpy.context.collection.objects.link(section_wall)
+    section_wall.hide_render = True
+    return ob, section_wall
 
 
 def main():
@@ -236,12 +244,14 @@ def main():
     asphalt = grey_mat("dark real-grain asphalt", (.09,.091,.087))
     bump_road(asphalt)
     groove = grey_mat("recessed dark groove", (.060,.062,.065))
+    section_face = grey_mat("solid asphalt milled cut material", (.19,.17,.15))
     background = grey_mat("shoulder gravel", (.19,.16,.12))
     yellow = grey_mat("road shoulder stripe", (.73,.68,.49))
     half_x=module.ROAD_X_HALF_SPAN
     near_y=module.ROAD_Y_NEAR_EDGE
     far_y=module.DIRT_Y_FAR_EDGE
-    railbed_road(asphalt,groove,x_extent=half_x,road_y_near=near_y)
+    _, section_wall = railbed_road(asphalt, groove, section_face, module,
+                                   x_extent=half_x, road_y_near=near_y)
     # Extend physical ground to the full fixed camera view (no world void).
     # Keep substrate BELOW the deepest milled cut so the groove stays visible.
     cube("road substrate", (0,0,-.27), (2*half_x,2*abs(near_y),.44), asphalt)
@@ -280,6 +290,16 @@ def main():
     bpy.ops.object.light_add(type="AREA",location=(3,2,6))
     bpy.context.object.data.energy=950
     bpy.context.object.data.size=5
+    # Restrained grazing illumination reveals the REAL recess and rotating
+    # tyre without widening groove depth or inventing a physics effect.
+    bpy.ops.object.light_add(type="AREA", location=(-1.0, -1.8, 1.65))
+    contact_rim = bpy.context.object
+    contact_rim.name = "Road-cut and rolling-contact surface light"
+    contact_rim.data.energy = 440
+    contact_rim.data.shape = "RECTANGLE"
+    contact_rim.data.size = 2.4
+    contact_rim.data.size_y = 0.45
+    contact_rim.hide_render = True
 
     scene.render.engine="CYCLES"
     scene.cycles.device="CPU"
@@ -321,6 +341,13 @@ def main():
             # Camera is fitted to a shot's *global* midpoint, regardless of
             # whether this worker renders its first/middle/last 30 frames.
             layout=module.camera_layout(shot)
+            # Optical detail follows the actual six-beat storyboard, with
+            # one fixed camera per shot and no changed physical motion.
+            section_wall.hide_render = (module.detail_stage(shot["id"]) != "road_section")
+            contact_rim.hide_render = not (
+                module.detail_stage(shot["id"]) == "rolling_contact"
+                or module.detail_stage(shot["id"]) == "road_section"
+            )
             middle=layout["anchor_frame"]
             centre_x=module.travel_x(middle)
             car.location=(centre_x,-.30+module.lane_return_offset(middle),0.)

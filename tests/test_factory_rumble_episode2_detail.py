@@ -71,3 +71,68 @@ def test_macro_treatment_does_not_change_six_shot_contract():
         (1, 150), (151, 300), (301, 450),
         (451, 600), (601, 750), (751, 900),
     ]
+
+
+def test_recess_profile_matches_original_sixteen_mm_road_mesh():
+    """The road cutaway and moving tyre must reference the actual asphalt profile."""
+    from shorts_studio.factory.rumble_episode2 import groove_height
+
+    assert groove_height(0.0) == pytest.approx(-0.016)
+    assert groove_height(0.34) == pytest.approx(-0.016)
+    assert groove_height(-0.34) == pytest.approx(-0.016)
+    assert groove_height(0.1) == pytest.approx(-0.008, abs=1e-9)
+    assert groove_height(-0.1) == pytest.approx(-0.008, abs=1e-9)
+    for position in (0.115, 0.17, 0.225):
+        assert groove_height(position) == pytest.approx(0.0)
+    with pytest.raises(ValueError):
+        groove_height(float("nan"))
+
+
+def test_cutaway_profile_exposes_real_substrate_not_free_floating_grooves():
+    from shorts_studio.factory.rumble_episode2 import road_section_profile
+
+    profile = road_section_profile()
+    assert len(profile) > 200  # covers the actual 26 m milled run
+    xs = [x for x, top, bottom in profile]
+    assert xs == sorted(xs)
+    assert xs[0] == pytest.approx(-13.0)
+    assert xs[-1] == pytest.approx(13.0)
+    assert any(abs(x) < 1e-9 and abs(z + .016) < 1e-9
+               for x, z, lower in profile)
+    assert all(bottom == pytest.approx(-.08) for x, top, bottom in profile)
+    assert all(bottom < top <= 0.0 for x, top, bottom in profile)
+    assert all(top == pytest.approx(
+        __import__("shorts_studio.factory.rumble_episode2", fromlist=["groove_height"]).groove_height(x))
+        for x, top, bottom in profile)
+
+
+def test_road_cut_and_contact_camera_are_tighter_with_full_tyre_safety():
+    from shorts_studio.factory.rumble_episode2 import camera_layout
+
+    shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
+    cut = camera_layout(shots["road_cut"])
+    contact = camera_layout(shots["tire_contact"])
+    assert 3.97 <= cut["scale"] <= 4.10
+    assert 3.45 <= contact["scale"] <= 3.65
+    assert cut["target"] == contact["target"] == "wheel"
+    assert cut["anchor_frame"] == 225 and contact["anchor_frame"] == 375
+    for shot, view in ((shots["road_cut"], cut), (shots["tire_contact"], contact)):
+        right, up = _up_and_right(view["offset"])
+        half_width = .9 * view["scale"] * 9 / 32
+        half_height = .9 * view["scale"] / 2
+        for frame in (shot["start"], view["anchor_frame"], shot["end"]):
+            dx = travel_x(frame) - travel_x(view["anchor_frame"])
+            assert abs(dx * right[0]) + .30 < half_width, (shot["id"], frame)
+            assert abs(dx * up[0]) + .30 < half_height, (shot["id"], frame)
+        camera_z = .28 + view["target_z"] + view["offset"][2]
+        assert camera_z - view["scale"] / 2 * up[2] >= .25
+
+
+def test_native_renderer_uses_shared_geometry_for_section_and_tyre_contact():
+    """Structural contract only; native Cycles32 screenshot still required."""
+    renderer = (EPISODE.parents[2]
+                / "benchmarks/road_safety/render_rumble_episode2.py").read_text()
+    assert "module.groove_height(" in renderer
+    assert "module.road_section_profile(" in renderer
+    assert 'section_wall.hide_render = (module.detail_stage(shot["id"]) != "road_section")' in renderer
+    assert 'module.detail_stage(shot["id"]) == "rolling_contact"' in renderer
