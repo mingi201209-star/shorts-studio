@@ -325,7 +325,7 @@ def summarize_workflow_jobs(run: dict, jobs: list) -> dict:
     ]
     if len(all_native) != 30:
         return result
-    earliest = min(start for _, start in all_native)
+    earliest = min(start for start, _ in all_native)
     latest = max(finish for _, finish in all_native)
     counts["wall_clock_span_seconds"] = round(latest - earliest, 3)
     # End times before start times: simultaneous runners sharing a timestamp
