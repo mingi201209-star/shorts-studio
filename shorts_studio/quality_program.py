@@ -11,6 +11,8 @@ import argparse
 import json
 import math
 import statistics
+import re
+from datetime import datetime
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -205,6 +207,147 @@ def build_scorecard(film: dict | None, human: dict | None = None) -> dict:
         "upload_authorized": False,
         "metrics_need_real_youtube_analytics": True,
     }
+
+
+def _utc_seconds(raw) -> float | None:
+    """Read GitHub REST timestamp, never guess for unstarted or ongoing jobs."""
+    if not isinstance(raw, str) or not raw.strip():
+        return None
+    try:
+        dt = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        return dt.timestamp() if dt.tzinfo is not None else None
+    except (ValueError, OverflowError):
+        return None
+
+
+def summarize_workflow_jobs(run: dict, jobs: list) -> dict:
+    """GitHub job timing evidence. NEVER call job elapsed time 'frame render time'.
+
+    Each native GitHub job includes download, Blender setup, rendering, lossless
+    encoding, QA and upload. The real per-frame times come only from validated
+    film_validation.json via render_metric_stats().
+    """
+    result = {
+        "status": "INVALID_EVIDENCE",
+        "run_id": run.get("id") if isinstance(run, Mapping) else None,
+        "native": {
+            "total": 30, "success": 0, "in_progress": 0, "queued": 0,
+            "failed": 0, "measured_p50_completed_job_seconds": None,
+            "measured_p95_completed_job_seconds": None,
+            "sum_completed_job_seconds": None,
+            "wall_clock_span_seconds": None,
+            "peak_parallel_jobs": None,
+            "mean_real_render_seconds": None,
+            "time_kind": "GitHub job elapsed including setup, encode and upload",
+        },
+        "stages": {"guard_seconds": None, "speech_seconds": None,
+                   "assemble_seconds": None},
+        "workflow_elapsed_seconds": None,
+        "upload_authorized": False,
+    }
+    if not isinstance(run, Mapping) or not isinstance(jobs, list) or not jobs:
+        return result
+    native_by_name = {}
+    all_by_name = {}
+    completed = []
+    for job in jobs:
+        if not isinstance(job, Mapping) or not isinstance(job.get("name"), str):
+            return result
+        name = job["name"]
+        if name in all_by_name:
+            return result
+        all_by_name[name] = job
+        match = re.fullmatch(r"native \\((\\d+)\\)", name)
+        if match:
+            number = int(match.group(1))
+            if number not in range(1, 901, 30):
+                return result
+            native_by_name[number] = job
+        if job.get("status") == "completed":
+            if job.get("conclusion") not in {"success", "failure", "cancelled",
+                                             "timed_out", "skipped", "neutral"}:
+                return result
+            start = _utc_seconds(job.get("started_at"))
+            finish = _utc_seconds(job.get("completed_at"))
+            if start is None or finish is None or finish < start:
+                return result
+            completed.append((name, start, finish, job.get("conclusion")))
+        elif job.get("status") not in {"queued", "waiting", "pending", "in_progress"}:
+            return result
+    counts = result["native"]
+    for job in native_by_name.values():
+        s = job.get("conclusion") or job.get("status")
+        key = ("failed" if s in {"failure", "cancelled", "timed_out"}
+               else "queued" if s in {"waiting", "pending"}
+               else s)
+        if key not in counts or type(counts[key]) is not int:
+            return result
+        counts[key] += 1
+    if not native_by_name:
+        return result
+    # A GitHub run lists queued matrix jobs progressively. Missing entries
+    # are PENDING, not zero-length 'completed' jobs.
+    counts["queued"] += 30 - len(native_by_name)
+    finished_native = [
+        (name, start, stop) for name, start, stop, state in completed
+        if name.startswith("native (") and state == "success"
+    ]
+    durations = sorted(stop - start for _, start, stop in finished_native)
+    if durations:
+        counts["measured_p50_completed_job_seconds"] = round(statistics.median(durations), 3)
+        counts["measured_p95_completed_job_seconds"] = round(
+            durations[math.ceil(.95 * len(durations)) - 1], 3)
+        counts["sum_completed_job_seconds"] = round(sum(durations), 3)
+    for stage in ("guard", "speech", "assemble"):
+        match = next(((finish - start) for name, start, finish, state in completed
+                      if name == stage and state == "success"), None)
+        if match is not None:
+            result["stages"][f"{stage}_seconds"] = round(match, 3)
+
+    failed = any(state in {"failure", "cancelled", "timed_out"} for _, _, _, state in completed)
+    if failed or run.get("conclusion") in {"failure", "cancelled", "timed_out"}:
+        result["status"] = "FAILED"
+        return result
+    if run.get("status") != "completed":
+        result["status"] = "IN_PROGRESS"
+        return result
+    # A run marked success is not evidence of full 900-frame delivery if the
+    # individual matrix/assemble jobs are missing, cancelled, or skipped.
+    if (run.get("conclusion") != "success"
+            or set(native_by_name) != set(range(1, 901, 30))
+            or counts["success"] != 30
+            or any(all_by_name.get(stage, {}).get("conclusion") != "success"
+                   for stage in ("guard", "speech", "assemble"))):
+        return result
+    all_native = [
+        (start, finish) for name, start, finish, state in completed
+        if name.startswith("native (") and state == "success"
+    ]
+    if len(all_native) != 30:
+        return result
+    earliest = min(start for _, start in all_native)
+    latest = max(finish for _, finish in all_native)
+    counts["wall_clock_span_seconds"] = round(latest - earliest, 3)
+    # End times before start times: simultaneous runners sharing a timestamp
+    # aren't spuriously double-counted as extra concurrency.
+    events = sorted(
+        [(s, 1) for s, _ in all_native] +
+        [(e, -1) for _, e in all_native],
+        key=lambda pair: (pair[0], pair[1]),
+    )
+    concurrent = 0
+    peak = 0
+    for _, direction in events:
+        concurrent += direction
+        peak = max(peak, concurrent)
+    if concurrent != 0:
+        return result
+    counts["peak_parallel_jobs"] = peak
+    result["workflow_elapsed_seconds"] = round(
+        max(stop for _, _, stop, _ in completed)
+        - min(start for _, start, _, _ in completed), 3)
+    result["status"] = "PASS_WORKFLOW"
+    return result
 
 
 def main() -> None:
