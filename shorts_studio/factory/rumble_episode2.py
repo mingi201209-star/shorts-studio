@@ -49,6 +49,52 @@ def semantic_labels(shot_id: str) -> tuple[str, ...]:
     return _SEMANTIC_POSITIVE_LABELS[shot_id]
 
 
+# Shared 16 mm physical milling profile. Blender renders this same contour
+# as both the true surface and the optional explanatory section face.
+GROOVE_PITCH_M = 0.34
+GROOVE_FLOOR_HALF_WIDTH_M = 0.085
+GROOVE_RAMP_HALF_WIDTH_M = 0.115
+
+
+def groove_height(x: float, depth: float = 0.016) -> float:
+    """Real road surface z in metres, never a painted/implied groove."""
+    if not math.isfinite(x) or not math.isfinite(depth) or depth <= 0:
+        raise ValueError("invalid physical milling coordinate or depth")
+    nearest = round(x / GROOVE_PITCH_M) * GROOVE_PITCH_M
+    distance = abs(x - nearest)
+    if distance < GROOVE_FLOOR_HALF_WIDTH_M:
+        return -depth
+    if distance < GROOVE_RAMP_HALF_WIDTH_M:
+        ramp = GROOVE_RAMP_HALF_WIDTH_M - GROOVE_FLOOR_HALF_WIDTH_M
+        return -depth * (GROOVE_RAMP_HALF_WIDTH_M - distance) / ramp
+    return 0.0
+
+
+def road_section_profile(
+    x_extent: float = ROAD_X_HALF_SPAN,
+    depth: float = 0.016,
+    substrate_floor: float = -0.08,
+) -> list[tuple[float, float, float]]:
+    """Actual milled top and solid cut-face bottom at each original road vertex."""
+    if not math.isfinite(x_extent) or x_extent <= 0 or not math.isfinite(substrate_floor):
+        raise ValueError("invalid road section dimensions")
+    if not math.isfinite(depth) or depth <= 0 or substrate_floor >= -depth:
+        raise ValueError("section must extend below actual groove floor")
+    cuts = {-x_extent, x_extent}
+    count = math.ceil(x_extent / GROOVE_PITCH_M) + 1
+    for index in range(-count, count + 1):
+        center = index * GROOVE_PITCH_M
+        for offset in (-.116, -.115, -.086, -.085, -.04, 0,
+                       .04, .085, .086, .115, .116):
+            x = center + offset
+            if -x_extent <= x <= x_extent:
+                cuts.add(x)
+    return [
+        (x, groove_height(x, depth), substrate_floor)
+        for x in sorted(cuts)
+    ]
+
+
 def detail_stage(shot_id: str) -> str:
     """Named native 3D mechanism treatment for each existing five-second beat.
 
@@ -82,8 +128,8 @@ def camera_layout(shot: dict) -> dict:
     # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
     layouts = {
         "hook_warning": ("wheel", middle, (0.25, -2.25, 1.75), 3.95, 0.0, -0.18),
-        "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.15, 0.0, -0.18),
-        "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.95, 0.0, -0.08),
+        "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.04, 0.0, -0.18),
+        "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.55, 0.0, -0.08),
         "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
         "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
         "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
