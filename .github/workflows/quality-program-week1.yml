@@ -1,0 +1,38 @@
+name: Quality-first W1 scorecard fail-closed
+on:
+  push:
+    branches: [plan/2026-10-24-eight-week-quality]
+    paths: [.github/workflows/quality-program-week1.yml]
+permissions:
+  contents: read
+jobs:
+  week1-baseline:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Generate honest first-week baseline before final MP4 is available
+        run: |
+          set -euo pipefail
+          PYTHONPATH=. python -m shorts_studio.quality_program --out build/quality/week01.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          data=json.loads(Path('build/quality/week01.json').read_text())
+          assert data['technical_status']=='NOT_MEASURED'
+          assert data['human_review']['status']=='NOT_REVIEWED'
+          assert data['editorial_decision']=='HOLD'
+          assert data['upload_authorized'] is False
+          assert data['render_metrics'] is None
+          print('WEEK1_BASELINE_EVIDENCE_PENDING_NO_FALSE_PASS')
+          PY
+      - name: Preserve quality baseline
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: eight-week-quality-W1-evidence-pending
+          path: build/quality/week01.json
+          retention-days: 14
+          if-no-files-found: error
