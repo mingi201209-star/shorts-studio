@@ -1,0 +1,44 @@
+{
+  "date_kst": "2026-10-24",
+  "program": "Shorts Studio 8-week quality-first W1",
+  "evidence_source": "https://github.com/mingi201209-star/shorts-studio/actions/runs/40084843910",
+  "run_id": 40084843910,
+  "run_head_sha": "02171e9972e709bfa05f16b1d188f4f9d38db292",
+  "renderer_source_sha256": "1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d",
+  "workflow_conclusion": "failure",
+  "native_shards": {
+    "expected": 30,
+    "succeeded": 30,
+    "failed": 0,
+    "frames_per_shard": 30,
+    "total_unique_frames_required": 900
+  },
+  "guard": "PASS",
+  "speech_preflight": "PASS",
+  "final_assembler": "FAILED_CLOSED",
+  "final_video_qa": {
+    "status": "FAIL",
+    "failed_gate": "visual_activity",
+    "first_5s_visual_changes": 0,
+    "minimum_required_changes": 1,
+    "sample_fps": 2,
+    "cut_timestamps_seconds": [
+      0,
+      5,
+      10,
+      15,
+      20,
+      25
+    ],
+    "maximum_static_visual_seconds": 5,
+    "black_opening": "PASS",
+    "captions_visible": "PASS",
+    "original_gate_modified": false
+  },
+  "technical_film_validation_generated": false,
+  "human_review_status": "AWAITING_PRIVATE_REVIEW_MP4",
+  "editorial_decision": "HOLD",
+  "upload_authorized": false,
+  "followup_issue": "https://github.com/mingi201209-star/shorts-studio/issues/80",
+  "notes": "No final successful report. Original 900 frames passed shard gates but complete video failed actual first-5s visual activity. A rejected internal-only MP4 recovery is separate and must never be called released or upload ready."
+}
