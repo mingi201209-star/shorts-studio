@@ -87,34 +87,43 @@ def stage_source(source: Path, *, root: Path, planned: Manifest,
     root = private_dir(root)
     space(root, planned.size_bytes + min(planned.chunk_bytes, planned.size_bytes), min_free_bytes)
     spool = Path(tempfile.mkdtemp(prefix=plan_id(planned) + "-", dir=root))
-    with source_handle(source) as handle:
-        before = Fingerprint.of(os.fstat(handle.fileno()))
-        require(before.size_bytes == planned.size_bytes, "SOURCE_CHANGED")
-        for c in planned.chunks:
-            space(root, c.size_bytes, min_free_bytes)
-            raw = handle.read(c.size_bytes)
-            require(len(raw) == c.size_bytes and hashlib.sha256(raw).hexdigest() == c.sha256,
+    try:
+        with source_handle(source) as handle:
+            before = Fingerprint.of(os.fstat(handle.fileno()))
+            require(before.size_bytes == planned.size_bytes, "SOURCE_CHANGED")
+            for c in planned.chunks:
+                space(root, c.size_bytes, min_free_bytes)
+                raw = handle.read(c.size_bytes)
+                require(len(raw) == c.size_bytes and hashlib.sha256(raw).hexdigest() == c.sha256,
+                        "SOURCE_CHANGED")
+                target = spool / f"{c.index}.bin"
+                with target.open("xb") as out:
+                    os.chmod(target, 0o600)
+                    out.write(raw)
+                    out.flush()
+                    os.fsync(out.fileno())
+                target.chmod(0o400)
+            require(not handle.read(1) and Fingerprint.of(os.fstat(handle.fileno())) == before,
                     "SOURCE_CHANGED")
-            target = spool / f"{c.index}.bin"
-            with target.open("xb") as out:
-                os.chmod(target, 0o600)
-                out.write(raw)
-                out.flush()
-                os.fsync(out.fileno())
-            target.chmod(0o400)
-        require(not handle.read(1) and Fingerprint.of(os.fstat(handle.fileno())) == before,
-                "SOURCE_CHANGED")
-    staged = Staged(plan_id(planned), Path(source).absolute(), before, spool, planned)
-    validate_original(staged)
-    validate_staged(staged)
-    with (spool / "manifest.json").open("xb") as out:
-        os.chmod(out.name, 0o400)
-        out.write(canonical_manifest(planned))
-        out.flush()
-        os.fsync(out.fileno())
-    fsync_dir(spool)
-    fsync_dir(root)
-    return staged
+        staged = Staged(plan_id(planned), Path(source).absolute(), before, spool, planned)
+        validate_original(staged)
+        validate_staged(staged)
+        with (spool / "manifest.json").open("xb") as out:
+            os.chmod(out.name, 0o400)
+            out.write(canonical_manifest(planned))
+            out.flush()
+            os.fsync(out.fileno())
+        fsync_dir(spool)
+        fsync_dir(root)
+        return staged
+    except BaseException:
+        # A failure anywhere after mkdtemp (a mid-copy SOURCE_CHANGED, a
+        # disk error on a later chunk, an unexpected OSError) must not leave
+        # an orphaned spool directory behind: nothing else ever reuses or
+        # removes a tempfile.mkdtemp-created directory for this plan_id, so
+        # every such failure would otherwise leak disk space permanently.
+        shutil.rmtree(spool, ignore_errors=True)
+        raise
 
 
 def restore_file(manifest: Manifest, *, destination: Path, fetch,

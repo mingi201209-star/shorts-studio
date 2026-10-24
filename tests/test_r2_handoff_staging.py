@@ -7,7 +7,8 @@ import sys
 import pytest
 from test_r2_handoff_contracts import plan
 
-from shorts_studio.r2_handoff.contracts import HandoffError
+import shorts_studio.r2_handoff.staging as staging_mod
+from shorts_studio.r2_handoff.contracts import HandoffError, plan_id
 from shorts_studio.r2_handoff.staging import (
     restore_file,
     stage_source,
@@ -90,3 +91,33 @@ def test_corrupt_readback_never_installs_destination(tmp_path):
     with pytest.raises(HandoffError):
         restore_file(m, destination=out, fetch=lambda c, p: p.write_bytes(b"bad"))
     assert not out.exists()
+
+
+def test_stage_source_cleans_up_spool_on_mid_copy_failure(tmp_path, monkeypatch):
+    """A failure partway through copying chunks (a SOURCE_CHANGED mid-loop,
+    a disk error on a later chunk, any other exception after
+    tempfile.mkdtemp has already created the spool directory) must not
+    leave that directory behind -- nothing else ever reuses or removes a
+    plan_id-prefixed mkdtemp directory, so every such failure would
+    otherwise leak disk space permanently on every retry."""
+    m = plan(tmp_path, raw=b"abcdef", chunk_bytes=2)  # 3 chunks of 2 bytes each
+    source = tmp_path / "sample.json"
+    real_sha256 = hashlib.sha256
+    calls = {"n": 0}
+    def flaky_sha256(data=b""):
+        calls["n"] += 1
+        if calls["n"] == 2:  # fail on the second chunk, after the first is already written
+            class _Wrong:
+                def hexdigest(self):
+                    return "0" * 64
+            return _Wrong()
+        return real_sha256(data)
+    monkeypatch.setattr(staging_mod.hashlib, "sha256", flaky_sha256)
+    root = tmp_path / "spool_root"
+    with pytest.raises(HandoffError, match="SOURCE_CHANGED"):
+        stage_source(source, root=root, planned=m)
+    leftover = list(root.glob(f"{plan_id(m)}-*")) if root.is_dir() else []
+    assert leftover == [], f"orphaned spool directory left behind: {leftover}"
+    # The real source file itself is never touched by a failed stage attempt.
+    assert source.read_bytes() == b"abcdef"
+
