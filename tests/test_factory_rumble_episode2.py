@@ -305,20 +305,7 @@ def _target(shot, layout):
     return (x, y, z + layout["target_z"])
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "hook_warning's current camera (offset (0.25, -2.7, 1.75), scale 3.8, "
-        "from PR #56 commit 82af1a3 'foreground tire and milled shoulder in "
-        "opening') places the near front tyre at frame 1 just outside this "
-        "test's 90% safety margin: abs(u)+radius=0.988 vs 0.9*half_width=0.962 "
-        "(short by 2.6cm). The tyre is still inside the raw frame (0.988 < "
-        "1.069 full half-width) -- this is a thin-margin near-miss, not a "
-        "confirmed off-screen defect. Needs a real sample-render visual check "
-        "(see the project's quick-QC step) before either retuning the camera "
-        "or widening this margin."
-    ),
-)
+# Restored as a mandatory safety gate after the opening camera correction.
 def test_fixed_wheel_cameras_keep_the_near_tyre_in_frame_for_the_whole_shot():
     from shorts_studio.factory.rumble_episode2 import camera_layout
 
@@ -339,18 +326,7 @@ def test_fixed_wheel_cameras_keep_the_near_tyre_in_frame_for_the_whole_shot():
             assert abs(v) + TYRE_RADIUS <= .9 * half_h, (shot["id"], frame)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "hook_warning's current camera (offset (0.25, -2.7, 1.75), scale 3.8, "
-        "from PR #56 commit 82af1a3) leaves only 0.184m between the "
-        "orthographic frustum's bottom edge and road grade, short of this "
-        "test's 0.25m safety buffer by 6.6cm. The plane is still above grade "
-        "(0.184 > 0), so no black void is confirmed -- this is a reduced-"
-        "buffer near-miss. Needs a real sample-render visual check before "
-        "either retuning the camera or widening this margin."
-    ),
-)
+# Restored as a mandatory safety gate after the opening camera correction.
 def test_orthographic_camera_plane_never_starts_below_the_road():
     from shorts_studio.factory.rumble_episode2 import camera_layout
 
