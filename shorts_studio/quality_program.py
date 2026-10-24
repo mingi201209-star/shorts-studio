@@ -355,13 +355,34 @@ def main() -> None:
     parser.add_argument("--film-validation", type=Path, help="Original film_validation.json")
     parser.add_argument("--review", type=Path, help="Optional actual human-review JSON")
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--workflow-run-json", type=Path,
+                        help="Unmodified GitHub Actions run API JSON")
+    parser.add_argument("--workflow-jobs-json", type=Path,
+                        help="Unmodified GitHub Actions jobs?per_page=100 API JSON")
+    parser.add_argument("--workflow-out", type=Path,
+                        help="Separate job/clock evidence JSON (not a video QA PASS)")
     args = parser.parse_args()
+    workflow_options = (args.workflow_run_json, args.workflow_jobs_json,
+                        args.workflow_out)
+    if any(workflow_options) and not all(workflow_options):
+        parser.error("workflow run, jobs and output path must be supplied together")
     # Explicitly provided missing files fail hard, rather than becoming 'not measured'.
     film = json.loads(args.film_validation.read_text()) if args.film_validation else None
     review = json.loads(args.review.read_text()) if args.review else None
     report = build_scorecard(film, review)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+    if all(workflow_options):
+        workflow = json.loads(args.workflow_run_json.read_text())
+        job_data = json.loads(args.workflow_jobs_json.read_text())
+        if not isinstance(job_data, dict) or not isinstance(job_data.get("jobs"), list):
+            parser.error("GitHub jobs API response must contain jobs array")
+        timing = summarize_workflow_jobs(workflow, job_data["jobs"])
+        args.workflow_out.parent.mkdir(parents=True, exist_ok=True)
+        args.workflow_out.write_text(json.dumps(timing, indent=2) + "\n")
+        print("QUALITY_PROGRAM_NATIVE_TIMING "
+              + json.dumps({"status": timing["status"],
+                            "native": timing["native"]}), flush=True)
     print("QUALITY_PROGRAM_WEEKLY_SCORECARD "
           + json.dumps({"technical_status": report["technical_status"],
                         "human_review": report["human_review"]["status"],
