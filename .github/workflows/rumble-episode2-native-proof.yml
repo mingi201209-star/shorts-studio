@@ -1,7 +1,7 @@
 name: Road rumble episode 2 six-shot native Cycles32 proof
 on:
   push:
-    branches: [feat/rumble-episode2-production-20261018, nightshift/episode2-editorial-20261022, feat/rumble-episode2-qa-port-20261024, feat/episode2-road-profile-macro-20261024, feat/episode2-isolated-tyre-cutaway-20261024]
+    branches: [feat/rumble-episode2-production-20261018, nightshift/episode2-editorial-20261022, feat/rumble-episode2-qa-port-20261024, feat/episode2-road-profile-macro-20261024, feat/episode2-isolated-tyre-cutaway-20261024, feat/episode2-grounded-macro-quality-20261024]
 permissions:
   contents: read
 jobs:

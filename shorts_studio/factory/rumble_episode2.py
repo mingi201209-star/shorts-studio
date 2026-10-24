@@ -22,6 +22,11 @@ VIEWS = {"hero", "contact", "roadside", "payoff"}
 ROAD_X_HALF_SPAN = 13.0
 ROAD_Y_NEAR_EDGE = -8.0
 DIRT_Y_FAR_EDGE = 14.0
+# The milled shoulder must sit UNDER the audited near-side front tyre
+# (source world-space lateral centre ~= -0.709 m), not merely touch its edge.
+MILLED_BAND_NEAR_Y = -1.20
+MILLED_BAND_FAR_Y = -0.55
+SHOULDER_LINE_Y = -0.46
 
 
 # Original CLIP semantic gate inputs (shorts_studio.visual_qa thresholds unchanged).
@@ -123,7 +128,7 @@ def detail_visibility(shot_id: str) -> dict[str, bool]:
     """
     stage = detail_stage(shot_id)
     is_section = stage == "road_section"
-    is_closeup = stage in ("road_section", "rolling_contact")
+    is_closeup = stage in ("macro_warning", "road_section", "rolling_contact")
     return {
         "body_visible": not is_closeup,
         "near_shoulder_visible": not is_section,
@@ -145,8 +150,8 @@ def camera_layout(shot: dict) -> dict:
     # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
     layouts = {
         "hook_warning": ("wheel", middle, (0.25, -2.25, 1.75), 3.95, 0.0, -0.18),
-        "road_cut": ("wheel", middle, (.1, -3.4, 4.15), 4.04, 0.0, -0.18),
-        "tire_contact": ("wheel", middle, (5.0, -4.2, 2.8), 3.55, 0.0, -0.08),
+        "road_cut": ("wheel", middle, (5.0, -1.8, 2.0), 2.65, 0.0, -0.18),
+        "tire_contact": ("wheel", middle, (4.0, -2.0, 2.0), 2.65, 0.0, -0.19),
         "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
         "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
         "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
