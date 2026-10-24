@@ -48,7 +48,7 @@ jobs:
           echo "$ORIGINAL_FAILED_MP4_SHA  build/original-failed-review/rumble-strips-english-30s-1080p.mp4" | sha256sum -c -
       - name: Make both original real Blender-footage 30s versions with unchanged original 0-30s AAC
         run: |
-          python -S benchmarks/road_safety/episode2_first5_ab_editorial.py \
+          python benchmarks/road_safety/episode2_first5_ab_editorial.py \
             --source build/original-failed-review/rumble-strips-english-30s-1080p.mp4 \
             --out build/episode2-first5-ab
       - name: Protect unchanged first-five-second pixel QA and no-upload policy
