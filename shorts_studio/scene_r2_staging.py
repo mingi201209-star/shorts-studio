@@ -33,6 +33,7 @@ from __future__ import annotations
 import math
 import os
 import re
+import shutil
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -111,7 +112,19 @@ def _upload_limits(size_bytes: int, chunk_bytes: int, deadline_hours: float) -> 
 def stage_scene_clip(clip: Path, *, config: R2StagingConfig) -> dict:
     """Hash, chunk, and durably stage `clip` for a future R2 upload. No
     network call; no credential is read. Idempotent: staging the same clip
-    bytes again returns the same job_id instead of re-copying."""
+    bytes again returns the same job_id instead of re-copying.
+
+    If StateStore.create_job raises AFTER stage_source has already copied
+    the chunks into the spool (verified by a real interrupted-retry test:
+    without this cleanup, a crash in that narrow window leaves an orphaned
+    spool directory that a later retry never reuses or removes, since
+    stage_source's own plan_id-prefixed tempfile.mkdtemp always creates a
+    fresh directory), the just-created spool is removed before re-raising
+    so a retry starts clean instead of leaking disk space on every failed
+    attempt. This narrows but does not eliminate the window: a hard process
+    kill (SIGKILL) between the two calls cannot be caught by any exception
+    handler and can still leak one spool directory -- a disk-space concern
+    only, never data loss or a duplicate/incorrect job."""
     clip = Path(clip)
     size_bytes = clip.stat().st_size
     limits = _upload_limits(size_bytes, config.chunk_bytes, config.deadline_hours)
@@ -129,7 +142,11 @@ def stage_scene_clip(clip: Path, *, config: R2StagingConfig) -> dict:
             if error.code != "UNKNOWN_JOB":
                 raise
             staged = stage_source(clip, root=config.state_root / "spool", planned=manifest)
-            store.create_job(staged, limits)
+            try:
+                store.create_job(staged, limits)
+            except BaseException:
+                shutil.rmtree(staged.spool, ignore_errors=True)
+                raise
     return {
         "status": "STAGED", "job_id": job_id, "sha256": manifest.sha256,
         "size_bytes": manifest.size_bytes, "namespace": config.namespace,

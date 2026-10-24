@@ -6,10 +6,14 @@ calls r2_handoff's plan_source/stage_source/StateStore, none of which touch
 the network or read any credential -- see the module's own docstring for why.
 """
 import os
+import shutil
+import sqlite3
 
 import pytest
 
 from shorts_studio.r2_handoff.contracts import HandoffError
+import shorts_studio.r2_handoff.staging as staging_mod
+import shorts_studio.r2_handoff.state as state_mod
 from shorts_studio.scene_r2_staging import (
     R2StagingConfig,
     R2StagingConfigError,
@@ -151,3 +155,72 @@ def test_render_stage_helper_raises_when_env_unconfigured(monkeypatch, tmp_path)
     project = type("P", (), {"title": "t"})()
     with pytest.raises(R2StagingConfigError):
         R._stage_scene_clip_for_project(clip, "s1", project)
+
+# --- interruption / resume / disk-floor safety -------------------------------
+# These reproduce, against a real local clip, the three scenarios a manual
+# reviewer explicitly asked to see proven: reprocessing the same scene never
+# duplicates staged data, a disk-space failure is refused cleanly, and a
+# crash between stage_source() succeeding and StateStore.create_job()
+# committing does not leak an orphaned spool directory on retry.
+
+def _count_spool_dirs(root):
+    spool = root / "spool"
+    return sorted(p.name for p in spool.iterdir()) if spool.is_dir() else []
+
+def _count_job_rows(root):
+    db = sqlite3.connect(str(root / "jobs.sqlite"))
+    try:
+        return db.execute("SELECT COUNT(*) FROM jobs").fetchone()[0]
+    finally:
+        db.close()
+
+def test_reprocessing_the_same_scene_never_duplicates_staged_data(tmp_path):
+    clip = tmp_path / "scene.mp4"
+    clip.write_bytes(b"real-looking clip bytes" * 200)
+    config = _config(tmp_path)
+    first = stage_scene_clip(clip, config=config)
+    dirs_after_first = _count_spool_dirs(config.state_root)
+    rows_after_first = _count_job_rows(config.state_root)
+    second = stage_scene_clip(clip, config=config)
+    assert first["job_id"] == second["job_id"]
+    assert _count_spool_dirs(config.state_root) == dirs_after_first
+    assert _count_job_rows(config.state_root) == rows_after_first == 1
+
+def test_disk_exhaustion_is_refused_cleanly_with_no_partial_state(tmp_path, monkeypatch):
+    clip = tmp_path / "scene.mp4"
+    clip.write_bytes(b"x" * 1000)
+    config = _config(tmp_path)
+    real_disk_usage = shutil.disk_usage
+    def fake_low_disk(path):
+        usage = real_disk_usage(path)
+        return type(usage)(total=usage.total, used=usage.total - 1, free=1)
+    monkeypatch.setattr(staging_mod.shutil, "disk_usage", fake_low_disk)
+    with pytest.raises(HandoffError) as excinfo:
+        stage_scene_clip(clip, config=config)
+    assert excinfo.value.code == "DISK_LIMIT"
+    # No job row and no leftover spool directory from the refused attempt.
+    assert not (config.state_root / "jobs.sqlite").exists() or _count_job_rows(config.state_root) == 0
+    assert _count_spool_dirs(config.state_root) == []
+
+def test_crash_between_stage_and_create_job_does_not_leak_a_spool_dir(tmp_path, monkeypatch):
+    clip = tmp_path / "scene.mp4"
+    clip.write_bytes(b"real-looking clip bytes" * 200)
+    config = _config(tmp_path)
+    real_create_job = state_mod.StateStore.create_job
+    calls = {"n": 0}
+    def flaky_create_job(self, staged, limits):
+        calls["n"] += 1
+        if calls["n"] == 1:
+            raise RuntimeError("simulated crash after stage_source, before create_job commits")
+        return real_create_job(self, staged, limits)
+    monkeypatch.setattr(state_mod.StateStore, "create_job", flaky_create_job)
+    with pytest.raises(RuntimeError):
+        stage_scene_clip(clip, config=config)
+    # The spool directory stage_source just wrote must be cleaned up, not
+    # left behind -- a retry's own fresh mkdtemp would never reuse or
+    # remove it otherwise (see stage_scene_clip's own docstring).
+    assert _count_spool_dirs(config.state_root) == []
+    result = stage_scene_clip(clip, config=config)
+    assert result["status"] == "STAGED"
+    assert len(_count_spool_dirs(config.state_root)) == 1
+
