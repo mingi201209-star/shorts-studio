@@ -228,3 +228,32 @@ def test_workflow_timing_duplicate_native_names_and_empty_jobs_are_not_valid():
     assert summarize_workflow_jobs(
         {"status": "completed", "conclusion": "success"}, duplicates
     )["status"] == "INVALID_EVIDENCE"
+
+
+def test_weekly_cli_can_emit_real_workflow_job_progress_separately(tmp_path):
+    import subprocess
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    run = tmp_path / "run.json"
+    jobs = tmp_path / "jobs.json"
+    result_file = tmp_path / "workflow.json"
+    scorecard = tmp_path / "baseline.json"
+    run.write_text(json.dumps({"id": 40084843910, "status": "in_progress"}))
+    jobs.write_text(json.dumps({"jobs": [
+        _job("native (1)", "2026-10-24T10:11:00Z", "2026-10-24T10:40:00Z"),
+        _job("native (31)", "2026-10-24T10:11:00Z", None,
+             status="in_progress", conclusion=None),
+    ]}))
+    p = subprocess.run([sys.executable, "-S", "-m", "shorts_studio.quality_program",
+        "--out", str(scorecard), "--workflow-run-json", str(run),
+        "--workflow-jobs-json", str(jobs), "--workflow-out", str(result_file)],
+        cwd=root, capture_output=True, text=True, timeout=20)
+    assert p.returncode == 0, p.stderr
+    report = json.loads(result_file.read_text())
+    assert report["status"] == "IN_PROGRESS"
+    assert report["native"]["success"] == 1
+    assert report["native"]["in_progress"] == 1
+    assert report["native"]["queued"] == 28
+    assert report["workflow_elapsed_seconds"] is None
+    assert json.loads(scorecard.read_text())["technical_status"] == "NOT_MEASURED"
