@@ -90,9 +90,14 @@ def railbed_road(asphalt, groove, section_face, module,
     # FHWA-style longitudinal shoulder rumble: the driver-side lanes stay
     # smooth, while ONLY the near-side tyre crosses a narrow milled band.
     # A full-lane dark stripe pattern is NOT a rumble strip.
-    y_positions=(road_y_near,-1.35,-1.3499,-.7001,-.70,2.4)
+    y_positions=(road_y_near,
+                 module.MILLED_BAND_NEAR_Y,
+                 module.MILLED_BAND_NEAR_Y + .0001,
+                 module.MILLED_BAND_FAR_Y - .0001,
+                 module.MILLED_BAND_FAR_Y,
+                 2.4)
     cross_count=len(y_positions)
-    vertices=[(x,y,top(x) if -1.3499<=y<=-.7001 else 0.0)
+    vertices=[(x,y,top(x) if module.MILLED_BAND_NEAR_Y + .0001 <= y <= module.MILLED_BAND_FAR_Y - .0001 else 0.0)
               for x in xs for y in y_positions]
     faces=[]
     near_faces=[]
@@ -125,12 +130,12 @@ def railbed_road(asphalt, groove, section_face, module,
     near_mesh.update()
     near_shoulder=bpy.data.objects.new("Real near shoulder foreground",near_mesh)
     bpy.context.collection.objects.link(near_shoulder)
-    # A cut face on the *real shoulder milling edge* at y=-1.3499.
+    # A cut face on the *real shoulder milling edge*, consistently shared with the surface.
     # Each upper vertex is the exact road surface z above a solid -8cm
     # substrate. Only displayed in the road_cut shot; not a floating prop.
     n = len(profile)
-    vertices = [(x, -1.3499, upper) for x, upper, lower in profile]
-    vertices += [(x, -1.3499, lower) for x, upper, lower in profile]
+    vertices = [(x, module.MILLED_BAND_NEAR_Y + .0001, upper) for x, upper, lower in profile]
+    vertices += [(x, module.MILLED_BAND_NEAR_Y + .0001, lower) for x, upper, lower in profile]
     wall_faces = [(i, i+1, n+i+1, n+i) for i in range(n-1)]
     wall_mesh = bpy.data.meshes.new("Actual 16mm groove cross-section face")
     wall_mesh.from_pydata(vertices, [], wall_faces)
@@ -283,10 +288,11 @@ def main():
     road_substrate=cube("road substrate", (0,0,-.27),
                         (2*half_x,2*abs(near_y),.44), asphalt)
     exposed_bank=cube("earth lowered to expose actual milling face",
-                      (0,(near_y-1.35)/2,-.31),
-                      (2*half_x,-1.35-near_y,.44),background)
+                      (0,(near_y+module.MILLED_BAND_NEAR_Y)/2,-.31),
+                      (2*half_x,module.MILLED_BAND_NEAR_Y-near_y,.44),background)
     exposed_bank.hide_render=True
-    cube("lane edge marking",(0,-.53,.007),(2*half_x,.060,.006),yellow)
+    cube("lane edge marking",(0,module.SHOULDER_LINE_Y,.007),
+         (2*half_x,.060,.006),yellow)
     cube("dry roadside earth",(0,(2.4+far_y)/2,-.12),
          (2*half_x,far_y-2.4,.19),background)
 
