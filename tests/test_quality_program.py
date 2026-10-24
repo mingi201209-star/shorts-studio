@@ -120,3 +120,26 @@ def test_snapshot_has_no_unmeasured_performance_claim_or_fake_retention_metric()
     assert "view_count" not in json.dumps(result)
     assert "retention_rate" not in json.dumps(result)
     assert result["metrics_need_real_youtube_analytics"] is True
+
+
+def test_weekly_scorecard_cli_runs_in_clean_python_without_factory_dependencies(tmp_path):
+    import subprocess
+    import sys
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[1]
+    target = tmp_path / "week01.json"
+    process = subprocess.run(
+        [sys.executable, "-S", "-m", "shorts_studio.quality_program",
+         "--out", str(target)],
+        cwd=root, capture_output=True, text=True, timeout=20,
+    )
+    assert process.returncode == 0, process.stderr
+    data = json.loads(target.read_text())
+    assert data["technical_status"] == "NOT_MEASURED"
+    assert data["upload_authorized"] is False
+
+
+def test_scorecard_shot_ids_match_authoritative_episode_contract():
+    from shorts_studio.quality_program import SHOT_IDS
+    from shorts_studio.factory.rumble_episode2 import SHOT_IDS as AUTHORITATIVE
+    assert SHOT_IDS == AUTHORITATIVE
