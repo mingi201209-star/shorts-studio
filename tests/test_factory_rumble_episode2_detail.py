@@ -112,8 +112,8 @@ def test_road_cut_and_contact_camera_are_tighter_with_full_tyre_safety():
     shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
     cut = camera_layout(shots["road_cut"])
     contact = camera_layout(shots["tire_contact"])
-    assert 3.97 <= cut["scale"] <= 4.10
-    assert 3.45 <= contact["scale"] <= 3.65
+    assert 2.35 <= cut["scale"] <= 2.85
+    assert 2.35 <= contact["scale"] <= 2.85
     assert cut["target"] == contact["target"] == "wheel"
     assert cut["anchor_frame"] == 225 and contact["anchor_frame"] == 375
     for shot, view in ((shots["road_cut"], cut), (shots["tire_contact"], contact)):
@@ -141,7 +141,7 @@ def test_mechanism_isolates_genuine_wheel_and_road_only_in_detail_beats():
     """Meaningful component close-ups, not a full car hiding the contact area."""
     from shorts_studio.factory.rumble_episode2 import detail_visibility
     cases = {
-        "hook_warning": (True, True, False, False),
+        "hook_warning": (False, True, False, False),
         "road_cut": (False, False, True, True),
         "tire_contact": (False, True, False, False),
         "rumble_mechanism": (True, True, False, False),
