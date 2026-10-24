@@ -8,7 +8,7 @@ on:
         description: Exact 40-character commit SHA being dispatched
         required: true
 env:
-  RENDERER_SOURCE_SHA256: 1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d
+  RENDERER_SOURCE_SHA256: 4debc60cc54587c1a6dab8167d0886ec7f26b064f0140d43235b481b6af24dbf
 permissions:
   contents: read
 jobs:
