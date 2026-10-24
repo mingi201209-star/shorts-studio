@@ -1,0 +1,142 @@
+name: Episode 2 six true midpoint frames strict semantic proof
+on:
+  push:
+    branches: [feat/episode2-cinematic-contact-20261024]
+    paths: [.github/workflows/rumble-episode2-midpoint-semantic-proof.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  native-original-2-frame:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: true
+      matrix:
+        frame: [525, 675, 825]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install hash-pinned Blender 5.0.1 and QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          python -m pip install Pillow pydantic
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Fetch exact CC0 production scene without binary commits
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/source"
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render one original frame in each of six story beats
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rumble"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_rumble_episode2.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/factory/rumble-episode2-30s.json --start ${{ matrix.frame }} --end ${{ matrix.frame }} --out "$RUNNER_TEMP/rumble"
+      - name: Verify native resolution samples 3D motion and source provenance
+        run: |
+          PYTHONPATH="$PWD" python -m shorts_studio.factory.rumble_native_shard_qa --out "$RUNNER_TEMP/rumble" --manifest examples/factory/rumble-episode2-30s.json --renderer benchmarks/road_safety/render_rumble_episode2.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rumble-midpoint-native-${{ matrix.frame }}
+          path: |
+            ${{ runner.temp }}/rumble/episode-proof.json
+            ${{ runner.temp }}/rumble/frame_*.png
+          if-no-files-found: error
+          retention-days: 3
+
+  original-midpoints:
+    needs: native-original-2-frame
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      PINNED_RENDERER_SHA: '1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d'
+      PREVIOUS_EXACT_SOURCE_HEAD: '46d68f06ca14e4ee58d310ab613697da6d7c68de'
+      PREVIOUS_NATIVE_PROOF_RUN: '40080011752'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Require same original renderer source for every reused original midpoint
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          echo "$PINNED_RENDERER_SHA  benchmarks/road_safety/render_rumble_episode2.py" | sha256sum -c -
+          test "$(gh api "repos/$GH_REPO/actions/runs/$PREVIOUS_NATIVE_PROOF_RUN" --jq .head_sha)" = "$PREVIOUS_EXACT_SOURCE_HEAD"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$PREVIOUS_NATIVE_PROOF_RUN" --jq .conclusion)" = success
+      - name: Install unmodified production CLIP implementation and thresholds
+        run: |
+          python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[vision]'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: rumble-midpoint-native-*
+          path: build/midpoints-new
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 40080011752
+          pattern: episode2-cinematic-motion-frame-*
+          path: build/midpoints-old
+      - name: Run original local semantic model on exact 5s midpoints (not frame starts)
+        run: |
+          PYTHONPATH=. python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          from PIL import Image
+          from shorts_studio.factory.rumble_episode2 import SHOT_IDS,semantic_labels,SEMANTIC_NEGATIVE_LABELS
+          from shorts_studio.visual_qa import ClipSemanticVisionProvider
+          from benchmarks.road_safety.episode2_film import check_semantic
+          provider=ClipSemanticVisionProvider()
+          out=Path("build/midpoint-semantic-report")
+          out.mkdir(parents=True,exist_ok=True)
+          all_results=[]
+          frames=(75,225,375,525,675,825)
+          for ident,frame in zip(SHOT_IDS,frames):
+              root=Path("build/midpoints-old" if frame<451 else "build/midpoints-new")
+              folder=root/("episode2-cinematic-motion-frame-" if frame<451 else "rumble-midpoint-native-")
+              folder=Path(str(folder)+str(frame))
+              proof=json.loads((folder/"episode-proof.json").read_text())
+              assert proof["renderer_source_sha256"]==os.environ["PINNED_RENDERER_SHA"]
+              assert proof["frame_numbers"]==[frame]
+              assert proof["resolution"]==[1080,1920] and proof["cycles_samples"]==32
+              assert proof["preview_only"] is False
+              image=folder/f"frame_{frame:04}.png"
+              assert hashlib.sha256(image.read_bytes()).hexdigest()==proof["original_frame_records"][0]["sha256"]
+              with Image.open(image) as im:
+                  assert im.size==(1080,1920)
+                  cropped=out/f"{ident}-midpoint.png"
+                  im.convert("RGB").crop((0,0,1080,1400)).save(cropped)
+              result=provider.evaluate(str(cropped),"true native 3D midpoint "+ident,
+                    positive_labels=list(semantic_labels(ident)),
+                    negative_labels=list(SEMANTIC_NEGATIVE_LABELS),
+                    media_box_applied=True)
+              all_results.append({"shot":ident,"frame":frame,"provider":"ClipSemanticVisionProvider",**result})
+              print("MIDPOINT_SEMANTIC_RESULT",json.dumps(all_results[-1]),flush=True)
+          report={"note":"Supplemental strict original CLIP on exact 5s midpoint stills, not proof of completed video.",
+                  "renderer_sha256":os.environ["PINNED_RENDERER_SHA"],"results":all_results,
+                  "status":"PASS" if all(e["status"]=="PASS" for e in all_results) else "QA_NOT_PASS"}
+          (out/"midpoint-semantic.json").write_text(json.dumps(report,indent=2))
+          check_semantic(all_results)
+          print("ALL_SIX_REAL_MIDPOINTS_STRICT_SEMANTIC_PASS",flush=True)
+          PY
+      - name: Preserve midpoints and failure verdicts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: episode2-true-midpoint-strict-semantic-evidence
+          path: build/midpoint-semantic-report/
+          retention-days: 4
+          if-no-files-found: warn

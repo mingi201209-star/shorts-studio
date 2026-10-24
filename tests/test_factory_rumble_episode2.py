@@ -134,7 +134,7 @@ def test_static_camera_layout_prioritizes_opening_contact_and_readable_context()
     hook = camera_layout(shot["hook_warning"])
     assert hook["anchor_frame"] == (shot["hook_warning"]["start"] + shot["hook_warning"]["end"]) // 2
     assert hook["target"] == "wheel"
-    assert hook["scale"] <= 4.0
+    assert 1.85 <= hook["scale"] <= 2.10
     assert hook["offset"][2] <= 1.8
     for ident in ("shoulder_location", "driver_response"):
         layout = camera_layout(shot[ident])
@@ -162,23 +162,23 @@ def test_hook_camera_preserves_tire_contact_through_entire_five_seconds():
     # An early absolute-frame camera anchor lets the tire leave the shot.
     assert view["anchor_frame"] == (hook["start"] + hook["end"]) // 2
     assert view["target"] == "wheel"
-    assert 3.5 <= view["scale"] <= 4.0
+    assert 1.85 <= view["scale"] <= 2.10
     # Lower, contact-focused fixed viewpoint instead of a hood-dominated hero.
     assert 1.2 <= view["offset"][2] <= 1.9
-    assert view["target_z"] <= -0.18
+    assert -.20 <= view["target_z"] <= -.10  # proof also enforces all 150 contact rows < 1250
 
 
-def test_opening_is_a_side_on_tire_contact_view_not_hood_hero():
-    """The opening must prove tire/groove contact instead of foregrounding hood."""
+def test_opening_is_an_along_road_tire_contact_view_not_hood_hero():
+    """Fixed oblique macro must fill the portrait picture yet preserve tyre contact."""
     from shorts_studio.factory.rumble_episode2 import camera_layout
 
     shot = fresh()["shots"][0]
     camera = camera_layout(shot)
     offset_x, offset_y, offset_z = camera["offset"]
-    assert -0.45 <= offset_x <= 0.45, "front-quarter view exposes oversized hood"
+    assert offset_x >= 8.0, "the close-up fixed camera must foreshorten five seconds of real travel"
     assert offset_y < -2.0, "camera must stay outside roadside wheel"
     assert 1.15 <= offset_z <= 1.8
-    assert 3.5 <= camera["scale"] <= 4.0
+    assert 1.85 <= camera["scale"] <= 2.10
     assert camera["anchor_frame"] == (shot["start"] + shot["end"]) // 2
     assert camera["target"] == "wheel"
 

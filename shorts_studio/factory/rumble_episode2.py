@@ -36,11 +36,12 @@ SEMANTIC_NEGATIVE_LABELS = (
     "a forest landscape with trees", "an animated cartoon character", "food on a plate",
 )
 _SEMANTIC_POSITIVE_LABELS = {
-    "hook_warning": ("a car tire on an asphalt road",
-                     "a blue car wheel beside grooves in the road"),
-    "road_cut": ("grooves cut into an asphalt road shoulder", "a blue car on an asphalt road"),
+    "hook_warning": ("close up of a car tire touching asphalt road grooves",
+                     "a black car tire beside real grooves in dark asphalt"),
+    "road_cut": ("a car tire beside grooves cut into asphalt",
+                 "a cross section of grooved asphalt beside a black tire"),
     "tire_contact": ("a car tire rolling over grooves in the road",
-                     "a blue car driving on asphalt"),
+                     "a rubber car tyre touching recessed road grooves"),
     "rumble_mechanism": ("a car wheel on a grooved road surface", "a blue car on a road"),
     "shoulder_location": ("a blue car beside the edge line of a road",
                           "a car on a road near the shoulder"),
@@ -149,9 +150,9 @@ def camera_layout(shot: dict) -> dict:
     middle = (shot["start"] + shot["end"]) // 2
     # target, anchor frame, offset xyz, orthographic scale, target_y, target_z
     layouts = {
-        "hook_warning": ("wheel", middle, (0.25, -2.25, 1.75), 3.95, 0.0, -0.18),
-        "road_cut": ("wheel", middle, (5.0, -1.8, 2.0), 2.65, 0.0, -0.18),
-        "tire_contact": ("wheel", middle, (4.0, -2.0, 2.0), 2.65, 0.0, -0.19),
+        "hook_warning": ("wheel", middle, (9.0, -2.3, 1.55), 2.05, 0.0, -0.12),
+        "road_cut": ("wheel", middle, (8.5, -2.5, 1.20), 2.05, 0.0, -0.10),
+        "tire_contact": ("wheel", middle, (-10.0, -2.2, 1.6), 1.95, 0.0, -0.12),
         "rumble_mechanism": ("wheel", middle, (-2.4, -6.8, 3.8), 4.15, 0.0, -0.13),
         "shoulder_location": ("car", middle, (.7, -5.3, 7.0), 8.8, -.1, .45),
         "driver_response": ("car", middle, (3.5, -6.0, 4.4), 8.4, -.25, .55),
