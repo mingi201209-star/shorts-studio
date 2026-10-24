@@ -136,3 +136,37 @@ def test_native_renderer_uses_shared_geometry_for_section_and_tyre_contact():
     assert "module.road_section_profile(" in renderer
     assert 'section_wall.hide_render = (module.detail_stage(shot["id"]) != "road_section")' in renderer
     assert 'module.detail_stage(shot["id"]) == "rolling_contact"' in renderer
+
+def test_mechanism_isolates_genuine_wheel_and_road_only_in_detail_beats():
+    """Meaningful component close-ups, not a full car hiding the contact area."""
+    from shorts_studio.factory.rumble_episode2 import detail_visibility
+    cases = {
+        "hook_warning": (True, True, False, False),
+        "road_cut": (False, False, True, True),
+        "tire_contact": (False, True, False, False),
+        "rumble_mechanism": (True, True, False, False),
+        "shoulder_location": (True, True, False, False),
+        "driver_response": (True, True, False, False),
+    }
+    for shot, expected in cases.items():
+        visible = detail_visibility(shot)
+        assert (
+            visible["body_visible"],
+            visible["near_shoulder_visible"],
+            visible["exposed_bank_visible"],
+            visible["section_face_visible"],
+        ) == expected
+    with pytest.raises(ValueError, match="unknown"):
+        detail_visibility("not-a-shot")
+
+
+def test_native_renderer_reveals_actual_wheel_components_not_fake_cutouts():
+    code = (EPISODE.parents[2]
+            / "benchmarks/road_safety/render_rumble_episode2.py").read_text()
+    assert 'wheel_explainer_meshes = set(groups["Front_tire"])' in code
+    assert "ob.hide_render = not visibility[\"body_visible\"]" in code
+    assert 'near_shoulder.hide_render = not visibility["near_shoulder_visible"]' in code
+    assert 'exposed_bank.hide_render = not visibility["exposed_bank_visible"]' in code
+    assert 'section_wall.hide_render = not visibility["section_face_visible"]' in code
+    assert "if j == 0:" in code and "near_faces.append(face)" in code
+    assert "car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)" in code
