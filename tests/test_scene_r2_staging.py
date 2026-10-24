@@ -224,3 +224,34 @@ def test_crash_between_stage_and_create_job_does_not_leak_a_spool_dir(tmp_path, 
     assert result["status"] == "STAGED"
     assert len(_count_spool_dirs(config.state_root)) == 1
 
+def test_reusing_an_existing_job_reverifies_the_spool_is_intact(tmp_path):
+    """A job row surviving in the DB while its spool was deleted or
+    corrupted out from under it (by anything external to this module) must
+    never silently report STAGED success again -- see stage_scene_clip's
+    own docstring. Found via a cross-review of the whole R2 stack."""
+    clip = tmp_path / "scene.mp4"
+    clip.write_bytes(b"real-looking clip bytes" * 200)
+    config = _config(tmp_path)
+    first = stage_scene_clip(clip, config=config)
+    spool_dirs = _count_spool_dirs(config.state_root)
+    assert len(spool_dirs) == 1
+    spool = config.state_root / "spool" / spool_dirs[0]
+    chunk_files = sorted(spool.glob("*.bin"))
+    assert chunk_files, "expected at least one spooled chunk file"
+    # Corrupt the first spooled chunk directly, simulating external
+    # deletion/corruption of the durable copy the first STAGED claim
+    # depends on.
+    chunk_files[0].chmod(0o600)
+    chunk_files[0].write_bytes(b"corrupted")
+    with pytest.raises(HandoffError):
+        stage_scene_clip(clip, config=config)
+
+def test_reusing_an_existing_job_with_an_intact_spool_still_succeeds(tmp_path):
+    clip = tmp_path / "scene.mp4"
+    clip.write_bytes(b"real-looking clip bytes" * 200)
+    config = _config(tmp_path)
+    first = stage_scene_clip(clip, config=config)
+    second = stage_scene_clip(clip, config=config)  # must not raise
+    assert first["job_id"] == second["job_id"]
+
+

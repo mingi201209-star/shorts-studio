@@ -39,7 +39,7 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from .r2_handoff.contracts import HandoffError, Limits, plan_id, plan_source
-from .r2_handoff.staging import stage_source
+from .r2_handoff.staging import stage_source, validate_staged
 from .r2_handoff.state import StateStore
 
 _NAMESPACE_SAFE = re.compile(r"[a-z0-9]+(?:[-/][a-z0-9]+)*")
@@ -124,7 +124,17 @@ def stage_scene_clip(clip: Path, *, config: R2StagingConfig) -> dict:
     attempt. This narrows but does not eliminate the window: a hard process
     kill (SIGKILL) between the two calls cannot be caught by any exception
     handler and can still leak one spool directory -- a disk-space concern
-    only, never data loss or a duplicate/incorrect job."""
+    only, never data loss or a duplicate/incorrect job.
+
+    On the reuse path (a job for this exact content already exists), the
+    existing spool is re-verified with validate_staged before reporting
+    success: without this, a job row surviving in the database while its
+    spool directory was deleted or corrupted out from under it (by anything
+    external to this module -- a disk cleanup script, manual intervention)
+    would silently report "STAGED" again on the next render even though the
+    durable copy that claim depends on no longer exists or no longer
+    matches the manifest. A HandoffError (typically INTEGRITY_FAILED) now
+    propagates instead of a false success."""
     clip = Path(clip)
     size_bytes = clip.stat().st_size
     limits = _upload_limits(size_bytes, config.chunk_bytes, config.deadline_hours)
@@ -137,7 +147,7 @@ def stage_scene_clip(clip: Path, *, config: R2StagingConfig) -> dict:
     config.state_root.mkdir(parents=True, exist_ok=True, mode=0o700)
     with StateStore(config.state_root / "jobs.sqlite") as store:
         try:
-            store.load_job(job_id)
+            existing, _ = store.load_job(job_id)
         except HandoffError as error:
             if error.code != "UNKNOWN_JOB":
                 raise
@@ -147,6 +157,8 @@ def stage_scene_clip(clip: Path, *, config: R2StagingConfig) -> dict:
             except BaseException:
                 shutil.rmtree(staged.spool, ignore_errors=True)
                 raise
+        else:
+            validate_staged(existing)
     return {
         "status": "STAGED", "job_id": job_id, "sha256": manifest.sha256,
         "size_bytes": manifest.size_bytes, "namespace": config.namespace,
