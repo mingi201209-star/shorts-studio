@@ -143,7 +143,7 @@ def test_mechanism_isolates_genuine_wheel_and_road_only_in_detail_beats():
     """Meaningful component close-ups, not a full car hiding the contact area."""
     from shorts_studio.factory.rumble_episode2 import detail_visibility
     cases = {
-        "hook_warning": (False, True, False, False),
+        "hook_warning": (True, True, False, False),
         "road_cut": (False, False, True, True),
         "tire_contact": (False, True, False, False),
         "rumble_mechanism": (True, True, False, False),
@@ -191,7 +191,7 @@ def test_first_15_seconds_use_a_grounded_true_tyre_macro_and_keep_late_shots():
 
     shots = {s["id"]: s for s in load_episode(EPISODE)["shots"]}
     hook = camera_layout(shots["hook_warning"])
-    assert not detail_visibility("hook_warning")["body_visible"]
+    assert detail_visibility("hook_warning")["body_visible"]
     assert hook["offset"][1] < -2.0 and hook["offset"][2] <= 1.8
     for name in ("road_cut", "tire_contact"):
         cam = camera_layout(shots[name])
@@ -242,7 +242,8 @@ def test_first_15s_wheel_is_large_enough_for_mobile_and_framed_down_the_road():
 
 def test_isolated_wheel_semantic_labels_do_not_require_hidden_blue_car():
     from shorts_studio.factory.rumble_episode2 import semantic_labels, detail_visibility
-    for name in ("hook_warning", "road_cut", "tire_contact"):
+    assert detail_visibility("hook_warning")["body_visible"] is True
+    for name in ("road_cut", "tire_contact"):
         assert detail_visibility(name)["body_visible"] is False
         labels = semantic_labels(name)
         assert len(labels) == 2
