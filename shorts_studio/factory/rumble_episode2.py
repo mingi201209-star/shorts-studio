@@ -129,7 +129,9 @@ def detail_visibility(shot_id: str) -> dict[str, bool]:
     """
     stage = detail_stage(shot_id)
     is_section = stage == "road_section"
-    is_closeup = stage in ("macro_warning", "road_section", "rolling_contact")
+    # Show the genuine source fender/body in the opening so the tyre has a
+    # visible mechanical connection; keep the explanation cutaways isolated.
+    is_closeup = stage in ("road_section", "rolling_contact")
     return {
         "body_visible": not is_closeup,
         "near_shoulder_visible": not is_section,
