@@ -1,0 +1,2 @@
+Traceable production render on latest main after natural Korean TTS merge.
+YouTube upload remains disabled.
