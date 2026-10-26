@@ -1,0 +1,22 @@
+[Unit]
+Description=Shorts improvement review controller
+ConditionPathExists=%h/shorts-improvement/adapter
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/shorts-controller-worktrees/persistent-improvement-20261026
+ExecStartPre=/usr/bin/test -x %h/shorts-improvement/adapter
+ExecStart=/usr/bin/python3 -m shorts_studio.improvement_worker --database %h/.local/state/shorts-improvement/state.db run --interval 300 --timeout 3600 %h/shorts-improvement/adapter
+Restart=on-failure
+RestartSec=30
+TimeoutStopSec=45
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
