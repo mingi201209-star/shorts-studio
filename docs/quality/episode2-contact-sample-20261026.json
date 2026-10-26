@@ -1,0 +1,55 @@
+{
+  "status": "PASS_SINGLE_NATIVE_FRAME_EDITORIAL_SAMPLE_ONLY",
+  "starting_commit": "b1de6839482f3cedf663c73fc56a278327bfcd78",
+  "change": "hook_warning fixed orthographic scale 2.05m -> 1.95m; all other camera parameters, geometry, lights, motion and A/B cut plans unchanged",
+  "mobile_review": "Compared actual native frame 1 side by side at 360x640. Modest larger tyre contact edge and adjacent recessed lip; no visible regression, clipping, floating gap or black void. This is visual judgment, not a calibrated contact solver.",
+  "linear_subject_scale_gain_percent": 5.128205128205132,
+  "source_sha256": "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877",
+  "blender_archive_sha256": "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09",
+  "blender_version": "5.0.1 a3db93c5b259",
+  "renderer_sha256": "1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d",
+  "starting_timeline_sha256": "13640df4ff737f6b12fe99252f66d0beee22b47d0d2f5ed646708d524a1fd2f9",
+  "candidate_timeline_sha256": "9adc1cf6ea833e8ba9e42cd197edd5f20095af28bfdb4f40ccb883f8c7033ab5",
+  "manifest_sha256": "ca08825a0a4af44ea131c344d7e0a33f02a7700562f08d7fd581504813958bb1",
+  "native_qa": "Both baseline and candidate: PASS_NATIVE_ORIGINAL_SHARD; 1080x1920 RGB PNG, Cycles32, global frame 1, near Front_tire and Rear_tire min_z=0m",
+  "tests": [
+    {
+      "files": [
+        "test_factory_rumble_episode2_detail.py",
+        "test_factory_rumble_native_shard_qa.py",
+        "test_episode2_first5_ab_editorial.py"
+      ],
+      "baseline": "102 passed in 15.81s",
+      "candidate": "102 passed in 39.00s"
+    },
+    {
+      "files": [
+        "test_factory_rumble_episode2.py",
+        "test_visual_activity_qa.py",
+        "test_final_video_qa.py"
+      ],
+      "candidate": "62 passed in 205.58s"
+    }
+  ],
+  "artifacts": {
+    "/tmp/ep2-contact/baseline-1/frame_0001.png": "e19c8efb9ea3b980125d857661e837813d7f7500988ea6817a2b9d4e68dbce56",
+    "/tmp/ep2-contact/baseline-1/episode-proof.json": "31da21927228eaaa6f3c8a0df5a3405294d714b02973646d164da546b3d2b75e",
+    "/tmp/ep2-contact/candidate-1/frame_0001.png": "83035e4a3b4beef562c0f22608983a6601a8804f83aaba319ee9758b963bb245",
+    "/tmp/ep2-contact/candidate-1/episode-proof.json": "7d6aa6b54307354e9652a8dc87b76a88a9c1bf782aa17c2b25bac1f4df6b258d",
+    "/tmp/ep2-contact/mobile-comparison.png": "9d165e5fc1740b236e283333d7e6d25db7c21773e7bcac667bf90f1e40ba33cd"
+  },
+  "native_render_seconds": {
+    "baseline": 193.411,
+    "candidate": 287.386
+  },
+  "render_interruption": "Candidate launcher returned SIGTERM 143 while its Blender child survived. A duplicate retry was started, then terminated after process inspection; only the original child completed and wrote the candidate PNG.",
+  "limitations": [
+    "Only two completed native still frames total, baseline and candidate at global 1. No temporal/contact-motion or other-frame pixel acceptance.",
+    "Existing all-frame analytic framing/caption-band checks pass; endpoint pixels not rendered.",
+    "No new A/B or final MP4; existing A/B produce() pins the original review hash and still generates prior footage. New timeline frames must not be substituted under that hash.",
+    "No new 2fps/12-point real-video cadence result, semantic/audio/caption/final-film QA, or human approval. QA regression tests are not final-video evidence.",
+    "Existing native proof lacks timeline/manifest hashes; this report explicitly records them. No native cache compatibility with the starting timeline is claimed.",
+    "Render files are local temporary artifacts, not committed or uploaded. No full render dispatched, no spend, publish, push, merge or YouTube action."
+  ],
+  "upload_authorized": false
+}
