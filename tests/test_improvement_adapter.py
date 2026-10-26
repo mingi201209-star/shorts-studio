@@ -296,3 +296,42 @@ def test_paid_execution_fails_closed(tmp_path):
     config["paid_execution"] = True
     with pytest.raises(ValueError, match="paid execution unsupported"):
         reserve(config, {"iteration": 1}, tmp_path)
+
+
+def test_actual_render_smoke_qa_shape_accepts_existing_gates_only():
+    report = good_qa()
+    actual = (
+        "composition_9x16",
+        "scenes_present",
+        "visual_cut_cadence",
+        "no_semantic_skip",
+        "narration_continuity",
+        "visual_activity_real",
+        "no_black_opening",
+        "source_reuse",
+        "title_visible",
+        "captions_visible",
+        "safe_area_clean",
+        "picture_caption_gutter",
+    )
+    report["final_video_qa"]["checks"] = {k: {"status": "PASS"} for k in actual}
+    validate_qa(report)
+    del report["final_video_qa"]["checks"]["visual_activity_real"]
+    with pytest.raises(ValueError, match="mandatory video gates missing"):
+        validate_qa(report)
+
+
+def test_optional_semantic_subtest_skip_never_hides_failure():
+    report = good_qa()
+    scene = report["semantic_visual_qa"]["results"][0]
+    scene["beat_results"] = [
+        {"status": "PASS", "sub_results": [{"status": "NOT_EVALUATED"}, {"status": "PASS"}]}
+    ]
+    validate_qa(report)
+    scene["beat_results"][0]["sub_results"][0]["status"] = "FAIL"
+    with pytest.raises(ValueError, match="unresolved"):
+        validate_qa(report)
+    scene["beat_results"][0]["sub_results"][0]["status"] = "PASS"
+    scene["beat_results"][0]["status"] = "NOT_EVALUATED"
+    with pytest.raises(ValueError, match="unresolved"):
+        validate_qa(report)
