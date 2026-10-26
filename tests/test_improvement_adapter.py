@@ -343,3 +343,23 @@ def test_optional_semantic_subtest_skip_never_hides_failure():
     scene["beat_results"][0]["status"] = "NOT_EVALUATED"
     with pytest.raises(ValueError, match="unresolved"):
         validate_qa(report)
+
+
+def test_subscription_editor_has_outer_sandbox_and_hides_home(tmp_path):
+    from shorts_studio.improvement_adapter import editor_invocation
+
+    home = tmp_path / "home"
+    (home / ".codex").mkdir(parents=True)
+    workspace = home / "campaign" / "attempt" / "workspace"
+    workspace.mkdir(parents=True)
+    argv = editor_invocation({"editor_mode": "codex_subscription"}, workspace, home)
+    assert argv[0] == "bwrap"
+    assert "--unshare-net" not in argv
+    assert argv[argv.index("--tmpfs") + 1] == str(home)
+    assert ["--bind", str(home / ".codex"), str(home / ".codex")] == argv[
+        argv.index("--bind") : argv.index("--bind") + 3
+    ]
+    assert ["--bind", str(workspace), str(workspace)] in [argv[i : i + 3] for i in range(len(argv))]
+    assert "danger-full-access" in argv
+    assert argv[-1] == "-"
+    assert "GH_TOKEN" in argv and "OPENAI_API_KEY" in argv

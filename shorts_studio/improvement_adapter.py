@@ -135,6 +135,16 @@ def reserve(config, job, root):
         re.fullmatch(r"shorts-draft/[a-z0-9-]+", config["draft_branch_prefix"]),
         "unsafe draft branch prefix",
     )
+    require(
+        config.get("editor_mode", "offline") in ("offline", "codex_subscription"),
+        "invalid editor mode",
+    )
+    if config.get("editor_mode") == "codex_subscription":
+        require(config.get("editor_command") == ["codex"], "subscription editor must be codex")
+        require(
+            not any(os.environ.get(k) for k in ("OPENAI_API_KEY", "GH_TOKEN", "GITHUB_TOKEN")),
+            "metered or GitHub token environment is not allowed",
+        )
     for key in ("review_command", "render_command", "editor_command"):
         require(
             isinstance(config[key], list)
@@ -309,6 +319,99 @@ class Runner:
             return out.read()
 
 
+def editor_invocation(config, workspace: Path, home: Path) -> list[str]:
+    mode = config.get("editor_mode", "offline")
+    if mode == "offline":
+        return [
+            "bwrap",
+            "--die-with-parent",
+            "--unshare-net",
+            "--unshare-pid",
+            "--new-session",
+            "--ro-bind",
+            "/",
+            "/",
+            "--bind",
+            str(workspace),
+            str(workspace),
+            "--tmpfs",
+            "/tmp",
+            "--proc",
+            "/proc",
+            "--dev",
+            "/dev",
+            "--chdir",
+            str(workspace),
+            "--",
+            *config["editor_command"],
+        ]
+    if mode != "codex_subscription":
+        raise ValueError("invalid editor mode")
+    workspace, home = workspace.resolve(), home.resolve()
+    if not workspace.is_relative_to(home):
+        raise ValueError("subscription workspace must be below home")
+    auth = home / ".codex"
+    if not auth.is_dir():
+        raise ValueError("ChatGPT Codex login missing")
+    argv = [
+        "bwrap",
+        "--die-with-parent",
+        "--unshare-pid",
+        "--new-session",
+        "--ro-bind",
+        "/",
+        "/",
+        "--tmpfs",
+        str(home),
+        "--dir",
+        str(auth),
+        "--bind",
+        str(auth),
+        str(auth),
+    ]
+    parents = []
+    cursor = workspace.parent
+    while cursor != home:
+        parents.append(cursor)
+        cursor = cursor.parent
+    for parent in reversed(parents):
+        argv += ["--dir", str(parent)]
+    argv += [
+        "--dir",
+        str(workspace),
+        "--bind",
+        str(workspace),
+        str(workspace),
+        "--tmpfs",
+        "/tmp",
+        "--proc",
+        "/proc",
+        "--dev",
+        "/dev",
+        "--chdir",
+        str(workspace),
+        "--",
+        "/usr/bin/env",
+        "-u",
+        "GH_TOKEN",
+        "-u",
+        "GITHUB_TOKEN",
+        "-u",
+        "OPENAI_API_KEY",
+        "codex",
+        "exec",
+        "--ignore-user-config",
+        "-s",
+        "danger-full-access",
+        "-c",
+        "approval_policy=never",
+        "-C",
+        str(workspace),
+        "-",
+    ]
+    return argv
+
+
 def attempt(config, job, run_factory=Runner):
     repo = Path(config["repository"]).resolve()
     root = Path(config["evidence_root"]).resolve()
@@ -360,35 +463,13 @@ def attempt(config, job, run_factory=Runner):
         run(["git", "checkout", "--detach", base], workspace)
         prompt = (
             config["task"]
-            + "\nEdit and render exactly one candidate in this checkout. Do not push, upload, merge, or start services. Do not modify QA implementations, tests, workflows, or fabricate reviews. Leave edits uncommitted. Produce dist/final.mp4 and dist/qa_report.json with production semantic QA enabled. Automated internal review is supplied independently; human approval is final only."
+            + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "
+            "merge, or start services. Do not modify QA implementations, tests, "
+            "workflows, or fabricate reviews. Leave edits uncommitted. Change only "
+            "the explicitly allowed manifest/assets. The trusted controller will "
+            "render and review afterwards."
         )
-        run(
-            [
-                "bwrap",
-                "--die-with-parent",
-                "--unshare-net",
-                "--unshare-pid",
-                "--new-session",
-                "--ro-bind",
-                "/",
-                "/",
-                "--bind",
-                str(workspace),
-                str(workspace),
-                "--tmpfs",
-                "/tmp",
-                "--proc",
-                "/proc",
-                "--dev",
-                "/dev",
-                "--chdir",
-                str(workspace),
-                "--",
-                *config["editor_command"],
-            ],
-            workspace,
-            prompt,
-        )
+        run(editor_invocation(config, workspace, Path.home()), workspace, prompt)
         # Operator allowlist prevents candidate changes to the verifier, workflows and arbitrary code.
         require(
             run(["git", "rev-parse", "HEAD"], workspace).strip() == base,

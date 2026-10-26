@@ -6,10 +6,7 @@ supports autonomous intermediate iterations; human approval is exclusively
 verified video before accepting it. There is no merge, release, upload, publication,
 or service enablement operation in this path.
 
-The trusted controller invokes a local editor in a bubblewrap namespace with no
-network and a read-only host filesystem except its isolated checkout and temporary
-files. The operator must supply a local, unmetered editor; paid execution fails
-closed because this repository has no provider-enforced monetary cap. After edits,
+The controller supports an offline editor in a network-isolated bubblewrap namespace. The optional ChatGPT-subscription Codex editor uses network inside an outer bubblewrap namespace that exposes only its isolated checkout and Codex login under the home directory; the rest of home, including GitHub and SSH credentials, is hidden. The Codex inner shell sandbox is disabled because nested user namespaces fail on this VPS; outer bubblewrap remains mandatory. Direct API-key execution fails closed. A subscription has usage limits, and the rolling-day attempt/time bounds still apply. After edits,
 only explicitly allowed JSON/images in examples/assets are committed. The editor's
 entire checkout is retained. A pristine clone of that commit is rendered using an
 operator command, decoded with ffmpeg, checked with ffprobe, and required to pass
@@ -79,7 +76,8 @@ Required operator configuration example (all values must be real and reviewed):
   "required_checks": ["draft-test"],
   "task": "Improve the selected manifest and assets using the editorial brief.",
   "editable_paths": ["examples/selected.json"],
-  "editor_command": ["/opt/local-editor"],
+  "editor_mode": "codex_subscription",
+  "editor_command": ["codex"],
   "render_command": ["/srv/venv/bin/python", "-m", "shorts_studio", "render", "examples/selected.json"],
   "review_command": ["/srv/venv/bin/python", "-m", "shorts_studio.improvement_review"],
   "baseline_video_sha256": "REPLACE_WITH_ACTUAL_BASELINE_SHA256",
