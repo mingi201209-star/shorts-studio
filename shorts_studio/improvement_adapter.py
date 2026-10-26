@@ -415,9 +415,38 @@ def editor_invocation(config, workspace: Path, home: Path) -> list[str]:
 def rejected_review_feedback(root: Path, iteration: int) -> str:
     if iteration <= 1:
         return ""
-    path = root / f"attempt-{iteration - 1:04}/internal-review.json"
+    previous_attempt = root / f"attempt-{iteration - 1:04}"
+    path = previous_attempt / "internal-review.json"
     if not path.is_file():
-        return ""
+        # The renderer can fail before the internal reviewer. Retain its
+        # structured numeric QA evidence without feeding arbitrary log text
+        # or model-authored prose back into the next editor prompt.
+        try:
+            report = load(previous_attempt / "workspace/dist/qa_report.json")
+            checks = report["final_video_qa"]["checks"]
+            cadence = checks["visual_cut_cadence"]
+            failure = cadence["failures"][0]
+            first_five = checks["visual_activity_real"]["evidence"]["first_5s_visual_changes"]
+            hold, limit = failure["longest_hold"], failure["limit"]
+            if (
+                report["status"] != "FAIL"
+                or cadence["status"] != "FAIL"
+                or not all(type(x) in (int, float) and 0 <= x < 1000 for x in (first_five, hold, limit))
+                or not isinstance(failure["scene"], str)
+                or not re.fullmatch(r"scene_[0-9]{2}", failure["scene"])
+            ):
+                return ""
+            scene = failure["scene"]
+            return (
+                f"\nPrevious rendered video failed real visual cut cadence QA: "
+                f"{scene} held one picture {hold:g}s (limit {limit:g}s), "
+                f"even though first-five-second changes reached {first_five:g}. "
+                "Preserve the increased early changes, but shorten that final hold "
+                "without increasing source reuse or degrading other scenes. "
+                "Do not repeat the same beat timing. Keep narration and image identity aligned."
+            )
+        except (OSError, ValueError, KeyError, IndexError, TypeError):
+            return ""
     try:
         review = load(path)
         details = json.loads(review["visual_notes"])
