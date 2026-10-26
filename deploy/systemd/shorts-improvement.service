@@ -14,7 +14,8 @@ RestartSec=30
 TimeoutStopSec=45
 UMask=0077
 NoNewPrivileges=true
-PrivateTmp=true
+# Bubblewrap provides a private /tmp; systemd PrivateTmp blocks nested namespaces here.
+PrivateTmp=false
 StandardOutput=journal
 StandardError=journal
 
