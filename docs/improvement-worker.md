@@ -103,3 +103,5 @@ GitHub draft-branch permissions, quota and required checks. Server GitHub CLI lo
 on the target host. These production components are not available/configured here;
 there is no claim of successful unattended production rendering. Service enablement
 and any candidate push remain untested. No service was enabled.
+
+A rejected review passes only the previous and rejected numeric QA metrics to the next attempt, so the editor can change its approach without treating arbitrary review text as instructions. The original verified source remains the edit seed.

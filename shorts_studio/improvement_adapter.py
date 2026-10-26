@@ -412,6 +412,40 @@ def editor_invocation(config, workspace: Path, home: Path) -> list[str]:
     return argv
 
 
+def rejected_review_feedback(root: Path, iteration: int) -> str:
+    if iteration <= 1:
+        return ""
+    path = root / f"attempt-{iteration - 1:04}/internal-review.json"
+    if not path.is_file():
+        return ""
+    try:
+        review = load(path)
+        details = json.loads(review["visual_notes"])
+        previous = details["previous"]
+        candidate = details["candidate"]
+        keys = (
+            "first_5s_visual_changes",
+            "max_static_visual_seconds",
+            "global_source_reuse_ratio",
+            "ending_new_ratio",
+        )
+        if review["decision"] != "HOLD" or not all(
+            type(previous[k]) in (int, float) and type(candidate[k]) in (int, float) for k in keys
+        ):
+            return ""
+        return (
+            "\nPrevious candidate was rejected after real video review. "
+            "Baseline metrics were "
+            + json.dumps({k: previous[k] for k in keys}, sort_keys=True)
+            + "; rejected candidate metrics were "
+            + json.dumps({k: candidate[k] for k in keys}, sort_keys=True)
+            + ". Keep first-five-second changes at least at baseline, do not "
+            "increase static holds or source reuse, and use a different edit."
+        )
+    except (OSError, ValueError, KeyError, TypeError):
+        return ""
+
+
 def attempt(config, job, run_factory=Runner):
     repo = Path(config["repository"]).resolve()
     root = Path(config["evidence_root"]).resolve()
@@ -463,6 +497,7 @@ def attempt(config, job, run_factory=Runner):
         run(["git", "checkout", "--detach", base], workspace)
         prompt = (
             config["task"]
+            + rejected_review_feedback(root, job["iteration"])
             + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "
             "merge, or start services. Do not modify QA implementations, tests, "
             "workflows, or fabricate reviews. Leave edits uncommitted. Change only "
