@@ -1,6 +1,6 @@
 # Bounded unattended Shorts improvement
 
-The service remains disabled and has not been pushed or deployed. The adapter
+The adapter is proposed in draft PR #82. The service remains disabled and has not been deployed. The adapter
 supports autonomous intermediate iterations; human approval is exclusively
 `improvement_worker approve EXACT_VIDEO_SHA256`. Approval rehashes the current
 verified video before accepting it. There is no merge, release, upload, publication,
@@ -102,7 +102,7 @@ and explicitly resumed; budget exhaustion does not require human intervention.
 
 Before any activation, supply and audit the actual local editor, automated
 visual/audio comparator, selected production manifest, baseline, runtime tools,
-GitHub branch credentials, quota and required checks. Run a real end-to-end canary
+GitHub draft-branch permissions, quota and required checks. Server GitHub CLI login has been verified, but a candidate push has not. Run a real end-to-end canary
 on the target host. These production components are not available/configured here;
 there is no claim of successful unattended production rendering. Service enablement
-and any real push remain separate operator actions. No service was enabled.
+and any candidate push remain untested. No service was enabled.
