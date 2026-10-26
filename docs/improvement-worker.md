@@ -1,6 +1,6 @@
 # Persistent Shorts improvement worker (foundation)
 
-Run this under a dedicated server account using `systemd` with `Restart=always`
+Run this under a dedicated server account using `systemd` with `Restart=on-failure`
 and a persistent SQLite path. It is currently **not deployed**. The worker
 invokes an external adapter every interval, records verified versions, and
 stops only when the current candidate hash is explicitly approved. A failed
@@ -26,5 +26,10 @@ adapter which checks video hash and CI receipts rather than trusting claims.
 
 The next integration step is to connect the existing Shorts Studio production
 and quality reports to that adapter, then deploy and verify `systemd` restart on
-the user's existing server. Current SSH key was rejected on the known server,
-so the 24-hour service and reboot recovery have not been verified.
+the user's existing server. SSH access to the existing Ubuntu server was
+verified using its already running phone SSH agent; the reviewed branch is
+checked out in an isolated server worktree and its eight tests pass there.
+The existing server has no Blender binary or GitHub CLI/credential helper and
+the existing Hermes controller only runs mock jobs. `deploy/systemd/shorts-improvement.service`
+is intentionally gated on the adapter executable existing; it must not be
+enabled until real media and CI receipts can be verified end to end.
