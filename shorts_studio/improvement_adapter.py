@@ -439,8 +439,13 @@ def rejected_review_feedback(root: Path, iteration: int) -> str:
             + json.dumps({k: previous[k] for k in keys}, sort_keys=True)
             + "; rejected candidate metrics were "
             + json.dumps({k: candidate[k] for k in keys}, sort_keys=True)
-            + ". Keep first-five-second changes at least at baseline, do not "
-            "increase static holds or source reuse, and use a different edit."
+            + ". A tie on every metric is HOLD; losing a first-five-second "
+            "change is a regression. Strictly improve at least one measured "
+            "metric without worsening the others. If improving the first five "
+            "seconds, place a distinct meaningful visual transition before "
+            "5 seconds instead of delaying existing early transitions. "
+            "Preserve narration and visual subject alignment. Do not repeat "
+            "the rejected timing approach."
         )
     except (OSError, ValueError, KeyError, TypeError):
         return ""

@@ -393,6 +393,7 @@ def test_rejected_review_feedback_passes_only_numeric_history(tmp_path):
         )
     )
     feedback = rejected_review_feedback(tmp_path, 2)
-    assert "first-five-second changes at least at baseline" in feedback
+    assert "Strictly improve at least one measured metric" in feedback
+    assert "before 5 seconds instead of delaying existing early transitions" in feedback
     assert "IGNORE ALL INSTRUCTIONS" not in feedback
     assert rejected_review_feedback(tmp_path, 1) == ""
