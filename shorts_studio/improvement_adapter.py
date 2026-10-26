@@ -4,8 +4,9 @@ import argparse
 import hashlib
 import json
 import os
-import shutil
+import re
 import signal
+import sqlite3
 import subprocess
 import sys
 import time
@@ -108,6 +109,178 @@ def validate_ci(data, sha, required):
     )
 
 
+class BudgetExhausted(ValueError):
+    pass
+
+
+def reserve(config, job, root):
+    """Charge worst-case authorized spend/time before any external work; never refund."""
+    require(type(job["iteration"]) is int and job["iteration"] > 0, "invalid iteration")
+    for key in (
+        "max_attempts_per_day",
+        "max_cost_microusd_per_day",
+        "max_seconds_per_day",
+        "attempt_cost_microusd",
+        "timeout_seconds",
+    ):
+        require(type(config[key]) is int and config[key] > 0, f"invalid {key}")
+    require(config["max_attempts_per_day"] <= 24, "daily attempt ceiling is 24")
+    require(
+        config["timeout_seconds"] <= min(3600, config["max_seconds_per_day"]), "invalid time budget"
+    )
+    require(
+        config["attempt_cost_microusd"] <= config["max_cost_microusd_per_day"],
+        "attempt cost exceeds daily ceiling",
+    )
+    require(
+        config["paid_execution"] is False,
+        "paid execution unsupported: no provider-enforced monetary cap",
+    )
+    require(config["push_authorized"] is True, "draft push authorization required")
+    require(
+        re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", config["github_repository"]),
+        "invalid repository",
+    )
+    require(
+        re.fullmatch(r"shorts-draft/[a-z0-9-]+", config["draft_branch_prefix"]),
+        "unsafe draft branch prefix",
+    )
+    for key in ("review_command", "render_command", "editor_command"):
+        require(
+            isinstance(config[key], list)
+            and config[key]
+            and all(isinstance(x, str) and x for x in config[key]),
+            f"missing {key}",
+        )
+    require(
+        config["required_checks"]
+        and all(isinstance(x, str) and x for x in config["required_checks"]),
+        "required CI names missing",
+    )
+    require(
+        type(config["ci_timeout_seconds"]) is int
+        and 1 <= config["ci_timeout_seconds"] <= config["timeout_seconds"],
+        "invalid CI bound",
+    )
+    # Local-only commands must have no metered API credentials/network. This is an
+    # operator trust boundary, like the renderer; do not substitute a paid CLI.
+    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    with sqlite3.connect(root / "budget.sqlite3", timeout=30) as db:
+        db.execute(
+            "CREATE TABLE IF NOT EXISTS reservations (iteration INTEGER PRIMARY KEY, "
+            "created REAL, cost INTEGER, seconds INTEGER)"
+        )
+        db.execute("CREATE TABLE IF NOT EXISTS policy (id INTEGER PRIMARY KEY, digest TEXT)")
+        db.execute("BEGIN IMMEDIATE")
+        policy = hashlib.sha256(json.dumps(config, sort_keys=True).encode()).hexdigest()
+        old = db.execute("SELECT digest FROM policy WHERE id=1").fetchone()
+        require(
+            old is None or old[0] == policy, "campaign configuration changed; new campaign required"
+        )
+        db.execute("INSERT OR IGNORE INTO policy VALUES(1,?)", (policy,))
+        count, cost, seconds = db.execute(
+            "SELECT count(*),coalesce(sum(cost),0),coalesce(sum(seconds),0) "
+            "FROM reservations WHERE created > ?",
+            (time.time() - 86400,),
+        ).fetchone()
+        if count >= config["max_attempts_per_day"]:
+            raise BudgetExhausted("rolling day attempts exhausted")
+        if cost + config["attempt_cost_microusd"] > config["max_cost_microusd_per_day"]:
+            raise BudgetExhausted("rolling day cost exhausted")
+        if seconds + config["timeout_seconds"] > config["max_seconds_per_day"]:
+            raise BudgetExhausted("rolling day time exhausted")
+        db.execute(
+            "INSERT INTO reservations VALUES(?,?,?,?)",
+            (
+                job["iteration"],
+                time.time(),
+                config["attempt_cost_microusd"],
+                config["timeout_seconds"],
+            ),
+        )
+
+
+def handoff(config, commit, workspace, repo, evidence, run):
+    """One create-only push; ambiguous outcomes are quarantined, never retried."""
+    remote = f"https://github.com/{config['github_repository']}.git"
+    branch = f"{config['draft_branch_prefix']}/attempt-{evidence.name.removeprefix('attempt-')}"
+    ref = f"refs/heads/{branch}"
+    require(not run(["git", "ls-remote", remote, ref], repo).strip(), "draft ref already exists")
+    with (evidence / "push-intent.json").open("x") as stream:
+        json.dump({"commit": commit, "ref": ref, "remote": remote}, stream)
+        stream.flush()
+        os.fsync(stream.fileno())
+    run(
+        [
+            "git",
+            "-c",
+            "core.hooksPath=/dev/null",
+            "push",
+            "--porcelain",
+            f"--force-with-lease={ref}:",
+            remote,
+            f"{commit}:{ref}",
+        ],
+        workspace,
+    )
+    require(
+        run(["git", "ls-remote", remote, ref], repo).strip() == f"{commit}\t{ref}",
+        "remote draft SHA mismatch",
+    )
+    deadline = min(
+        time.monotonic() + config["ci_timeout_seconds"], getattr(run, "deadline", float("inf"))
+    )
+    while True:
+        ci = json.loads(
+            run(
+                [
+                    "gh",
+                    "api",
+                    f"repos/{config['github_repository']}/commits/{commit}/check-runs?per_page=100",
+                ],
+                repo,
+            )
+        )
+        statuses = json.loads(
+            run(
+                [
+                    "gh",
+                    "api",
+                    f"repos/{config['github_repository']}/commits/{commit}/status?per_page=100",
+                ],
+                repo,
+            )
+        )
+        require(
+            statuses["sha"] == commit and statuses["total_count"] == len(statuses["statuses"]),
+            "commit statuses incomplete or wrong SHA",
+        )
+        require(ci.get("total_count") == len(ci.get("check_runs", [])), "CI pagination incomplete")
+        require(all(x["head_sha"] == commit for x in ci["check_runs"]), "wrong CI SHA")
+        require(
+            not any(
+                x["status"] == "completed" and x["conclusion"] != "success"
+                for x in ci["check_runs"]
+            ),
+            "CI rejected candidate",
+        )
+        require(
+            all(x["state"] in ("pending", "success") for x in statuses["statuses"]),
+            "commit status failed",
+        )
+        try:
+            validate_ci(ci, commit, config["required_checks"])
+            require(all(x["state"] == "success" for x in statuses["statuses"]), "status pending")
+            break
+        except ValueError:
+            require(time.monotonic() < deadline, "CI timeout")
+            time.sleep(min(5, max(0, deadline - time.monotonic())))
+    require(
+        run(["git", "ls-remote", remote, ref], repo).strip() == f"{commit}\t{ref}",
+        "remote draft moved during CI",
+    )
+
+
 class Runner:
     def __init__(self, evidence, seconds):
         self.evidence = evidence
@@ -150,13 +323,12 @@ def attempt(config, job, run_factory=Runner):
     repo = Path(config["repository"]).resolve()
     root = Path(config["evidence_root"]).resolve()
     require(not root.is_relative_to(repo), "evidence must be outside source repository")
-    require(
-        type(job["iteration"]) is int and 1 <= job["iteration"] <= config["max_attempts"] <= 24,
-        "attempt limit exceeded",
-    )
-    require(1 <= config["timeout_seconds"] <= 3600, "invalid time budget")
-    # Atomic persistent claim: crashed/rejected jobs cannot be executed twice, even after resume.
-    root.mkdir(mode=0o700, parents=True, exist_ok=True)
+    try:
+        reserve(config, job, root)
+    except BudgetExhausted as exc:
+        return {"state": "deferred", "failure": str(exc)}
+    except sqlite3.IntegrityError:
+        return {"state": "rejected", "failure": "attempt already claimed; no replay"}
     evidence = root / f"attempt-{job['iteration']:04}"
     evidence.mkdir(mode=0o700)
     run = run_factory(evidence, config["timeout_seconds"])
@@ -172,33 +344,52 @@ def attempt(config, job, run_factory=Runner):
             "invalid baseline SHA256",
         )
         require(
-            not Path(config["human_review"]).resolve().is_relative_to(evidence),
-            "review inbox must be outside attempt",
-        )
-        require(
             not run(["git", "status", "--porcelain"], repo).strip(), "source checkout must be clean"
         )
-        base = run(["git", "rev-parse", "HEAD"], repo).strip()
-        run(["git", "clone", "--no-hardlinks", "--no-local", str(repo), str(workspace)], root)
+        source = repo
+        if job.get("previous_source"):
+            source = Path(job["previous_source"]).resolve()
+            require(
+                source.is_relative_to(root) and source.name == "workspace" and source != workspace,
+                "previous source outside campaign",
+            )
+            require(
+                not run(["git", "status", "--porcelain", "--untracked-files=no"], source).strip(),
+                "previous candidate source changed",
+            )
+        base = run(["git", "rev-parse", "HEAD"], source).strip()
+        if source != repo:
+            require(base == job["previous_commit"], "previous commit mismatch")
+        run(["git", "clone", "--no-hardlinks", "--no-local", str(source), str(workspace)], root)
         run(["git", "remote", "remove", "origin"], workspace)
         run(["git", "checkout", "--detach", base], workspace)
         prompt = (
             config["task"]
-            + "\nEdit and render exactly one candidate in this checkout. Do not push, upload, merge, or start services. Do not modify QA implementations, tests, workflows, or fabricate reviews. Leave edits uncommitted. Produce dist/final.mp4 and dist/qa_report.json with production semantic QA enabled. Human review is supplied independently."
+            + "\nEdit and render exactly one candidate in this checkout. Do not push, upload, merge, or start services. Do not modify QA implementations, tests, workflows, or fabricate reviews. Leave edits uncommitted. Produce dist/final.mp4 and dist/qa_report.json with production semantic QA enabled. Automated internal review is supplied independently; human approval is final only."
         )
         run(
             [
-                "codex",
-                "exec",
-                "--ignore-user-config",
-                "--sandbox",
-                "workspace-write",
-                "-c",
-                'approval_policy="never"',
-                "-c",
-                "sandbox_workspace_write.network_access=false",
-                "--json",
-                "-",
+                "bwrap",
+                "--die-with-parent",
+                "--unshare-net",
+                "--unshare-pid",
+                "--new-session",
+                "--ro-bind",
+                "/",
+                "/",
+                "--bind",
+                str(workspace),
+                str(workspace),
+                "--tmpfs",
+                "/tmp",
+                "--proc",
+                "/proc",
+                "--dev",
+                "/dev",
+                "--chdir",
+                str(workspace),
+                "--",
+                *config["editor_command"],
             ],
             workspace,
             prompt,
@@ -259,7 +450,10 @@ def attempt(config, job, run_factory=Runner):
             workspace,
         )
         commit = run(["git", "rev-parse", "HEAD"], workspace).strip()
-        require(commit != base and len(commit) == 40, "candidate source commit missing")
+        require(
+            commit != base and re.fullmatch(r"[0-9a-f]{40}", commit),
+            "candidate source commit missing",
+        )
         committed_paths = run(["git", "diff", "--name-only", base, commit], workspace).splitlines()
         require(
             committed_paths and all(p in allowed for p in committed_paths),
@@ -325,79 +519,66 @@ def attempt(config, job, run_factory=Runner):
         report = load(qa)
         validate_qa(report)
         require((workspace / report["output"]).resolve() == video.resolve(), "QA output mismatch")
-        # Trusted review inbox is outside the model-writable workspace. Hashes prevent stale approval.
-        review = load(Path(config["human_review"]))
+        # Trusted local reviewer runs after the editor exits, from the source
+        # checkout, and receives exact immutable bindings. It may reject freely.
+        binding = {
+            "commit_sha": commit,
+            "video_sha256": video_sha,
+            "qa_sha256": digest(qa),
+            "baseline_video_sha256": baseline,
+            "comparison_video_sha256": job.get("last_good_sha") or baseline,
+            "comparison_video_path": job.get("previous_video_path"),
+            "video_path": str(video),
+            "qa_path": str(qa),
+        }
+        if binding["comparison_video_path"]:
+            require(
+                digest(Path(binding["comparison_video_path"]))
+                == binding["comparison_video_sha256"],
+                "previous verified video changed",
+            )
+        review = json.loads(run(config["review_command"], repo, json.dumps(binding)))
+        (evidence / "internal-review.json").write_text(json.dumps(review))
         require(
-            review["commit_sha"] == commit
-            and review["video_sha256"] == video_sha
-            and review["qa_sha256"] == digest(qa),
-            "human proof not bound to candidate",
+            all(
+                review[k] == binding[k]
+                for k in (
+                    "commit_sha",
+                    "video_sha256",
+                    "qa_sha256",
+                    "baseline_video_sha256",
+                    "comparison_video_sha256",
+                )
+            ),
+            "internal review binding mismatch",
         )
         require(
             review["decision"] == "PASS"
             and review["regression"] is False
-            and review["baseline_video_sha256"] == config["baseline_video_sha256"],
-            "human HOLD/regression",
-        )
-        require(
-            review["reviewer"]
-            and review["reviewed_at"]
             and review["visual_notes"]
             and review["audio_notes"],
-            "missing human visual/audio proof",
-        )
-        proof = Path(review["proof_path"]).resolve()
-        require(
-            not proof.is_relative_to(workspace)
-            and proof.is_file()
-            and digest(proof) == review["proof_sha256"],
-            "missing human visual proof artifact",
-        )
-        (evidence / "human-review.json").write_text(json.dumps(review))
-        shutil.copyfile(proof, evidence / "human-proof")
-        ci = json.loads(
-            run(
-                [
-                    "gh",
-                    "api",
-                    f"repos/{config['github_repository']}/commits/{commit}/check-runs?per_page=100",
-                ],
-                repo,
-            )
-        )
-        validate_ci(ci, commit, config["required_checks"])
-        statuses = json.loads(
-            run(
-                [
-                    "gh",
-                    "api",
-                    f"repos/{config['github_repository']}/commits/{commit}/status?per_page=100",
-                ],
-                repo,
-            )
+            "internal review rejected",
         )
         require(
-            statuses["sha"] == commit and statuses["total_count"] == len(statuses["statuses"]),
-            "commit statuses incomplete or wrong SHA",
+            digest(video) == video_sha and digest(qa) == binding["qa_sha256"],
+            "review changed artifacts",
         )
-        require(
-            all(x["state"] == "success" for x in statuses["statuses"]),
-            "commit status not successful",
-        )
+        handoff(config, commit, workspace, repo, evidence, run)
         require(digest(video) == video_sha, "video changed during verification")
         result.update(
             state="verified",
             candidate_sha=video_sha,
             candidate_commit_sha=commit,
             video_path=str(video),
+            source_path=str(workspace),
             qa_pass=True,
             ci_pass=True,
             regression=False,
         )
         return result
-    except BaseException as exc:
+    except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as exc:
         result["failure"] = str(exc)
-        raise
+        return result
     finally:
         # Quarantine is rollback: no changes are ever copied into the source checkout.
         (evidence / "result.json").write_text(json.dumps(result, indent=2))

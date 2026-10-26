@@ -13,7 +13,6 @@ import subprocess
 import time
 from pathlib import Path
 
-
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS campaign (
  id INTEGER PRIMARY KEY CHECK (id = 1), state TEXT NOT NULL,
@@ -37,8 +36,10 @@ def connect(path: Path) -> sqlite3.Connection:
 
 
 def record(db: sqlite3.Connection, kind: str, details: dict) -> None:
-    db.execute("INSERT INTO events(created_at,kind,details) VALUES(?,?,?)",
-               (int(time.time()), kind, json.dumps(details, ensure_ascii=False)))
+    db.execute(
+        "INSERT INTO events(created_at,kind,details) VALUES(?,?,?)",
+        (int(time.time()), kind, json.dumps(details, ensure_ascii=False)),
+    )
 
 
 def step(db: sqlite3.Connection, adapter: list[str], timeout: int) -> str:
@@ -49,15 +50,44 @@ def step(db: sqlite3.Connection, adapter: list[str], timeout: int) -> str:
         return "accepted"
     if state == "blocked":
         return "blocked"
-    job = {"iteration": iteration + 1, "last_good_sha": good,
-           "previous_candidate_sha": candidate}
+    job = {"iteration": iteration + 1, "last_good_sha": good, "previous_candidate_sha": candidate}
+    previous = db.execute(
+        "SELECT details FROM events WHERE kind='candidate' ORDER BY id DESC LIMIT 1"
+    ).fetchone()
+    if previous:
+        receipt = json.loads(previous[0])
+        job["previous_source"] = receipt.get("source_path")
+        job["previous_commit"] = receipt.get("commit_sha")
+        job["previous_video_path"] = receipt.get("video")
     try:
-        proc = subprocess.run(adapter, input=json.dumps(job), text=True,
-                              capture_output=True, timeout=timeout, check=True)
+        proc = subprocess.run(
+            adapter,
+            input=json.dumps(job),
+            text=True,
+            capture_output=True,
+            timeout=timeout,
+            check=True,
+        )
         result = json.loads(proc.stdout)
+        if result.get("state") == "deferred":
+            with db:
+                record(db, "deferred", result)
+            return "running"
+        if result.get("state") == "rejected":
+            with db:
+                db.execute(
+                    "UPDATE campaign SET iteration=?, failure=? WHERE id=1",
+                    (iteration + 1, str(result.get("failure", "rejected"))[:500]),
+                )
+                record(db, "rejected", {"iteration": iteration + 1, **result})
+            return "running"
         sha = result["candidate_sha"]
         video = result["video_path"]
-        if not isinstance(sha, str) or len(sha) != 64 or not all(c in "0123456789abcdef" for c in sha):
+        if (
+            not isinstance(sha, str)
+            or len(sha) != 64
+            or not all(c in "0123456789abcdef" for c in sha)
+        ):
             raise ValueError("candidate_sha must be a lowercase SHA256")
         if not isinstance(video, str) or not video or not Path(video).is_file():
             raise ValueError("candidate video missing")
@@ -76,14 +106,32 @@ def step(db: sqlite3.Connection, adapter: list[str], timeout: int) -> str:
             raise ValueError("regression must be explicitly false")
     except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as exc:
         with db:
-            db.execute("UPDATE campaign SET state='blocked', failure=? WHERE id=1", (str(exc)[:500],))
+            db.execute(
+                "UPDATE campaign SET state='blocked', failure=? WHERE id=1 AND accepted_sha IS NULL",
+                (str(exc)[:500],),
+            )
             record(db, "blocked", {"iteration": iteration + 1, "reason": str(exc)[:500]})
         return "blocked"
     with db:
-        db.execute("UPDATE campaign SET state='running', iteration=?, last_good_sha=?, "
-                   "candidate_sha=?, video_path=?, failure=NULL WHERE id=1",
-                   (iteration + 1, sha, sha, video))
-        record(db, "candidate", {"iteration": iteration + 1, "sha": sha, "video": video})
+        db.execute("BEGIN IMMEDIATE")
+        if db.execute("SELECT accepted_sha FROM campaign WHERE id=1").fetchone()[0]:
+            return "accepted"
+        db.execute(
+            "UPDATE campaign SET state='running', iteration=?, last_good_sha=?, "
+            "candidate_sha=?, video_path=?, failure=NULL WHERE id=1",
+            (iteration + 1, sha, sha, video),
+        )
+        record(
+            db,
+            "candidate",
+            {
+                "iteration": iteration + 1,
+                "sha": sha,
+                "video": video,
+                "source_path": result.get("source_path"),
+                "commit_sha": result.get("candidate_commit_sha"),
+            },
+        )
     return "running"
 
 
@@ -92,6 +140,10 @@ def approve(db: sqlite3.Connection, sha: str) -> None:
         row = db.execute("SELECT candidate_sha,state FROM campaign WHERE id=1").fetchone()
         if row != (sha, "running"):
             raise ValueError("approval must match the current verified candidate")
+        video = db.execute("SELECT video_path FROM campaign WHERE id=1").fetchone()[0]
+        with Path(video).open("rb") as source:
+            if hashlib.file_digest(source, "sha256").hexdigest() != sha:
+                raise ValueError("approval video no longer matches exact SHA256")
         db.execute("UPDATE campaign SET accepted_sha=?, state='accepted' WHERE id=1", (sha,))
         record(db, "accepted", {"sha": sha})
 
@@ -111,13 +163,34 @@ def main() -> None:
     args = parser.parse_args()
     db = connect(args.database)
     if args.action == "status":
-        row = db.execute("SELECT state,iteration,accepted_sha,last_good_sha,candidate_sha,video_path,failure FROM campaign WHERE id=1").fetchone()
-        print(json.dumps(dict(zip(("state", "iteration", "accepted_sha", "last_good_sha", "candidate_sha", "video_path", "failure"), row))))
+        row = db.execute(
+            "SELECT state,iteration,accepted_sha,last_good_sha,candidate_sha,video_path,failure FROM campaign WHERE id=1"
+        ).fetchone()
+        print(
+            json.dumps(
+                dict(
+                    zip(
+                        (
+                            "state",
+                            "iteration",
+                            "accepted_sha",
+                            "last_good_sha",
+                            "candidate_sha",
+                            "video_path",
+                            "failure",
+                        ),
+                        row,
+                    )
+                )
+            )
+        )
     elif args.action == "approve":
         approve(db, args.sha)
     elif args.action == "resume":
         with db:
-            db.execute("UPDATE campaign SET state='running',failure=NULL WHERE state='blocked' AND id=1")
+            db.execute(
+                "UPDATE campaign SET state='running',failure=NULL WHERE state='blocked' AND id=1"
+            )
     else:
         if not args.adapter or args.interval < 1 or args.timeout < 1:
             parser.error("adapter, positive interval and timeout required")

@@ -74,7 +74,19 @@ def test_missing_or_paginated_ci_rejected(response):
 
 
 @pytest.mark.parametrize(
-    "attack", ["timeout", "process", "unchanged", "not_mp4", "qa", "human", "ci"]
+    "attack",
+    [
+        "timeout",
+        "process",
+        "unchanged",
+        "not_mp4",
+        "qa",
+        "review",
+        "ci",
+        "pending",
+        "success",
+        "push",
+    ],
 )
 def test_attempt_quarantines_and_never_retries(tmp_path, attack):
     repo = tmp_path / "source"
@@ -86,13 +98,21 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
     config = {
         "repository": str(repo),
         "evidence_root": str(tmp_path / "evidence"),
-        "max_attempts": 2,
+        "max_attempts_per_day": 2,
+        "max_cost_microusd_per_day": 200,
+        "max_seconds_per_day": 120,
+        "attempt_cost_microusd": 100,
+        "paid_execution": False,
+        "push_authorized": True,
+        "draft_branch_prefix": "shorts-draft/test",
+        "ci_timeout_seconds": 1,
+        "editor_command": ["local-editor"],
+        "review_command": ["local-review"],
         "timeout_seconds": 60,
         "task": "Improve",
         "editable_paths": ["examples/project.json"],
         "render_command": ["trusted-render"],
         "baseline_video_sha256": baseline,
-        "human_review": str(tmp_path / "review.json"),
         "github_repository": "owner/repo",
         "required_checks": ["render"],
     }
@@ -108,7 +128,7 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
             if argv[:2] == ["git", "clone"]:
                 self.workspace.mkdir()
                 (self.workspace / "examples").mkdir()
-            if argv[0] == "codex":
+            if argv[0] == "bwrap":
                 if attack == "timeout":
                     raise TimeoutError("bounded fake timeout")
                 if attack == "process":
@@ -129,26 +149,6 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
                 if attack == "qa":
                     qa["editorial_status"] = "HOLD"
                 (cwd / "dist/qa_report.json").write_text(json.dumps(qa))
-                if attack == "ci":
-                    proof = tmp_path / "proof.png"
-                    proof.write_bytes(b"fake-proof")
-                    review = {
-                        "commit_sha": "b" * 40,
-                        "video_sha256": hashlib.sha256(b"fake-video").hexdigest(),
-                        "qa_sha256": hashlib.sha256(
-                            (cwd / "dist/qa_report.json").read_bytes()
-                        ).hexdigest(),
-                        "decision": "PASS",
-                        "regression": False,
-                        "baseline_video_sha256": baseline,
-                        "reviewer": "test",
-                        "reviewed_at": "test",
-                        "visual_notes": "test",
-                        "audio_notes": "test",
-                        "proof_path": str(proof),
-                        "proof_sha256": hashlib.sha256(b"fake-proof").hexdigest(),
-                    }
-                    (tmp_path / "review.json").write_text(json.dumps(review))
             if argv[0] == "ffprobe":
                 return json.dumps(
                     {
@@ -159,6 +159,25 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
                         "streams": [{"codec_type": "video"}, {"codec_type": "audio"}],
                     }
                 )
+            if argv[0] == "local-review":
+                binding = json.loads(stdin)
+                return json.dumps(
+                    {
+                        **binding,
+                        "decision": "HOLD" if attack == "review" else "PASS",
+                        "regression": False,
+                        "visual_notes": "compared",
+                        "audio_notes": "compared",
+                    }
+                )
+            if argv[:2] == ["git", "ls-remote"]:
+                if sum(c[:2] == ["git", "ls-remote"] for c in calls) == 1:
+                    return ""
+                return "b" * 40 + "\trefs/heads/shorts-draft/test/attempt-0001"
+            if "push" in argv and attack == "push":
+                raise ValueError("ambiguous push failure")
+            if argv[0] == "gh" and "/status?" in argv[-1]:
+                return json.dumps({"sha": "b" * 40, "total_count": 0, "statuses": []})
             if argv[0] == "gh":
                 return json.dumps(
                     {
@@ -166,8 +185,8 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
                         "check_runs": [
                             {
                                 "name": "render",
-                                "head_sha": "c" * 40,
-                                "status": "completed",
+                                "head_sha": ("c" if attack == "ci" else "b") * 40,
+                                "status": "queued" if attack == "pending" else "completed",
                                 "conclusion": "success",
                             }
                         ],
@@ -176,20 +195,23 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
             return ""
 
     job = {"iteration": 1, "last_good_sha": None, "previous_candidate_sha": None}
-    with pytest.raises((ValueError, OSError, TimeoutError)):
-        attempt(config, job, FakeRunner)
+    result = attempt(config, job, FakeRunner)
     assert source.read_text() == "original"
-    if attack == "ci":
-        assert any(c[0] == "gh" for c in calls)
-    if attack == "human":
-        assert any(c[0] == "ffmpeg" for c in calls)
     evidence = tmp_path / "evidence/attempt-0001"
-    assert json.loads((evidence / "result.json").read_text())["state"] == "rejected"
+    if attack == "success":
+        assert result["state"] == "verified"
+        assert result["candidate_commit_sha"] == "b" * 40
+        assert any("push" in c for c in calls)
+    else:
+        assert result["state"] == "rejected"
+    if attack in ("qa", "review", "timeout", "process", "not_mp4", "unchanged"):
+        assert not any("push" in c for c in calls)
+    assert json.loads((evidence / "result.json").read_text()) == result
     before = len(calls)
-    with pytest.raises(FileExistsError):
-        attempt(config, job, FakeRunner)
+    assert attempt(config, job, FakeRunner)["state"] == "rejected"
     assert len(calls) == before
-    assert sum(c[0] == "codex" for c in calls) == 1
+    assert sum(c[0] == "bwrap" for c in calls) == 1
+    assert sum("push" in c for c in calls) <= 1
 
 
 def test_real_runner_timeout_preserves_process_logs(tmp_path):
@@ -207,3 +229,70 @@ def test_real_runner_timeout_preserves_process_logs(tmp_path):
     assert (tmp_path / "process-001.json").is_file()
     assert (tmp_path / "process-001.stdout").is_file()
     assert (tmp_path / "process-001.stderr").is_file()
+
+
+def budget_config():
+    return {
+        "max_attempts_per_day": 2,
+        "max_cost_microusd_per_day": 20,
+        "max_seconds_per_day": 120,
+        "attempt_cost_microusd": 10,
+        "timeout_seconds": 60,
+        "paid_execution": False,
+        "push_authorized": True,
+        "github_repository": "owner/repo",
+        "draft_branch_prefix": "shorts-draft/test",
+        "review_command": ["review"],
+        "render_command": ["render"],
+        "editor_command": ["editor"],
+        "required_checks": ["draft-test"],
+        "ci_timeout_seconds": 10,
+    }
+
+
+@pytest.mark.parametrize("bound", ["attempts", "cost", "time"])
+def test_persistent_rolling_day_reservations(tmp_path, monkeypatch, bound):
+    from shorts_studio import improvement_adapter as module
+
+    config = budget_config()
+    if bound == "cost":
+        config["max_cost_microusd_per_day"] = 10
+    elif bound == "time":
+        config["max_seconds_per_day"] = 60
+    else:
+        config["max_attempts_per_day"] = 1
+    monkeypatch.setattr(module.time, "time", lambda: 100000)
+    module.reserve(config, {"iteration": 1}, tmp_path)
+    with pytest.raises(module.BudgetExhausted):
+        module.reserve(config, {"iteration": 2}, tmp_path)
+    monkeypatch.setattr(module.time, "time", lambda: 186401)
+    module.reserve(config, {"iteration": 2}, tmp_path)
+
+
+@pytest.mark.parametrize("key", list(budget_config()))
+def test_missing_policy_fails_before_external_work(tmp_path, key):
+    from shorts_studio.improvement_adapter import reserve
+
+    config = budget_config()
+    del config[key]
+    with pytest.raises((KeyError, ValueError)):
+        reserve(config, {"iteration": 1}, tmp_path)
+
+
+def test_budget_policy_cannot_be_raised_after_restart(tmp_path):
+    from shorts_studio.improvement_adapter import reserve
+
+    config = budget_config()
+    reserve(config, {"iteration": 1}, tmp_path)
+    config["max_attempts_per_day"] = 3
+    with pytest.raises(ValueError, match="configuration changed"):
+        reserve(config, {"iteration": 2}, tmp_path)
+
+
+def test_paid_execution_fails_closed(tmp_path):
+    from shorts_studio.improvement_adapter import reserve
+
+    config = budget_config()
+    config["paid_execution"] = True
+    with pytest.raises(ValueError, match="paid execution unsupported"):
+        reserve(config, {"iteration": 1}, tmp_path)

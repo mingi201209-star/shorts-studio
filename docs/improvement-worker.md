@@ -1,114 +1,108 @@
-# Persistent Shorts improvement worker (foundation)
+# Bounded unattended Shorts improvement
 
-Run this under a dedicated server account using `systemd` with `Restart=on-failure`
-and a persistent SQLite path. It is currently **not deployed**. The worker
-invokes an external adapter every interval, records verified versions, and
-stops only when the current candidate hash is explicitly approved. A failed
-adapter, missing video, failed QA/CI or detected regression blocks the campaign
-until its root cause is fixed and `resume` is called. The service stays alive,
-but blocked work is never reported as active improvement.
+The service remains disabled and has not been pushed or deployed. The adapter
+supports autonomous intermediate iterations; human approval is exclusively
+`improvement_worker approve EXACT_VIDEO_SHA256`. Approval rehashes the current
+verified video before accepting it. There is no merge, release, upload, publication,
+or service enablement operation in this path.
 
-```bash
-python -m shorts_studio.improvement_worker --database /var/lib/shorts-improvement/state.db run --interval 300 --timeout 3600 /opt/shorts-improvement/adapter
-python -m shorts_studio.improvement_worker --database /var/lib/shorts-improvement/state.db status
-python -m shorts_studio.improvement_worker --database /var/lib/shorts-improvement/state.db approve ACTUAL_VERIFIED_SHA256
-```
+The trusted controller invokes a local editor in a bubblewrap namespace with no
+network and a read-only host filesystem except its isolated checkout and temporary
+files. The operator must supply a local, unmetered editor; paid execution fails
+closed because this repository has no provider-enforced monetary cap. After edits,
+only explicitly allowed JSON/images in examples/assets are committed. The editor's
+entire checkout is retained. A pristine clone of that commit is rendered using an
+operator command, decoded with ffmpeg, checked with ffprobe, and required to pass
+all structural, semantic, subtitle, and final-video gates. Trusted commands must be
+operator-owned and must not invoke candidate-provided executables or metered APIs.
 
-Adapter stdin: `{ "iteration": 1, "last_good_sha": null, "previous_candidate_sha": null }`.
-It must return JSON containing the lowercase SHA256 of the exact review video,
-an absolute `video_path` and independently verified booleans `qa_pass=true`,
-`ci_pass=true`, `regression=false`. It must itself verify source/main/PR status,
-render real media, compare visual and audio quality, poll CI to terminal, and
-restore the last good code when quality regresses. The worker does not grant
-deployment, publication, purchasing or merge authority. An adapter that falsely
-claims verification defeats this boundary; production requires an audited
-adapter which checks video hash and CI receipts rather than trusting claims.
+A separate automated review command runs from the trusted source checkout. It reads
+JSON on stdin with `commit_sha`, `video_sha256`, `qa_sha256`,
+`baseline_video_sha256`, `comparison_video_sha256`, `comparison_video_path`,
+`video_path`, and `qa_path`. The comparison is the last verified candidate when
+available, otherwise the configured baseline (whose media the reviewer must know). It must inspect the actual
+video and compare visual/audio quality with the baseline. Its JSON stdout repeats
+the five hash bindings and contains `decision: "PASS"`, `regression: false`,
+nonempty `visual_notes`, and `audio_notes` to pass. Any other decision rejects the
+attempt and the controller continues without a human. This interface does not
+invent a production quality comparator: an audited local implementation is still
+required. Missing commands/configuration block the campaign.
 
-The next integration step is to connect the existing Shorts Studio production
-and quality reports to that adapter, then deploy and verify `systemd` restart on
-the user's existing server. SSH access to the existing Ubuntu server was
-verified using its already running phone SSH agent; the reviewed branch is
-checked out in an isolated server worktree and its eight tests pass there.
-The existing server has no Blender binary or GitHub CLI/credential helper and
-the existing Hermes controller only runs mock jobs. `deploy/systemd/shorts-improvement.service`
-is intentionally gated on the adapter executable existing; it must not be
-enabled until real media and CI receipts can be verified end to end.
+Only after trusted rendering, QA and internal review does the adapter perform one
+create-only push to `shorts-draft/CAMPAIGN/attempt-NNNN` at the explicitly authorized
+GitHub repository. An empty force-with-lease prevents overwriting any existing ref.
+A durable push intent precedes the single push. The remote ref is checked against
+the exact local commit before and after bounded CI polling. Every returned check
+must be successful and terminal on that commit, all configured required names must
+exist, all commit statuses must succeed, and incomplete pagination fails closed.
+No candidate registers before those checks. Failed or ambiguous pushes are never
+retried for that attempt. Draft refs remain as evidence after rejection.
 
-## Fail-closed one-shot adapter
+`shorts-draft.yml` provides a read-only, ten-minute `draft-test` job for these
+branches. The existing general test/render push workflows exclude this namespace.
+This check tests source; production media QA and review still run locally against
+the pristine candidate. There is no CI media upload in this workflow. Branch policy,
+other installed GitHub Apps and account billing/quota must be audited before use;
+the adapter cannot enforce a GitHub account's dollar spend. Do not authorize paid
+CI overages for this unmetered-only campaign.
 
-`python -m shorts_studio.improvement_adapter --config /absolute/operator-config.json`
-implements the worker stdin/stdout protocol. Configuration and human-review inbox
-must be operator-owned, outside the candidate sandbox. Run as a dedicated account
-with Codex workspace-write sandbox support; do not grant extra writable roots,
-network access, hooks, upload credentials, or privileged execution to the editor.
-The source checkout must be clean. A separate local clone has its origin removed;
-rejected clones are quarantined, never copied back into source. A verified result
-also does not promote source. This is an asset/manifest improvement adapter:
-only explicit `examples/` and `assets/` JSON/image paths may be edited. Changes to
-Python, tests, workflows, deleted inputs, or candidate history block the attempt.
+Each attempt reserves its full worst-case local cost allowance and execution time
+in a persistent SQLite ledger before any external command. Counts, time and cost
+are capped over a rolling 86400 seconds, including failures and crashes, without
+refunds. Daily exhaustion defers work until capacity returns. A consumed iteration
+cannot run or push again after restart. Subprocesses share an attempt deadline and
+are killed as a process group on timeout. The worker timeout must exceed that
+deadline to permit evidence finalization. Use one worker per database/campaign.
+Do not delete the budget ledger or reuse a campaign directory with different limits.
 
-Example operator configuration (paths and task must be chosen for the campaign):
+Verified iterations seed the next isolated clone from the previous exact source
+commit. Rejected edits never become that seed. The original source checkout is
+never changed: retaining/quarantining each rejected clone implements source
+rollback. Commands, stdout/stderr, editor artifacts, source diff, pristine render,
+internal review, CI responses, push intent and result remain under the private
+evidence root. Storage retention must be provisioned separately.
+
+Required operator configuration example (all values must be real and reviewed):
 
 ```json
 {
   "repository": "/srv/shorts-studio",
   "evidence_root": "/var/lib/shorts-improvement/campaign-001",
-  "max_attempts": 24,
+  "max_attempts_per_day": 24,
+  "max_seconds_per_day": 86400,
+  "max_cost_microusd_per_day": 24000000,
+  "attempt_cost_microusd": 1000000,
+  "paid_execution": false,
   "timeout_seconds": 3300,
-  "task": "Improve the selected manifest and assets using the supplied editorial brief.",
-  "editable_paths": ["examples/selected.json"],
-  "render_command": ["/srv/venv/bin/python", "-m", "shorts_studio", "render", "examples/selected.json"],
-  "baseline_video_sha256": "REPLACE_WITH_ACTUAL_BASELINE_SHA256",
-  "human_review": "/var/lib/shorts-review/current.json",
+  "ci_timeout_seconds": 900,
+  "push_authorized": true,
+  "draft_branch_prefix": "shorts-draft/campaign-001",
   "github_repository": "owner/repository",
-  "required_checks": ["REPLACE_WITH_EXACT_REQUIRED_RENDER_CHECK_NAME"]
+  "required_checks": ["draft-test"],
+  "task": "Improve the selected manifest and assets using the editorial brief.",
+  "editable_paths": ["examples/selected.json"],
+  "editor_command": ["/opt/local-editor"],
+  "render_command": ["/srv/venv/bin/python", "-m", "shorts_studio", "render", "examples/selected.json"],
+  "review_command": ["/opt/local-video-review"],
+  "baseline_video_sha256": "REPLACE_WITH_ACTUAL_BASELINE_SHA256"
 }
 ```
 
-Set `SHORTS_REQUIRE_SEMANTIC_QA=1` in the adapter environment. Validate the exact
-render command against the selected project before activation. Each process has
-at most 1800 seconds and the entire subprocess sequence at most the configured
-3600-second ceiling. Timeout kills the process group. The persistent atomic
-`attempt-NNNN` claim prevents rerunning an iteration, including after crashes or
-worker `resume`; investigate failures rather than deleting claims. Use a fresh,
-explicitly reviewed campaign directory for a new campaign. The outer worker
-must have a longer timeout than the adapter, allowing evidence finalization.
+The allowance is an authorization reservation, not a measurement of actual spend.
+All metered execution is unsupported; using a paid CLI behind a trusted command
+violates the execution contract. Configuration, commands and evidence ledger must
+be outside the editor's writable namespace. The renderer must require semantic QA
+(`SHORTS_REQUIRE_SEMANTIC_QA=1`); missing semantic evaluation cannot pass.
 
-The model's entire checkout is archived separately; a pristine clone of the
-candidate commit and a fresh operator command
-must produce the local MP4 and QA report. ffprobe validates audiovisual MP4
-streams and ffmpeg decodes the entire file. The adapter hashes the actual bytes,
-requires every mandatory final-video gate, all semantic scenes and subtitles to
-PASS, rejects unresolved editorial states, and checks all returned GitHub check
-runs and commit statuses on the exact candidate source commit. Empty, paginated,
-missing required checks, pending, skipped, neutral or failed results block; there
-is one bounded query per endpoint, no polling or automatic reattempt. Logs,
-commands, stdout/stderr, source diff, candidate clone, model output, review proof
-and outcome remain in the evidence directory. These may contain sensitive data;
-restrict directory access and plan disk retention externally.
+Run the adapter with `python -m shorts_studio.improvement_adapter --config CONFIG`.
+It consumes the worker job on stdin and returns verified/rejected/deferred JSON.
+The worker records rejections, advances iterations, retains the last verified
+candidate and continues. Infrastructure/configuration errors block until repaired
+and explicitly resumed; budget exhaustion does not require human intervention.
 
-Human review JSON must contain `commit_sha`, `video_sha256`, `qa_sha256`,
-`baseline_video_sha256`, `decision: "PASS"`, `regression: false`, `reviewer`,
-`reviewed_at`, `visual_notes`, `audio_notes`, `proof_path`, and `proof_sha256`.
-Proof must be a real review artifact outside the model workspace. The reviewer
-must inspect the exact video and compare it to the baseline, supplying evidence
-for both visual and audio quality before verification reaches the review gate.
-The adapter verifies bindings and presence; it cannot authenticate a human's
-identity or judge whether their written claims are truthful. Protect this inbox
-with a separate trusted review process. It never manufactures a review.
-
-Before 24-hour activation, still required:
-
-* Install and verify sandboxed Codex, rendering/semantic dependencies, ffmpeg,
-  ffprobe, and read-only authenticated `gh` on the target server.
-* Select real baseline media, its SHA256, explicit editable inputs, the trusted
-  render command, exact required CI check names, and a bounded campaign policy.
-* Establish the external human visual/audio comparison and proof handoff.
-* Arrange independently authorized CI for the **exact local candidate commit**.
-  This adapter never pushes or dispatches workflows; a commit absent from GitHub
-  will fail closed. No CI receipt is synthesized to bridge this gap.
-* Run a real end-to-end canary with actual MP4, local QA, human proof and terminal
-  exact-commit CI; test rejection, timeout recovery, evidence retention and service
-  restart on the target host. Then separately authorize service enablement and
-  a 24-hour monitored run. Nothing here starts the daemon, uploads to YouTube,
-  merges, pushes, or publishes.
+Before any activation, supply and audit the actual local editor, automated
+visual/audio comparator, selected production manifest, baseline, runtime tools,
+GitHub branch credentials, quota and required checks. Run a real end-to-end canary
+on the target host. These production components are not available/configured here;
+there is no claim of successful unattended production rendering. Service enablement
+and any real push remain separate operator actions. No service was enabled.
