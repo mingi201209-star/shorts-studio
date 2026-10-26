@@ -20,7 +20,7 @@ A separate automated review command runs from the trusted source checkout. It re
 JSON on stdin with `commit_sha`, `video_sha256`, `qa_sha256`,
 `baseline_video_sha256`, `comparison_video_sha256`, `comparison_video_path`,
 `video_path`, and `qa_path`. The comparison is the last verified candidate when
-available, otherwise the configured baseline (whose media the reviewer must know). It must inspect the actual
+available, otherwise the configured baseline file, whose SHA256 is verified before editing. It must inspect the actual
 video and compare visual/audio quality with the baseline. Its JSON stdout repeats
 the five hash bindings and contains `decision: "PASS"`, `regression: false`,
 nonempty `visual_notes`, and `audio_notes` to pass. Any other decision rejects the
@@ -84,7 +84,8 @@ Required operator configuration example (all values must be real and reviewed):
   "editor_command": ["/opt/local-editor"],
   "render_command": ["/srv/venv/bin/python", "-m", "shorts_studio", "render", "examples/selected.json"],
   "review_command": ["/opt/local-video-review"],
-  "baseline_video_sha256": "REPLACE_WITH_ACTUAL_BASELINE_SHA256"
+  "baseline_video_sha256": "REPLACE_WITH_ACTUAL_BASELINE_SHA256",
+  "baseline_video_path": "/var/lib/shorts-improvement/baseline/final.mp4"
 }
 ```
 

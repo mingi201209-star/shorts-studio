@@ -77,6 +77,7 @@ def test_missing_or_paginated_ci_rejected(response):
     "attack",
     [
         "timeout",
+        "baseline",
         "process",
         "unchanged",
         "not_mp4",
@@ -94,7 +95,12 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
     (repo / "examples").mkdir()
     source = repo / "examples/project.json"
     source.write_text("original")
-    baseline = hashlib.sha256(b"fake-video").hexdigest() if attack == "unchanged" else "0" * 64
+    baseline_bytes = b"fake-video" if attack == "unchanged" else b"baseline-video"
+    baseline_path = tmp_path / "baseline.mp4"
+    baseline_path.write_bytes(baseline_bytes)
+    baseline = hashlib.sha256(baseline_bytes).hexdigest()
+    if attack == "baseline":
+        baseline_path.write_bytes(b"changed")
     config = {
         "repository": str(repo),
         "evidence_root": str(tmp_path / "evidence"),
@@ -113,6 +119,7 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
         "editable_paths": ["examples/project.json"],
         "render_command": ["trusted-render"],
         "baseline_video_sha256": baseline,
+        "baseline_video_path": str(baseline_path),
         "github_repository": "owner/repo",
         "required_checks": ["render"],
     }
@@ -161,6 +168,7 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
                 )
             if argv[0] == "local-review":
                 binding = json.loads(stdin)
+                assert binding["comparison_video_path"] == str(baseline_path)
                 return json.dumps(
                     {
                         **binding,
@@ -204,13 +212,13 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
         assert any("push" in c for c in calls)
     else:
         assert result["state"] == "rejected"
-    if attack in ("qa", "review", "timeout", "process", "not_mp4", "unchanged"):
+    if attack in ("qa", "review", "timeout", "baseline", "process", "not_mp4", "unchanged"):
         assert not any("push" in c for c in calls)
     assert json.loads((evidence / "result.json").read_text()) == result
     before = len(calls)
     assert attempt(config, job, FakeRunner)["state"] == "rejected"
     assert len(calls) == before
-    assert sum(c[0] == "bwrap" for c in calls) == 1
+    assert sum(c[0] == "bwrap" for c in calls) == (0 if attack == "baseline" else 1)
     assert sum("push" in c for c in calls) <= 1
 
 

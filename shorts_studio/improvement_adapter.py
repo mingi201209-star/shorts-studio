@@ -333,6 +333,11 @@ def attempt(config, job, run_factory=Runner):
             and all(c in "0123456789abcdef" for c in baseline),
             "invalid baseline SHA256",
         )
+        baseline_path = Path(config["baseline_video_path"]).resolve()
+        require(
+            baseline_path.is_file() and digest(baseline_path) == baseline,
+            "baseline video missing or changed",
+        )
         require(
             not run(["git", "status", "--porcelain"], repo).strip(), "source checkout must be clean"
         )
@@ -517,7 +522,7 @@ def attempt(config, job, run_factory=Runner):
             "qa_sha256": digest(qa),
             "baseline_video_sha256": baseline,
             "comparison_video_sha256": job.get("last_good_sha") or baseline,
-            "comparison_video_path": job.get("previous_video_path"),
+            "comparison_video_path": job.get("previous_video_path") or str(baseline_path),
             "video_path": str(video),
             "qa_path": str(qa),
         }
