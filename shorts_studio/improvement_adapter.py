@@ -116,8 +116,10 @@ def reserve(config, job, root):
         require(type(config[key]) is int and config[key] > 0, f"invalid {key}")
     rolling = config.get("rolling_budget_enabled", True)
     require(type(rolling) is bool, "invalid rolling budget switch")
-    require(rolling or config.get("editor_mode") == "codex_subscription",
-            "unbounded rolling attempts require subscription editor")
+    require(
+        rolling or config.get("editor_mode") == "codex_subscription",
+        "unbounded rolling attempts require subscription editor",
+    )
     require(config["max_attempts_per_day"] <= 24, "daily attempt ceiling is 24")
     require(
         config["timeout_seconds"] <= min(3600, config["max_seconds_per_day"]), "invalid time budget"
@@ -436,7 +438,9 @@ def rejected_review_feedback(root: Path, iteration: int) -> str:
             if (
                 report["status"] != "FAIL"
                 or cadence["status"] != "FAIL"
-                or not all(type(x) in (int, float) and 0 <= x < 1000 for x in (first_five, hold, limit))
+                or not all(
+                    type(x) in (int, float) and 0 <= x < 1000 for x in (first_five, hold, limit)
+                )
                 or not isinstance(failure["scene"], str)
                 or not re.fullmatch(r"scene_[0-9]{2}", failure["scene"])
             ):
@@ -483,6 +487,30 @@ def rejected_review_feedback(root: Path, iteration: int) -> str:
         )
     except (OSError, ValueError, KeyError, TypeError):
         return ""
+
+
+def no_edit_feedback(root: Path, iteration: int) -> str:
+    """Carry a trusted no-edit outcome forward without quoting model output."""
+    if iteration <= 1:
+        return ""
+    try:
+        result = load(root / f"attempt-{iteration - 1:04}" / "result.json")
+        if (
+            result.get("state") != "rejected"
+            or result.get("failure") != "editor produced no source changes"
+        ):
+            return ""
+    except (OSError, ValueError, TypeError):
+        return ""
+    return (
+        "\nThe previous attempt produced no source changes. Existing source options "
+        "in the task may already be integrated in this checkout. Inspect the current "
+        "manifest first; do not spend another attempt rechecking those same proposals. "
+        "Investigate a different remaining weakness, such as meaningful first-five-second "
+        "transitions, ending novelty, or a genuinely distinct subject-correct source. "
+        "Preserve all quality gates and factual alignment. Do not manufacture a cosmetic "
+        "edit just to avoid a no-change result."
+    )
 
 
 def attempt(config, job, run_factory=Runner):
@@ -537,6 +565,7 @@ def attempt(config, job, run_factory=Runner):
         prompt = (
             config["task"]
             + rejected_review_feedback(root, job["iteration"])
+            + no_edit_feedback(root, job["iteration"])
             + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "
             "merge, or start services. Do not modify QA implementations, tests, "
             "workflows, or fabricate reviews. Leave edits uncommitted. Change only "
@@ -558,8 +587,9 @@ def attempt(config, job, run_factory=Runner):
             "editor staged source changes",
         )
         allowed = config["editable_paths"]
+        require(changed, "editor produced no source changes")
         require(
-            changed and all(p in allowed or p.startswith("dist/") for p in changed),
+            all(p in allowed or p.startswith("dist/") for p in changed),
             "source changes outside explicit allowlist",
         )
         require(
