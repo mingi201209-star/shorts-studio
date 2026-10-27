@@ -513,10 +513,61 @@ def no_edit_feedback(root: Path, iteration: int) -> str:
     )
 
 
+def read_input_revision(root):
+    """Read a bounded operator research reference, never editor-written text."""
+    revision = root / "input-revision.txt"
+    token = ""
+    if revision.exists() or revision.is_symlink():
+        require(not revision.is_symlink() and revision.is_file(), "unsafe input revision")
+        require(revision.stat().st_size <= 1024, "input revision too large")
+        token = revision.read_text()
+    return token
+
+
+def input_signature(config, job, root, revision=None):
+    """Bind exhausted editing to exact inputs, not a rolling attempt quota."""
+    token = read_input_revision(root) if revision is None else revision
+    values = {
+        "config": config,
+        "candidate": job.get("previous_candidate_sha"),
+        "commit": job.get("previous_commit"),
+        "revision": token,
+        "adapter": digest(Path(__file__)),
+    }
+    return hashlib.sha256(json.dumps(values, sort_keys=True).encode()).hexdigest()
+
+
+def repeated_no_edit(root, iteration, signature):
+    """Allow feedback once; suppress only two matching completed no-edit outcomes."""
+    if iteration < 3:
+        return False
+    for number in (iteration - 1, iteration - 2):
+        try:
+            result = load(root / f"attempt-{number:04}" / "result.json")
+            if not isinstance(result, dict) or not (
+                result.get("state") == "rejected"
+                and result.get("failure") == "editor produced no source changes"
+                and result.get("input_signature") == signature
+            ):
+                return False
+        except (OSError, ValueError, TypeError):
+            return False
+    return True
+
+
 def attempt(config, job, run_factory=Runner):
     repo = Path(config["repository"]).resolve()
     root = Path(config["evidence_root"]).resolve()
     require(not root.is_relative_to(repo), "evidence must be outside source repository")
+    require(type(job["iteration"]) is int and job["iteration"] > 0, "invalid iteration")
+    revision = read_input_revision(root)
+    signature = input_signature(config, job, root, revision)
+    if repeated_no_edit(root, job["iteration"], signature):
+        return {
+            "state": "deferred",
+            "failure": "same inputs produced no edit twice; new input required",
+            "input_signature": signature,
+        }
     try:
         reserve(config, job, root)
     except BudgetExhausted as exc:
@@ -527,7 +578,7 @@ def attempt(config, job, run_factory=Runner):
     evidence.mkdir(mode=0o700)
     run = run_factory(evidence, config["timeout_seconds"])
     workspace = evidence / "workspace"
-    result = {"state": "rejected", "evidence_path": str(evidence)}
+    result = {"state": "rejected", "evidence_path": str(evidence), "input_signature": signature}
     try:
         (evidence / "job.json").write_text(json.dumps(job))
         baseline = config["baseline_video_sha256"]
@@ -564,6 +615,11 @@ def attempt(config, job, run_factory=Runner):
         run(["git", "checkout", "--detach", base], workspace)
         prompt = (
             config["task"]
+            + (
+                "\nOperator research reference (preserve all quality gates): " + revision
+                if revision
+                else ""
+            )
             + rejected_review_feedback(root, job["iteration"])
             + no_edit_feedback(root, job["iteration"])
             + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "
