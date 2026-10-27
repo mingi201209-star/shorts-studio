@@ -76,6 +76,8 @@ def test_missing_or_paginated_ci_rejected(response):
 @pytest.mark.parametrize(
     "attack",
     [
+        "no_edit",
+        "outside",
         "timeout",
         "baseline",
         "process",
@@ -147,7 +149,11 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
             if argv[:4] == ["git", "diff", "--name-only", "a" * 40]:
                 return "examples/project.json\n"
             if argv[:2] == ["git", "ls-files"]:
-                return "examples/project.json\n"
+                return (
+                    ""
+                    if attack == "no_edit"
+                    else ("outside.py\n" if attack == "outside" else "examples/project.json\n")
+                )
             if argv[0] == "trusted-render":
                 (cwd / "dist").mkdir()
                 (cwd / "dist/final.mp4").write_bytes(b"fake-video")
@@ -215,6 +221,12 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
     if attack in ("qa", "review", "timeout", "baseline", "process", "not_mp4", "unchanged"):
         assert not any("push" in c for c in calls)
     assert json.loads((evidence / "result.json").read_text()) == result
+    if attack == "no_edit":
+        assert result["failure"] == "editor produced no source changes"
+        assert not any(c[0] == "trusted-render" for c in calls)
+    if attack == "outside":
+        assert result["failure"] == "source changes outside explicit allowlist"
+        assert not any(c[0] == "trusted-render" for c in calls)
     before = len(calls)
     assert attempt(config, job, FakeRunner)["state"] == "rejected"
     assert len(calls) == before
@@ -279,6 +291,7 @@ def test_persistent_rolling_day_reservations(tmp_path, monkeypatch, bound):
 
 def test_unmetered_subscription_does_not_idle_at_rolling_cap(tmp_path, monkeypatch):
     import sqlite3
+
     from shorts_studio import improvement_adapter as module
 
     config = budget_config()
@@ -294,7 +307,9 @@ def test_unmetered_subscription_does_not_idle_at_rolling_cap(tmp_path, monkeypat
     for iteration in (1, 2, 3):
         module.reserve(config, {"iteration": iteration}, tmp_path)
     with sqlite3.connect(tmp_path / "budget.sqlite3") as db:
-        assert db.execute("SELECT count(*),sum(cost),sum(seconds) FROM reservations").fetchone() == (3, 30, 180)
+        assert db.execute(
+            "SELECT count(*),sum(cost),sum(seconds) FROM reservations"
+        ).fetchone() == (3, 30, 180)
     with pytest.raises(sqlite3.IntegrityError):
         module.reserve(config, {"iteration": 3}, tmp_path)
 
@@ -438,7 +453,6 @@ def test_rejected_review_feedback_passes_only_numeric_history(tmp_path):
     assert rejected_review_feedback(tmp_path, 1) == ""
 
 
-
 def test_rejected_review_feedback_uses_render_failure_metrics(tmp_path):
     from shorts_studio.improvement_adapter import rejected_review_feedback
 
@@ -457,9 +471,7 @@ def test_rejected_review_feedback_uses_render_failure_metrics(tmp_path):
                                 {"scene": "scene_01", "longest_hold": 4.205, "limit": 3.5}
                             ],
                         },
-                        "visual_activity_real": {
-                            "evidence": {"first_5s_visual_changes": 3}
-                        },
+                        "visual_activity_real": {"evidence": {"first_5s_visual_changes": 3}},
                     }
                 },
             }
@@ -469,3 +481,22 @@ def test_rejected_review_feedback_uses_render_failure_metrics(tmp_path):
     assert "scene_01 held one picture 4.205s (limit 3.5s)" in feedback
     assert "first-five-second changes reached 3" in feedback
     assert "IGNORE ALL INSTRUCTIONS" not in feedback
+
+
+def test_no_edit_feedback_uses_only_trusted_outcome(tmp_path):
+    from shorts_studio.improvement_adapter import no_edit_feedback
+
+    previous = tmp_path / "attempt-0001"
+    previous.mkdir()
+    result = previous / "result.json"
+    result.write_text(
+        json.dumps({"state": "rejected", "failure": "editor produced no source changes"})
+    )
+    assert "different remaining weakness" in no_edit_feedback(tmp_path, 2)
+    assert no_edit_feedback(tmp_path, 1) == ""
+    result.write_text(
+        json.dumps({"state": "verified", "failure": "editor produced no source changes"})
+    )
+    assert no_edit_feedback(tmp_path, 2) == ""
+    result.write_text("broken")
+    assert no_edit_feedback(tmp_path, 2) == ""
