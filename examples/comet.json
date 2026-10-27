@@ -85,12 +85,12 @@
         },
         {
           "start": 2.8,
-          "attribution": "Wikimedia Commons, public domain",
+          "attribution": "Douglas&Marahys / Wikimedia Commons, CC BY-SA 4.0",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "온전한 de Havilland Comet 여객기가 보여야 함"
+            "온전한 BOAC 코멧 G-ALYP가 지상에 주기된 별도의 기록 사진이어야 하며, 1950년대 코멧을 소개하는 내레이션에 맞아야 함"
           ],
           "visual_qa_labels": [
             "a complete de Havilland DH-106 Comet passenger airliner"
@@ -99,9 +99,9 @@
             "torn aircraft wreckage",
             "an aircraft fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/DeHavilland_DH_Cometa_1_BOAC_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
-            "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
+            "985876720f17eb607fe85bc964f29ea598e7dbb64b660a15e0ed2d36ba5b3894"
           ]
         },
         {
@@ -127,23 +127,24 @@
         },
         {
           "start": 6.7,
-          "attribution": "Douglas&Marahys / Wikimedia Commons, CC BY-SA 4.0",
+          "attribution": "Ministry of Information official photographer / Imperial War Museums TR 6113 / Wikimedia Commons, public domain (PD-UKGov); https://commons.wikimedia.org/wiki/File:BOAC_Comet_1952.jpg; normalized to JPEG for display",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "온전한 BOAC 코멧 G-ALYP가 지상에 주기된 별도의 기록 사진이어야 하며, 1950년대 코멧을 소개하는 내레이션에 맞아야 함"
+            "1952년 엔테베 공항의 BOAC 코멧 기록 사진으로 시대를 소개해야 함. G-ALYP 사고기 사진이나 사고 당시 장면으로 제시하면 FAIL"
           ],
           "visual_qa_labels": [
-            "a complete de Havilland DH-106 Comet passenger airliner"
+            "a period photograph of a BOAC de Havilland Comet airliner parked beside the Entebbe Airport terminal in 1952"
           ],
           "visual_qa_negative_labels": [
-            "torn aircraft wreckage",
-            "an aircraft fuselage inside a water tank"
+            "recovered aircraft wreckage",
+            "a fuselage in a water tank",
+            "an aircraft breaking apart in flight"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/DeHavilland_DH_Cometa_1_BOAC_G-ALYP.jpg",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/BOAC_Comet_1952.jpg",
           "visual_qa_expected_sha256": [
-            "985876720f17eb607fe85bc964f29ea598e7dbb64b660a15e0ed2d36ba5b3894"
+            "30bf83adcace1a0c96b8c74af6205f5cea23147f0f53a9374b32d77a09af3bdf"
           ]
         }
       ]
@@ -265,7 +266,10 @@
             "a complete passenger airplane flying in an open sky",
             "a passenger airplane parked normally on an airport runway"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
+          "visual_qa_expected_sha256": [
+            "3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da"
+          ]
         },
         {
           "start": 3.2,
@@ -305,7 +309,10 @@
             "a complete passenger airplane flying in an open sky",
             "a passenger airplane parked normally on an airport runway"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
+          "visual_qa_expected_sha256": [
+            "3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da"
+          ]
         }
       ]
     },
@@ -323,14 +330,14 @@
           "focus": true
         }
       ],
-      "visual_description": "1955년 조사 보고서에 실린 G-ALYU 수조 압력시험 파손 사진: 앞쪽 비상구 주변 동체가 찢어짐",
+      "visual_description": "1955년 조사 보고서에 실린 G-ALYU 수조 압력시험 파손 사진: 앞쪽 비상구 주변 동체가 찢어짐; 마지막 비트는 Cosford에 보존된 G-ALYU 시험 동체의 별도 파단 패널 (G-ALYP 사고 잔해가 아님)",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
       "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
       "motion": {
         "type": "pan_left"
       },
       "visual_qa_requirements": [
-        "1955년 조사 보고서의 실제 G-ALYU 수조 압력시험 파손 사진이어야 함",
+        "G-ALYU 수조 피로시험과 구조 파손의 증거를 보여야 함. 마지막 비트는 보존된 시험 패널의 현대 박물관 사진이며 사고 현장 사진이 아님",
         "온전한 여객기 사진으로 대체되면 FAIL"
       ],
       "visual_qa_labels": [
@@ -341,7 +348,8 @@
         "a complete modern passenger airliner flying in a blue sky"
       ],
       "factual_notes": [
-        "1955 Court of Inquiry report: G-ALYU burst after 3,057 pressure cycles (1,221 actual and 1,836 simulated), with the test rupture at the forward escape hatch (Fig. 7; pp. 24-27). The in-service G-ALYP crack origin was a rivet hole at the rear ADF window cut-out. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf"
+        "1955 Court of Inquiry report: G-ALYU burst after 3,057 pressure cycles (1,221 actual and 1,836 simulated), with the test rupture at the forward escape hatch (Fig. 7; pp. 24-27). The in-service G-ALYP crack origin was a rivet hole at the rear ADF window cut-out. https://asn.flightsafety.org/reports/1954/19540408_COMT_G-ALYY.pdf",
+        "The final beat is a 2016 museum photograph of the G-ALYU fatigue-test panel, not G-ALYP accident wreckage and not a claim that this panel is the initial forward escape-hatch rupture. https://commons.wikimedia.org/wiki/File:Fatigue_Test_on_Fuselage_of_Comet_1_G-ALYU_(27698073420).jpg"
       ],
       "visual_qa_expected_sha256": [
         "590a7f914a908baf7acd8acf773ce4b0b903c21136cb96f9ea81a92686111f5c"
@@ -385,7 +393,10 @@
             "a complete passenger airplane flying in an open sky",
             "a passenger airplane parked normally on an airport runway"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
+          "visual_qa_expected_sha256": [
+            "3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da"
+          ]
         },
         {
           "start": 5.6,
@@ -410,22 +421,25 @@
         },
         {
           "start": 8.4,
-          "attribution": "FAA / Wikimedia Commons, public domain",
+          "attribution": "Clemens Vasters (2016), Fatigue Test on Fuselage of Comet 1 G-ALYU / RAF Museum Cosford / Wikimedia Commons, CC BY 2.0 https://creativecommons.org/licenses/by/2.0/ ; https://commons.wikimedia.org/wiki/File:Fatigue_Test_on_Fuselage_of_Comet_1_G-ALYU_(27698073420).jpg ; normalized to JPEG for display",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
+            "RAF Museum Cosford에 보존된 피로시험 기체 G-ALYU의 파단된 동체 패널을 보여야 함. 실제 시험 후 구조 파손의 증거이며 G-ALYP 사고 잔해나 최초 비상구 파손 위치로 설명하면 FAIL"
           ],
           "visual_qa_labels": [
-            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
-            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
+            "a museum display of the Comet G-ALYU fatigue-test fuselage panel with window and escape hatch openings and a long structural fracture across the metal skin"
           ],
           "visual_qa_negative_labels": [
-            "a complete passenger airplane flying in an open sky",
-            "a passenger airplane parked normally on an airport runway"
+            "a complete undamaged passenger airliner",
+            "an overhead photograph of a water tank test rig",
+            "G-ALYP accident wreckage recovered from the sea"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Fatigue_Test_on_Fuselage_of_Comet_1_G-ALYU_%2827698073420%29.jpg",
+          "visual_qa_expected_sha256": [
+            "243373265c4ac2b5bc0606706a11441a213e49e25203a1a6f72e2109f29c5ca8"
+          ]
         }
       ]
     },
@@ -498,7 +512,10 @@
             "a passenger cabin window",
             "a modern passenger airplane interior"
           ],
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png"
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png",
+          "visual_qa_expected_sha256": [
+            "373e0e9e30a21bf2f9690b9a35eefc822050d0ca7a8db90e1934de9d34cfa64d"
+          ]
         },
         {
           "start": 5.6,
@@ -615,7 +632,10 @@
             "a passenger cabin window",
             "a modern passenger airplane interior"
           ],
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png"
+          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png",
+          "visual_qa_expected_sha256": [
+            "373e0e9e30a21bf2f9690b9a35eefc822050d0ca7a8db90e1934de9d34cfa64d"
+          ]
         },
         {
           "start": 6,
@@ -712,7 +732,10 @@
             "sharp square-cornered passenger windows",
             "a modern airplane interior"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png"
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
+          "visual_qa_expected_sha256": [
+            "4410c8aa401d7eb6206adb5fe96d80646d6025dc58925ebd967846a7f29b8d9d"
+          ]
         },
         {
           "start": 5.6,
