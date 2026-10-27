@@ -114,6 +114,10 @@ def reserve(config, job, root):
         "timeout_seconds",
     ):
         require(type(config[key]) is int and config[key] > 0, f"invalid {key}")
+    rolling = config.get("rolling_budget_enabled", True)
+    require(type(rolling) is bool, "invalid rolling budget switch")
+    require(rolling or config.get("editor_mode") == "codex_subscription",
+            "unbounded rolling attempts require subscription editor")
     require(config["max_attempts_per_day"] <= 24, "daily attempt ceiling is 24")
     require(
         config["timeout_seconds"] <= min(3600, config["max_seconds_per_day"]), "invalid time budget"
@@ -183,12 +187,13 @@ def reserve(config, job, root):
             "FROM reservations WHERE created > ?",
             (time.time() - 86400,),
         ).fetchone()
-        if count >= config["max_attempts_per_day"]:
-            raise BudgetExhausted("rolling day attempts exhausted")
-        if cost + config["attempt_cost_microusd"] > config["max_cost_microusd_per_day"]:
-            raise BudgetExhausted("rolling day cost exhausted")
-        if seconds + config["timeout_seconds"] > config["max_seconds_per_day"]:
-            raise BudgetExhausted("rolling day time exhausted")
+        if rolling:
+            if count >= config["max_attempts_per_day"]:
+                raise BudgetExhausted("rolling day attempts exhausted")
+            if cost + config["attempt_cost_microusd"] > config["max_cost_microusd_per_day"]:
+                raise BudgetExhausted("rolling day cost exhausted")
+            if seconds + config["timeout_seconds"] > config["max_seconds_per_day"]:
+                raise BudgetExhausted("rolling day time exhausted")
         db.execute(
             "INSERT INTO reservations VALUES(?,?,?,?)",
             (

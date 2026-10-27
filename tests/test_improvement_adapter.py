@@ -277,6 +277,45 @@ def test_persistent_rolling_day_reservations(tmp_path, monkeypatch, bound):
     module.reserve(config, {"iteration": 2}, tmp_path)
 
 
+def test_unmetered_subscription_does_not_idle_at_rolling_cap(tmp_path, monkeypatch):
+    import sqlite3
+    from shorts_studio import improvement_adapter as module
+
+    config = budget_config()
+    config.update(
+        editor_mode="codex_subscription",
+        editor_command=["codex"],
+        rolling_budget_enabled=False,
+        max_attempts_per_day=1,
+        max_cost_microusd_per_day=10,
+        max_seconds_per_day=60,
+    )
+    monkeypatch.setattr(module.time, "time", lambda: 100000)
+    for iteration in (1, 2, 3):
+        module.reserve(config, {"iteration": iteration}, tmp_path)
+    with sqlite3.connect(tmp_path / "budget.sqlite3") as db:
+        assert db.execute("SELECT count(*),sum(cost),sum(seconds) FROM reservations").fetchone() == (3, 30, 180)
+    with pytest.raises(sqlite3.IntegrityError):
+        module.reserve(config, {"iteration": 3}, tmp_path)
+
+
+def test_unmetered_switch_rejects_invalid_or_non_subscription_mode(tmp_path):
+    from shorts_studio.improvement_adapter import reserve
+
+    config = budget_config()
+    config["rolling_budget_enabled"] = "false"
+    with pytest.raises(ValueError, match="invalid rolling budget switch"):
+        reserve(config, {"iteration": 1}, tmp_path)
+    config["rolling_budget_enabled"] = False
+    with pytest.raises(ValueError, match="subscription editor"):
+        reserve(config, {"iteration": 1}, tmp_path)
+    config["editor_mode"] = "codex_subscription"
+    config["editor_command"] = ["codex"]
+    config["paid_execution"] = True
+    with pytest.raises(ValueError, match="paid execution unsupported"):
+        reserve(config, {"iteration": 1}, tmp_path)
+
+
 @pytest.mark.parametrize("key", list(budget_config()))
 def test_missing_policy_fails_before_external_work(tmp_path, key):
     from shorts_studio.improvement_adapter import reserve

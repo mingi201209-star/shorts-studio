@@ -6,7 +6,7 @@ supports autonomous intermediate iterations; human approval is exclusively
 verified video before accepting it. There is no merge, release, upload, publication,
 or service enablement operation in this path.
 
-The controller supports an offline editor in a network-isolated bubblewrap namespace. The optional ChatGPT-subscription Codex editor uses network inside an outer bubblewrap namespace that exposes only its isolated checkout and Codex login under the home directory; the rest of home, including GitHub and SSH credentials, is hidden. The Codex inner shell sandbox is disabled because nested user namespaces fail on this VPS; outer bubblewrap remains mandatory. Direct API-key execution fails closed. A subscription has usage limits, and the rolling-day attempt/time bounds still apply. After edits,
+The controller supports an offline editor in a network-isolated bubblewrap namespace. The optional ChatGPT-subscription Codex editor uses network inside an outer bubblewrap namespace that exposes only its isolated checkout and Codex login under the home directory; the rest of home, including GitHub and SSH credentials, is hidden. The Codex inner shell sandbox is disabled because nested user namespaces fail on this VPS; outer bubblewrap remains mandatory. Direct API-key execution fails closed. A subscription has provider usage limits. Rolling-day bounds apply by default; an explicitly unmetered subscription campaign may disable those local bounds. After edits,
 only explicitly allowed JSON/images in examples/assets are committed. The editor's
 entire checkout is retained. A pristine clone of that commit is rendered using an
 operator command, decoded with ffmpeg, checked with ffprobe, and required to pass
@@ -43,9 +43,13 @@ CI overages for this unmetered-only campaign.
 
 Each attempt reserves its full worst-case local cost allowance and execution time
 in a persistent SQLite ledger before any external command. Counts, time and cost
-are capped over a rolling 86400 seconds, including failures and crashes, without
-refunds. Daily exhaustion defers work until capacity returns. A consumed iteration
-cannot run or push again after restart. Subprocesses share an attempt deadline and
+are capped over a rolling 86400 seconds by default, including failures and crashes, without
+refunds. Daily exhaustion defers work until capacity returns. For a non-paid
+Codex subscription campaign only, setting "rolling_budget_enabled": false
+keeps every reservation and unique iteration while allowing new attempts when
+the worker is idle; the provider may still enforce its own usage limit. The
+per-attempt deadline, no-API-key rule, QA/review and CI gates still apply.
+A consumed iteration cannot run or push again after restart. Subprocesses share an attempt deadline and
 are killed as a process group on timeout. The worker timeout must exceed that
 deadline to permit evidence finalization. Use one worker per database/campaign.
 Do not delete the budget ledger or reuse a campaign directory with different limits.
