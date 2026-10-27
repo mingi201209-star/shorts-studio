@@ -513,14 +513,20 @@ def no_edit_feedback(root: Path, iteration: int) -> str:
     )
 
 
-def input_signature(config, job, root):
-    """Bind exhausted editing to exact inputs, not a rolling attempt quota."""
+def read_input_revision(root):
+    """Read a bounded operator research reference, never editor-written text."""
     revision = root / "input-revision.txt"
     token = ""
     if revision.exists() or revision.is_symlink():
         require(not revision.is_symlink() and revision.is_file(), "unsafe input revision")
         require(revision.stat().st_size <= 1024, "input revision too large")
         token = revision.read_text()
+    return token
+
+
+def input_signature(config, job, root, revision=None):
+    """Bind exhausted editing to exact inputs, not a rolling attempt quota."""
+    token = read_input_revision(root) if revision is None else revision
     values = {
         "config": config,
         "candidate": job.get("previous_candidate_sha"),
@@ -554,7 +560,8 @@ def attempt(config, job, run_factory=Runner):
     root = Path(config["evidence_root"]).resolve()
     require(not root.is_relative_to(repo), "evidence must be outside source repository")
     require(type(job["iteration"]) is int and job["iteration"] > 0, "invalid iteration")
-    signature = input_signature(config, job, root)
+    revision = read_input_revision(root)
+    signature = input_signature(config, job, root, revision)
     if repeated_no_edit(root, job["iteration"], signature):
         return {
             "state": "deferred",
@@ -608,6 +615,11 @@ def attempt(config, job, run_factory=Runner):
         run(["git", "checkout", "--detach", base], workspace)
         prompt = (
             config["task"]
+            + (
+                "\nOperator research reference (preserve all quality gates): " + revision
+                if revision
+                else ""
+            )
             + rejected_review_feedback(root, job["iteration"])
             + no_edit_feedback(root, job["iteration"])
             + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "

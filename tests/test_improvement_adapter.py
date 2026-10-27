@@ -76,6 +76,7 @@ def test_missing_or_paginated_ci_rejected(response):
 @pytest.mark.parametrize(
     "attack",
     [
+        "research",
         "no_edit",
         "outside",
         "timeout",
@@ -138,6 +139,8 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
                 self.workspace.mkdir()
                 (self.workspace / "examples").mkdir()
             if argv[0] == "bwrap":
+                if attack == "research":
+                    assert "new reviewed source reference" in stdin
                 if attack == "timeout":
                     raise TimeoutError("bounded fake timeout")
                 if attack == "process":
@@ -208,11 +211,15 @@ def test_attempt_quarantines_and_never_retries(tmp_path, attack):
                 )
             return ""
 
+    if attack == "research":
+        root = tmp_path / "evidence"
+        root.mkdir()
+        (root / "input-revision.txt").write_text("new reviewed source reference")
     job = {"iteration": 1, "last_good_sha": None, "previous_candidate_sha": None}
     result = attempt(config, job, FakeRunner)
     assert source.read_text() == "original"
     evidence = tmp_path / "evidence/attempt-0001"
-    if attack == "success":
+    if attack in ("success", "research"):
         assert result["state"] == "verified"
         assert result["candidate_commit_sha"] == "b" * 40
         assert any("push" in c for c in calls)

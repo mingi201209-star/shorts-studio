@@ -13,7 +13,8 @@ migration; never reset the ledger to resume.
 
 After adding genuinely new reviewed research, record its identity in
 <campaign evidence root>/input-revision.txt (regular file, at most 1024 bytes).
-The marker is read-only to the editor sandbox. Do not change it just to replay an
+The reference is appended to the editor prompt as context; it does not override
+quality gates. The marker file is read-only to the editor sandbox. Do not change it just to replay an
 exhausted prompt. Existing records without input signatures do not suppress work:
 two new signed outcomes must first be collected.
 
