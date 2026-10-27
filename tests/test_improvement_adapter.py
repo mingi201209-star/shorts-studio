@@ -500,3 +500,68 @@ def test_no_edit_feedback_uses_only_trusted_outcome(tmp_path):
     assert no_edit_feedback(tmp_path, 2) == ""
     result.write_text("broken")
     assert no_edit_feedback(tmp_path, 2) == ""
+
+
+def test_same_input_no_edit_suppression_has_no_model_or_reservation(tmp_path, monkeypatch):
+    from shorts_studio import improvement_adapter as module
+
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    root = tmp_path / "evidence"
+    root.mkdir()
+    config = {"repository": str(repo), "evidence_root": str(root), "task": "improve"}
+    job = {"iteration": 3, "previous_candidate_sha": "a" * 64, "previous_commit": "b" * 40}
+    signature = module.input_signature(config, job, root)
+    for number in (1, 2):
+        path = root / f"attempt-{number:04}"
+        path.mkdir()
+        (path / "result.json").write_text(
+            json.dumps(
+                {
+                    "state": "rejected",
+                    "failure": "editor produced no source changes",
+                    "input_signature": signature,
+                }
+            )
+        )
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("unchanged exhausted inputs must not reserve or launch")
+
+    monkeypatch.setattr(module, "reserve", forbidden)
+    result = module.attempt(config, job, forbidden)
+    assert result["state"] == "deferred"
+    assert not (root / "attempt-0003").exists()
+    assert module.input_signature(config, {**job, "iteration": 4}, root) == signature
+    assert module.input_signature({**config, "task": "new idea"}, job, root) != signature
+    assert module.input_signature(config, {**job, "previous_commit": "c" * 40}, root) != signature
+    (root / "input-revision.txt").write_text("new verified research")
+    assert module.input_signature(config, job, root) != signature
+
+
+def test_no_edit_guard_requires_two_exact_trusted_outcomes(tmp_path):
+    from shorts_studio.improvement_adapter import repeated_no_edit
+
+    for number in (1, 2):
+        p = tmp_path / f"attempt-{number:04}"
+        p.mkdir()
+        (p / "result.json").write_text(
+            json.dumps(
+                {
+                    "state": "rejected",
+                    "failure": "editor produced no source changes",
+                    "input_signature": "a",
+                }
+            )
+        )
+    assert repeated_no_edit(tmp_path, 3, "a")
+    assert not repeated_no_edit(tmp_path, 3, "b")
+    p = tmp_path / "attempt-0002/result.json"
+    p.write_text(
+        json.dumps(
+            {"state": "rejected", "failure": "internal review rejected", "input_signature": "a"}
+        )
+    )
+    assert not repeated_no_edit(tmp_path, 3, "a")
+    p.write_text("[]")
+    assert not repeated_no_edit(tmp_path, 3, "a")
