@@ -163,7 +163,7 @@
           "focus": true
         }
       ],
-      "visual_description": "반복된 코멧 사고를 보여주는 실제 G-ALYP 회수 잔해와 코멧 기체",
+      "visual_description": "반복 사고 이후 히스로에 보호 피막을 씌워 보관한 G-ALYW의 실제 1954년 사진에서 G-ALYP 회수 잔해로 전환",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
       "attribution": "Wikimedia Commons, CC BY-SA 4.0",
       "motion": {
@@ -172,23 +172,26 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Wikimedia Commons, public domain",
+          "attribution": "RuthAS / Wikimedia Commons, CC BY 3.0; https://creativecommons.org/licenses/by/3.0/; https://commons.wikimedia.org/wiki/File:DH.106_Comet_1_G-ALYW_BOAC_LAP_(2)_12.09.54_edited-3.jpg; photographed 12 September 1954; normalized to JPEG for display",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "온전한 de Havilland Comet 여객기가 보여야 함"
+            "1954년 9월 12일 히스로에서 보호 피막에 싸여 보관된 BOAC 코멧 G-ALYW의 기록 사진이어야 함. 반복 사고 이후의 운항 중단을 보여주는 자료이며, G-ALYP 사고기나 비행 중 사고 장면으로 제시하면 FAIL",
+            "피막으로 덮인 동체와 지상 보관 상태가 보여야 함. 객실 창문 클로즈업을 보여주지 않아야 함"
           ],
           "visual_qa_labels": [
-            "a complete de Havilland DH-106 Comet passenger airliner"
+            "a black and white historical photograph of a BOAC de Havilland Comet airliner cocooned in protective covering and stored on the ground at Heathrow in 1954"
           ],
           "visual_qa_negative_labels": [
-            "torn aircraft wreckage",
-            "an aircraft fuselage inside a water tank"
+            "recovered torn aircraft wreckage",
+            "an airplane flying in the sky",
+            "a close-up of a passenger cabin window",
+            "a fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/DH.106_Comet_1_G-ALYW_BOAC_LAP_%282%29_12.09.54_edited-3.jpg",
           "visual_qa_expected_sha256": [
-            "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
+            "f3566369095570c7921d8b47518ef5138eaed08ff944c7c3e7c53e95992e4f36"
           ]
         },
         {
@@ -215,6 +218,9 @@
       ],
       "visual_qa_requirements": [
         "반복 사고와 원인 미상의 위기를 전달해야 하며 객실 창문 클로즈업을 아직 보여주지 않아야 함"
+      ],
+      "factual_notes": [
+        "RuthAS photographed G-ALYW stored cocooned at Heathrow on 12 September 1954 after the Comet crashes earlier that year. This is a grounded surviving aircraft, not G-ALYP or G-ALYY and not an accident photograph. Subject, date, own-work authorship and CC BY 3.0 checked on https://commons.wikimedia.org/wiki/File:DH.106_Comet_1_G-ALYW_BOAC_LAP_(2)_12.09.54_edited-3.jpg ."
       ]
     },
     {
@@ -576,7 +582,7 @@
           "focus": true
         }
       ],
-      "visual_description": "지중해에서 회수된 코멧 G-ALYP 동체 파편과 피로 파손 흔적",
+      "visual_description": "코멧 G-ALYP 회수 다이어그램과 ADF 개구부 자료에서 실제 회수 잔해의 별도 근접 사진으로 전환: 리벳 구멍과 찢어진 금속판",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
       "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
       "motion": {
@@ -639,25 +645,31 @@
         },
         {
           "start": 6,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "attribution": "Paul Hudson / Wikimedia Commons, CC BY 2.0; https://creativecommons.org/licenses/by/2.0/; https://commons.wikimedia.org/wiki/File:Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_(7762058290).jpg; photographed 11 August 2012; normalized to JPEG for display",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 코멧 G-ALYP 회수 잔해가 보여야 함"
+            "2012년 Alan Turing 전시에 있던 실제 코멧 회수 잔해를 별도로 촬영한 근접 사진이어야 함. 리벳 구멍 열, 개구부와 찢어진 금속판이 보여야 함",
+            "G-ALYU 물탱크 시험 패널이나 비행 중 파손 장면으로 제시하면 FAIL. 사진만으로 최초 균열의 정확한 리벳 구멍을 특정하거나 객실 창문이 사고 원인이라고 암시하면 FAIL"
           ],
           "visual_qa_labels": [
-            "a museum photograph of recovered de Havilland Comet fuselage wreckage with torn metal and window openings"
+            "a museum close-up photograph of recovered de Havilland Comet wreckage showing torn overlapping metal skin, rows of rivet holes and a framed opening"
           ],
           "visual_qa_negative_labels": [
-            "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky"
+            "a complete undamaged passenger airplane",
+            "an aircraft fuselage enclosed in a water tank",
+            "an explanatory drawing or diagram",
+            "a modern passenger cabin interior"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_%287762058290%29.jpg",
           "visual_qa_expected_sha256": [
-            "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
+            "466b07e5a06750382be9045b2301563c9721f75057683cd7f5e30100e13471b1"
           ]
         }
+      ],
+      "factual_notes": [
+        "Paul Hudson photographed Comet wreckage in the Alan Turing exhibition on 11 August 2012. Commons places the file in BOAC Flight 781 and records CC BY 2.0, confirmed by Flickr license review. Use the photograph as evidence of torn riveted skin; do not adopt the source description’s simplified claim about window corners or identify an exact initiating rivet from this image. https://commons.wikimedia.org/wiki/File:Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_(7762058290).jpg ."
       ]
     },
     {
