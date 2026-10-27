@@ -84,7 +84,7 @@
           ]
         },
         {
-          "start": 3.4,
+          "start": 2.8,
           "attribution": "Wikimedia Commons, public domain",
           "motion": {
             "type": "static"
@@ -105,7 +105,7 @@
           ]
         },
         {
-          "start": 6,
+          "start": 4.6,
           "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
           "motion": {
             "type": "static"
@@ -123,6 +123,27 @@
           "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
             "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
+          ]
+        },
+        {
+          "start": 6.7,
+          "attribution": "Douglas&Marahys / Wikimedia Commons, CC BY-SA 4.0",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "온전한 BOAC 코멧 G-ALYP가 지상에 주기된 별도의 기록 사진이어야 하며, 1950년대 코멧을 소개하는 내레이션에 맞아야 함"
+          ],
+          "visual_qa_labels": [
+            "a complete de Havilland DH-106 Comet passenger airliner"
+          ],
+          "visual_qa_negative_labels": [
+            "torn aircraft wreckage",
+            "an aircraft fuselage inside a water tank"
+          ],
+          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/DeHavilland_DH_Cometa_1_BOAC_G-ALYP.jpg",
+          "visual_qa_expected_sha256": [
+            "985876720f17eb607fe85bc964f29ea598e7dbb64b660a15e0ed2d36ba5b3894"
           ]
         }
       ]
