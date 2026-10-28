@@ -6,7 +6,7 @@ from .final_video_qa import verify_source_budget, verify_retention_contract
 def main():
     ap=argparse.ArgumentParser(prog="shorts_studio"); sub=ap.add_subparsers(dest="cmd",required=True)
     v=sub.add_parser("validate"); v.add_argument("manifest")
-    r=sub.add_parser("render"); r.add_argument("manifest"); r.add_argument("--dry-run",action="store_true")
+    r=sub.add_parser("render"); r.add_argument("manifest"); r.add_argument("--dry-run",action="store_true"); r.add_argument("--narration-cache")
     q=sub.add_parser("qa"); q.add_argument("video")
     g=sub.add_parser("idea-gate"); g.add_argument("pitch")
     a=ap.parse_args()
@@ -35,7 +35,7 @@ def main():
                 print(json.dumps({"status":"FAIL","retention_contract":retention["checks"]},ensure_ascii=False))
                 raise SystemExit(1)
         print(json.dumps({"status":"PASS","scenes":len(p.scenes)},ensure_ascii=False))
-    elif a.cmd=="render": print(json.dumps(render(a.manifest,a.dry_run),ensure_ascii=False))
+    elif a.cmd=="render": print(json.dumps(render(a.manifest,a.dry_run,a.narration_cache),ensure_ascii=False))
     else:
         from pathlib import Path
         from .qa import probe_video

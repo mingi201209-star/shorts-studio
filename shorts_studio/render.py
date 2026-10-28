@@ -140,6 +140,10 @@ CAPTION_MASK_HEIGHT=1920-SAFE_BOTTOM_Y
 # for this taller two-line title.
 _TITLE_STYLE=f"Alignment=6,MarginV=18,FontSize=130,Outline=2,Shadow=0,Bold=1,{_PLAY_RES}"
 
+def _caption_style(scene):
+    size=getattr(scene,"caption_font_size",CAPTION_FONT_SIZE)
+    return CAPTION_STYLE.replace(f"FontSize={CAPTION_FONT_SIZE}",f"FontSize={size}")
+
 def _title_clause(title_srt:Path|None)->str:
     if not title_srt:
         return ""
@@ -150,7 +154,7 @@ def _write_title_srt(path:Path, title:str, duration:float)->Path:
     return path
 
 def _visual_filter(scene, srt:Path, fps:int, title_srt:Path|None=None)->str:
-    style=CAPTION_STYLE
+    style=_caption_style(scene)
     # Contain the complete photo in the same centered box for every scene.
     # The final canvas is black, so subtitles can only appear in the separate
     # lower region; still-image motion is intentionally disabled.
@@ -265,7 +269,7 @@ def _composite_scene_clip(scene, asset:Path|None, audio:Path, srt:Path, duration
         _log_asset_diagnostics(scene.id,asset)
         cmd=["ffmpeg","-y","-loop","1","-framerate",str(fps),"-i",str(asset),"-i",str(audio),"-t",str(duration),"-vf",_visual_filter(scene,srt,fps,title_srt),"-c:v","libx264","-pix_fmt","yuv420p","-af",f"apad=whole_dur={duration}","-c:a","aac",str(clip)]
     else:
-        vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
+        vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{_caption_style(scene)}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
         cmd=["ffmpeg","-y","-f","lavfi","-i",f"color=c=black:s=1080x1920:r={fps}:d={duration}","-i",str(audio),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)]
     try:
         subprocess.run(cmd,check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
@@ -330,7 +334,7 @@ def _composite_visual_beats(scene, audio:Path, srt:Path, duration:float, fps:int
     subprocess.run(["ffmpeg","-y","-f","concat","-safe","0","-i",str(lst),"-c","copy",str(joined)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     clip=build/(f"{scene.id}.mp4" if index==0 else f"{scene.id}_r{index}.mp4")
     title_srt=_write_title_srt(build/f"{scene.id}_title.srt",title,duration) if title else None
-    vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{CAPTION_STYLE}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
+    vf=f"split=2[base][cap];[cap]subtitles={srt.as_posix()}:force_style='{_caption_style(scene)}',crop=1080:{CAPTION_MASK_HEIGHT}:0:{CAPTION_MASK_TOP}[capg];[base][capg]overlay=0:{CAPTION_MASK_TOP}{_title_clause(title_srt)}"
     subprocess.run(["ffmpeg","-y","-i",str(joined),"-i",str(audio),"-t",str(duration),"-vf",vf,"-af",f"apad=whole_dur={duration}","-c:v","libx264","-pix_fmt","yuv420p","-c:a","aac",str(clip)],check=True,capture_output=True,text=True,timeout=_FFMPEG_TIMEOUT_SECONDS)
     return clip,assets,[_media_duration_seconds(path) for path in visual_clips],visual_clips
 
@@ -471,7 +475,7 @@ def _render_scene_with_recovery(scene, audio:Path, duration:float, srt:Path, fps
     result={**result,"recovery_attempts":recovery_attempts,"recovery_exhausted":bool(exhausted)}
     return {"clip":clip,"source":used,"semantic":result}
 
-def render(manifest:str,dry_run:bool=False)->dict:
+def render(manifest:str,dry_run:bool=False,narration_cache:Path|None=None)->dict:
     p=load_project(manifest)
     # Fail before spending a full render on a manifest that doesn't have
     # enough genuinely distinct source families to cover its own visual
@@ -505,7 +509,11 @@ def render(manifest:str,dry_run:bool=False)->dict:
     concat=[]; subtitle_reports=[]; sources=[]; semantic_results=[]; scene_windows=[]; cumulative=0.0
     asset_cache={}
     for scene in p.scenes:
-        audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
+        if narration_cache is not None:
+            from .narration_cache import reuse_scene_audio
+            audio,duration,srt,q,caps,narration_units=reuse_scene_audio(scene,build,narration_cache)
+        else:
+            audio,duration,srt,q,caps,narration_units=_synthesize_scene_audio(scene,build)
         if p.strict_meaningful_visual_changes:
             timing=json.loads((build/f"{scene.id}.timing.json").read_text(encoding="utf-8"))
             resolved=resolve_visual_cues(scene,timing["words"],duration)

@@ -110,6 +110,7 @@ class Scene(BaseModel):
     expected_duration: float | None = Field(default=None, gt=0)
     motion: Motion = Motion()
     transition: str = "cut"
+    caption_font_size: int = Field(default=72, ge=48, le=96)
     # Optional visual-only cuts inside this scene. Empty preserves the original
     # one-image-per-scene renderer exactly.
     visual_beats: list[VisualBeat] = []
