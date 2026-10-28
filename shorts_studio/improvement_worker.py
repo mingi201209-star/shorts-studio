@@ -194,7 +194,12 @@ def main() -> None:
     else:
         if not args.adapter or args.interval < 1 or args.timeout < 1:
             parser.error("adapter, positive interval and timeout required")
-        while step(db, args.adapter, args.timeout) == "running":
+        while True:
+            outcome = step(db, args.adapter, args.timeout)
+            if outcome == "accepted":
+                break
+            # A blocked campaign remains resident without rerunning unsafe work.
+            # Explicit repair/resume may change its state; approval still terminates.
             time.sleep(args.interval)
 
 
