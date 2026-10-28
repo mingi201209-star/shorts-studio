@@ -28,6 +28,27 @@ STRATEGIES = (
 )
 
 
+
+def provider_outage(result_path, result):
+    """Recognize actual failed CLI quota errors, not harmless rate-limit telemetry."""
+    if result.get("provider_unavailable"):
+        return True
+    if result.get("failure") != "process failed: bwrap (1)":
+        return False
+    logs = sorted(Path(result_path).parent.glob("process-*.stderr"))
+    if not logs:
+        return False
+    try:
+        with logs[-1].open("rb") as stream:
+            stream.seek(max(0, logs[-1].stat().st_size - 16384))
+            text = stream.read(16384).decode("utf-8", errors="replace")
+        errors = [line.strip().lower() for line in text.splitlines()
+                  if line.strip().startswith("ERROR:")]
+        return any("usage limit" in line or ("429" in line and "rate limit" in line)
+                   for line in errors)
+    except OSError:
+        return False
+
 def choose_strategy(root, context, candidate_sha):
     root = Path(root)
     # Campaign configuration is immutable. Context/controller version changes must
@@ -37,24 +58,27 @@ def choose_strategy(root, context, candidate_sha):
         try:
             result = json.loads(path.read_text())
             if result.get("strategy_candidate") == candidate_sha:
-                history.append(result)
+                history.append({**result,
+                                "provider_unavailable": provider_outage(path, result),
+                                "_completed_at": path.stat().st_mtime})
         except (OSError, ValueError, TypeError):
             continue
-    if history and history[0].get("review_unavailable"):
-        for path in sorted(root.glob("attempt-*/result.json"), reverse=True):
-            try:
-                entry = json.loads(path.read_text())
-                if entry.get("strategy_candidate") == candidate_sha:
-                    if time.time() - path.stat().st_mtime < 1800:
-                        return {"id": entry.get("strategy_id", STRATEGIES[0][0]),
-                                "instruction": "Independent reviewer unavailable: wait for provider recovery; do not repeat editing/rendering during the 30-minute cooldown.",
-                                "remaining": 0, "completed_failures": 0, "exhausted": False, "defer": True}
-                    break
-            except (OSError, ValueError, TypeError):
-                continue
+    if history and (history[0].get("review_unavailable") or history[0].get("provider_unavailable")):
+        outages = 0
+        for entry in history:
+            if not (entry.get("review_unavailable") or entry.get("provider_unavailable")):
+                break
+            outages += 1
+        cooldown = min(21600, 1800 * 2 ** min(outages - 1, 4))
+        remaining = cooldown - (time.time() - history[0]["_completed_at"])
+        if remaining > 0:
+            return {"id": history[0].get("strategy_id", STRATEGIES[0][0]),
+                    "instruction": "Subscription/reviewer unavailable: wait for provider recovery; do not repeat editing/rendering during the backoff.",
+                    "remaining": 0, "completed_failures": 0, "exhausted": False, "defer": True,
+                    "retry_after_seconds": int(remaining) + 1}
     for key, instruction in STRATEGIES:
         failures = [x for x in history if x.get("strategy_id") == key and x.get("state") == "rejected"
-                    and not x.get("review_unavailable")]
+                    and not x.get("review_unavailable") and not x.get("provider_unavailable")]
         if len(failures) < 2:
             return {"id": key, "instruction": instruction, "completed_failures": len(failures),
                     "remaining": 2 - len(failures), "exhausted": False}

@@ -180,3 +180,24 @@ def test_exact_paths_and_policy_failure_reach_next_editor(tmp_path):
     assert json.dumps(config["editable_paths"]) in prompt
     assert "assets/wrong-directory/photo.png" in prompt
     assert "/tmp" in prompt and "Do not invent other asset names" in prompt
+
+
+
+def test_actual_failed_cli_quota_error_defers_without_consuming_strategy(tmp_path):
+    write_result(tmp_path, 1, "mobile_readability", failure="process failed: bwrap (1)")
+    (tmp_path / "attempt-0001/process-007.stderr").write_text("ERROR: You have hit your usage limit.")
+    route = choose_strategy(tmp_path, "patched-context", "video")
+    assert route["defer"] and route["retry_after_seconds"] >= 1790
+    write_result(tmp_path, 2, "mobile_readability", failure="process failed: bwrap (1)")
+    (tmp_path / "attempt-0002/process-007.stderr").write_text("ERROR: You have hit your usage limit.")
+    route = choose_strategy(tmp_path, "patched-again", "video")
+    assert route["defer"] and route["retry_after_seconds"] >= 3590
+
+
+def test_harmless_telemetry_does_not_become_provider_outage(tmp_path):
+    from shorts_studio.improvement_strategy import provider_outage
+    path = tmp_path / "result.json"
+    (tmp_path / "process-007.stderr").write_text("warning: rate-limit telemetry; completed normally")
+    assert not provider_outage(path, {"failure": "process failed: bwrap (1)"})
+    (tmp_path / "process-007.stderr").write_text("ERROR: You have hit your usage limit.")
+    assert not provider_outage(path, {"state": "verified"})

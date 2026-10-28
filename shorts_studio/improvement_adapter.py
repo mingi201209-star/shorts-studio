@@ -859,6 +859,8 @@ def attempt(config, job, run_factory=Runner):
         return result
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as exc:
         result["failure"] = str(exc)
+        from .improvement_strategy import provider_outage
+        result["provider_unavailable"] = provider_outage(evidence / "result.json", result)
         return result
     finally:
         # Quarantine is rollback: no changes are ever copied into the source checkout.
