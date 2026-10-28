@@ -145,3 +145,59 @@ def test_visual_regression_is_reported_as_regression_not_only_hold(tmp_path):
     q.update(video_sha256=binding["video_sha256"], comparison_video_sha256=binding["comparison_video_sha256"])
     result = assess(binding, visual_reviewer=lambda b: q)
     assert result["decision"] == "HOLD" and result["regression"] is True
+
+
+@pytest.mark.parametrize("reason", ["source changes outside explicit allowlist", "process failed: bwrap (1)", "previously unknown rejection"])
+def test_every_rejection_counts_toward_bounded_strategy(reason, tmp_path):
+    for n in (1, 2):
+        write_result(tmp_path, n, "mobile_readability", failure=reason)
+    route = choose_strategy(tmp_path, "new-controller-code-hash", "video")
+    assert route["id"] == "causal_explanation"
+
+
+def test_controller_context_change_does_not_erase_same_candidate_failures(tmp_path):
+    for index, (key, _) in enumerate(STRATEGIES):
+        for n in (0, 1):
+            write_result(tmp_path, index * 2 + n + 1, key)
+    assert choose_strategy(tmp_path, "patched-controller", "video")["exhausted"] is True
+
+
+def test_failure_history_does_not_expire_after_128_other_attempts(tmp_path):
+    for index, (key, _) in enumerate(STRATEGIES):
+        for n in (0, 1):
+            write_result(tmp_path, index * 2 + n + 1, key)
+    for n in range(9, 140):
+        write_result(tmp_path, n, "mobile_readability", strategy_candidate="unrelated-video")
+    assert choose_strategy(tmp_path, "context", "video")["exhausted"] is True
+
+
+def test_exact_paths_and_policy_failure_reach_next_editor(tmp_path):
+    from shorts_studio.improvement_adapter import edit_scope_feedback
+    write_result(tmp_path, 1, "opening_storyboard", failure="source changes outside explicit allowlist",
+                 rejected_paths=["assets/wrong-directory/photo.png"])
+    config = {"editable_paths": ["examples/comet.json", "assets/autonomous/opening.png"]}
+    prompt = edit_scope_feedback(config, tmp_path, 2)
+    assert json.dumps(config["editable_paths"]) in prompt
+    assert "assets/wrong-directory/photo.png" in prompt
+    assert "/tmp" in prompt and "Do not invent other asset names" in prompt
+
+
+
+def test_actual_failed_cli_quota_error_defers_without_consuming_strategy(tmp_path):
+    write_result(tmp_path, 1, "mobile_readability", failure="process failed: bwrap (1)")
+    (tmp_path / "attempt-0001/process-007.stderr").write_text("ERROR: You have hit your usage limit.")
+    route = choose_strategy(tmp_path, "patched-context", "video")
+    assert route["defer"] and route["retry_after_seconds"] >= 1790
+    write_result(tmp_path, 2, "mobile_readability", failure="process failed: bwrap (1)")
+    (tmp_path / "attempt-0002/process-007.stderr").write_text("ERROR: You have hit your usage limit.")
+    route = choose_strategy(tmp_path, "patched-again", "video")
+    assert route["defer"] and route["retry_after_seconds"] >= 3590
+
+
+def test_harmless_telemetry_does_not_become_provider_outage(tmp_path):
+    from shorts_studio.improvement_strategy import provider_outage
+    path = tmp_path / "result.json"
+    (tmp_path / "process-007.stderr").write_text("warning: rate-limit telemetry; completed normally")
+    assert not provider_outage(path, {"failure": "process failed: bwrap (1)"})
+    (tmp_path / "process-007.stderr").write_text("ERROR: You have hit your usage limit.")
+    assert not provider_outage(path, {"state": "verified"})
