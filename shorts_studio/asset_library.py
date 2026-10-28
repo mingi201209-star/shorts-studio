@@ -31,11 +31,14 @@ def inspect_bundle(root: Path) -> tuple[dict, dict]:
             raise ValueError(f"missing or symlinked bundle file: {name}")
     manifest = json.loads((root / "manifest.json").read_text())
     outputs = manifest["outputs"]
-    if set(outputs) != set(FILES):
+    owned_files = {"builder_source.py", "provenance.json"}
+    if set(outputs) not in (set(FILES), set(FILES) | owned_files):
         raise ValueError("unexpected bundle outputs")
-    for name in FILES:
+    for name in outputs:
         record = outputs[name]
         path = root / name
+        if path.is_symlink() or not path.is_file():
+            raise ValueError("missing or symlinked bundle output")
         if record["bytes"] != path.stat().st_size or record["sha256"] != sha(path):
             raise ValueError(f"bundle checksum mismatch: {name}")
     metadata = json.loads((root / "asset.json").read_text())
@@ -54,6 +57,16 @@ def inspect_bundle(root: Path) -> tuple[dict, dict]:
         or metadata.get("interaction_physics_validated") is not False
     ):
         raise ValueError("shelf importer cannot import production or physics approval")
+    if "provenance.json" in outputs:
+        provenance = json.loads((root / "provenance.json").read_text())
+        if not (
+            provenance.get("license") == "OWNED"
+            and provenance.get("creator") == "Shorts Studio procedural builder"
+            and provenance.get("external_assets") == []
+            and provenance.get("builder_source_sha256") == sha(root / "builder_source.py")
+            and provenance["builder_source_sha256"] == metadata["source_sha256"]
+        ):
+            raise ValueError("owned source provenance mismatch")
     return metadata, outputs
 
 
@@ -79,7 +92,7 @@ def register(source: Path, library: Path) -> dict:
             with tempfile.TemporaryDirectory(prefix=".import-", dir=bundles) as temporary:
                 staged = Path(temporary) / "bundle"
                 staged.mkdir()
-                for name in (*FILES, "manifest.json"):
+                for name in (*outputs, "manifest.json"):
                     shutil.copyfile(source / name, staged / name, follow_symlinks=False)
                 _, copied = inspect_bundle(staged)
                 if copied != outputs:
@@ -92,7 +105,7 @@ def register(source: Path, library: Path) -> dict:
         "motion": "static_object_view",
         "blend_path": str(destination / "asset.blend"),
         "source_sha256": metadata["source_sha256"],
-        "license_status": "unverified",
+        "license_status": "declared_owned" if "provenance.json" in outputs else "unverified",
         "production_approved": False,
         "physics_validated": False,
     }
@@ -140,7 +153,9 @@ def search(
                     "view": metadata["view"],
                     "blend_path": str(bundle / "asset.blend"),
                     "motion": metadata["motion"],
-                    "license_status": "unverified",
+                    "license_status": "declared_owned"
+                    if "provenance.json" in outputs
+                    else "unverified",
                     "production_approved": False,
                     "physics_validated": False,
                 }
