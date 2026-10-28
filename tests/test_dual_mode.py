@@ -223,6 +223,9 @@ def test_benchmark_resumes_completed_stages_without_replaying_them(tmp_path, mon
         frames=4,
         resume=False,
     )
+    monkeypatch.setattr(
+        "shorts_studio.dual_mode_benchmark.shutil.which", lambda name: "/fixture/" + name
+    )
     monkeypatch.setattr(dual_mode, "runtime", lambda *a: {"fixture": True})
     monkeypatch.setattr(dual_mode, "validate_cached", lambda *a: {"fixture": True})
     calls = []
@@ -263,3 +266,15 @@ def test_benchmark_resumes_completed_stages_without_replaying_them(tmp_path, mon
         ("fast", "locked"),
     ]
     assert result["premium_cold"]["wall_seconds"] == 10
+
+
+def test_benchmark_missing_media_tools_fails_before_any_work(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+
+    from shorts_studio.dual_mode_benchmark import benchmark
+
+    monkeypatch.setattr("shorts_studio.dual_mode_benchmark.shutil.which", lambda name: None)
+    args = SimpleNamespace(receipt=tmp_path / "result.json")
+    with pytest.raises(ValueError, match="ffmpeg and ffprobe"):
+        benchmark(args, dual_mode)
+    assert not args.receipt.with_suffix(".phases").exists()

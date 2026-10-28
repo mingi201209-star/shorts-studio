@@ -18,8 +18,10 @@ def write_json(path, value):
 def benchmark(args, runner):
     started = time.monotonic()
     phases = args.receipt.with_suffix(".phases")
-    ffmpeg = Path(shutil.which("ffmpeg"))
-    ffprobe = Path(shutil.which("ffprobe"))
+    ffmpeg_name, ffprobe_name = shutil.which("ffmpeg"), shutil.which("ffprobe")
+    if not ffmpeg_name or not ffprobe_name:
+        raise ValueError("ffmpeg and ffprobe are required for native benchmark validation")
+    ffmpeg, ffprobe = Path(ffmpeg_name), Path(ffprobe_name)
     binding = {
         "library": str(args.library.resolve()),
         "cache": str(args.cache.resolve()),
