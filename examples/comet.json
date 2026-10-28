@@ -43,7 +43,7 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Wikimedia Commons, public domain",
+          "attribution": "Wikimedia Commons, public domain; original URL: https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "motion": {
             "type": "static"
           },
@@ -57,14 +57,14 @@
             "torn aircraft wreckage",
             "an aircraft fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/48/British_Overseas_Airways_Corporation_-_de_Havilland_DH-106_Comet_1_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
             "bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/bbcc3a9f952c6ad1dacd245eb58212f09dbb7d3657632a49d827adb71cc50812.jpg"
         },
         {
           "start": 1,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0; original URL: https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "motion": {
             "type": "static"
           },
@@ -78,14 +78,14 @@
             "an intact de Havilland Comet passenger airliner",
             "an airplane flying in a clear sky"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
             "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf.jpg"
         },
         {
           "start": 2.8,
-          "attribution": "Douglas&Marahys / Wikimedia Commons, CC BY-SA 4.0",
+          "attribution": "Douglas&Marahys / Wikimedia Commons, CC BY-SA 4.0; original URL: https://upload.wikimedia.org/wikipedia/commons/3/34/DeHavilland_DH_Cometa_1_BOAC_G-ALYP.jpg",
           "motion": {
             "type": "static"
           },
@@ -99,14 +99,14 @@
             "torn aircraft wreckage",
             "an aircraft fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/DeHavilland_DH_Cometa_1_BOAC_G-ALYP.jpg",
           "visual_qa_expected_sha256": [
             "985876720f17eb607fe85bc964f29ea598e7dbb64b660a15e0ed2d36ba5b3894"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/985876720f17eb607fe85bc964f29ea598e7dbb64b660a15e0ed2d36ba5b3894.jpg"
         },
         {
           "start": 4.6,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0; original URL: https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "motion": {
             "type": "static"
           },
@@ -120,14 +120,14 @@
             "an intact de Havilland Comet passenger airliner",
             "an airplane flying in a clear sky"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
             "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf.jpg"
         },
         {
           "start": 6.7,
-          "attribution": "Ministry of Information official photographer / Imperial War Museums TR 6113 / Wikimedia Commons, public domain (PD-UKGov); https://commons.wikimedia.org/wiki/File:BOAC_Comet_1952.jpg; normalized to JPEG for display",
+          "attribution": "Ministry of Information official photographer / Imperial War Museums TR 6113 / Wikimedia Commons, public domain (PD-UKGov); https://commons.wikimedia.org/wiki/File:BOAC_Comet_1952.jpg; normalized to JPEG for display; original URL: https://upload.wikimedia.org/wikipedia/commons/f/f5/BOAC_Comet_1952.jpg",
           "motion": {
             "type": "static"
           },
@@ -142,12 +142,13 @@
             "a fuselage in a water tank",
             "an aircraft breaking apart in flight"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/f/f5/BOAC_Comet_1952.jpg",
           "visual_qa_expected_sha256": [
             "30bf83adcace1a0c96b8c74af6205f5cea23147f0f53a9374b32d77a09af3bdf"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/30bf83adcace1a0c96b8c74af6205f5cea23147f0f53a9374b32d77a09af3bdf.jpg"
         }
-      ]
+      ],
+      "caption_font_size": 88
     },
     {
       "id": "scene_02",
@@ -172,7 +173,7 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "RuthAS / Wikimedia Commons, CC BY 3.0; https://creativecommons.org/licenses/by/3.0/; https://commons.wikimedia.org/wiki/File:DH.106_Comet_1_G-ALYW_BOAC_LAP_(2)_12.09.54_edited-3.jpg; photographed 12 September 1954; normalized to JPEG for display",
+          "attribution": "RuthAS / Wikimedia Commons, CC BY 3.0; https://creativecommons.org/licenses/by/3.0/; https://commons.wikimedia.org/wiki/File:DH.106_Comet_1_G-ALYW_BOAC_LAP_(2)_12.09.54_edited-3.jpg; photographed 12 September 1954; normalized to JPEG for display; original URL: https://upload.wikimedia.org/wikipedia/commons/d/d3/DH.106_Comet_1_G-ALYW_BOAC_LAP_%282%29_12.09.54_edited-3.jpg",
           "motion": {
             "type": "static"
           },
@@ -189,14 +190,14 @@
             "a close-up of a passenger cabin window",
             "a fuselage inside a water tank"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/DH.106_Comet_1_G-ALYW_BOAC_LAP_%282%29_12.09.54_edited-3.jpg",
           "visual_qa_expected_sha256": [
             "f3566369095570c7921d8b47518ef5138eaed08ff944c7c3e7c53e95992e4f36"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/f3566369095570c7921d8b47518ef5138eaed08ff944c7c3e7c53e95992e4f36.jpg"
         },
         {
           "start": 3.5,
-          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+          "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0; original URL: https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "motion": {
             "type": "static"
           },
@@ -210,10 +211,10 @@
             "an intact de Havilland Comet passenger airliner",
             "an airplane flying in a clear sky"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
           "visual_qa_expected_sha256": [
             "cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/cb751f4d9f7a97bcb9029d8fdfaedc68bccedfa483dfc1bcac43f72bd9fa0eaf.jpg"
         }
       ],
       "visual_qa_requirements": [
@@ -221,7 +222,8 @@
       ],
       "factual_notes": [
         "RuthAS photographed G-ALYW stored cocooned at Heathrow on 12 September 1954 after the Comet crashes earlier that year. This is a grounded surviving aircraft, not G-ALYP or G-ALYY and not an accident photograph. Subject, date, own-work authorship and CC BY 3.0 checked on https://commons.wikimedia.org/wiki/File:DH.106_Comet_1_G-ALYW_BOAC_LAP_(2)_12.09.54_edited-3.jpg ."
-      ]
+      ],
+      "caption_font_size": 88
     },
     {
       "id": "scene_03",
@@ -257,7 +259,7 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "FAA / Wikimedia Commons, public domain",
+          "attribution": "FAA / Wikimedia Commons, public domain; original URL: https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
           "motion": {
             "type": "static"
           },
@@ -272,35 +274,32 @@
             "a complete passenger airplane flying in an open sky",
             "a passenger airplane parked normally on an airport runway"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
           "visual_qa_expected_sha256": [
             "3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da.jpg"
         },
         {
           "start": 3.2,
-          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
+          "asset": "assets/comet-terra/pressure.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
+            "물탱크 압력 시험의 올림·낮춤·반복을 설명해야 함",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "136b79ef003e8e67ade4abb675a1a67624e8832cad6184b97764d3016022a8bc"
           ],
           "visual_qa_labels": [
-            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
-            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
-          ],
-          "visual_qa_negative_labels": [
-            "a complete modern passenger airliner flying in a blue sky"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
-          "visual_qa_expected_sha256": [
-            "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
+            "an educational diagram of repeated pressurization cycles for a water tank test"
           ]
         },
         {
           "start": 6.4,
-          "attribution": "FAA / Wikimedia Commons, public domain",
+          "attribution": "FAA / Wikimedia Commons, public domain; original URL: https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
           "motion": {
             "type": "static"
           },
@@ -315,12 +314,13 @@
             "a complete passenger airplane flying in an open sky",
             "a passenger airplane parked normally on an airport runway"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
           "visual_qa_expected_sha256": [
             "3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da.jpg"
         }
-      ]
+      ],
+      "caption_font_size": 88
     },
     {
       "id": "scene_04",
@@ -336,15 +336,14 @@
           "focus": true
         }
       ],
-      "visual_description": "1955년 조사 보고서에 실린 G-ALYU 수조 압력시험 파손 사진: 앞쪽 비상구 주변 동체가 찢어짐; 마지막 비트는 Cosford에 보존된 G-ALYU 시험 동체의 별도 파단 패널 (G-ALYP 사고 잔해가 아님)",
+      "visual_description": "수조 시험기 G-ALYU의 실제 운항·추가 수조 시험·누적 사이클을 나눠 설명한 뒤 실제 시험 파손 사진으로 전환",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
       "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
       "motion": {
         "type": "pan_left"
       },
       "visual_qa_requirements": [
-        "G-ALYU 수조 피로시험과 구조 파손의 증거를 보여야 함. 마지막 비트는 보존된 시험 패널의 현대 박물관 사진이며 사고 현장 사진이 아님",
-        "온전한 여객기 사진으로 대체되면 FAIL"
+        "G-ALYU 수조 시험기 실제·모의 사이클을 구분하고 마지막은 실제 시험 파손 사진으로 전환; G-ALYP 사고 현장 사진으로 제시하면 FAIL"
       ],
       "visual_qa_labels": [
         "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
@@ -363,7 +362,61 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
+          "asset": "assets/comet-terra/cycles-flight.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "G-ALYU 실제 운항 1,221회를 크게 단독 표시",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "8db077a58c0ebf535e03b3626bb3aca08d4bf454223aae9d825b5f672d3ac3d3"
+          ],
+          "visual_qa_labels": [
+            "an infographic with a large number 1221 and a simplified top view airplane"
+          ]
+        },
+        {
+          "start": 3.033333,
+          "asset": "assets/comet-terra/cycles-tank.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "물탱크에서 추가한 1,836회를 크게 단독 표시",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "d4ae04e53de32613ffdd0b734e992536cb96be426e53e02a0d43e23fea8507b6"
+          ],
+          "visual_qa_labels": [
+            "an infographic with a large number 1836 and an aircraft fuselage in a rectangular water tank"
+          ]
+        },
+        {
+          "start": 6.033333,
+          "asset": "assets/comet-terra/cycles-total.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "G-ALYU 실제 1,221회와 모의 1,836회의 합계 3,057회를 표시",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "a2e0b66ec8e267cb5e89812d654804143a9e38c837f3bbf2be9f100e5efa9d35"
+          ],
+          "visual_qa_labels": [
+            "an infographic with the number 3057 and a two color stacked bar comparing actual and simulated pressure cycles"
+          ]
+        },
+        {
+          "start": 8.0,
+          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0; original URL: https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
           "motion": {
             "type": "static"
           },
@@ -377,77 +430,13 @@
           "visual_qa_negative_labels": [
             "a complete modern passenger airliner flying in a blue sky"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
           "visual_qa_expected_sha256": [
             "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
-          ]
-        },
-        {
-          "start": 2.8,
-          "attribution": "FAA / Wikimedia Commons, public domain",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "코멧 G-ALYU의 물탱크 압력 시험 장면이어야 함"
           ],
-          "visual_qa_labels": [
-            "an archival overhead photograph of the de Havilland Comet fuselage enclosed inside a large water tank pressure test structure",
-            "a full scale aircraft fuselage inside a rectangular structural water tank test rig"
-          ],
-          "visual_qa_negative_labels": [
-            "a complete passenger airplane flying in an open sky",
-            "a passenger airplane parked normally on an airport runway"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/c/c4/Comet_G-ALYU_in_the_water_tank_for_pressure_tests.jpg",
-          "visual_qa_expected_sha256": [
-            "3c8b60532100b01bd30ed599d905fbb4d9e213238b05d735a81497fddf1278da"
-          ]
-        },
-        {
-          "start": 5.6,
-          "attribution": "HM Stationery Office / Cohen Inquiry Fig. 7; Wikimedia Commons uploader Completeaerogeek, CC BY-SA 4.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "실제 G-ALYU 수조 압력시험 파손 사진이어야 함"
-          ],
-          "visual_qa_labels": [
-            "a black and white figure from the 1955 Cohen Inquiry report showing the Comet G-ALYU pressure-test fuselage rupture at the forward escape hatch",
-            "inside view of a de Havilland Comet fuselage failure during water tank fatigue testing, with torn skin around an open hatch"
-          ],
-          "visual_qa_negative_labels": [
-            "a complete modern passenger airliner flying in a blue sky"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Comet_G-ALYU_escape_hatch_failure.png",
-          "visual_qa_expected_sha256": [
-            "8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc"
-          ]
-        },
-        {
-          "start": 8.4,
-          "attribution": "Clemens Vasters (2016), Fatigue Test on Fuselage of Comet 1 G-ALYU / RAF Museum Cosford / Wikimedia Commons, CC BY 2.0 https://creativecommons.org/licenses/by/2.0/ ; https://commons.wikimedia.org/wiki/File:Fatigue_Test_on_Fuselage_of_Comet_1_G-ALYU_(27698073420).jpg ; normalized to JPEG for display",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "RAF Museum Cosford에 보존된 피로시험 기체 G-ALYU의 파단된 동체 패널을 보여야 함. 실제 시험 후 구조 파손의 증거이며 G-ALYP 사고 잔해나 최초 비상구 파손 위치로 설명하면 FAIL"
-          ],
-          "visual_qa_labels": [
-            "a museum display of the Comet G-ALYU fatigue-test fuselage panel with window and escape hatch openings and a long structural fracture across the metal skin"
-          ],
-          "visual_qa_negative_labels": [
-            "a complete undamaged passenger airliner",
-            "an overhead photograph of a water tank test rig",
-            "G-ALYP accident wreckage recovered from the sea"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Fatigue_Test_on_Fuselage_of_Comet_1_G-ALYU_%2827698073420%29.jpg",
-          "visual_qa_expected_sha256": [
-            "243373265c4ac2b5bc0606706a11441a213e49e25203a1a6f72e2109f29c5ca8"
-          ]
+          "asset": "assets/comet-terra-sources/8bf05081ddcb663b81aac1553ff24515db2afe2bdec829197933c883862c5abc.jpg"
         }
-      ]
+      ],
+      "caption_font_size": 88
     },
     {
       "id": "scene_05",
@@ -463,16 +452,14 @@
           "focus": true
         }
       ],
-      "visual_description": "사고의 시작점인 상부 동체 ADF 안테나 개구부와 객실 창문 구분",
+      "visual_description": "사고기 ADF 안테나 개구부 기록 사진 → 객실 창문과 다른 위치를 보여주는 큰 모식도 → 리벳 구멍 주변 균열 설명 → 실제 회수 잔해",
       "asset": "assets/window_compare.svg",
       "attribution": "shorts-studio explanatory graphic",
       "motion": {
         "type": "push_in"
       },
       "visual_qa_requirements": [
-        "왼쪽은 각진 ADF 안테나 개구부 모식도",
-        "오른쪽은 둥근 모서리의 객실 창문",
-        "두 형태가 즉시 구별되어야 함"
+        "실제 G-ALYP 자료 사진과 설명 모식도를 구분하고, ADF 개구부와 객실 창문이 다른 위치임을 명확하게 전달"
       ],
       "visual_qa_expected_sha256": [
         "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
@@ -483,28 +470,7 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "shorts-studio explanatory graphic",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "ADF 안테나 개구부와 객실 창문의 차이가 한눈에 보여야 함"
-          ],
-          "visual_qa_labels": [
-            "an explanatory comparison graphic of an angular ADF antenna opening and a rounded passenger window"
-          ],
-          "visual_qa_negative_labels": [
-            "a modern passenger cabin photograph",
-            "a complete airplane in flight"
-          ],
-          "asset": "assets/window_compare.svg",
-          "visual_qa_expected_sha256": [
-            "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
-          ]
-        },
-        {
-          "start": 2.8,
-          "attribution": "HM Stationery Office, Cohen Inquiry accident report / Completeaerogeek, CC BY-SA 4.0",
+          "attribution": "HM Stationery Office, Cohen Inquiry accident report / Completeaerogeek, CC BY-SA 4.0; original URL: https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png",
           "motion": {
             "type": "static"
           },
@@ -518,134 +484,50 @@
             "a passenger cabin window",
             "a modern passenger airplane interior"
           ],
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png",
           "visual_qa_expected_sha256": [
             "373e0e9e30a21bf2f9690b9a35eefc822050d0ca7a8db90e1934de9d34cfa64d"
+          ],
+          "asset": "assets/comet-terra-sources/373e0e9e30a21bf2f9690b9a35eefc822050d0ca7a8db90e1934de9d34cfa64d.jpg"
+        },
+        {
+          "start": 2.8,
+          "asset": "assets/comet-terra/location.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "G-ALYP 동체 위쪽의 ADF 개구부와 옆면 객실 창문을 구분",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "91dae50b940dac606bffc280f678f80ac5318ebf7ac6eda70d27aa205112212a"
+          ],
+          "visual_qa_labels": [
+            "a labeled schematic showing an antenna opening on the roof of an aircraft fuselage above its passenger windows"
           ]
         },
         {
           "start": 5.6,
-          "attribution": "HM Stationery Office, Cohen Inquiry accident report",
+          "asset": "assets/comet-terra/rivet.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "1955년 사고 조사 보고서의 코멧 잔해 회수 다이어그램에 Forward ADF aerial \"window\" 위치가 표시되어 있어야 함"
+            "G-ALYP 조사 결과인 ADF 리벳 구멍 주변의 균열 시작을 설명",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "ddd829d4dcd4c556c10653dd77783e1a26509202d2e122858e8eb81f6c2c9a58"
           ],
           "visual_qa_labels": [
-            "a 1955 accident report diagram of the recovered de Havilland Comet G-ALYP wreckage with the forward ADF aerial window location labeled"
-          ],
-          "visual_qa_negative_labels": [
-            "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky",
-            "a passenger cabin window"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
-          "visual_qa_expected_sha256": [
-            "4e00ba79934be0087c36372db8810cff7c16314634520c50564ad4e448628de7"
+            "a schematic metal panel with an opening, rivet holes and a small highlighted crack near one hole"
           ]
         },
         {
           "start": 8.4,
-          "attribution": "shorts-studio explanatory graphic",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "ADF 안테나 개구부와 객실 창문의 차이가 한눈에 보여야 함"
-          ],
-          "visual_qa_labels": [
-            "an explanatory comparison graphic of an angular ADF antenna opening and a rounded passenger window"
-          ],
-          "visual_qa_negative_labels": [
-            "a modern passenger cabin photograph",
-            "a complete airplane in flight"
-          ],
-          "asset": "assets/window_compare.svg",
-          "visual_qa_expected_sha256": [
-            "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
-          ]
-        }
-      ]
-    },
-    {
-      "id": "scene_06",
-      "narration": "작은 균열이 비행할 때마다 반복되는 압력으로 자라면서, 결국 동체가 버티지 못한 겁니다.",
-      "narration_plan": [
-        {
-          "role": "EXPLANATION",
-          "text": "작은 균열이 비행할 때마다 반복되는 압력으로 자라면서"
-        },
-        {
-          "role": "EXPLANATION",
-          "text": "결국 동체가 버티지 못한 겁니다",
-          "focus": true
-        }
-      ],
-      "visual_description": "코멧 G-ALYP 회수 다이어그램과 ADF 개구부 자료에서 실제 회수 잔해의 별도 근접 사진으로 전환: 리벳 구멍과 찢어진 금속판",
-      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
-      "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
-      "motion": {
-        "type": "pan_right"
-      },
-      "visual_qa_requirements": [
-        "사고기 잔해 장면이어야 하며 narration과 일치해야 함(정상 기체로 대체되면 FAIL)"
-      ],
-      "visual_qa_labels": [
-        "a museum photograph of a real recovered torn de Havilland Comet aircraft fuselage fragment with window openings",
-        "a close-up of recovered crashed aircraft fuselage wreckage with torn metal skin and window frames"
-      ],
-      "visual_qa_negative_labels": [
-        "a complete undamaged passenger airplane flying in an open sky",
-        "a diagram or illustration of a complete airplane"
-      ],
-      "visual_beats": [
-        {
-          "start": 0,
-          "attribution": "HM Stationery Office, Cohen Inquiry accident report",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "1955년 사고 조사 보고서의 코멧 잔해 회수 다이어그램에 Forward ADF aerial \"window\" 위치가 표시되어 있어야 함"
-          ],
-          "visual_qa_labels": [
-            "a 1955 accident report diagram of the recovered de Havilland Comet G-ALYP wreckage with the forward ADF aerial window location labeled"
-          ],
-          "visual_qa_negative_labels": [
-            "an intact de Havilland Comet passenger airliner",
-            "an airplane flying in a clear sky",
-            "a passenger cabin window"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/7/70/Comet_1_G-ALYP_-_wreckage_recovered_png.png",
-          "visual_qa_expected_sha256": [
-            "4e00ba79934be0087c36372db8810cff7c16314634520c50564ad4e448628de7"
-          ]
-        },
-        {
-          "start": 3,
-          "attribution": "HM Stationery Office, Cohen Inquiry accident report / Completeaerogeek, CC BY-SA 4.0",
-          "motion": {
-            "type": "static"
-          },
-          "visual_qa_requirements": [
-            "1955년 사고 조사 보고서에 실린 코멧의 ADF 안테나 개구부가 보여야 함"
-          ],
-          "visual_qa_labels": [
-            "a black and white 1955 accident report photograph of roof mounted ADF window cutouts on the de Havilland Comet G-ALYP above the cockpit"
-          ],
-          "visual_qa_negative_labels": [
-            "a passenger cabin window",
-            "a modern passenger airplane interior"
-          ],
-          "asset_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Comet_G-ALYP_ADF_windows.png",
-          "visual_qa_expected_sha256": [
-            "373e0e9e30a21bf2f9690b9a35eefc822050d0ca7a8db90e1934de9d34cfa64d"
-          ]
-        },
-        {
-          "start": 6,
-          "attribution": "Paul Hudson / Wikimedia Commons, CC BY 2.0; https://creativecommons.org/licenses/by/2.0/; https://commons.wikimedia.org/wiki/File:Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_(7762058290).jpg; photographed 11 August 2012; normalized to JPEG for display",
+          "attribution": "Paul Hudson / Wikimedia Commons, CC BY 2.0; https://creativecommons.org/licenses/by/2.0/; https://commons.wikimedia.org/wiki/File:Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_(7762058290).jpg; photographed 11 August 2012; normalized to JPEG for display; original URL: https://upload.wikimedia.org/wikipedia/commons/a/a6/Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_%287762058290%29.jpg",
           "motion": {
             "type": "static"
           },
@@ -662,15 +544,111 @@
             "an explanatory drawing or diagram",
             "a modern passenger cabin interior"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/a/a6/Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_%287762058290%29.jpg",
           "visual_qa_expected_sha256": [
             "466b07e5a06750382be9045b2301563c9721f75057683cd7f5e30100e13471b1"
+          ],
+          "asset": "assets/comet-terra-sources/466b07e5a06750382be9045b2301563c9721f75057683cd7f5e30100e13471b1.jpg"
+        }
+      ],
+      "caption_font_size": 88
+    },
+    {
+      "id": "scene_06",
+      "narration": "작은 균열이 비행할 때마다 반복되는 압력으로 자라면서, 결국 동체가 버티지 못한 겁니다.",
+      "narration_plan": [
+        {
+          "role": "EXPLANATION",
+          "text": "작은 균열이 비행할 때마다 반복되는 압력으로 자라면서"
+        },
+        {
+          "role": "EXPLANATION",
+          "text": "결국 동체가 버티지 못한 겁니다",
+          "focus": true
+        }
+      ],
+      "visual_description": "작은 균열 → 반복 압력에 의한 균열 성장 모식도 → 실제 회수 잔해",
+      "asset_url": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fuselage_of_de_Havilland_Comet_Airliner_G-ALYP.JPG",
+      "attribution": "Krelnik / Wikimedia Commons, CC BY-SA 3.0",
+      "motion": {
+        "type": "pan_right"
+      },
+      "visual_qa_requirements": [
+        "금속 피로의 균열 성장 모식도 뒤 실제 회수 잔해로 전환; 모식도를 사고 사진으로 설명하면 FAIL"
+      ],
+      "visual_qa_labels": [
+        "a museum photograph of a real recovered torn de Havilland Comet aircraft fuselage fragment with window openings",
+        "a close-up of recovered crashed aircraft fuselage wreckage with torn metal skin and window frames"
+      ],
+      "visual_qa_negative_labels": [
+        "a complete undamaged passenger airplane flying in an open sky",
+        "a diagram or illustration of a complete airplane"
+      ],
+      "visual_beats": [
+        {
+          "start": 0,
+          "asset": "assets/comet-terra/crack-small.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "반복 하중을 받는 작은 균열을 설명하는 모식도",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "40250467440ad7dc59a34aa5aff34bb536340badd416591ef30ae81644822cab"
+          ],
+          "visual_qa_labels": [
+            "an educational metal fatigue diagram showing a small crack near a rivet hole in an aircraft panel"
           ]
+        },
+        {
+          "start": 3,
+          "asset": "assets/comet-terra/crack-grown.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "반복 압력에 의해 이전보다 성장한 균열을 설명하는 모식도",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "927158caaf6f5187557b076ede9dec9daf454b2cf3ee7bcace5d71d81803c05c"
+          ],
+          "visual_qa_labels": [
+            "a side by side explanatory diagram comparing a small crack and a larger crack after repeated loading"
+          ]
+        },
+        {
+          "start": 6,
+          "attribution": "Paul Hudson / Wikimedia Commons, CC BY 2.0; https://creativecommons.org/licenses/by/2.0/; https://commons.wikimedia.org/wiki/File:Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_(7762058290).jpg; photographed 11 August 2012; normalized to JPEG for display; original URL: https://upload.wikimedia.org/wikipedia/commons/a/a6/Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_%287762058290%29.jpg",
+          "motion": {
+            "type": "static"
+          },
+          "visual_qa_requirements": [
+            "2012년 Alan Turing 전시에 있던 실제 코멧 회수 잔해를 별도로 촬영한 근접 사진이어야 함. 리벳 구멍 열, 개구부와 찢어진 금속판이 보여야 함",
+            "G-ALYU 물탱크 시험 패널이나 비행 중 파손 장면으로 제시하면 FAIL. 사진만으로 최초 균열의 정확한 리벳 구멍을 특정하거나 객실 창문이 사고 원인이라고 암시하면 FAIL"
+          ],
+          "visual_qa_labels": [
+            "a museum close-up photograph of recovered de Havilland Comet wreckage showing torn overlapping metal skin, rows of rivet holes and a framed opening"
+          ],
+          "visual_qa_negative_labels": [
+            "a complete undamaged passenger airplane",
+            "an aircraft fuselage enclosed in a water tank",
+            "an explanatory drawing or diagram",
+            "a modern passenger cabin interior"
+          ],
+          "visual_qa_expected_sha256": [
+            "466b07e5a06750382be9045b2301563c9721f75057683cd7f5e30100e13471b1"
+          ],
+          "asset": "assets/comet-terra-sources/466b07e5a06750382be9045b2301563c9721f75057683cd7f5e30100e13471b1.jpg"
         }
       ],
       "factual_notes": [
         "Paul Hudson photographed Comet wreckage in the Alan Turing exhibition on 11 August 2012. Commons places the file in BOAC Flight 781 and records CC BY 2.0, confirmed by Flickr license review. Use the photograph as evidence of torn riveted skin; do not adopt the source description’s simplified claim about window corners or identify an exact initiating rivet from this image. https://commons.wikimedia.org/wiki/File:Alan_Turing_exhibition_Wreckage_from_a_Comet_jet_(7762058290).jpg ."
-      ]
+      ],
+      "caption_font_size": 88
     },
     {
       "id": "scene_07",
@@ -686,14 +664,14 @@
           "focus": true
         }
       ],
-      "visual_description": "현대 여객기 객실 창문은 둥근 모서리이며, 코멧 사고의 균열 시작점은 별도의 ADF 개구부였음",
+      "visual_description": "현대 객실 창문과 코멧 객실 창문 기록 사진 → ADF와 객실 창문 구분 → 반복 압력·균열 성장·파손 요약",
       "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
       "attribution": "Wikimedia Commons, CC BY 2.0",
       "motion": {
         "type": "pull_out"
       },
       "visual_qa_requirements": [
-        "현대 여객기의 둥근 모서리 객실 창문이 명확히 보여야 함"
+        "초반 객실 창문 사진과 후반 ADF 구분·금속 피로 설명 그림이 각각 정확한 순서로 보여야 함"
       ],
       "visual_qa_labels": [
         "a modern passenger airplane window with large smoothly rounded corners"
@@ -710,7 +688,7 @@
       "visual_beats": [
         {
           "start": 0,
-          "attribution": "Wikimedia Commons, CC BY 2.0",
+          "attribution": "Wikimedia Commons, CC BY 2.0; original URL: https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
           "motion": {
             "type": "static"
           },
@@ -723,14 +701,14 @@
           "visual_qa_negative_labels": [
             "a sharp square-cornered vintage 1950s airplane window"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
           "visual_qa_expected_sha256": [
             "9a681641bab64a9fd322f057f50353fed937a49827d313b8c528619b62e01ebb"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/9a681641bab64a9fd322f057f50353fed937a49827d313b8c528619b62e01ebb.jpg"
         },
         {
           "start": 2.8,
-          "attribution": "Wikimedia Commons, CC BY-SA 4.0",
+          "attribution": "Wikimedia Commons, CC BY-SA 4.0; original URL: https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
           "motion": {
             "type": "static"
           },
@@ -744,53 +722,49 @@
             "sharp square-cornered passenger windows",
             "a modern airplane interior"
           ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Comet_1_windows.png",
           "visual_qa_expected_sha256": [
             "4410c8aa401d7eb6206adb5fe96d80646d6025dc58925ebd967846a7f29b8d9d"
-          ]
+          ],
+          "asset": "assets/comet-terra-sources/4410c8aa401d7eb6206adb5fe96d80646d6025dc58925ebd967846a7f29b8d9d.jpg"
         },
         {
           "start": 5.6,
-          "attribution": "shorts-studio explanatory graphic",
+          "asset": "assets/comet-terra/compare.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "ADF 안테나 개구부와 객실 창문의 차이가 한눈에 보여야 함"
+            "객실 창문과 G-ALYP ADF 개구부를 구분하고 균열 시작점은 ADF 리벳 구멍 주변임을 명시",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "6a5a60a506076e9383c6887da503ef7e908dd2ef559743fb32dfc339f0e0af9c"
           ],
           "visual_qa_labels": [
-            "an explanatory comparison graphic of an angular ADF antenna opening and a rounded passenger window"
-          ],
-          "visual_qa_negative_labels": [
-            "a modern passenger cabin photograph",
-            "a complete airplane in flight"
-          ],
-          "asset": "assets/window_compare.svg",
-          "visual_qa_expected_sha256": [
-            "ecf6999668eedcd6c7ccd1bb30a5140a17bc3a5a426e31fa9d66180a5c98b684"
+            "an explanatory comparison diagram of a rounded passenger window and a separate ADF antenna opening"
           ]
         },
         {
           "start": 8.4,
-          "attribution": "Wikimedia Commons, CC BY 2.0",
+          "asset": "assets/comet-terra/summary.png",
+          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
           "motion": {
             "type": "static"
           },
           "visual_qa_requirements": [
-            "현대 여객기의 둥근 객실 창문이 명확히 보여야 함"
+            "반복 압력 → 균열 성장 → 동체 파손의 인과관계를 크게 요약",
+            "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
+          ],
+          "visual_qa_expected_sha256": [
+            "837fe8d9d2a4e0feab49f011c529c773bfb95488df16828072bfafbaab763b67"
           ],
           "visual_qa_labels": [
-            "a modern passenger airplane window with large smoothly rounded corners"
-          ],
-          "visual_qa_negative_labels": [
-            "a sharp square-cornered vintage 1950s airplane window"
-          ],
-          "asset_url": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Aircraft_window_interior.jpg",
-          "visual_qa_expected_sha256": [
-            "9a681641bab64a9fd322f057f50353fed937a49827d313b8c528619b62e01ebb"
+            "an educational flowchart linking repeated pressure, crack growth, and fuselage structural failure"
           ]
         }
-      ]
+      ],
+      "caption_font_size": 88
     }
   ],
   "overlay_title": "비행 중 갑자기 찢어진 여객기"
