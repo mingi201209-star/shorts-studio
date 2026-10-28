@@ -422,6 +422,10 @@ def editor_invocation(config, workspace: Path, home: Path) -> list[str]:
 def rejected_review_feedback(root: Path, iteration: int) -> str:
     if iteration <= 1:
         return ""
+    from .improvement_strategy import qualitative_feedback
+    qualitative = qualitative_feedback(root, iteration)
+    if qualitative:
+        return qualitative
     previous_attempt = root / f"attempt-{iteration - 1:04}"
     path = previous_attempt / "internal-review.json"
     if not path.is_file():
@@ -562,6 +566,15 @@ def attempt(config, job, run_factory=Runner):
     require(type(job["iteration"]) is int and job["iteration"] > 0, "invalid iteration")
     revision = read_input_revision(root)
     signature = input_signature(config, job, root, revision)
+    strategy = None
+    context = signature
+    if config.get("autonomous_strategy_enabled"):
+        from .improvement_strategy import choose_strategy
+        strategy = choose_strategy(root, context, job.get("previous_candidate_sha"))
+        if strategy["exhausted"] or strategy.get("defer"):
+            return {"state": "deferred", "failure": strategy["instruction"], "strategy": strategy}
+        signature = hashlib.sha256((context + ":" + strategy["id"]).encode()).hexdigest()
+
     if repeated_no_edit(root, job["iteration"], signature):
         return {
             "state": "deferred",
@@ -579,6 +592,11 @@ def attempt(config, job, run_factory=Runner):
     run = run_factory(evidence, config["timeout_seconds"])
     workspace = evidence / "workspace"
     result = {"state": "rejected", "evidence_path": str(evidence), "input_signature": signature}
+    if strategy is not None:
+        result.update(strategy_id=strategy["id"], strategy_context=context,
+                      strategy_candidate=job.get("previous_candidate_sha"))
+        (evidence / "strategy.json").write_text(json.dumps(strategy, indent=2))
+
     try:
         (evidence / "job.json").write_text(json.dumps(job))
         baseline = config["baseline_video_sha256"]
@@ -620,6 +638,7 @@ def attempt(config, job, run_factory=Runner):
                 if revision
                 else ""
             )
+            + ("\nConcrete autonomous strategy: " + strategy["instruction"] if strategy else "")
             + rejected_review_feedback(root, job["iteration"])
             + no_edit_feedback(root, job["iteration"])
             + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "
@@ -667,7 +686,7 @@ def attempt(config, job, run_factory=Runner):
             "symlinked editable input",
         )
         run(["git", "diff", "--binary"], workspace)  # retained before any rejection
-        run(["git", "add", "--", *allowed], workspace)
+        run(["git", "add", "--", *[p for p in changed if p in allowed]], workspace)
         run(
             [
                 "git",
@@ -775,6 +794,10 @@ def attempt(config, job, run_factory=Runner):
             )
         review = json.loads(run(config["review_command"], repo, json.dumps(binding)))
         (evidence / "internal-review.json").write_text(json.dumps(review))
+        try:
+            result["review_unavailable"] = json.loads(review["visual_notes"]).get("qualitative", {}).get("status") == "unavailable"
+        except (ValueError, KeyError, TypeError):
+            result["review_unavailable"] = False
         require(
             all(
                 review[k] == binding[k]

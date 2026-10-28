@@ -6,6 +6,8 @@ This is a narrow automated metric review. It does not replace human taste.
 import hashlib
 import json
 import math
+import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -35,7 +37,7 @@ def metric(report: dict, name: str) -> float:
     return float(value)
 
 
-def assess(binding: dict) -> dict:
+def assess(binding: dict, visual_reviewer=None) -> dict:
     candidate = Path(binding["video_path"]).resolve()
     baseline = Path(binding["comparison_video_path"]).resolve()
     qa_path = Path(binding["qa_path"]).resolve()
@@ -81,7 +83,20 @@ def assess(binding: dict) -> dict:
         or new["global_source_reuse_ratio"] + 0.05 < old["global_source_reuse_ratio"]
         or new["ending_new_ratio"] > old["ending_new_ratio"] + 0.05
     )
-    passed = not regressions and improvements
+    qualitative = None
+    if visual_reviewer is not None and not regressions:
+        try:
+            qualitative = visual_reviewer(binding)
+            if qualitative.get("video_sha256") != binding["video_sha256"] or qualitative.get("comparison_video_sha256") != binding["comparison_video_sha256"]:
+                raise ValueError("qualitative media binding mismatch")
+        except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError):
+            qualitative = {"status": "unavailable", "improved": False, "not_worse": False,
+                           "next_actions": ["Independent visual reviewer unavailable; preserve evidence and retry after provider recovery."]}
+    passed = not regressions and (
+        improvements if visual_reviewer is None else
+        qualitative is not None and qualitative.get("not_worse") is True and not qualitative.get("regressions") and
+        (improvements or qualitative.get("improved") is True)
+    )
     return {
         **{
             key: binding[key]
@@ -94,9 +109,9 @@ def assess(binding: dict) -> dict:
             )
         },
         "decision": "PASS" if passed else "HOLD",
-        "regression": bool(regressions),
+        "regression": bool(regressions or (qualitative or {}).get("regressions")),
         "visual_notes": json.dumps(
-            {"previous": old, "candidate": new, "regressions": regressions},
+            {"previous": old, "candidate": new, "regressions": regressions, **({"qualitative": qualitative} if qualitative is not None else {})},
             ensure_ascii=False,
             sort_keys=True,
         ),
@@ -109,7 +124,11 @@ def assess(binding: dict) -> dict:
 
 def main() -> None:
     try:
-        print(json.dumps(assess(json.load(sys.stdin)), ensure_ascii=False))
+        reviewer = None
+        if os.environ.get("SHORTS_QUALITATIVE_REVIEW") == "1":
+            from .visual_review import review_pair
+            reviewer = review_pair
+        print(json.dumps(assess(json.load(sys.stdin), visual_reviewer=reviewer), ensure_ascii=False))
     except (OSError, ValueError, KeyError, TypeError) as exc:
         print(str(exc), file=sys.stderr)
         raise SystemExit(1) from exc
