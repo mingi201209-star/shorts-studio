@@ -30,19 +30,21 @@ STRATEGIES = (
 
 def choose_strategy(root, context, candidate_sha):
     root = Path(root)
+    # Campaign configuration is immutable. Context/controller version changes must
+    # not erase failed work against this same verified candidate.
     history = []
-    for path in sorted(root.glob("attempt-*/result.json"), reverse=True)[:128]:
+    for path in sorted(root.glob("attempt-*/result.json"), reverse=True):
         try:
             result = json.loads(path.read_text())
-            if result.get("strategy_context") == context and result.get("strategy_candidate") == candidate_sha:
+            if result.get("strategy_candidate") == candidate_sha:
                 history.append(result)
         except (OSError, ValueError, TypeError):
             continue
     if history and history[0].get("review_unavailable"):
-        for path in sorted(root.glob("attempt-*/result.json"), reverse=True)[:128]:
+        for path in sorted(root.glob("attempt-*/result.json"), reverse=True):
             try:
                 entry = json.loads(path.read_text())
-                if entry.get("strategy_context") == context and entry.get("strategy_candidate") == candidate_sha:
+                if entry.get("strategy_candidate") == candidate_sha:
                     if time.time() - path.stat().st_mtime < 1800:
                         return {"id": entry.get("strategy_id", STRATEGIES[0][0]),
                                 "instruction": "Independent reviewer unavailable: wait for provider recovery; do not repeat editing/rendering during the 30-minute cooldown.",
@@ -52,7 +54,6 @@ def choose_strategy(root, context, candidate_sha):
                 continue
     for key, instruction in STRATEGIES:
         failures = [x for x in history if x.get("strategy_id") == key and x.get("state") == "rejected"
-                    and x.get("failure") in ("editor produced no source changes", "internal review rejected")
                     and not x.get("review_unavailable")]
         if len(failures) < 2:
             return {"id": key, "instruction": instruction, "completed_failures": len(failures),

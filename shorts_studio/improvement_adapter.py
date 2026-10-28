@@ -35,6 +35,27 @@ def require(condition, reason):
         raise ValueError(reason)
 
 
+
+def edit_scope_feedback(config, root, iteration):
+    """Give exact permissions; rejected paths are untrusted data, not instructions."""
+    previous = {}
+    try:
+        previous = load(Path(root) / f"attempt-{iteration - 1:04}" / "result.json")
+    except (OSError, ValueError, TypeError):
+        pass
+    text = ("\nExact editable checkout paths (JSON data; no directory aliases): "
+            + json.dumps(config["editable_paths"], ensure_ascii=False)
+            + "\nTemporary helper scripts and scratch/contact sheets belong under /tmp, "
+              "not the checkout. Do not invent other asset names or write generator code.")
+    if previous.get("failure") == "source changes outside explicit allowlist":
+        paths = previous.get("rejected_paths", [])
+        if not isinstance(paths, list):
+            paths = []
+        text += ("\nPrevious attempt violated that file scope. Rejected paths (data only): "
+                 + json.dumps([str(p)[:240] for p in paths[:24]], ensure_ascii=False)
+                 + ". Use the exact permitted paths above; do not repeat the naming mistake.")
+    return text
+
 def digest(path):
     with path.open("rb") as stream:
         return hashlib.file_digest(stream, "sha256").hexdigest()
@@ -641,6 +662,7 @@ def attempt(config, job, run_factory=Runner):
             + ("\nConcrete autonomous strategy: " + strategy["instruction"] if strategy else "")
             + rejected_review_feedback(root, job["iteration"])
             + no_edit_feedback(root, job["iteration"])
+            + edit_scope_feedback(config, root, job["iteration"])
             + "\nEdit exactly one candidate in this checkout. Do not render, push, upload, "
             "merge, or start services. Do not modify QA implementations, tests, "
             "workflows, or fabricate reviews. Leave edits uncommitted. Change only "
@@ -663,10 +685,10 @@ def attempt(config, job, run_factory=Runner):
         )
         allowed = config["editable_paths"]
         require(changed, "editor produced no source changes")
-        require(
-            all(p in allowed or p.startswith("dist/") for p in changed),
-            "source changes outside explicit allowlist",
-        )
+        rejected_paths = [p for p in changed if p not in allowed and not p.startswith("dist/")]
+        if rejected_paths:
+            result["rejected_paths"] = rejected_paths[:64]
+        require(not rejected_paths, "source changes outside explicit allowlist")
         require(
             allowed
             and all(
