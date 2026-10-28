@@ -94,7 +94,7 @@ def assess(binding: dict, visual_reviewer=None) -> dict:
                            "next_actions": ["Independent visual reviewer unavailable; preserve evidence and retry after provider recovery."]}
     passed = not regressions and (
         improvements if visual_reviewer is None else
-        qualitative is not None and qualitative.get("not_worse") is True and
+        qualitative is not None and qualitative.get("not_worse") is True and not qualitative.get("regressions") and
         (improvements or qualitative.get("improved") is True)
     )
     return {
@@ -109,7 +109,7 @@ def assess(binding: dict, visual_reviewer=None) -> dict:
             )
         },
         "decision": "PASS" if passed else "HOLD",
-        "regression": bool(regressions),
+        "regression": bool(regressions or (qualitative or {}).get("regressions")),
         "visual_notes": json.dumps(
             {"previous": old, "candidate": new, "regressions": regressions, **({"qualitative": qualitative} if qualitative is not None else {})},
             ensure_ascii=False,

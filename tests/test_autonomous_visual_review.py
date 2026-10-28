@@ -134,3 +134,14 @@ def test_blocked_monitor_stays_resident_without_restarting_work(monkeypatch, tmp
                                     "run", "--interval", "5", "adapter"])
     worker.main()
     assert sleeps == [5]
+
+
+
+def test_visual_regression_is_reported_as_regression_not_only_hold(tmp_path):
+    binding = setup(tmp_path, report())
+    data = judgment()
+    data["b_scores"]["truthful_presentation"] = 1
+    q = validate_judgment(data, "bound", "B", [36, 47])
+    q.update(video_sha256=binding["video_sha256"], comparison_video_sha256=binding["comparison_video_sha256"])
+    result = assess(binding, visual_reviewer=lambda b: q)
+    assert result["decision"] == "HOLD" and result["regression"] is True
