@@ -17,6 +17,7 @@ def motion_data(motion="rolling", count=4):
         **dual_mode.PROFILE,
         "motion": motion,
         "simulation": "kinematic",
+        "geometry_bounds": "mesh_vertices",
         "radius": 0.95,
         "speed": 0.6,
         "start_x": -0.3,
@@ -37,6 +38,8 @@ def motion_data(motion="rolling", count=4):
                 "marker_z": 0.95 - 0.86 * math.sin(angle),
                 "camera": [1.0] * 16,
                 "bbox": [0.2, 0.3, 0.8, 0.7],
+                "near_depth": 1.0,
+                "lowest_world_z": 0.0,
             }
         )
     return data
@@ -278,3 +281,46 @@ def test_benchmark_missing_media_tools_fails_before_any_work(tmp_path, monkeypat
     with pytest.raises(ValueError, match="ffmpeg and ffprobe"):
         benchmark(args, dual_mode)
     assert not args.receipt.with_suffix(".phases").exists()
+
+
+def test_rotated_round_mesh_uses_real_vertices_not_empty_aabb_corners():
+    from types import SimpleNamespace
+
+    from shorts_studio.dual_mode_blender import projected_geometry_bounds
+
+    angle, radius = 0.63, 0.95
+
+    class Transform:
+        def __matmul__(self, point):
+            x, y, z = point
+            return (
+                x * math.cos(angle) + z * math.sin(angle) + 0.3,
+                y,
+                -x * math.sin(angle) + z * math.cos(angle) + radius,
+            )
+
+    transform = Transform()
+
+    def project(point):
+        return SimpleNamespace(x=0.5 + point[0] / 2.925, y=0.5 + (point[2] - radius) / 5.2, z=10.0)
+
+    vertices = [
+        SimpleNamespace(
+            co=(radius * math.cos(i * math.tau / 128), 0, radius * math.sin(i * math.tau / 128))
+        )
+        for i in range(128)
+    ]
+    mesh = SimpleNamespace(matrix_world=transform, data=SimpleNamespace(vertices=vertices))
+    bounds, depth, lowest = projected_geometry_bounds([mesh], project)
+    assert 0.03 < bounds[0] < bounds[2] < 0.97
+    assert depth > 0
+    assert abs(lowest) < 0.002
+    old_corner = project(transform @ (radius, 0, radius))
+    assert old_corner.x > 1.0
+
+
+def test_geometry_contact_is_independent_of_declared_radius():
+    data = motion_data()
+    data["frames_data"][-1]["lowest_world_z"] = 0.1
+    with pytest.raises(ValueError, match="actual mesh loses ground contact"):
+        validate_motion(data)

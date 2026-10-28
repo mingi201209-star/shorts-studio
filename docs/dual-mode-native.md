@@ -80,3 +80,50 @@ Report exact tested frame counts and end-to-end times. An 8-frame experiment is
 8/30 seconds of clean native motion, not a full Short or a 30-second speed claim.
 Cached clip reuse is distinct from accelerating a newly composed scene. No fixed
 five-minute cold-render guarantee is implied.
+
+## Automatic clean sequence assembly
+
+Use a JSON sequence with explicit scene keys and optional inclusive native frame
+cuts. The compositor validates each complete source scene again, copies original
+native PNGs with per-frame provenance, encodes without interpolation and verifies
+the decoded result. Repeated original frames are rejected rather than extended
+to fill duration. If two scenes deliberately share the same initial pose, select
+an explicit nonduplicate cut; no automatic hidden trim is performed.
+
+Example sequence:
+{"parts":[{"key":"<rolling scene key>"},{"key":"<locked scene key>","start":2}]}
+
+python -m shorts_studio.dual_mode_compose --cache /assets/case-cache --sequence /evidence/sequence.json --output /evidence/assembled
+
+The result is sequence.mp4 plus frame-level mapping and output hashes. It is a
+clean motion asset sequence: audio/subtitle QA is not applicable, and final
+production approval remains false. Existing complete-Short gates are still
+required after narration and captions are added.
+
+## One-command workflow and review
+
+python -m shorts_studio.dual_mode_pipeline --library /assets/library --cache /assets/fresh-cache --blender /tools/blender --receipt /evidence/comparison.json --review /evidence/review --frames 8
+
+The supported rolling/locked recipe performs the checkpointed benchmark, checks
+visible orange-tracer displacement in actual rendered pixels, selects explicit
+native source cuts, composes the clean sequence, and packages the videos, pose
+contact sheet and measured report. An orchestration lock rejects duplicate
+writers. Use --resume only after reconciling a stopped job; completed artifacts
+are revalidated, not silently overwritten.
+
+The recipe explicitly omits the locked scene's shared initial pose from the
+combined sequence. This source cut is recorded in its provenance map. It does
+not interpolate frames or extend a static picture.
+
+python -m shorts_studio.dual_mode_preview --root /evidence/review --port 8766
+
+The review server binds only to 127.0.0.1, serves only hash-bound manifest files,
+supports byte ranges and disables caching. Videos loop for inspection; each
+clip's actual native frame count and duration are shown. It is read-only and
+does not approve or publish videos.
+
+Geometry QA projects actual mesh vertices, rather than rotating empty corners
+of the mesh bounding box. It checks positive camera depth and the actual lowest
+mesh point within 2mm of the demonstration ground, as well as the declared
+centre/radius relation. These checks establish visible kinematic alignment,
+not force/friction/collision simulation validity.

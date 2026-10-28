@@ -11,6 +11,24 @@ import time
 from pathlib import Path
 
 
+def projected_geometry_bounds(meshes, project):
+    """Measure actual projected geometry and its lowest world-space point."""
+    world_points = [obj.matrix_world @ vertex.co for obj in meshes for vertex in obj.data.vertices]
+    points = [project(point) for point in world_points]
+    if not points:
+        raise ValueError("empty rendered geometry")
+    return (
+        [
+            min(point.x for point in points),
+            min(point.y for point in points),
+            max(point.x for point in points),
+            max(point.y for point in points),
+        ],
+        min(point.z for point in points),
+        min(point[2] for point in world_points),
+    )
+
+
 def main():
     import bpy
     from bpy_extras.object_utils import world_to_camera_view
@@ -214,11 +232,9 @@ def main():
         rig.keyframe_insert("location", frame=frame)
         rig.keyframe_insert("rotation_euler", frame=frame)
         bpy.context.view_layer.update()
-        projected = [
-            world_to_camera_view(scene, scene.camera, o.matrix_world @ Vector(corner))
-            for o in meshes
-            for corner in o.bound_box
-        ]
+        bbox, near_depth, lowest_world_z = projected_geometry_bounds(
+            meshes, lambda point: world_to_camera_view(scene, scene.camera, point)
+        )
         centre = rig.matrix_world.translation
         point = marker.matrix_world.translation
         samples.append(
@@ -229,12 +245,9 @@ def main():
                 "angle": rig.rotation_euler.y,
                 "marker_x": point.x,
                 "marker_z": point.z,
-                "bbox": [
-                    min(v.x for v in projected),
-                    min(v.y for v in projected),
-                    max(v.x for v in projected),
-                    max(v.y for v in projected),
-                ],
+                "bbox": bbox,
+                "near_depth": near_depth,
+                "lowest_world_z": lowest_world_z,
                 "camera": [value for row in scene.camera.matrix_world for value in row],
             }
         )
@@ -247,6 +260,7 @@ def main():
                 "motion": request["motion"],
                 "renderer": "CYCLES",
                 "simulation": "kinematic",
+                "geometry_bounds": "mesh_vertices",
                 "radius": radius,
                 "speed": speed,
                 "start_x": start,

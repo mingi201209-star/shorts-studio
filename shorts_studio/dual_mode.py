@@ -86,6 +86,8 @@ def validate_motion(data):
         raise ValueError("native profile mismatch")
     if data["blender_version"] != "5.0.1":
         raise ValueError("Blender version mismatch")
+    if data.get("geometry_bounds") != "mesh_vertices":
+        raise ValueError("actual mesh geometry bounds required")
     count = data["frames"]
     rows = data["frames_data"]
     if type(count) is not int or not 2 <= count <= 300 or len(rows) != count:
@@ -121,6 +123,10 @@ def validate_motion(data):
             raise ValueError("rolling/contact/locked-wheel motion mismatch")
         if row["camera"] != camera:
             raise ValueError("camera moved within shot")
+        if not math.isfinite(row["near_depth"]) or row["near_depth"] <= 0:
+            raise ValueError("geometry behind camera")
+        if not math.isfinite(row["lowest_world_z"]) or abs(row["lowest_world_z"]) > 0.002:
+            raise ValueError("actual mesh loses ground contact")
         x0, y0, x1, y1 = row["bbox"]
         if not all(math.isfinite(v) for v in row["bbox"]) or not (
             0.03 < x0 < x1 < 0.97 and 0.03 < y0 < y1 < 0.97
@@ -298,6 +304,8 @@ def owned_asset(mode, library, cache, blender, identity):
                     "-b",
                     "--factory-startup",
                     "--disable-autoexec",
+                    "--python-exit-code",
+                    "1",
                     "-P",
                     str(builder),
                     "--",
@@ -384,6 +392,10 @@ def run(mode, motion, library, cache, blender, frames=30, reuse_visuals=True):
                         "-b",
                         "--factory-startup",
                         "--disable-autoexec",
+                        "--python-exit-code",
+                        "1",
+                        "--python-exit-code",
+                        "1",
                         "-P",
                         str(Path(__file__).with_name("dual_mode_blender.py")),
                         "--",
