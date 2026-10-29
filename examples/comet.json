@@ -757,10 +757,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "f9c3308b95957d1c26673414701c2bd4e3f25cffdf70d8c52b35256bcc26d0d8"
+            "53dd648d13449421c5a954cc94ba74c203872e19659fd3a549ba55a551f4990c"
           ],
           "visual_qa_labels": [
-            "three vertically stacked conceptual diagrams of the same generic rivet hole and opening showing a short red crack, a longer crack and an interrupted panel edge with large causal labels"
+            "one large conceptual metal fatigue schematic showing a long crack growing from the same rivet hole beside a generic opening, reaching an interrupted panel edge; large text links repeated pressure, crack growth and structural failure; clearly labeled not actual accident geometry"
           ]
         }
       ],

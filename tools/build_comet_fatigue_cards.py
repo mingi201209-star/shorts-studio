@@ -73,15 +73,12 @@ def build(root):
     text(d,490,788,"같은 구멍에서 더 길어진 균열",47,GOLD)
     footer(d);im.save(root/"crack-grown.png")
 
-    im,d=base("핵심은 금속 피로", "같은 부위의 변화 · 설명용 모식도")
-    for i,(label,stage) in enumerate([("반복 하중",0),("균열 성장",1),("구조 파손",2)]):
-        y=230+i*185
-        specimen(d,stage,(465,y-35,835,y+120))
-        text(d,245,y+43,label,56,GOLD if i==1 else WHITE)
-        if i<2:
-            d.line((650,y+125,650,y+143),fill=BLUE,width=6)
-            d.polygon([(650,y+153),(639,y+138),(661,y+138)],fill=BLUE)
-    footer(d);im.save(root/"summary.png")
+    im,d=base("핵심은 금속 피로", "")
+    specimen(d,2)
+    text(d,490,167,"반복 압력 → 균열 성장 → 파손",49,GOLD)
+    text(d,490,810,"설명용 모식도",48,GOLD)
+    text(d,490,889,"실제 사고 형상·크기 아님",43,WHITE)
+    im.save(root/"summary.png")
 
 if __name__=="__main__":
     root=Path("assets/comet-terra")
