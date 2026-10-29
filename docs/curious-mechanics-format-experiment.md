@@ -41,3 +41,8 @@ The latest audited cache is a 0.5-second native technical proof, not a ready 30-
 No score is currently populated and no winner is selected. These documents do not enable an automatic gate, modify the Comet worker, reset its counters, change a voice/model, spend money, merge a PR or publish a video.
 
 Next production action: verify and render the shared physical mechanism, then produce the three cuts from validated clean native footage. Publication remains subject to the user's separate approval.
+
+## Recovery and speech-cadence check
+The prior 30-second English review was recovered from retained artifact 12171404885 and matched its recorded SHA-256 b0c4d3f72cb4e0315cc12ab5533aa4255ddd30906cf4c0400a65cc4760aa83df. The retained archive contains the captioned final and audio/QA, but no clean native clips. The upstream native-chunk artifact list returned no available files. It cannot be treated as clean footage for three new narrations.
+
+Opening scripts are 5–7 words and each planned beat is at most 2.5 words per second; these are feasibility checks, not measured speech or approved timing. Actual synthesis/alignment remains required.

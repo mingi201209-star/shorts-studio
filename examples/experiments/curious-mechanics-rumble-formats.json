@@ -58,7 +58,16 @@
       "Inspect real opening motion for each variant, including smooth/grooved contact and lane context.",
       "Verify contact, geometry, no clipping and meaningful changes before full renders.",
       "Full videos must cover their actual 900 output frames; a 15-frame proof is insufficient."
-    ]
+    ],
+    "prior_finished_review": {
+      "artifact_id": 12171404885,
+      "video_sha256": "b0c4d3f72cb4e0315cc12ab5533aa4255ddd30906cf4c0400a65cc4760aa83df",
+      "seconds": 30,
+      "captioned": true,
+      "clean_native_clips_in_retained_archive": false,
+      "editorial_status": "REQUIRES_HUMAN_REVIEW",
+      "reuse_authorized_as_clean_footage": false
+    }
   },
   "variants": [
     {
@@ -73,37 +82,37 @@
         {
           "start": 0,
           "end": 3,
-          "narration_en": "Those grooves beside the lane are rumble strips.",
+          "narration_en": "These grooves warn drifting drivers.",
           "visual_evidence_required": "Lane-edge overview establishes the car, white edge line and grooved shoulder immediately."
         },
         {
           "start": 3,
           "end": 8,
-          "narration_en": "They warn drivers with sound and vibration when a vehicle drifts out of its lane.",
+          "narration_en": "They use sound and vibration when a tire reaches the shoulder.",
           "visual_evidence_required": "Two real events within five seconds: tire enters the grooved band, then a section view exposes the cuts."
         },
         {
           "start": 8,
           "end": 13,
-          "narration_en": "On this road, the strips are cut into the asphalt.",
+          "narration_en": "Here, shallow grooves are cut into the asphalt beside the lane.",
           "visual_evidence_required": "Fixed-camera section of actual milled geometry, visibly below the smooth adjoining lane."
         },
         {
           "start": 13,
           "end": 20,
-          "narration_en": "As the tire crosses the cuts, repeated contact makes the car rumble.",
+          "narration_en": "As the tire crosses each groove, repeated contact makes the car rumble.",
           "visual_evidence_required": "Continuous native wheel motion across successive grooves; matching illustrative rumble and vibration."
         },
         {
           "start": 20,
           "end": 26,
-          "narration_en": "The warning gives the driver a chance to notice the drift.",
+          "narration_en": "That warning can alert a driver who has drifted out of the lane.",
           "visual_evidence_required": "Return to the same road context with car approaching the edge; no invented crash."
         },
         {
           "start": 26,
           "end": 30,
-          "narration_en": "The grooves give the warning. The driver makes the correction.",
+          "narration_en": "The driver still needs to steer back safely.",
           "visual_evidence_required": "Clearly attributed driver-initiated correction; retain a final spatial answer showing lane and shoulder."
         }
       ]
@@ -120,25 +129,25 @@
         {
           "start": 0,
           "end": 3,
-          "narration_en": "The road looks almost flat. So why does this tire rumble?",
+          "narration_en": "Why does this flat-looking road rumble?",
           "visual_evidence_required": "Show smooth-lane contact then actual grooved-shoulder contact, with the same wheel and scene scale. These are separate fixed-camera shots; no hidden geometry or fake depth."
         },
         {
           "start": 3,
           "end": 8,
-          "narration_en": "Look beside the white line: shallow grooves are cut into the asphalt.",
+          "narration_en": "Beside the white line, shallow grooves are cut into the asphalt.",
           "visual_evidence_required": "A native section reveal exposes the true recessed surface and locates it beside the edge line."
         },
         {
           "start": 8,
           "end": 13,
-          "narration_en": "The tire repeatedly crosses them, creating sound and vibration.",
+          "narration_en": "Each groove changes tire contact, creating sound and vibration.",
           "visual_evidence_required": "Continuous contact close-up; the tire and groove must remain visible together."
         },
         {
           "start": 13,
           "end": 20,
-          "narration_en": "That disturbance is deliberate: it warns a driver drifting out of the lane.",
+          "narration_en": "The rumble has a purpose: alerting a driver drifting out of the lane.",
           "visual_evidence_required": "Wider location reveal connects the surprising rumble to the car reaching the shoulder."
         },
         {
@@ -150,7 +159,7 @@
         {
           "start": 26,
           "end": 30,
-          "narration_en": "The driver still has to notice the warning and correct the car's path.",
+          "narration_en": "The driver still has to correct the car's path.",
           "visual_evidence_required": "Same driver-response footage pool as A; resolve why the shallow-looking surface produced the warning."
         }
       ]
@@ -167,37 +176,37 @@
         {
           "start": 0,
           "end": 3,
-          "narration_en": "Your tire reaches the shoulder. Suddenly, the car starts to rumble.",
+          "narration_en": "Your car rumbles. What just happened?",
           "visual_evidence_required": "First frame identifies a car, its tire and lane edge. Within three seconds the tire reaches actual grooves and the warning begins."
         },
         {
           "start": 3,
           "end": 8,
-          "narration_en": "What is the road trying to tell you?",
+          "narration_en": "Its tire has reached shallow grooves beside the white edge line.",
           "visual_evidence_required": "Maintain spatial continuity; reveal the recessed grooves as the candidate answer, without unrelated suspense shots."
         },
         {
           "start": 8,
           "end": 13,
-          "narration_en": "These shallow grooves make repeated contact with the tire.",
+          "narration_en": "Repeated tire contact creates sound and vibration through the car.",
           "visual_evidence_required": "Native fixed-camera contact view follows the same tire across successive grooves."
         },
         {
           "start": 13,
           "end": 20,
-          "narration_en": "That creates sound and vibration you can notice inside the car.",
+          "narration_en": "That is the road's warning that your vehicle is drifting out of the lane.",
           "visual_evidence_required": "Wheel/contact detail and nearby body response explain the audible/tactile cue; disclose stylized kinematic motion."
         },
         {
           "start": 20,
           "end": 26,
-          "narration_en": "It is a warning that your vehicle is drifting out of the lane.",
+          "narration_en": "The noise and shaking give the driver a chance to notice.",
           "visual_evidence_required": "Wider road context answers what the signal means, with the edge line and car present together."
         },
         {
           "start": 26,
           "end": 30,
-          "narration_en": "The driver needs to respond and guide the car back. That is what the rumble is for.",
+          "narration_en": "The driver needs to react and steer back safely.",
           "visual_evidence_required": "Show driver-initiated correction and the original lane/shoulder relationship. End the question asked at the start."
         }
       ]
