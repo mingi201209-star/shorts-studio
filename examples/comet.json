@@ -596,7 +596,7 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "02983f43af83910fe5e2c2980290d9e3c38ce7d0526ea9963888adfd4e5bc000"
+            "788af6650c1ba2f655db1048bea92f87c4592ea41f3a7ce6b3f0772e2da573e3"
           ],
           "visual_qa_labels": [
             "an explicitly virtual laboratory style metal coupon with a circular hole and a schematic red fatigue crack; Korean labels state it explains the principle and is not an aircraft accident reconstruction"
@@ -614,7 +614,7 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "7695a271cc933d60e327a97e43e79ef28ad1e2a2d48b862e26290f7a022eaadb"
+            "f8cfcc34d7e30f030941f4228be827e4dd247220c59092bb558d19e0ef7e5bd5"
           ],
           "visual_qa_labels": [
             "an explicitly virtual laboratory style metal coupon with a circular hole and a schematic red fatigue crack; Korean labels state it explains the principle and is not an aircraft accident reconstruction; side by side short and long crack comparison"
@@ -757,7 +757,7 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "cad955fbe0335124405b870be697f815d39d3cce20be5eaa095a330ba19aa618"
+            "709d1e9ec46c4f951f569f8ca05067d8bb0b5c6f7a3b859e3487a94e39f6e089"
           ],
           "visual_qa_labels": [
             "an explicitly virtual laboratory style metal coupon with a circular hole and a schematic red fatigue crack; Korean labels state it explains the principle and is not an aircraft accident reconstruction"

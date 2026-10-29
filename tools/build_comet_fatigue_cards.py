@@ -25,8 +25,7 @@ def text(d, x, y, value, size=52, color=WHITE):
     d.text((x, y), value, font=font, fill=color, anchor="mm")
 
 def footer(d):
-    text(d, 490, 847, "설명용 모식도", 43, GOLD)
-    text(d, 490, 906, "원리 설명 · 사고기 재현 아님", 38, WHITE)
+    text(d, 490, 876, "원리 설명 · 사고기 재현 아님", 52, WHITE)
 
 def specimen(d, stage, box=(140, 240, 840, 745)):
     x0,y0,x1,y1 = box
@@ -42,36 +41,30 @@ def specimen(d, stage, box=(140, 240, 840, 745)):
     if stage>=1:pts += [(149,232),(163,272),(121,317),(134,360),(93,405)]
     if stage>=2:pts += [(110,447),(77,505)]
     d.line([p(*a) for a in pts],fill=RED,width=max(3,int(15*sx)),joint="curve")
-    if stage>=2:
-        # Generic loss of continuity only; no physical stress or exact fracture prediction.
-        d.line([p(77,505),p(110,447),p(93,405)],fill=BG,width=max(4,int(22*sx)))
     return p
 
 def build(root):
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
-    im,d=base("가상 금속 시편", "작은 균열에 반복 하중")
+    im,d=base("구멍 주변의 작은 균열", "가상 금속판으로 원리 설명")
     specimen(d,0)
     # Long opposing arrows show loading rather than imply air pressure through the opening.
     for x,dx in [(110,-55),(870,55)]:
         d.line((x,490,x+dx,490),fill=BLUE,width=8)
         d.polygon([(x+dx,490),(x+dx-(15 if dx>0 else -15),479),(x+dx-(15 if dx>0 else -15),501)],fill=BLUE)
-    text(d,490,788,"같은 부위에 반복 하중",52,GOLD)
     footer(d);im.save(root/"crack-small.png")
 
-    im,d=base("가상 금속 시편", "같은 부위 · 반복 하중 전후 비교")
+    im,d=base("반복 하중 전후", "가상 금속판으로 원리 설명")
     for box,stage,label,x in [
         ((50,300,460,735),0,"처음",255),
         ((520,300,930,735),1,"반복 하중 뒤",725)]:
         specimen(d,stage,box)
         text(d,x,252,label,43,GOLD if stage else WHITE)
-    text(d,490,788,"같은 구멍에서 더 길어진 균열",47,GOLD)
     footer(d);im.save(root/"crack-grown.png")
 
-    im,d=base("가상 금속 시편", "")
+    im,d=base("균열이 더 길어지면", "가상 금속판으로 원리 설명")
     specimen(d,2)
-    text(d,490,167,"반복 압력 → 균열 성장 → 파손",49,GOLD)
-    text(d,490,810,"설명용 모식도",48,GOLD)
-    text(d,490,889,"원리 설명 · 사고기 재현 아님",43,WHITE)
+    text(d,490,786,"반복 압력 → 균열 성장 → 파손",49,GOLD)
+    footer(d)
     im.save(root/"summary.png")
 
 if __name__=="__main__":
