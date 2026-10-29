@@ -614,10 +614,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "732e38f3f0dda5fe3a301351ef94453ebfd89f4bb0ded308830ab127d8d47d52"
+            "ab31ce8570f0ae22d4b8458a48959075164673fd7ef53ed102f768e57a60a6f2"
           ],
           "visual_qa_labels": [
-            "an explicitly conceptual educational metal fatigue diagram with a long red crack growing from the same rivet hole beside a generic opening"
+            "a side by side conceptual metal fatigue diagram comparing a short crack and a much longer crack growing from the same generic rivet hole beside the same opening, clearly marked as schematic rather than actual accident geometry"
           ]
         },
         {

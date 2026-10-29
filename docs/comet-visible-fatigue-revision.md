@@ -7,3 +7,5 @@ Four cards use a fixed generic opening/hole specimen, a visibly longer crack und
 This is original explanatory artwork, not a physical simulation or an exact reconstruction of G-ALYP. The G-ALYP finding and G-ALYU test evidence remain distinct. No external media or paid execution is introduced.
 
 The automatic campaign remains at iteration 183 with all failures and its last verified candidate retained. This separately assisted source-material revision does not reset its strategy budgets, relabel rejected attempts, promote a candidate or grant upload/human approval.
+
+The first assisted render failed the unchanged visual-activity gate (6.0 seconds static). Its complete output is retained separately. The growth card is corrected to a simultaneous short/long crack comparison, rather than repeating a single-panel composition. No QA threshold was changed.

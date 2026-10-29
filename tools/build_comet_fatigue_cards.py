@@ -64,11 +64,13 @@ def build(root):
     text(d,490,788,"같은 부위에 반복 하중",52,GOLD)
     footer(d);im.save(root/"crack-small.png")
 
-    im,d=base("반복 하중 뒤", "같은 부위에서 균열이 성장")
-    specimen(d,1)
-    # Visible old/new extent, with a leader only to the crack tip.
-    d.line((233,645,100,706),fill=GOLD,width=7)
-    text(d,490,788,"균열이 더 길어짐",58,GOLD)
+    im,d=base("작은 균열 → 큰 균열", "같은 부위 · 반복 하중 전후 비교")
+    for box,stage,label,x in [
+        ((50,300,460,735),0,"처음",255),
+        ((520,300,930,735),1,"반복 하중 뒤",725)]:
+        specimen(d,stage,box)
+        text(d,x,252,label,43,GOLD if stage else WHITE)
+    text(d,490,788,"같은 구멍에서 더 길어진 균열",47,GOLD)
     footer(d);im.save(root/"crack-grown.png")
 
     im,d=base("핵심은 금속 피로", "같은 부위의 변화 · 설명용 모식도")
