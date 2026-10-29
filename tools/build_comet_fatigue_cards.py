@@ -26,7 +26,7 @@ def text(d, x, y, value, size=52, color=WHITE):
 
 def footer(d):
     text(d, 490, 847, "설명용 모식도", 43, GOLD)
-    text(d, 490, 906, "실제 사고 형상·크기 아님", 38, WHITE)
+    text(d, 490, 906, "원리 설명 · 사고기 재현 아님", 38, WHITE)
 
 def specimen(d, stage, box=(140, 240, 840, 745)):
     x0,y0,x1,y1 = box
@@ -34,8 +34,8 @@ def specimen(d, stage, box=(140, 240, 840, 745)):
     def p(x,y): return (x0+x*sx,y0+y*sy)
     def rect(r,**kwargs):d.rounded_rectangle((*p(r[0],r[1]),*p(r[2],r[3])),**kwargs)
     rect((0,0,700,505),radius=int(25*min(sx,sy)),fill="#486575",outline="#b7ccd7",width=max(2,int(6*sx)))
-    # Same generic opening and hole in every state; positions are not accident coordinates.
-    rect((260,130,610,380),radius=int(25*min(sx,sy)),fill=BG,outline="#e0edf5",width=max(2,int(9*sx)))
+    # A plain laboratory-style metal coupon, not an aircraft panel or ADF window.
+    # No window/cutout geometry or accident rivet coordinates are represented.
     hole=p(215,115);rr=17*min(sx,sy)
     d.ellipse((hole[0]-rr,hole[1]-rr,hole[0]+rr,hole[1]+rr),fill=BG,outline=GOLD,width=max(2,int(6*sx)))
     pts=[(203,127),(175,158),(187,190)]
@@ -55,7 +55,7 @@ def build(root):
     text(d,490,788,"ADF 개구부의 리벳 구멍 주변",47,GOLD)
     footer(d);im.save(root/"rivet.png")
 
-    im,d=base("작은 균열", "금속 피로의 원리 · 확대 모식도")
+    im,d=base("가상 금속 시편", "작은 균열에 반복 하중")
     specimen(d,0)
     # Long opposing arrows show loading rather than imply air pressure through the opening.
     for x,dx in [(110,-55),(870,55)]:
@@ -64,7 +64,7 @@ def build(root):
     text(d,490,788,"같은 부위에 반복 하중",52,GOLD)
     footer(d);im.save(root/"crack-small.png")
 
-    im,d=base("작은 균열 → 큰 균열", "같은 부위 · 반복 하중 전후 비교")
+    im,d=base("가상 금속 시편", "같은 부위 · 반복 하중 전후 비교")
     for box,stage,label,x in [
         ((50,300,460,735),0,"처음",255),
         ((520,300,930,735),1,"반복 하중 뒤",725)]:
@@ -73,11 +73,11 @@ def build(root):
     text(d,490,788,"같은 구멍에서 더 길어진 균열",47,GOLD)
     footer(d);im.save(root/"crack-grown.png")
 
-    im,d=base("핵심은 금속 피로", "")
+    im,d=base("가상 금속 시편", "")
     specimen(d,2)
     text(d,490,167,"반복 압력 → 균열 성장 → 파손",49,GOLD)
     text(d,490,810,"설명용 모식도",48,GOLD)
-    text(d,490,889,"실제 사고 형상·크기 아님",43,WHITE)
+    text(d,490,889,"원리 설명 · 사고기 재현 아님",43,WHITE)
     im.save(root/"summary.png")
 
 if __name__=="__main__":
