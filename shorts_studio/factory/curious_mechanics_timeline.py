@@ -8,9 +8,9 @@ for _name in dir(original):
     if not _name.startswith('_'): globals()[_name]=getattr(original,_name)
 # This module is loaded in a new Blender process per variant.
 _STYLE={}
-ROAD_X_HALF_SPAN=22.0
-ROAD_Y_NEAR_EDGE=-20.0
-DIRT_Y_FAR_EDGE=22.0
+ROAD_X_HALF_SPAN=32.0
+ROAD_Y_NEAR_EDGE=-40.0
+DIRT_Y_FAR_EDGE=40.0
 STYLES={
  'A':[['shoulder_location'],['tire_contact','road_cut'],['road_cut','shoulder_location'],['tire_contact','rumble_mechanism'],['shoulder_location','rumble_mechanism'],['driver_response']],
  'B':[['shoulder_location','tire_contact'],['road_cut','shoulder_location'],['tire_contact','rumble_mechanism'],['shoulder_location','tire_contact'],['shoulder_location','rumble_mechanism'],['driver_response']],
