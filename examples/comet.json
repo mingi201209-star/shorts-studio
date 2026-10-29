@@ -510,7 +510,7 @@
         {
           "start": 5.6,
           "asset": "assets/comet-terra/rivet.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original conceptual fatigue schematic; existing factual_notes retained. Project-owned geometry; not a photograph, accident reconstruction or engineering simulation. Provenance: assets/comet-terra/fatigue-provenance.json.",
           "motion": {
             "type": "static"
           },
@@ -519,10 +519,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "ddd829d4dcd4c556c10653dd77783e1a26509202d2e122858e8eb81f6c2c9a58"
+            "da455c94ba2b83a3666039597b88a8e0bc8936ca0d4ecc8f318d971f03ecdec3"
           ],
           "visual_qa_labels": [
-            "a schematic metal panel with an opening, rivet holes and a small highlighted crack near one hole"
+            "an explicitly conceptual schematic of an opening and a highlighted rivet hole with a short red crack, labeled as the G-ALYP investigation finding and not actual accident geometry"
           ]
         },
         {
@@ -587,7 +587,7 @@
         {
           "start": 0,
           "asset": "assets/comet-terra/crack-small.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original conceptual fatigue schematic; existing factual_notes retained. Project-owned geometry; not a photograph, accident reconstruction or engineering simulation. Provenance: assets/comet-terra/fatigue-provenance.json.",
           "motion": {
             "type": "static"
           },
@@ -596,7 +596,7 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "40250467440ad7dc59a34aa5aff34bb536340badd416591ef30ae81644822cab"
+            "1803f5a71c69468886be53f6b17a61dada42ca9cb2dc421b5ad62e874c6400ad"
           ],
           "visual_qa_labels": [
             "an educational metal fatigue diagram showing a small crack near a rivet hole in an aircraft panel"
@@ -605,7 +605,7 @@
         {
           "start": 3,
           "asset": "assets/comet-terra/crack-grown.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original conceptual fatigue schematic; existing factual_notes retained. Project-owned geometry; not a photograph, accident reconstruction or engineering simulation. Provenance: assets/comet-terra/fatigue-provenance.json.",
           "motion": {
             "type": "static"
           },
@@ -614,10 +614,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "927158caaf6f5187557b076ede9dec9daf454b2cf3ee7bcace5d71d81803c05c"
+            "732e38f3f0dda5fe3a301351ef94453ebfd89f4bb0ded308830ab127d8d47d52"
           ],
           "visual_qa_labels": [
-            "a side by side explanatory diagram comparing a small crack and a larger crack after repeated loading"
+            "an explicitly conceptual educational metal fatigue diagram with a long red crack growing from the same rivet hole beside a generic opening"
           ]
         },
         {
@@ -748,7 +748,7 @@
         {
           "start": 8.4,
           "asset": "assets/comet-terra/summary.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original conceptual fatigue schematic; existing factual_notes retained. Project-owned geometry; not a photograph, accident reconstruction or engineering simulation. Provenance: assets/comet-terra/fatigue-provenance.json.",
           "motion": {
             "type": "static"
           },
@@ -757,10 +757,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "837fe8d9d2a4e0feab49f011c529c773bfb95488df16828072bfafbaab763b67"
+            "f9c3308b95957d1c26673414701c2bd4e3f25cffdf70d8c52b35256bcc26d0d8"
           ],
           "visual_qa_labels": [
-            "an educational flowchart linking repeated pressure, crack growth, and fuselage structural failure"
+            "three vertically stacked conceptual diagrams of the same generic rivet hole and opening showing a short red crack, a longer crack and an interrupted panel edge with large causal labels"
           ]
         }
       ],
