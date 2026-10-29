@@ -1,0 +1,14 @@
+{
+  "type": "original virtual metal-coupon fatigue schematic",
+  "author": "Shorts Studio",
+  "license": "project-owned original geometry",
+  "engineering_simulation": false,
+  "exact_accident_geometry": false,
+  "aircraft_geometry": false,
+  "source_basis": "Existing verified factual_notes in examples/comet.json: fatigue origin at ADF rivet hole; growth under repeated loading.",
+  "assets": {
+    "crack-small.png": "788af6650c1ba2f655db1048bea92f87c4592ea41f3a7ce6b3f0772e2da573e3",
+    "crack-grown.png": "f8cfcc34d7e30f030941f4228be827e4dd247220c59092bb558d19e0ef7e5bd5",
+    "summary.png": "709d1e9ec46c4f951f569f8ca05067d8bb0b5c6f7a3b859e3487a94e39f6e089"
+  }
+}

@@ -587,7 +587,7 @@
         {
           "start": 0,
           "asset": "assets/comet-terra/crack-small.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original virtual metal-coupon fatigue explanation. No aircraft opening geometry, accident coordinates or physical simulation. Principle basis: RAF Museum Comet Failure and existing verified factual_notes. Project-owned geometry.",
           "motion": {
             "type": "static"
           },
@@ -596,16 +596,16 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "40250467440ad7dc59a34aa5aff34bb536340badd416591ef30ae81644822cab"
+            "788af6650c1ba2f655db1048bea92f87c4592ea41f3a7ce6b3f0772e2da573e3"
           ],
           "visual_qa_labels": [
-            "an educational metal fatigue diagram showing a small crack near a rivet hole in an aircraft panel"
+            "an explicitly virtual laboratory style metal coupon with a circular hole and a schematic red fatigue crack; Korean labels state it explains the principle and is not an aircraft accident reconstruction"
           ]
         },
         {
           "start": 3,
           "asset": "assets/comet-terra/crack-grown.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original virtual metal-coupon fatigue explanation. No aircraft opening geometry, accident coordinates or physical simulation. Principle basis: RAF Museum Comet Failure and existing verified factual_notes. Project-owned geometry.",
           "motion": {
             "type": "static"
           },
@@ -614,10 +614,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "927158caaf6f5187557b076ede9dec9daf454b2cf3ee7bcace5d71d81803c05c"
+            "f8cfcc34d7e30f030941f4228be827e4dd247220c59092bb558d19e0ef7e5bd5"
           ],
           "visual_qa_labels": [
-            "a side by side explanatory diagram comparing a small crack and a larger crack after repeated loading"
+            "an explicitly virtual laboratory style metal coupon with a circular hole and a schematic red fatigue crack; Korean labels state it explains the principle and is not an aircraft accident reconstruction; side by side short and long crack comparison"
           ]
         },
         {
@@ -748,7 +748,7 @@
         {
           "start": 8.4,
           "asset": "assets/comet-terra/summary.png",
-          "attribution": "Shorts Studio original explanatory diagram; sources: RAF Museum Comet Failure; Science Museum Group 1993-2155; FAA Lessons Learned G-ALYV. Not a photograph or engineering-scale reconstruction.",
+          "attribution": "Shorts Studio original virtual metal-coupon fatigue explanation. No aircraft opening geometry, accident coordinates or physical simulation. Principle basis: RAF Museum Comet Failure and existing verified factual_notes. Project-owned geometry.",
           "motion": {
             "type": "static"
           },
@@ -757,10 +757,10 @@
             "설명용 모식도임이 명확하며 실제 사고 사진이나 정확한 비율 도면으로 제시하지 않아야 함"
           ],
           "visual_qa_expected_sha256": [
-            "837fe8d9d2a4e0feab49f011c529c773bfb95488df16828072bfafbaab763b67"
+            "709d1e9ec46c4f951f569f8ca05067d8bb0b5c6f7a3b859e3487a94e39f6e089"
           ],
           "visual_qa_labels": [
-            "an educational flowchart linking repeated pressure, crack growth, and fuselage structural failure"
+            "an explicitly virtual laboratory style metal coupon with a circular hole and a schematic red fatigue crack; Korean labels state it explains the principle and is not an aircraft accident reconstruction"
           ]
         }
       ],
