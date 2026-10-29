@@ -49,12 +49,6 @@ def specimen(d, stage, box=(140, 240, 840, 745)):
 
 def build(root):
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
-    im,d=base("균열 시작 부근", "G-ALYP 사고 조사 결과")
-    p=specimen(d,0)
-    d.ellipse((292,303,417,429),outline=GOLD,width=6)
-    text(d,490,788,"ADF 개구부의 리벳 구멍 주변",47,GOLD)
-    footer(d);im.save(root/"rivet.png")
-
     im,d=base("가상 금속 시편", "작은 균열에 반복 하중")
     specimen(d,0)
     # Long opposing arrows show loading rather than imply air pressure through the opening.
@@ -83,9 +77,9 @@ def build(root):
 if __name__=="__main__":
     root=Path("assets/comet-terra")
     build(root)
-    manifest={"type":"original explanatory schematic","author":"Shorts Studio",
+    manifest={"type":"original virtual metal-coupon fatigue schematic","author":"Shorts Studio",
               "license":"project-owned original geometry","engineering_simulation":False,
-              "exact_accident_geometry":False,
+              "exact_accident_geometry":False,"aircraft_geometry":False,
               "source_basis":"Existing verified factual_notes in examples/comet.json: fatigue origin at ADF rivet hole; growth under repeated loading.",
-              "assets":{n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in ["rivet.png","crack-small.png","crack-grown.png","summary.png"]}}
+              "assets":{n:hashlib.sha256((root/n).read_bytes()).hexdigest() for n in ["crack-small.png","crack-grown.png","summary.png"]}}
     (root/"fatigue-provenance.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n")

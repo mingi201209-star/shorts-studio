@@ -4,11 +4,11 @@
   "license": "project-owned original geometry",
   "engineering_simulation": false,
   "exact_accident_geometry": false,
+  "aircraft_geometry": false,
   "source_basis": "Existing verified factual_notes in examples/comet.json: fatigue origin at ADF rivet hole; growth under repeated loading.",
   "assets": {
     "crack-small.png": "02983f43af83910fe5e2c2980290d9e3c38ce7d0526ea9963888adfd4e5bc000",
     "crack-grown.png": "7695a271cc933d60e327a97e43e79ef28ad1e2a2d48b862e26290f7a022eaadb",
     "summary.png": "cad955fbe0335124405b870be697f815d39d3cce20be5eaa095a330ba19aa618"
-  },
-  "aircraft_geometry": false
+  }
 }

@@ -1,11 +1,11 @@
-# Comet visible fatigue revision
+# Comet fatigue principle revision
 
-The sampled-frame review of attempt 183 found a real explanatory gain at 61s but HOLD: small crack details, crowded ending and repeated location/growth art. This revision supplies new owned conceptual geometry instead of replaying the exhausted automatic editor.
+The 40–47s sequence previously repeated almost the same location diagram. The original ending stated the causal chain using text boxes. This revision retains the existing G-ALYP origin card, then uses three original virtual metal-coupon assets to explain short cracks, visibly longer cracks under repeated loading, and loss of material continuity.
 
-Four cards use a fixed generic opening/hole specimen, a visibly longer crack under repeated loading, and a vertical three-state causal ending. The reconstruction disclaimer is enlarged and the precise metallic treatment is removed. All existing primary factual_notes, narration, narration plans, beat timing, caption sizes, sources and QA requirements are retained. Only descriptive semantic labels and normalized pixel hashes change to match the actual assets.
+The coupon has no aircraft window, ADF geometry or reconstruction coordinates. Large on-screen labels identify it as a virtual specimen and a principle explanation, not an accident reconstruction. The growth card compares the same coupon before and after repeated loading; the ending shows one large view instead of three small panels. This is conceptual artwork, not engineering simulation.
 
-This is original explanatory artwork, not a physical simulation or an exact reconstruction of G-ALYP. The G-ALYP finding and G-ALYU test evidence remain distinct. No external media or paid execution is introduced.
+Narration, original audio, caption size and timing, beat timings, factual_notes, source photographs, and QA thresholds remain unchanged. Asset hashes, credits and descriptive semantic labels match the actual drawings. The generator deterministically rebuilds these three assets and their provenance.
 
-The automatic campaign remains at iteration 183 with all failures and its last verified candidate retained. This separately assisted source-material revision does not reset its strategy budgets, relabel rejected attempts, promote a candidate or grant upload/human approval.
+Validation history is retained: the initial single-panel sequence failed the unchanged static-activity gate at 6.0s. A simultaneous comparison passed full semantic/video QA at 3.5s maximum static hold. Independent reviews of the intermediate three-panel and single-panel ADF-style endings returned HOLD due to clutter and possible exact-geometry implications. Those outputs were not promoted. The final virtual-coupon revision addresses those concrete observations.
 
-The first assisted render failed the unchanged visual-activity gate (6.0 seconds static). Its complete output is retained separately. The growth card is corrected to a simultaneous short/long crack comparison, rather than repeating a single-panel composition. No QA threshold was changed.
+The exhausted automatic campaign and its last verified video remain intact; no strategy counters, policy, tests or rejection history are reset. This is separately assisted source-material work, with no paid API, upload, merger or human approval.
