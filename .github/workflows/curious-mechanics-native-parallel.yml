@@ -1,4 +1,4 @@
-name: Curious Mechanics native parallel production
+name: Curious Mechanics native camera correction
 on:
   push:
     branches: [exp/curious-mechanics-production-20261029]
@@ -9,92 +9,20 @@ concurrency:
   group: curious-mechanics-native-pilot
   cancel-in-progress: false
 env:
-  RENDERER_SOURCE_SHA256: e6f3da8e73bbcecc54454b4d3a7407d4e7949ac93689a49eb289f123772dd797
+  RENDERER_SOURCE_SHA256: 700c523fac79cbafac3e763e0e9bbace429c6deff89da1ddbf97616f143debae
 jobs:
   native:
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
       fail-fast: false
-      max-parallel: 18
+      max-parallel: 4
       matrix:
         include:
-          - {variant: C, start: 91, end: 120}
-          - {variant: A, start: 121, end: 150}
-          - {variant: B, start: 121, end: 150}
-          - {variant: C, start: 121, end: 150}
-          - {variant: A, start: 151, end: 180}
-          - {variant: B, start: 151, end: 180}
-          - {variant: C, start: 151, end: 180}
-          - {variant: A, start: 181, end: 210}
-          - {variant: B, start: 181, end: 210}
-          - {variant: C, start: 181, end: 210}
+          - {variant: A, start: 91, end: 120}
           - {variant: A, start: 211, end: 240}
-          - {variant: B, start: 211, end: 240}
           - {variant: C, start: 211, end: 240}
-          - {variant: A, start: 241, end: 270}
-          - {variant: A, start: 271, end: 300}
-          - {variant: B, start: 271, end: 300}
-          - {variant: C, start: 271, end: 300}
-          - {variant: A, start: 301, end: 330}
-          - {variant: B, start: 301, end: 330}
-          - {variant: C, start: 301, end: 330}
-          - {variant: A, start: 331, end: 360}
-          - {variant: B, start: 331, end: 360}
-          - {variant: C, start: 331, end: 360}
-          - {variant: A, start: 361, end: 390}
-          - {variant: B, start: 361, end: 390}
-          - {variant: C, start: 361, end: 390}
-          - {variant: A, start: 391, end: 420}
-          - {variant: B, start: 391, end: 420}
-          - {variant: C, start: 391, end: 420}
-          - {variant: B, start: 421, end: 450}
-          - {variant: C, start: 421, end: 450}
-          - {variant: A, start: 451, end: 480}
-          - {variant: B, start: 451, end: 480}
-          - {variant: C, start: 451, end: 480}
-          - {variant: A, start: 481, end: 510}
-          - {variant: B, start: 481, end: 510}
-          - {variant: C, start: 481, end: 510}
-          - {variant: A, start: 511, end: 540}
-          - {variant: B, start: 511, end: 540}
-          - {variant: C, start: 511, end: 540}
-          - {variant: A, start: 541, end: 570}
-          - {variant: B, start: 541, end: 570}
-          - {variant: C, start: 541, end: 570}
-          - {variant: A, start: 571, end: 600}
-          - {variant: B, start: 571, end: 600}
-          - {variant: C, start: 571, end: 600}
-          - {variant: A, start: 601, end: 630}
-          - {variant: B, start: 601, end: 630}
-          - {variant: C, start: 601, end: 630}
-          - {variant: A, start: 631, end: 660}
-          - {variant: B, start: 631, end: 660}
-          - {variant: C, start: 631, end: 660}
-          - {variant: A, start: 661, end: 690}
-          - {variant: B, start: 661, end: 690}
-          - {variant: C, start: 661, end: 690}
-          - {variant: A, start: 691, end: 720}
-          - {variant: B, start: 691, end: 720}
-          - {variant: C, start: 691, end: 720}
-          - {variant: A, start: 721, end: 750}
           - {variant: B, start: 721, end: 750}
-          - {variant: C, start: 721, end: 750}
-          - {variant: A, start: 751, end: 780}
-          - {variant: B, start: 751, end: 780}
-          - {variant: C, start: 751, end: 780}
-          - {variant: A, start: 781, end: 810}
-          - {variant: B, start: 781, end: 810}
-          - {variant: C, start: 781, end: 810}
-          - {variant: A, start: 811, end: 840}
-          - {variant: B, start: 811, end: 840}
-          - {variant: C, start: 811, end: 840}
-          - {variant: A, start: 841, end: 870}
-          - {variant: B, start: 841, end: 870}
-          - {variant: C, start: 841, end: 870}
-          - {variant: A, start: 871, end: 900}
-          - {variant: B, start: 871, end: 900}
-          - {variant: C, start: 871, end: 900}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065

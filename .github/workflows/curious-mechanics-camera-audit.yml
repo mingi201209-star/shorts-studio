@@ -9,7 +9,7 @@ concurrency:
   group: curious-mechanics-camera-audit
   cancel-in-progress: false
 env:
-  RENDERER_SOURCE_SHA256: e6f3da8e73bbcecc54454b4d3a7407d4e7949ac93689a49eb289f123772dd797
+  RENDERER_SOURCE_SHA256: 700c523fac79cbafac3e763e0e9bbace429c6deff89da1ddbf97616f143debae
 jobs:
   camera-audit:
     runs-on: ubuntu-24.04
@@ -40,7 +40,7 @@ jobs:
           echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
       - name: Reproduce camera mismatch and candidate anchor without rendering
         run: |
-          python benchmarks/road_safety/curious_mechanics_camera_audit.py --blender "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --out "$RUNNER_TEMP/camera-audit" --inventory
+          python benchmarks/road_safety/curious_mechanics_camera_audit.py --blender "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --out "$RUNNER_TEMP/camera-audit" --inventory --production-fixed
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

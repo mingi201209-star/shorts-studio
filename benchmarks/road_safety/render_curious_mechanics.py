@@ -479,6 +479,9 @@ def main():
             for pivot,rest in hub_rest.items():
                 pivot.location=rest
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(middle)
+            # Fit every shard from exactly the same wheel pose at this shot anchor.
+            for pivot,radius in pivots:
+                pivot.rotation_euler[0]=(centre_x-module.travel_x(1))/(.85*radius)
             bpy.context.view_layer.update()
             front=bpy.data.objects["Front_tire"]
             rear=bpy.data.objects["Rear_tire"]
@@ -513,6 +516,9 @@ def main():
             previous_shot=shot["id"]
             car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
+            # Restore native absolute motion before projecting/rendering this frame.
+            for pivot,radius in pivots:
+                pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
             for pivot,rest in hub_rest.items():
                 pivot.location=rest-Vector((0,0,bounce/car.scale[2]))
             bpy.context.view_layer.update()
