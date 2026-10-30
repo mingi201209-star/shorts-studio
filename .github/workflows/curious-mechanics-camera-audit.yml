@@ -2,7 +2,7 @@ name: Curious Mechanics camera audit no render
 on:
   push:
     branches: [exp/curious-mechanics-production-20261029]
-    paths: [.github/workflows/curious-mechanics-camera-audit.yml]
+    paths: [.github/workflows/curious-mechanics-camera-audit.yml, benchmarks/road_safety/curious_mechanics_camera_audit.py]
 permissions:
   contents: read
 concurrency:

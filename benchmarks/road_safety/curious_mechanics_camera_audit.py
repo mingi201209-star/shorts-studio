@@ -22,7 +22,7 @@ def main():
     renderer=Path(__file__).with_name('render_curious_mechanics.py').resolve()
     wrapper=a.out/'probe.py'
     # Source inputs and on-disk renderer remain untouched. Exit before projection/render.
-    wrapper.write_text('import os\nfrom pathlib import Path\nfrom benchmarks.road_safety.curious_mechanics_camera_audit import instrument\np=Path('+repr(str(renderer))+')\ncode=instrument(p.read_text(),os.environ["CAMERA_AUDIT_CANDIDATE"]=="1")\nexec(compile(code,str(p),"exec"),{"__file__":str(p),"__name__":"__main__"})\n')
+    wrapper.write_text('import os,sys\nfrom pathlib import Path\nsys.path.insert(0,str(Path.cwd()))\nfrom benchmarks.road_safety.curious_mechanics_camera_audit import instrument\np=Path('+repr(str(renderer))+')\ncode=instrument(p.read_text(),os.environ["CAMERA_AUDIT_CANDIDATE"]=="1")\nexec(compile(code,str(p),"exec"),{"__file__":str(p),"__name__":"__main__"})\n')
     results={}
     for variant,starts in [('A',[121,211]),('C',[181,211])]:
         results[variant]={}
