@@ -5,6 +5,7 @@ on:
     paths: [.github/workflows/curious-mechanics-final-assembly.yml]
 permissions:
   contents: read
+  actions: read
 concurrency:
   group: curious-mechanics-final-assembly
   cancel-in-progress: false
@@ -30,7 +31,7 @@ jobs:
           printf '%s\n' "$EXPORT_KNOWN_HOSTS" > "$RUNNER_TEMP/export-known-hosts"
           ssh -T -i "$RUNNER_TEMP/export-key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$RUNNER_TEMP/export-known-hosts" -o ConnectTimeout=30 "ubuntu@$EXPORT_HOST" | tar -xf - -C "$RUNNER_TEMP/bundle"
           rm -f "$RUNNER_TEMP/export-key"
-          echo "c7395f37b02735d8c1637d9364d30fb471e984e0f64d1da14020888aacc731b7  $RUNNER_TEMP/bundle/manifest.json" | sha256sum -c -
+          echo "a412a016b655b1400a02badbe06f13fcfbcb3afb57e10496efd4159b2f9484bd  $RUNNER_TEMP/bundle/manifest.json" | sha256sum -c -
           python - <<'PY'
           import json,hashlib,os
           from pathlib import Path
@@ -45,14 +46,28 @@ jobs:
           sudo apt-get install -y ffmpeg fonts-dejavu-core
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
           python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
-      - name: Assemble and strictly validate all three real films
+      - name: Reuse byte-identical passed A and B, preserve first C candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          status=0
-          for variant in A B C; do
-            PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_delivery.py assemble --bundle "$RUNNER_TEMP/bundle" --variant "$variant" --out "$RUNNER_TEMP/final-review/$variant" || status=1
-          done
-          exit "$status"
+          gh run download 41073101578 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-three-review-films --dir "$RUNNER_TEMP/previous-review"
+          python - <<'PYCODE'
+          import json,hashlib,shutil,os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          expected={'A':'3bcbb08bb88ae3979e2e4cfa8fcb7c571d9a5ebb7d0f6c5b1f38b064cbbf8695','B':'e764fd636e846dc0030ddb2cd9ddd3cf75eb915ad6c779bf9e675f23e3de9578'}
+          for v in 'AB':
+              source=root/'previous-review'/v
+              report=json.loads((source/'film-validation.json').read_text())
+              assert report['technical_status']=='PASS'
+              assert hashlib.sha256((source/f'curious-mechanics-{v}.mp4').read_bytes()).hexdigest()==report['sha256']==expected[v]
+              shutil.copytree(source,root/'final-review'/v)
+          PYCODE
+      - name: Recut C from same absolute native frames and run unchanged final QA
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_delivery.py assemble --bundle "$RUNNER_TEMP/bundle" --variant C --out "$RUNNER_TEMP/final-review/C"
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

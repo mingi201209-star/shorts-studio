@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "edits": {
+    "C": [{
+      "start": 571,
+      "end": 600,
+      "source_variant": "B",
+      "reason": "At 19-20 seconds, show actual tire-to-groove contact as the C narration introduces distinctive noise and shaking. Replace part of the adjacent wide-context shots that produced a measured 6-second weak-activity span at 16.5-22.5 seconds. Use the same absolute native frames, shared geometry/trajectory, Cycles32 and fixed source camera; no replay, interpolation, speed change or quality-gate change."
+    }]
+  }
+}

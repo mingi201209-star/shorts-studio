@@ -11,11 +11,11 @@ LEGACY='e6f3da8e73bbcecc54454b4d3a7407d4e7949ac93689a49eb289f123772dd797'
 FIXED='700c523fac79cbafac3e763e0e9bbace429c6deff89da1ddbf97616f143debae'
 def digest(p):return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 def write(p,d):p.write_text(json.dumps(d,indent=2)+'\n')
-def validate_layout(shards,canonical,variant):
+def validate_layout(shards,canonical,variant,source_overrides=None):
     ordered=sorted(shards,key=lambda x:x['proof']['first_frame']);proofs=[x['proof'] for x in ordered];film.validate_shard_layout(proofs)
     hashes=[]
     for s in ordered:
-        p=s['proof'];assert p['episode_id']=='curious-mechanics-'+variant
+        p=s['proof'];expected_source=(source_overrides or {}).get(p['first_frame'],variant);assert p['episode_id']=='curious-mechanics-'+expected_source
         assert p['renderer_source_sha256'] in (LEGACY,FIXED)
         assert p['renderer']=='CYCLES' and p['cycles_samples']==32 and p['resolution']==[1080,1920] and p['fps']==30 and p['preview_only'] is False
         assert p['car_mesh_parts']>=65 and p['rotating_wheel_pivots']==4 and p['physically_calibrated'] is False and p['upload_ready'] is False
@@ -62,10 +62,18 @@ def semantic(final,out,episode,audio):
     return results
 
 def assemble(a):
-    meta=json.loads((a.bundle/f'{a.variant}.json').read_text());assert meta['variant']==a.variant and meta['controller_png_qa']=='ACTUALLY_EXECUTED';shards=validate_layout(meta['shards'],meta['canonical_camera_by_shot'],a.variant);a.out.mkdir(parents=True,exist_ok=True)
+    meta=json.loads((a.bundle/f'{a.variant}.json').read_text());assert meta['variant']==a.variant and meta['controller_png_qa']=='ACTUALLY_EXECUTED'
+    edit_path=ROOT/'examples/experiments/curious-mechanics-delivery-edits.json';edits=json.loads(edit_path.read_text())['edits'].get(a.variant,[]);overrides={};selected=list(meta['shards'])
+    for edit in edits:
+        assert edit['source_variant'] in 'ABC' and edit['end']==edit['start']+29 and edit['start'] in range(1,901,30)
+        source=json.loads((a.bundle/(edit['source_variant']+'.json')).read_text());assert source['controller_png_qa']=='ACTUALLY_EXECUTED'
+        replacement=next(x for x in source['shards'] if x['proof']['first_frame']==edit['start'] and x['proof']['last_frame']==edit['end'])
+        indices=[i for i,x in enumerate(selected) if x['proof']['first_frame']==edit['start']];assert len(indices)==1 and edit['start'] not in overrides
+        selected[indices[0]]=replacement;overrides[edit['start']]=edit['source_variant']
+    shards=validate_layout(selected,meta['canonical_camera_by_shot'],a.variant,overrides);a.out.mkdir(parents=True,exist_ok=True)
     for s in shards:
-        p=s['proof'];assert s['validator_sha256']==digest(ROOT/'shorts_studio/factory/curious_mechanics_native_qa.py');assert digest(a.bundle/s['clip'])==s['clip_sha256']
-        for key,path in [('timeline_source_sha256',ROOT/'shorts_studio/factory/curious_mechanics_timeline.py'),('canonical_timeline_sha256',ROOT/'shorts_studio/factory/rumble_episode2.py'),('manifest_sha256',ROOT/f'examples/experiments/curious-mechanics-{a.variant}.json'),('experiment_plan_sha256',ROOT/'examples/experiments/curious-mechanics-rumble-formats.json')]:assert p[key]==digest(path)
+        p=s['proof'];source_variant=p['episode_id'].rsplit('-',1)[-1];assert s['validator_sha256']==digest(ROOT/'shorts_studio/factory/curious_mechanics_native_qa.py');assert digest(a.bundle/s['clip'])==s['clip_sha256']
+        for key,path in [('timeline_source_sha256',ROOT/'shorts_studio/factory/curious_mechanics_timeline.py'),('canonical_timeline_sha256',ROOT/'shorts_studio/factory/rumble_episode2.py'),('manifest_sha256',ROOT/f'examples/experiments/curious-mechanics-{source_variant}.json'),('experiment_plan_sha256',ROOT/'examples/experiments/curious-mechanics-rumble-formats.json')]:assert p[key]==digest(path)
         dec=film.run(['ffmpeg','-v','error','-i',a.bundle/s['clip'],'-pix_fmt','rgb24','-f','framemd5','-']).stdout;actual=[l.split(',')[-1].strip() for l in dec.splitlines() if l and not l.startswith('#')];assert actual==s['rgb_md5'],'EXPORTED_CLIP_PIXEL_MISMATCH'
     for name,rec in meta['audio'].items():assert digest(a.bundle/rec['path'])==rec['sha256'];shutil.copyfile(a.bundle/rec['path'],a.out/name)
     audio=json.loads((a.out/'audio-validation.json').read_text());assert audio['status']=='PASS' and audio['voice']=='en-US-AndrewNeural' and audio['rate']=='+5%';assert digest(a.out/'narration.wav')==audio['narration_sha256']
@@ -75,7 +83,12 @@ def assemble(a):
         assert 0<=cue['start']<cue['end']<=30 and len(cue['text'].replace(r'\N',' '))<=31
         assert all(font.getlength(line)<=900 for line in cue['text'].split(r'\N'))
     assert all(x['end']<=y['start'] for x,y in zip(audio['cues'],audio['cues'][1:]))
-    episode=timeline.load_episode(ROOT/f'examples/experiments/curious-mechanics-{a.variant}.json');concat=a.out/'concat.txt';concat.write_text(''.join(f"file '{(a.bundle/s['clip']).resolve()}'\n" for s in shards));final=a.out/f'curious-mechanics-{a.variant}.mp4'
+    episode=timeline.load_episode(ROOT/f'examples/experiments/curious-mechanics-{a.variant}.json');actual_shots=[]
+    for shard in shards:
+        for record in shard['proof']['original_frame_records']:
+            if actual_shots and actual_shots[-1]['id']==record['shot_id'] and actual_shots[-1]['end']+1==record['frame']:actual_shots[-1]['end']=record['frame']
+            else:actual_shots.append(dict(id=record['shot_id'],start=record['frame'],end=record['frame']))
+    episode['shots']=actual_shots;concat=a.out/'concat.txt';concat.write_text(''.join(f"file '{(a.bundle/s['clip']).resolve()}'\n" for s in shards));final=a.out/f'curious-mechanics-{a.variant}.mp4'
     assert not final.exists(),'Preserve existing output; choose a new assembly directory'
     film.run(['ffmpeg','-v','error','-y','-f','concat','-safe','0','-i',concat,'-i',a.out/'narration.wav','-vf',film.caption_filter(a.out)+':fontsdir='+str(a.bundle/'fonts'),'-map','0:v:0','-map','1:a:0','-t','30','-c:v','libx264','-preset','slow','-crf','17','-pix_fmt','yuv420p','-c:a','aac','-b:a','192k','-movflags','+faststart',final])
     info=film.probe(final);v=next(s for s in info['streams'] if s['codec_type']=='video');au=next(s for s in info['streams'] if s['codec_type']=='audio');assert (v['width'],v['height'],v['r_frame_rate'],int(v['nb_read_frames']),v['codec_name'],v['pix_fmt'])==(1080,1920,'30/1',900,'h264','yuv420p');assert au['codec_name']=='aac' and au['sample_rate']=='48000' and au['channels']==1;assert abs(float(info['format']['duration'])-30)<.04
@@ -85,7 +98,7 @@ def assemble(a):
     for i,shot in enumerate(episode['shots']):
         t=((shot['start']+shot['end'])/2-1)/30;p=a.out/f'review-{i:02d}.jpg';film.run(['ffmpeg','-v','error','-y','-ss',t,'-i',final,'-frames:v','1',p])
         with Image.open(p) as im:assert max(im.convert('L').crop((0,1400,1080,1440)).getextrema())<=24;assert ImageStat.Stat(im.convert('L').crop((0,0,1080,1400))).mean[0]>=25
-    meaning=semantic(final,a.out,episode,audio);write(a.out/'film-validation.json',dict(technical_status='PASS',sha256=digest(final),frames=900,seconds=30,resolution=[1080,1920],cycles_samples=32,native_input_versions=sorted({s['proof']['renderer_source_sha256'] for s in shards}),source_frames_verified=900,semantic_visual_qa=meaning,original_video_qa=viewer,silence_seconds=gaps,loudness=levels,editorial_status='REQUIRES_ACTUAL_REVIEW',human_first_view='UNVERIFIED',upload_authorized=False));print('FINAL_TECHNICAL_PASS',a.variant,digest(final),flush=True)
+    meaning=semantic(final,a.out,episode,audio);write(a.out/'film-validation.json',dict(technical_status='PASS',sha256=digest(final),frames=900,seconds=30,resolution=[1080,1920],cycles_samples=32,native_input_versions=sorted({s['proof']['renderer_source_sha256'] for s in shards}),source_frames_verified=900,editorial_edits=edits,editorial_edits_sha256=digest(edit_path),source_segments=[dict(first=x['proof']['first_frame'],last=x['proof']['last_frame'],episode=x['proof']['episode_id'],clip_sha256=x['clip_sha256']) for x in shards],semantic_visual_qa=meaning,original_video_qa=viewer,silence_seconds=gaps,loudness=levels,editorial_status='REQUIRES_ACTUAL_REVIEW',human_first_view='UNVERIFIED',upload_authorized=False));print('FINAL_TECHNICAL_PASS',a.variant,digest(final),flush=True)
 
 if __name__=='__main__':
     p=argparse.ArgumentParser();sub=p.add_subparsers(dest='mode',required=True);e=sub.add_parser('export');e.add_argument('--plan',type=Path,required=True);e.add_argument('--legacy-renderer',type=Path,required=True);e.add_argument('--out',type=Path,required=True);c=sub.add_parser('assemble');c.add_argument('--bundle',type=Path,required=True);c.add_argument('--variant',choices=list('ABC'),required=True);c.add_argument('--out',type=Path,required=True);a=p.parse_args()

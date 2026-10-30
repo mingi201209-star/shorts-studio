@@ -24,3 +24,10 @@ def test_complete_source_bound_unique_native_contract(fault):
     if fault:
         with pytest.raises(AssertionError):validate_layout(rows,canonical,'A')
     else:assert len(validate_layout(rows,canonical,'A'))==30
+
+
+def test_source_substitution_requires_explicit_absolute_frame_mapping():
+    rows=spans();canonical=copy.deepcopy(rows[0]['proof']['camera_by_shot']);rows[19]['proof']['episode_id']='curious-mechanics-B'
+    with pytest.raises(AssertionError):validate_layout(rows,canonical,'A')
+    assert len(validate_layout(rows,canonical,'A',{571:'B'}))==30
+    with pytest.raises(AssertionError):validate_layout(rows,canonical,'A',{541:'B'})
