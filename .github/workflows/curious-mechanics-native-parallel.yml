@@ -1,4 +1,4 @@
-name: Curious Mechanics native parallel pilot
+name: Curious Mechanics native parallel production
 on:
   push:
     branches: [exp/curious-mechanics-production-20261029]
@@ -13,15 +13,88 @@ env:
 jobs:
   native:
     runs-on: ubuntu-24.04
-    timeout-minutes: 75
+    timeout-minutes: 100
     strategy:
-      fail-fast: true
-      max-parallel: 3
+      fail-fast: false
+      max-parallel: 18
       matrix:
         include:
-          - {variant: A, start: 91, end: 120}
-          - {variant: B, start: 91, end: 120}
-          - {variant: C, start: 241, end: 270}
+          - {variant: C, start: 91, end: 120}
+          - {variant: A, start: 121, end: 150}
+          - {variant: B, start: 121, end: 150}
+          - {variant: C, start: 121, end: 150}
+          - {variant: A, start: 151, end: 180}
+          - {variant: B, start: 151, end: 180}
+          - {variant: C, start: 151, end: 180}
+          - {variant: A, start: 181, end: 210}
+          - {variant: B, start: 181, end: 210}
+          - {variant: C, start: 181, end: 210}
+          - {variant: A, start: 211, end: 240}
+          - {variant: B, start: 211, end: 240}
+          - {variant: C, start: 211, end: 240}
+          - {variant: A, start: 241, end: 270}
+          - {variant: A, start: 271, end: 300}
+          - {variant: B, start: 271, end: 300}
+          - {variant: C, start: 271, end: 300}
+          - {variant: A, start: 301, end: 330}
+          - {variant: B, start: 301, end: 330}
+          - {variant: C, start: 301, end: 330}
+          - {variant: A, start: 331, end: 360}
+          - {variant: B, start: 331, end: 360}
+          - {variant: C, start: 331, end: 360}
+          - {variant: A, start: 361, end: 390}
+          - {variant: B, start: 361, end: 390}
+          - {variant: C, start: 361, end: 390}
+          - {variant: A, start: 391, end: 420}
+          - {variant: B, start: 391, end: 420}
+          - {variant: C, start: 391, end: 420}
+          - {variant: B, start: 421, end: 450}
+          - {variant: C, start: 421, end: 450}
+          - {variant: A, start: 451, end: 480}
+          - {variant: B, start: 451, end: 480}
+          - {variant: C, start: 451, end: 480}
+          - {variant: A, start: 481, end: 510}
+          - {variant: B, start: 481, end: 510}
+          - {variant: C, start: 481, end: 510}
+          - {variant: A, start: 511, end: 540}
+          - {variant: B, start: 511, end: 540}
+          - {variant: C, start: 511, end: 540}
+          - {variant: A, start: 541, end: 570}
+          - {variant: B, start: 541, end: 570}
+          - {variant: C, start: 541, end: 570}
+          - {variant: A, start: 571, end: 600}
+          - {variant: B, start: 571, end: 600}
+          - {variant: C, start: 571, end: 600}
+          - {variant: A, start: 601, end: 630}
+          - {variant: B, start: 601, end: 630}
+          - {variant: C, start: 601, end: 630}
+          - {variant: A, start: 631, end: 660}
+          - {variant: B, start: 631, end: 660}
+          - {variant: C, start: 631, end: 660}
+          - {variant: A, start: 661, end: 690}
+          - {variant: B, start: 661, end: 690}
+          - {variant: C, start: 661, end: 690}
+          - {variant: A, start: 691, end: 720}
+          - {variant: B, start: 691, end: 720}
+          - {variant: C, start: 691, end: 720}
+          - {variant: A, start: 721, end: 750}
+          - {variant: B, start: 721, end: 750}
+          - {variant: C, start: 721, end: 750}
+          - {variant: A, start: 751, end: 780}
+          - {variant: B, start: 751, end: 780}
+          - {variant: C, start: 751, end: 780}
+          - {variant: A, start: 781, end: 810}
+          - {variant: B, start: 781, end: 810}
+          - {variant: C, start: 781, end: 810}
+          - {variant: A, start: 811, end: 840}
+          - {variant: B, start: 811, end: 840}
+          - {variant: C, start: 811, end: 840}
+          - {variant: A, start: 841, end: 870}
+          - {variant: B, start: 841, end: 870}
+          - {variant: C, start: 841, end: 870}
+          - {variant: A, start: 871, end: 900}
+          - {variant: B, start: 871, end: 900}
+          - {variant: C, start: 871, end: 900}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -47,16 +120,18 @@ jobs:
           gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
           echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
       - name: Render 30 contiguous absolute original frames
+        timeout-minutes: 90
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/rumble"
-          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_curious_mechanics.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/experiments/curious-mechanics-${{ matrix.variant }}.json --start ${{ matrix.start }} --end ${{ matrix.end }} --out "$RUNNER_TEMP/rumble"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_curious_mechanics.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/experiments/curious-mechanics-${{ matrix.variant }}.json --start ${{ matrix.start }} --end ${{ matrix.end }} --out "$RUNNER_TEMP/rumble" 2>&1 | tee "$RUNNER_TEMP/rumble/render.log"
       - name: Native shard QA and lossless intermediate
         run: |
           PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_shard_artifact.py --out "$RUNNER_TEMP/rumble" --manifest examples/experiments/curious-mechanics-${{ matrix.variant }}.json
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: curious-native-${{ matrix.variant }}-${{ matrix.start }}
           path: ${{ runner.temp }}/rumble/
           if-no-files-found: error
-          retention-days: 2
+          retention-days: 7
