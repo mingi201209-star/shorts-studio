@@ -43,7 +43,7 @@ def waveform_points(t, groove):
     return [(x,y-3) for x,y in center]+[(x,y+3) for x,y in reversed(center)]
 
 
-def schematic(variant, out, beats=None):
+def schematic(variant, out, beats=None, source_episode=None):
     """A separate drawing, not a measurement or alteration of source geometry."""
     header = '''[Script Info]
 ScriptType: v4.00+
@@ -57,7 +57,7 @@ Style: Diagram,DejaVu Sans,38,&H00FFFFFF,&H00FFFFFF,&H001B1510,&H001B1510,-1,0,0
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 '''
     lines = []
-    source_episode=timeline.load_episode(delivery.ROOT/f'examples/experiments/curious-mechanics-{variant}.json')
+    source_episode=source_episode or timeline.load_episode(delivery.ROOT/f'examples/experiments/curious-mechanics-{variant}.json')
     safe=[((s['start']-1)/30,s['end']/30) for s in source_episode['shots']
           if not s['id'].endswith('rumble_mechanism')]
 
@@ -181,3 +181,4 @@ if __name__=='__main__':
     p.add_argument('--variant',choices=list('ABC'),required=True);p.add_argument('--out',type=Path,required=True)
     p.add_argument('--rewrite',type=Path)
     a=p.parse_args();build(a.source,a.variant,a.out,a.rewrite)
+
