@@ -23,7 +23,12 @@ def digest(path):
 def assemble(root, source, variant, out):
     assert os.environ.get('GITHUB_ACTIONS') == 'true', 'GitHub-only encoding'
     out.mkdir(parents=True, exist_ok=False)
-    manifest = delivery.ROOT / f'examples/experiments/curious-mechanics-progressive-{variant}.json'
+    # One newly rendered 900-frame asset bed is shared by the three editorial
+    # treatments. Do not render identical story roles three times or imply
+    # that these are independent native-camera experiments.
+    native_variant = 'B'
+    manifest = delivery.ROOT / 'examples/experiments/curious-mechanics-progressive-B.json'
+    audio_manifest = delivery.ROOT / f'examples/experiments/curious-mechanics-progressive-{variant}.json'
     episode = timeline.load_episode(manifest)
     roles = ['_'.join(s['id'].split('_')[2:]) for s in episode['shots']]
     assert tuple(roles) == timeline.PROGRESSIVE_STYLES
@@ -31,7 +36,7 @@ def assemble(root, source, variant, out):
     selected = []
     for proof_path in root.rglob('episode-proof.json'):
         proof = json.loads(proof_path.read_text())
-        if proof['episode_id'] != 'curious-mechanics-' + variant:
+        if proof['episode_id'] != 'curious-mechanics-' + native_variant:
             continue
         folder = proof_path.parent
         qa = verify(folder, manifest, delivery.ROOT/'benchmarks/road_safety/render_curious_mechanics.py')
@@ -61,8 +66,9 @@ def assemble(root, source, variant, out):
     previous = source/f'curious-mechanics-{variant}-mechanism-v2.mp4'
     assert digest(previous) == prior['sha256']
     audio = json.loads((source/'audio/audio-validation.json').read_text())
+    assert audio == prior['audio_validation'], 'Measured speech/caption receipt changed'
     assert audio['status'] == 'PASS' and audio['voice'] == 'en-US-AndrewNeural' and audio['rate'] == '+5%'
-    assert digest(source/'audio/narration.wav') == audio['narration_sha256'] == json.loads(manifest.read_text())['measured_audio_sha256']
+    assert digest(source/'audio/narration.wav') == audio['narration_sha256'] == json.loads(audio_manifest.read_text())['measured_audio_sha256']
     for name in ['film.ass','narration.wav','audio-validation.json']:
         shutil.copyfile(source/'audio'/name,out/name)
     # Keep the existing labelled diagram, but hide it over the new body interval.
@@ -92,7 +98,14 @@ def assemble(root, source, variant, out):
     report=dict(technical_status='PASS',sha256=digest(final),source_frames_verified=900,
                 frames=900,seconds=30,resolution=[1080,1920],cycles_samples=32,
                 native_roles=roles,native_role_returns=0,shots=episode['shots'],
+                native_source_variant=native_variant,shared_native_asset_bed=True,
+                independent_native_camera_experiment=False,
                 camera_by_shot=cameras,manifest_sha256=digest(manifest),
+                audio_manifest_sha256=digest(audio_manifest),
+                native_proof_run=41197516170,production_run=os.environ.get('GITHUB_RUN_ID'),
+                native_input_sha256={k:selected[0][0][k] for k in (
+                    'source_sha256','renderer_source_sha256','timeline_source_sha256',
+                    'canonical_timeline_sha256','manifest_sha256','experiment_plan_sha256')},
                 audio_validation=audio,previous_revision_sha256=prior['sha256'],
                 native_source_shards=[dict(first=s[0]['first_frame'],last=s[0]['last_frame'],
                     clip_sha256=digest(s[1]),renderer_sha256=s[0]['renderer_source_sha256'],
