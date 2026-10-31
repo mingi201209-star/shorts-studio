@@ -33,6 +33,13 @@ def polygon(points):
     return 'm ' + ' l '.join(f'{round(x)} {round(y)}' for x, y in points)
 
 
+def waveform_points(t, groove):
+    center=[(x,280+(24*math.sin((x-650)/28+t*math.tau*1.8) if groove else 0))
+            for x in range(650,961,4)]
+    # Forward top + reversed bottom avoids a self-intersecting filled polygon.
+    return [(x,y-3) for x,y in center]+[(x,y+3) for x,y in reversed(center)]
+
+
 def schematic(variant, out):
     """A separate drawing, not a measurement or alteration of source geometry."""
     header = '''[Script Info]
@@ -84,15 +91,11 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
         cy=253+drop
         shape(t,end,[(300+56*math.cos(i*math.tau/48),cy+56*math.sin(i*math.tau/48)) for i in range(49)],'E8DFCF')
         shape(t,end,[(300+32*math.cos(i*math.tau/32),cy+32*math.sin(i*math.tau/32)) for i in range(33)],'45382B')
-        angle=-t*3
+        angle=-t*(160*1.8/56)
         shape(t,end,[(297,cy-3),(300+28*math.cos(angle),cy+28*math.sin(angle)),(303,cy+3)],'F6C853')
         label(t,end,648,185,'SMOOTH' if not groove else 'CONTACT CHANGES',29)
         # Graph is explicitly illustrative. Native picture below is never warped.
-        wave=[]
-        for x in range(650,961,4):
-            y=280+(0 if not groove else 24*math.sin((x-650)/28+t*math.tau*1.8))
-            wave.extend([(x,y-3),(x+3,y+3)])
-        shape(t,end,wave,'F6C853')
+        shape(t,end,waveform_points(t,groove),'F6C853')
         label(t,end,650,330,'QUIET / STEADY' if not groove else 'SOUND + VIBRATION',25)
     path=out/'mechanism.ass'
     path.write_text(header+''.join(lines))

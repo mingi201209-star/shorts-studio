@@ -48,3 +48,5 @@ jobs:
           path: ${{ runner.temp }}/revision/
           if-no-files-found: error
           retention-days: 7
+
+# Revision 2: remove self-intersecting waveform teeth observed in actual output.
