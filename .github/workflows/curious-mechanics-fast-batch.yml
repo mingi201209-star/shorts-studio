@@ -18,7 +18,7 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix:
-        variant: [A, B, C]
+        variant: [B, C]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
@@ -49,4 +49,4 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-# Revision 4: repair measured multiword boundary openings, excess sentence pauses and C overrun.
+# Revision 5: retain passed A from 41190640057; repair only B/C measured padding silence.
