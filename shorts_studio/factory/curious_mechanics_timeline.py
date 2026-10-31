@@ -8,6 +8,16 @@ for _name in dir(original):
     if not _name.startswith('_'): globals()[_name]=getattr(original,_name)
 # This module is loaded in a new Blender process per variant.
 _STYLE={}
+_PROGRESSIVE=set()
+PROGRESSIVE_STYLES=('shoulder_location','road_cut','tire_contact','rumble_mechanism','driver_response')
+
+def progressive_cuts(ends):
+    if (not isinstance(ends,list) or len(ends)!=5
+            or any(type(n) is not int for n in ends)
+            or ends[-1]!=900 or ends[0]<30
+            or any(b-a<30 for a,b in zip(ends,ends[1:]))):
+        raise ValueError('invalid progressive native shot coverage')
+    return list(zip(ends,PROGRESSIVE_STYLES))
 ROAD_X_HALF_SPAN=32.0
 ROAD_Y_NEAR_EDGE=-40.0
 DIRT_Y_FAR_EDGE=40.0
@@ -31,7 +41,7 @@ def load_episode(path):
     if len(beats)!=6 or beats[0]['start']!=0 or abs(beats[-1]['end']-30)>.001: raise ValueError('incomplete narration schedule')
     if any(a['end']!=b['start'] for a,b in zip(beats,beats[1:])) or any(b['end']<=b['start'] for b in beats): raise ValueError('overlapping/gapped beats')
     if variant['audio_qa']['status']!='PASS': raise ValueError('measured audio QA missing')
-    shots=[];start=1;_STYLE.clear()
+    shots=[];start=1;_STYLE.clear();_PROGRESSIVE.clear()
     cuts=[]
     for index,(beat,styles) in enumerate(zip(beats,STYLES[ident])):
         first=round(beat['start']*30)+1;last=round(beat['end']*30)
@@ -39,14 +49,22 @@ def load_episode(path):
         if ident=='A' and index==1: middle=first+29
         else: middle=(first+last)//2
         cuts.extend([(middle,styles[0]),(last,styles[1])])
+    if 'progressive_cut_frames' in data:
+        cuts=progressive_cuts(data['progressive_cut_frames'])
+        if not isinstance(data.get('measured_audio_sha256'),str) or len(data['measured_audio_sha256'])!=64:
+            raise ValueError('progressive audio binding missing')
     for i,(end,style) in enumerate(cuts):
         name=f'{ident}_{i:02}_{style}';_STYLE[name]=style
+        if 'progressive_cut_frames' in data: _PROGRESSIVE.add(name)
         shots.append(dict(id=name,start=start,end=end));start=end+1
     assert start==901 and all(s['end']>=s['start'] for s in shots)
     return dict(episode_id='curious-mechanics-'+ident,resolution=[1080,1920],cycles_samples=32,total_frames=900,fps=30,shots=shots)
 def camera_layout(shot):
     layout=original.camera_layout(dict(shot,id=_STYLE[shot['id']]))
     if _STYLE[shot['id']] in ('shoulder_location','driver_response'): layout['scale']=15.5
+    # A single long shot needs a wider fixed frame to retain the actual moving
+    # wheel throughout; never track the camera or reframe on shard boundaries.
+    if shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='rumble_mechanism': layout['scale']=7.6
     return layout
 def detail_stage(ident): return original.detail_stage(_STYLE[ident])
 def detail_visibility(ident): return original.detail_visibility(_STYLE[ident])
@@ -65,3 +83,4 @@ def rumble_displacement(frame):
     # Explanatory kinematics, suppressed while the wheel is in the smooth lane.
     overlap=max(0.,min(1.,(.30-lane_return_offset(frame))/.20))
     return overlap*.008*math.sin(travel_x(frame)/.34*math.tau)
+

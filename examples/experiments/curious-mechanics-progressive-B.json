@@ -1,0 +1,13 @@
+{
+  "variant_id": "B",
+  "plan_path": "curious-mechanics-rumble-formats.json",
+  "plan_sha256": "a2c31d29b45e47a511c91cd5d76c4c313c7aac82f371c0e5f2b89a9f2de26ed2",
+  "progressive_cut_frames": [
+    135,
+    310,
+    460,
+    767,
+    900
+  ],
+  "measured_audio_sha256": "00f8bcb2c088d3104b5018bf22404f4db017449793c6c365e0995458609c39aa"
+}
