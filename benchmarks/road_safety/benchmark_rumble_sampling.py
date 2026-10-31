@@ -42,6 +42,15 @@ def main():
     source_hash = digest(renderer)
     anchor = '    scene.cycles.use_denoising=True\n'
     assert original.count(anchor) == 1
+    # The renderer's own fail-closed gate rejects any non-preview frame whose
+    # cycles_samples differs from the approved manifest's 32 -- exactly the
+    # protection that must stay in place for real production renders. This
+    # experiment exists specifically to render AT a different sample count,
+    # so the gate's samples half (only) is neutralized in the disposable
+    # candidate copy; the resolution half, and the real production file,
+    # are untouched (checked below via the unmodified source hash).
+    gate_anchor = '        or result["cycles_samples"]!=episode["cycles_samples"]\n'
+    assert original.count(gate_anchor) == 1
     manifest = Path('examples/factory/rumble-episode2-30s.json')
     report = {'status': 'RUNNING', 'benchmark_only': True,
               'production_adopted': False, 'original_renderer_sha256': source_hash,
@@ -57,9 +66,14 @@ def main():
         (runtime/'benchmarks/road_safety').mkdir(parents=True)
         (runtime/'shorts_studio').symlink_to(Path('shorts_studio').resolve(), target_is_directory=True)
         candidate = runtime/'benchmarks/road_safety/benchmark-renderer.py'
-        candidate.write_text(original.replace(anchor, anchor +
+        text = original.replace(anchor, anchor +
             (f'    scene.cycles.samples={args.candidate_samples}\n' if enabled else '') +
-            '    print("BENCH_SAMPLES", scene.cycles.samples, flush=True)\n'))
+            '    print("BENCH_SAMPLES", scene.cycles.samples, flush=True)\n')
+        if enabled:
+            text = text.replace(gate_anchor,
+                '        or False  # benchmark_rumble_sampling: cycles_samples '
+                'intentionally overridden for this measurement, never adopted as-is\n')
+        candidate.write_text(text)
         command = ['/usr/bin/time', '-v', '-o', str(output/'resource.txt'),
                    'xvfb-run', '-a', str(args.blender), '-b', '-t', '4',
                    '--python-exit-code', '1', '-P', str(candidate), '--',
