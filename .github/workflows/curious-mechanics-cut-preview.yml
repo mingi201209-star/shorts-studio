@@ -1,0 +1,38 @@
+name: Curious Mechanics fast cut-order preview
+on:
+  push:
+    branches: [exp/curious-mechanics-production-20261029]
+    paths: [.github/workflows/curious-mechanics-cut-preview.yml]
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: curious-mechanics-cut-preview
+  cancel-in-progress: false
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Retrieve completed native proofs without rendering
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for n in 1 121 301 451 871; do
+            gh run download 41197516170 --repo "$GITHUB_REPOSITORY" --name "curious-progressive-B-$n" --dir "$RUNNER_TEMP/native/curious-progressive-B-$n"
+          done
+      - name: Make and verify silent cut-order preview
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python3 benchmarks/road_safety/curious_mechanics_cut_preview.py --source "$RUNNER_TEMP/native" --out "$RUNNER_TEMP/preview"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: curious-mechanics-five-shot-preview
+          path: ${{ runner.temp }}/preview/
+          if-no-files-found: error
+          retention-days: 7

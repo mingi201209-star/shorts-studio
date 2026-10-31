@@ -1,0 +1,62 @@
+name: Curious Mechanics causal edit batch
+on:
+  push:
+    branches: [exp/curious-mechanics-production-20261029]
+    paths:
+      - .github/workflows/curious-mechanics-fast-batch.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: curious-mechanics-causal-edit-batch
+  cancel-in-progress: false
+jobs:
+  revise:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        variant: [B, C]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Retrieve hash-bound source films and QA receipts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 41078848380 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-three-review-films --dir "$RUNNER_TEMP/source"
+      - name: Reuse exact unchanged measured speech from preserved failed run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 41190882648 --repo "$GITHUB_REPOSITORY" --name "curious-mechanics-causal-revision-${{ matrix.variant }}" --dir "$RUNNER_TEMP/previous"
+          mkdir -p "$RUNNER_TEMP/revision/${{ matrix.variant }}/speech-vprevious"
+          cp -a "$RUNNER_TEMP/previous/${{ matrix.variant }}/speech/${{ matrix.variant }}" "$RUNNER_TEMP/revision/${{ matrix.variant }}/speech-vprevious/"
+      - name: Install unchanged observed CPU QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
+          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93 edge-tts==7.3.1
+      - name: Causal schematic revision and unchanged final QA
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_fast_batch.py --source "$RUNNER_TEMP/source/${{ matrix.variant }}" --variant "${{ matrix.variant }}" --out "$RUNNER_TEMP/revision/${{ matrix.variant }}" --rewrite examples/experiments/curious-mechanics-rewrite.json
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: curious-mechanics-causal-revision-${{ matrix.variant }}
+          path: ${{ runner.temp }}/revision/
+          if-no-files-found: error
+          retention-days: 7
+
+# Revision 6: add only two spoken words to measured endings; reuse unchanged real captures.
+
+# Revision 7: permit only pre-staged capture cache, never pre-existing production outputs.
