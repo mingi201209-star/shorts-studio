@@ -58,3 +58,5 @@ jobs:
           retention-days: 7
 
 # Revision 6: add only two spoken words to measured endings; reuse unchanged real captures.
+
+# Revision 7: permit only pre-staged capture cache, never pre-existing production outputs.

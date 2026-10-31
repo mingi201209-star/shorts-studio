@@ -115,7 +115,10 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 def build(source, variant, out, rewrite=None):
     assert os.environ.get('GITHUB_ACTIONS')=='true', 'Encoding is GitHub-only'
     start=time.monotonic()
-    out.mkdir(parents=True,exist_ok=False)
+    if out.exists():
+        assert {p.name for p in out.iterdir()} == {'speech-vprevious'}, 'Existing production output must never be overwritten'
+    else:
+        out.mkdir(parents=True,exist_ok=False)
     native=source/f'curious-mechanics-{variant}.mp4'
     prior=json.loads((source/'film-validation.json').read_text())
     assert digest(native)==HASHES[variant]==prior['sha256']
