@@ -22,11 +22,24 @@ from pathlib import Path
 
 from PIL import Image, ImageChops, ImageStat
 
-from shorts_studio.factory.rumble_native_shard_qa import verify
+from shorts_studio.factory.rumble_native_shard_qa import visual_content_checks
 
 
 def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def visual_qa_only(output: Path) -> dict:
+    """Checks the pixels this experiment actually cares about -- not
+    blank, no black-void edge band, no accidental frame-cloning -- without
+    verify()'s full production contract, which hardcodes cycles_samples==32
+    and would therefore always reject a deliberately non-32-sample render
+    regardless of what the pixels actually look like."""
+    proof = json.loads((output/'episode-proof.json').read_text())
+    previous = None
+    for frame in proof['frame_numbers']:
+        previous = visual_content_checks(output/f'frame_{frame:04d}.png', previous)
+    return {'status': 'PASS_VISUAL_CONTENT_ONLY', 'frames': len(proof['frame_numbers'])}
 
 
 def main():
@@ -84,7 +97,7 @@ def main():
             subprocess.run(command, check=True, stdout=log, stderr=subprocess.STDOUT)
         wall = time.perf_counter()-begin
         try:
-            qa = verify(output, manifest, candidate)
+            qa = visual_qa_only(output)
             qa_error = None
         except ValueError as error:
             # A real finding, not a harness bug: fewer samples tripped one of

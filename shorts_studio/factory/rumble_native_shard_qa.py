@@ -36,6 +36,36 @@ def valid_camera(camera) -> bool:
     )
 
 
+def visual_content_checks(path: Path, previous: Image.Image | None, *,
+                          expected_size: tuple[int, int] = (1080, 1920)) -> Image.Image:
+    """Pure pixel-content checks, independent of any production-contract
+    metadata (sample count, renderer identity, etc.): a real single-frame
+    RGB PNG at the expected size, not a blank/near-black frame, no black
+    -void band at a frame edge (an orthographic camera plane below road
+    grade), and not an exact clone of `previous`. Used by verify()'s full
+    production contract and standalone by experiments that deliberately
+    render at a non-production setting (e.g. a reduced sample count) and
+    still want a real answer to "is the picture itself broken", separate
+    from "does it match the approved manifest exactly"."""
+    with Image.open(path) as picture:
+        if picture.format != "PNG" or getattr(picture, "n_frames", 1) != 1:
+            raise ValueError("native source must be a single PNG image")
+        picture.load()
+        if picture.size != expected_size or picture.mode != "RGB":
+            raise ValueError("fake scaled/downsampled frame")
+        current = picture.copy()
+    if sum(ImageStat.Stat(current.resize((30, 50))).mean) < 25:
+        raise ValueError(f"black or empty visual: {path.name}")
+    width, height = current.size
+    for top in (0, height - 40):
+        band = current.crop((0, top, width, top + 40)).resize((54, 2))
+        if all(high < 8 for _, high in band.getextrema()):
+            raise ValueError(f"black void band at frame edge: {path.name}")
+    if previous is not None and ImageChops.difference(previous, current).getbbox() is None:
+        raise ValueError("frame cloning instead of actual 3D motion")
+    return current
+
+
 def verify(out: Path, manifest: Path, renderer: Path) -> dict:
     episode = load_episode(manifest)
     proof = json.loads((out/"episode-proof.json").read_text())
@@ -101,23 +131,7 @@ def verify(out: Path, manifest: Path, renderer: Path) -> dict:
             raise ValueError("no complete real image")
         if digest(path)!=record["sha256"]:
             raise ValueError("native source image hash mismatch")
-        with Image.open(path) as picture:
-            if picture.format != "PNG" or getattr(picture, "n_frames", 1) != 1:
-                raise ValueError("native source must be a single PNG image")
-            picture.load()
-            if picture.size!=(1080,1920) or picture.mode!="RGB":
-                raise ValueError("fake scaled/downsampled frame")
-            current=picture.copy()
-        # Preserve the existing rumble pilot's black/empty-image gate.
-        if sum(ImageStat.Stat(current.resize((30, 50))).mean) < 25:
-            raise ValueError(f"black or empty visual: {path.name}")
-        # Camera planes below grade leave full-width black bands at an edge.
-        for top in (0, 1920 - 40):
-            band = current.crop((0, top, 1080, top + 40)).resize((54, 2))
-            if all(high < 8 for _, high in band.getextrema()):
-                raise ValueError(f"black void band at frame edge: {path.name}")
-        if old is not None and ImageChops.difference(old,current).getbbox() is None:
-            raise ValueError("frame cloning instead of actual 3D motion")
+        current = visual_content_checks(path, old)
         decoded_sha = hashlib.sha256(current.tobytes()).hexdigest()
         if decoded_sha in decoded_hashes:
             raise ValueError("frame cloning instead of actual 3D motion")
