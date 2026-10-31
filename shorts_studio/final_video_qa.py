@@ -224,7 +224,20 @@ def measure_visual_activity(video: Path, media_box: tuple[int, int], build_dir: 
     changes in the rendered output. This is ground truth: it does not trust
     the manifest's visual_beats timestamps at all, so an author who claims a
     cut but doesn't actually deliver a different picture (e.g. only a
-    crop/zoom of the same source composited to look "new") is still caught."""
+    crop/zoom of the same source composited to look "new") is still caught.
+
+    Each sample is compared against the last REGISTERED reference (the most
+    recent sample that itself crossed change_threshold), not against the
+    immediately preceding sample. A hard cut still registers on the very
+    next sample either way. But a real, continuous, camera-relative motion
+    (a slow pan/dolly under a fixed, non-tracking camera, for example) can
+    move the picture a long and clearly visible distance while never making
+    any single adjacent-sample step cross the threshold on its own -- that
+    pattern is real, substantial, and not static to a viewer, and comparing
+    only to the immediately preceding sample under-counted it as "no
+    activity" for the whole duration. Comparing to a stable reference lets
+    the same cumulative change the pixels actually underwent cross the same
+    threshold once it adds up, without lowering what counts as real change."""
     import cv2
     import numpy as np
     frames = _sample_media_box_frames(video, media_box, build_dir, fps=fps)
@@ -233,14 +246,16 @@ def measure_visual_activity(video: Path, media_box: tuple[int, int], build_dir: 
                 "max_static_visual_seconds": 0.0, "first_5s_visual_changes": 0, "sample_fps": fps}
     interval = 1.0 / fps
     cuts = [0.0]
-    prev = cv2.imread(str(frames[0]))
+    reference = cv2.imread(str(frames[0]))
     for i, fp in enumerate(frames[1:], start=1):
         cur = cv2.imread(str(fp))
-        if prev is not None and cur is not None and prev.shape == cur.shape:
-            diff = float(np.abs(cur.astype(int) - prev.astype(int)).mean())
+        if reference is not None and cur is not None and reference.shape == cur.shape:
+            diff = float(np.abs(cur.astype(int) - reference.astype(int)).mean())
             if diff >= change_threshold:
                 cuts.append(i * interval)
-        prev = cur
+                reference = cur
+        else:
+            reference = cur
     total_duration = len(frames) * interval
     edges = cuts + [total_duration]
     holds = [b - a for a, b in zip(edges, edges[1:])]
