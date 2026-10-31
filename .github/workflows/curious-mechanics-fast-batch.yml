@@ -49,4 +49,4 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-# Revision 3: rewrite narration with measured Andrew boundaries; omit panel on body close-ups.
+# Revision 4: repair measured multiword boundary openings, excess sentence pauses and C overrun.
