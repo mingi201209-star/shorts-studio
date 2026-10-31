@@ -30,6 +30,14 @@ jobs:
         run: |
           set -euo pipefail
           gh run download 41078848380 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-three-review-films --dir "$RUNNER_TEMP/source"
+      - name: Reuse exact unchanged measured speech from preserved failed run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 41190882648 --repo "$GITHUB_REPOSITORY" --name "curious-mechanics-causal-revision-${{ matrix.variant }}" --dir "$RUNNER_TEMP/previous"
+          mkdir -p "$RUNNER_TEMP/revision/${{ matrix.variant }}/speech-vprevious"
+          cp -a "$RUNNER_TEMP/previous/${{ matrix.variant }}/speech/${{ matrix.variant }}" "$RUNNER_TEMP/revision/${{ matrix.variant }}/speech-vprevious/"
       - name: Install unchanged observed CPU QA dependencies
         run: |
           set -euo pipefail
@@ -49,4 +57,4 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-# Revision 5: retain passed A from 41190640057; repair only B/C measured padding silence.
+# Revision 6: add only two spoken words to measured endings; reuse unchanged real captures.
