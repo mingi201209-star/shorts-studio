@@ -77,6 +77,32 @@ def main():
     full_diffs = [p["full_frame_mean_abs_diff"] for p in pairs]
     center_diffs = [p["center_crop_mean_abs_diff"] for p in pairs]
     gate_threshold = 12.0
+
+    # Adjacent-frame diffs answer "is there a visible jump between two frames
+    # 1/30s apart" (what the gate's cut detector effectively asks, just at a
+    # coarser 0.5s/h264-encoded sampling). They do NOT answer "does the
+    # picture end up looking meaningfully different after N seconds of a
+    # slow continuous pan/dolly" -- small, steady per-frame drift can still
+    # add up to a large total displacement that a viewer would perceive as
+    # real progress, even though no single adjacent pair crosses a cut
+    # threshold. This measures that separately, against the first present
+    # frame as a fixed baseline, at growing offsets.
+    baseline_n = present[0]
+    baseline_full = load_media(frame_paths[baseline_n])
+    baseline_center = center_crop(baseline_full)
+    long_baseline = []
+    for offset_seconds in (0.5, 1, 2, 3, 5, 7, 9):
+        offset_frames = round(offset_seconds * 30)
+        target = baseline_n + offset_frames
+        if target not in frame_paths or target > args.end:
+            continue
+        media = load_media(frame_paths[target])
+        center = center_crop(media)
+        long_baseline.append({
+            "seconds_from_start": offset_seconds, "frame": target,
+            "full_frame_mean_abs_diff": round(float(np.abs(media.astype(int) - baseline_full.astype(int)).mean()), 4),
+            "center_crop_mean_abs_diff": round(float(np.abs(center.astype(int) - baseline_center.astype(int)).mean()), 4),
+        })
     report = {
         "requested_range": [args.start, args.end],
         "frames_present": len(present),
@@ -102,6 +128,7 @@ def main():
             "pairs_above_3": sum(1 for d in center_diffs if d >= 3.0),
             "pairs_above_6": sum(1 for d in center_diffs if d >= 6.0),
         },
+        "long_baseline_vs_first_frame": long_baseline,
         "pairs": pairs,
     }
     (args.out / "activity_diagnosis.json").write_text(json.dumps(report, indent=2))
