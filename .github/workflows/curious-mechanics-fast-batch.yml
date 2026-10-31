@@ -36,11 +36,11 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg fonts-dejavu-core
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
-          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93 edge-tts==7.3.1
       - name: Causal schematic revision and unchanged final QA
         run: |
           set -euo pipefail
-          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_fast_batch.py --source "$RUNNER_TEMP/source/${{ matrix.variant }}" --variant "${{ matrix.variant }}" --out "$RUNNER_TEMP/revision/${{ matrix.variant }}"
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_fast_batch.py --source "$RUNNER_TEMP/source/${{ matrix.variant }}" --variant "${{ matrix.variant }}" --out "$RUNNER_TEMP/revision/${{ matrix.variant }}" --rewrite examples/experiments/curious-mechanics-rewrite.json
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -49,4 +49,4 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-# Revision 2: remove self-intersecting waveform teeth observed in actual output.
+# Revision 3: rewrite narration with measured Andrew boundaries; omit panel on body close-ups.

@@ -1,0 +1,28 @@
+{
+  "variants": [
+    {"id":"A","beats":[
+      {"start":0,"end":5,"narration_en":"This road is built to make your car shake. On purpose."},
+      {"start":5,"end":10,"narration_en":"Look beside the white line. These are shallow cuts, not bumps piled onto the road."},
+      {"start":10,"end":15,"narration_en":"A tire crosses one dip, then another. That repeated contact creates sound and vibration."},
+      {"start":15,"end":20,"narration_en":"Now the strange shaking makes sense. The tire has reached the shoulder outside the travel lane."},
+      {"start":20,"end":25,"narration_en":"The noise and vibration can alert a distracted or drowsy driver to that drift."},
+      {"start":25,"end":30,"narration_en":"But the road cannot steer. That warning still needs a driver who notices and responds."}
+    ]},
+    {"id":"B","beats":[
+      {"start":0,"end":5,"narration_en":"Those cuts beside the road are supposed to make noise. They are a warning system."},
+      {"start":5,"end":10,"narration_en":"From above, you see a stripe of grooves. From the side, you see cuts below the surface."},
+      {"start":10,"end":15,"narration_en":"Each dip changes the tire's contact with the road. Repeat that, and you get a rumble."},
+      {"start":15,"end":20,"narration_en":"The important part is where it happens: beside the white edge line, on the shoulder."},
+      {"start":20,"end":25,"narration_en":"The sound and vibration can tell a distracted driver that the car has drifted out of its lane."},
+      {"start":25,"end":30,"narration_en":"So these grooves do not drive the car. They warn the person who does."}
+    ]},
+    {"id":"C","beats":[
+      {"start":0,"end":5,"narration_en":"Your car suddenly rumbles. The road may be trying to tell you something."},
+      {"start":5,"end":10,"narration_en":"Follow the tire past the white edge line. It has reached shallow cuts in the shoulder."},
+      {"start":10,"end":15,"narration_en":"One dip changes its contact. The next does it again. Repeated contact creates sound and vibration."},
+      {"start":15,"end":20,"narration_en":"That turns a quiet drift into a warning you can hear and feel inside the car."},
+      {"start":20,"end":25,"narration_en":"It can help a distracted or drowsy driver notice what happened. It cannot guarantee a response."},
+      {"start":25,"end":30,"narration_en":"The rumble answers the mystery: you reached the shoulder. The driver still has to react."}
+    ]}
+  ]
+}
