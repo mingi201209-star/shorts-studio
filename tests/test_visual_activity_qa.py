@@ -81,6 +81,62 @@ def test_genuine_cuts_every_two_seconds_pass_and_measure_correctly(tmp_path):
     assert verify_visual_activity(activity)["status"] == "PASS"
 
 
+def _drift_clip(tmp_path, *, seconds=6, fps=30, speed_px_per_s=80, box=200,
+                y=600, size=(1080, 1500), name="drift.mp4"):
+    """A real encoded clip of a solid box moving at a constant, continuous
+    speed -- a stand-in for a fixed (non-tracking) camera watching a subject
+    translate across frame, e.g. a car under a wide orthographic shot. Built
+    frame-by-frame with PIL/numpy and muxed with ffmpeg rather than via a
+    `drawbox=x='...*t'` filter expression: that expression silently rendered
+    nothing on this project's ffmpeg build (6.1.1) for any non-zero
+    coefficient of t, with no error -- `t` is also drawbox's own thickness
+    option name, and multiplying by it produced an empty frame instead of a
+    filter error. This path sidesteps that ambiguity entirely."""
+    build = tmp_path / "build"; build.mkdir(exist_ok=True)
+    width, height = size
+    for i in range(seconds * fps):
+        frame = np.zeros((height, width, 3), dtype=np.uint8)
+        x = int(speed_px_per_s * i / fps)
+        frame[y:y + box, x:x + box] = 255
+        Image.fromarray(frame, "RGB").save(build / f"src_{i:04d}.png")
+    clip = build / name
+    subprocess.run(["ffmpeg", "-y", "-framerate", str(fps), "-i", str(build / "src_%04d.png"),
+                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", str(clip)],
+                   check=True, capture_output=True)
+    return clip, build
+
+
+# --- 3b. continuous drift without any single cut, still real activity ----
+
+@requires_ffmpeg
+def test_continuous_drift_below_the_cut_threshold_still_counts_as_real_activity(tmp_path):
+    """Reproduces the false FAIL from PR #92 run 41201322921: the shared
+    native-B asset bed's single long 'rumble_mechanism' take measured real
+    full-frame adjacent-pair diffs averaging ~0.57 (max 0.74) across 269
+    consecutive native frame pairs -- an order of magnitude under this
+    module's 12.0 change_threshold -- because the only real per-frame change
+    is a car continuously translating under a wide, non-tracking fixed
+    camera. But the SAME diagnosis found the cumulative diff from the first
+    frame already past 12.0 by 3s and rising to ~15 by 7s: real, substantial,
+    continuous motion that an adjacent-sample-only comparison can never see,
+    no matter how long it keeps looking.
+
+    This synthetic clip reproduces the same shape at a scale a test can
+    assert on exactly: a box moving fast enough that successive 0.5s-apart
+    samples never individually cross the threshold (measured ~3.98 per
+    step), but cumulative displacement from a fixed reference crosses it
+    before 2s. Before the fix (comparing each sample only to the one before
+    it), this clip measured max_static_visual_seconds == 6.0 and FAILed --
+    the exact false positive this test guards against."""
+    clip, build = _drift_clip(tmp_path)
+    activity = measure_visual_activity(clip, MEDIA_BOX, build)
+    assert activity["cut_timestamps"] != [0.0], (
+        "continuous real motion was not detected at all -- regressed to the pre-fix behavior")
+    assert activity["max_static_visual_seconds"] < 5.0, activity
+    assert activity["first_5s_visual_changes"] >= 1, activity
+    assert verify_visual_activity(activity)["status"] == "PASS", activity
+
+
 # --- 4. first-5s visual beat detection -----------------------------------
 
 @requires_ffmpeg
