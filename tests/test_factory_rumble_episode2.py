@@ -12,10 +12,12 @@ import pytest
 from PIL import ImageFont
 
 from shorts_studio.factory.rumble_episode2 import (
+    SHOT_IDS,
     lane_return_heading,
     lane_return_offset,
     load_episode,
     render_slice,
+    shard_starts_for_shots,
     shot_for_frame,
     travel_x,
     validate_episode,
@@ -305,61 +307,69 @@ def _target(shot, layout):
     return (x, y, z + layout["target_z"])
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "hook_warning's current camera (offset (0.25, -2.7, 1.75), scale 3.8, "
-        "from PR #56 commit 82af1a3 'foreground tire and milled shoulder in "
-        "opening') places the near front tyre at frame 1 just outside this "
-        "test's 90% safety margin: abs(u)+radius=0.988 vs 0.9*half_width=0.962 "
-        "(short by 2.6cm). The tyre is still inside the raw frame (0.988 < "
-        "1.069 full half-width) -- this is a thin-margin near-miss, not a "
-        "confirmed off-screen defect. Needs a real sample-render visual check "
-        "(see the project's quick-QC step) before either retuning the camera "
-        "or widening this margin."
-    ),
-)
-def test_fixed_wheel_cameras_keep_the_near_tyre_in_frame_for_the_whole_shot():
+# Both geometry checks below used to loop over every shot and assert inline,
+# so a failure on the first shot (hook_warning, iterated first) raised
+# immediately and silently hid a worse failure on a later shot. That is
+# exactly how PR #69 shipped a confirmed-by-real-render black void on
+# tire_contact while only hook_warning's near-miss was visible locally:
+# tire_contact's old camera had margin -0.215m (frustum below grade), far
+# worse than hook_warning's 0.184m, but the loop never reached it. Both
+# tests are now parametrized per shot so every shot's result is reported
+# independently.
+def _xfail_hook_warning(reason):
+    return [pytest.param(shot_id, marks=pytest.mark.xfail(strict=True, reason=reason))
+            if shot_id == "hook_warning" else shot_id for shot_id in SHOT_IDS]
+
+
+@pytest.mark.parametrize("shot_id", _xfail_hook_warning(
+    "hook_warning's current camera (offset (0.25, -2.7, 1.75), scale 3.8, "
+    "from PR #56 commit 82af1a3 'foreground tire and milled shoulder in "
+    "opening') places the near front tyre at frame 1 just outside this "
+    "test's 90% safety margin: abs(u)+radius=0.988 vs 0.9*half_width=0.962 "
+    "(short by 2.6cm). The tyre is still inside the raw frame (0.988 < "
+    "1.069 full half-width) -- this is a thin-margin near-miss, not a "
+    "confirmed off-screen defect. Needs a real sample-render visual check "
+    "(see the project's quick-QC step) before either retuning the camera "
+    "or widening this margin."
+))
+def test_fixed_wheel_cameras_keep_the_near_tyre_in_frame_for_the_whole_shot(shot_id):
     from shorts_studio.factory.rumble_episode2 import camera_layout
 
-    for shot in fresh()["shots"]:
-        layout = camera_layout(shot)
-        if layout["target"] != "wheel":
-            continue
-        tyre = "Rear_tire" if shot["id"] == "rumble_mechanism" else "Front_tire"
-        target = _target(shot, layout)
-        right, up = _camera_axes(layout["offset"])
-        half_h = layout["scale"] / 2
-        half_w = half_h * 9 / 16
-        for frame in range(shot["start"], shot["end"] + 1):
-            delta = [a - b for a, b in zip(_tyre_world(frame, tyre), target)]
-            u = sum(d * r for d, r in zip(delta, right))
-            v = sum(d * w for d, w in zip(delta, up))
-            assert abs(u) + TYRE_RADIUS <= .9 * half_w, (shot["id"], frame)
-            assert abs(v) + TYRE_RADIUS <= .9 * half_h, (shot["id"], frame)
+    shot = next(s for s in fresh()["shots"] if s["id"] == shot_id)
+    layout = camera_layout(shot)
+    if layout["target"] != "wheel":
+        pytest.skip(f"{shot_id} targets the car body, not a wheel")
+    tyre = "Rear_tire" if shot_id == "rumble_mechanism" else "Front_tire"
+    target = _target(shot, layout)
+    right, up = _camera_axes(layout["offset"])
+    half_h = layout["scale"] / 2
+    half_w = half_h * 9 / 16
+    for frame in range(shot["start"], shot["end"] + 1):
+        delta = [a - b for a, b in zip(_tyre_world(frame, tyre), target)]
+        u = sum(d * r for d, r in zip(delta, right))
+        v = sum(d * w for d, w in zip(delta, up))
+        assert abs(u) + TYRE_RADIUS <= .9 * half_w, (shot_id, frame)
+        assert abs(v) + TYRE_RADIUS <= .9 * half_h, (shot_id, frame)
 
 
-@pytest.mark.xfail(
-    strict=True,
-    reason=(
-        "hook_warning's current camera (offset (0.25, -2.7, 1.75), scale 3.8, "
-        "from PR #56 commit 82af1a3) leaves only 0.184m between the "
-        "orthographic frustum's bottom edge and road grade, short of this "
-        "test's 0.25m safety buffer by 6.6cm. The plane is still above grade "
-        "(0.184 > 0), so no black void is confirmed -- this is a reduced-"
-        "buffer near-miss. Needs a real sample-render visual check before "
-        "either retuning the camera or widening this margin."
-    ),
-)
-def test_orthographic_camera_plane_never_starts_below_the_road():
+@pytest.mark.parametrize("shot_id", _xfail_hook_warning(
+    "hook_warning's current camera (offset (0.25, -2.7, 1.75), scale 3.8, "
+    "from PR #56 commit 82af1a3) leaves only 0.184m between the "
+    "orthographic frustum's bottom edge and road grade, short of this "
+    "test's 0.25m safety buffer by 6.6cm. The plane is still above grade "
+    "(0.184 > 0), so no black void is confirmed -- this is a reduced-"
+    "buffer near-miss. Needs a real sample-render visual check before "
+    "either retuning the camera or widening this margin."
+))
+def test_orthographic_camera_plane_never_starts_below_the_road(shot_id):
     from shorts_studio.factory.rumble_episode2 import camera_layout
 
-    for shot in fresh()["shots"]:
-        layout = camera_layout(shot)
-        _, up = _camera_axes(layout["offset"])
-        camera_z = _target(shot, layout)[2] + layout["offset"][2]
-        # Rays from a plane edge below grade render as a black void band.
-        assert camera_z - layout["scale"] / 2 * up[2] >= .25, shot["id"]
+    shot = next(s for s in fresh()["shots"] if s["id"] == shot_id)
+    layout = camera_layout(shot)
+    _, up = _camera_axes(layout["offset"])
+    camera_z = _target(shot, layout)[2] + layout["offset"][2]
+    # Rays from a plane edge below grade render as a black void band.
+    assert camera_z - layout["scale"] / 2 * up[2] >= .25, shot_id
 
 
 def test_lower_captions_never_cover_the_tyre_road_contact():
@@ -465,3 +475,70 @@ def test_six_shot_proof_runs_on_this_editorial_branch():
     header = proof.split("jobs:", 1)[0]
     assert "nightshift/episode2-editorial-20261022" in header
     assert "workflow_dispatch" not in header
+
+
+def test_shard_starts_for_one_shot_matches_its_five_aligned_shards():
+    episode = fresh()
+    # Every shot is exactly 150 frames (5 * 30), confirmed by validate_episode's
+    # own "end - start != 149" check, so each shot maps to exactly 5 shard starts.
+    assert shard_starts_for_shots(episode, {"hook_warning"}) == [1, 31, 61, 91, 121]
+    assert shard_starts_for_shots(episode, {"road_cut"}) == [151, 181, 211, 241, 271]
+    assert shard_starts_for_shots(episode, {"driver_response"}) == [751, 781, 811, 841, 871]
+
+
+def test_shard_starts_for_multiple_shots_is_the_union_not_everything_between():
+    episode = fresh()
+    starts = shard_starts_for_shots(episode, {"hook_warning", "driver_response"})
+    assert starts == [1, 31, 61, 91, 121, 751, 781, 811, 841, 871]
+    assert len(starts) == 10, "must skip the four untouched shots' 20 shards"
+
+
+def test_shard_starts_covers_every_shot_when_all_are_named():
+    episode = fresh()
+    assert shard_starts_for_shots(episode, set(SHOT_IDS)) == list(range(1, 901, 30))
+
+
+def test_shard_starts_rejects_empty_or_unknown_shots():
+    episode = fresh()
+    with pytest.raises(ValueError, match="at least one shot_id"):
+        shard_starts_for_shots(episode, set())
+    with pytest.raises(ValueError, match="unknown shot ids"):
+        shard_starts_for_shots(episode, {"not_a_real_shot"})
+
+
+SCOPED_RERENDER = ROOT / ".github/workflows/rumble-episode2-scoped-rerender.yml"
+
+
+def test_scoped_rerender_is_manual_pinned_and_uses_a_dynamic_shot_matrix():
+    workflow = SCOPED_RERENDER.read_text()
+    header = workflow.split("jobs:", 1)[0]
+    assert "workflow_dispatch:" in header and "push:" not in header
+    assert "pull_request" not in header and "schedule" not in header
+    assert "shot_ids:" in header
+    assert 'test "$GITHUB_SHA" = "$EXPECTED_HEAD"' in workflow
+    renderer = ROOT / "benchmarks/road_safety/render_rumble_episode2.py"
+    pinned = re.search(r"RENDERER_SOURCE_SHA256: ([0-9a-f]{64})", workflow).group(1)
+    assert pinned == hashlib.sha256(renderer.read_bytes()).hexdigest()
+    # The matrix comes from the plan job's own computed shard list, never a
+    # hardcoded 30-element one -- that is the entire point of this workflow.
+    assert "matrix:\n        frame: ${{ fromJson(needs.plan.outputs.frames) }}" in workflow
+    assert "shard_starts_for_shots" in workflow
+    # It measures and reports; it does not assemble a deliverable video.
+    assert "episode2_film.py assemble" not in workflow
+    assert "scoped-rerender-report" in workflow
+
+
+CAMERA_PREVIEW = ROOT / ".github/workflows/rumble-episode2-camera-preview.yml"
+
+
+def test_camera_preview_runs_automatically_and_stays_preview_only():
+    workflow = CAMERA_PREVIEW.read_text()
+    header = workflow.split("jobs:", 1)[0]
+    # Automatic, not manually gated like the expensive film/scoped workflows --
+    # that is the whole point: a fast, free signal before anyone has to ask.
+    assert "pull_request:" in header and "workflow_dispatch" not in header
+    assert "shorts_studio/factory/rumble_episode2.py" in header
+    assert "--preview --frame-list 1,151,301,451,601,751" in workflow
+    # Never claims to be the real production QA gate.
+    assert "native_shard_qa" not in workflow
+    assert "(450, 800)" in workflow

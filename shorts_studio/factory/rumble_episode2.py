@@ -186,6 +186,29 @@ def render_slice(start: int, end: int) -> list[int]:
     return list(range(start, end + 1))
 
 
+def shard_starts_for_shots(episode: dict, shot_ids, *, shard_size: int = 30) -> list[int]:
+    """1-indexed shard-start frames (matching the native-film workflow's
+    30-frame matrix convention) that cover every frame of the given shots.
+
+    For a revision that only changes one or two shots, this is the shard
+    list a scoped re-render actually needs -- the other shots' already
+    -verified frames are untouched and do not need recomputing. Pure
+    bookkeeping over the manifest; renders nothing and reads no asset."""
+    ids = set(shot_ids)
+    if not ids:
+        raise ValueError("at least one shot_id required")
+    unknown = ids - {s["id"] for s in episode["shots"]}
+    if unknown:
+        raise ValueError(f"unknown shot ids: {sorted(unknown)}")
+    total = episode["total_frames"]
+    if total % shard_size:
+        raise ValueError("total_frames must be an exact multiple of shard_size")
+    return [shard_start for shard_start in range(1, total + 1, shard_size)
+            if any(s["id"] in ids and shard_start <= s["end"]
+                   and s["start"] <= shard_start + shard_size - 1
+                   for s in episode["shots"])]
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--manifest", type=Path, required=True)
