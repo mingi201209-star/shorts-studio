@@ -85,7 +85,11 @@ def camera_layout(shot):
     # A long wide-location shot needs a wider fixed frame to retain the actual
     # moving wheel throughout; never track the camera or reframe on shard
     # boundaries. The 'rumble_mechanism_close' sub-beat deliberately keeps the
-    # unwidened native scale so the already-simulated body vibration reads.
+    # unwidened native scale so the already-simulated body vibration reads --
+    # which is also why its manifest boundary must end at/before frame 719:
+    # lane_return_offset's lateral drift back toward the lane starts exactly
+    # at frame 720, and this tight camera's frustum was never fit to also
+    # absorb that second axis of motion on top of ongoing forward travel.
     if (shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='rumble_mechanism'
             and not shot['id'].endswith('rumble_mechanism_close')):
         layout['scale']=7.6

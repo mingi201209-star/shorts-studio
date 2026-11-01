@@ -43,8 +43,8 @@ def test_curious_mechanics_b_manifest_resolves_seven_distinct_roles_to_real_base
         'rumble_mechanism_wide', 'rumble_mechanism_close', 'driver_response',
     ]
     assert len(roles) == len(set(roles))
-    assert [s['start'] for s in episode['shots']] == [1, 51, 136, 311, 461, 607, 768]
-    assert [s['end'] for s in episode['shots']] == [50, 135, 310, 460, 606, 767, 900]
+    assert [s['start'] for s in episode['shots']] == [1, 51, 136, 311, 461, 607, 720]
+    assert [s['end'] for s in episode['shots']] == [50, 135, 310, 460, 606, 719, 900]
 
 
 def test_curious_mechanics_a_and_c_manifests_are_unaffected_by_the_b_extension():
