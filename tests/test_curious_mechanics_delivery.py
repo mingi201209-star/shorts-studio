@@ -4,6 +4,7 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pytest
 from benchmarks.road_safety.curious_mechanics_delivery import validate_layout,LEGACY
+from shorts_studio.factory import curious_mechanics_timeline as timeline
 
 def spans():
     rows=[]
@@ -31,3 +32,35 @@ def test_source_substitution_requires_explicit_absolute_frame_mapping():
     with pytest.raises(AssertionError):validate_layout(rows,canonical,'A')
     assert len(validate_layout(rows,canonical,'A',{571:'B'}))==30
     with pytest.raises(AssertionError):validate_layout(rows,canonical,'A',{541:'B'})
+
+
+def _semantic_style(shot_id):
+    # Mirrors curious_mechanics_delivery.semantic()'s style-resolution line.
+    return timeline._STYLE.get(shot_id) or '_'.join(shot_id.split('_')[2:])
+
+
+def test_semantic_style_resolves_progressive_sub_beats_to_their_shared_base():
+    # Regression guard: run 41274189435's final job crashed with
+    # KeyError('rumble_mechanism_wide') because semantic() used to derive the
+    # canonical reference/label style by blindly stripping the id prefix,
+    # which only works when role == base style. B's split rumble_mechanism
+    # sub-beats (_wide/_close/_return) need to resolve to the shared base
+    # 'rumble_mechanism' instead, the same way camera/detail lookups already
+    # do via curious_mechanics_timeline._STYLE.
+    episode = timeline.load_episode('examples/experiments/curious-mechanics-progressive-B.json')
+    base = timeline.original.load_episode(Path('examples/factory/rumble-episode2-30s.json'))
+    by_id = {s['id']: s for s in base['shots']}
+    for shot in episode['shots']:
+        style = _semantic_style(shot['id'])
+        assert style in by_id, (shot['id'], style)
+        timeline.original.semantic_labels(style)  # must not raise
+
+
+def test_semantic_style_fallback_matches_old_behavior_for_unsplit_roles():
+    # A caller that builds its own episode dict without calling
+    # load_episode() first (curious_mechanics_fast_batch.py) never populates
+    # _STYLE; for those (role == base already) the fallback plain id-suffix
+    # derivation must still give the same answer it always did.
+    timeline._STYLE.clear()
+    assert _semantic_style('A_00_hook_warning') == 'hook_warning'
+    assert _semantic_style('B_03_driver_response') == 'driver_response'
