@@ -11,13 +11,26 @@ _STYLE={}
 _PROGRESSIVE=set()
 PROGRESSIVE_STYLES=('shoulder_location','road_cut','tire_contact','rumble_mechanism','driver_response')
 
-def progressive_cuts(ends):
-    if (not isinstance(ends,list) or len(ends)!=5
+def _normalize_progressive_roles(roles):
+    """Each entry is either a canonical base-style name (role == base), or a
+    [role_name, base_style] pair giving one shot a distinct, descriptive role
+    while its camera/semantic/detail lookups still resolve to a real,
+    already-defined base style in original.SHOT_IDS. This lets one base style
+    (e.g. 'rumble_mechanism') carry two visually distinct sub-beats without
+    ever inventing a camera the canonical module doesn't already know."""
+    normalized = [tuple(r) if isinstance(r, (list, tuple)) else (r, r) for r in roles]
+    if any(base not in original.SHOT_IDS for _, base in normalized):
+        raise ValueError('progressive role maps to an unknown base style')
+    return normalized
+
+def progressive_cuts(ends, roles=PROGRESSIVE_STYLES):
+    normalized = _normalize_progressive_roles(roles)
+    if (not isinstance(ends,list) or len(ends)!=len(normalized)
             or any(type(n) is not int for n in ends)
             or ends[-1]!=900 or ends[0]<30
             or any(b-a<30 for a,b in zip(ends,ends[1:]))):
         raise ValueError('invalid progressive native shot coverage')
-    return list(zip(ends,PROGRESSIVE_STYLES))
+    return list(zip(ends,roles))
 ROAD_X_HALF_SPAN=32.0
 ROAD_Y_NEAR_EDGE=-40.0
 DIRT_Y_FAR_EDGE=40.0
@@ -50,11 +63,13 @@ def load_episode(path):
         else: middle=(first+last)//2
         cuts.extend([(middle,styles[0]),(last,styles[1])])
     if 'progressive_cut_frames' in data:
-        cuts=progressive_cuts(data['progressive_cut_frames'])
+        roles = data.get('progressive_styles', PROGRESSIVE_STYLES)
+        cuts=progressive_cuts(data['progressive_cut_frames'], roles)
         if not isinstance(data.get('measured_audio_sha256'),str) or len(data['measured_audio_sha256'])!=64:
             raise ValueError('progressive audio binding missing')
     for i,(end,style) in enumerate(cuts):
-        name=f'{ident}_{i:02}_{style}';_STYLE[name]=style
+        role,base=tuple(style) if isinstance(style,(list,tuple)) else (style,style)
+        name=f'{ident}_{i:02}_{role}';_STYLE[name]=base
         if 'progressive_cut_frames' in data: _PROGRESSIVE.add(name)
         shots.append(dict(id=name,start=start,end=end));start=end+1
     assert start==901 and all(s['end']>=s['start'] for s in shots)
@@ -62,9 +77,13 @@ def load_episode(path):
 def camera_layout(shot):
     layout=original.camera_layout(dict(shot,id=_STYLE[shot['id']]))
     if _STYLE[shot['id']] in ('shoulder_location','driver_response'): layout['scale']=15.5
-    # A single long shot needs a wider fixed frame to retain the actual moving
-    # wheel throughout; never track the camera or reframe on shard boundaries.
-    if shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='rumble_mechanism': layout['scale']=7.6
+    # A long wide-location shot needs a wider fixed frame to retain the actual
+    # moving wheel throughout; never track the camera or reframe on shard
+    # boundaries. The 'rumble_mechanism_close' sub-beat deliberately keeps the
+    # unwidened native scale so the already-simulated body vibration reads.
+    if (shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='rumble_mechanism'
+            and not shot['id'].endswith('rumble_mechanism_close')):
+        layout['scale']=7.6
     return layout
 def detail_stage(ident): return original.detail_stage(_STYLE[ident])
 def detail_visibility(ident): return original.detail_visibility(_STYLE[ident])

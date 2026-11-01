@@ -31,8 +31,9 @@ def assemble(root, source, variant, out):
     audio_manifest = delivery.ROOT / f'examples/experiments/curious-mechanics-progressive-{variant}.json'
     episode = timeline.load_episode(manifest)
     roles = ['_'.join(s['id'].split('_')[2:]) for s in episode['shots']]
-    assert tuple(roles) == timeline.PROGRESSIVE_STYLES
-    assert len(roles) == len(set(roles)) == 5, 'Native visual role returned'
+    assert len(roles) == len(set(roles)), 'Native visual role returned'
+    assert all(timeline._STYLE[s['id']] in timeline.SHOT_IDS for s in episode['shots']), \
+        'Native role maps to an unknown base style'
     selected = []
     for proof_path in root.rglob('episode-proof.json'):
         proof = json.loads(proof_path.read_text())
