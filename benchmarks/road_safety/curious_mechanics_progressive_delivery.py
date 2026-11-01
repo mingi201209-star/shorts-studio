@@ -20,6 +20,29 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+# Two audited renderer generations of render_curious_mechanics.py coexist for
+# this native asset bed: PRE_STEER rendered the first 25 shards (frames
+# 1-750, where lane_return_heading is always 0, so their pixels are
+# unaffected by the fix below and are reused rather than re-rendered); WITH_STEER
+# added a visible front-wheel steer-angle during the lane-return correction
+# (frames 751-900) so "the person who still controls it" (driver_response's
+# narration) shows an actual steering operation, not just a translated body.
+# A shard's own renderer_source_sha256 says which generation rendered it;
+# verify() must be handed that exact generation's file, never today's file
+# for yesterday's shards (mirrors curious_mechanics_delivery.py's existing
+# LEGACY/FIXED split for the same reason).
+PRE_STEER_RENDERER_SHA256 = '700c523fac79cbafac3e763e0e9bbace429c6deff89da1ddbf97616f143debae'
+WITH_STEER_RENDERER_SHA256 = '04fdc326a6a8a874840072ce82529e777ff0956f5c17c991ad8f87b4e59ac765'
+
+
+def renderer_for(renderer_source_sha256):
+    if renderer_source_sha256 == PRE_STEER_RENDERER_SHA256:
+        return delivery.ROOT / 'benchmarks/road_safety/renderer_snapshots/render_curious_mechanics_700c523f.py'
+    if renderer_source_sha256 == WITH_STEER_RENDERER_SHA256:
+        return delivery.ROOT / 'benchmarks/road_safety/render_curious_mechanics.py'
+    raise ValueError('unrecognized renderer_source_sha256; refuse to mix an unaudited renderer generation')
+
+
 def assemble(root, source, variant, out):
     assert os.environ.get('GITHUB_ACTIONS') == 'true', 'GitHub-only encoding'
     out.mkdir(parents=True, exist_ok=False)
@@ -40,7 +63,7 @@ def assemble(root, source, variant, out):
         if proof['episode_id'] != 'curious-mechanics-' + native_variant:
             continue
         folder = proof_path.parent
-        qa = verify(folder, manifest, delivery.ROOT/'benchmarks/road_safety/render_curious_mechanics.py')
+        qa = verify(folder, manifest, renderer_for(proof.get('renderer_source_sha256')))
         receipt = json.loads((folder/'native-validation.json').read_text())
         clip = folder/'native-lossless.mkv'
         assert receipt['decoded_exact'] and receipt['clip_sha256'] == digest(clip)
@@ -105,8 +128,9 @@ def assemble(root, source, variant, out):
                 audio_manifest_sha256=digest(audio_manifest),
                 native_proof_run=41197516170,production_run=os.environ.get('GITHUB_RUN_ID'),
                 native_input_sha256={k:selected[0][0][k] for k in (
-                    'source_sha256','renderer_source_sha256','timeline_source_sha256',
+                    'source_sha256','timeline_source_sha256',
                     'canonical_timeline_sha256','manifest_sha256','experiment_plan_sha256')},
+                native_renderer_generations=sorted({s[0]['renderer_source_sha256'] for s in selected}),
                 audio_validation=audio,previous_revision_sha256=prior['sha256'],
                 native_source_shards=[dict(first=s[0]['first_frame'],last=s[0]['last_frame'],
                     clip_sha256=digest(s[1]),renderer_sha256=s[0]['renderer_source_sha256'],
