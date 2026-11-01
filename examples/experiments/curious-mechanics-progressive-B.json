@@ -9,6 +9,7 @@
     460,
     606,
     719,
+    767,
     900
   ],
   "progressive_styles": [
@@ -18,6 +19,7 @@
     "tire_contact",
     ["rumble_mechanism_wide", "rumble_mechanism"],
     ["rumble_mechanism_close", "rumble_mechanism"],
+    ["rumble_mechanism_return", "rumble_mechanism"],
     "driver_response"
   ],
   "measured_audio_sha256": "00f8bcb2c088d3104b5018bf22404f4db017449793c6c365e0995458609c39aa"
