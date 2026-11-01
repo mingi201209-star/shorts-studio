@@ -287,9 +287,22 @@ def main():
         tyre=bpy.data.objects[name]
         if tyre.parent != pivot or len(groups[name]) < 5:
             raise ValueError("tyre component pivot incomplete")
-        pivots.append((pivot,radii[name]))
+        pivots.append((pivot,radii[name],name))
     if len(pivots)!=4:
         raise ValueError("lost wheel pivots")
+    FRONT_WHEEL_NAMES=("Front_tire","Front_tire.001")
+
+    def front_steer_angle(frame):
+        """Visual-only driver-input proxy: turn the front wheels into the
+        lane-return correction, then straighten out, instead of leaving the
+        whole manoeuvre to a uniform body translation with no visible
+        operation. A finite-difference yaw RATE off the already-authored
+        module.lane_return_heading(frame), not a calibrated bicycle-model
+        steer angle; zero wherever that heading itself is zero (frame<=750).
+        """
+        nxt,prv=min(900,frame+1),max(1,frame-1)
+        rate=(module.lane_return_heading(nxt)-module.lane_return_heading(prv))/2
+        return max(-0.22,min(0.22,rate*14.0))
 
     wheel_explainer_meshes = set(groups["Front_tire"])
     # The real audited source wheel, rim and spokes are the only car
@@ -437,7 +450,7 @@ def main():
     camera_proofs={}
     previous_shot=None
     near_tyres=[bpy.data.objects[n] for n in ("Front_tire","Rear_tire")]
-    hub_rest={pivot:pivot.location.copy() for pivot,_ in pivots}
+    hub_rest={pivot:pivot.location.copy() for pivot,_,_ in pivots}
     for i, absolute_frame in enumerate(absolute_frames):
         # Over the longer real pilot, one tire traverses several physical grooves.
         # Small displacement only, not a realistic tire/suspension solver.
@@ -448,8 +461,10 @@ def main():
         # Tyres rest on the road; only the sprung body carries the vibration.
         car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
         car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
-        for pivot,radius in pivots:
+        steer=front_steer_angle(absolute_frame)
+        for pivot,radius,name in pivots:
             pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
+            pivot.rotation_euler[2]=steer if name in FRONT_WHEEL_NAMES else 0.0
             pivot.location=hub_rest[pivot]-Vector((0,0,bounce/car.scale[2]))
         scene.frame_set(absolute_frame)
         bpy.context.view_layer.update()
@@ -480,8 +495,10 @@ def main():
                 pivot.location=rest
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(middle)
             # Fit every shard from exactly the same wheel pose at this shot anchor.
-            for pivot,radius in pivots:
+            anchor_steer=front_steer_angle(middle)
+            for pivot,radius,name in pivots:
                 pivot.rotation_euler[0]=(centre_x-module.travel_x(1))/(.85*radius)
+                pivot.rotation_euler[2]=anchor_steer if name in FRONT_WHEEL_NAMES else 0.0
             bpy.context.view_layer.update()
             front=bpy.data.objects["Front_tire"]
             rear=bpy.data.objects["Rear_tire"]
@@ -517,8 +534,9 @@ def main():
             car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
             # Restore native absolute motion before projecting/rendering this frame.
-            for pivot,radius in pivots:
+            for pivot,radius,name in pivots:
                 pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
+                pivot.rotation_euler[2]=steer if name in FRONT_WHEEL_NAMES else 0.0
             for pivot,rest in hub_rest.items():
                 pivot.location=rest-Vector((0,0,bounce/car.scale[2]))
             bpy.context.view_layer.update()
