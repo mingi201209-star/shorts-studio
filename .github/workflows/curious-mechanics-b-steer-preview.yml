@@ -8,6 +8,8 @@ name: Curious Mechanics B steer-angle preview (cheap, manual only)
 # so it cannot be an accidental duplicate trigger of anything.
 on:
   workflow_dispatch: {}
+  push:
+    branches: [feat/curious-mechanics-b-causal-shot-20261101-steer-staging]
 permissions:
   contents: read
 jobs:
