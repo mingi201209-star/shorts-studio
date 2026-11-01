@@ -34,8 +34,8 @@ jobs:
           gh run download 41283956286 --repo "$GITHUB_REPOSITORY" --name curious-progressive-causal-shot-B-reassembled --dir "$RUNNER_TEMP/before"
           gh run download 41298025251 --repo "$GITHUB_REPOSITORY" --name curious-progressive-causal-shot-B --dir "$RUNNER_TEMP/after"
           find "$RUNNER_TEMP/before" "$RUNNER_TEMP/after" -iname '*.mp4'
-      - name: driver_response shot (25.6-29.9s, before vs after)
+      - name: driver_response shot (25.6-29.9s, before vs after) -- full native resolution
         run: |
           set -euo pipefail
-          python benchmarks/road_safety/extract_video_timestamps_b64.py --video "$(find "$RUNNER_TEMP/before" -iname '*progressive-v3.mp4')" --label BEFORE_driver --timestamps 25.8 26.5 27.3 28.1 28.9 29.6
-          python benchmarks/road_safety/extract_video_timestamps_b64.py --video "$(find "$RUNNER_TEMP/after" -iname '*progressive-v3.mp4')" --label AFTER_driver --timestamps 25.8 26.5 27.3 28.1 28.9 29.6
+          python benchmarks/road_safety/extract_video_timestamps_b64.py --video "$(find "$RUNNER_TEMP/before" -iname '*progressive-v3.mp4')" --label BEFORE_driver_hd --timestamps 25.8 28.9 --width 1080
+          python benchmarks/road_safety/extract_video_timestamps_b64.py --video "$(find "$RUNNER_TEMP/after" -iname '*progressive-v3.mp4')" --label AFTER_driver_hd --timestamps 25.8 28.9 --width 1080
