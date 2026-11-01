@@ -5,11 +5,19 @@ Three separate judgments, never collapsed into one verdict:
   technical_qa          -- did the artifact pass the existing, unmodified
                             technical gates (shorts_studio.factory.
                             curious_mechanics_native_qa.verify, etc.)?
+                            For a real (non-mock) render task this relays the
+                            verdict that already ran server-side, inside the
+                            GitHub Actions job that rendered it -- see
+                            render.py's module docstring for why this is not
+                            recomputed locally.
   content_screen_match   -- does what's on screen actually match what the
-                            script/requirement says should be there (this is
-                            the same judgment the narration/scene audit made
-                            by hand earlier in this project; here it is a
-                            task the evaluation department runs)?
+                            script/requirement says should be there? Real
+                            connection (benchmarks.road_safety.
+                            curious_mechanics_delivery.semantic) requires a
+                            fully assembled clip with audio, which a single
+                            preview-frame render never produces, so this is
+                            explicitly NOT_IMPLEMENTED for real tasks rather
+                            than silently skipped or faked.
   performance_analysis   -- how did it actually perform once published?
                             Always UNVERIFIED here: this project does not
                             publish publicly, so there is never real
@@ -18,12 +26,11 @@ Three separate judgments, never collapsed into one verdict:
 """
 from __future__ import annotations
 
-from pathlib import Path
-
 from ..ledger import TaskLedger
 from ..task import Task
 
 MOCK_TECHNICAL_QA_STATUS = "MOCK_SKIPPED"  # never the real PASS_NATIVE_ORIGINAL_SHARD string
+NOT_IMPLEMENTED = "NOT_IMPLEMENTED"
 
 
 class EvaluationDept:
@@ -36,35 +43,34 @@ class EvaluationDept:
 
     @staticmethod
     def _technical_qa_real(render_task: Task) -> dict:
-        """Real connection: shorts_studio.factory.curious_mechanics_native_qa.verify.
-
-        Not exercised by this round's tests -- it requires an actual
-        rendered-frame directory, manifest, and renderer file on disk, which
-        only exist as GitHub Actions artifacts, not in this sandbox.
-        """
-        from shorts_studio.factory.curious_mechanics_native_qa import verify
-
-        output = render_task.output or {}
-        try:
-            out_dir = Path(output["out_dir"])
-            manifest = Path(output["manifest"])
-            renderer = Path(output["renderer"])
-        except KeyError as exc:
+        """Relays the real curious_mechanics_native_qa.verify() verdict that
+        studio-org-render-task.yml already computed server-side (see
+        render.py's RenderDept._execute_real / fetch_eval_result). A preview
+        render is expected to genuinely FAIL this check (preview_only=True,
+        450x800/7 samples vs the production contract's False/1080x1920/32) --
+        that is the real, unmodified gate working correctly, not a bug."""
+        payload = (render_task.output or {}).get("real_technical_qa")
+        if payload is None:
             raise ValueError(
-                "real technical_qa requires output.out_dir/manifest/renderer"
-            ) from exc
-        result = verify(out_dir, manifest, renderer)
-        return {"status": result["status"], "detail": result}
+                f"render task {render_task.task_id} has no embedded "
+                "real_technical_qa result to relay"
+            )
+        if payload.get("ok"):
+            return {"status": payload["result"]["status"], "detail": payload["result"]}
+        return {"status": "FAIL",
+                 "detail": f"{payload['error_type']}: {payload['error']}"}
 
     def content_screen_match(self, render_task: Task, requirement: dict) -> dict:
         output = render_task.output or {}
         if output.get("is_mock"):
             matches = render_task.requirements.get("shot") == requirement.get("shot")
             return {"status": "PASS" if matches else "FAIL", "mock": True}
-        raise NotImplementedError(
-            "real content_screen_match would call benchmarks.road_safety."
-            "curious_mechanics_delivery.semantic(); not implemented here"
-        )
+        return {
+            "status": NOT_IMPLEMENTED,
+            "reason": "requires benchmarks.road_safety.curious_mechanics_delivery.semantic() "
+                      "against a fully assembled clip with audio; a single preview-frame "
+                      "render has no assembled output to check this against",
+        }
 
     def performance_analysis(self, render_task: Task) -> dict:
         return {
@@ -80,6 +86,12 @@ class EvaluationDept:
             technical["status"] in ("PASS", MOCK_TECHNICAL_QA_STATUS)
             and content["status"] == "PASS"
         )
+        if content["status"] == NOT_IMPLEMENTED:
+            failure_reason = "content_screen_match is not implemented for real render tasks"
+        elif not passed:
+            failure_reason = "technical_qa or content_screen_match failed"
+        else:
+            failure_reason = None
         return ledger.create(
             department="평가부", division="기술검수",
             requirements=requirement, predecessors=[render_task.task_id],
@@ -91,6 +103,6 @@ class EvaluationDept:
             },
             completion_criteria="technical_qa and content_screen_match both PASS",
             status="completed" if passed else "failed",
-            failure_reason=None if passed else "technical_qa or content_screen_match failed",
+            failure_reason=failure_reason,
             is_mock=render_task.is_mock,
         )

@@ -18,11 +18,12 @@ from .task import Task
 
 class Orchestrator:
     def __init__(self, ledger: TaskLedger, render: RenderDept, evaluation: EvaluationDept,
-                 *, mock: bool = True):
+                 *, mock: bool = True, ref: str | None = None):
         self.ledger = ledger
         self.render = render
         self.evaluation = evaluation
         self.mock = mock
+        self.ref = ref  # branch to dispatch real (mock=False) renders against
 
     def _is_ready(self, task: Task) -> bool:
         if task.department != "렌더부" or task.status != "assigned":
@@ -39,7 +40,7 @@ class Orchestrator:
             current = self.ledger.get(task_id)
             if current.status != "assigned":
                 return current  # picked up or finished elsewhere already
-            return self.render.execute(current, self.ledger, mock=self.mock)
+            return self.render.execute(current, self.ledger, mock=self.mock, ref=self.ref)
         finally:
             lock.release()
 
