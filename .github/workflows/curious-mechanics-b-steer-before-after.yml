@@ -1,0 +1,41 @@
+name: Curious Mechanics B driver_response steer before/after (base64-in-log)
+# Read-only: downloads the pre-steering final B video (run 41283956286,
+# curious-progressive-causal-shot-B-reassembled, sha256 55a2fe30...) and the
+# new front-wheel-steer final B video (run 41298025251,
+# curious-progressive-causal-shot-B, sha256 1cb57666...) and prints base64
+# JPEG stills from each at matching timestamps across the 25.6-29.9s
+# driver_response shot, since artifact ZIP downloads are blocked in this
+# sandbox. Renders nothing new.
+on:
+  push:
+    branches: [feat/curious-mechanics-b-causal-shot-20261101]
+    paths:
+      - ".github/workflows/curious-mechanics-b-steer-before-after.yml"
+      - "benchmarks/road_safety/extract_video_timestamps_b64.py"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  compare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Download the before (no steering) and after (front-wheel steer) final B videos
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/before" "$RUNNER_TEMP/after"
+          gh run download 41283956286 --repo "$GITHUB_REPOSITORY" --name curious-progressive-causal-shot-B-reassembled --dir "$RUNNER_TEMP/before"
+          gh run download 41298025251 --repo "$GITHUB_REPOSITORY" --name curious-progressive-causal-shot-B --dir "$RUNNER_TEMP/after"
+          find "$RUNNER_TEMP/before" "$RUNNER_TEMP/after" -iname '*.mp4'
+      - name: driver_response shot (25.6-29.9s, before vs after) -- full native resolution
+        run: |
+          set -euo pipefail
+          python benchmarks/road_safety/extract_video_timestamps_b64.py --video "$(find "$RUNNER_TEMP/before" -iname '*progressive-v3.mp4')" --label BEFORE_driver_hd --timestamps 25.8 28.9 --width 1080
+          python benchmarks/road_safety/extract_video_timestamps_b64.py --video "$(find "$RUNNER_TEMP/after" -iname '*progressive-v3.mp4')" --label AFTER_driver_hd --timestamps 25.8 28.9 --width 1080

@@ -55,7 +55,13 @@ def semantic(final,out,episode,audio):
     from shorts_studio.visual_qa import ClipSemanticVisionProvider
     provider=ClipSemanticVisionProvider();base=timeline.original.load_episode(ROOT/'examples/factory/rumble-episode2-30s.json');by_id={s['id']:s for s in base['shots']};results=[]
     for shot in episode['shots']:
-        t=((shot['start']+shot['end'])/2-1)/30;style='_'.join(shot['id'].split('_')[2:]);reference=by_id[style];p=out/f'semantic-{shot["id"]}.png';film.run(['ffmpeg','-v','error','-y','-ss',t,'-i',final,'-frames:v','1',p])
+        # Prefer the canonical base style a fresh load_episode() just recorded
+        # (needed for a progressive sub-beat role like 'rumble_mechanism_wide',
+        # whose semantic reference/labels are the shared base 'rumble_mechanism'
+        # it reuses, not a style of its own); fall back to the plain id-suffix
+        # for callers (e.g. curious_mechanics_fast_batch.py) that build their
+        # own episode dict without calling load_episode(), where role==base.
+        t=((shot['start']+shot['end'])/2-1)/30;style=timeline._STYLE.get(shot['id']) or '_'.join(shot['id'].split('_')[2:]);reference=by_id[style];p=out/f'semantic-{shot["id"]}.png';film.run(['ffmpeg','-v','error','-y','-ss',t,'-i',final,'-frames:v','1',p])
         with Image.open(p) as im:im.convert('RGB').crop((0,0,1080,1400)).save(p)
         beat=next(b for b in audio['beats'] if b['start']<=t<b['end']);verdict=provider.evaluate(str(p),reference['visual_proof'],narration=beat['narration_en'],positive_labels=list(timeline.original.semantic_labels(style)),negative_labels=list(timeline.original.SEMANTIC_NEGATIVE_LABELS),media_box_applied=True);results.append(dict(shot=shot['id'],timestamp=t,**verdict));write(out/'semantic-results.json',results)
     assert all(r['status']=='PASS' for r in results),('SEMANTIC_VISUAL_QA',results)
