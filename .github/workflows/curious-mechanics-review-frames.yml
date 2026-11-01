@@ -2,12 +2,14 @@ name: Curious Mechanics review frames (base64-in-log, no artifact download neede
 # This sandbox cannot download GitHub Actions artifact ZIPs (the blob
 # -storage redirect target is policy-blocked), so this prints small
 # thumbnail JPEGs as base64 directly into the job's own log -- a text API
-# this session CAN read -- for the three review points: the first 3s
-# (frames 1-90, shoulder_location), tire contact (frames 311-460), and the
-# long rumble_mechanism take's reported static window (native frames
-# 466-766, output 15.5s-25.5s). Read-only: downloads already-rendered,
-# already-QA-passed native B shards (shared by all three variants);
-# renders nothing new.
+# this session CAN read. Read-only: downloads already-rendered native B
+# shards; renders nothing new.
+#
+# Current use: verify the two shot-boundary fixes made during the causal-
+# shot re-render (run 41266614904) by eye, using its own already-completed
+# shards -- frames 47-53 across the hook_warning(1-50)/shoulder_location(51+)
+# cut, and 73-75, the old frame-74 clipping failure point, now safely inside
+# shoulder_location.
 on:
   push:
     branches: [feat/curious-mechanics-b-causal-shot-20261101]
@@ -27,21 +29,14 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install Pillow
-      - name: Download the shards covering the three review windows
+      - name: Download the shards covering the hook_warning/shoulder_location boundary
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/shards"
-          for start in 1 301 451 751; do
-            gh run download 41197516170 --repo "$GITHUB_REPOSITORY" --name "curious-progressive-B-$start" --dir "$RUNNER_TEMP/shards/$start"
+          for start in 31 61; do
+            gh run download 41266614904 --repo "$GITHUB_REPOSITORY" --name "curious-progressive-B-causal-$start" --dir "$RUNNER_TEMP/shards/$start"
           done
-          for start in 31 61 331 361 391 421 541 601 661 721; do
-            gh run download 41201322921 --repo "$GITHUB_REPOSITORY" --name "curious-progressive-B-$start" --dir "$RUNNER_TEMP/shards/$start"
-          done
-      - name: First 3 seconds (shoulder_location opening)
-        run: python benchmarks/road_safety/extract_review_frames_b64.py --shards "$RUNNER_TEMP/shards" --frames 1 30 60 90
-      - name: Tire contact
-        run: python benchmarks/road_safety/extract_review_frames_b64.py --shards "$RUNNER_TEMP/shards" --frames 311 350 400 450
-      - name: Long rumble_mechanism take (output 15.5s-25.5s)
-        run: python benchmarks/road_safety/extract_review_frames_b64.py --shards "$RUNNER_TEMP/shards" --frames 466 550 616 683 750
+      - name: hook_warning/shoulder_location cut (47-53) and the old frame-74 failure point (73-75)
+        run: python benchmarks/road_safety/extract_review_frames_b64.py --shards "$RUNNER_TEMP/shards" --frames 47 48 49 50 51 52 53 73 74 75
