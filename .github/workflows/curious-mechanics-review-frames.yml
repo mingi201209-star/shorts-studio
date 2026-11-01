@@ -5,11 +5,11 @@ name: Curious Mechanics review frames (base64-in-log, no artifact download neede
 # this session CAN read. Read-only: downloads already-rendered native B
 # shards; renders nothing new.
 #
-# Current use: verify the two shot-boundary fixes made during the causal-
+# Current use: verify the second shot-boundary fix made during the causal-
 # shot re-render (run 41266614904) by eye, using its own already-completed
-# shards -- frames 47-53 across the hook_warning(1-50)/shoulder_location(51+)
-# cut, and 73-75, the old frame-74 clipping failure point, now safely inside
-# shoulder_location.
+# shards -- frames 716-723 across the rumble_mechanism_close(607-719)/
+# driver_response(720+) cut, and 752-756, the old frame-754 clipping failure
+# point, now safely inside the extended driver_response.
 on:
   push:
     branches: [feat/curious-mechanics-b-causal-shot-20261101]
@@ -29,14 +29,14 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install Pillow
-      - name: Download the shards covering the hook_warning/shoulder_location boundary
+      - name: Download the shards covering the rumble_mechanism_close/driver_response boundary
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/shards"
-          for start in 31 61; do
+          for start in 691 721 751; do
             gh run download 41266614904 --repo "$GITHUB_REPOSITORY" --name "curious-progressive-B-causal-$start" --dir "$RUNNER_TEMP/shards/$start"
           done
-      - name: hook_warning/shoulder_location cut (47-53) and the old frame-74 failure point (73-75)
-        run: python benchmarks/road_safety/extract_review_frames_b64.py --shards "$RUNNER_TEMP/shards" --frames 47 48 49 50 51 52 53 73 74 75
+      - name: rumble_mechanism_close/driver_response cut (716-723) and the old frame-754 failure point (752-756)
+        run: python benchmarks/road_safety/extract_review_frames_b64.py --shards "$RUNNER_TEMP/shards" --frames 716 717 718 719 720 721 722 723 752 753 754 755 756
