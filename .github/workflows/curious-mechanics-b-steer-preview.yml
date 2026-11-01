@@ -43,11 +43,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/rumble"
-          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_curious_mechanics.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/experiments/curious-mechanics-progressive-B.json --preview --frame-list 751,780,800,830,860,900 --out "$RUNNER_TEMP/rumble"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_curious_mechanics.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/experiments/curious-mechanics-progressive-B.json --preview --frame-list 768,785,825,870,892,900 --out "$RUNNER_TEMP/rumble"
       - name: Print each preview frame as base64 PNG in the job log
         run: |
           set -euo pipefail
-          for f in 0751 0780 0800 0830 0860 0900; do
+          for f in 0768 0785 0825 0870 0892 0900; do
             echo "FRAME_B64_START steer_$f"
             base64 -w0 "$RUNNER_TEMP/rumble/frame_${f}.png"
             echo ""

@@ -302,7 +302,7 @@ def main():
         """
         nxt,prv=min(900,frame+1),max(1,frame-1)
         rate=(module.lane_return_heading(nxt)-module.lane_return_heading(prv))/2
-        return max(-0.22,min(0.22,rate*14.0))
+        return max(-0.22,min(0.22,rate*26.0))
 
     wheel_explainer_meshes = set(groups["Front_tire"])
     # The real audited source wheel, rim and spokes are the only car

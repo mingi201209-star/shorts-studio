@@ -32,7 +32,7 @@ def digest(path):
 # for yesterday's shards (mirrors curious_mechanics_delivery.py's existing
 # LEGACY/FIXED split for the same reason).
 PRE_STEER_RENDERER_SHA256 = '700c523fac79cbafac3e763e0e9bbace429c6deff89da1ddbf97616f143debae'
-WITH_STEER_RENDERER_SHA256 = '204fb5c4e53e4e3690c3a035466a0a3cb72b7ce8a1bac400451f2e67f71dcbbd'
+WITH_STEER_RENDERER_SHA256 = '04fdc326a6a8a874840072ce82529e777ff0956f5c17c991ad8f87b4e59ac765'
 
 
 def renderer_for(renderer_source_sha256):
