@@ -77,6 +77,11 @@ def load_episode(path):
 def camera_layout(shot):
     layout=original.camera_layout(dict(shot,id=_STYLE[shot['id']]))
     if _STYLE[shot['id']] in ('shoulder_location','driver_response'): layout['scale']=15.5
+    # travel_x moves ~2.8x faster over frames 1-90 than the rest of the film
+    # (see travel_x below); a progressive-length 'hook_warning' opening covers
+    # more absolute distance per frame than its native 5s-shot scale was fit
+    # for, so it needs a wider fixed frame to keep the wheel from clipping out.
+    if shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='hook_warning': layout['scale']=3.2
     # A long wide-location shot needs a wider fixed frame to retain the actual
     # moving wheel throughout; never track the camera or reframe on shard
     # boundaries. The 'rumble_mechanism_close' sub-beat deliberately keeps the
