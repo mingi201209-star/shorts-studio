@@ -25,7 +25,7 @@ class EditingDept:
             requirements=requirement, predecessors=[resolved.task_id],
             input_hash=resolved.input_hash,
             completion_criteria="predecessor asset exists and (if rendered) passed evaluation",
-            status="completed" if resolved.status == "completed" else "blocked",
+            status="blocked",
             target_resource=f"edit:{requirement['shot']}",
         )
 
@@ -36,6 +36,13 @@ class EditingDept:
         if need.is_terminal:
             return need
         predecessor = ledger.get(need.predecessors[0])
+        if not predecessor.is_mock:
+            # Real completion belongs to film_pipeline.finish_film, which emits
+            # an actual MP4 and full QA receipt. Dependency resolution is not assembly.
+            return ledger.update(
+                need.task_id, status="blocked",
+                failure_reason="real cut requires MP4 assembly and QA receipt",
+            )
         if predecessor.department == "관리부":
             if predecessor.status == "completed":
                 return ledger.update(
