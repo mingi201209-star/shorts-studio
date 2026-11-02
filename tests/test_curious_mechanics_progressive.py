@@ -115,12 +115,14 @@ def test_critical_preview_frames_chunk_fits_the_preview_tool_sparse_limit():
     episode = load_episode('examples/experiments/curious-mechanics-progressive-B.json')
     frames = critical_preview_frames(episode)
     assert frames == sorted(set(frames))  # sorted, deduplicated
+    assert 616 in frames
+    assert 637 in frames
     # render_curious_mechanics.py caps --preview --frame-list at 12 frames;
-    # confirm the real B manifest needs (and this test documents) 2 chunks.
+    # confirm the real B manifest needs (and this test documents) 3 chunks.
     chunk_size = 12
     chunks = [frames[i:i + chunk_size] for i in range(0, len(frames), chunk_size)]
     assert all(len(c) <= chunk_size for c in chunks)
-    assert len(chunks) == 2
+    assert len(chunks) == 3
 
 
 @pytest.mark.parametrize('ends', [

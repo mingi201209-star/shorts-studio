@@ -75,3 +75,13 @@ jobs:
             echo "Previewing frames: $chunk"
             xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_curious_mechanics.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/experiments/curious-mechanics-progressive-B.json --preview --frame-list "$chunk" --out "$RUNNER_TEMP/preview"
           done
+      - name: Preserve preview frames for actual visual review
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: curious-mechanics-B-preflight-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/preview/
+            ${{ runner.temp }}/chunks.txt
+          if-no-files-found: error
+          retention-days: 7

@@ -27,6 +27,7 @@ from shorts_studio.factory.curious_mechanics_timeline import load_episode
 # spending an actual (low-res/low-sample --preview) Blender check on before
 # committing to a full production matrix.
 KINEMATIC_BREAKPOINTS = (75, 90, 720)
+RUMBLE_REVIEW_FRAMES = (616, 637)
 
 
 def critical_preview_frames(episode, breakpoints=KINEMATIC_BREAKPOINTS):
@@ -40,6 +41,10 @@ def critical_preview_frames(episode, breakpoints=KINEMATIC_BREAKPOINTS):
     for shot in episode["shots"]:
         frames.add(shot["start"])
         frames.add(shot["end"])
+        if shot["id"].endswith("rumble_mechanism_close"):
+            for frame in RUMBLE_REVIEW_FRAMES:
+                if shot["start"] <= frame <= shot["end"]:
+                    frames.add(frame)
         for bp in breakpoints:
             if shot["start"] <= bp <= shot["end"]:
                 frames.add(bp)
