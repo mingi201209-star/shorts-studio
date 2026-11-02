@@ -88,7 +88,7 @@ def camera_layout(shot):
     if shot['id'].endswith('road_cut_top'):
         layout.update(offset=(1.4, -.8, 8.5), scale=2.8, target_z=-.10)
     elif shot['id'].endswith('road_cut_side'):
-        layout.update(offset=(1.0, -7.5, .65), scale=2.4, target_z=-.10)
+        layout.update(offset=(1.0, -7.5, .65), scale=2.7, target_z=-.10)
     # A long wide-location shot needs a wider fixed frame to retain the actual
     # moving wheel throughout; never track the camera or reframe on shard
     # boundaries. The 'rumble_mechanism_close' sub-beat deliberately keeps the
