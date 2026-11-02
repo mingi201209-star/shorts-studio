@@ -15,6 +15,10 @@ concurrency:
   cancel-in-progress: false
 jobs:
   assemble:
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [A, B, C]
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -30,11 +34,12 @@ jobs:
       - name: Download already verified native sources
         env:
           GH_TOKEN: ${{ github.token }}
+          VARIANT: ${{ matrix.variant }}
         run: |
           set -euo pipefail
           gh run download 41274189435 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/native"
           gh run download 41298025251 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/steered"
-          gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-B --dir "$RUNNER_TEMP/source"
+          gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name "curious-mechanics-causal-revision-$VARIANT" --dir "$RUNNER_TEMP/source"
           gh run download 41424164628 --repo "$GITHUB_REPOSITORY" --name studio-org-driver-action-native-complete --dir "$RUNNER_TEMP/driver"
       - name: Replace only the five steered shards
         run: |
@@ -46,18 +51,20 @@ jobs:
       - name: Assemble narration-matched edit and run full QA
         env:
           GITHUB_ACTIONS: 'true'
+          VARIANT: ${{ matrix.variant }}
         run: |
           PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_driver_cut.py \
             --native "$RUNNER_TEMP/native" \
-            --source "$RUNNER_TEMP/source/B" \
+            --source "$RUNNER_TEMP/source/$VARIANT" \
             --driver "$RUNNER_TEMP/driver" \
-            --out "$RUNNER_TEMP/out"
+            --out "$RUNNER_TEMP/out" \
+            --variant "$VARIANT"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: studio-org-driver-cut-B
+          name: studio-org-driver-cut-${{ matrix.variant }}
           path: |
-            ${{ runner.temp }}/out/curious-mechanics-B-driver-cut.mp4
+            ${{ runner.temp }}/out/curious-mechanics-${{ matrix.variant }}-driver-cut.mp4
             ${{ runner.temp }}/out/film-validation.json
             ${{ runner.temp }}/out/edit-receipt.json
             ${{ runner.temp }}/out/semantic-results.json

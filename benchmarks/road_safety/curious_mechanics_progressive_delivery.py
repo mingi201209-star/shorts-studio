@@ -15,7 +15,7 @@ from benchmarks.road_safety import curious_mechanics_fast_batch as fast
 from benchmarks.road_safety import episode2_film as film
 from shorts_studio.factory import curious_mechanics_timeline as timeline
 from shorts_studio.factory.curious_mechanics_native_qa import verify
-from shorts_studio.studio_org.driver_cut import INSERTS, frame_map, write_receipt
+from shorts_studio.studio_org.driver_cut import frame_map, inserts_for, write_receipt
 from shorts_studio.studio_org.driver_review import inspect_pilot
 from shorts_studio.visual_qa import ClipSemanticVisionProvider
 
@@ -102,13 +102,13 @@ def assemble(root, source, variant, out, driver=None):
     driver_integrity = None
     native_inputs = [clip for _, clip, _, _, _ in selected]
     if driver is not None:
-        assert variant == 'B', 'driver edit is independently timed for B only'
         driver_integrity = inspect_pilot(
             driver, delivery.ROOT/'benchmarks/road_safety/render_driver_insert.py')
         write_receipt(out/'edit-receipt.json',
+                      variant=variant,
                       pilot_proof=driver/'driver-pilot.json',
                       native_manifest=manifest)
-        replacements = frame_map()
+        replacements = frame_map(variant)
         frame_sources = {}
         for proof, _, _, _, folder in selected:
             for n in proof['frame_numbers']:
@@ -149,7 +149,7 @@ def assemble(root, source, variant, out, driver=None):
     hidden_intervals = (
         [
             ((insert['destination_start'] - 1) / 30, insert['destination_end'] / 30)
-            for insert in INSERTS
+            for insert in inserts_for(variant)
         ]
         if driver
         else ()
@@ -187,11 +187,17 @@ def assemble(root, source, variant, out, driver=None):
     human_meaning = []
     if driver is not None:
         provider = ClipSemanticVisionProvider()
+        semantic_timestamps = {
+            'A': (23.1, 28.9),
+            'B': (22.8, 29.0),
+            'C': (22.3, 28.4),
+        }
+        reaction_timestamp, control_timestamp = semantic_timestamps[variant]
         checks = [
-            ('driver_notices_warning', 22.8,
+            ('driver_notices_warning', reaction_timestamp,
              ['a surprised driver inside a car',
               'a human face reacting to a warning']),
-            ('driver_turns_wheel', 29.0,
+            ('driver_turns_wheel', control_timestamp,
              ['a driver holding and turning a steering wheel',
               'human hands controlling a steering wheel']),
         ]
@@ -231,8 +237,8 @@ def assemble(root, source, variant, out, driver=None):
                     timeline_sha256=s[0]['timeline_source_sha256']) for s in selected],
                 original_video_qa=viewer,semantic_visual_qa=meaning,
                 human_semantic_visual_qa=human_meaning,
-                original_native_frames_reused=817 if driver else 900,
-                driver_native_frames_reused=83 if driver else 0,
+                original_native_frames_reused=900-len(frame_map(variant)) if driver else 900,
+                driver_native_frames_reused=len(frame_map(variant)) if driver else 0,
                 driver_integrity=driver_integrity,
                 edit_receipt_sha256=digest(out/'edit-receipt.json') if driver else None,
                 silence_seconds=gaps,loudness=levels,editorial_status='HOLD_ACTUAL_REVIEW',

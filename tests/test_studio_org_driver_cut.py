@@ -2,10 +2,50 @@ import json
 
 from shorts_studio.studio_org.driver_cut import (
     INSERTS,
+    INSERTS_BY_VARIANT,
     frame_map,
     validate_direction,
     write_receipt,
 )
+
+EXPECTED = {
+    "A": (set(range(665, 715)) | set(range(853, 878)), 75),
+    "B": (set(range(659, 709)) | set(range(853, 886)), 83),
+    "C": (set(range(642, 692)) | set(range(835, 868)), 83),
+}
+
+
+def test_each_variant_has_an_independently_timed_unique_plan():
+    assert set(INSERTS_BY_VARIANT) == set("ABC")
+    for variant, (destinations, count) in EXPECTED.items():
+        mapping = frame_map(variant)
+        assert set(mapping) == destinations
+        assert len(mapping) == count
+        assert len({row["source_frame"] for row in mapping.values()}) == count
+        assert len(set(range(1, 901)) - set(mapping)) == 900 - count
+
+
+def test_a_and_c_reaction_peak_lands_inside_their_own_narration_cue():
+    for variant in ("A", "C"):
+        insert = INSERTS_BY_VARIANT[variant][0]
+        peak_start = (insert["destination_start"] - 1) / 30 + 0.67
+        peak_end = (insert["destination_start"] - 1) / 30 + 1.07
+        assert insert["cue_start"] <= peak_start
+        assert peak_end <= insert["cue_end"]
+
+
+def test_a_and_c_steering_motion_overlaps_their_own_steer_cue():
+    for variant in ("A", "C"):
+        insert = INSERTS_BY_VARIANT[variant][1]
+        clip_start = (insert["destination_start"] - 1) / 30
+        clip_end = insert["destination_end"] / 30
+        assert clip_start <= insert["cue_end"]
+        assert clip_end >= insert["cue_start"]
+
+
+def test_each_variant_leaves_exterior_lane_return_result_after_control_insert():
+    for variant in "ABC":
+        assert INSERTS_BY_VARIANT[variant][1]["destination_end"] < 900
 
 
 def test_driver_cut_reuses_exactly_83_unique_native_frames():
@@ -55,3 +95,18 @@ def test_driver_cut_receipt_is_valid_json(tmp_path):
     expected = write_receipt(receipt, pilot_proof=pilot, native_manifest=manifest)
 
     assert json.loads(receipt.read_text()) == json.loads(json.dumps(expected))
+
+
+def test_variant_specific_receipt_counts(tmp_path):
+    pilot = tmp_path / "pilot.json"
+    manifest = tmp_path / "manifest.json"
+    pilot.write_text("{}\n")
+    manifest.write_text("{}\n")
+    for variant, (_, count) in EXPECTED.items():
+        receipt = tmp_path / f"receipt-{variant}.json"
+        actual = write_receipt(
+            receipt, variant=variant, pilot_proof=pilot, native_manifest=manifest
+        )
+        assert actual["variant"] == variant
+        assert actual["driver_native_frames_reused"] == count
+        assert actual["original_native_frames_reused"] == 900 - count
