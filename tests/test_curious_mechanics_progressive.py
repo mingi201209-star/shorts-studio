@@ -1,7 +1,12 @@
 import pytest
-from shorts_studio.factory.curious_mechanics_timeline import load_episode, progressive_cuts
+
 from benchmarks.road_safety.curious_mechanics_select_preview_frames import (
     critical_preview_frames,
+)
+from shorts_studio.factory.curious_mechanics_timeline import (
+    load_episode,
+    progressive_cuts,
+    rumble_displacement,
 )
 
 
@@ -38,7 +43,7 @@ def test_progressive_cuts_rejects_a_role_mapped_to_an_unknown_base_style():
         progressive_cuts([900], roles=[['invented_role', 'not_a_real_style']])
 
 
-def test_curious_mechanics_b_manifest_resolves_eight_distinct_roles_to_real_base_styles():
+def test_curious_mechanics_b_manifest_resolves_nine_distinct_roles_to_real_base_styles():
     # 'rumble_mechanism_return' (720-767) exists because driver_response must
     # stay at its proven-safe 768-900/4.43s span -- extending it back to 720
     # once failed final_video_qa's visual_activity check (a real 6.0s static
@@ -49,13 +54,21 @@ def test_curious_mechanics_b_manifest_resolves_eight_distinct_roles_to_real_base
     episode = load_episode('examples/experiments/curious-mechanics-progressive-B.json')
     roles = ['_'.join(s['id'].split('_')[2:]) for s in episode['shots']]
     assert roles == [
-        'hook_warning', 'shoulder_location', 'road_cut', 'tire_contact',
+        'hook_warning', 'shoulder_location', 'road_cut_top', 'road_cut_side',
+        'tire_contact',
         'rumble_mechanism_wide', 'rumble_mechanism_close',
         'rumble_mechanism_return', 'driver_response',
     ]
     assert len(roles) == len(set(roles))
-    assert [s['start'] for s in episode['shots']] == [1, 51, 136, 311, 461, 607, 720, 768]
-    assert [s['end'] for s in episode['shots']] == [50, 135, 310, 460, 606, 719, 767, 900]
+    assert [s['start'] for s in episode['shots']] == [1, 51, 136, 219, 311, 461, 607, 720, 768]
+    assert [s['end'] for s in episode['shots']] == [50, 135, 218, 310, 460, 606, 719, 767, 900]
+
+
+def test_progressive_rumble_motion_is_visible_but_stays_bounded():
+    amplitudes = [abs(rumble_displacement(frame)) for frame in range(461, 720)]
+    assert max(amplitudes) > .02
+    assert max(amplitudes) < .03
+
 
 
 def test_curious_mechanics_a_and_c_manifests_are_unaffected_by_the_b_extension():

@@ -82,6 +82,13 @@ def camera_layout(shot):
     # more absolute distance per frame than its native 5s-shot scale was fit
     # for, so it needs a wider fixed frame to keep the wheel from clipping out.
     if shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='hook_warning': layout['scale']=3.2
+    # Make B's spoken “From above” then “from the side” literal: both fixed
+    # cameras use the same real road/tire geometry, first showing the groove
+    # stripe overhead and then the recessed section face from a low side view.
+    if shot['id'].endswith('road_cut_top'):
+        layout.update(offset=(1.4, -.8, 8.5), scale=2.8, target_z=-.10)
+    elif shot['id'].endswith('road_cut_side'):
+        layout.update(offset=(1.0, -7.5, .65), scale=2.4, target_z=-.10)
     # A long wide-location shot needs a wider fixed frame to retain the actual
     # moving wheel throughout; never track the camera or reframe on shard
     # boundaries. The 'rumble_mechanism_close' sub-beat deliberately keeps the
@@ -95,7 +102,18 @@ def camera_layout(shot):
         layout['scale']=7.6
     return layout
 def detail_stage(ident): return original.detail_stage(_STYLE[ident])
-def detail_visibility(ident): return original.detail_visibility(_STYLE[ident])
+def detail_visibility(ident):
+    visibility=original.detail_visibility(_STYLE[ident])
+    if ident.endswith('road_cut_top'):
+        # The overhead claim needs the actual milled top surface, not the
+        # exposed section bank used by the following side-view explanation.
+        return {
+            'body_visible': False,
+            'near_shoulder_visible': True,
+            'exposed_bank_visible': False,
+            'section_face_visible': False,
+        }
+    return visibility
 def _smooth(t):
     t=max(0.,min(1.,t));return t*t*(3-2*t)
 def travel_x(frame):
@@ -110,5 +128,8 @@ def lane_return_heading(frame):
 def rumble_displacement(frame):
     # Explanatory kinematics, suppressed while the wheel is in the smooth lane.
     overlap=max(0.,min(1.,(.30-lane_return_offset(frame))/.20))
-    return overlap*.008*math.sin(travel_x(frame)/.34*math.tau)
+    # 8 mm disappeared at phone scale. The film already discloses exaggerated
+    # schematic motion; 24 mm keeps tyre contact fixed while making the
+    # sprung-body/suspension response legible.
+    return overlap*.024*math.sin(travel_x(frame)/.34*math.tau)
 
