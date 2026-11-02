@@ -15,7 +15,7 @@ from benchmarks.road_safety import curious_mechanics_fast_batch as fast
 from benchmarks.road_safety import episode2_film as film
 from shorts_studio.factory import curious_mechanics_timeline as timeline
 from shorts_studio.factory.curious_mechanics_native_qa import verify
-from shorts_studio.studio_org.driver_cut import frame_map, write_receipt
+from shorts_studio.studio_org.driver_cut import INSERTS, frame_map, write_receipt
 from shorts_studio.studio_org.driver_review import inspect_pilot
 from shorts_studio.visual_qa import ClipSemanticVisionProvider
 
@@ -144,8 +144,23 @@ def assemble(root, source, variant, out, driver=None):
                   if x and not x.startswith('#')]
         assert actual == edited_rgb, 'Edited lossless/native pixel mismatch'
         native_inputs = [edited_lossless]
-    # Keep the existing labelled diagram, but hide it over the new body interval.
-    diagram = fast.schematic(variant, out, audio['beats'], source_episode=episode)
+    # The person and their hands are the explanation in these inserts.  Do not
+    # turn them back into a presentation slide by covering them with a diagram.
+    hidden_intervals = (
+        [
+            ((insert['destination_start'] - 1) / 30, insert['destination_end'] / 30)
+            for insert in INSERTS
+        ]
+        if driver
+        else ()
+    )
+    diagram = fast.schematic(
+        variant,
+        out,
+        audio['beats'],
+        source_episode=episode,
+        hidden_intervals=hidden_intervals,
+    )
     concat = out/'concat.txt'
     concat.write_text(''.join("file '"+str(clip.resolve())+"'\n" for clip in native_inputs))
     final = out/(f'curious-mechanics-{variant}-driver-cut.mp4' if driver else

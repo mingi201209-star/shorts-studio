@@ -2,6 +2,7 @@
 
 This module plans edits only.  It never renders or encodes on the VPS.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -59,12 +60,12 @@ def frame_map() -> dict[int, dict]:
 def validate_direction() -> dict:
     """Record the coordinate audit that makes the hflip mandatory.
 
-The car travels in +x and the final correction increases +y, so its heading
-is positive.  The front-facing pilot renders a negative wheel rotation; from
-the driver's opposite viewing side that reads as the opposite turn.  A
-horizontal flip reverses the visible turn without repeating or holding frames.
-This is an editorial direction check, not a calibrated steering model.
-"""
+    The car travels in +x and the final correction increases +y, so its heading
+    is positive.  The front-facing pilot renders a negative wheel rotation; from
+    the driver's opposite viewing side that reads as the opposite turn.  A
+    horizontal flip reverses the visible turn without repeating or holding frames.
+    This is an editorial direction check, not a calibrated steering model.
+    """
     control = INSERTS[1]
     assert control["transform"] == "hflip"
     return {
@@ -97,5 +98,5 @@ def write_receipt(path: Path, *, pilot_proof: Path, native_manifest: Path) -> di
         "human_first_view": "UNVERIFIED",
         "upload_authorized": False,
     }
-    path.write_text(json.dumps(receipt, indent=2) + "\\n")
+    path.write_text(json.dumps(receipt, indent=2) + "\n")
     return receipt
