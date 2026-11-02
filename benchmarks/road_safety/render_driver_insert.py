@@ -23,7 +23,10 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", type=Path, required=True)
+    parser.add_argument("--start", type=int, default=1)
+    parser.add_argument("--end", type=int, default=90)
     args = parser.parse_args(sys.argv[sys.argv.index("--") + 1:])
+    assert 1 <= args.start <= args.end <= 90
     args.out.mkdir(parents=True, exist_ok=False)
     bpy.ops.object.select_all(action="SELECT")
     bpy.ops.object.delete(use_global=False)
@@ -155,7 +158,7 @@ def main():
     scene.render.image_settings.file_format = "PNG"
     scene.view_settings.view_transform = "AgX"
     poses = []
-    for frame in range(1, 91):
+    for frame in range(args.start, args.end + 1):
         t = (frame - 1) / 30
         notice = max(0, min(1, (t - .65) / .40))
         turn = max(0, min(1, (t - 1.65) / .75))
@@ -183,13 +186,15 @@ def main():
     bpy.ops.wm.save_as_mainfile(filepath=str(args.out / "driver-pilot.blend"))
     hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
               for p in sorted(args.out.glob("*.png"))}
-    assert len(hashes) == 90 and len(set(hashes.values())) == 90
+    count = args.end - args.start + 1
+    assert len(hashes) == count and len(set(hashes.values())) == count
     receipt = {"status": "RENDERED_REVIEW_REQUIRED", "is_final": False,
                "silent": True, "narration_alignment": "NOT_YET_APPLIED",
                "human_review": "UNVERIFIED", "editorial_status": "REVIEW_REQUIRED",
                "renderer_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                "blender": bpy.app.version_string, "samples": 32,
-               "resolution": [1080, 1920], "fps": 30, "frame_count": 90,
+               "resolution": [1080, 1920], "fps": 30, "frame_count": count,
+               "frame_numbers": list(range(args.start, args.end + 1)),
                "geometry_source": "procedural authoring in this script",
                "poses": poses, "png_sha256": hashes}
     (args.out / "driver-pilot.json").write_text(json.dumps(receipt, indent=2) + "\n")

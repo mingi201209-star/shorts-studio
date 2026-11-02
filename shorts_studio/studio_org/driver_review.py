@@ -24,6 +24,20 @@ def inspect_pilot(root: Path, renderer: Path) -> dict:
         32, [1080, 1920], 30, 90)
     assert proof["is_final"] is False and proof["narration_alignment"] == "NOT_YET_APPLIED"
     assert set(proof["png_sha256"]) == {f"{n:04d}.png" for n in range(1, 91)}
+    if "generation_by_frame" in proof:
+        repo = Path(__file__).resolve().parents[2]
+        inventory_path = repo / "examples/experiments/curious-driver-pilot-preserved-41416805484.json"
+        inventory = json.loads(inventory_path.read_text())
+        snapshot = repo / "benchmarks/road_safety/renderer_snapshots/render_driver_insert_055db61.py"
+        assert digest(snapshot) == inventory["renderer_sha256"]
+        assert proof["preserved_inventory_sha256"] == digest(inventory_path)
+        assert set(proof["generation_by_frame"]) == set(proof["png_sha256"])
+        for name, source_sha in proof["generation_by_frame"].items():
+            if name in inventory["png_sha256"]:
+                assert proof["png_sha256"][name] == inventory["png_sha256"][name]
+                assert source_sha == digest(snapshot)
+            else:
+                assert source_sha == digest(renderer)
     pixels = []
     for name, sha in sorted(proof["png_sha256"].items()):
         path = root / name
