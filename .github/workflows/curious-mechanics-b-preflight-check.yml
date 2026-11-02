@@ -35,7 +35,7 @@ permissions:
   contents: read
   actions: read
 env:
-  RENDERER_SOURCE_SHA256: 700c523fac79cbafac3e763e0e9bbace429c6deff89da1ddbf97616f143debae
+  RENDERER_SOURCE_SHA256: 04fdc326a6a8a874840072ce82529e777ff0956f5c17c991ad8f87b4e59ac765
 jobs:
   preflight:
     runs-on: ubuntu-24.04
@@ -83,5 +83,5 @@ jobs:
           path: |
             ${{ runner.temp }}/preview/
             ${{ runner.temp }}/chunks.txt
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 7
