@@ -3,17 +3,21 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import shutil
 import sys
+from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from PIL import Image
-from benchmarks.road_safety import episode2_film as film
+
 from benchmarks.road_safety import curious_mechanics_delivery as delivery
 from benchmarks.road_safety import curious_mechanics_fast_batch as fast
+from benchmarks.road_safety import episode2_film as film
 from shorts_studio.factory import curious_mechanics_timeline as timeline
 from shorts_studio.factory.curious_mechanics_native_qa import verify
+from shorts_studio.studio_org.driver_cut import frame_map, write_receipt
+from shorts_studio.studio_org.driver_review import inspect_pilot
+from shorts_studio.visual_qa import ClipSemanticVisionProvider
 
 
 def digest(path):
@@ -43,7 +47,7 @@ def renderer_for(renderer_source_sha256):
     raise ValueError('unrecognized renderer_source_sha256; refuse to mix an unaudited renderer generation')
 
 
-def assemble(root, source, variant, out):
+def assemble(root, source, variant, out, driver=None):
     assert os.environ.get('GITHUB_ACTIONS') == 'true', 'GitHub-only encoding'
     out.mkdir(parents=True, exist_ok=False)
     # One newly rendered 900-frame asset bed is shared by the three editorial
@@ -74,13 +78,13 @@ def assemble(root, source, variant, out):
             with Image.open(folder/f'frame_{n:04d}.png') as im:
                 expected.append(hashlib.md5(im.convert('RGB').tobytes()).hexdigest())
         assert actual == expected, 'Lossless/native pixel mismatch'
-        selected.append((proof, clip, expected, qa))
+        selected.append((proof, clip, expected, qa, folder))
     selected.sort(key=lambda s:s[0]['first_frame'])
     film.validate_shard_layout([x[0] for x in selected])
     pixels = [h for s in selected for h in s[2]]
     assert len(pixels) == len(set(pixels)) == 900
     cameras = {}
-    for proof, _, _, _ in selected:
+    for proof, _, _, _, _ in selected:
         for name, camera in proof['camera_by_shot'].items():
             assert name not in cameras or cameras[name] == camera, 'Camera reset between shards'
             cameras[name] = camera
@@ -95,11 +99,57 @@ def assemble(root, source, variant, out):
     assert digest(source/'audio/narration.wav') == audio['narration_sha256'] == json.loads(audio_manifest.read_text())['measured_audio_sha256']
     for name in ['film.ass','narration.wav','audio-validation.json']:
         shutil.copyfile(source/'audio'/name,out/name)
+    driver_integrity = None
+    native_inputs = [clip for _, clip, _, _, _ in selected]
+    if driver is not None:
+        assert variant == 'B', 'driver edit is independently timed for B only'
+        driver_integrity = inspect_pilot(
+            driver, delivery.ROOT/'benchmarks/road_safety/render_driver_insert.py')
+        write_receipt(out/'edit-receipt.json',
+                      pilot_proof=driver/'driver-pilot.json',
+                      native_manifest=manifest)
+        replacements = frame_map()
+        frame_sources = {}
+        for proof, _, _, _, folder in selected:
+            for n in proof['frame_numbers']:
+                frame_sources[n] = folder/f'frame_{n:04d}.png'
+        assert set(frame_sources) == set(range(1, 901))
+        edited = out/'edited-native'
+        edited.mkdir()
+        edited_rgb = []
+        for n in range(1, 901):
+            destination = edited/f'{n:04d}.png'
+            replacement = replacements.get(n)
+            if replacement:
+                source_frame = driver/f'{replacement["source_frame"]:04d}.png'
+                with Image.open(source_frame) as image:
+                    rgb = image.convert('RGB')
+                    if replacement['transform'] == 'hflip':
+                        rgb = rgb.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+                    else:
+                        assert replacement['transform'] == 'identity'
+                    rgb.save(destination)
+            else:
+                shutil.copyfile(frame_sources[n], destination)
+                with Image.open(destination) as image:
+                    rgb = image.convert('RGB')
+            edited_rgb.append(hashlib.md5(rgb.tobytes()).hexdigest())
+        assert len(edited_rgb) == len(set(edited_rgb)) == 900
+        edited_lossless = out/'driver-cut-native.mkv'
+        film.run(['ffmpeg','-v','error','-framerate','30','-i',edited/'%04d.png',
+                  '-frames:v','900','-c:v','ffv1','-level','3',edited_lossless])
+        decoded = film.run(['ffmpeg','-v','error','-i',edited_lossless,
+                            '-pix_fmt','rgb24','-f','framemd5','-']).stdout
+        actual = [x.split(',')[-1].strip() for x in decoded.splitlines()
+                  if x and not x.startswith('#')]
+        assert actual == edited_rgb, 'Edited lossless/native pixel mismatch'
+        native_inputs = [edited_lossless]
     # Keep the existing labelled diagram, but hide it over the new body interval.
     diagram = fast.schematic(variant, out, audio['beats'], source_episode=episode)
     concat = out/'concat.txt'
-    concat.write_text(''.join("file '"+str(clip.resolve())+"'\n" for _,clip,_,_ in selected))
-    final = out/f'curious-mechanics-{variant}-progressive-v3.mp4'
+    concat.write_text(''.join("file '"+str(clip.resolve())+"'\n" for clip in native_inputs))
+    final = out/(f'curious-mechanics-{variant}-driver-cut.mp4' if driver else
+                f'curious-mechanics-{variant}-progressive-v3.mp4')
     film.run(['ffmpeg','-v','error','-f','concat','-safe','0','-i',concat,'-i',out/'narration.wav',
               '-vf',f'ass={diagram},'+film.caption_filter(out),'-map','0:v:0','-map','1:a:0',
               '-c:v','libx264','-preset','fast','-crf','17','-pix_fmt','yuv420p',
@@ -119,6 +169,35 @@ def assemble(root, source, variant, out):
     levels=film.check_loudness(film.loudness(final))
     viewer=film.original_video_qa(final,out,audio['cues'])
     meaning=delivery.semantic(final,out,episode,audio)
+    human_meaning = []
+    if driver is not None:
+        provider = ClipSemanticVisionProvider()
+        checks = [
+            ('driver_notices_warning', 22.8,
+             ['a surprised driver inside a car',
+              'a human face reacting to a warning']),
+            ('driver_turns_wheel', 29.0,
+             ['a driver holding and turning a steering wheel',
+              'human hands controlling a steering wheel']),
+        ]
+        negatives = ['an empty road with no person',
+                     'a car exterior with no visible driver',
+                     'a landscape without a human']
+        for role, timestamp, positives in checks:
+            path = out/f'human-semantic-{role}.png'
+            film.run(['ffmpeg','-v','error','-y','-ss',timestamp,'-i',final,
+                      '-frames:v','1',path])
+            with Image.open(path) as image:
+                image.convert('RGB').crop((0,0,1080,1400)).save(path)
+            verdict = provider.evaluate(
+                str(path), [f'narration visibly depicts {role}'],
+                positive_labels=positives, negative_labels=negatives,
+                media_box_applied=True)
+            human_meaning.append(dict(role=role,timestamp=timestamp,**verdict))
+        (out/'human-semantic-results.json').write_text(
+            json.dumps(human_meaning,indent=2)+'\n')
+        assert all(row['status']=='PASS' for row in human_meaning), (
+            'HUMAN_SEMANTIC_VISUAL_QA', human_meaning)
     report=dict(technical_status='PASS',sha256=digest(final),source_frames_verified=900,
                 frames=900,seconds=30,resolution=[1080,1920],cycles_samples=32,
                 native_roles=roles,native_role_returns=0,shots=episode['shots'],
@@ -136,6 +215,11 @@ def assemble(root, source, variant, out):
                     clip_sha256=digest(s[1]),renderer_sha256=s[0]['renderer_source_sha256'],
                     timeline_sha256=s[0]['timeline_source_sha256']) for s in selected],
                 original_video_qa=viewer,semantic_visual_qa=meaning,
+                human_semantic_visual_qa=human_meaning,
+                original_native_frames_reused=817 if driver else 900,
+                driver_native_frames_reused=83 if driver else 0,
+                driver_integrity=driver_integrity,
+                edit_receipt_sha256=digest(out/'edit-receipt.json') if driver else None,
                 silence_seconds=gaps,loudness=levels,editorial_status='HOLD_ACTUAL_REVIEW',
                 human_first_view='UNVERIFIED',upload_authorized=False)
     (out/'film-validation.json').write_text(json.dumps(report,indent=2)+'\n')
@@ -145,5 +229,6 @@ def assemble(root, source, variant, out):
 if __name__=='__main__':
     p=argparse.ArgumentParser();p.add_argument('--native',type=Path,required=True)
     p.add_argument('--source',type=Path,required=True);p.add_argument('--variant',choices=list('ABC'),required=True)
-    p.add_argument('--out',type=Path,required=True);a=p.parse_args()
-    assemble(a.native,a.source,a.variant,a.out)
+    p.add_argument('--out',type=Path,required=True);p.add_argument('--driver',type=Path)
+    a=p.parse_args()
+    assemble(a.native,a.source,a.variant,a.out,a.driver)
