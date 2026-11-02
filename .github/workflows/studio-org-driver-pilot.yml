@@ -1,0 +1,45 @@
+name: Studio org driver action pilot
+on:
+  push:
+    branches: [fix/studio-org-integration-20261102]
+    paths:
+      - .github/workflows/studio-org-driver-pilot.yml
+      - benchmarks/road_safety/render_driver_insert.py
+permissions:
+  contents: read
+concurrency:
+  group: studio-org-driver-pilot
+  cancel-in-progress: false
+jobs:
+  driver:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install pinned Blender and ffmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg xvfb libxkbcommon0 libxi6 libxrender1 libgl1
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Render 90 consecutive native frames at production resolution and samples
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_driver_insert.py -- --out "$RUNNER_TEMP/driver" 2>&1 | tee "$RUNNER_TEMP/driver-render.log"
+      - name: Encode lossless and review clips on the standard runner
+        run: |
+          set -euo pipefail
+          ffmpeg -v error -framerate 30 -i "$RUNNER_TEMP/driver/%04d.png" -frames:v 90 -c:v ffv1 -level 3 "$RUNNER_TEMP/driver/driver-lossless.mkv"
+          ffmpeg -v error -i "$RUNNER_TEMP/driver/driver-lossless.mkv" -c:v libx264 -crf 17 -pix_fmt yuv420p "$RUNNER_TEMP/driver/driver-review.mp4"
+          ffmpeg -v error -i "$RUNNER_TEMP/driver/driver-review.mp4" -f null -
+          ffprobe -v error -count_frames -select_streams v:0 -show_entries stream=width,height,r_frame_rate,nb_read_frames -of json "$RUNNER_TEMP/driver/driver-review.mp4" > "$RUNNER_TEMP/driver/ffprobe.json"
+          sha256sum "$RUNNER_TEMP/driver/driver-review.mp4" "$RUNNER_TEMP/driver/driver-lossless.mkv" > "$RUNNER_TEMP/driver/clip-sha256.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: studio-org-driver-action-pilot
+          path: |
+            ${{ runner.temp }}/driver/
+            ${{ runner.temp }}/driver-render.log
+          retention-days: 14
