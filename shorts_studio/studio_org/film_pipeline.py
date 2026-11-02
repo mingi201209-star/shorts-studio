@@ -72,8 +72,9 @@ def main():
     parser = argparse.ArgumentParser()
     for name in ('native', 'source', 'out', 'ledger'):
         parser.add_argument('--' + name, type=Path, required=True)
+    parser.add_argument('--variant', choices=['B'], default='B')
     args = parser.parse_args()
-    result = finish_film(args.native, args.source, args.out, TaskLedger(args.ledger))
+    result = finish_film(args.native, args.source, args.out, TaskLedger(args.ledger), args.variant)
     print('STUDIO_ORG_REAL_FILM ' + json.dumps(result), flush=True)
 
 
