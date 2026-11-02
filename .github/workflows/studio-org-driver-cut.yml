@@ -18,15 +18,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: [A, B, C]
+        include:
+          - variant: A
+            source_run: 41190640057
+          - variant: B
+            source_run: 41191337000
+          - variant: C
+            source_run: 41191337000
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        if: matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        if: matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')
         with:
           python-version: '3.12'
-      - run: |
+      - if: matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')
+        run: |
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg fonts-dejavu-core
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
@@ -35,13 +44,16 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           VARIANT: ${{ matrix.variant }}
+          SOURCE_RUN: ${{ matrix.source_run }}
+        if: matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')
         run: |
           set -euo pipefail
           gh run download 41274189435 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/native"
           gh run download 41298025251 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/steered"
-          gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name "curious-mechanics-causal-revision-$VARIANT" --dir "$RUNNER_TEMP/source"
+          gh run download "$SOURCE_RUN" --repo "$GITHUB_REPOSITORY" --name "curious-mechanics-causal-revision-$VARIANT" --dir "$RUNNER_TEMP/source"
           gh run download 41424164628 --repo "$GITHUB_REPOSITORY" --name studio-org-driver-action-native-complete --dir "$RUNNER_TEMP/driver"
       - name: Replace only the five steered shards
+        if: matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')
         run: |
           set -euo pipefail
           for start in 751 781 811 841 871; do
@@ -52,6 +64,7 @@ jobs:
         env:
           GITHUB_ACTIONS: 'true'
           VARIANT: ${{ matrix.variant }}
+        if: matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')
         run: |
           PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_driver_cut.py \
             --native "$RUNNER_TEMP/native" \
@@ -60,7 +73,7 @@ jobs:
             --out "$RUNNER_TEMP/out" \
             --variant "$VARIANT"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
-        if: always()
+        if: (matrix.variant == 'A' || !contains(github.event.head_commit.message, '[A-only]')) && always()
         with:
           name: studio-org-driver-cut-${{ matrix.variant }}
           path: |
