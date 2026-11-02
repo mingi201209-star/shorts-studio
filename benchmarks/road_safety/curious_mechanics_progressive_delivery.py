@@ -190,7 +190,7 @@ def assemble(root, source, variant, out, driver=None):
         semantic_timestamps = {
             'A': (23.1, 28.9),
             'B': (22.8, 29.0),
-            'C': (22.3, 28.4),
+            'C': (19.3, 28.6),
         }
         reaction_timestamp, control_timestamp = semantic_timestamps[variant]
         checks = [

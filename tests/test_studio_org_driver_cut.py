@@ -11,7 +11,7 @@ from shorts_studio.studio_org.driver_cut import (
 EXPECTED = {
     "A": (set(range(665, 715)) | set(range(853, 878)), 75),
     "B": (set(range(659, 709)) | set(range(853, 886)), 83),
-    "C": (set(range(642, 692)) | set(range(835, 868)), 83),
+    "C": (set(range(554, 604)) | set(range(844, 877)), 83),
 }
 
 
