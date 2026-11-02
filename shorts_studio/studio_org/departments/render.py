@@ -49,7 +49,7 @@ def dispatch_real_render(frame_list: list[int], request_tag: str, ref: str) -> s
     proc = subprocess.run(
         ["gh", "workflow", "run", REAL_RENDER_WORKFLOW, "--ref", ref,
          "-f", f"frame_list={csv}", "-f", f"request_tag={request_tag}"],
-        capture_output=True, text=True, timeout=60,
+        check=False, capture_output=True, text=True, timeout=60,
     )
     if proc.returncode != 0:
         raise RealRenderDispatchError(proc.stderr.strip() or proc.stdout.strip())
@@ -65,7 +65,7 @@ def wait_for_run(run_id: str, timeout_seconds: int = REAL_RENDER_TIMEOUT_SECONDS
     while True:
         proc = subprocess.run(
             ["gh", "run", "view", run_id, "--json", "status,conclusion"],
-            capture_output=True, text=True, timeout=30,
+            check=False, capture_output=True, text=True, timeout=30,
         )
         if proc.returncode != 0:
             raise RealRenderDispatchError(proc.stderr.strip())
@@ -82,7 +82,7 @@ def fetch_eval_result(run_id: str, request_tag: str) -> dict:
     artifact download (which this sandbox cannot do); job logs are plain text
     and always reachable."""
     proc = subprocess.run(["gh", "run", "view", run_id, "--log"],
-                           capture_output=True, text=True, timeout=60)
+                           check=False, capture_output=True, text=True, timeout=60)
     if proc.returncode != 0:
         raise RealRenderDispatchError(proc.stderr.strip())
     marker = f"STUDIO_ORG_EVAL_RESULT {request_tag} "
@@ -97,6 +97,10 @@ class RenderDept:
     def execute(self, task: Task, ledger: TaskLedger, *, mock: bool, ref: str | None = None) -> Task:
         if task.department != "렌더부":
             raise ValueError(f"not a render-dept task: {task.task_id}")
+        if task.is_terminal:
+            return task
+        if not mock and (not ref or not task.requirements.get("frame_list")):
+            raise ValueError("real render requires ref and requirements['frame_list']")
         ledger.update(task.task_id, status="running")
         if mock:
             output = {
@@ -106,7 +110,14 @@ class RenderDept:
                 "renderer": MOCK_RENDERER_TAG,
             }
             return ledger.update(task.task_id, status="completed", output=output, is_mock=True)
-        return self._execute_real(task, ledger, ref)
+        try:
+            return self._execute_real(task, ledger, ref)
+        except Exception as exc:
+            # Timeout/transport errors do not prove the remote render stopped.
+            # Keep the run reference and block retries pending reconciliation.
+            ledger.update(task.task_id, status="blocked",
+                          failure_reason=f"remote state requires reconciliation: {exc}")
+            raise
 
     def _execute_real(self, task: Task, ledger: TaskLedger, ref: str | None) -> Task:
         if not ref:
@@ -114,9 +125,32 @@ class RenderDept:
         frame_list = task.requirements.get("frame_list")
         if not frame_list:
             raise ValueError("real render requires requirements['frame_list']")
-        run_id = dispatch_real_render(frame_list, task.task_id, ref)
+        previous = task.output or {}
+        run_id = previous.get("github_run_id")
+        if not run_id:
+            if previous.get("dispatch_requested"):
+                raise RealRenderDispatchError(
+                    "previous dispatch outcome unknown; locate its run before resubmitting")
+            ledger.update(task.task_id, output={
+                "is_mock": False, "dispatch_requested": True, "ref": ref,
+                "request_tag": task.task_id, "preview_only": True,
+            })
+            run_id = dispatch_real_render(frame_list, task.task_id, ref)
+            ledger.update(task.task_id, output={
+                **task.output, "github_run_id": run_id,
+            })
         state = wait_for_run(run_id)
+        if state["conclusion"] != "success":
+            return ledger.update(
+                task.task_id, status="failed",
+                output={**task.output, "workflow_conclusion": state["conclusion"]},
+                failure_reason=f"GitHub render concluded {state['conclusion']}")
         eval_result = fetch_eval_result(run_id, task.task_id)
+        if not eval_result.get("ok"):
+            return ledger.update(
+                task.task_id, status="failed",
+                output={**task.output, "real_technical_qa": eval_result},
+                failure_reason="render technical QA did not pass")
         output = {
             "is_mock": False,
             "github_run_id": run_id,
