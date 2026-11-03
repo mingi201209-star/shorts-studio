@@ -10,6 +10,7 @@ on:
     branches: [fix/studio-org-integration-20261102]
     paths:
       - ".github/workflows/studio-org-panel-free-reverify.yml"
+      - "benchmarks/road_safety/curious_mechanics_delivery.py"
       - "benchmarks/road_safety/curious_mechanics_progressive_delivery.py"
       - "benchmarks/road_safety/assemble_driver_cut.py"
       - "shorts_studio/studio_org/driver_cut.py"

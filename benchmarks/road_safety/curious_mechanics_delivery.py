@@ -27,10 +27,10 @@ def validate_layout(shards,canonical,variant,source_overrides=None):
     return ordered
 ROLE_SEMANTIC_OVERRIDES={
     'B_02_road_cut_top':{
-        'requirements':['High-angle overhead view reveals a black tire crossing real parallel grooves cut into the asphalt'],
+        'requirements':['Overhead view reveals a gray tire crossing rectangular grooves recessed into a gray road'],
         'positive_labels':[
-            'a car tire crossing black parallel grooves in gray pavement',
-            'a top down view of a car wheel over a rumble strip',
+            'an overhead view of a gray tire crossing rectangular grooves in a road',
+            'a top down gray wheel over recessed rumble strip grooves',
         ],
     },
 }

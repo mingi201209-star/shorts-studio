@@ -74,6 +74,9 @@ def test_top_and_side_road_cut_use_truthful_distinct_semantic_evidence():
         'B_03_road_cut_side', 'road_cut', reference)
 
     assert any('overhead' in label or 'top down' in label for label in top_labels)
+    assert all('black' not in label for label in top_labels)
+    assert all('gray' in label for label in top_labels)
+    assert all('groove' in label for label in top_labels)
     assert all('cross section' not in label for label in top_labels)
     assert top_requirements != side_requirements
     assert top_labels != side_labels
