@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pytest
-from benchmarks.road_safety.curious_mechanics_delivery import validate_layout,LEGACY
+from benchmarks.road_safety.curious_mechanics_delivery import validate_layout,LEGACY,semantic_evidence
 from shorts_studio.factory import curious_mechanics_timeline as timeline
 
 def spans():
@@ -64,3 +64,18 @@ def test_semantic_style_fallback_matches_old_behavior_for_unsplit_roles():
     timeline._STYLE.clear()
     assert _semantic_style('A_00_hook_warning') == 'hook_warning'
     assert _semantic_style('B_03_driver_response') == 'driver_response'
+
+def test_top_and_side_road_cut_use_truthful_distinct_semantic_evidence():
+    base = timeline.original.load_episode(Path('examples/factory/rumble-episode2-30s.json'))
+    reference = next(shot for shot in base['shots'] if shot['id'] == 'road_cut')
+    top_requirements, top_labels = semantic_evidence(
+        'B_02_road_cut_top', 'road_cut', reference)
+    side_requirements, side_labels = semantic_evidence(
+        'B_03_road_cut_side', 'road_cut', reference)
+
+    assert any('overhead' in label or 'top down' in label for label in top_labels)
+    assert all('cross section' not in label for label in top_labels)
+    assert top_requirements != side_requirements
+    assert top_labels != side_labels
+    assert side_requirements == reference['visual_proof']
+    assert side_labels == list(timeline.original.semantic_labels('road_cut'))
