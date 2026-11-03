@@ -1,0 +1,94 @@
+name: Studio org panel-free A/B/C reverify
+
+# Editing-department pass: reuse the already rendered literal 900-frame bed
+# and verified driver action, remove the presentation-style mechanism panel,
+# preserve measured narration/captions, and run unchanged final QA.
+# Public standard GitHub runners only. No Blender render, VPS, paid runner,
+# merge, publication, voice change, or quality-threshold change.
+on:
+  push:
+    branches: [fix/studio-org-integration-20261102]
+    paths:
+      - ".github/workflows/studio-org-panel-free-reverify.yml"
+      - "benchmarks/road_safety/curious_mechanics_progressive_delivery.py"
+      - "benchmarks/road_safety/assemble_driver_cut.py"
+      - "shorts_studio/studio_org/driver_cut.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: studio-org-panel-free-reverify
+  cancel-in-progress: false
+
+jobs:
+  reverify:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: A
+            source_run: 41190640057
+          - variant: B
+            source_run: 41191337000
+          - variant: C
+            source_run: 41191337000
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Download preserved literal native bed, measured audio, and driver action
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VARIANT: ${{ matrix.variant }}
+          SOURCE_RUN: ${{ matrix.source_run }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/source" "$RUNNER_TEMP/driver"
+          gh run download 41560673857 --repo "$GITHUB_REPOSITORY" --pattern 'studio-org-B-literal-native-*' --dir "$RUNNER_TEMP/native"
+          test "$(find "$RUNNER_TEMP/native" -name episode-proof.json | wc -l)" = 30
+          gh run download "$SOURCE_RUN" --repo "$GITHUB_REPOSITORY" --name "curious-mechanics-causal-revision-$VARIANT" --dir "$RUNNER_TEMP/source"
+          gh run download 41424164628 --repo "$GITHUB_REPOSITORY" --name studio-org-driver-action-native-complete --dir "$RUNNER_TEMP/driver"
+      - name: Install unchanged final QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
+          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Assemble panel-free narration-matched edit and run full QA
+        env:
+          GITHUB_ACTIONS: 'true'
+          VARIANT: ${{ matrix.variant }}
+        run: |
+          PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_driver_cut.py \
+            --native "$RUNNER_TEMP/native" \
+            --source "$RUNNER_TEMP/source/$VARIANT" \
+            --driver "$RUNNER_TEMP/driver" \
+            --out "$RUNNER_TEMP/out" \
+            --variant "$VARIANT"
+          python - "$RUNNER_TEMP/out/film-validation.json" <<'PY'
+          import json, sys
+          report=json.load(open(sys.argv[1]))
+          assert report['explanatory_schematic_applied'] is False
+          PY
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: studio-org-panel-free-${{ matrix.variant }}
+          path: |
+            ${{ runner.temp }}/out/curious-mechanics-${{ matrix.variant }}-driver-cut.mp4
+            ${{ runner.temp }}/out/film-validation.json
+            ${{ runner.temp }}/out/edit-receipt.json
+            ${{ runner.temp }}/out/semantic-results.json
+            ${{ runner.temp }}/out/human-semantic-results.json
+            ${{ runner.temp }}/out/review-*.jpg
+            ${{ runner.temp }}/out/semantic-*.png
+            ${{ runner.temp }}/out/human-semantic-*.png
+          if-no-files-found: error
+          retention-days: 14

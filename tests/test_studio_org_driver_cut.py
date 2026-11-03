@@ -1,5 +1,8 @@
 import json
 
+from benchmarks.road_safety.curious_mechanics_progressive_delivery import (
+    compose_editorial_filters,
+)
 from shorts_studio.studio_org.driver_cut import (
     INSERTS,
     INSERTS_BY_VARIANT,
@@ -7,6 +10,13 @@ from shorts_studio.studio_org.driver_cut import (
     validate_direction,
     write_receipt,
 )
+
+
+def test_final_driver_cut_uses_captions_without_presentation_panel():
+    assert compose_editorial_filters('ass=film.ass') == 'ass=film.ass'
+    assert compose_editorial_filters(
+        'ass=film.ass', 'mechanism.ass'
+    ) == 'ass=mechanism.ass,ass=film.ass'
 
 EXPECTED = {
     "A": (set(range(665, 715)) | set(range(853, 878)), 75),

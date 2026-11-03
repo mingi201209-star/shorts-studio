@@ -24,6 +24,21 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def compose_editorial_filters(caption_filter, diagram=None):
+    """Keep final driver cuts footage-led instead of presentation-led.
+
+    The optional diagram remains available for legacy non-driver review films,
+    but a driver-cut path must show the native 3D cause/action plus word
+    captions only. A full explanatory panel would otherwise cover the evidence
+    the narration is supposed to point at.
+    """
+    filters = []
+    if diagram is not None:
+        filters.append(f'ass={diagram}')
+    filters.append(caption_filter)
+    return ','.join(filters)
+
+
 # Two audited renderer generations of render_curious_mechanics.py coexist for
 # this native asset bed: PRE_STEER rendered the first 25 shards (frames
 # 1-750, where lane_return_heading is always 0, so their pixels are
@@ -144,29 +159,25 @@ def assemble(root, source, variant, out, driver=None):
                   if x and not x.startswith('#')]
         assert actual == edited_rgb, 'Edited lossless/native pixel mismatch'
         native_inputs = [edited_lossless]
-    # The person and their hands are the explanation in these inserts.  Do not
-    # turn them back into a presentation slide by covering them with a diagram.
-    hidden_intervals = (
-        [
-            ((insert['destination_start'] - 1) / 30, insert['destination_end'] / 30)
-            for insert in inserts_for(variant)
-        ]
-        if driver
-        else ()
-    )
-    diagram = fast.schematic(
-        variant,
-        out,
-        audio['beats'],
-        source_episode=episode,
-        hidden_intervals=hidden_intervals,
-    )
+    # Final driver cuts are footage-led: the real top/side/contact/body/driver
+    # shots must carry the explanation. The old animated panel made the film
+    # read like a slide deck and covered the actual 3D evidence. Retain it only
+    # for the legacy non-driver review path.
+    diagram = None
+    if driver is None:
+        diagram = fast.schematic(
+            variant,
+            out,
+            audio['beats'],
+            source_episode=episode,
+        )
     concat = out/'concat.txt'
     concat.write_text(''.join("file '"+str(clip.resolve())+"'\n" for clip in native_inputs))
     final = out/(f'curious-mechanics-{variant}-driver-cut.mp4' if driver else
                 f'curious-mechanics-{variant}-progressive-v3.mp4')
     film.run(['ffmpeg','-v','error','-f','concat','-safe','0','-i',concat,'-i',out/'narration.wav',
-              '-vf',f'ass={diagram},'+film.caption_filter(out),'-map','0:v:0','-map','1:a:0',
+              '-vf',compose_editorial_filters(film.caption_filter(out), diagram),
+              '-map','0:v:0','-map','1:a:0',
               '-c:v','libx264','-preset','fast','-crf','17','-pix_fmt','yuv420p',
               '-c:a','aac','-b:a','192k','-movflags','+faststart',final])
     info = film.probe(final)
@@ -241,6 +252,7 @@ def assemble(root, source, variant, out, driver=None):
                 driver_native_frames_reused=len(frame_map(variant)) if driver else 0,
                 driver_integrity=driver_integrity,
                 edit_receipt_sha256=digest(out/'edit-receipt.json') if driver else None,
+                explanatory_schematic_applied=diagram is not None,
                 silence_seconds=gaps,loudness=levels,editorial_status='HOLD_ACTUAL_REVIEW',
                 human_first_view='UNVERIFIED',upload_authorized=False)
     (out/'film-validation.json').write_text(json.dumps(report,indent=2)+'\n')
