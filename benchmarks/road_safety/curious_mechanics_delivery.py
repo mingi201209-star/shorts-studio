@@ -29,8 +29,8 @@ ROLE_SEMANTIC_OVERRIDES={
     'B_02_road_cut_top':{
         'requirements':['High-angle overhead view reveals a black tire crossing real parallel grooves cut into the asphalt'],
         'positive_labels':[
-            'an overhead view of a black car tire crossing parallel grooves cut into asphalt',
-            'a top down view of a tire above a striped band of road grooves',
+            'a car tire crossing black parallel grooves in gray pavement',
+            'a top down view of a car wheel over a rumble strip',
         ],
     },
 }
