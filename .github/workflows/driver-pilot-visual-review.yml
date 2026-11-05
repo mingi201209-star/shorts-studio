@@ -44,3 +44,12 @@ jobs:
         run: |
           set -euo pipefail
           python benchmarks/road_safety/diff_video_frames.py --video "$RUNNER_TEMP/driver/driver-review.mp4" --out "$RUNNER_TEMP/diffcheck"
+      - name: Print exact-index key frames as base64 (frame 1/21/27/40/51/73/90, no seek ambiguity)
+        run: |
+          set -euo pipefail
+          for n in 0001 0021 0027 0040 0051 0073 0090; do
+            ffmpeg -v error -y -i "$RUNNER_TEMP/diffcheck/f_$n.png" -vf scale=720:-1 -q:v 3 "$RUNNER_TEMP/exact_$n.jpg"
+            echo "FRAME_B64_START exact_$n"
+            python -c "import base64; print(base64.b64encode(open('$RUNNER_TEMP/exact_$n.jpg','rb').read()).decode())"
+            echo "FRAME_B64_END exact_$n"
+          done
