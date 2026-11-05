@@ -67,11 +67,15 @@ def audit_beats(beats: Iterable[Beat], *, root: Path) -> AuditResult:
                 findings.append(f"{prefix}: invalid SHA256")
             else:
                 digest = hashlib.sha256()
-                with candidate.open("rb") as handle:
-                    for chunk in iter(lambda: handle.read(1024 * 1024), b""):
-                        digest.update(chunk)
-                if digest.hexdigest() != beat.footage_sha256:
-                    findings.append(f"{prefix}: footage SHA256 mismatch")
+                try:
+                    with candidate.open("rb") as handle:
+                        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                            digest.update(chunk)
+                except OSError:
+                    findings.append(f"{prefix}: footage unreadable during audit")
+                else:
+                    if digest.hexdigest() != beat.footage_sha256:
+                        findings.append(f"{prefix}: footage SHA256 mismatch")
         if beat.editorial_review != "PASS":
             findings.append(f"{prefix}: editorial review not PASS")
     return AuditResult("HOLD" if findings else "EVIDENCE_COMPLETE", tuple(findings))
