@@ -39,3 +39,12 @@ Next action: wait for/check PR #98 exact-head CI, review code and integration wi
 - Small isolated quality-contract hardening: evidence path resolution / symlink-loop exceptions now fail closed to `HOLD`, rather than crash. Added regression test simulating `Path.resolve` RuntimeError. Commits `40ad76a` and `d8e1482`.
 - Exact-head workflow-run query for `d8e148261df8d9bceff561d23127ff5b5784a020` returned no runs; combined statuses empty. **CI NOT VERIFIED, not PASS**. No local test run or real video review was performed. Documentation commit will change head again.
 - Next: inspect exact latest head's terminal test CI, diagnose missing PR workflow association if still absent, review 90-frame driver visual evidence and narration alignment without changing production-owned files. Retain HOLD for visual/editorial quality. No merge/upload/payment/VPS render.
+
+## 2026-11-05 21:08 KST — manual continuation
+
+- Checked open PR #95–#99 and existing main test workflow. Both hourly automations remain enabled; production worker owns render/edit/orchestration. No production-owned files modified. STOP/lock outside the session document could not be independently verified.
+- Prior reported head `91886da` returned no PR-associated workflow runs and no combined statuses through available GitHub queries; this is **NOT CI PASS**. The workflow-run connector only returns PR-triggered first-page runs, so an empty response does not prove no Actions run exists.
+- Isolated quality-contract change only: an exception while resolving the evidence **root** now yields `HOLD` instead of crashing; regression test simulates a root symlink-loop `RuntimeError`.
+- Code commit `cb3fe1b`; test commit `927e375`. No local pytest or full suite executed; exact-head CI must be checked and remains **HOLD** until verified. This documentation update creates a new head.
+- 90-frame driver physical motion, voice/visual correspondence, and real editorial acceptance remain **HOLD**; no video frames inspected in this execution.
+- Next: inspect exact-head CI to terminal outcome, check whether workflow runs are missing due to connector filtering; then inspect PR #97 real 90-frame proof before any integration. No main merge, upload, payment or VPS render.
