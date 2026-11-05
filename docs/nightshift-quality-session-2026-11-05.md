@@ -32,3 +32,10 @@ Next action: wait for/check PR #98 exact-head CI, review code and integration wi
 - Exact-head CI for `1cff68a82f8e355e98110dfbd8e1b551102dba29` returned no workflow runs and no combined statuses at inspection. **NOT VERIFIED; do not mark PASS.** This documentation commit will create a newer head; check its CI separately.
 - No local/full-suite test execution was available through the GitHub connector. No video/editorial review performed; 90-frame physical realism and narration correspondence remain HOLD.
 - Next: inspect terminal CI for current PR #98 head; if missing, diagnose trigger/configuration. Then check actual 90-frame review evidence in PR #97 before any integration. Do not touch overlapping renderer work or weaken QA.
+
+## 2026-11-05 20:26 KST — unattended continuation
+
+- Checked repository open PRs: #95–#99 still open; main latest searchable commit remains `fcd20fd78851b18c550b1e433bee46ee34313c1d`. The other hourly worker owns render/film/department orchestration; no changes made to those paths. No STOP marker found in this session document; external worker lock/ownership status could not be independently verified via available connector.
+- Small isolated quality-contract hardening: evidence path resolution / symlink-loop exceptions now fail closed to `HOLD`, rather than crash. Added regression test simulating `Path.resolve` RuntimeError. Commits `40ad76a` and `d8e1482`.
+- Exact-head workflow-run query for `d8e148261df8d9bceff561d23127ff5b5784a020` returned no runs; combined statuses empty. **CI NOT VERIFIED, not PASS**. No local test run or real video review was performed. Documentation commit will change head again.
+- Next: inspect exact latest head's terminal test CI, diagnose missing PR workflow association if still absent, review 90-frame driver visual evidence and narration alignment without changing production-owned files. Retain HOLD for visual/editorial quality. No merge/upload/payment/VPS render.
