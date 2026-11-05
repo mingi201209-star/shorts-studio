@@ -1,16 +1,22 @@
-name: Driver cut B with idle-motion-fixed pilot (reuse approved native shards)
+name: Driver cut B with idle-motion-fixed pilot (fresh native shards)
 # Re-runs benchmarks/road_safety/assemble_driver_cut.py -- the SAME, already
 # production-proven narration-matched splice (shorts_studio/studio_org/
 # driver_cut.py's frame_map) that run 41430756777 already used successfully
 # for variant B (PROGRESSIVE_FILM_PASS B 9e467cab...) -- but with --driver
 # pointed at run 42028852096 (the idle-motion-fixed 90-frame pilot from this
-# branch) instead of the old run 41424164628. Native/source downloads are
-# the exact same already-rendered, already-approved assets studio-org-
-# driver-cut.yml and studio-org-film.yml reuse; nothing new is rendered
-# here except the Python-side splice + encode + real semantic QA.
+# branch) instead of the old run 41424164628.
+#
+# The native shards also changed: run 42033820281 proved the old native bed
+# (runs 41274189435/41298025251) is stale against the current
+# curious_mechanics_timeline.py (timeline_source_sha256 mismatch -- see that
+# run's failure). Run 42038281331 (approved re-render, this branch) produced
+# a fresh, verified 30-shard bed against the current timeline.py
+# (PROGRESSIVE_FILM_PASS B 27b1e21e...), so this workflow now downloads from
+# that run instead, with no "replace steered shards" step needed since all
+# 30 shards are already one consistent generation.
 on:
   push:
-    branches: [review/driver-pilot-visual-check-20261105]
+    branches: [native-b-rerender-20261105]
     paths:
       - .github/workflows/driver-cut-idle-motion-b.yml
 permissions:
@@ -33,22 +39,15 @@ jobs:
           sudo apt-get install -y ffmpeg fonts-dejavu-core
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
           python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
-      - name: Download already verified native sources and the idle-motion-fixed pilot
+      - name: Download the fresh verified native shards and the idle-motion-fixed pilot
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          gh run download 41274189435 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/native"
-          gh run download 41298025251 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/steered"
+          gh run download 42038281331 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 30
           gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-B --dir "$RUNNER_TEMP/source"
           gh run download 42028852096 --repo "$GITHUB_REPOSITORY" --name studio-org-driver-idle-motion-complete --dir "$RUNNER_TEMP/driver"
-      - name: Replace only the five steered shards
-        run: |
-          set -euo pipefail
-          for start in 751 781 811 841 871; do
-            find "$RUNNER_TEMP/native" -type d -name "curious-progressive-B-causal-$start" -prune -exec rm -rf {} +
-          done
-          cp -a "$RUNNER_TEMP/steered"/. "$RUNNER_TEMP/native"/
       - name: Assemble narration-matched edit and run full QA
         env:
           GITHUB_ACTIONS: 'true'
