@@ -84,3 +84,19 @@ def test_unresolvable_footage_path_holds_instead_of_crashing(tmp_path, monkeypat
     result = audit_beats([beat(b"x")], root=tmp_path)
     assert result.status == "HOLD"
     assert any("footage missing or outside evidence root" in finding for finding in result.findings)
+
+
+def test_unresolvable_evidence_root_holds_instead_of_crashing(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    original_resolve = Path.resolve
+
+    def blocked_resolve(path, *args, **kwargs):
+        if path == tmp_path:
+            raise RuntimeError("simulated root symlink loop")
+        return original_resolve(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "resolve", blocked_resolve)
+    result = audit_beats([beat(b"x")], root=tmp_path)
+    assert result.status == "HOLD"
+    assert any("evidence root cannot be resolved" in finding for finding in result.findings)
