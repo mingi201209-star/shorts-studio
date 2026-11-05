@@ -58,8 +58,12 @@ def audit_beats(beats: Iterable[Beat], *, root: Path) -> AuditResult:
         if not beat.footage_path or not beat.footage_sha256:
             findings.append(f"{prefix}: footage path or SHA256 missing")
         else:
-            candidate = (root / beat.footage_path).resolve()
-            if not candidate.is_relative_to(root) or not candidate.is_file():
+            try:
+                candidate = (root / beat.footage_path).resolve()
+                valid_candidate = candidate.is_relative_to(root) and candidate.is_file()
+            except (OSError, RuntimeError):
+                valid_candidate = False
+            if not valid_candidate:
                 findings.append(f"{prefix}: footage missing or outside evidence root")
             elif len(beat.footage_sha256) != 64 or any(
                 c not in "0123456789abcdef" for c in beat.footage_sha256
