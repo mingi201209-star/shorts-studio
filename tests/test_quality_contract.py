@@ -50,3 +50,20 @@ def test_timing_gap_holds(tmp_path):
 def test_duplicate_ids_hold(tmp_path):
     (tmp_path / "shot.mp4").write_bytes(b"x")
     assert audit_beats([beat(b"x"), beat(b"x", start=1000, end=2000)], root=tmp_path).status == "HOLD"
+
+
+def test_unreadable_footage_holds_instead_of_crashing(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    (tmp_path / "shot.mp4").write_bytes(b"x")
+    original_open = Path.open
+
+    def blocked_open(path, *args, **kwargs):
+        if path.name == "shot.mp4":
+            raise PermissionError("simulated unreadable file")
+        return original_open(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "open", blocked_open)
+    result = audit_beats([beat(b"x")], root=tmp_path)
+    assert result.status == "HOLD"
+    assert any("unreadable during audit" in finding for finding in result.findings)
