@@ -36,7 +36,10 @@ def audit_beats(beats: Iterable[Beat], *, root: Path) -> AuditResult:
     All file references must stay inside ``root``. Empty episodes fail closed.
     Editorial review must be an explicit PASS; technical QA remains separate.
     """
-    root = root.resolve()
+    try:
+        root = root.resolve()
+    except (OSError, RuntimeError):
+        return AuditResult("HOLD", ("episode: evidence root cannot be resolved",))
     items = list(beats)
     findings: list[str] = []
     if not items:
