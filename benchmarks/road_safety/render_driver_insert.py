@@ -3,6 +3,11 @@
 Procedural geometry authored here: no downloaded human model or paid API.
 Silent 3-second action proof, not a narration-aligned final film.
 Run only on GitHub Actions standard runners.
+
+Idle motion (chest breathing + three blinks placed inside the pre-notice,
+inter-notice/turn, and post-turn holds) keeps those holds from being a
+frozen still, without touching the notice/turn reaction timing itself or
+the camera framing.
 """
 from __future__ import annotations
 
@@ -93,7 +98,7 @@ def main():
     box("seat back", (0, .24, .95), (.86, .23, 1.20), seat_mat)
     box("headrest", (0, .24, 1.72), (.60, .23, .45), seat_mat)
     box("seat cushion", (0, -.10, .39), (.85, .85, .20), seat_mat)
-    ball("torso", (0, 0, .99), (.37, .23, .49), shirt)
+    torso = ball("torso", (0, 0, .99), (.37, .23, .49), shirt)
     ball("neck", (0, -.015, 1.44), (.12, .12, .17), skin)
     head = empty("acting head", (0, -.02, 1.73))
     ball("head", (0, 0, 0), (.255, .23, .32), skin, head)
@@ -157,18 +162,37 @@ def main():
     scene.render.resolution_percentage, scene.render.fps = 100, 30
     scene.render.image_settings.file_format = "PNG"
     scene.view_settings.view_transform = "AgX"
+    # Idle motion so the pre-notice, inter-notice/turn, and post-turn holds
+    # are not a frozen still: a continuous chest-breathing cycle plus three
+    # short blinks placed to sit entirely inside those holds (never
+    # overlapping the notice [.65-1.05s] or turn [1.65-2.40s] ramps above),
+    # so the already-correct reaction/turn timing is untouched.
+    BLINK_CENTERS = (.30, 1.30, 2.70)
+    BLINK_HALF_WIDTH = .09
+
+    def blink_amount(t):
+        amt = 0.0
+        for center in BLINK_CENTERS:
+            d = abs(t - center)
+            if d < BLINK_HALF_WIDTH:
+                amt = max(amt, 1 - d / BLINK_HALF_WIDTH)
+        return amt
+
     poses = []
     for frame in range(args.start, args.end + 1):
         t = (frame - 1) / 30
         notice = max(0, min(1, (t - .65) / .40))
         turn = max(0, min(1, (t - 1.65) / .75))
         smooth_turn = turn * turn * (3 - 2 * turn)
+        breathing = math.sin(2 * math.pi * t / 2.6)
+        blink = blink_amount(t)
         head.rotation_euler.x = .28 * (1 - notice)
         head.rotation_euler.z = -.10 * (1 - notice)
-        head.location.z = 1.73 + .025 * math.sin(math.pi * notice) + .002 * math.sin(t * 4)
+        head.location.z = 1.73 + .025 * math.sin(math.pi * notice) + .010 * math.sin(t * 4)
+        torso.scale.y = .23 * (1 + .035 * breathing)
         wheel.rotation_euler.y = -.35 * smooth_turn
         for eye, brow in zip(eyes, brows):
-            eye.scale.z = .044 + .018 * notice
+            eye.scale.z = (.044 + .018 * notice) * (1 - .85 * blink)
             brow.location.z = .139 + .035 * notice
         mouth.scale.z = .012 + .030 * math.sin(math.pi * notice)
         bpy.context.view_layer.update()
@@ -182,7 +206,8 @@ def main():
         scene.render.filepath = str(args.out / f"{frame:04d}.png")
         bpy.ops.render.render(write_still=True)
         poses.append({"frame": frame, "notice": notice,
-                      "steering_radians": wheel.rotation_euler.y})
+                      "steering_radians": wheel.rotation_euler.y,
+                      "breathing": breathing, "blink": blink})
     bpy.ops.wm.save_as_mainfile(filepath=str(args.out / "driver-pilot.blend"))
     hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
               for p in sorted(args.out.glob("*.png"))}
