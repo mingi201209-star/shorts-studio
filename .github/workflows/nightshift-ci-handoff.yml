@@ -1,0 +1,74 @@
+name: Nightshift CI completion handoff
+
+# GitHub workflow_run is event-driven: no hourly polling.
+# This is a signal/receipt bridge, NOT an AI agent or a ChatGPT wake-up.
+on:
+  workflow_run:
+    workflows: ["test"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: nightshift-handoff-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  record:
+    # A failed CI on an untrusted PR may trigger this workflow, so never
+    # check out or execute PR code, and never pass secrets to PR code.
+    if: ${{ github.event.workflow_run.event == 'pull_request' || github.event.workflow_run.event == 'push' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Record completed CI as a bounded, auditable issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          EVENT_KIND: ${{ github.event.workflow_run.event }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import subprocess
+
+          run_id = os.environ["RUN_ID"]
+          conclusion = os.environ["CONCLUSION"]
+          # No code changes, dispatch loops, PR merge, or paid model calls.
+          # Successes do not create an issue. Failed runs get one handoff
+          # issue, deduplicated by run ID.
+          if conclusion == "success":
+              print(f"CI success receipt: {run_id} {os.environ['HEAD_SHA']}")
+              raise SystemExit(0)
+          marker = f"<!-- nightshift-ci-run:{run_id} -->"
+          # Search server-side instead of checking only the most recent 100 issues.
+          listing = subprocess.run(
+              ["gh", "issue", "list", "--state", "all", "--search",
+               f"nightshift-ci-run:{run_id} in:body", "--limit", "1",
+               "--json", "number,body"],
+              check=True, capture_output=True, text=True,
+          )
+          if any(marker in (issue.get("body") or "") for issue in json.loads(listing.stdout)):
+              print("Existing handoff issue found; no duplicate")
+              raise SystemExit(0)
+          body = "\n".join([
+              marker,
+              "Automated CI completion signal. This is not an AI execution receipt.",
+              f"- Run: {os.environ['RUN_URL']}",
+              f"- Commit: `{os.environ['HEAD_SHA']}`",
+              f"- Event: {os.environ['EVENT_KIND']}",
+              f"- Conclusion: **{conclusion}**",
+              "- Next: inspect exact-head CI and reproduce failure before editing.",
+              "- Safety: no automatic merge, upload, render or paid AI call.",
+          ])
+          subprocess.run(
+              ["gh", "issue", "create", "--title", f"[Nightshift CI] {conclusion} run {run_id}",
+               "--body", body],
+              check=True,
+          )
+          PY
