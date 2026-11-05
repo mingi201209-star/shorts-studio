@@ -46,8 +46,10 @@ jobs:
               print(f"CI success receipt: {run_id} {os.environ['HEAD_SHA']}")
               raise SystemExit(0)
           marker = f"<!-- nightshift-ci-run:{run_id} -->"
+          # Search server-side instead of checking only the most recent 100 issues.
           listing = subprocess.run(
-              ["gh", "issue", "list", "--state", "all", "--limit", "100",
+              ["gh", "issue", "list", "--state", "all", "--search",
+               f"nightshift-ci-run:{run_id} in:body", "--limit", "1",
                "--json", "number,body"],
               check=True, capture_output=True, text=True,
           )
