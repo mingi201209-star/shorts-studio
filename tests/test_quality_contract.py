@@ -67,3 +67,20 @@ def test_unreadable_footage_holds_instead_of_crashing(tmp_path, monkeypatch):
     result = audit_beats([beat(b"x")], root=tmp_path)
     assert result.status == "HOLD"
     assert any("unreadable during audit" in finding for finding in result.findings)
+
+
+def test_unresolvable_footage_path_holds_instead_of_crashing(tmp_path, monkeypatch):
+    from pathlib import Path
+
+    (tmp_path / "shot.mp4").write_bytes(b"x")
+    original_resolve = Path.resolve
+
+    def blocked_resolve(path, *args, **kwargs):
+        if path.name == "shot.mp4":
+            raise RuntimeError("simulated symlink loop")
+        return original_resolve(path, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "resolve", blocked_resolve)
+    result = audit_beats([beat(b"x")], root=tmp_path)
+    assert result.status == "HOLD"
+    assert any("footage missing or outside evidence root" in finding for finding in result.findings)
