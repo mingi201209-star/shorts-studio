@@ -229,8 +229,8 @@ def main():
     bend = hb.location + Vector((0.0, 0.0, 0.012))
     exitp = hb.location + Vector((0.035, -0.012, 0.028))
     ray_segments = [
-        cylinder("Ray in", entry, bend, 0.0015, ray_mat),
-        cylinder("Ray out", bend, exitp, 0.0015, ray_mat),
+        cylinder("Ray in", entry, bend, 0.004, ray_mat),
+        cylinder("Ray out", bend, exitp, 0.004, ray_mat),
     ]
     for seg in ray_segments:
         seg.hide_render = True
@@ -268,8 +268,8 @@ def main():
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.03, 0.06, -0.01)), target)
         elif shot["id"] == "bead_macro_ray":
-            cam_pos = (lerp(-0.02, 0.02, math.sin(t * math.tau) * 0.5 + 0.5), -0.09, 0.055)
-            target = (0, 0.0, 0.01)
+            cam_pos = (lerp(-0.02, 0.02, math.sin(t * math.tau) * 0.5 + 0.5), -0.11, 0.028)
+            target = (0, 0.05, 0.012)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.01, 0.015, -0.005)), target)
@@ -292,8 +292,8 @@ def main():
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
         elif shot["id"] == "bead_macro_closing":
             drift = math.sin(t * math.tau * 0.5) * 0.01
-            cam_pos = (drift, -0.09, 0.055)
-            target = (0, 0.0, 0.01)
+            cam_pos = (drift, -0.11, 0.028)
+            target = (0, 0.05, 0.012)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.01, 0.015, -0.005)), target)
