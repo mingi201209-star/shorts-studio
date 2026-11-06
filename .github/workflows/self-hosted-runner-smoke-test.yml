@@ -1,0 +1,25 @@
+name: Self-hosted Hetzner CX32 runner smoke test
+# Read-only check that the self-hosted runner (ops/hetzner-cx32-runner-setup.sh)
+# is actually reachable and has the pre-installed Blender/Python it claims to.
+# Does not render or assemble anything.
+on:
+  push:
+    branches: [self-hosted-runner-hetzner-20261106]
+    paths:
+      - .github/workflows/self-hosted-runner-smoke-test.yml
+jobs:
+  smoke:
+    runs-on: [self-hosted, shorts-studio-cx32]
+    timeout-minutes: 5
+    steps:
+      - name: Report host facts and pre-installed tool versions
+        run: |
+          set -euo pipefail
+          hostname
+          whoami
+          nproc
+          free -h
+          /opt/shorts-studio/blender-5.0.1-linux-x64/blender --version
+          /opt/shorts-studio/venv/bin/python --version
+          /opt/shorts-studio/venv/bin/python -c "import PIL, pydantic, torch, open_clip, cv2; print('deps OK', torch.__version__, cv2.__version__)"
+          echo "SELF_HOSTED_SMOKE_PASS"
