@@ -158,6 +158,11 @@ def main():
     scene.render.image_settings.color_mode = "RGB"
     scene.view_settings.view_transform = "AgX"
     scene.world.color = (0.008, 0.008, 0.012)
+    if scene.world.use_nodes:
+        bg = scene.world.node_tree.nodes.get("Background")
+        if bg is not None:
+            bg.inputs["Color"].default_value = (0.008, 0.008, 0.012, 1)
+            bg.inputs["Strength"].default_value = 1.0
 
     asphalt_mat = material("Night asphalt", (0.022, 0.023, 0.025), rough=0.92)
     paint_mat = material("Lane paint base", (0.62, 0.60, 0.54), rough=0.55)
@@ -170,6 +175,15 @@ def main():
     bpy.ops.object.camera_add(location=(0, -3, 0.6))
     cam = bpy.context.object
     scene.camera = cam
+    # Explicit, known field of view: Blender's default "auto" sensor fit on a
+    # PORTRAIT (1080x1920) render fits the sensor to the taller dimension,
+    # which makes the effective horizontal FOV much narrower than a normal
+    # 50mm lens suggests -- small objects at sub-metre distance filled almost
+    # the whole frame in the first preview. Fixing sensor_fit=HORIZONTAL with
+    # a known lens makes apparent size predictable across every shot.
+    cam.data.sensor_fit = "HORIZONTAL"
+    cam.data.sensor_width = 36
+    cam.data.lens = 32
 
     bpy.ops.object.light_add(type="SPOT", location=(0.05, -2.9, 0.55))
     headlight = bpy.context.object
