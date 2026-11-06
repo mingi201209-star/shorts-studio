@@ -43,7 +43,7 @@ def waveform_points(t, groove):
     return [(x,y-3) for x,y in center]+[(x,y+3) for x,y in reversed(center)]
 
 
-def schematic(variant, out, beats=None, source_episode=None):
+def schematic(variant, out, beats=None, source_episode=None, hidden_intervals=()):
     """A separate drawing, not a measurement or alteration of source geometry."""
     header = '''[Script Info]
 ScriptType: v4.00+
@@ -60,6 +60,21 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
     source_episode=source_episode or timeline.load_episode(delivery.ROOT/f'examples/experiments/curious-mechanics-{variant}.json')
     safe=[((s['start']-1)/30,s['end']/30) for s in source_episode['shots']
           if not s['id'].endswith('rumble_mechanism')]
+    # When the edit cuts to a person, let the action occupy the frame instead
+    # of covering their head and hands with the explanatory panel.  Subtract
+    # the exact editorial intervals without changing the source picture.
+    for hidden_start, hidden_end in hidden_intervals:
+        assert 0 <= hidden_start < hidden_end <= 30
+        visible = []
+        for start, end in safe:
+            if hidden_end <= start or hidden_start >= end:
+                visible.append((start, end))
+                continue
+            if start < hidden_start:
+                visible.append((start, hidden_start))
+            if hidden_end < end:
+                visible.append((hidden_end, end))
+        safe = visible
 
     def event(start, end, text, layer=2):
         for lo,hi in safe:

@@ -1,0 +1,153 @@
+name: Studio org B literal cause production
+
+# B-only production render for the narration-visible cause chain:
+# overhead grooves -> side contact -> visible body vibration -> driver reaction.
+# Public standard GitHub runners only. No VPS render, paid runner, merge, or upload.
+on:
+  push:
+    branches: [fix/studio-org-integration-20261102]
+    paths:
+      - ".github/workflows/studio-org-b-literal-cause.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: studio-org-b-literal-cause
+  cancel-in-progress: false
+
+env:
+  RENDERER_SOURCE_SHA256: 04fdc326a6a8a874840072ce82529e777ff0956f5c17c991ad8f87b4e59ac765
+
+jobs:
+  blender:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Fetch Blender once to avoid 20 simultaneous upstream downloads
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6 7 8; do
+            if curl -fLsS -A 'shorts-studio-ci/1.0' --max-time 240 \
+              https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz \
+              -o "$RUNNER_TEMP/blender.tar.xz"; then
+              break
+            fi
+            rm -f "$RUNNER_TEMP/blender.tar.xz"
+            sleep $((attempt * 10))
+          done
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: studio-org-blender-5.0.1
+          path: ${{ runner.temp }}/blender.tar.xz
+          if-no-files-found: error
+          retention-days: 1
+
+  native:
+    needs: blender
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        start: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271, 301, 331, 361, 391, 421, 451, 481, 511, 541, 571, 601, 631, 661, 691, 721, 751, 781, 811, 841, 871]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Download the once-fetched pinned Blender archive
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: studio-org-blender-5.0.1
+          path: ${{ runner.temp }}
+      - name: Install pinned Blender and QA dependencies
+        run: |
+          set -euo pipefail
+          echo "$RENDERER_SOURCE_SHA256  benchmarks/road_safety/render_curious_mechanics.py" | sha256sum -c -
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6 ffmpeg
+          python -m pip install Pillow pydantic
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Fetch exact CC0 production scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/source"
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render production Cycles32 shard
+        timeout-minutes: 90
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/rumble"
+          end=$((${{ matrix.start }} + 29))
+          if [ "$end" -gt 900 ]; then end=900; fi
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_curious_mechanics.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/experiments/curious-mechanics-progressive-B.json --start ${{ matrix.start }} --end "$end" --out "$RUNNER_TEMP/rumble" 2>&1 | tee "$RUNNER_TEMP/rumble/render.log"
+      - name: Native shard QA and lossless intermediate
+        run: |
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_shard_artifact.py --out "$RUNNER_TEMP/rumble" --manifest examples/experiments/curious-mechanics-progressive-B.json
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: studio-org-B-literal-native-${{ matrix.start }}
+          path: ${{ runner.temp }}/rumble/
+          if-no-files-found: error
+          retention-days: 7
+
+  final:
+    needs: native
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Download exact current-run native bed, measured B audio, and verified driver action
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/source" "$RUNNER_TEMP/driver"
+          gh run download ${{ github.run_id }} --repo "$GITHUB_REPOSITORY" --pattern 'studio-org-B-literal-native-*' --dir "$RUNNER_TEMP/native"
+          test "$(find "$RUNNER_TEMP/native" -name episode-proof.json | wc -l)" = 30
+          gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-B --dir "$RUNNER_TEMP/source"
+          gh run download 41424164628 --repo "$GITHUB_REPOSITORY" --name studio-org-driver-action-native-complete --dir "$RUNNER_TEMP/driver"
+      - name: Install final QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
+          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Assemble narration-matched B and run full QA
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: |
+          PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_driver_cut.py \
+            --native "$RUNNER_TEMP/native" \
+            --source "$RUNNER_TEMP/source/B" \
+            --driver "$RUNNER_TEMP/driver" \
+            --out "$RUNNER_TEMP/out" \
+            --variant B
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: studio-org-B-literal-cause-final
+          path: |
+            ${{ runner.temp }}/out/curious-mechanics-B-driver-cut.mp4
+            ${{ runner.temp }}/out/film-validation.json
+            ${{ runner.temp }}/out/edit-receipt.json
+            ${{ runner.temp }}/out/semantic-results.json
+            ${{ runner.temp }}/out/human-semantic-results.json
+            ${{ runner.temp }}/out/review-*.jpg
+            ${{ runner.temp }}/out/human-semantic-*.png
+          if-no-files-found: error
+          retention-days: 14

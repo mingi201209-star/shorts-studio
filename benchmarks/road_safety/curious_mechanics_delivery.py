@@ -25,6 +25,20 @@ def validate_layout(shards,canonical,variant,source_overrides=None):
         hashes.extend(s['rgb_md5'])
     assert len(hashes)==len(set(hashes))==900,'CLONED_NATIVE_PIXELS'
     return ordered
+ROLE_SEMANTIC_OVERRIDES={
+    'B_02_road_cut_top':{
+        'requirements':['Overhead view reveals a gray tire crossing rectangular grooves recessed into a gray road'],
+        'positive_labels':[
+            'an overhead view of a gray tire crossing rectangular grooves in a road',
+            'a top down gray wheel over recessed rumble strip grooves',
+        ],
+    },
+}
+def semantic_evidence(shot_id,style,reference):
+    override=ROLE_SEMANTIC_OVERRIDES.get(shot_id)
+    if override:
+        return override['requirements'],list(override['positive_labels'])
+    return reference['visual_proof'],list(timeline.original.semantic_labels(style))
 
 def export(a):
     plan=json.loads(a.plan.read_text());assert plan['status']=='CORRECTED_FULL_NATIVE_READY_ASSEMBLY';a.out.mkdir(parents=True,exist_ok=True);(a.out/'clips').mkdir(exist_ok=True);(a.out/'audio').mkdir(exist_ok=True)
@@ -63,7 +77,8 @@ def semantic(final,out,episode,audio):
         # own episode dict without calling load_episode(), where role==base.
         t=((shot['start']+shot['end'])/2-1)/30;style=timeline._STYLE.get(shot['id']) or '_'.join(shot['id'].split('_')[2:]);reference=by_id[style];p=out/f'semantic-{shot["id"]}.png';film.run(['ffmpeg','-v','error','-y','-ss',t,'-i',final,'-frames:v','1',p])
         with Image.open(p) as im:im.convert('RGB').crop((0,0,1080,1400)).save(p)
-        beat=next(b for b in audio['beats'] if b['start']<=t<b['end']);verdict=provider.evaluate(str(p),reference['visual_proof'],narration=beat['narration_en'],positive_labels=list(timeline.original.semantic_labels(style)),negative_labels=list(timeline.original.SEMANTIC_NEGATIVE_LABELS),media_box_applied=True);results.append(dict(shot=shot['id'],timestamp=t,**verdict));write(out/'semantic-results.json',results)
+        requirements,positive_labels=semantic_evidence(shot['id'],style,reference)
+        beat=next(b for b in audio['beats'] if b['start']<=t<b['end']);verdict=provider.evaluate(str(p),requirements,narration=beat['narration_en'],positive_labels=positive_labels,negative_labels=list(timeline.original.SEMANTIC_NEGATIVE_LABELS),media_box_applied=True);results.append(dict(shot=shot['id'],timestamp=t,**verdict));write(out/'semantic-results.json',results)
     assert all(r['status']=='PASS' for r in results),('SEMANTIC_VISUAL_QA',results)
     return results
 

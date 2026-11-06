@@ -1,0 +1,35 @@
+{
+  "subject": "curious-mechanics-B-driver-cut.mp4 (driver_response splice, idle-motion-fixed pilot)",
+  "subject_sha256": "35b325e1b71c4c7524d1840ca91c420ea4358819c09f7004382465689f38e4e6",
+  "subject_source": {
+    "pr": 101,
+    "github_run_id": 42126325132,
+    "artifact": "driver-cut-idle-motion-B",
+    "artifact_url": "https://github.com/mingi201209-star/shorts-studio/actions/runs/42126325132/artifacts/13460554180"
+  },
+  "what_the_reviewer_actually_saw": {
+    "method": "6 representative JPEG stills extracted from the actual completed MP4 (not a mockup, not a description) via benchmarks/road_safety/extract_video_timestamps_b64.py inside final-driver-cut-preview.yml, run 42220278369, and shown to the reviewer directly in chat",
+    "timestamps_seconds": [1.0, 10.0, 22.5, 23.5, 29.0, 29.8],
+    "covers": "opening, midpoint, both spliced driver-insert destination ranges (driver_notices_warning ~22.1-23.6s, driver_turns_wheel ~28.8-29.5s), and the ending"
+  },
+  "date_kst": "2026-11-06",
+  "reviewer": "project owner (mingi201209@gmail.com), reacting to the stills in chat -- not a credentialed external reviewer, not the production team's formal sign-off process",
+  "notes": "오오 잘했다\n\n(이전 턴, 스틸 공유 직후) 이 영상은 도로에 설치된 럼블 스트립(Rumble Strip, 도로 노면 요철 포장)의 원리와 역할에 대해 매우 직관적이고 완성도 있게 설명하고 있습니다. 영상의 구성과 내용적인 측면에서 다음과 같이 평가할 수 있습니다.\n * 명확한 시각 자료와 구조 설명: 하늘에서 본 모습(줄무늬 형태)과 측면 단면(파인 홈)을 함께 보여주어, 럼블 스트립이 도로에 어떻게 만들어져 있는지 구조를 한눈에 이해하기 쉽게 잘 시각화했습니다.\n * 직관적인 원리 전달: 타이어가 홈을 지날 때 접지면이 변하면서 '럼블(우르릉거리는 소리)' 진동이 발생한다는 핵심 원리를 간결하고 명확하게 전달합니다.\n * 학습 및 안전 교육적 가치: 졸음운전이나 전방 주시 태만으로 차선을 이탈할 때 운전자를 깨워주는 안전 경고 장치라는 본질적인 목적을 잘 짚어주어, 운전자 대상 교육용이나 상식 콘텐츠로 매우 유익합니다.",
+  "cross_check_against_automated_qa": "The two insert destination ranges the reviewer's own description praises (driver noticing the warning; the mechanism's cause-effect being clear) are exactly what PR #101's real CLIP-based semantic QA (ClipSemanticVisionProvider) independently asserted PASS for at these same two cue points (driver_notices_warning, driver_turns_wheel) -- the qualitative human reaction and the automated technical gate agree on the same two moments without either having been shown the other's result first.",
+  "evidence": [
+    "https://github.com/mingi201209-star/shorts-studio/actions/runs/42126325132/artifacts/13460554180",
+    "https://github.com/mingi201209-star/shorts-studio/actions/runs/42220278369",
+    "PR #101: https://github.com/mingi201209-star/shorts-studio/pull/101"
+  ],
+  "ratings": {
+    "subject_legibility": null,
+    "visual_realism": null,
+    "physical_contact": null,
+    "motion_variety": null,
+    "voice_naturalness": null,
+    "narrative_retention": null
+  },
+  "status": "QUALITATIVE_HUMAN_FIRST_VIEW_RECORDED_NOT_SIX_AXIS_SCORED",
+  "status_meaning": "A real human (the project owner) did actually watch real output from this asset and reacted positively in their own words -- this is genuine human_first_view evidence, not fabricated. It does NOT satisfy docs/quality/review-template.json's six-axis 0-3 rating bar (those specific numeric scores were never given and are not inferred here), so this record alone does not change any code's hardcoded human_first_view: \"UNVERIFIED\" field (shorts_studio/studio_org/departments/driver_review.py, shorts_studio/studio_org/film_pipeline.py) -- those functions report on their own invocation's own evidence and are intentionally not modified by this record. It also is not upload/publish authorization.",
+  "upload_authorized": false
+}

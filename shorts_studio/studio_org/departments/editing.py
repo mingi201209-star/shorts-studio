@@ -25,7 +25,7 @@ class EditingDept:
             requirements=requirement, predecessors=[resolved.task_id],
             input_hash=resolved.input_hash,
             completion_criteria="predecessor asset exists and (if rendered) passed evaluation",
-            status="completed" if resolved.status == "completed" else "blocked",
+            status="blocked",
             target_resource=f"edit:{requirement['shot']}",
         )
 
@@ -36,6 +36,36 @@ class EditingDept:
         if need.is_terminal:
             return need
         predecessor = ledger.get(need.predecessors[0])
+        if not predecessor.is_mock:
+            # Real completion belongs to film_pipeline.finish_film, which emits
+            # an actual MP4 and full QA receipt -- dependency resolution alone
+            # is not assembly. A preliminary/partial technical check (e.g. the
+            # driver pilot's own driver-pilot-integrity evaluation, which is
+            # explicitly not_final) must not unblock this either: only a real
+            # finish_film-shaped evaluation (technical_status PASS plus its
+            # film-validation receipt path) does, and even then the task
+            # completes as "the cut was actually assembled and passed
+            # technical QA" -- never as editorial acceptance, which the
+            # evaluation's own editorial_status/human_first_view fields keep
+            # on HOLD/UNVERIFIED regardless.
+            if predecessor.department == "렌더부":
+                evaluation = ledger.find_evaluation_for(predecessor.task_id)
+                if evaluation is not None and evaluation.status == "completed":
+                    output = evaluation.output or {}
+                    if output.get("technical_status") == "PASS" and "receipt" in output:
+                        return ledger.update(
+                            need.task_id, status="completed",
+                            output={
+                                "assembled_from": predecessor.task_id,
+                                "evaluated_by": evaluation.task_id,
+                                **output,
+                            },
+                            is_mock=False,
+                        )
+            return ledger.update(
+                need.task_id, status="blocked",
+                failure_reason="real cut requires MP4 assembly and QA receipt",
+            )
         if predecessor.department == "관리부":
             if predecessor.status == "completed":
                 return ledger.update(

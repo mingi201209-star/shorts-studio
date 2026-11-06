@@ -30,7 +30,7 @@ class ManagementDept:
                 department="관리부", division="자원관리",
                 requirements=requirement, predecessors=[],
                 input_hash=fingerprint(requirement), output=dict(existing),
-                completion_criteria="existing asset located in the known manifest",
+                completion_criteria="existing file located and SHA256 verified",
                 status="completed", target_resource=target,
             )
         duplicate = self.ledger.find_active_by_target(target)
