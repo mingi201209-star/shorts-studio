@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "road-paint-retroreflective",
+      "beats": [
+        {
+          "narration_en": "At night, these lane lines seem to glow, lit by nothing but your own headlights.",
+          "start": 0,
+          "end": 5
+        },
+        {
+          "narration_en": "Zoom in, and the paint is packed with thousands of tiny glass beads.",
+          "start": 5,
+          "end": 10
+        },
+        {
+          "narration_en": "Light enters a bead, bends, bounces off the back, and bends again, straight back toward where it came from.",
+          "start": 10,
+          "end": 16
+        },
+        {
+          "narration_en": "Without those beads, the same white paint looks dull and almost disappears in the dark.",
+          "start": 16,
+          "end": 21
+        },
+        {
+          "narration_en": "That extra glow can buy a driver a crucial extra second to see the lane at night.",
+          "start": 21,
+          "end": 26
+        },
+        {
+          "narration_en": "A tiny glass sphere, doing a precise job, on every striped road in the country.",
+          "start": 26,
+          "end": 30
+        }
+      ]
+    }
+  ]
+}
