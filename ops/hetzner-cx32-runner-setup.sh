@@ -41,7 +41,7 @@ RENDERER_SOURCE_SHA256=04fdc326a6a8a874840072ce82529e777ff0956f5c17c991ad8f87b4e
 echo "== apt packages =="
 apt-get update -qq
 apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6 \
-  ffmpeg fonts-dejavu-core curl tar python3.11 python3.11-venv jq
+  ffmpeg fonts-dejavu-core curl tar python3 python3-venv jq
 
 echo "== Blender ${BLENDER_VERSION} (hash-pinned, matches the GitHub-hosted workflows) =="
 mkdir -p /opt/shorts-studio
@@ -54,7 +54,7 @@ fi
 echo "Blender installed at /opt/shorts-studio/blender-${BLENDER_VERSION}-linux-x64/blender"
 
 echo "== Python venv with the pinned native+final QA dependencies =="
-python3.11 -m venv /opt/shorts-studio/venv
+python3 -m venv /opt/shorts-studio/venv
 /opt/shorts-studio/venv/bin/pip install --quiet --upgrade pip
 /opt/shorts-studio/venv/bin/pip install --quiet Pillow==13.0.0 pydantic==2.14.1
 /opt/shorts-studio/venv/bin/pip install --quiet --index-url https://download.pytorch.org/whl/cpu \
