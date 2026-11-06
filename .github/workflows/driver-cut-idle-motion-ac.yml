@@ -1,0 +1,88 @@
+name: Driver cut A and C with idle-motion-fixed pilot (reuse B's native bed)
+# Corrects a planning mistake: an earlier commit on this branch rendered
+# separate 900-frame native asset beds for variants A and C
+# (curious-mechanics-ac-timeline-rerender.yml, now removed), on the wrong
+# premise that each variant has its own native camera footage.
+#
+# It does not. benchmarks/road_safety/curious_mechanics_progressive_delivery.py's
+# assemble() hardcodes native_variant = 'B' and only ever selects shards whose
+# episode_id == 'curious-mechanics-B' -- its own comment says why: "One newly
+# rendered 900-frame asset bed is shared by the three editorial treatments...
+# Do not render identical story roles three times". A and C are a different
+# narration/audio track plus a different driver-insert frame range
+# (shorts_studio/studio_org/driver_cut.py's INSERTS_BY_VARIANT) laid over the
+# SAME 900 B-rendered frames -- never a separately rendered scene. Re-rendering
+# A/C-manifest native shards produced episode_id values the assembler's B-only
+# filter discards entirely, which is why that attempt failed with
+# MISSING_NATIVE_FRAMES for both variants regardless of shard count.
+#
+# The actual fix needs no new rendering at all: reuse the already-verified B
+# native bed from run 42038281331 (PROGRESSIVE_FILM_PASS B 27b1e21e...), the
+# same one driver-cut-idle-motion-b.yml used, and just swap --variant and
+# --source to each variant's own preserved audio/narration artifact. This
+# mirrors driver-cut-idle-motion-b.yml exactly otherwise.
+on:
+  push:
+    branches: [driver-cut-idle-motion-ac-20261106]
+    paths:
+      - .github/workflows/driver-cut-idle-motion-ac.yml
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: driver-cut-idle-motion-ac
+  cancel-in-progress: false
+jobs:
+  assemble:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [A, C]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
+          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Download the verified B native shards and this variant's own preserved source/audio and the idle-motion-fixed pilot
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 42038281331 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 30
+          if [ '${{ matrix.variant }}' = A ]; then
+            gh run download 41190640057 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-A --dir "$RUNNER_TEMP/source"
+          else
+            gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-${{ matrix.variant }} --dir "$RUNNER_TEMP/source"
+          fi
+          gh run download 42028852096 --repo "$GITHUB_REPOSITORY" --name studio-org-driver-idle-motion-complete --dir "$RUNNER_TEMP/driver"
+      - name: Assemble narration-matched edit and run full QA
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: |
+          PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_driver_cut.py \
+            --native "$RUNNER_TEMP/native" \
+            --source "$RUNNER_TEMP/source/${{ matrix.variant }}" \
+            --driver "$RUNNER_TEMP/driver" \
+            --out "$RUNNER_TEMP/out" \
+            --variant ${{ matrix.variant }}
+          sha256sum "$RUNNER_TEMP/out/curious-mechanics-${{ matrix.variant }}-driver-cut.mp4"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: driver-cut-idle-motion-${{ matrix.variant }}
+          path: |
+            ${{ runner.temp }}/out/curious-mechanics-${{ matrix.variant }}-driver-cut.mp4
+            ${{ runner.temp }}/out/film-validation.json
+            ${{ runner.temp }}/out/edit-receipt.json
+            ${{ runner.temp }}/out/semantic-results.json
+            ${{ runner.temp }}/out/human-semantic-results.json
+            ${{ runner.temp }}/out/human-semantic-*.png
+          retention-days: 14
