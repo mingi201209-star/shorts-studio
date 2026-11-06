@@ -136,6 +136,30 @@ def set_camera(cam, location, target):
     cam.rotation_euler = (Vector(target) - cam.location).to_track_quat("-Z", "Y").to_euler()
 
 
+def point_light(light, location, target):
+    """Spot/area lights point along local -Z by default; without this a
+    light that only ever gets translated (never rotated) keeps illuminating
+    whatever direction it started in -- the actual bug behind the first two
+    previews' night_wide and macro shots being far too dark."""
+    light.location = Vector(location)
+    light.rotation_euler = (Vector(target) - light.location).to_track_quat("-Z", "Y").to_euler()
+
+
+HEADLIGHT_REFERENCE_DISTANCE = 2.0
+HEADLIGHT_REFERENCE_ENERGY = 420.0
+
+
+def aim_headlight(light, location, target):
+    """Same near-camera headlight across wildly different shot distances
+    (3m wide shot down to 9cm macro): without compensating energy for
+    distance, inverse-square falloff alone would make the same light either
+    invisible at wide range or blown-out white at macro range."""
+    point_light(light, location, target)
+    distance = (Vector(target) - Vector(location)).length
+    ratio = max(distance, 0.01) / HEADLIGHT_REFERENCE_DISTANCE
+    light.data.energy = HEADLIGHT_REFERENCE_ENERGY * ratio * ratio
+
+
 def main():
     args = arguments()
     manifest = json.loads(args.manifest.read_text(encoding="utf8"))
@@ -232,34 +256,47 @@ def main():
             seg.hide_render = True
 
         if shot["id"] == "night_wide":
-            set_camera(cam, (0, lerp(-3.0, -1.6, t), 0.6), (0, 2.0, 0.02))
+            cam_pos = (0, lerp(-3.0, -1.6, t), 0.6)
+            target = (0, cam_pos[1] + 4.0, 0.01)
+            set_camera(cam, cam_pos, target)
             headlight.hide_render = False
-            headlight.location = cam.location + Vector((0.05, 0.08, -0.03))
+            aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
         elif shot["id"] == "paint_push_in":
-            set_camera(cam, (0, lerp(-1.6, -0.55, t), lerp(0.55, 0.22, t)), (0, 1.0, 0.01))
+            cam_pos = (0, lerp(-1.6, -0.55, t), lerp(0.55, 0.22, t))
+            target = (0, cam_pos[1] + 1.6, 0.005)
+            set_camera(cam, cam_pos, target)
             headlight.hide_render = False
-            headlight.location = cam.location + Vector((0.03, 0.06, -0.01))
+            aim_headlight(headlight, Vector(cam_pos) + Vector((0.03, 0.06, -0.01)), target)
         elif shot["id"] == "bead_macro_ray":
-            set_camera(cam, (lerp(-0.02, 0.02, math.sin(t * math.tau) * 0.5 + 0.5), -0.09, 0.055), (0, 0.0, 0.01))
+            cam_pos = (lerp(-0.02, 0.02, math.sin(t * math.tau) * 0.5 + 0.5), -0.09, 0.055)
+            target = (0, 0.0, 0.01)
+            set_camera(cam, cam_pos, target)
             headlight.hide_render = False
-            headlight.location = cam.location + Vector((0.01, 0.015, -0.005))
+            aim_headlight(headlight, Vector(cam_pos) + Vector((0.01, 0.015, -0.005)), target)
             reveal = min(1.0, t / 0.6)
             for i, seg in enumerate(ray_segments):
                 seg.hide_render = reveal <= 0.02
                 seg.scale = (1, 1, min(1.0, max(0.02, reveal * 2 - i)))
         elif shot["id"] == "paint_dull_comparison":
             angle = lerp(-0.25, 0.25, t)
-            set_camera(cam, (math.sin(angle) * 0.9, -0.55 + math.cos(angle) * -0.05, 0.22), (0, 1.0, 0.01))
+            cam_pos = (math.sin(angle) * 0.9, -0.55 + math.cos(angle) * -0.05, 0.22)
+            target = (0, 1.0, 0.01)
+            set_camera(cam, cam_pos, target)
             ambient.hide_render = False
+            point_light(ambient, (2.4, 0.5, 1.6), target)
         elif shot["id"] == "night_wide_safety":
-            set_camera(cam, (0, lerp(-2.6, -1.3, t), 0.58), (0, 2.2, 0.02))
+            cam_pos = (0, lerp(-2.6, -1.3, t), 0.58)
+            target = (0, cam_pos[1] + 4.0, 0.01)
+            set_camera(cam, cam_pos, target)
             headlight.hide_render = False
-            headlight.location = cam.location + Vector((0.05, 0.08, -0.03))
+            aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
         elif shot["id"] == "bead_macro_closing":
             drift = math.sin(t * math.tau * 0.5) * 0.01
-            set_camera(cam, (drift, -0.09, 0.055), (0, 0.0, 0.01))
+            cam_pos = (drift, -0.09, 0.055)
+            target = (0, 0.0, 0.01)
+            set_camera(cam, cam_pos, target)
             headlight.hide_render = False
-            headlight.location = cam.location + Vector((0.01, 0.015, -0.005))
+            aim_headlight(headlight, Vector(cam_pos) + Vector((0.01, 0.015, -0.005)), target)
         else:
             raise ValueError(f"unknown shot id {shot['id']!r}")
 
