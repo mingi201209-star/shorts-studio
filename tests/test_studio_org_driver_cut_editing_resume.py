@@ -83,3 +83,74 @@ def test_resume_assembly_is_idempotent_on_the_still_blocked_real_cut(tmp_path):
 
     assert first.status == second.status == "blocked"
     assert first.failure_reason == second.failure_reason
+
+
+# Printed verbatim by job 125138422202 of run 41402905779
+# (studio-org-film.yml, "Studio org real film integration"), which actually
+# ran shorts_studio.studio_org.film_pipeline.finish_film() against the real
+# (then-current) native B asset bed -- not a fabricated fixture.
+REAL_FINISH_FILM_EVALUATION = {
+    "video": "/home/runner/work/_temp/final/B/curious-mechanics-B-progressive-v3.mp4",
+    "sha256": "f5d977a25adf4adc1d14ebc7bff8a68f1c677a46324829f511e2f1f2fb44a473",
+    "is_mock": False,
+    "technical_status": "PASS",
+    "editorial_status": "HOLD_ACTUAL_REVIEW",
+    "human_first_view": "UNVERIFIED",
+    "upload_authorized": False,
+    "receipt": "/home/runner/work/_temp/final/B/film-validation.json",
+}
+
+
+def _build_real_finished_film(ledger: TaskLedger):
+    """Same shape as _build_real_driver_cut, but the 평가부 evaluation this
+    time is the real finish_film() receipt (run 41402905779) rather than the
+    driver pilot's own preliminary integrity check."""
+    editing = EditingDept()
+    management = ManagementDept(ledger, AssetRegistry())
+    need = editing.request_cut({"shot": "progressive_v3"}, management, ledger)
+    render_task_id = need.predecessors[0]
+    ledger.update(
+        render_task_id, status="completed", is_mock=False,
+        output={"is_mock": False, "github_run_id": 41402905779,
+                "preview_only": False, "workflow_conclusion": "success"},
+    )
+    ledger.create(
+        department="평가부", division="기술검수", predecessors=[render_task_id],
+        requirements={"kind": "real-film-assembly"},
+        completion_criteria="finish_film() receipt: full native, audio, captions, semantic and final QA passed",
+        input_hash=REAL_FINISH_FILM_EVALUATION["sha256"],
+        output=REAL_FINISH_FILM_EVALUATION, status="completed", is_mock=False,
+    )
+    return editing, need
+
+
+def test_real_finish_film_receipt_unblocks_the_edit_task(tmp_path):
+    """The actual gap this closes: previously ANY non-mock predecessor stayed
+    'blocked' forever, even with a genuine finish_film() PASS+receipt sitting
+    right there in the ledger. Now a real finished assembly unblocks it."""
+    ledger = TaskLedger(tmp_path / "tasks.json")
+    editing, need = _build_real_finished_film(ledger)
+
+    resumed = editing.resume_assembly(need.task_id, ledger)
+
+    assert resumed.status == "completed"
+    assert resumed.is_mock is False
+    assert resumed.output["sha256"] == REAL_FINISH_FILM_EVALUATION["sha256"]
+    assert resumed.output["technical_status"] == "PASS"
+    # Completing the EDIT task is not editorial acceptance: those fields
+    # must still read exactly what finish_film() actually produced, not get
+    # upgraded or stripped by resume_assembly.
+    assert resumed.output["editorial_status"] == "HOLD_ACTUAL_REVIEW"
+    assert resumed.output["human_first_view"] == "UNVERIFIED"
+    assert resumed.output["upload_authorized"] is False
+
+
+def test_resume_assembly_on_a_real_finished_film_is_idempotent(tmp_path):
+    ledger = TaskLedger(tmp_path / "tasks.json")
+    editing, need = _build_real_finished_film(ledger)
+
+    first = editing.resume_assembly(need.task_id, ledger)
+    second = editing.resume_assembly(need.task_id, ledger)
+
+    assert first.status == second.status == "completed"
+    assert first.output == second.output
