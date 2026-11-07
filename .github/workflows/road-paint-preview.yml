@@ -35,7 +35,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/preview"
-          for start in 1 80 160 700 780; do
+          for start in 495 570 645; do
             end=$((start + 2))
             xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
               -P benchmarks/road_safety/render_road_paint.py -- \

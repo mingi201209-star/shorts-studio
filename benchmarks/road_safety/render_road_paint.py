@@ -159,9 +159,14 @@ def bead_positions(n, width, depth, seed=20261106):
     return positions
 
 
+PLAIN_STRIPE_X = 1.2
+
+
 def build_scene(beads_mat, paint_mat, asphalt_mat):
-    """One lane stripe embedded with glass beads, sitting in a dark asphalt
-    plane. Shared by every shot; only camera/lighting change between them."""
+    """One lane stripe embedded with glass beads, plus a second, literally
+    bead-free stripe for the real with/without comparison, sitting in a dark
+    asphalt plane. Shared by every shot; only camera/lighting change between
+    them."""
     cube("Asphalt road surface", (0, 0, -0.05), (6.0, 40.0, 0.10), asphalt_mat)
     stripe = cube("Painted lane stripe", (0, 0, 0.0015), (0.42, 30.0, 0.003), paint_mat)
     beads = []
@@ -171,7 +176,14 @@ def build_scene(beads_mat, paint_mat, asphalt_mat):
         # docs/quality/road-paint-retroreflective-human-review-20261107.json);
         # 22/14 is still cheap for 260 spheres but removes the visible facets.
         beads.append(sphere(f"Glass bead {len(beads)}", (x, y, 0.004 + r * 0.55), r, beads_mat, segments=22, rings=14))
-    return stripe, beads
+    # Real human_first_view feedback ("화면과 설명의 일치: 부분적으로 일치" via
+    # the relayed AI review): the narration says "without those beads" but
+    # the shot only re-lit the SAME beaded stripe -- it never showed an
+    # actually bead-free stripe. This second stripe, identical paint
+    # material, zero beads, sitting right beside the first one, makes the
+    # comparison literally true on screen, not just implied by lighting.
+    plain_stripe = cube("Painted lane stripe (no beads)", (PLAIN_STRIPE_X, 0, 0.0015), (0.42, 30.0, 0.003), paint_mat)
+    return stripe, beads, plain_stripe
 
 
 def hero_beads(beads, n=3):
@@ -263,7 +275,7 @@ def main():
     ray_in_mat = material("Illustrative incoming ray", (0.55, 0.75, 1.0), rough=1.0, emission=7.0)
     ray_out_mat = material("Illustrative outgoing ray", (1.0, 0.75, 0.2), rough=1.0, emission=9.0)
 
-    stripe, beads = build_scene(beads_mat, paint_mat, asphalt_mat)
+    stripe, beads, plain_stripe = build_scene(beads_mat, paint_mat, asphalt_mat)
     hero = hero_beads(beads)
     roadside_delineators(post_mat, beads_mat)
 
@@ -392,9 +404,17 @@ def main():
                 seg.hide_render = reveal <= 0.02
                 seg.scale = (1, 1, min(1.0, max(0.02, reveal * 2 - i)))
         elif shot["id"] == "paint_dull_comparison":
+            # Real human_first_view feedback: the narration says "without
+            # those beads" but this shot only re-lit the SAME beaded stripe
+            # under ambient light -- the comparison was never actually
+            # shown. Recentring on the midpoint between the beaded stripe
+            # (x=0) and the real bead-free stripe (x=PLAIN_STRIPE_X) and
+            # pulling back puts both in frame together under the identical
+            # ambient light, so "with vs without" is literally on screen.
+            center_x = PLAIN_STRIPE_X / 2
             angle = lerp(-0.25, 0.25, t)
-            cam_pos = (math.sin(angle) * 0.9, -0.55 + math.cos(angle) * -0.05, 0.22)
-            target = (0, 1.0, 0.01)
+            cam_pos = (center_x + math.sin(angle) * 0.9, -1.05 + math.cos(angle) * -0.05, 0.34)
+            target = (center_x, 1.0, 0.01)
             set_camera(cam, cam_pos, target)
             ambient.hide_render = False
             point_light(ambient, (2.4, 0.5, 1.6), target)
