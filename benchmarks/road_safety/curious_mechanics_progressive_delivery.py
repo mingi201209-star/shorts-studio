@@ -13,6 +13,7 @@ from benchmarks.road_safety import episode2_film as film
 from benchmarks.road_safety import curious_mechanics_delivery as delivery
 from benchmarks.road_safety import curious_mechanics_fast_batch as fast
 from shorts_studio.factory import curious_mechanics_timeline as timeline
+from shorts_studio.factory.rumble_duration import expected_frame_count
 from shorts_studio.factory.curious_mechanics_native_qa import verify
 
 
@@ -53,7 +54,7 @@ def assemble(root, source, variant, out):
     manifest = delivery.ROOT / 'examples/experiments/curious-mechanics-progressive-B.json'
     audio_manifest = delivery.ROOT / f'examples/experiments/curious-mechanics-progressive-{variant}.json'
     episode = timeline.load_episode(manifest)
-    expected_frames = timeline.expected_frame_count(episode['total_frames'] / episode['fps'], episode['fps'])
+    expected_frames = expected_frame_count(episode['total_frames'] / episode['fps'], episode['fps'])
     expected_seconds = expected_frames / episode['fps']
     roles = ['_'.join(s['id'].split('_')[2:]) for s in episode['shots']]
     assert len(roles) == len(set(roles)), 'Native visual role returned'
