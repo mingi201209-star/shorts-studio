@@ -348,7 +348,7 @@ def main():
             cy = lerp(-7.0, 0.0, min(1.0, phase))
             car_root.location = (cx, cy, 0)
             car_root.rotation_euler = (math.radians(-9.0 * settle), 0, math.radians(-14.0))
-            cam_pos = (cx - 3.2, cy - 1.6, 1.25)
+            cam_pos = (cx - 6.5, cy - 3.2, 1.9)
             target = (BARRIER_X - 0.3, cy + 0.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
@@ -392,12 +392,14 @@ def main():
                               wheel_point.z + 0.12))
             target = wheel_point
             set_camera(cam, cam_pos, target)
-            macro_key.hide_render = False
-            # Preview run 42387613693 (frame 541): energy=60 at ~0.3m
-            # overexposed the whole frame to flat white. An AREA light this
-            # close only needs a few watts, not dozens.
-            macro_key.location = Vector(cam_pos) + Vector((0.1, 0.2, 0.3))
-            macro_key.data.energy = 4.0
+            # Preview runs 42387613693 and 42387885176: energy=60, then
+            # energy=4.0, both still blew the frame to flat white -- at
+            # this macro range (camera ~0.3-0.5 units from the subject)
+            # irradiance from ANY nearby area light scales too fast with
+            # 1/distance^2 to tune by trial. Dropping the dedicated macro
+            # light entirely and relying on the same sun + world ambient
+            # every other shot uses removes that failure mode outright.
+            key.data.energy = 3.6
 
         elif shot["id"] == "sloped_barrier_success":
             sloped_barrier.hide_render = False
@@ -418,7 +420,7 @@ def main():
             # Same wide side-on camera device as flat_wall_fail (mirrored
             # on purpose, see that shot's comment) so the two outcomes are
             # a literal, legible before/after comparison.
-            cam_pos = (cx - 3.2, cy - 1.6, 1.25)
+            cam_pos = (cx - 6.5, cy - 3.2, 1.9)
             target = (BARRIER_X - 0.3, cy + 0.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
