@@ -1,10 +1,15 @@
 name: Curious Mechanics real vibration-transfer close-up proof
 on:
+  workflow_dispatch:
+    inputs:
+      source_run:
+        description: Existing proof run whose native artifacts should be reviewed
+        required: true
+        type: string
   push:
     branches: [fix/curious-mechanics-vibration-transfer-20261107]
     paths:
       - shorts_studio/factory/curious_mechanics_timeline.py
-      - .github/workflows/curious-mechanics-vibration-transfer-proof.yml
 permissions:
   contents: read
   actions: read
@@ -15,6 +20,7 @@ env:
   RENDERER_SOURCE_SHA256: 04fdc326a6a8a874840072ce82529e777ff0956f5c17c991ad8f87b4e59ac765
 jobs:
   native-proof:
+    if: github.event_name == 'push'
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     strategy:
@@ -67,6 +73,7 @@ jobs:
 
   review-clip:
     needs: native-proof
+    if: ${{ always() && (needs.native-proof.result == 'success' || github.event_name == 'workflow_dispatch') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -75,11 +82,13 @@ jobs:
         with:
           pattern: vibration-transfer-proof-*
           path: ${{ runner.temp }}/proof
+          run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run || github.run_id }}
       - name: Verify and assemble the actual consecutive frames
         run: |
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
+          python -m pip install pydantic
           mkdir -p "$RUNNER_TEMP/frames" "$RUNNER_TEMP/review"
           find "$RUNNER_TEMP/proof" -name 'frame_*.png' -exec cp {} "$RUNNER_TEMP/frames/" \;
           test "$(find "$RUNNER_TEMP/frames" -name 'frame_*.png' | wc -l)" = 22
