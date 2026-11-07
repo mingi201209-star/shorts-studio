@@ -7,6 +7,9 @@ on:
     branches: [fix/curious-mechanics-driver-vibration-reaction-20261108]
     paths:
       - .github/workflows/curious-mechanics-driver-vibration-reaction-recover-b.yml
+      - benchmarks/road_safety/curious_mechanics_delivery.py
+      - benchmarks/road_safety/curious_mechanics_progressive_delivery.py
+      - tests/test_curious_mechanics_delivery.py
 permissions:
   contents: read
   actions: read
