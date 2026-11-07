@@ -6,48 +6,48 @@
   "fps": 30,
   "resolution": [1080, 1920],
   "cycles_samples": 32,
-  "total_frames": 960,
-  "_frame_plan_note": "Target 32.0s matching the series' established pacing (see road-paint-manifest.json). Per-beat frame windows below are this episode's own estimate, proportional to each narration beat's approximate speaking length; the real captured narration only has to sum to <=32.0s total (curious_mechanics_audio.py's slack mechanism), it does not have to match these per-shot boundaries exactly.",
+  "total_frames": 720,
+  "_frame_plan_note": "Real captured narration (production run 42388630867's speech job) summed to 21.768s across 6 beats. The first attempt used target_seconds=32.0, which the audio build's even-slack distribution turned into ~1.7s of dead air per beat -- over curious_mechanics_audio.py's/episode2_film.py's 0.9s LONG_DEAD_AIR ceiling, so the audio job hard-failed. target_seconds=24.0 keeps slack to ~0.37s/beat, comfortably under that limit, and also gives this episode a snappier pace than the original. Per-beat frame windows below are this episode's own estimate, proportional to each narration beat's approximate speaking length; the real captured narration only has to sum to <=24.0s total, it does not have to match these per-shot boundaries exactly.",
   "shots": [
     {
       "id": "barrier_establish",
       "start": 1,
-      "end": 165,
+      "end": 124,
       "visual_proof": "Wide 3/4 elevated angle on a straight barrier run receding into the distance, slow push-in -- the only wide establishing shot in the episode",
       "narration_en": "This low concrete wall along the highway is called a Jersey barrier."
     },
     {
       "id": "flat_wall_fail",
-      "start": 166,
-      "end": 330,
+      "start": 125,
+      "end": 248,
       "visual_proof": "Low behind-car chase angle: a car approaches a flat-faced wall at a shallow angle and stops dead, nose dipping down on impact -- the only flat-wall shot, and the only low chase-cam shot used for the 'before' half of the comparison",
       "narration_en": "Hit a flat wall at an angle, and the car just stops dead."
     },
     {
       "id": "barrier_cross_section",
-      "start": 331,
-      "end": 465,
+      "start": 249,
+      "end": 349,
       "visual_proof": "Macro, orthogonal side-on cutaway of the barrier's profile with the camera orbiting ~30 degrees to reveal the sloped wedge shape in silhouette -- no car in frame, the only profile/cutaway shot",
       "narration_en": "This barrier's face isn't flat. It's angled, like a ramp."
     },
     {
       "id": "wheel_climb_macro",
-      "start": 466,
-      "end": 615,
+      "start": 350,
+      "end": 462,
       "visual_proof": "Extreme macro at wheel height, tight on the car's front tire riding up the sloped face -- the only extreme close-up shot and the only one with the wheel (not the whole car) as the subject",
       "narration_en": "A wheel that hits it climbs the slope instead of digging in."
     },
     {
       "id": "sloped_barrier_success",
-      "start": 616,
-      "end": 795,
+      "start": 463,
+      "end": 597,
       "visual_proof": "Same low chase angle and approach geometry as flat_wall_fail, but against the sloped barrier: the car rides up and redirects, continuing forward roughly parallel to the barrier instead of stopping dead -- a deliberate mirrored pair with flat_wall_fail so the before/after comparison is literally on screen, same device as road-paint's with/without-beads comparison shot",
       "narration_en": "That lifts the car just enough to steer it back into its lane."
     },
     {
       "id": "barrier_closing",
-      "start": 796,
-      "end": 960,
+      "start": 598,
+      "end": 720,
       "visual_proof": "High overhead angle looking down the barrier line at dusk, slow lateral pan only -- the only overhead shot and the only pure-pan camera move in the episode",
       "narration_en": "One curve in a concrete wall keeps cars from becoming projectiles."
     }
