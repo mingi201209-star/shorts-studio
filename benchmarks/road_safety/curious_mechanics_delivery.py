@@ -65,7 +65,7 @@ def export(a):
         write(a.out/f'{v}.json',dict(variant=v,shards=shards,canonical_camera_by_shot=canonical,audio=files,controller_png_qa='ACTUALLY_EXECUTED',upload_authorized=False))
     write(a.out/'manifest.json',dict(status='VERIFIED_NATIVE_EXPORT',font_sha256=digest(a.out/'fonts/DejaVuSans.ttf'),files={str(p.relative_to(a.out)):digest(p) for p in a.out.rglob('*.json') if p.name not in ('manifest.json','failure.json')},upload_authorized=False));print('EXPORT_READY',digest(a.out/'manifest.json'),flush=True)
 
-def semantic(final,out,episode,audio):
+def semantic(final,out,episode,audio,timestamp_overrides=None):
     from shorts_studio.visual_qa import ClipSemanticVisionProvider
     provider=ClipSemanticVisionProvider();base=timeline.original.load_episode(ROOT/'examples/factory/rumble-episode2-30s.json');by_id={s['id']:s for s in base['shots']};results=[]
     for shot in episode['shots']:
@@ -75,10 +75,17 @@ def semantic(final,out,episode,audio):
         # it reuses, not a style of its own); fall back to the plain id-suffix
         # for callers (e.g. curious_mechanics_fast_batch.py) that build their
         # own episode dict without calling load_episode(), where role==base.
-        t=((shot['start']+shot['end'])/2-1)/30;style=timeline._STYLE.get(shot['id']) or '_'.join(shot['id'].split('_')[2:]);reference=by_id[style];p=out/f'semantic-{shot["id"]}.png';film.run(['ffmpeg','-v','error','-y','-ss',t,'-i',final,'-frames:v','1',p])
+        default_t=((shot['start']+shot['end'])/2-1)/30
+        t=(timestamp_overrides or {}).get(shot['id'],default_t)
+        assert (shot['start']-1)/30 <= t <= (shot['end']-1)/30
+        style=timeline._STYLE.get(shot['id']) or '_'.join(shot['id'].split('_')[2:]);reference=by_id[style];p=out/f'semantic-{shot["id"]}.png';film.run(['ffmpeg','-v','error','-y','-ss',t,'-i',final,'-frames:v','1',p])
         with Image.open(p) as im:im.convert('RGB').crop((0,0,1080,1400)).save(p)
         requirements,positive_labels=semantic_evidence(shot['id'],style,reference)
-        beat=next(b for b in audio['beats'] if b['start']<=t<b['end']);verdict=provider.evaluate(str(p),requirements,narration=beat['narration_en'],positive_labels=positive_labels,negative_labels=list(timeline.original.SEMANTIC_NEGATIVE_LABELS),media_box_applied=True);results.append(dict(shot=shot['id'],timestamp=t,**verdict));write(out/'semantic-results.json',results)
+        beat=next(b for b in audio['beats'] if b['start']<=t<b['end']);verdict=provider.evaluate(str(p),requirements,narration=beat['narration_en'],positive_labels=positive_labels,negative_labels=list(timeline.original.SEMANTIC_NEGATIVE_LABELS),media_box_applied=True);results.append(dict(
+            shot=shot['id'],timestamp=t,default_timestamp=default_t,
+            sample_role=('nearest_unreplaced_native_frame'
+                         if t != default_t else 'canonical_midpoint'),
+            **verdict));write(out/'semantic-results.json',results)
     assert all(r['status']=='PASS' for r in results),('SEMANTIC_VISUAL_QA',results)
     return results
 

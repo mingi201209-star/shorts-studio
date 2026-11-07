@@ -4,6 +4,8 @@ from pathlib import Path
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 import pytest
 from benchmarks.road_safety.curious_mechanics_delivery import validate_layout,LEGACY,semantic_evidence
+from benchmarks.road_safety.curious_mechanics_progressive_delivery import semantic_sample_overrides_for_driver
+from shorts_studio.studio_org.driver_cut import frame_map
 from shorts_studio.factory import curious_mechanics_timeline as timeline
 
 def spans():
@@ -82,3 +84,20 @@ def test_top_and_side_road_cut_use_truthful_distinct_semantic_evidence():
     assert top_labels != side_labels
     assert side_requirements == reference['visual_proof']
     assert side_labels == list(timeline.original.semantic_labels('road_cut'))
+
+
+def test_driver_edit_keeps_native_semantic_probe_on_unreplaced_frame():
+    episode = timeline.load_episode(
+        'examples/experiments/curious-mechanics-progressive-B.json'
+    )
+    replacements = frame_map('B')
+    overrides = semantic_sample_overrides_for_driver(episode, replacements)
+    shot = next(
+        row for row in episode['shots']
+        if row['id'] == 'B_06_rumble_mechanism_close'
+    )
+    sample_frame = int(round(overrides[shot['id']] * 30)) + 1
+
+    assert sample_frame == 658
+    assert shot['start'] <= sample_frame <= shot['end']
+    assert sample_frame not in replacements

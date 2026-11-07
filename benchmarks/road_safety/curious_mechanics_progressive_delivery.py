@@ -39,6 +39,26 @@ def compose_editorial_filters(caption_filter, diagram=None):
     return ','.join(filters)
 
 
+def semantic_sample_overrides_for_driver(episode, replacements):
+    """Keep native-shot QA on a real native frame when an edit covers its midpoint."""
+    overrides = {}
+    for shot in episode['shots']:
+        midpoint = (shot['start'] + shot['end']) / 2
+        default_frame = int(round(midpoint))
+        if default_frame not in replacements:
+            continue
+        candidates = [
+            frame for frame in range(shot['start'], shot['end'] + 1)
+            if frame not in replacements
+        ]
+        if not candidates:
+            continue
+        chosen = min(candidates, key=lambda frame: (abs(frame - midpoint), frame))
+        assert chosen not in replacements
+        overrides[shot['id']] = (chosen - 1) / 30
+    return overrides
+
+
 # Two audited renderer generations of render_curious_mechanics.py coexist for
 # this native asset bed: PRE_STEER rendered the first 25 shards (frames
 # 1-750, where lane_return_heading is always 0, so their pixels are
@@ -115,6 +135,7 @@ def assemble(root, source, variant, out, driver=None):
     for name in ['film.ass','narration.wav','audio-validation.json']:
         shutil.copyfile(source/'audio'/name,out/name)
     driver_integrity = None
+    semantic_sample_overrides = {}
     native_inputs = [clip for _, clip, _, _, _ in selected]
     if driver is not None:
         driver_integrity = inspect_pilot(
@@ -124,6 +145,8 @@ def assemble(root, source, variant, out, driver=None):
                       pilot_proof=driver/'driver-pilot.json',
                       native_manifest=manifest)
         replacements = frame_map(variant)
+        semantic_sample_overrides = semantic_sample_overrides_for_driver(
+            episode, replacements)
         frame_sources = {}
         for proof, _, _, _, folder in selected:
             for n in proof['frame_numbers']:
@@ -194,7 +217,9 @@ def assemble(root, source, variant, out, driver=None):
     gaps=film.silence(final)
     levels=film.check_loudness(film.loudness(final))
     viewer=film.original_video_qa(final,out,audio['cues'])
-    meaning=delivery.semantic(final,out,episode,audio)
+    meaning=delivery.semantic(
+        final,out,episode,audio,
+        timestamp_overrides=semantic_sample_overrides)
     human_meaning = []
     if driver is not None:
         provider = ClipSemanticVisionProvider()
