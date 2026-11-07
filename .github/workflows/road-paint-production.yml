@@ -10,6 +10,9 @@ on:
     branches: [road-paint-retroreflective-20261106]
     paths:
       - .github/workflows/road-paint-production.yml
+      - examples/experiments/road-paint-speech-plan.json
+      - benchmarks/road_safety/curious_mechanics_speech.py
+      - benchmarks/road_safety/curious_mechanics_audio.py
 permissions:
   contents: read
   actions: read
