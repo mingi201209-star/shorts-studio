@@ -51,6 +51,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install Pillow pydantic
       - name: Download the captured narration
         env:
           GH_TOKEN: ${{ github.token }}
