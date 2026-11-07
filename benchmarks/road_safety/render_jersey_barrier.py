@@ -127,27 +127,6 @@ def set_camera(cam, location, target):
     cam.rotation_euler = (Vector(target) - cam.location).to_track_quat("-Z", "Y").to_euler()
 
 
-def point_light(light, location, target):
-    light.location = Vector(location)
-    light.rotation_euler = (Vector(target) - light.location).to_track_quat("-Z", "Y").to_euler()
-
-
-KEY_REFERENCE_DISTANCE = 4.0
-KEY_REFERENCE_ENERGY = 900.0
-
-
-def aim_key_light(light, location, target):
-    """Same inverse-square compensation as render_road_paint.py's
-    aim_headlight(): this single key light is reused from a 9m wide
-    establishing shot down to a 0.3m macro wheel shot, so its energy has to
-    scale with distance^2 or it would be invisible wide and blown out
-    macro."""
-    point_light(light, location, target)
-    distance = (Vector(target) - Vector(location)).length
-    ratio = max(distance, 0.01) / KEY_REFERENCE_DISTANCE
-    light.data.energy = KEY_REFERENCE_ENERGY * ratio * ratio
-
-
 BARRIER_X = 2.4
 BASE_HALF_WIDTH = 0.30
 BARRIER_HEIGHT = 0.81
@@ -250,17 +229,21 @@ def main():
     scene.render.image_settings.file_format = "PNG"
     scene.render.image_settings.color_mode = "RGB"
     scene.view_settings.view_transform = "AgX"
-    scene.world.color = (0.30, 0.33, 0.40)
+    scene.world.color = (0.10, 0.12, 0.19)
     if scene.world.use_nodes:
         bg = scene.world.node_tree.nodes.get("Background")
         if bg is not None:
-            bg.inputs["Color"].default_value = (0.30, 0.33, 0.40, 1)
+            bg.inputs["Color"].default_value = (0.10, 0.12, 0.19, 1)
             bg.inputs["Strength"].default_value = 1.0
 
-    asphalt_mat = material("Dusk asphalt", (0.07, 0.072, 0.078), rough=0.9)
+    # Preview run 42386915851: a near-background-grey concrete against a
+    # similarly bright sky made the barrier nearly invisible in every chase
+    # shot -- a much darker dusk sky plus a noticeably lighter, warmer
+    # concrete gives the barrier real contrast against the background.
+    asphalt_mat = material("Dusk asphalt", (0.055, 0.056, 0.06), rough=0.9)
     asphalt_grain(asphalt_mat)
-    flat_wall_mat = material("Flat wall concrete", (0.62, 0.61, 0.58), rough=0.75)
-    barrier_mat = material("Jersey barrier concrete", (0.64, 0.63, 0.60), rough=0.72)
+    flat_wall_mat = material("Flat wall concrete", (0.80, 0.77, 0.70), rough=0.7)
+    barrier_mat = material("Jersey barrier concrete", (0.82, 0.79, 0.72), rough=0.68)
     body_mat = material("Car body paint", (0.72, 0.1, 0.08), metal=0.3, rough=0.35)
     glass_mat = material("Car glass", (0.04, 0.05, 0.06), rough=0.15)
     wheel_mat = material("Car tyre", (0.015, 0.015, 0.016), rough=0.8)
@@ -286,8 +269,15 @@ def main():
     key = bpy.context.object
     key.name = "Low dusk sun"
     key.data.angle = 0.2
-    key.rotation_euler = (math.radians(68), 0, math.radians(35))
-    key.data.energy = 2.6
+    # Set once and never touched again. Real bug found in preview run
+    # 42386915851: barrier_establish called point_light() (a position/target
+    # aimer meant for the macro area light) on this SUN with a degenerate
+    # (0,0,0)->(0,0,0) target, which silently overwrote this rotation with
+    # an undefined one -- every later shot inherited that broken direction,
+    # explaining the flat, low-contrast lighting across the whole preview.
+    # A directional SUN only ever needs a rotation, never a location/target.
+    key.rotation_euler = (math.radians(55), 0, math.radians(35))
+    key.data.energy = 3.6
 
     bpy.ops.object.light_add(type="AREA", location=(0, -4, 3))
     macro_key = bpy.context.object
@@ -322,8 +312,7 @@ def main():
             cam_pos = (lerp(6.5, 4.2, t), lerp(-10.0, -6.0, t), lerp(3.4, 2.4, t))
             target = (BARRIER_X, cam_pos[1] + 7.0, 0.5)
             set_camera(cam, cam_pos, target)
-            aim_key_light(key, Vector((0, 0, 0)), Vector((0, 0, 0)))
-            key.data.energy = 2.6
+            key.data.energy = 3.6
 
         elif shot["id"] == "flat_wall_fail":
             flat_wall.hide_render = False
@@ -337,35 +326,50 @@ def main():
             cam_pos = (cx - 1.4, cy - 4.6, 1.15)
             target = (BARRIER_X - 0.6, cy + 2.5, 0.5)
             set_camera(cam, cam_pos, target)
-            key.data.energy = 2.6
+            key.data.energy = 3.6
 
         elif shot["id"] == "barrier_cross_section":
+            # Real bug in preview run 42386915851 (frame 399, fully black):
+            # the camera sat only ~0.2-0.7 units from the target, nearly
+            # grazing the barrier's own solid cross-section instead of
+            # standing back to actually frame the cutaway end cap. Pulling
+            # the whole orbit well clear of the barrier's y=-20 end (camera
+            # now 3.2-4.6 units out, not <1) gives it room to see the slice.
             sloped_barrier.hide_render = False
             angle = lerp(-0.55, 0.55, t)
-            radius = 1.35
-            cam_pos = (BARRIER_X + math.sin(angle) * radius, -19.3 + math.cos(angle) * -radius * 0.4,
-                       lerp(0.35, 0.55, (math.sin(t * math.tau) * 0.5 + 0.5)))
+            radius = 1.6
+            cam_pos = (BARRIER_X + math.sin(angle) * radius,
+                       -20 - 2.4 - math.cos(angle) * 1.0,
+                       lerp(0.35, 0.6, (math.sin(t * math.tau) * 0.5 + 0.5)))
             target = (BARRIER_X, -20, 0.4)
             set_camera(cam, cam_pos, target)
-            key.data.energy = 2.6
+            key.data.energy = 3.6
 
         elif shot["id"] == "wheel_climb_macro":
+            # Real bug in preview run 42386915851 (frame 541, a close-up of
+            # a flat mesh interior face): the camera offset put it INSIDE
+            # the car body's own bounding box (body spans roughly x in
+            # [0.52, 2.32] around the car's resting position, and the old
+            # offset landed at x in [1.65, 1.85]). Dropping the approach
+            # heading to zero for this shot (it is a static explanatory
+            # close-up, not a moving approach) and placing the camera
+            # clearly beyond the body's +x edge fixes that.
             sloped_barrier.hide_render = False
             car_root.hide_render = False
             car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.08, 0, 0)
-            car_root.rotation_euler = (0, 0, math.radians(-14.0))
+            car_root.rotation_euler = (0, 0, 0)
             lift = min(1.0, t * 1.3) * 0.22
             for w in front_wheels:
                 w.location.z = CAR_WHEEL_RADIUS + lift
             wheel_point = car_root.matrix_world @ front_wheels[0].location
-            cam_pos = Vector((wheel_point.x - lerp(0.55, 0.35, t),
+            cam_pos = Vector((wheel_point.x + lerp(0.55, 0.38, t),
                               wheel_point.y + math.sin(t * math.tau * 0.5) * 0.15,
                               wheel_point.z + 0.12))
             target = wheel_point
             set_camera(cam, cam_pos, target)
             macro_key.hide_render = False
             macro_key.location = Vector(cam_pos) + Vector((0.1, 0.2, 0.3))
-            macro_key.data.energy = 40
+            macro_key.data.energy = 60
 
         elif shot["id"] == "sloped_barrier_success":
             sloped_barrier.hide_render = False
@@ -386,7 +390,7 @@ def main():
             cam_pos = (cx - 1.4, cy - 4.6, 1.15)
             target = (cx + 0.3, cy + 2.5, 0.5)
             set_camera(cam, cam_pos, target)
-            key.data.energy = 2.6
+            key.data.energy = 3.6
 
         elif shot["id"] == "barrier_closing":
             sloped_barrier.hide_render = False
@@ -397,7 +401,7 @@ def main():
             cam_pos = (BARRIER_X + 1.5, pan, 9.0)
             target = (BARRIER_X, pan + 6.0, 0.3)
             set_camera(cam, cam_pos, target)
-            key.data.energy = 2.9
+            key.data.energy = 3.9
 
         else:
             raise ValueError(f"unknown shot id {shot['id']!r}")
