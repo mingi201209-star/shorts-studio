@@ -409,15 +409,29 @@ def main():
             # under ambient light -- the comparison was never actually
             # shown. Recentring on the midpoint between the beaded stripe
             # (x=0) and the real bead-free stripe (x=PLAIN_STRIPE_X) and
-            # pulling back puts both in frame together under the identical
-            # ambient light, so "with vs without" is literally on screen.
+            # pulling back puts both in frame together, so "with vs without"
+            # is literally on screen.
+            #
+            # Second real bug, found by actually inspecting the rendered
+            # frames (not just trusting the QA gates) after the first fix:
+            # retroreflection is a near-camera-light effect by definition --
+            # a bead only bounces light straight back toward where it came
+            # from, so it only glints when the light source is close to the
+            # viewpoint. The off-axis "ambient" light used here put the
+            # light nowhere near the camera, so NEITHER stripe retroreflected
+            # and they read as equally flat. Switching to the same near-camera
+            # headlight the other shots use makes the beaded stripe actually
+            # glint back at the lens while the plain stripe, lit the same way
+            # but with no beads to retroreflect, stays comparatively dim --
+            # the real physical difference the narration describes.
             center_x = PLAIN_STRIPE_X / 2
             angle = lerp(-0.25, 0.25, t)
             cam_pos = (center_x + math.sin(angle) * 0.9, -1.05 + math.cos(angle) * -0.05, 0.34)
             target = (center_x, 1.0, 0.01)
             set_camera(cam, cam_pos, target)
-            ambient.hide_render = False
-            point_light(ambient, (2.4, 0.5, 1.6), target)
+            ambient.hide_render = True
+            headlight.hide_render = False
+            aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
         elif shot["id"] == "night_wide_safety":
             cam_pos = (0, lerp(-2.6, -1.3, t), 0.58)
             target = (0, cam_pos[1] + 4.0, 0.01)

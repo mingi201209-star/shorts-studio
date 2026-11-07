@@ -28,8 +28,12 @@ env:
   BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
 jobs:
   speech:
-    # Cheap preview run (42371773972) confirmed the real with/without-beads
-    # comparison reads clearly -- re-enabled.
+    # Gated off again: visually inspecting the 42371913787 frames showed the
+    # with/without-beads comparison still didn't read (both stripes equally
+    # flat under off-axis ambient light -- retroreflection needs a near-
+    # camera light to show up at all). Re-lit with the headlight instead;
+    # re-enable once a cheap preview confirms the glint actually shows.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -89,7 +93,8 @@ jobs:
           retention-days: 14
 
   native:
-    # Re-enabled, see the note on the speech job above.
+    # Gated off, see the note on the speech job above.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
