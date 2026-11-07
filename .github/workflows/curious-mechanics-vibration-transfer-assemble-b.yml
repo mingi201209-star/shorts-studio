@@ -3,7 +3,7 @@ name: Curious Mechanics B assemble preserved vibration-transfer render
 # shards succeeded there; its final job failed before QA because older source
 # assets no longer resolve by artifact name. This workflow uses immutable,
 # unexpired artifact IDs and verifies both archive digests before assembly.
-+# It never runs Blender and never changes the preserved render inputs.
+# It never runs Blender and never changes the preserved render inputs.
 on:
   push:
     branches: [fix/curious-mechanics-vibration-transfer-20261107]
