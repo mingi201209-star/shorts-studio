@@ -37,10 +37,12 @@ def expected_frame_count(seconds, fps=30):
 
 def progressive_cuts(ends, roles=PROGRESSIVE_STYLES, *, total_frames=900):
     normalized = _normalize_progressive_roles(roles)
-    if (not isinstance(ends,list) or len(ends)!=len(normalized)
+    if (not isinstance(total_frames, int) or isinstance(total_frames, bool)
+            or total_frames < 30 or not isinstance(ends, list) or not ends
+            or len(ends) != len(normalized)
             or any(type(n) is not int for n in ends)
-            or ends[-1]!=total_frames or ends[0]<30
-            or any(b-a<30 for a,b in zip(ends,ends[1:]))):
+            or ends[-1] != total_frames or ends[0] < 30
+            or any(b-a < 30 for a,b in zip(ends,ends[1:]))):
         raise ValueError('invalid progressive native shot coverage')
     return list(zip(ends,roles))
 ROAD_X_HALF_SPAN=32.0
