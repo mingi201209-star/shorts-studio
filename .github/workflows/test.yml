@@ -12,3 +12,26 @@ jobs:
           python-version: '3.11'
       - run: pip install -e '.[dev]'
       - run: pytest -q
+  blender-motion-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb
+      - name: Render real multi-topic Blender frames
+        run: |
+          mkdir -p "$RUNNER_TEMP/motion-smoke"
+          xvfb-run -a blender -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_motion_recipes_smoke.py -- --out "$RUNNER_TEMP/motion-smoke"
+          test -s "$RUNNER_TEMP/motion-smoke/motion-proof.json"
+          test "$(find "$RUNNER_TEMP/motion-smoke" -name 'motion_*.png' | wc -l)" -eq 5
+      - name: Upload rendered PNGs and proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: four-topics-blender-render-proof
+          path: ${{ runner.temp }}/motion-smoke/
+          if-no-files-found: warn
+          retention-days: 7
