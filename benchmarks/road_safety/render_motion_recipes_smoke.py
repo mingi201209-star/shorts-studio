@@ -32,6 +32,7 @@ BlenderMotionDriver = sys.modules[f"{factory_name}.blender_motion_adapter"].Blen
 
 p = argparse.ArgumentParser()
 p.add_argument("--out", type=Path, required=True)
+p.add_argument("--full-900", action="store_true", help="Render 900 frames at 1080x1920; demonstration, not final film")
 args = p.parse_args(sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else [])
 args.out.mkdir(parents=True, exist_ok=True)
 bpy.ops.object.select_all(action="SELECT")
@@ -69,7 +70,7 @@ for i, (kind, channels) in enumerate(scenes):
         controls[channel] = control
         parent = control
     cube(f"{kind}-visible-geometry", parent, (0.65, 0.20, 0.20))
-    recipe = dict(kind=kind, object_id=root.name, start_frame=2, end_frame=8,
+    recipe = dict(kind=kind, object_id=root.name, start_frame=1 if args.full_900 else 2, end_frame=900 if args.full_900 else 8,
                   frequency_hz=3, amplitude=0.10)
     driver = BlenderMotionDriver(bpy.data.objects, recipe, fps=30)
     driver.capture_rest()
@@ -86,12 +87,13 @@ bpy.context.object.data.size = 12
 scene = bpy.context.scene
 engines = {item.identifier for item in scene.render.bl_rna.properties["engine"].enum_items}
 scene.render.engine = next((e for e in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE") if e in engines), "BLENDER_WORKBENCH")
-scene.render.resolution_x = 640
-scene.render.resolution_y = 360
+scene.render.resolution_x = 1080 if args.full_900 else 640
+scene.render.resolution_y = 1920 if args.full_900 else 360
 scene.render.resolution_percentage = 100
 scene.render.image_settings.file_format = "PNG"
 proof = []
-for frame in (1, 3, 5, 7, 9):
+frames = range(1, 901) if args.full_900 else (1, 3, 5, 7, 9)
+for frame in frames:
     motion = {driver.recipe["kind"]: driver.apply(frame) for driver in drivers}
     scene.frame_set(frame)
     bpy.context.view_layer.update()
@@ -99,8 +101,10 @@ for frame in (1, 3, 5, 7, 9):
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
     proof.append(dict(frame=frame, sha256=hashlib.sha256(path.read_bytes()).hexdigest(), motion=motion))
-active = [p for p in proof if 2 <= p["frame"] <= 8]
-if len({p["sha256"] for p in active}) != len(active):
-    raise RuntimeError("active motion preview produced duplicate images")
+active = [p for p in proof if (1 <= p["frame"] <= 900 if args.full_900 else 2 <= p["frame"] <= 8)]
+if len({p["sha256"] for p in active}) < (50 if args.full_900 else len(active)):
+    raise RuntimeError("active motion preview has insufficient unique frames")
+if args.full_900 and len(proof) != 900:
+    raise RuntimeError("900-frame render incomplete")
 (args.out / "motion-proof.json").write_text(json.dumps(proof, indent=2))
-print("MULTI_TOPIC_NATIVE_MOTION_PREVIEW_PASS", flush=True)
+print("MULTI_TOPIC_900_FRAME_RENDER_PASS" if args.full_900 else "MULTI_TOPIC_NATIVE_MOTION_PREVIEW_PASS", flush=True)
