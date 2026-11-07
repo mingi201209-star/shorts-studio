@@ -123,6 +123,7 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path) -> dict:
         "captions_visible": verify_captions_visible(
             final, [((c["start"] + c["end"]) / 2, band) for c in cues], out),
     }
+    print("ROAD_PAINT_ORIGINAL_QA " + json.dumps(original_qa), flush=True)
     failing = [k for k, v in original_qa.items() if v["status"] != "PASS"]
     if failing:
         raise ValueError(f"ORIGINAL_VIDEO_QA_FAILED: {failing}")
