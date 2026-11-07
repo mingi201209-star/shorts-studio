@@ -1,7 +1,7 @@
 name: Extract road-paint final mp4 (base64-in-log, read-only)
-# Downloads the completed road-paint-final artifact (run 42371913787, real
-# ROAD_PAINT_FILM_PASS 401fc70aaa177aeb29b3d5ad970a9958b8dd3b0484124c37d54d328985efbbfc --
-# the with/without-beads literal-comparison fix)
+# Downloads the completed road-paint-final artifact (run 42377722829, real
+# ROAD_PAINT_FILM_PASS 3e193f28e7a455eef54fb9b24c473a2f25382649daf0256f1ce279b570a49ab4 --
+# the headlight-lit with/without-beads comparison fix)
 # and prints the actual mp4 as base64 in the job log, since this sandbox
 # cannot download GitHub Actions artifacts directly.
 on:
@@ -23,7 +23,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/final"
-          gh run download 42371913787 --repo "$GITHUB_REPOSITORY" --name road-paint-final --dir "$RUNNER_TEMP/final"
+          gh run download 42377722829 --repo "$GITHUB_REPOSITORY" --name road-paint-final --dir "$RUNNER_TEMP/final"
           mp4="$RUNNER_TEMP/final/road-paint-retroreflective.mp4"
           ls -la "$mp4"
           sha256sum "$mp4"
