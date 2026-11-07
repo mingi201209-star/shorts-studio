@@ -31,3 +31,11 @@ def test_actual_motion_after_contact():
 def test_out_of_range_frames_fail(frame):
     with pytest.raises(ValueError):
         vehicle_motion(frame, StubTimeline)
+
+
+def test_new_native_render_uses_enhanced_motion_by_default():
+    from pathlib import Path
+    renderer = (Path(__file__).resolve().parents[1] / "benchmarks/road_safety/render_curious_mechanics.py").read_text()
+    assert 'p.add_argument("--legacy-motion", action="store_true"' in renderer
+    assert 'motion=vehicle_motion(absolute_frame, module) if not args.legacy_motion else None' in renderer
+    assert '--enhanced-motion' not in renderer
