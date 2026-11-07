@@ -321,13 +321,25 @@ def main():
             w.location.z = CAR_WHEEL_RADIUS
 
         if shot["id"] == "barrier_establish":
+            # Preview run 42387613693 (frame 81, car bug now fixed): from
+            # this far/high an elevated angle, a 0.81m-tall barrier
+            # perspective-flattens into a thin line -- no sense of it being
+            # a real wall. Much lower and closer, roughly at the barrier's
+            # own height, reads its face and top as actual volume instead.
             sloped_barrier.hide_render = False
-            cam_pos = (lerp(6.5, 4.2, t), lerp(-10.0, -6.0, t), lerp(3.4, 2.4, t))
-            target = (BARRIER_X, cam_pos[1] + 7.0, 0.5)
+            cam_pos = (lerp(0.3, -1.0, t), lerp(-9.5, -5.0, t), lerp(1.1, 0.72, t))
+            target = (BARRIER_X - 0.2, cam_pos[1] + 5.0, 0.35)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
         elif shot["id"] == "flat_wall_fail":
+            # Preview run 42387613693 (frame 261): a close behind-car chase
+            # camera left the wall as a barely-visible sliver at the frame
+            # edge, mostly occluded by the car. A wide side-on angle,
+            # further back and well off to the near side of the road,
+            # keeps both the approaching car and the full wall face in
+            # frame together for the whole shot -- a classic crash-test
+            # side camera, not a chase cam.
             flat_wall.hide_render = False
             set_car_visible(car_root, True)
             phase = min(1.0, t / 0.5)
@@ -336,8 +348,8 @@ def main():
             cy = lerp(-7.0, 0.0, min(1.0, phase))
             car_root.location = (cx, cy, 0)
             car_root.rotation_euler = (math.radians(-9.0 * settle), 0, math.radians(-14.0))
-            cam_pos = (cx - 1.4, cy - 4.6, 1.15)
-            target = (BARRIER_X - 0.6, cy + 2.5, 0.5)
+            cam_pos = (cx - 3.2, cy - 1.6, 1.25)
+            target = (BARRIER_X - 0.3, cy + 0.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -381,8 +393,11 @@ def main():
             target = wheel_point
             set_camera(cam, cam_pos, target)
             macro_key.hide_render = False
+            # Preview run 42387613693 (frame 541): energy=60 at ~0.3m
+            # overexposed the whole frame to flat white. An AREA light this
+            # close only needs a few watts, not dozens.
             macro_key.location = Vector(cam_pos) + Vector((0.1, 0.2, 0.3))
-            macro_key.data.energy = 60
+            macro_key.data.energy = 4.0
 
         elif shot["id"] == "sloped_barrier_success":
             sloped_barrier.hide_render = False
@@ -400,8 +415,11 @@ def main():
             lift = math.sin(lift_phase * math.pi) * 0.22
             for w in front_wheels:
                 w.location.z = CAR_WHEEL_RADIUS + lift
-            cam_pos = (cx - 1.4, cy - 4.6, 1.15)
-            target = (cx + 0.3, cy + 2.5, 0.5)
+            # Same wide side-on camera device as flat_wall_fail (mirrored
+            # on purpose, see that shot's comment) so the two outcomes are
+            # a literal, legible before/after comparison.
+            cam_pos = (cx - 3.2, cy - 1.6, 1.25)
+            target = (BARRIER_X - 0.3, cy + 0.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
