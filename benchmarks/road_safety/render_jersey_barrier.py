@@ -387,9 +387,18 @@ def main():
             for w in front_wheels:
                 w.location.z = CAR_WHEEL_RADIUS + lift
             wheel_point = car_root.matrix_world @ front_wheels[0].location
-            cam_pos = Vector((wheel_point.x + lerp(0.55, 0.38, t),
-                              wheel_point.y + math.sin(t * math.tau * 0.5) * 0.15,
-                              wheel_point.z + 0.12))
+            # Preview run 42388175956 (frame 541, still flat blown-out
+            # grey after removing the macro light): the barrier's own
+            # solid cross-section spans roughly x in [2.1, 2.7] at every
+            # y and any z from 0 to 0.81 -- the lateral-only camera offset
+            # (+0.38 to +0.55 in x from a wheel at x~2.2) put the camera
+            # INSIDE that solid, not clear of it. Only height reliably
+            # clears a shape that runs the full length of the road:
+            # placing the camera above BARRIER_HEIGHT looking down at the
+            # contact point is outside the solid regardless of x or y.
+            cam_pos = Vector((wheel_point.x + 0.12,
+                              wheel_point.y - 0.3 + math.sin(t * math.tau * 0.5) * 0.1,
+                              wheel_point.z + 0.75))
             target = wheel_point
             set_camera(cam, cam_pos, target)
             # Preview runs 42387613693 and 42387885176: energy=60, then
