@@ -268,6 +268,20 @@ def rumble_displacement(frame: int) -> float:
     return 0.008 * math.sin(travel_x(frame) / 0.34 * math.tau)
 
 
+
+def vibration_chain(frame: int) -> dict[str, float]:
+    """Deterministic, visibly phase-delayed wheel -> sprung body response.
+
+    Illustrative motion only, not calibrated vehicle dynamics. Both values
+    share the same absolute timeline across independently rendered shards.
+    """
+    wheel = rumble_displacement(frame)
+    delayed = rumble_displacement(max(1, frame - 3))
+    body = 0.40 * delayed
+    return {"wheel_z_m": wheel, "body_z_m": body,
+            "relative_suspension_z_m": wheel - body}
+
+
 def render_slice(start: int, end: int) -> list[int]:
     if (type(start) is not int or type(end) is not int
             or start < 1 or end > 900 or end < start or end - start > 29):
