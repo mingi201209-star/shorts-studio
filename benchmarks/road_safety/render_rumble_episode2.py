@@ -421,14 +421,15 @@ def main():
         # Small displacement only, not a realistic tire/suspension solver.
         shot=module.shot_for_frame(episode,absolute_frame)
         x=module.travel_x(absolute_frame)
-        bounce=module.rumble_displacement(absolute_frame)
+        vibration=module.vibration_chain(absolute_frame)
+        bounce=vibration["body_z_m"]
         # Motion is a global deterministic x coordinate, not a per-shard reset.
         # Tyres rest on the road; only the sprung body carries the vibration.
         car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
         car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
         for pivot,radius in pivots:
             pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
-            pivot.location=hub_rest[pivot]-Vector((0,0,bounce/car.scale[2]))
+            pivot.location=hub_rest[pivot]+Vector((0,0,vibration["relative_suspension_z_m"]/car.scale[2]))
         scene.frame_set(absolute_frame)
         bpy.context.view_layer.update()
         if shot["id"]!=previous_shot:
@@ -492,7 +493,7 @@ def main():
             car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
             for pivot,rest in hub_rest.items():
-                pivot.location=rest-Vector((0,0,bounce/car.scale[2]))
+                pivot.location=rest+Vector((0,0,vibration["relative_suspension_z_m"]/car.scale[2]))
             bpy.context.view_layer.update()
         contact={o.name:round(min((o.matrix_world@v.co).z for v in o.data.vertices),5)
                  for o in near_tyres}
@@ -503,7 +504,7 @@ def main():
         elapsed=round(time.perf_counter()-start,3)
         sha=hashlib.sha256(frame_path.read_bytes()).hexdigest()
         checksums.append({"frame":absolute_frame,"shot_id":shot["id"],
-                          "absolute_x_m":round(x,7),"sha256":sha,
+                          "absolute_x_m":round(x,7),"vibration_chain":vibration,"sha256":sha,
                           "render_seconds":elapsed,
                           "near_tyre_min_z_m":contact})
         all_times.append(elapsed)
