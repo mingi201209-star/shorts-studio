@@ -28,11 +28,8 @@ env:
   BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
 jobs:
   speech:
-    # TEMPORARILY DISABLED: real feedback said the narration ("without
-    # those beads") and the visual (the same beaded stripe just relit)
-    # didn't actually match. Added a real bead-free second stripe for
-    # paint_dull_comparison; checking cheaply before another full run.
-    if: false
+    # Cheap preview run (42371773972) confirmed the real with/without-beads
+    # comparison reads clearly -- re-enabled.
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -92,8 +89,7 @@ jobs:
           retention-days: 14
 
   native:
-    # TEMPORARILY DISABLED: see the note on the speech job above.
-    if: false
+    # Re-enabled, see the note on the speech job above.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
