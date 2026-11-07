@@ -4,34 +4,34 @@
       "id": "jersey-barrier-ribbon",
       "beats": [
         {
-          "narration_en": "This low concrete wall along the highway is called a Jersey barrier.",
+          "narration_en": "Along the highway, this low concrete wall running beside the lane is called a Jersey barrier.",
           "start": 0,
-          "end": 4.1
+          "end": 5.5
         },
         {
-          "narration_en": "Hit a flat wall at an angle, and the car just stops dead.",
-          "start": 4.1,
-          "end": 7.5
+          "narration_en": "Hit a flat wall at a shallow angle, and the car doesn't glance off, it just stops dead.",
+          "start": 5.5,
+          "end": 11.0
         },
         {
-          "narration_en": "This barrier's face isn't flat. It's angled, like a ramp.",
-          "start": 7.5,
-          "end": 11.2
+          "narration_en": "This barrier's face isn't flat at all. It's cut at an angle, rising like a ramp.",
+          "start": 11.0,
+          "end": 15.5
         },
         {
-          "narration_en": "A wheel that hits it climbs the slope instead of digging in.",
-          "start": 11.2,
-          "end": 14.4
+          "narration_en": "A wheel that strikes that slope climbs up it, instead of digging straight into the concrete.",
+          "start": 15.5,
+          "end": 20.5
         },
         {
-          "narration_en": "That lifts the car just enough to steer it back into its lane.",
-          "start": 14.4,
-          "end": 17.9
+          "narration_en": "That small lift is enough to redirect the whole car, steering it back into its own lane.",
+          "start": 20.5,
+          "end": 26.5
         },
         {
-          "narration_en": "One curve in a concrete wall keeps cars from becoming projectiles.",
-          "start": 17.9,
-          "end": 21.8
+          "narration_en": "One carefully angled curve in a concrete wall keeps cars from becoming out of control projectiles.",
+          "start": 26.5,
+          "end": 32.0
         }
       ]
     }

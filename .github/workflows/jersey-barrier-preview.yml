@@ -37,7 +37,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/preview"
-          for start in 60 200 287 389 538 631; do
+          for start in 80 260 398 540 760 878; do
             end=$((start + 2))
             xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
               -P benchmarks/road_safety/render_jersey_barrier.py -- \
