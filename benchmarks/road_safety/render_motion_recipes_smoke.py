@@ -13,7 +13,22 @@ import bpy
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
-from shorts_studio.factory.blender_motion_adapter import BlenderMotionDriver
+# Load the standalone motion modules without importing the package's optional
+# production dependencies (Blender's bundled Python has no pydantic).
+import importlib.util
+import types
+factory_name = "shorts_studio.factory"
+sys.modules.setdefault("shorts_studio", types.ModuleType("shorts_studio"))
+factory = types.ModuleType(factory_name)
+factory.__path__ = [str(ROOT / "shorts_studio" / "factory")]
+sys.modules[factory_name] = factory
+for module_name in ("motion_recipes", "blender_motion_adapter"):
+    qualified = f"{factory_name}.{module_name}"
+    spec = importlib.util.spec_from_file_location(qualified, ROOT / "shorts_studio" / "factory" / f"{module_name}.py")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[qualified] = module
+    spec.loader.exec_module(module)
+BlenderMotionDriver = sys.modules[f"{factory_name}.blender_motion_adapter"].BlenderMotionDriver
 
 p = argparse.ArgumentParser()
 p.add_argument("--out", type=Path, required=True)
