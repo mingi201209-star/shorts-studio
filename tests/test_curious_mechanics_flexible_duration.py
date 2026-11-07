@@ -30,3 +30,16 @@ def test_extended_coverage_is_explicit():
     assert progressive_cuts([720, 1440], roles, total_frames=1440)[-1][0] == 1440
     with pytest.raises(ValueError):
         progressive_cuts([720, 1439], roles, total_frames=1440)
+
+
+@pytest.mark.parametrize("ends,roles,total", [
+    ([], [], 900),
+    ([900], ["tire_contact"], 0),
+    ([900], ["tire_contact"], True),
+    ([29, 900], ["tire_contact", "driver_response"], 900),
+    ([500, 529, 900], ["tire_contact", "driver_response", "road_cut"], 900),
+    ([500, 900], ["tire_contact"], 900),
+])
+def test_malformed_cut_coverage_fails_closed(ends, roles, total):
+    with pytest.raises(ValueError):
+        progressive_cuts(ends, roles, total_frames=total)
