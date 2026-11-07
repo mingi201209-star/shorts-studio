@@ -90,6 +90,55 @@ def cylinder(name, start, end, radius, mat):
     return ob
 
 
+def asphalt_grain(mat):
+    """Real human_first_view feedback (road-paint-retroreflective-human-
+    review-20261107.json, second round, via a relayed AI review): a flat
+    roughness value with no surface variation reads as an abstract plane,
+    not real asphalt. World-space noise driving both a touch of albedo
+    variation and a bump normal (same technique as render_rumble_episode2.py's
+    world_grain) catches real grazing headlight light without needing a
+    downloaded texture."""
+    nodes, links = mat.node_tree.nodes, mat.node_tree.links
+    shader = nodes.get("Principled BSDF")
+    geometry = nodes.new("ShaderNodeNewGeometry")
+    coarse = nodes.new("ShaderNodeTexNoise")
+    coarse.inputs["Scale"].default_value = 18
+    coarse.inputs["Detail"].default_value = 3
+    fine = nodes.new("ShaderNodeTexNoise")
+    fine.inputs["Scale"].default_value = 140
+    fine.inputs["Detail"].default_value = 2
+    ramp = nodes.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].position = 0.25
+    ramp.color_ramp.elements[0].color = (0.018, 0.019, 0.021, 1)
+    ramp.color_ramp.elements[1].position = 0.75
+    ramp.color_ramp.elements[1].color = (0.034, 0.035, 0.038, 1)
+    bump = nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.35
+    bump.inputs["Distance"].default_value = 0.004
+    links.new(geometry.outputs["Position"], coarse.inputs["Vector"])
+    links.new(geometry.outputs["Position"], fine.inputs["Vector"])
+    links.new(coarse.outputs["Fac"], ramp.inputs["Fac"])
+    links.new(ramp.outputs["Color"], shader.inputs["Base Color"])
+    links.new(fine.outputs["Fac"], bump.inputs["Height"])
+    links.new(bump.outputs["Normal"], shader.inputs["Normal"])
+
+
+def roadside_delineators(post_mat, cap_mat):
+    """Reflector posts along both shoulders. Real human_first_view feedback
+    said the scene reads as "white shapes floating in a black void" rather
+    than a real road -- breaking up the empty shoulder with a recognisable
+    roadside object (the same kind of post a real night-drive photo would
+    show receding into the distance) is a cheap, no-external-asset fix for
+    that specific complaint."""
+    posts = []
+    for y in range(-15, 9, 3):
+        for side in (-1, 1):
+            x = side * 3.35
+            cube(f"Delineator post {y}_{side}", (x, y, 0.09), (0.03, 0.03, 0.18), post_mat)
+            posts.append(sphere(f"Delineator cap {y}_{side}", (x, y, 0.185), 0.025, cap_mat, segments=10, rings=7))
+    return posts
+
+
 def bead_positions(n, width, depth, seed=20261106):
     """Deterministic, reproducible bead layout -- never re-randomized per
     run, so pixel checksums stay comparable across shards/re-renders of the
@@ -193,8 +242,11 @@ def main():
             bg.inputs["Strength"].default_value = 1.0
 
     asphalt_mat = material("Night asphalt", (0.022, 0.023, 0.025), rough=0.92)
+    asphalt_grain(asphalt_mat)
     paint_mat = material("Lane paint base", (0.62, 0.60, 0.54), rough=0.55)
     beads_mat = material("Retroreflective glass bead", (0.92, 0.93, 0.95), rough=0.07)
+    post_mat = material("Delineator post", (0.05, 0.05, 0.055), rough=0.85)
+    dash_mat = material("Driver-POV dashboard silhouette", (0.012, 0.012, 0.014), rough=0.95)
     # Real human_first_view feedback (docs/quality/road-paint-retroreflective-
     # human-review-20261107.json): the single-color, thin (0.004 radius) ray
     # buried in a 260-bead macro field didn't read as "light goes in, comes
@@ -206,6 +258,16 @@ def main():
 
     stripe, beads = build_scene(beads_mat, paint_mat, asphalt_mat)
     hero = hero_beads(beads)
+    roadside_delineators(post_mat, beads_mat)
+
+    # Real human_first_view feedback: the closing shot should read as a
+    # driver's own view, not a floating camera. A simple dark foreground
+    # shape held at a fixed offset from the camera (so it stays put in
+    # screen space as the camera moves, like real dashboard trim) is a
+    # stylized stand-in -- same honesty convention as the illustrative
+    # ray, not a claim this is a modelled car interior.
+    dashboard = cube("Driver-POV dashboard silhouette", (0, 0, 0), (3.0, 0.5, 0.5), dash_mat)
+    dashboard.hide_render = True
 
     bpy.ops.object.camera_add(location=(0, -3, 0.6))
     cam = bpy.context.object
@@ -263,6 +325,7 @@ def main():
 
         headlight.hide_render = True
         ambient.hide_render = True
+        dashboard.hide_render = True
         for seg in ray_segments:
             seg.hide_render = True
 
@@ -334,6 +397,8 @@ def main():
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
+            dashboard.hide_render = False
+            dashboard.location = Vector(cam_pos) + Vector((0, 0.32, -0.36))
         elif shot["id"] == "bead_macro_closing":
             # The +/-0.01 drift, and even a widened +/-0.06 drift with a
             # small 0.012-unit push-in, still measured as a fully static
