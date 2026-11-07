@@ -28,11 +28,9 @@ env:
   BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
 jobs:
   speech:
-    # TEMPORARILY DISABLED: real reviewer feedback (relayed from another AI
-    # review) said the scene still reads as an abstract void, not a real
-    # road. Checking the asphalt-grain + roadside-delineator + driver-POV
-    # dashboard redesign cheaply via road-paint-preview.yml first.
-    if: false
+    # Cheap preview runs (42364691908, 42364904715) confirmed the asphalt-
+    # grain + roadside-delineator + driver-POV dashboard redesign, and the
+    # dashboard exposure/size fix -- re-enabled.
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -92,8 +90,7 @@ jobs:
           retention-days: 14
 
   native:
-    # TEMPORARILY DISABLED: see the note on the speech job above.
-    if: false
+    # Re-enabled, see the note on the speech job above.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
