@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "jersey-barrier-ribbon",
+      "beats": [
+        {
+          "narration_en": "This low concrete wall along the highway is called a Jersey barrier.",
+          "start": 0,
+          "end": 5.5
+        },
+        {
+          "narration_en": "Hit a flat wall at an angle, and the car just stops dead.",
+          "start": 5.5,
+          "end": 11.0
+        },
+        {
+          "narration_en": "This barrier's face isn't flat. It's angled, like a ramp.",
+          "start": 11.0,
+          "end": 15.5
+        },
+        {
+          "narration_en": "A wheel that hits it climbs the slope instead of digging in.",
+          "start": 15.5,
+          "end": 20.5
+        },
+        {
+          "narration_en": "That lifts the car just enough to steer it back into its lane.",
+          "start": 20.5,
+          "end": 26.5
+        },
+        {
+          "narration_en": "One curve in a concrete wall keeps cars from becoming projectiles.",
+          "start": 26.5,
+          "end": 32.0
+        }
+      ]
+    }
+  ]
+}

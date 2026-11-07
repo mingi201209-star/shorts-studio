@@ -1,0 +1,54 @@
+name: Jersey barrier preview (cheap sanity check, not production)
+# Replaces the retroreflective-road-paint episode on this branch with a new
+# subject (the Jersey barrier ribbon effect, under the approved
+# "guardrail-deflection" topic) after direct user feedback that the old
+# episode's shots repeated and its macro shots had no scale reference.
+# Fully procedural scene (no external CC0 asset): this renders a handful of
+# LOW-sample preview frames (one per shot) to confirm render_jersey_barrier.py
+# actually runs and frames the scene reasonably, before committing to the
+# full 960-frame production render.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/jersey-barrier-preview.yml
+      - benchmarks/road_safety/render_jersey_barrier.py
+      - examples/experiments/jersey-barrier-manifest.json
+permissions:
+  contents: read
+  actions: read
+env:
+  BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install hash-pinned Blender 5.0.1
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Render one preview frame per shot (low sample, small resolution)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/preview"
+          for start in 80 260 398 540 760 878; do
+            end=$((start + 2))
+            xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
+              -P benchmarks/road_safety/render_jersey_barrier.py -- \
+              --manifest examples/experiments/jersey-barrier-manifest.json \
+              --start "$start" --end "$end" --preview \
+              --out "$RUNNER_TEMP/preview" 2>&1 | tee -a "$RUNNER_TEMP/preview/render.log"
+          done
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: jersey-barrier-preview
+          path: ${{ runner.temp }}/preview/
+          if-no-files-found: error
+          retention-days: 7

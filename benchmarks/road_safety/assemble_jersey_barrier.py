@@ -1,0 +1,162 @@
+"""Assemble the jersey-barrier-ribbon episode from native shards + real
+captured audio into a final MP4, then run the same technical QA rigor
+(loudness, silence, black-opening, caption visibility, visual activity,
+duplicate-frame detection) the rest of this project's video pipeline uses.
+No semantic/CLIP gate yet (HOLD, same honesty convention as every other
+unfinished QA axis elsewhere in this project): this episode's content-match
+checking is NOT_IMPLEMENTED for now, not silently skipped.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+from pathlib import Path
+
+from benchmarks.road_safety.episode2_film import (
+    caption_filter,
+    check_loudness,
+    loudness,
+    probe,
+    run,
+    silence,
+)
+from shorts_studio.final_video_qa import (
+    measure_visual_activity,
+    verify_captions_visible,
+    verify_no_black_opening,
+    verify_visual_activity,
+)
+
+
+def digest(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def collect_native_frames(native: Path, manifest: dict) -> dict[int, Path]:
+    proofs = sorted(native.rglob("barrier-proof.json"))
+    if not proofs:
+        raise ValueError("no native shard proofs found")
+    renderer_sha256 = None
+    frame_paths: dict[int, Path] = {}
+    for proof_path in proofs:
+        proof = json.loads(proof_path.read_text())
+        folder = proof_path.parent
+        if renderer_sha256 is None:
+            renderer_sha256 = proof["renderer_source_sha256"]
+        elif proof["renderer_source_sha256"] != renderer_sha256:
+            raise ValueError("mixed renderer_source_sha256 across shards; refuse to assemble")
+        for checksum in proof["checksums"]:
+            frame = checksum["frame"]
+            path = folder / f"frame_{frame:04d}.png"
+            if digest(path) != checksum["sha256"]:
+                raise ValueError(f"frame hash mismatch: {path}")
+            if frame in frame_paths:
+                raise ValueError(f"duplicate frame number across shards: {frame}")
+            frame_paths[frame] = path
+    total = manifest["total_frames"]
+    if set(frame_paths) != set(range(1, total + 1)):
+        missing = sorted(set(range(1, total + 1)) - set(frame_paths))
+        raise ValueError(f"MISSING_NATIVE_FRAMES: {missing[:10]}{'...' if len(missing) > 10 else ''}")
+    return frame_paths
+
+
+def assemble(native: Path, audio: Path, manifest_path: Path, out: Path) -> dict:
+    out.mkdir(parents=True, exist_ok=False)
+    manifest = json.loads(manifest_path.read_text())
+    frame_paths = collect_native_frames(native, manifest)
+
+    flat = out / "frames"
+    flat.mkdir()
+    for frame, path in frame_paths.items():
+        (flat / f"frame_{frame:04d}.png").symlink_to(path.resolve())
+
+    for name in ("narration.wav", "film.ass", "audio-validation.json"):
+        (out / name).write_bytes((audio / name).read_bytes())
+    audio_report = json.loads((out / "audio-validation.json").read_text())
+    if audio_report["status"] != "PASS":
+        raise ValueError("audio capture did not PASS")
+
+    final = out / "jersey-barrier-ribbon.mp4"
+    run(["ffmpeg", "-v", "error", "-framerate", str(manifest["fps"]),
+         "-i", str(flat / "frame_%04d.png"),
+         "-i", str(out / "narration.wav"),
+         "-vf", caption_filter(out),
+         "-map", "0:v:0", "-map", "1:a:0",
+         "-c:v", "libx264", "-preset", "fast", "-crf", "17", "-pix_fmt", "yuv420p",
+         "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", final])
+
+    info = probe(final)
+    video = next(s for s in info["streams"] if s["codec_type"] == "video")
+    audio_stream = next(s for s in info["streams"] if s["codec_type"] == "audio")
+    expected_w, expected_h = manifest["resolution"]
+    if (video["width"], video["height"], video["r_frame_rate"], int(video["nb_read_frames"])) != (
+        expected_w, expected_h, f"{manifest['fps']}/1", manifest["total_frames"]
+    ):
+        raise ValueError("RESOLUTION_FPS_FRAMECOUNT_MISMATCH")
+    if audio_stream["codec_name"] != "aac" or audio_stream["sample_rate"] != "48000":
+        raise ValueError("AUDIO_CODEC_MISMATCH")
+    if abs(float(info["format"]["duration"]) - manifest["total_frames"] / manifest["fps"]) > 0.04:
+        raise ValueError("DURATION_MISMATCH")
+
+    run(["ffmpeg", "-v", "error", "-i", final, "-f", "null", "-"])
+    hashes = run(["ffmpeg", "-v", "error", "-i", final, "-map", "0:v:0", "-f", "framemd5", "-"]).stdout
+    unique = [x.split(",")[-1].strip() for x in hashes.splitlines() if x and not x.startswith("#")]
+    if not (len(unique) == len(set(unique)) == manifest["total_frames"]):
+        raise ValueError("DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE")
+    black = run(["ffmpeg", "-hide_banner", "-i", final, "-vf",
+                 "blackdetect=d=0.15:pix_th=0.06", "-an", "-f", "null", "-"]).stderr
+    if "black_start:" in black:
+        raise ValueError("UNEXPECTED_BLACK_FRAMES")
+
+    gaps = silence(final)
+    levels = check_loudness(loudness(final))
+
+    cues = json.loads((out / "audio-validation.json").read_text())["cues"]
+    picture = (0, 1400)
+    band = (1400, 1919)
+    original_qa = {
+        "visual_activity": verify_visual_activity(measure_visual_activity(final, picture, out)),
+        "black_opening": verify_no_black_opening(final, picture, out),
+        "captions_visible": verify_captions_visible(
+            final, [((c["start"] + c["end"]) / 2, band) for c in cues], out),
+    }
+    print("BARRIER_ORIGINAL_QA " + json.dumps(original_qa), flush=True)
+    failing = [k for k, v in original_qa.items() if v["status"] != "PASS"]
+    if failing:
+        raise ValueError(f"ORIGINAL_VIDEO_QA_FAILED: {failing}")
+
+    result = {
+        "video": str(final.resolve()),
+        "sha256": digest(final),
+        "is_mock": False,
+        "technical_status": "PASS",
+        "content_screen_match": "NOT_IMPLEMENTED",
+        "editorial_status": "HOLD_ACTUAL_REVIEW",
+        "human_first_view": "UNVERIFIED",
+        "upload_authorized": False,
+        "resolution": [video["width"], video["height"]],
+        "fps": manifest["fps"],
+        "duration_seconds": float(info["format"]["duration"]),
+        "silence_gaps": gaps,
+        "loudness": levels,
+        "original_video_qa": original_qa,
+        "frame_count": manifest["total_frames"],
+    }
+    (out / "jersey-barrier-validation.json").write_text(json.dumps(result, indent=2))
+    print("BARRIER_FILM_PASS " + result["sha256"], flush=True)
+    return result
+
+
+def main() -> None:
+    p = argparse.ArgumentParser()
+    p.add_argument("--native", type=Path, required=True)
+    p.add_argument("--audio", type=Path, required=True)
+    p.add_argument("--manifest", type=Path, required=True)
+    p.add_argument("--out", type=Path, required=True)
+    args = p.parse_args()
+    assemble(args.native, args.audio, args.manifest, args.out)
+
+
+if __name__ == "__main__":
+    main()

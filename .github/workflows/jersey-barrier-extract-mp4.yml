@@ -1,0 +1,36 @@
+name: Extract jersey-barrier final mp4 (base64-in-log, read-only)
+# Downloads the completed jersey-barrier-final artifact and prints the
+# actual mp4 as base64 in the job log, since this sandbox cannot download
+# GitHub Actions artifacts directly. The run ID below is updated by hand
+# once a real production run has succeeded.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/jersey-barrier-extract-mp4.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  extract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Download the real final MP4 and print its size/hash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/final"
+          gh run download PLACEHOLDER_RUN_ID --repo "$GITHUB_REPOSITORY" --name jersey-barrier-final --dir "$RUNNER_TEMP/final"
+          mp4="$RUNNER_TEMP/final/jersey-barrier-ribbon.mp4"
+          ls -la "$mp4"
+          sha256sum "$mp4"
+      - name: Print the mp4 as base64
+        run: |
+          set -euo pipefail
+          mp4="$RUNNER_TEMP/final/jersey-barrier-ribbon.mp4"
+          echo "MP4_B64_START jersey-barrier-ribbon.mp4"
+          base64 -w0 "$mp4"
+          echo ""
+          echo "MP4_B64_END jersey-barrier-ribbon.mp4"

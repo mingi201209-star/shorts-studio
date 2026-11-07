@@ -1,0 +1,32 @@
+name: Show jersey-barrier preview frames (base64-in-log, read-only)
+# Downloads the already-completed preview artifact and prints the 6 preview
+# PNGs (one per shot) as base64 in the job log, since this sandbox cannot
+# download GitHub Actions artifacts directly. The run ID below is updated by
+# hand each time a new preview run needs inspecting.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/jersey-barrier-preview-show.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  show:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download preview artifact and print each PNG as base64
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/preview"
+          gh run download PLACEHOLDER_RUN_ID --repo "$GITHUB_REPOSITORY" --name jersey-barrier-preview --dir "$RUNNER_TEMP/preview"
+          cd "$RUNNER_TEMP/preview"
+          for f in $(ls frame_*.png | sort); do
+            echo "FRAME_B64_START $f"
+            base64 -w0 "$f"
+            echo ""
+            echo "FRAME_B64_END $f"
+          done
