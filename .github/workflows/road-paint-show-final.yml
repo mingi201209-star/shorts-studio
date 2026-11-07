@@ -1,0 +1,42 @@
+name: Show road-paint final frames (base64-in-log, read-only)
+# Downloads the completed road-paint-final artifact (run 42339267850, real
+# ROAD_PAINT_FILM_PASS 5c344c903fa382a27eb65447d8c99cd9ae19bd92d66ab79364995b6a29497d39)
+# and prints a handful of representative frames as base64 in the job log,
+# since this sandbox cannot download GitHub Actions artifacts directly.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/road-paint-show-final.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  show:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - name: Download the real final MP4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/final"
+          gh run download 42339267850 --repo "$GITHUB_REPOSITORY" --name road-paint-final --dir "$RUNNER_TEMP/final"
+          ls -la "$RUNNER_TEMP/final"
+      - name: Extract representative frames and print each as base64
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/shots"
+          mp4="$RUNNER_TEMP/final/road-paint-retroreflective.mp4"
+          for t in 1 6 11 18 23 29; do
+            ffmpeg -v error -y -ss "$t" -i "$mp4" -frames:v 1 "$RUNNER_TEMP/shots/t_${t}.png"
+          done
+          cd "$RUNNER_TEMP/shots"
+          for f in $(ls t_*.png | sort -t_ -k2 -n); do
+            echo "FRAME_B64_START $f"
+            base64 -w0 "$f"
+            echo ""
+            echo "FRAME_B64_END $f"
+          done
