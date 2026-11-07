@@ -256,14 +256,16 @@ def main():
             seg.hide_render = True
 
         if shot["id"] == "night_wide":
-            # Wide, fast dolly-in -- the earlier narrow 1.4-unit drift left
-            # the real rendered picture almost static for the first 5s
-            # (measured: 0 real pixel changes in cut_timestamps before 5.5s,
-            # see road-paint-validation.json's visual_activity evidence).
-            # Starting much further back (same -1.6 endpoint, so the match
-            # cut into paint_push_in is unchanged) sweeps the glowing stripe
-            # across far more of the frame in the same 5.4s.
-            cam_pos = (0, lerp(-4.8, -1.6, t), 0.6)
+            # A pure forward dolly here is an almost perfect no-op on screen:
+            # camera, headlight and target all translate together by the
+            # same offset through a uniform stripe/asphalt with no unique
+            # features, so the rendered picture is translation-invariant no
+            # matter how far the camera travels (measured: 0 real pixel
+            # changes across the whole shot even after widening the dolly
+            # distance alone). Adding a real descent (height actually
+            # changes, not just position) breaks that symmetry -- the
+            # viewing angle onto the stripe genuinely changes over the shot.
+            cam_pos = (0, lerp(-4.8, -1.6, t), lerp(1.15, 0.5, t))
             target = (0, cam_pos[1] + 4.0, 0.01)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
@@ -305,12 +307,17 @@ def main():
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
         elif shot["id"] == "bead_macro_closing":
-            # Same fix as bead_macro_ray: the old +/-0.01 drift measured as
-            # part of a 5.5s static tail with no real pixel change. Wider
-            # lateral drift plus a slow push-in keeps the closing beauty
-            # shot moving for its real screen time.
+            # The +/-0.01 drift, and even a widened +/-0.06 drift with a
+            # small 0.012-unit push-in, still measured as a fully static
+            # 5.5s tail with no real pixel change: bead_macro_ray only
+            # passed because of its bright animated ray reveal, not its
+            # camera motion -- this shot has no such overlay by design
+            # ("no ray overlay"), so the camera move itself has to do real
+            # work. A much bigger height swoop (well above the beads down
+            # to right at bead level) actually changes the viewing angle,
+            # unlike a small depth nudge.
             drift = math.sin(t * math.tau * 0.5) * 0.06
-            cam_pos = (drift, -0.11, lerp(0.034, 0.022, t))
+            cam_pos = (drift, -0.11, lerp(0.07, 0.016, t))
             target = (0, 0.05, 0.012)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
