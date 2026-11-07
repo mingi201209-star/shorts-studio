@@ -87,10 +87,9 @@ jobs:
           retention-days: 14
 
   native:
-    # TEMPORARILY DISABLED: validating the cheap speech/audio steps first,
-    # before spending the expensive 30-shard render. Flip this back to true
-    # once speech+audio are confirmed real PASS.
-    if: false
+    # speech+audio confirmed real PASS (run 42316747839: 32.0s target met
+    # exactly with the original, untrimmed narration) -- full 32-shard
+    # render enabled.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
