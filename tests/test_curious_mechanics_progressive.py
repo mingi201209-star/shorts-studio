@@ -4,6 +4,7 @@ from benchmarks.road_safety.curious_mechanics_select_preview_frames import (
     critical_preview_frames,
 )
 from shorts_studio.factory.curious_mechanics_timeline import (
+    camera_layout,
     load_episode,
     progressive_cuts,
     rumble_displacement,
@@ -69,6 +70,19 @@ def test_progressive_rumble_motion_is_visible_but_stays_bounded():
     assert max(amplitudes) > .02
     assert max(amplitudes) < .03
 
+
+
+def test_close_vibration_beat_frames_real_tyre_and_wheel_arch_without_changing_motion():
+    episode = load_episode('examples/experiments/curious-mechanics-progressive-B.json')
+    close = next(s for s in episode['shots'] if s['id'].endswith('rumble_mechanism_close'))
+    layout = camera_layout(close)
+
+    assert (close['start'], close['end']) == (607, 719)
+    assert layout['target'] == 'wheel'
+    assert layout['anchor_frame'] == 663
+    assert layout['scale'] == 3.15
+    assert layout['target_z'] == .12
+    assert max(abs(rumble_displacement(f)) for f in range(607, 720)) < .03
 
 
 def test_curious_mechanics_a_and_c_manifests_are_unaffected_by_the_b_extension():

@@ -89,6 +89,14 @@ def camera_layout(shot):
         layout.update(offset=(1.4, -.8, 8.5), scale=2.8, target_z=-.10)
     elif shot['id'].endswith('road_cut_side'):
         layout.update(offset=(1.0, -7.5, .65), scale=3.0, target_z=-.10)
+    if shot['id'].endswith('rumble_mechanism_close'):
+        # Put the original rear tyre and its wheel arch in the same tight
+        # fixed frame. The tyre remains contact-locked by the renderer while
+        # the sprung body carries rumble_displacement(), so their relative
+        # motion becomes visible instead of being lost in a full-car dolly.
+        # This is a framing change only: geometry, contact and 24 mm disclosed
+        # explanatory displacement are unchanged.
+        layout.update(scale=3.15, target_z=.12)
     # A long wide-location shot needs a wider fixed frame to retain the actual
     # moving wheel throughout; never track the camera or reframe on shard
     # boundaries. The 'rumble_mechanism_close' sub-beat deliberately keeps the
