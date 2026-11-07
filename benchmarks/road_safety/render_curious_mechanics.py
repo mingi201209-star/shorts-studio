@@ -452,7 +452,12 @@ def main():
     previous_shot=None
     near_tyres=[bpy.data.objects[n] for n in ("Front_tire","Rear_tire")]
     hub_rest={pivot:pivot.location.copy() for pivot,_,_ in pivots}
-    from shorts_studio.factory.rumble_motion_v2 import vehicle_motion
+    # Blender is launched with -P; import sibling without requiring package installation.
+    motion_path=Path(__file__).resolve().parents[2]/"shorts_studio/factory/rumble_motion_v2.py"
+    motion_spec=importlib.util.spec_from_file_location("rumble_motion_v2",motion_path)
+    motion_module=importlib.util.module_from_spec(motion_spec)
+    motion_spec.loader.exec_module(motion_module)
+    vehicle_motion=motion_module.vehicle_motion
     for i, absolute_frame in enumerate(absolute_frames):
         # Over the longer real pilot, one tire traverses several physical grooves.
         # Small displacement only, not a realistic tire/suspension solver.
