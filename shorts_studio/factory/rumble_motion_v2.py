@@ -14,7 +14,7 @@ def vehicle_motion(frame, timeline):
     x = timeline.travel_x(frame)
     phase = x / 0.34 * math.tau
     # Wheels follow the grooves. Sprung mass lags with reduced amplitude.
-    wheel_heave = 0.0025 * overlap * math.sin(phase)
+    wheel_heave = 0.0012 * overlap * (1.0 + math.sin(phase))
     body_heave = 0.009 * overlap * math.sin(phase - 0.75)
     body_roll = 0.006 * overlap * math.sin(phase - 1.1)
     body_pitch = 0.004 * overlap * math.sin(phase - 0.45)
