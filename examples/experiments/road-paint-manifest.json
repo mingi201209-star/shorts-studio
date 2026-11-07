@@ -6,47 +6,48 @@
   "fps": 30,
   "resolution": [1080, 1920],
   "cycles_samples": 32,
-  "total_frames": 900,
+  "total_frames": 960,
+  "_frame_plan_note": "Shot boundaries are sized from the real captured en-US-AndrewNeural narration durations (run 42315767863: 5.304/4.152/6.624/5.304/4.872/5.256s, 31.512s total), not force-fit to a fixed 30s -- the video runs as long as the real narration needs. 960 frames @30fps = 32.0s, giving each beat a small even pause (0.0813s x6) instead of being cut.",
   "shots": [
     {
       "id": "night_wide",
       "start": 1,
-      "end": 150,
+      "end": 162,
       "visual_proof": "Night road scene, two headlight-style lights near camera, painted lane stripe glowing brightly while the rest of the road stays dark",
       "narration_en": "At night, these lane lines seem to glow, lit by nothing but your own headlights."
     },
     {
       "id": "paint_push_in",
-      "start": 151,
-      "end": 300,
+      "start": 163,
+      "end": 289,
       "visual_proof": "Camera dollies toward the lane stripe, surface texture and individual glints becoming visible",
       "narration_en": "Zoom in, and the paint is packed with thousands of tiny glass beads."
     },
     {
       "id": "bead_macro_ray",
-      "start": 301,
-      "end": 480,
+      "start": 290,
+      "end": 490,
       "visual_proof": "Extreme close-up on glass beads embedded in the paint, an illustrative light path entering a bead, bending, and exiting back toward the camera",
       "narration_en": "Light enters a bead, bends, bounces off the back, and bends again, straight back toward where it came from."
     },
     {
       "id": "paint_dull_comparison",
-      "start": 481,
-      "end": 630,
+      "start": 491,
+      "end": 651,
       "visual_proof": "Same stripe and beads, now lit only by an off-axis light instead of a near-camera headlight, looking dull and low-contrast",
       "narration_en": "Without those beads, the same white paint looks dull and almost disappears in the dark."
     },
     {
       "id": "night_wide_safety",
-      "start": 631,
-      "end": 780,
+      "start": 652,
+      "end": 800,
       "visual_proof": "Return to the night driving view, stripe glowing clearly ahead under headlights",
       "narration_en": "That extra glow can buy a driver a crucial extra second to see the lane at night."
     },
     {
       "id": "bead_macro_closing",
-      "start": 781,
-      "end": 900,
+      "start": 801,
+      "end": 960,
       "visual_proof": "Close macro beauty shot of beads glinting under the headlight-style light, no ray overlay",
       "narration_en": "A tiny glass sphere, doing a precise job, on every striped road in the country."
     }

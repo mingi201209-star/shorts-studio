@@ -1,18 +1,26 @@
 name: Road paint retroreflective production (full render + real audio + QA)
 # Full production run for the new retroreflective-road-paint episode:
 # real narration capture (edge-tts, en-US-AndrewNeural, same voice/rate as
-# every other episode in this project), the full 900-frame procedural
-# render (30 shards, matching the house shard layout), and final assembly
-# + the real technical QA this project uses everywhere (no CLIP semantic
-# gate yet -- content_screen_match stays explicitly NOT_IMPLEMENTED).
+# every other episode in this project), the full 960-frame procedural
+# render (32 shards of 30 frames, matching the house shard layout), and
+# final assembly + the real technical QA this project uses everywhere (no
+# CLIP semantic gate yet -- content_screen_match stays explicitly
+# NOT_IMPLEMENTED). The video is NOT force-fit to a fixed 30s: 960
+# frames @30fps = 32.0s was sized from the real captured narration
+# (31.512s across 6 beats) plus a small even pause per beat, so the real
+# speech decides how long the video runs instead of editing text to fit
+# a round number.
 on:
   push:
     branches: [road-paint-retroreflective-20261106]
     paths:
       - .github/workflows/road-paint-production.yml
       - examples/experiments/road-paint-speech-plan.json
+      - examples/experiments/road-paint-manifest.json
       - benchmarks/road_safety/curious_mechanics_speech.py
       - benchmarks/road_safety/curious_mechanics_audio.py
+      - benchmarks/road_safety/render_road_paint.py
+      - benchmarks/road_safety/assemble_road_paint.py
 permissions:
   contents: read
   actions: read
@@ -35,6 +43,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/speech"
           PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
             --plan examples/experiments/road-paint-speech-plan.json \
+            --target-seconds 32.0 \
             --out "$RUNNER_TEMP/speech"
           cat "$RUNNER_TEMP/speech/road-paint-retroreflective/capture.json"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -68,7 +77,7 @@ jobs:
           PYTHONPATH="$PWD" python -c "
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build
-          build(Path('$RUNNER_TEMP/speech/road-paint-retroreflective'), Path('$RUNNER_TEMP/audio'))
+          build(Path('$RUNNER_TEMP/speech/road-paint-retroreflective'), Path('$RUNNER_TEMP/audio'), target_seconds=32.0)
           "
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -88,7 +97,7 @@ jobs:
       fail-fast: false
       max-parallel: 20
       matrix:
-        start: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271, 301, 331, 361, 391, 421, 451, 481, 511, 541, 571, 601, 631, 661, 691, 721, 751, 781, 811, 841, 871]
+        start: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271, 301, 331, 361, 391, 421, 451, 481, 511, 541, 571, 601, 631, 661, 691, 721, 751, 781, 811, 841, 871, 901, 931]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install hash-pinned Blender 5.0.1
@@ -105,7 +114,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/native"
           end=$((${{ matrix.start }} + 29))
-          if [ "$end" -gt 900 ]; then end=900; fi
+          if [ "$end" -gt 960 ]; then end=960; fi
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
             -P benchmarks/road_safety/render_road_paint.py -- \
             --manifest examples/experiments/road-paint-manifest.json \
@@ -130,14 +139,14 @@ jobs:
           python-version: '3.12'
       - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
       - run: python -m pip install Pillow pydantic
-      - name: Retrieve all 30 native shards and the real audio
+      - name: Retrieve all 32 native shards and the real audio
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'road-paint-native-*' --dir "$RUNNER_TEMP/native"
-          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 30
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 32
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name road-paint-audio --dir "$RUNNER_TEMP/audio"
       - name: Assemble final MP4 and run real technical QA
         run: |

@@ -4,7 +4,7 @@ from pathlib import Path
 import edge_tts
 
 def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
-async def capture(plan, out):
+async def capture(plan, out, target_seconds=30):
     out.mkdir(parents=True, exist_ok=True)
     reports=[]
     cached=list(out.parent.glob("speech-v*/*/beat_*.json"))
@@ -46,9 +46,9 @@ async def capture(plan, out):
             record=dict(text=beat['narration_en'],voice='en-US-AndrewNeural',rate='+5%',words=words,duration=duration,audio_sha256=sha(audio),available_seconds=available,fits=duration<=available-.1)
             timing.write_text(json.dumps(record,indent=2)+'\n');beats.append(record)
             print(variant['id'],i,round(duration,3),'fit',record['fits'],flush=True)
-        report=dict(variant=variant['id'],beats=beats,total_speech_seconds=sum(b['duration'] for b in beats),target_seconds=30,production_approved=False)
+        report=dict(variant=variant['id'],beats=beats,total_speech_seconds=sum(b['duration'] for b in beats),target_seconds=target_seconds,production_approved=False)
         (folder/'capture.json').write_text(json.dumps(report,indent=2)+'\n');reports.append(report)
     (out/'capture-summary.json').write_text(json.dumps(reports,indent=2)+'\n')
 if __name__=='__main__':
-    p=argparse.ArgumentParser();p.add_argument('--plan',type=Path,required=True);p.add_argument('--out',type=Path,required=True);a=p.parse_args()
-    asyncio.run(capture(json.loads(a.plan.read_text()),a.out))
+    p=argparse.ArgumentParser();p.add_argument('--plan',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--target-seconds',type=float,default=30);a=p.parse_args()
+    asyncio.run(capture(json.loads(a.plan.read_text()),a.out,a.target_seconds))
