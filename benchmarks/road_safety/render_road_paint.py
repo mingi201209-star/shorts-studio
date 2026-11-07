@@ -260,12 +260,16 @@ def main():
             # camera, headlight and target all translate together by the
             # same offset through a uniform stripe/asphalt with no unique
             # features, so the rendered picture is translation-invariant no
-            # matter how far the camera travels (measured: 0 real pixel
-            # changes across the whole shot even after widening the dolly
-            # distance alone). Adding a real descent (height actually
-            # changes, not just position) breaks that symmetry -- the
-            # viewing angle onto the stripe genuinely changes over the shot.
-            cam_pos = (0, lerp(-4.8, -1.6, t), lerp(1.15, 0.5, t))
+            # matter how far the camera travels. Widening the dolly distance
+            # and adding a 0.65-unit height descent (measured in the
+            # cheap diagnose run) still wasn't enough real signal -- a thin,
+            # distant stripe against near-black asphalt barely moves the
+            # full-frame mean pixel value even as the camera approaches.
+            # Ending the dolly much closer (no longer matched to
+            # paint_push_in's -1.6 start -- a hard cut into that shot is
+            # fine) puts the glowing stripe much more prominently in frame
+            # by the end, giving a real, unambiguous amount of change.
+            cam_pos = (0, lerp(-4.8, -0.5, t), lerp(1.3, 0.3, t))
             target = (0, cam_pos[1] + 4.0, 0.01)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
