@@ -1,8 +1,7 @@
 name: Extract road-paint final mp4 (base64-in-log, read-only)
-# TEMP: pointed at the PREVIOUS realism-redesign run (42365062287, real
-# ROAD_PAINT_FILM_PASS 5c344c903fa382a27eb65447d8c99cd9ae19bd92d66ab79364995b6a29497d39)
-# to pull a before/after comparison against the with/without-beads fix
-# (run 42371913787). Will be pointed back after the comparison.
+# Downloads the completed road-paint-final artifact (run 42371913787, real
+# ROAD_PAINT_FILM_PASS 401fc70aaa177aeb29b3d5ad970a9958b8dd3b0484124c37d54d328985efbbfc --
+# the with/without-beads literal-comparison fix)
 # and prints the actual mp4 as base64 in the job log, since this sandbox
 # cannot download GitHub Actions artifacts directly.
 on:
@@ -24,7 +23,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/final"
-          gh run download 42365062287 --repo "$GITHUB_REPOSITORY" --name road-paint-final --dir "$RUNNER_TEMP/final"
+          gh run download 42371913787 --repo "$GITHUB_REPOSITORY" --name road-paint-final --dir "$RUNNER_TEMP/final"
           mp4="$RUNNER_TEMP/final/road-paint-retroreflective.mp4"
           ls -la "$mp4"
           sha256sum "$mp4"
