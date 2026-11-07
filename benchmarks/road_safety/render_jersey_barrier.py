@@ -208,6 +208,19 @@ def build_car(prefix, body_mat, glass_mat, wheel_mat):
     return root, wheels
 
 
+def set_car_visible(root, visible):
+    """hide_render on an Empty does NOT cascade to its mesh children in
+    Blender -- it is a per-object flag checked independently at render
+    time. Real bug found in preview run 42387340025 (frame 81 showed the
+    car in barrier_establish, which never un-hides it): setting
+    car_root.hide_render alone left the actual body/cabin/wheel meshes at
+    their default hide_render=False forever, so the car rendered in every
+    shot regardless of this flag. Every mesh child must be set directly."""
+    root.hide_render = not visible
+    for child in root.children:
+        child.hide_render = not visible
+
+
 def main():
     args = arguments()
     manifest = json.loads(args.manifest.read_text(encoding="utf8"))
@@ -302,7 +315,7 @@ def main():
 
         flat_wall.hide_render = True
         sloped_barrier.hide_render = True
-        car_root.hide_render = True
+        set_car_visible(car_root, False)
         macro_key.hide_render = True
         for w in wheels:
             w.location.z = CAR_WHEEL_RADIUS
@@ -316,7 +329,7 @@ def main():
 
         elif shot["id"] == "flat_wall_fail":
             flat_wall.hide_render = False
-            car_root.hide_render = False
+            set_car_visible(car_root, True)
             phase = min(1.0, t / 0.5)
             settle = max(0.0, (t - 0.5) / 0.5)
             cx = lerp(0.0, BARRIER_X - CAR_HALF_WIDTH - 0.08, min(1.0, phase))
@@ -355,7 +368,7 @@ def main():
             # close-up, not a moving approach) and placing the camera
             # clearly beyond the body's +x edge fixes that.
             sloped_barrier.hide_render = False
-            car_root.hide_render = False
+            set_car_visible(car_root, True)
             car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.08, 0, 0)
             car_root.rotation_euler = (0, 0, 0)
             lift = min(1.0, t * 1.3) * 0.22
@@ -373,7 +386,7 @@ def main():
 
         elif shot["id"] == "sloped_barrier_success":
             sloped_barrier.hide_render = False
-            car_root.hide_render = False
+            set_car_visible(car_root, True)
             phase = min(1.0, t / 0.5)
             redirect = max(0.0, (t - 0.5) / 0.5)
             cx_approach = lerp(0.0, BARRIER_X - CAR_HALF_WIDTH - 0.08, min(1.0, phase))
@@ -394,7 +407,7 @@ def main():
 
         elif shot["id"] == "barrier_closing":
             sloped_barrier.hide_render = False
-            car_root.hide_render = False
+            set_car_visible(car_root, True)
             car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.93, lerp(2.0, 14.0, t), 0)
             car_root.rotation_euler = (0, 0, 0)
             pan = lerp(-3.5, 3.5, t)
