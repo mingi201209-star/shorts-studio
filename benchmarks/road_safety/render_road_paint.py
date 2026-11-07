@@ -117,7 +117,11 @@ def build_scene(beads_mat, paint_mat, asphalt_mat):
     stripe = cube("Painted lane stripe", (0, 0, 0.0015), (0.42, 30.0, 0.003), paint_mat)
     beads = []
     for x, y, r in bead_positions(260, 0.40, 28.0):
-        beads.append(sphere(f"Glass bead {len(beads)}", (x, y, 0.004 + r * 0.55), r, beads_mat, segments=10, rings=7))
+        # segments=10/rings=7 read as faceted "golf balls" rather than smooth
+        # glass under macro-shot lighting (real human_first_view feedback,
+        # docs/quality/road-paint-retroreflective-human-review-20261107.json);
+        # 22/14 is still cheap for 260 spheres but removes the visible facets.
+        beads.append(sphere(f"Glass bead {len(beads)}", (x, y, 0.004 + r * 0.55), r, beads_mat, segments=22, rings=14))
     return stripe, beads
 
 
@@ -191,7 +195,14 @@ def main():
     asphalt_mat = material("Night asphalt", (0.022, 0.023, 0.025), rough=0.92)
     paint_mat = material("Lane paint base", (0.62, 0.60, 0.54), rough=0.55)
     beads_mat = material("Retroreflective glass bead", (0.92, 0.93, 0.95), rough=0.07)
-    ray_mat = material("Illustrative light path", (1.0, 0.85, 0.35), rough=1.0, emission=6.0)
+    # Real human_first_view feedback (docs/quality/road-paint-retroreflective-
+    # human-review-20261107.json): the single-color, thin (0.004 radius) ray
+    # buried in a 260-bead macro field didn't read as "light goes in, comes
+    # back out" to a viewer. Two distinct colors for the incoming headlight
+    # beam vs. the outgoing retroreflected light, and a much thicker line,
+    # are a legibility fix, not a physical claim about wavelength.
+    ray_in_mat = material("Illustrative incoming ray", (0.55, 0.75, 1.0), rough=1.0, emission=7.0)
+    ray_out_mat = material("Illustrative outgoing ray", (1.0, 0.75, 0.2), rough=1.0, emission=9.0)
 
     stripe, beads = build_scene(beads_mat, paint_mat, asphalt_mat)
     hero = hero_beads(beads)
@@ -229,8 +240,8 @@ def main():
     bend = hb.location + Vector((0.0, 0.0, 0.012))
     exitp = hb.location + Vector((0.035, -0.012, 0.028))
     ray_segments = [
-        cylinder("Ray in", entry, bend, 0.004, ray_mat),
-        cylinder("Ray out", bend, exitp, 0.004, ray_mat),
+        cylinder("Ray in", entry, bend, 0.009, ray_in_mat),
+        cylinder("Ray out", bend, exitp, 0.009, ray_out_mat),
     ]
     for seg in ray_segments:
         seg.hide_render = True
@@ -287,9 +298,15 @@ def main():
             # video). A much wider lateral sweep plus a slow continuous
             # push-in keep real parallax moving across the bead field for
             # the full shot, not just its first third.
+            # Real human_first_view feedback (road-paint-retroreflective-
+            # human-review-20261107.json): the enter/bend/exit explanation
+            # was lost among 260 background beads. Progressively closing the
+            # distance onto the actual hero bead (not an approximate fixed
+            # point) isolates it by the time the ray is fully revealed.
+            distance = lerp(-0.14, -0.045, t)
             cam_pos = (lerp(-0.07, 0.07, math.sin(t * math.tau) * 0.5 + 0.5),
-                       -0.11, lerp(0.034, 0.022, t))
-            target = (0, 0.05, 0.012)
+                       distance, lerp(0.034, 0.02, t))
+            target = tuple(hb.location)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.01, 0.015, -0.005)), target)

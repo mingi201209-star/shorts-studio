@@ -28,9 +28,12 @@ env:
   BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
 jobs:
   speech:
-    # Cheap diagnose run (42337705044) confirmed all 3 previously-failing
-    # shots (night_wide, bead_macro_ray, bead_macro_closing) now register
-    # real visual_activity cuts -- full run re-enabled.
+    # TEMPORARILY DISABLED: real human_first_view feedback (road-paint-
+    # retroreflective-human-review-20261107.json) said the explanation
+    # didn't land and the look was crude. Checking the bead-smoothing +
+    # ray-clarity + camera-isolation fix cheaply via road-paint-preview.yml
+    # before spending another full production run.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -90,8 +93,8 @@ jobs:
           retention-days: 14
 
   native:
-    # Cheap diagnose run confirmed the motion fix -- re-enabled, see note
-    # on the speech job above.
+    # TEMPORARILY DISABLED: see the note on the speech job above.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:

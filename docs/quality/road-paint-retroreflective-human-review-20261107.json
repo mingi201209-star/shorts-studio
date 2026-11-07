@@ -1,0 +1,38 @@
+{
+  "subject": "road-paint-retroreflective.mp4 (full production, motion-fix pass)",
+  "subject_sha256": "5c344c903fa382a27eb65447d8c99cd9ae19bd92d66ab79364995b6a29497d39",
+  "subject_source": {
+    "branch": "road-paint-retroreflective-20261106",
+    "github_run_id": 42339267850,
+    "artifact": "road-paint-final",
+    "artifact_url": "https://github.com/mingi201209-star/shorts-studio/actions/runs/42339267850/artifacts/13562386328"
+  },
+  "what_the_reviewer_actually_saw": {
+    "method": "The actual completed MP4 (not stills, not a mockup) extracted via road-paint-extract-mp4.yml (run 42346318646, base64-in-log) and sent directly to the reviewer as a file; sha256 of the delivered file matches the real ROAD_PAINT_FILM_PASS hash exactly",
+    "duration_seconds": 32.0
+  },
+  "date_kst": "2026-11-07",
+  "reviewer": "project owner (mingi201209@gmail.com), watched the actual video and reacted in chat -- not a credentialed external reviewer, not the production team's formal sign-off process",
+  "notes": "업로 (not great). Follow-up, asked to clarify \"뭐라하는지 모르겠고\" (can't tell what it's saying): the reviewer selected \"설명 내용 자체가 이해 안 됨\" (the explanation itself doesn't land) -- the light-enters-bead-bends-bounces-exits physics explanation in the bead_macro_ray shot does not communicate even though captions are legible and audio passed loudness QA. Also stated \"너무 조악해\" (too crude/cheap-looking) about overall visual quality.",
+  "likely_causes_not_yet_confirmed": [
+    "The illustrative ray-path overlay (2 thin emissive cylinders, radius 0.004) is embedded directly in a visually busy 260-bead macro field with camera motion -- a viewer gets one quick, unlabeled glimpse of a bent yellow line near one bead, not a clear enter/bounce/exit diagram.",
+    "Glass bead spheres are low-poly (segments=10, rings=7 in render_road_paint.py's sphere() calls) and read as faceted \"golf balls\" rather than smooth glass, which is plausibly what reads as crude/cheap -- this is a real, fixable geometry detail, not a QA-gate-driven camera change.",
+    "This is this project's first fully-procedural (no external CC0 asset) episode; every earlier episode in this repo used a detailed external car/road model. The simpler primitive-based scene may simply look less finished by comparison."
+  ],
+  "cross_check_against_automated_qa": "All of this project's existing automated technical QA (visual_activity, black_opening, captions_visible, loudness/silence, resolution/fps/duration/no-duplicate-frames) passed real checks on this exact file. None of those gates check whether the explanation is actually comprehensible or whether the geometry looks polished -- this human_first_view reaction is catching a real gap those gates cannot see (content_screen_match is still explicitly NOT_IMPLEMENTED for this reason).",
+  "evidence": [
+    "https://github.com/mingi201209-star/shorts-studio/actions/runs/42339267850/artifacts/13562386328",
+    "https://github.com/mingi201209-star/shorts-studio/actions/runs/42346318646"
+  ],
+  "ratings": {
+    "subject_legibility": null,
+    "visual_realism": null,
+    "physical_contact": null,
+    "motion_variety": null,
+    "voice_naturalness": null,
+    "narrative_retention": null
+  },
+  "status": "QUALITATIVE_HUMAN_FIRST_VIEW_RECORDED_NOT_SIX_AXIS_SCORED",
+  "status_meaning": "A real human (the project owner) did actually watch the real completed output and reacted negatively in their own words -- this is genuine human_first_view evidence, not fabricated, and not softened. It does NOT satisfy docs/quality/review-template.json's six-axis 0-3 rating bar (those specific numeric scores were never given and are not inferred here). It does not change any code's hardcoded human_first_view: \"UNVERIFIED\" field. This episode is NOT ready for further scaling until the explanation clarity and visual polish issues named here are addressed and re-reviewed.",
+  "upload_authorized": false
+}
