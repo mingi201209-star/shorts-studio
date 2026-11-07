@@ -246,7 +246,14 @@ def main():
     paint_mat = material("Lane paint base", (0.62, 0.60, 0.54), rough=0.55)
     beads_mat = material("Retroreflective glass bead", (0.92, 0.93, 0.95), rough=0.07)
     post_mat = material("Delineator post", (0.05, 0.05, 0.055), rough=0.85)
-    dash_mat = material("Driver-POV dashboard silhouette", (0.012, 0.012, 0.014), rough=0.95)
+    # Preview run 42364691908, frame 700: a diffuse-lit material this close
+    # to the near-camera headlight blew out to near-white and the shape
+    # (3.0x0.5x0.5 at a 0.32-0.36 unit offset) was comically oversized,
+    # filling half the frame instead of a thin bottom-edge band. A small,
+    # unlit (emission-only) dark material reads as a true silhouette
+    # regardless of nearby light, same as a real dashboard would look
+    # against a bright windshield view.
+    dash_mat = material("Driver-POV dashboard silhouette", (0.02, 0.02, 0.022), emission=0.3)
     # Real human_first_view feedback (docs/quality/road-paint-retroreflective-
     # human-review-20261107.json): the single-color, thin (0.004 radius) ray
     # buried in a 260-bead macro field didn't read as "light goes in, comes
@@ -266,7 +273,7 @@ def main():
     # screen space as the camera moves, like real dashboard trim) is a
     # stylized stand-in -- same honesty convention as the illustrative
     # ray, not a claim this is a modelled car interior.
-    dashboard = cube("Driver-POV dashboard silhouette", (0, 0, 0), (3.0, 0.5, 0.5), dash_mat)
+    dashboard = cube("Driver-POV dashboard silhouette", (0, 0, 0), (2.2, 0.10, 0.09), dash_mat)
     dashboard.hide_render = True
 
     bpy.ops.object.camera_add(location=(0, -3, 0.6))
@@ -398,7 +405,7 @@ def main():
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
             dashboard.hide_render = False
-            dashboard.location = Vector(cam_pos) + Vector((0, 0.32, -0.36))
+            dashboard.location = Vector(cam_pos) + Vector((0, 0.24, -0.27))
         elif shot["id"] == "bead_macro_closing":
             # The +/-0.01 drift, and even a widened +/-0.06 drift with a
             # small 0.012-unit push-in, still measured as a fully static
