@@ -1,7 +1,7 @@
 """Regression tests for opt-in frame counting; existing 30s output stays unchanged."""
 import math
 import pytest
-from shorts_studio.factory.curious_mechanics_timeline import expected_frame_count, progressive_cuts
+from shorts_studio.factory.rumble_duration import expected_frame_count, progressive_cuts
 
 
 def test_legacy_and_extended_frames():
