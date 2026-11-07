@@ -3,6 +3,7 @@ import json
 from benchmarks.road_safety.curious_mechanics_progressive_delivery import (
     compose_editorial_filters,
 )
+from benchmarks.road_safety.render_driver_insert import driver_vibration
 from shorts_studio.studio_org.driver_cut import (
     INSERTS,
     INSERTS_BY_VARIANT,
@@ -120,3 +121,13 @@ def test_variant_specific_receipt_counts(tmp_path):
         assert actual["variant"] == variant
         assert actual["driver_native_frames_reused"] == count
         assert actual["original_native_frames_reused"] == 900 - count
+
+
+def test_driver_body_receives_visible_rumble_before_notice_reaction():
+    samples = [driver_vibration(frame / 30) for frame in range(0, 25)]
+    lateral = [point[0] for point in samples]
+    vertical = [point[1] for point in samples]
+    assert driver_vibration(0.0) == (0.0, 0.0)
+    assert driver_vibration(0.70) == (0.0, 0.0)
+    assert max(lateral) - min(lateral) >= 0.014
+    assert max(vertical) - min(vertical) >= 0.020
