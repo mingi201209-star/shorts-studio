@@ -13,6 +13,7 @@ from benchmarks.road_safety import episode2_film as film
 from benchmarks.road_safety import curious_mechanics_delivery as delivery
 from benchmarks.road_safety import curious_mechanics_fast_batch as fast
 from shorts_studio.factory import curious_mechanics_timeline as timeline
+from shorts_studio.factory.rumble_duration import expected_frame_count
 from shorts_studio.factory.curious_mechanics_native_qa import verify
 
 
@@ -53,6 +54,8 @@ def assemble(root, source, variant, out):
     manifest = delivery.ROOT / 'examples/experiments/curious-mechanics-progressive-B.json'
     audio_manifest = delivery.ROOT / f'examples/experiments/curious-mechanics-progressive-{variant}.json'
     episode = timeline.load_episode(manifest)
+    expected_frames = expected_frame_count(episode['total_frames'] / episode['fps'], episode['fps'])
+    expected_seconds = expected_frames / episode['fps']
     roles = ['_'.join(s['id'].split('_')[2:]) for s in episode['shots']]
     assert len(roles) == len(set(roles)), 'Native visual role returned'
     assert all(timeline._STYLE[s['id']] in timeline.SHOT_IDS for s in episode['shots']), \
@@ -78,7 +81,7 @@ def assemble(root, source, variant, out):
     selected.sort(key=lambda s:s[0]['first_frame'])
     film.validate_shard_layout([x[0] for x in selected])
     pixels = [h for s in selected for h in s[2]]
-    assert len(pixels) == len(set(pixels)) == 900
+    assert len(pixels) == len(set(pixels)) == expected_frames
     cameras = {}
     for proof, _, _, _ in selected:
         for name, camera in proof['camera_by_shot'].items():
@@ -93,6 +96,8 @@ def assemble(root, source, variant, out):
     assert audio == prior['audio_validation'], 'Measured speech/caption receipt changed'
     assert audio['status'] == 'PASS' and audio['voice'] == 'en-US-AndrewNeural' and audio['rate'] == '+5%'
     assert digest(source/'audio/narration.wav') == audio['narration_sha256'] == json.loads(audio_manifest.read_text())['measured_audio_sha256']
+    # An extended picture cannot silently inherit the old 30s soundtrack.
+    assert abs(float(film.probe(source/'audio/narration.wav')['format']['duration']) - expected_seconds) < .04, 'narration duration does not match picture'
     for name in ['film.ass','narration.wav','audio-validation.json']:
         shutil.copyfile(source/'audio'/name,out/name)
     # Keep the existing labelled diagram, but hide it over the new body interval.
@@ -107,20 +112,20 @@ def assemble(root, source, variant, out):
     info = film.probe(final)
     video = next(s for s in info['streams'] if s['codec_type']=='video')
     au = next(s for s in info['streams'] if s['codec_type']=='audio')
-    assert (video['width'],video['height'],video['r_frame_rate'],int(video['nb_read_frames'])) == (1080,1920,'30/1',900)
+    assert (video['width'],video['height'],video['r_frame_rate'],int(video['nb_read_frames'])) == (1080,1920,'30/1',expected_frames)
     assert au['codec_name']=='aac' and au['sample_rate']=='48000' and au['channels']==1
-    assert abs(float(info['format']['duration'])-30)<.04
+    assert abs(float(info['format']['duration'])-expected_seconds)<.04
     film.run(['ffmpeg','-v','error','-i',final,'-f','null','-'])
     hashes = film.run(['ffmpeg','-v','error','-i',final,'-map','0:v:0','-f','framemd5','-']).stdout
     unique = [x.split(',')[-1].strip() for x in hashes.splitlines() if x and not x.startswith('#')]
-    assert len(unique)==len(set(unique))==900
+    assert len(unique)==len(set(unique))==expected_frames
     assert 'black_start:' not in film.run(['ffmpeg','-hide_banner','-i',final,'-vf','blackdetect=d=0.15:pix_th=0.06','-an','-f','null','-']).stderr
     gaps=film.silence(final)
     levels=film.check_loudness(film.loudness(final))
     viewer=film.original_video_qa(final,out,audio['cues'])
     meaning=delivery.semantic(final,out,episode,audio)
-    report=dict(technical_status='PASS',sha256=digest(final),source_frames_verified=900,
-                frames=900,seconds=30,resolution=[1080,1920],cycles_samples=32,
+    report=dict(technical_status='PASS',sha256=digest(final),source_frames_verified=expected_frames,
+                frames=expected_frames,seconds=expected_seconds,resolution=[1080,1920],cycles_samples=32,
                 native_roles=roles,native_role_returns=0,shots=episode['shots'],
                 native_source_variant=native_variant,shared_native_asset_bed=True,
                 independent_native_camera_experiment=False,

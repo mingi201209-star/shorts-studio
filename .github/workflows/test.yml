@@ -12,3 +12,56 @@ jobs:
           python-version: '3.11'
       - run: pip install -e '.[dev]'
       - run: pytest -q
+  blender-motion-render:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb
+      - name: Render real multi-topic Blender frames
+        run: |
+          mkdir -p "$RUNNER_TEMP/motion-smoke"
+          xvfb-run -a blender -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_motion_recipes_smoke.py -- --out "$RUNNER_TEMP/motion-smoke"
+          test -s "$RUNNER_TEMP/motion-smoke/motion-proof.json"
+          test "$(find "$RUNNER_TEMP/motion-smoke" -name 'motion_*.png' | wc -l)" -eq 5
+      - name: Upload rendered PNGs and proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: four-topics-blender-render-proof
+          path: ${{ runner.temp }}/motion-smoke/
+          if-no-files-found: warn
+          retention-days: 7
+  blender-900-portrait:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender and FFmpeg
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y blender xvfb ffmpeg
+      - name: Render 900 real 1080x1920 Blender frames
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/motion-900"
+          xvfb-run -a blender -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_motion_recipes_smoke.py -- --out "$RUNNER_TEMP/motion-900" --full-900
+          test "$(find "$RUNNER_TEMP/motion-900" -name 'motion_*.png' | wc -l)" -eq 900
+          python -c 'import json,sys; p=json.load(open(sys.argv[1])); assert len(p)==900; print("900 verified")' "$RUNNER_TEMP/motion-900/motion-proof.json"
+      - name: Encode preview MP4 at 30fps
+        run: |
+          ffmpeg -hide_banner -loglevel error -y -framerate 30 -i "$RUNNER_TEMP/motion-900/motion_%04d.png" -c:v libx264 -preset veryfast -crf 24 -pix_fmt yuv420p "$RUNNER_TEMP/motion-900/preview-900.mp4"
+          ffprobe -v error -select_streams v:0 -count_frames -show_entries stream=width,height,nb_read_frames -of json "$RUNNER_TEMP/motion-900/preview-900.mp4"
+      - name: Upload 900 frame render evidence and MP4
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: blender-900-portrait-demo
+          path: |
+            ${{ runner.temp }}/motion-900/preview-900.mp4
+            ${{ runner.temp }}/motion-900/motion-proof.json
+          if-no-files-found: warn
+          retention-days: 7

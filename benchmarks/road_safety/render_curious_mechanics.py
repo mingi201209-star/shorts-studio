@@ -26,6 +26,7 @@ def arguments():
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--frames", type=int, default=4)
     p.add_argument("--preview", action="store_true")
+    p.add_argument("--legacy-motion", action="store_true", help="Explicit compatibility mode for historical native renders")
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--start", type=int)
     p.add_argument("--end", type=int)
@@ -451,21 +452,36 @@ def main():
     previous_shot=None
     near_tyres=[bpy.data.objects[n] for n in ("Front_tire","Rear_tire")]
     hub_rest={pivot:pivot.location.copy() for pivot,_,_ in pivots}
+    # Blender is launched with -P; import sibling without requiring package installation.
+    motion_path=Path(__file__).resolve().parents[2]/"shorts_studio/factory/rumble_motion_v2.py"
+    motion_spec=importlib.util.spec_from_file_location("rumble_motion_v2",motion_path)
+    motion_module=importlib.util.module_from_spec(motion_spec)
+    motion_spec.loader.exec_module(motion_module)
+    vehicle_motion=motion_module.vehicle_motion
     for i, absolute_frame in enumerate(absolute_frames):
         # Over the longer real pilot, one tire traverses several physical grooves.
         # Small displacement only, not a realistic tire/suspension solver.
         shot=module.shot_for_frame(episode,absolute_frame)
         x=module.travel_x(absolute_frame)
         bounce=module.rumble_displacement(absolute_frame)
+        # Existing renderer stays byte-for-byte equivalent unless explicitly opted in.
+        motion=vehicle_motion(absolute_frame, module) if not args.legacy_motion else None
+        if motion is not None:
+            bounce=motion["body_heave"]
         # Motion is a global deterministic x coordinate, not a per-shard reset.
         # Tyres rest on the road; only the sprung body carries the vibration.
         car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
         car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
+        if motion is not None:
+            car.rotation_euler[0]=motion["body_roll"]
+            car.rotation_euler[1]=motion["body_pitch"]
         steer=front_steer_angle(absolute_frame)
         for pivot,radius,name in pivots:
             pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
             pivot.rotation_euler[2]=steer if name in FRONT_WHEEL_NAMES else 0.0
             pivot.location=hub_rest[pivot]-Vector((0,0,bounce/car.scale[2]))
+            if motion is not None:
+                pivot.location.z += motion["wheel_heave"] / car.scale[2]
         scene.frame_set(absolute_frame)
         bpy.context.view_layer.update()
         if shot["id"]!=previous_shot:
@@ -533,12 +549,17 @@ def main():
             previous_shot=shot["id"]
             car.location=(x,-.30+module.lane_return_offset(absolute_frame),bounce)
             car.rotation_euler[2]=math.pi/2+module.lane_return_heading(absolute_frame)
+            if motion is not None:
+                car.rotation_euler[0]=motion["body_roll"]
+                car.rotation_euler[1]=motion["body_pitch"]
             # Restore native absolute motion before projecting/rendering this frame.
             for pivot,radius,name in pivots:
                 pivot.rotation_euler[0]=(x-module.travel_x(1))/(.85*radius)
                 pivot.rotation_euler[2]=steer if name in FRONT_WHEEL_NAMES else 0.0
             for pivot,rest in hub_rest.items():
                 pivot.location=rest-Vector((0,0,bounce/car.scale[2]))
+                if motion is not None:
+                    pivot.location.z += motion["wheel_heave"] / car.scale[2]
             bpy.context.view_layer.update()
         visible_car=[ob for ob in car.children_recursive if ob.type=='MESH' and not ob.hide_render]
         if module.detail_stage(shot['id'])=='wheel_body_vibration': visible_car=groups['Rear_tire']
