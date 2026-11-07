@@ -26,7 +26,7 @@ def arguments():
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--frames", type=int, default=4)
     p.add_argument("--preview", action="store_true")
-    p.add_argument("--enhanced-motion", action="store_true", help="Opt-in revised physical body/suspension motion; requires new native render and QA")
+    p.add_argument("--legacy-motion", action="store_true", help="Explicit compatibility mode for historical native renders")
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--start", type=int)
     p.add_argument("--end", type=int)
@@ -465,7 +465,7 @@ def main():
         x=module.travel_x(absolute_frame)
         bounce=module.rumble_displacement(absolute_frame)
         # Existing renderer stays byte-for-byte equivalent unless explicitly opted in.
-        motion=vehicle_motion(absolute_frame, module) if args.enhanced_motion else None
+        motion=vehicle_motion(absolute_frame, module) if not args.legacy_motion else None
         if motion is not None:
             bounce=motion["body_heave"]
         # Motion is a global deterministic x coordinate, not a per-shard reset.
