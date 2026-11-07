@@ -303,7 +303,14 @@ def main():
             # was lost among 260 background beads. Progressively closing the
             # distance onto the actual hero bead (not an approximate fixed
             # point) isolates it by the time the ray is fully revealed.
-            distance = lerp(-0.14, -0.045, t)
+            # Pushing this below ~-0.075 collapses the headlight: aim_headlight's
+            # (distance/HEADLIGHT_REFERENCE_DISTANCE)**2 falloff, tuned for the
+            # wide shots' multi-metre range, makes energy fall below 0.25W at
+            # this macro scale and the shot goes nearly black (checked: frame
+            # 460 at distance=-0.045 was visibly underexposed in preview run
+            # 42347115919). -0.075 still closes in for real isolation without
+            # the collapse.
+            distance = lerp(-0.14, -0.075, t)
             cam_pos = (lerp(-0.07, 0.07, math.sin(t * math.tau) * 0.5 + 0.5),
                        distance, lerp(0.034, 0.02, t))
             target = tuple(hb.location)
