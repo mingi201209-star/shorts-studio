@@ -87,7 +87,10 @@ jobs:
           retention-days: 14
 
   native:
-    if: false
+    # Re-enabled: preview run 42388447130 confirmed all six shots frame
+    # correctly after fixing the car-visibility, exposure, and
+    # camera-inside-geometry bugs found across runs 42386915851 through
+    # 42388175956.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -126,7 +129,6 @@ jobs:
           retention-days: 14
 
   final:
-    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
