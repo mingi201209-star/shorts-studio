@@ -20,6 +20,17 @@ import sys
 from pathlib import Path
 
 
+def driver_vibration(t: float) -> tuple[float, float]:
+    """Seat-relative body displacement while the tire warning reaches the driver."""
+    if not 0.10 <= t <= 0.65:
+        return 0.0, 0.0
+    phase = (t - 0.10) / 0.55
+    envelope = math.sin(math.pi * phase) ** 2
+    lateral = 0.012 * math.sin(2 * math.pi * 7.5 * t) * envelope
+    vertical = 0.018 * math.sin(2 * math.pi * 9.0 * t + 0.4) * envelope
+    return lateral, vertical
+
+
 def main():
     if os.environ.get("GITHUB_ACTIONS") != "true":
         raise RuntimeError("driver rendering is restricted to GitHub Actions")
@@ -99,7 +110,7 @@ def main():
     box("headrest", (0, .24, 1.72), (.60, .23, .45), seat_mat)
     box("seat cushion", (0, -.10, .39), (.85, .85, .20), seat_mat)
     torso = ball("torso", (0, 0, .99), (.37, .23, .49), shirt)
-    ball("neck", (0, -.015, 1.44), (.12, .12, .17), skin)
+    neck = ball("neck", (0, -.015, 1.44), (.12, .12, .17), skin)
     head = empty("acting head", (0, -.02, 1.73))
     ball("head", (0, 0, 0), (.255, .23, .32), skin, head)
     ball("hair", (0, .035, .20), (.26, .23, .15), dark, head)
@@ -186,9 +197,16 @@ def main():
         smooth_turn = turn * turn * (3 - 2 * turn)
         breathing = math.sin(2 * math.pi * t / 2.6)
         blink = blink_amount(t)
+        vibration_x, vibration_z = driver_vibration(t)
         head.rotation_euler.x = .28 * (1 - notice)
         head.rotation_euler.z = -.10 * (1 - notice)
-        head.location.z = 1.73 + .025 * math.sin(math.pi * notice) + .010 * math.sin(t * 4)
+        head.location.x = vibration_x
+        head.location.z = (1.73 + vibration_z + .025 * math.sin(math.pi * notice)
+                           + .010 * math.sin(t * 4))
+        neck.location.x = vibration_x
+        neck.location.z = 1.44 + vibration_z
+        torso.location.x = vibration_x
+        torso.location.z = vibration_z
         torso.scale.y = .23 * (1 + .035 * breathing)
         wheel.rotation_euler.y = -.35 * smooth_turn
         for eye, brow in zip(eyes, brows):
@@ -197,9 +215,10 @@ def main():
         mouth.scale.z = .012 + .030 * math.sin(math.pi * notice)
         bpy.context.view_layer.update()
         for (side, upper, fore), hand in zip(arms, hands):
-            shoulder = (side * .31, -.02, 1.21)
+            shoulder = (side * .31 + vibration_x, -.02, 1.21 + vibration_z)
             hand_world = hand.matrix_world.translation
-            elbow = (side * .43, -.30, .94 + side * .05 * smooth_turn)
+            elbow = (side * .43 + vibration_x * .55, -.30,
+                     .94 + side * .05 * smooth_turn + vibration_z * .55)
             set_limb(upper, shoulder, elbow, .085)
             set_limb(fore, elbow, hand_world, .065)
         scene.frame_set(frame)
@@ -207,7 +226,9 @@ def main():
         bpy.ops.render.render(write_still=True)
         poses.append({"frame": frame, "notice": notice,
                       "steering_radians": wheel.rotation_euler.y,
-                      "breathing": breathing, "blink": blink})
+                      "breathing": breathing, "blink": blink,
+                      "driver_vibration_x_m": vibration_x,
+                      "driver_vibration_z_m": vibration_z})
     bpy.ops.wm.save_as_mainfile(filepath=str(args.out / "driver-pilot.blend"))
     hashes = {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
               for p in sorted(args.out.glob("*.png"))}
@@ -221,6 +242,13 @@ def main():
                "resolution": [1080, 1920], "fps": 30, "frame_count": count,
                "frame_numbers": list(range(args.start, args.end + 1)),
                "geometry_source": "procedural authoring in this script",
+               "vibration_transfer": {
+                   "kind": "seat-relative procedural body displacement",
+                   "window_seconds": [0.10, 0.65],
+                   "lateral_amplitude_m": 0.012,
+                   "vertical_amplitude_m": 0.018,
+                   "camera_motion": False,
+               },
                "poses": poses, "png_sha256": hashes}
     (args.out / "driver-pilot.json").write_text(json.dumps(receipt, indent=2) + "\n")
 
