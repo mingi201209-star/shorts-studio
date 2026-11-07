@@ -83,6 +83,7 @@ jobs:
           pattern: vibration-transfer-proof-*
           path: ${{ runner.temp }}/proof
           run-id: ${{ github.event_name == 'workflow_dispatch' && inputs.source_run || github.run_id }}
+          github-token: ${{ github.token }}
       - name: Verify and assemble the actual consecutive frames
         run: |
           set -euo pipefail
