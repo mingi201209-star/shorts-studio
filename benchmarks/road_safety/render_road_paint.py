@@ -256,7 +256,14 @@ def main():
             seg.hide_render = True
 
         if shot["id"] == "night_wide":
-            cam_pos = (0, lerp(-3.0, -1.6, t), 0.6)
+            # Wide, fast dolly-in -- the earlier narrow 1.4-unit drift left
+            # the real rendered picture almost static for the first 5s
+            # (measured: 0 real pixel changes in cut_timestamps before 5.5s,
+            # see road-paint-validation.json's visual_activity evidence).
+            # Starting much further back (same -1.6 endpoint, so the match
+            # cut into paint_push_in is unchanged) sweeps the glowing stripe
+            # across far more of the frame in the same 5.4s.
+            cam_pos = (0, lerp(-4.8, -1.6, t), 0.6)
             target = (0, cam_pos[1] + 4.0, 0.01)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
@@ -268,7 +275,14 @@ def main():
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.03, 0.06, -0.01)), target)
         elif shot["id"] == "bead_macro_ray":
-            cam_pos = (lerp(-0.02, 0.02, math.sin(t * math.tau) * 0.5 + 0.5), -0.11, 0.028)
+            # The old +/-0.02 sweep and a ray reveal that froze after t=0.6
+            # left this shot's last ~7s with no real pixel change (measured
+            # max_static_visual_seconds=7.0, the global max across the whole
+            # video). A much wider lateral sweep plus a slow continuous
+            # push-in keep real parallax moving across the bead field for
+            # the full shot, not just its first third.
+            cam_pos = (lerp(-0.07, 0.07, math.sin(t * math.tau) * 0.5 + 0.5),
+                       -0.11, lerp(0.034, 0.022, t))
             target = (0, 0.05, 0.012)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False
@@ -291,8 +305,12 @@ def main():
             headlight.hide_render = False
             aim_headlight(headlight, Vector(cam_pos) + Vector((0.05, 0.08, -0.03)), target)
         elif shot["id"] == "bead_macro_closing":
-            drift = math.sin(t * math.tau * 0.5) * 0.01
-            cam_pos = (drift, -0.11, 0.028)
+            # Same fix as bead_macro_ray: the old +/-0.01 drift measured as
+            # part of a 5.5s static tail with no real pixel change. Wider
+            # lateral drift plus a slow push-in keeps the closing beauty
+            # shot moving for its real screen time.
+            drift = math.sin(t * math.tau * 0.5) * 0.06
+            cam_pos = (drift, -0.11, lerp(0.034, 0.022, t))
             target = (0, 0.05, 0.012)
             set_camera(cam, cam_pos, target)
             headlight.hide_render = False

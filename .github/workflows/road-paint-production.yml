@@ -28,6 +28,11 @@ env:
   BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
 jobs:
   speech:
+    # TEMPORARILY DISABLED: validating the bead_macro_ray/bead_macro_closing/
+    # night_wide motion fix cheaply via road-paint-motion-diagnose.yml before
+    # spending another full production run. Re-enable once that confirms
+    # visual_activity now passes for all three shots.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
@@ -87,9 +92,9 @@ jobs:
           retention-days: 14
 
   native:
-    # speech+audio confirmed real PASS (run 42316747839: 32.0s target met
-    # exactly with the original, untrimmed narration) -- full 32-shard
-    # render enabled.
+    # TEMPORARILY DISABLED: see the note on the speech job above -- same
+    # reason, validating the motion fix cheaply before the full re-render.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
