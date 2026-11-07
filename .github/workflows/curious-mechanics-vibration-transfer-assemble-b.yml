@@ -1,9 +1,9 @@
 name: Curious Mechanics B assemble preserved vibration-transfer render
 # Assembly-only recovery for full native run 42380212611. All 30 native
-# shards succeeded there; its final job failed before QA because the GitHub CLI
-# could not resolve an older driver artifact by name. This workflow downloads
-# that same unexpired artifact by immutable ID and verifies its archive digest.
-# It never runs Blender and never changes the preserved render inputs.
+# shards succeeded there; its final job failed before QA because older source
+# assets no longer resolve by artifact name. This workflow uses immutable,
+# unexpired artifact IDs and verifies both archive digests before assembly.
++# It never runs Blender and never changes the preserved render inputs.
 on:
   push:
     branches: [fix/curious-mechanics-vibration-transfer-20261107]
@@ -29,11 +29,29 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/source" "$RUNNER_TEMP/driver"
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/source/B/audio" "$RUNNER_TEMP/driver" "$RUNNER_TEMP/prior"
           gh run download 42380212611 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-causal-*' --dir "$RUNNER_TEMP/native"
           ls "$RUNNER_TEMP/native" | sort
           test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 30
-          gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-B --dir "$RUNNER_TEMP/source"
+
+          # The unexpired prior B film carries the exact approved Andrew +5%
+          # narration/captions used by this manifest. Rebuild only the legacy
+          # source-folder layout expected by the unchanged assembler.
+          gh api -H 'Accept: application/vnd.github+json' \
+            "/repos/$GITHUB_REPOSITORY/actions/artifacts/13081202684/zip" \
+            > "$RUNNER_TEMP/prior.zip"
+          echo "fa410b014c38e5e6b39cbba2f63e52b80b97dd475cefe3259b9c44a80a49992e  $RUNNER_TEMP/prior.zip" | sha256sum -c -
+          unzip -q "$RUNNER_TEMP/prior.zip" -d "$RUNNER_TEMP/prior"
+          cp "$RUNNER_TEMP/prior/B/narration.wav" "$RUNNER_TEMP/source/B/audio/narration.wav"
+          cp "$RUNNER_TEMP/prior/B/film.ass" "$RUNNER_TEMP/source/B/audio/film.ass"
+          cp "$RUNNER_TEMP/prior/B/audio-validation.json" "$RUNNER_TEMP/source/B/audio/audio-validation.json"
+          cp "$RUNNER_TEMP/prior/B/curious-mechanics-B-progressive-v3.mp4" "$RUNNER_TEMP/source/B/curious-mechanics-B-mechanism-v2.mp4"
+          cp "$RUNNER_TEMP/prior/B/film-validation.json" "$RUNNER_TEMP/source/B/revision-validation.json"
+          echo "00f8bcb2c088d3104b5018bf22404f4db017449793c6c365e0995458609c39aa  $RUNNER_TEMP/source/B/audio/narration.wav" | sha256sum -c -
+          echo "4eabcb1d61cafeefd15282f9300de315a37fa05bee27d049d4b9756ba5eb68b3  $RUNNER_TEMP/source/B/audio/film.ass" | sha256sum -c -
+          echo "c5d259be6f2df13879b2a717b8b9ba0ab87ea736e2c0015559ac3aa7a115c537  $RUNNER_TEMP/source/B/audio/audio-validation.json" | sha256sum -c -
+          echo "1cb57666230f809b012cd622ac8ac545540fc0df8075970eb9cc03b5efe182a8  $RUNNER_TEMP/source/B/curious-mechanics-B-mechanism-v2.mp4" | sha256sum -c -
+
           gh api -H 'Accept: application/vnd.github+json' \
             "/repos/$GITHUB_REPOSITORY/actions/artifacts/13415651768/zip" \
             > "$RUNNER_TEMP/driver.zip"
