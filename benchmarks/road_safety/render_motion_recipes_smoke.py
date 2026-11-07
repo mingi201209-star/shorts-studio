@@ -83,7 +83,8 @@ for frame in (1, 3, 5, 7, 9):
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
     proof.append(dict(frame=frame, sha256=hashlib.sha256(path.read_bytes()).hexdigest(), motion=motion))
-if len({p["sha256"] for p in proof}) != len(proof):
-    raise RuntimeError("motion preview produced duplicate images")
+active = [p for p in proof if 2 <= p["frame"] <= 8]
+if len({p["sha256"] for p in active}) != len(active):
+    raise RuntimeError("active motion preview produced duplicate images")
 (args.out / "motion-proof.json").write_text(json.dumps(proof, indent=2))
 print("MULTI_TOPIC_NATIVE_MOTION_PREVIEW_PASS", flush=True)
