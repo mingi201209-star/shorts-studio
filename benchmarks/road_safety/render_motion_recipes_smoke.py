@@ -69,7 +69,8 @@ bpy.ops.object.light_add(type="AREA", location=(0, -4, 10))
 bpy.context.object.data.energy = 1700
 bpy.context.object.data.size = 12
 scene = bpy.context.scene
-scene.render.engine = "BLENDER_EEVEE_NEXT"
+engines = {item.identifier for item in scene.render.bl_rna.properties["engine"].enum_items}
+scene.render.engine = next((e for e in ("BLENDER_EEVEE_NEXT", "BLENDER_EEVEE") if e in engines), "BLENDER_WORKBENCH")
 scene.render.resolution_x = 640
 scene.render.resolution_y = 360
 scene.render.resolution_percentage = 100
