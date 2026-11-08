@@ -528,9 +528,14 @@ def main():
             # clears a shape that runs the full length of the road:
             # placing the camera above BARRIER_HEIGHT looking down at the
             # contact point is outside the solid regardless of x or y.
-            cam_pos = Vector((wheel_point.x + 0.12,
-                              wheel_point.y - 0.3 + math.sin(t * math.tau * 0.5) * 0.1,
-                              wheel_point.z + 0.75))
+            # Real car swap (preview run 42454726586, frame 540): the real
+            # car's body is taller and the old 0.12/0.75 offsets were far
+            # too tight against it, landing the camera right against a
+            # body panel. Staying low (near wheel height, not body height)
+            # and well clear laterally keeps the camera off the car itself.
+            cam_pos = Vector((wheel_point.x + 0.6,
+                              wheel_point.y - 0.3 + math.sin(t * math.tau * 0.5) * 0.15,
+                              wheel_point.z + 0.15))
             target = wheel_point
             set_camera(cam, cam_pos, target)
             # Preview runs 42387613693 and 42387885176: energy=60, then
