@@ -359,9 +359,23 @@ def main():
             # -- so as the camera translated forward, the VIEWING ANGLE
             # never changed at all, just its position. A fixed target
             # point makes the camera genuinely sweep past it instead.
+            # Per-axis lerps (x, y, z independently) kept landing around
+            # 9.0 mean diff however much the raw numbers were widened --
+            # same mistake as barrier_cross_section's first fix: moving
+            # several offsets independently doesn't reliably shrink the
+            # true camera-to-target DISTANCE. Switching to the same
+            # explicit radial distance/angle approach that got
+            # cross_section and barrier_closing over threshold.
+            # Neither translating the camera (first attempt) nor closing
+            # true radial distance on a fixed target (second attempt, risked
+            # ending up inside the barrier's own solid or losing it from
+            # frame) reliably cleared the threshold. barrier_closing's fix
+            # (FIXED camera, target swinging through a wide arc) scored
+            # 29.2 -- comfortable margin -- so apply the same proven device
+            # here instead of a third bespoke tuning attempt.
             sloped_barrier.hide_render = False
-            cam_pos = (lerp(4.0, -4.0, t), lerp(-15.0, 0.5, t), lerp(2.9, 0.25, t))
-            target = (BARRIER_X - 0.3, -0.5, 0.2)
+            cam_pos = (0.6, -8.0, 1.25)
+            target = (BARRIER_X - 0.3, lerp(-15.0, 9.0, t), 0.3)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -488,13 +502,13 @@ def main():
             lift = math.sin(lift_phase * math.pi) * 0.22
             for w in front_wheels:
                 w.location.z = CAR_WHEEL_RADIUS + lift
-            # Same push-in device as flat_wall_fail (mirrored on purpose,
-            # see that shot's comment) so the two outcomes are a literal,
-            # legible before/after comparison -- pulled back a little
-            # further since this shot's car travels a wider y range (-7 to
-            # +7, not just -7 to 0) through the redirect.
-            cam_pos = (lerp(-13.0, -2.5, t), lerp(-11.0, -2.0, t), lerp(3.4, 0.7, t))
-            target = (BARRIER_X - 0.3, 0.0, 0.4)
+            # Same proven device as barrier_establish's final fix: FIXED
+            # camera, target swinging through a wide arc (same as
+            # barrier_closing, which scored 29.2) -- the car's own motion
+            # plus a real background sweep together, not relying on either
+            # alone.
+            cam_pos = (-5.0, -5.5, 1.6)
+            target = (BARRIER_X - 0.3, lerp(-10.0, 10.0, t), 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
