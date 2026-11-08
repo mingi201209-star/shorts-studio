@@ -360,8 +360,8 @@ def main():
             # never changed at all, just its position. A fixed target
             # point makes the camera genuinely sweep past it instead.
             sloped_barrier.hide_render = False
-            cam_pos = (lerp(2.2, -2.6, t), lerp(-12.0, -1.5, t), lerp(2.0, 0.6, t))
-            target = (BARRIER_X - 0.3, -1.5, 0.3)
+            cam_pos = (lerp(3.2, -3.2, t), lerp(-14.0, -0.3, t), lerp(2.6, 0.45, t))
+            target = (BARRIER_X - 0.3, -1.0, 0.25)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -392,7 +392,7 @@ def main():
             # which is a far larger and more reliable source of real
             # pixel-level change than hoping one small moving object
             # carries the whole measurement.
-            cam_pos = (lerp(-9.0, -4.5, t), lerp(-8.5, -4.0, t), lerp(2.4, 1.3, t))
+            cam_pos = (lerp(-10.5, -3.2, t), lerp(-9.5, -2.8, t), lerp(2.8, 0.9, t))
             target = (BARRIER_X - 0.3, -3.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
@@ -413,10 +413,20 @@ def main():
             # changing subject real weight in the average instead of being
             # diluted by mostly-static background.
             sloped_barrier.hide_render = False
-            angle = lerp(-1.0, 1.0, t)
-            radius = lerp(2.2, 0.85, t)
-            cam_pos = (BARRIER_X + math.sin(angle) * radius,
-                       -20 - 2.4 - math.cos(angle) * 1.0,
+            # Second attempt (preview run 42430779080, frame 331 vs 465):
+            # a +/-1.0 rad swing changed the VIEWING ANGLE of the wedge so
+            # much that it read as narrower, not bigger, by t=1, cancelling
+            # out the intended push-in -- and the push-in itself barely
+            # worked anyway, because only the small x/z "radius" term
+            # shrank while the dominant y-offset (-20-2.4) that actually
+            # set most of the camera-to-target distance never changed.
+            # Scaling true camera-to-target DISTANCE directly (not just
+            # one offset term) with a smaller angle swing actually closes
+            # the gap this time.
+            angle = lerp(-0.4, 0.4, t)
+            dist = lerp(3.6, 1.4, t)
+            cam_pos = (BARRIER_X + math.sin(angle) * dist,
+                       -20 - math.cos(angle) * dist,
                        lerp(0.3, 0.65, (math.sin(t * math.tau) * 0.5 + 0.5)))
             target = (BARRIER_X, -20, 0.4)
             set_camera(cam, cam_pos, target)
@@ -483,7 +493,7 @@ def main():
             # legible before/after comparison -- pulled back a little
             # further since this shot's car travels a wider y range (-7 to
             # +7, not just -7 to 0) through the redirect.
-            cam_pos = (lerp(-10.0, -5.0, t), lerp(-9.0, -4.5, t), lerp(2.6, 1.4, t))
+            cam_pos = (lerp(-11.5, -3.6, t), lerp(-10.0, -3.0, t), lerp(3.0, 1.0, t))
             target = (BARRIER_X - 0.3, 0.0, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
