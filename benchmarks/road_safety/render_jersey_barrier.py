@@ -464,12 +464,17 @@ def main():
             # which is a far larger and more reliable source of real
             # pixel-level change than hoping one small moving object
             # carries the whole measurement.
-            # Real car swap (preview run 42455427540): regressed to 7.7,
-            # under threshold again -- the real car's smaller footprint
-            # carries less of the frame-mean than the stylized box did at
-            # the same distance. Pushed closer still for more margin.
+            # Real car swap (preview run 42455676386): a FIXED target point
+            # didn't account for the push-in narrowing the field of view --
+            # by t=1 the camera was close enough that the car (resting at
+            # a different point than the fixed aim point) left frame
+            # almost entirely, undercutting the very push-in meant to grow
+            # it. Tracking the car's own live position as the target (the
+            # camera's own PATH still doesn't move with the car -- only
+            # where it points does -- so this isn't the comoving-camera
+            # bug from before) keeps the car in frame throughout the push.
             cam_pos = (lerp(-12.0, -2.2, t), lerp(-10.5, -1.8, t), lerp(3.1, 0.6, t))
-            target = (BARRIER_X - 0.3, -3.3, 0.4)
+            target = car_root.location
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -580,13 +585,19 @@ def main():
             # Same whole-car tilt as wheel_climb_macro (not an individually
             # articulated wheel) standing in for the climb/redirect.
             car_root.rotation_euler = (0, math.radians(lift * 10), math.radians(heading))
-            # Same proven device as barrier_establish's final fix: FIXED
-            # camera, target swinging through a wide arc (same as
-            # barrier_closing, which scored 29.2) -- the car's own motion
-            # plus a real background sweep together, not relying on either
-            # alone.
-            cam_pos = (-5.0, -5.5, 1.6)
-            target = (BARRIER_X - 0.3, lerp(-10.0, 10.0, t), 0.4)
+            # Real car swap (preview run 42455676386): the fixed-camera/
+            # swinging-target device scored only 8.5 with the real car's
+            # smaller footprint (this was the shot I meant to re-tune last
+            # round but edited flat_wall_fail's block twice by mistake
+            # instead). Switching to the same push-in dolly as
+            # flat_wall_fail -- proven to clear threshold for that mirrored
+            # shot -- rather than a third variant of the swinging-target
+            # device.
+            # Same live-tracked target as flat_wall_fail's fix: a fixed aim
+            # point leaves the car out of frame once the push-in narrows
+            # the field of view enough.
+            cam_pos = (lerp(-12.0, -2.2, t), lerp(-10.5, -1.8, t), lerp(3.1, 0.6, t))
+            target = car_root.location
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
