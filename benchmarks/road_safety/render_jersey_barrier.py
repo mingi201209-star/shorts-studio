@@ -178,8 +178,11 @@ def extruded_profile(name, profile_xz, y0, y1, mat):
 # hard-coded half-width/length served) -- rounded up from the real car's
 # own measured bounding box in load_source_car() below, not load-bearing
 # for anything else.
-CAR_HALF_WIDTH = 1.05
-CAR_HALF_LENGTH = 2.35
+# Measured from preview run 42454408264's CAR_BOUNDS print (half_width
+# 0.986, half_length 1.996 once the axes are corrected -- see the
+# rotation_euler comment in load_source_car()), rounded up for margin.
+CAR_HALF_WIDTH = 1.1
+CAR_HALF_LENGTH = 2.2
 CAR_WHEEL_RADIUS = 0.33
 
 
@@ -206,9 +209,14 @@ def load_source_car(source_path):
     for ob in car.children_recursive:
         if ob.animation_data:
             ob.animation_data_clear()
-    # Same base alignment render_curious_mechanics.py uses for this asset:
-    # its un-rotated forward axis isn't this project's scene-forward (+Y).
-    car.rotation_euler = (0, 0, math.pi / 2)
+    # Real measurement from preview run 42454408264's CAR_BOUNDS print:
+    # render_curious_mechanics.py's own pi/2 rotation (presumably matching
+    # THEIR scene's forward axis, not necessarily this one) put the car's
+    # ~4m length along world X and its ~2m width along world Y -- the
+    # opposite of what this episode's shot code assumes (length along Y,
+    # matching every other object in this scene). No extra rotation (just
+    # the mesh's native orientation) should put length back along Y.
+    car.rotation_euler = (0, 0, 0)
     car.scale = (0.85, 0.85, 0.85)
     car.location = (0, 0, 0)
 
