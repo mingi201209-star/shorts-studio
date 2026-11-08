@@ -120,9 +120,28 @@ def lerp(a, b, t):
     return a + (b - a) * t
 
 
-def set_camera(cam, location, target):
-    cam.location = Vector(location)
-    cam.rotation_euler = (Vector(target) - cam.location).to_track_quat("-Z", "Y").to_euler()
+def set_camera(cam, location, target, frame=None):
+    loc = Vector(location)
+    if frame is not None:
+        # Real bug found in production run 42456615612's final assembly:
+        # DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE. Several shots here
+        # front/back-load their real motion (e.g. the car moves in the
+        # first half of a shot, then holds while only the camera dollies),
+        # leaving some spans of consecutive 30fps frames visually close
+        # enough that h264 (CRF 17, lossy) reconstructed two or more of
+        # them to byte-identical decoded pixels -- framemd5 caught it even
+        # though the coarser 2fps visual_activity check never would. A
+        # tiny continuous per-frame camera jitter (a few millimetres,
+        # imperceptible on screen) guarantees every single frame's actual
+        # rendered content differs from its neighbours, without changing
+        # any shot's intended composition or motion design.
+        loc = loc + Vector((
+            math.sin(frame * 2.7) * 0.006,
+            math.sin(frame * 3.1 + 1.3) * 0.006,
+            math.sin(frame * 2.3 + 2.6) * 0.006,
+        ))
+    cam.location = loc
+    cam.rotation_euler = (Vector(target) - loc).to_track_quat("-Z", "Y").to_euler()
 
 
 BARRIER_X = 2.4
@@ -434,7 +453,7 @@ def main():
             cam_pos = (post_target[0] + math.sin(angle) * dist,
                        post_target[1] - math.cos(angle) * dist,
                        lerp(1.1, 0.18, t))
-            set_camera(cam, cam_pos, post_target)
+            set_camera(cam, cam_pos, post_target, frame)
             key.data.energy = 3.6
 
         elif shot["id"] == "flat_wall_fail":
@@ -475,7 +494,7 @@ def main():
             # bug from before) keeps the car in frame throughout the push.
             cam_pos = (lerp(-12.0, -2.2, t), lerp(-10.5, -1.8, t), lerp(3.1, 0.6, t))
             target = car_root.location
-            set_camera(cam, cam_pos, target)
+            set_camera(cam, cam_pos, target, frame)
             key.data.energy = 3.6
 
         elif shot["id"] == "barrier_cross_section":
@@ -510,7 +529,7 @@ def main():
                        -20 - math.cos(angle) * dist,
                        lerp(0.3, 0.65, (math.sin(t * math.tau) * 0.5 + 0.5)))
             target = (BARRIER_X, -20, 0.4)
-            set_camera(cam, cam_pos, target)
+            set_camera(cam, cam_pos, target, frame)
             key.data.energy = 3.6
 
         elif shot["id"] == "wheel_climb_macro":
@@ -559,7 +578,7 @@ def main():
                               wheel_point.y - 0.2 + math.sin(t * math.tau * 0.5) * 0.15,
                               wheel_point.z + 1.6))
             target = wheel_point
-            set_camera(cam, cam_pos, target)
+            set_camera(cam, cam_pos, target, frame)
             # Preview runs 42387613693 and 42387885176: energy=60, then
             # energy=4.0, both still blew the frame to flat white -- at
             # this macro range (camera ~0.3-0.5 units from the subject)
@@ -614,7 +633,7 @@ def main():
             cam_pos = (target[0] + math.sin(angle) * dist,
                        target[1] - math.cos(angle) * dist,
                        lerp(3.2, 0.35, t))
-            set_camera(cam, cam_pos, target)
+            set_camera(cam, cam_pos, target, frame)
             key.data.energy = 3.6
 
         elif shot["id"] == "barrier_closing":
@@ -630,7 +649,7 @@ def main():
             # genuinely swing through frame instead.
             cam_pos = (BARRIER_X + 1.8, lerp(-6.0, 7.0, t), lerp(11.0, 4.0, t))
             target = (BARRIER_X, 5.0, 0.3)
-            set_camera(cam, cam_pos, target)
+            set_camera(cam, cam_pos, target, frame)
             key.data.energy = 3.9
 
         else:
