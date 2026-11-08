@@ -422,10 +422,15 @@ def main():
             # it to sweep dramatically through frame -- same principle as
             # wheel_climb_macro's close framing, which cleared threshold
             # by a wide margin.
+            # Real car swap (preview run 42455427540): the real car is
+            # smaller/differently proportioned than the stylized box this
+            # shot was tuned against, and this shot has no car in frame at
+            # all anyway -- regressed to 10.5, under threshold again.
+            # Pushing closer still for more margin.
             sloped_barrier.hide_render = False
             post_target = (BARRIER_X - 0.6, 2.0, 0.15)
-            angle = lerp(-0.25, 0.25, t)
-            dist = lerp(14.0, 0.6, t)
+            angle = lerp(-0.35, 0.35, t)
+            dist = lerp(14.0, 0.35, t)
             cam_pos = (post_target[0] + math.sin(angle) * dist,
                        post_target[1] - math.cos(angle) * dist,
                        lerp(1.1, 0.18, t))
@@ -459,7 +464,11 @@ def main():
             # which is a far larger and more reliable source of real
             # pixel-level change than hoping one small moving object
             # carries the whole measurement.
-            cam_pos = (lerp(-10.5, -3.2, t), lerp(-9.5, -2.8, t), lerp(2.8, 0.9, t))
+            # Real car swap (preview run 42455427540): regressed to 7.7,
+            # under threshold again -- the real car's smaller footprint
+            # carries less of the frame-mean than the stylized box did at
+            # the same distance. Pushed closer still for more margin.
+            cam_pos = (lerp(-12.0, -2.2, t), lerp(-10.5, -1.8, t), lerp(3.1, 0.6, t))
             target = (BARRIER_X - 0.3, -3.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
