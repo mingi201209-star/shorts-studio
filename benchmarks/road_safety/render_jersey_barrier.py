@@ -534,9 +534,16 @@ def main():
             # above BARRIER_HEIGHT (0.81) looking down is outside the
             # barrier's solid no matter what, and well above the car's
             # body too.
-            cam_pos = Vector((wheel_point.x - 0.15,
-                              wheel_point.y - 0.3 + math.sin(t * math.tau * 0.5) * 0.15,
-                              wheel_point.z + 1.0))
+            # Still not clear (preview run 42455101249, frame 540): +1.0 in
+            # z only got to ~1.33, barely 0.07 above the real car's own
+            # roof (top_z 1.258) -- looking almost straight down at point-
+            # blank range onto the hood. BARRIER_HEIGHT is only 0.81, so
+            # any height clearing the car's taller roof clears the barrier
+            # automatically too, regardless of x/y; +1.6 gives real margin
+            # above both instead of a few centimetres.
+            cam_pos = Vector((wheel_point.x + 0.3,
+                              wheel_point.y - 0.2 + math.sin(t * math.tau * 0.5) * 0.15,
+                              wheel_point.z + 1.6))
             target = wheel_point
             set_camera(cam, cam_pos, target)
             # Preview runs 42387613693 and 42387885176: energy=60, then
