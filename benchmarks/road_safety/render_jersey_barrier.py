@@ -373,9 +373,14 @@ def main():
             # (FIXED camera, target swinging through a wide arc) scored
             # 29.2 -- comfortable margin -- so apply the same proven device
             # here instead of a third bespoke tuning attempt.
+            # Visibly different frames (road curves right then left) still
+            # only scored 7.3: roughly half the frame is unchanging flat
+            # sky, diluting the mean. Lowering the camera and the target's
+            # z pushes the horizon higher, giving the actually-changing
+            # road/barrier region more of the frame to work with.
             sloped_barrier.hide_render = False
-            cam_pos = (0.6, -8.0, 1.25)
-            target = (BARRIER_X - 0.3, lerp(-15.0, 9.0, t), 0.3)
+            cam_pos = (0.5, -8.0, 0.55)
+            target = (BARRIER_X - 0.3, lerp(-15.0, 9.0, t), 0.05)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
