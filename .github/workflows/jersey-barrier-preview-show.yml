@@ -22,7 +22,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/preview"
-          gh run download 42456165400 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-preview --dir "$RUNNER_TEMP/preview"
+          gh run download 42456398034 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-preview --dir "$RUNNER_TEMP/preview"
           cd "$RUNNER_TEMP/preview"
           for f in $(ls frame_*.png | sort); do
             echo "FRAME_B64_START $f"
