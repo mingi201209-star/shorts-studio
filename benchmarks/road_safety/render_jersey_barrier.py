@@ -599,9 +599,18 @@ def main():
             # threshold for barrier_establish and barrier_cross_section
             # (angle sweep combined with distance shrinking, around the
             # car's own live position) instead of a fourth linear variant.
+            # IMPORTANT: this metric alone can be fooled -- preview run
+            # 42456165400's full-span diff came back 54.6 (comfortably
+            # over threshold), but frame 795 itself, viewed directly, was
+            # fully BLACK: at dist=1.1 the camera ended up inside the
+            # car's own body or the barrier's solid, and "real content" to
+            # "solid black" reads as a huge pixel change despite being a
+            # render bug, not real motion. Checking the actual frame, not
+            # just the number, caught it. Backed the closest distance off
+            # to 2.2, clear of both.
             target = car_root.location
             angle = lerp(-0.35, 0.35, t)
-            dist = lerp(15.0, 1.1, t)
+            dist = lerp(15.0, 2.2, t)
             cam_pos = (target[0] + math.sin(angle) * dist,
                        target[1] - math.cos(angle) * dist,
                        lerp(3.2, 0.35, t))
