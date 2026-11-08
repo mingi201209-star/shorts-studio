@@ -15,13 +15,13 @@ low chase, orbiting cutaway, macro wheel, overhead pan) except the one
 deliberate exception: flat_wall_fail and sloped_barrier_success mirror the
 same chase-camera geometry on purpose, so the before/after comparison is
 literally on screen (same device as road-paint's with/without-beads
-comparison shot). The car is a stylized two-box-plus-wheels silhouette, not
-a photoreal model -- same honesty convention as this project's other
-"stylized, kinematic visual demonstration, not a calibrated crash-physics
-model" disclaimers. It gives the macro wheel shot an unambiguous size
-reference, fixing the earlier episode's scale problem, without adding an
-external asset dependency (same no-external-asset style as
-render_road_paint.py).
+comparison shot). The car is the same pinned CC0 detailed sedan this
+project already uses in render_curious_mechanics.py/render_rumble_episode2.py
+(real user request: "use the car we made before" after an earlier version
+of this episode used a stylized two-box-plus-wheels placeholder) -- it
+gives the macro wheel shot an unambiguous size reference, fixing the
+earlier episode's scale problem, without modeling a car from scratch.
+Everything else (barrier, road, markers, lighting) stays fully procedural.
 
 No frame holds, interpolation, or output upscaling. No upload or TTS.
 """
@@ -38,9 +38,12 @@ from pathlib import Path
 import bpy
 from mathutils import Vector
 
+PINNED_SCENE_SHA256 = "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877"
+
 
 def arguments():
     p = argparse.ArgumentParser()
+    p.add_argument("--source", type=Path, required=True)
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--start", type=int, required=True)
@@ -48,6 +51,15 @@ def arguments():
     p.add_argument("--preview", action="store_true")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
+
+
+def stable_source(path):
+    if not path.is_file():
+        raise FileNotFoundError(path)
+    h = hashlib.sha256(path.read_bytes()).hexdigest()
+    if h != PINNED_SCENE_SHA256:
+        raise ValueError(f"pinned car scene SHA mismatch: {h}")
+    return h
 
 
 def material(name, color, metal=0.0, rough=0.55, emission=0.0):
@@ -70,20 +82,6 @@ def cube(name, center, dimensions, mat):
     ob.name = name
     ob.dimensions = dimensions
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
-    ob.data.materials.append(mat)
-    return ob
-
-
-def cylinder(name, start, end, radius, mat, vertices=24):
-    start, end = Vector(start), Vector(end)
-    mid = (start + end) / 2
-    length = (end - start).length
-    bpy.ops.mesh.primitive_cylinder_add(
-        vertices=vertices, radius=radius, depth=max(length, 1e-5), location=mid)
-    ob = bpy.context.object
-    ob.name = name
-    direction = (end - start).normalized() if length > 1e-6 else Vector((0, 0, 1))
-    ob.rotation_euler = direction.to_track_quat("Z", "Y").to_euler()
     ob.data.materials.append(mat)
     return ob
 
@@ -175,37 +173,60 @@ def extruded_profile(name, profile_xz, y0, y1, mat):
     return ob
 
 
+# Safety-margin envelope around the real car, used only to keep cameras
+# from ending up inside its mesh (same purpose the old stylized car's
+# hard-coded half-width/length served) -- rounded up from the real car's
+# own measured bounding box in load_source_car() below, not load-bearing
+# for anything else.
+CAR_HALF_WIDTH = 1.05
+CAR_HALF_LENGTH = 2.35
 CAR_WHEEL_RADIUS = 0.33
-CAR_HALF_WIDTH = 0.90
-CAR_HALF_LENGTH = 2.15
-CAR_WHEEL_X = [-0.78, 0.78]
-CAR_WHEEL_Y = [-1.55, 1.55]
 
 
-def build_car(prefix, body_mat, glass_mat, wheel_mat):
-    """A stylized two-box-plus-four-wheels silhouette: unambiguous as 'a
-    car' at every shot distance in this episode, unlike an abstract
-    primitive, without needing an external car asset. Everything is
-    parented to a root empty at the world origin so the whole rig can be
-    moved/rotated as one rigid body per shot."""
-    root = bpy.data.objects.new(f"{prefix} root", None)
+def load_source_car(source_path):
+    """Loads the same pinned CC0 detailed sedan render_curious_mechanics.py
+    and render_rumble_episode2.py already use, by opening it as the base
+    scene (same technique those two scripts use) and pruning everything
+    that isn't the car -- this episode's road, barrier, markers and
+    lighting are all built fresh afterward, same as before. Real user
+    request: swap out the earlier stylized two-box placeholder for the
+    actual car model this project already has."""
+    stable_source(source_path)
+    bpy.ops.wm.open_mainfile(filepath=str(source_path))
+    car = bpy.data.objects.get("CC0 detailed sedan animated as a rigid car")
+    if car is None:
+        raise ValueError("source car hierarchy unavailable")
+    keep = {car, *car.children_recursive}
+    for ob in list(bpy.data.objects):
+        if ob not in keep:
+            bpy.data.objects.remove(ob, do_unlink=True)
+    if len([o for o in car.children_recursive if o.type == "MESH"]) < 65:
+        raise ValueError("incomplete vehicle part set")
+    car.animation_data_clear()
+    for ob in car.children_recursive:
+        if ob.animation_data:
+            ob.animation_data_clear()
+    # Same base alignment render_curious_mechanics.py uses for this asset:
+    # its un-rotated forward axis isn't this project's scene-forward (+Y).
+    car.rotation_euler = (0, 0, math.pi / 2)
+    car.scale = (0.85, 0.85, 0.85)
+    car.location = (0, 0, 0)
+
+    root = bpy.data.objects.new("Demo car root", None)
     bpy.context.collection.objects.link(root)
-    body = cube(f"{prefix} body", (0, 0, CAR_WHEEL_RADIUS + 0.45),
-                (CAR_HALF_WIDTH * 2, CAR_HALF_LENGTH * 2, 0.9), body_mat)
-    body.parent = root
-    cabin = cube(f"{prefix} cabin", (0, -0.25, CAR_WHEEL_RADIUS + 1.08),
-                 (CAR_HALF_WIDTH * 1.7, CAR_HALF_LENGTH * 1.0, 0.56), glass_mat)
-    cabin.parent = root
-    wheels = []
-    for wx in CAR_WHEEL_X:
-        for wy in CAR_WHEEL_Y:
-            w = cylinder(f"{prefix} wheel {wx}_{wy}",
-                         (wx - 0.09, wy, CAR_WHEEL_RADIUS),
-                         (wx + 0.09, wy, CAR_WHEEL_RADIUS),
-                         CAR_WHEEL_RADIUS, wheel_mat)
-            w.parent = root
-            wheels.append(w)
-    return root, wheels
+    car.parent = root
+    car.matrix_parent_inverse.identity()
+
+    bpy.context.view_layer.update()
+    corners = [ob.matrix_world @ Vector(v) for ob in car.children_recursive
+               if ob.type == "MESH" for v in ob.bound_box]
+    xs, ys, zs = [c.x for c in corners], [c.y for c in corners], [c.z for c in corners]
+    print("CAR_BOUNDS " + json.dumps({
+        "half_width": round((max(xs) - min(xs)) / 2, 3),
+        "half_length": round((max(ys) - min(ys)) / 2, 3),
+        "bottom_z": round(min(zs), 3), "top_z": round(max(zs), 3),
+    }), flush=True)
+    return root, car
 
 
 def barrier_markers(post_mat, stripe_mat):
@@ -240,7 +261,7 @@ def set_car_visible(root, visible):
     their default hide_render=False forever, so the car rendered in every
     shot regardless of this flag. Every mesh child must be set directly."""
     root.hide_render = not visible
-    for child in root.children:
+    for child in root.children_recursive:
         child.hide_render = not visible
 
 
@@ -249,8 +270,13 @@ def main():
     manifest = json.loads(args.manifest.read_text(encoding="utf8"))
     shots = manifest["shots"]
 
-    bpy.ops.object.select_all(action="SELECT")
-    bpy.ops.object.delete(use_global=False)
+    # load_source_car() opens the pinned .blend as the base scene (same
+    # technique render_curious_mechanics.py uses for this asset) -- that
+    # REPLACES bpy.data wholesale, so it must happen before anything else
+    # in this scene is built, not after (an earlier draft of this function
+    # built the whole road/barrier/marker scene first and would have had
+    # open_mainfile silently discard all of it).
+    car_root, car = load_source_car(args.source)
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
@@ -280,9 +306,6 @@ def main():
     asphalt_grain(asphalt_mat)
     flat_wall_mat = material("Flat wall concrete", (0.80, 0.77, 0.70), rough=0.7)
     barrier_mat = material("Jersey barrier concrete", (0.82, 0.79, 0.72), rough=0.68)
-    body_mat = material("Car body paint", (0.72, 0.1, 0.08), metal=0.3, rough=0.35)
-    glass_mat = material("Car glass", (0.04, 0.05, 0.06), rough=0.15)
-    wheel_mat = material("Car tyre", (0.015, 0.015, 0.016), rough=0.8)
     post_mat = material("Reflector post", (0.9, 0.78, 0.2), emission=1.2)
     stripe_mat = material("Road lane stripe", (0.78, 0.76, 0.7), rough=0.6)
 
@@ -294,8 +317,20 @@ def main():
     sloped_barrier.location = (BARRIER_X, 0, 0)
     barrier_markers(post_mat, stripe_mat)
 
-    car_root, wheels = build_car("Demo car", body_mat, glass_mat, wheel_mat)
-    front_wheels = [w for w in wheels if w.location.x > 0]
+    # Same technique render_curious_mechanics.py uses: reuse the car's own
+    # original body material, just recolor it, rather than overriding the
+    # whole mesh's materials.
+    body_paint = bpy.data.materials.get("blue")
+    if body_paint is None:
+        raise ValueError("missing original CC0 blue body material")
+    body_paint.use_nodes = True
+    paint_shader = body_paint.node_tree.nodes.get("Principled BSDF")
+    if paint_shader is None:
+        raise ValueError("source body material has no Principled BSDF")
+    paint_shader.inputs["Base Color"].default_value = (0.72, 0.1, 0.08, 1)
+    paint_shader.inputs["Metallic"].default_value = 0.3
+    paint_shader.inputs["Roughness"].default_value = 0.35
+    body_paint.diffuse_color = (0.72, 0.1, 0.08, 1)
 
     bpy.ops.object.camera_add(location=(0, -8, 2.0))
     cam = bpy.context.object
@@ -343,8 +378,6 @@ def main():
         sloped_barrier.hide_render = True
         set_car_visible(car_root, False)
         macro_key.hide_render = True
-        for w in wheels:
-            w.location.z = CAR_WHEEL_RADIUS
 
         if shot["id"] == "barrier_establish":
             # Preview run 42387613693 (frame 81, car bug now fixed): from
@@ -470,11 +503,14 @@ def main():
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
             car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.08, 0, 0)
-            car_root.rotation_euler = (0, 0, 0)
+            # Tilting the whole car (not an individually-articulated wheel
+            # -- the real CC0 car's wheels aren't rigged for that here) is
+            # the same "stylized, kinematic, not calibrated" simplification
+            # this project already uses elsewhere for illustrative motion.
             lift = min(1.0, t * 1.3) * 0.22
-            for w in front_wheels:
-                w.location.z = CAR_WHEEL_RADIUS + lift
-            wheel_point = car_root.matrix_world @ front_wheels[0].location
+            car_root.rotation_euler = (0, math.radians(lift * 10), 0)
+            wheel_point = car_root.matrix_world @ Vector(
+                (CAR_HALF_WIDTH, CAR_HALF_LENGTH * 0.55, CAR_WHEEL_RADIUS + lift))
             # Preview run 42388175956 (frame 541, still flat blown-out
             # grey after removing the macro light): the barrier's own
             # solid cross-section spans roughly x in [2.1, 2.7] at every
@@ -509,11 +545,11 @@ def main():
             cy = lerp(cy, cy + 7.0, redirect)
             car_root.location = (cx, cy, 0)
             heading = lerp(-14.0, 0.0, redirect)
-            car_root.rotation_euler = (0, 0, math.radians(heading))
             lift_phase = max(0.0, min(1.0, (t - 0.35) / 0.3))
             lift = math.sin(lift_phase * math.pi) * 0.22
-            for w in front_wheels:
-                w.location.z = CAR_WHEEL_RADIUS + lift
+            # Same whole-car tilt as wheel_climb_macro (not an individually
+            # articulated wheel) standing in for the climb/redirect.
+            car_root.rotation_euler = (0, math.radians(lift * 10), math.radians(heading))
             # Same proven device as barrier_establish's final fix: FIXED
             # camera, target swinging through a wide arc (same as
             # barrier_closing, which scored 29.2) -- the car's own motion

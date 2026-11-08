@@ -3,10 +3,12 @@ name: Jersey barrier preview (cheap sanity check, not production)
 # subject (the Jersey barrier ribbon effect, under the approved
 # "guardrail-deflection" topic) after direct user feedback that the old
 # episode's shots repeated and its macro shots had no scale reference.
-# Fully procedural scene (no external CC0 asset): this renders a handful of
-# LOW-sample preview frames (one per shot) to confirm render_jersey_barrier.py
-# actually runs and frames the scene reasonably, before committing to the
-# full 960-frame production render.
+# Uses the same pinned CC0 detailed sedan render_curious_mechanics.py and
+# render_rumble_episode2.py already use (real user request: use the real car
+# model, not a stylized placeholder). This renders a handful of LOW-sample
+# preview frames (one per shot) to confirm render_jersey_barrier.py actually
+# runs and frames the scene reasonably, before committing to the full
+# 960-frame production render.
 on:
   push:
     branches: [road-paint-retroreflective-20261106]
@@ -33,6 +35,13 @@ jobs:
           curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
           echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
           tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Download pinned CC0 car scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
       - name: Render first/mid/last single frame of each shot (low sample, small resolution)
         # First-vs-last frame of each shot, not three contiguous frames: a
         # contiguous triple (0.033s apart at 30fps) always looks "similar"
@@ -54,6 +63,7 @@ jobs:
             796 878 960; do
             xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
               -P benchmarks/road_safety/render_jersey_barrier.py -- \
+              --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
               --manifest examples/experiments/jersey-barrier-manifest.json \
               --start "$frame" --end "$frame" --preview \
               --out "$RUNNER_TEMP/preview" 2>&1 | tee -a "$RUNNER_TEMP/preview/render.log"
