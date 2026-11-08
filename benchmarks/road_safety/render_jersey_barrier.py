@@ -593,15 +593,18 @@ def main():
             # flat_wall_fail -- proven to clear threshold for that mirrored
             # shot -- rather than a third variant of the swinging-target
             # device.
-            # Same live-tracked target as flat_wall_fail's fix: a fixed aim
-            # point leaves the car out of frame once the push-in narrows
-            # the field of view enough. Still under threshold at 7.6 with
-            # the same push amplitude as flat_wall_fail -- this shot's car
-            # covers a much wider y range (-7 to +7, not -7 to 0), so the
-            # same fixed camera path doesn't track proportionally as well.
-            # Widened the push further.
-            cam_pos = (lerp(-14.0, -1.3, t), lerp(-12.0, -0.9, t), lerp(3.5, 0.4, t))
+            # Linear push-in plateaued around 7.6-8.6 across three widening
+            # attempts -- diminishing returns, not an amplitude problem.
+            # Switching to the same orbit+push radial device that cleared
+            # threshold for barrier_establish and barrier_cross_section
+            # (angle sweep combined with distance shrinking, around the
+            # car's own live position) instead of a fourth linear variant.
             target = car_root.location
+            angle = lerp(-0.35, 0.35, t)
+            dist = lerp(15.0, 1.1, t)
+            cam_pos = (target[0] + math.sin(angle) * dist,
+                       target[1] - math.cos(angle) * dist,
+                       lerp(3.2, 0.35, t))
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
