@@ -510,7 +510,11 @@ def main():
             # clearly beyond the body's +x edge fixes that.
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
-            car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.08, 0, 0)
+            # More clearance from the barrier than the stylized car used
+            # (0.08): the real car's wheel_point reference, further out at
+            # CAR_HALF_WIDTH, otherwise lands close enough to the barrier's
+            # sloped near face to risk being behind/inside it.
+            car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.4, 0, 0)
             # Tilting the whole car (not an individually-articulated wheel
             # -- the real CC0 car's wheels aren't rigged for that here) is
             # the same "stylized, kinematic, not calibrated" simplification
@@ -519,23 +523,20 @@ def main():
             car_root.rotation_euler = (0, math.radians(lift * 10), 0)
             wheel_point = car_root.matrix_world @ Vector(
                 (CAR_HALF_WIDTH, CAR_HALF_LENGTH * 0.55, CAR_WHEEL_RADIUS + lift))
-            # Preview run 42388175956 (frame 541, still flat blown-out
-            # grey after removing the macro light): the barrier's own
-            # solid cross-section spans roughly x in [2.1, 2.7] at every
-            # y and any z from 0 to 0.81 -- the lateral-only camera offset
-            # (+0.38 to +0.55 in x from a wheel at x~2.2) put the camera
-            # INSIDE that solid, not clear of it. Only height reliably
-            # clears a shape that runs the full length of the road:
-            # placing the camera above BARRIER_HEIGHT looking down at the
-            # contact point is outside the solid regardless of x or y.
-            # Real car swap (preview run 42454726586, frame 540): the real
-            # car's body is taller and the old 0.12/0.75 offsets were far
-            # too tight against it, landing the camera right against a
-            # body panel. Staying low (near wheel height, not body height)
-            # and well clear laterally keeps the camera off the car itself.
-            cam_pos = Vector((wheel_point.x + 0.6,
+            # Real bug twice over at this macro range: once with the
+            # stylized car (camera landed inside the barrier's own solid
+            # cross-section, preview 42388175956) and once with the real
+            # car (camera landed right against its taller body panel,
+            # preview 42454726586, after trying to clear it laterally,
+            # which instead pushed the camera BEHIND the barrier -- fully
+            # black). The one offset that reliably clears both obstacles
+            # regardless of x/y position is height: placing the camera
+            # above BARRIER_HEIGHT (0.81) looking down is outside the
+            # barrier's solid no matter what, and well above the car's
+            # body too.
+            cam_pos = Vector((wheel_point.x - 0.15,
                               wheel_point.y - 0.3 + math.sin(t * math.tau * 0.5) * 0.15,
-                              wheel_point.z + 0.15))
+                              wheel_point.z + 1.0))
             target = wheel_point
             set_camera(cam, cam_pos, target)
             # Preview runs 42387613693 and 42387885176: energy=60, then
