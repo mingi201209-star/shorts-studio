@@ -383,11 +383,11 @@ def main():
             # by a wide margin.
             sloped_barrier.hide_render = False
             post_target = (BARRIER_X - 0.6, 2.0, 0.15)
-            angle = lerp(-0.2, 0.2, t)
-            dist = lerp(14.0, 1.3, t)
+            angle = lerp(-0.25, 0.25, t)
+            dist = lerp(14.0, 0.6, t)
             cam_pos = (post_target[0] + math.sin(angle) * dist,
                        post_target[1] - math.cos(angle) * dist,
-                       lerp(1.1, 0.2, t))
+                       lerp(1.1, 0.18, t))
             set_camera(cam, cam_pos, post_target)
             key.data.energy = 3.6
 
