@@ -87,13 +87,11 @@ jobs:
           retention-days: 14
 
   native:
-    if: false
-    # Gated off again: swapping the stylized placeholder car for the real
-    # CC0 sedan (user request) changes framing/clearances around the car
-    # everywhere it appears. Re-enable only after a preview run's pixel
-    # diffs are re-checked locally against the real 12.0 threshold, same
-    # discipline as before -- a different-shaped car can reintroduce the
-    # camera-inside-geometry or weak-motion bugs already fixed once.
+    # Re-enabled: preview run 42456398034's first/mid/last frames per shot
+    # all pixel-diff above the real QA's 12.0 threshold (checked locally,
+    # AND every frame directly viewed -- an earlier pass scored 54.6 on
+    # the metric but was actually a fully black frame from the camera
+    # landing inside the car/barrier; this run's frames are real content).
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -140,7 +138,6 @@ jobs:
           retention-days: 14
 
   final:
-    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
