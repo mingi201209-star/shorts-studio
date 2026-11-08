@@ -208,6 +208,29 @@ def build_car(prefix, body_mat, glass_mat, wheel_mat):
     return root, wheels
 
 
+def barrier_markers(post_mat, stripe_mat):
+    """Real bug found by comparing actual rendered frames from production
+    run 42396471568 (visual_activity FAIL: 'picture held static for 15.5s'):
+    the barrier and road are perfectly uniform, featureless, and run the
+    full -20..20 length with no breaks, so a camera translating alongside
+    or chasing a car along them is nearly translation-invariant -- camera,
+    subject and background all move together through a scene with no
+    distinguishing features, so almost nothing in the actual picture
+    changes frame to frame, however far the camera travels (same failure
+    mode road-paint's first night_wide attempt hit, worse here because
+    even the car-chase shots had no independent background cue). A
+    reflective post plus a painted road stripe every 3 units gives every
+    camera move in this episode something concrete to reveal passing by."""
+    markers = []
+    for y in range(-19, 20, 3):
+        post = cube(f"Barrier reflector post {y}", (BARRIER_X - 0.45, y, 0.14), (0.05, 0.05, 0.28), post_mat)
+        cap = cube(f"Barrier reflector cap {y}", (BARRIER_X - 0.45, y, 0.29), (0.09, 0.05, 0.03), post_mat)
+        markers += [post, cap]
+    for y in range(-19, 20, 6):
+        markers.append(cube(f"Road stripe {y}", (-1.0, y, 0.001), (0.12, 2.0, 0.002), stripe_mat))
+    return markers
+
+
 def set_car_visible(root, visible):
     """hide_render on an Empty does NOT cascade to its mesh children in
     Blender -- it is a per-object flag checked independently at render
@@ -260,6 +283,8 @@ def main():
     body_mat = material("Car body paint", (0.72, 0.1, 0.08), metal=0.3, rough=0.35)
     glass_mat = material("Car glass", (0.04, 0.05, 0.06), rough=0.15)
     wheel_mat = material("Car tyre", (0.015, 0.015, 0.016), rough=0.8)
+    post_mat = material("Reflector post", (0.9, 0.78, 0.2), emission=1.2)
+    stripe_mat = material("Road lane stripe", (0.78, 0.76, 0.7), rough=0.6)
 
     cube("Road surface", (0, 0, -0.05), (10.0, 60.0, 0.10), asphalt_mat)
 
@@ -267,6 +292,7 @@ def main():
     flat_wall.location = (BARRIER_X, 0, 0)
     sloped_barrier = extruded_profile("Jersey barrier (ribbon face)", sloped_profile(), -20, 20, barrier_mat)
     sloped_barrier.location = (BARRIER_X, 0, 0)
+    barrier_markers(post_mat, stripe_mat)
 
     car_root, wheels = build_car("Demo car", body_mat, glass_mat, wheel_mat)
     front_wheels = [w for w in wheels if w.location.x > 0]
@@ -333,13 +359,14 @@ def main():
             key.data.energy = 3.6
 
         elif shot["id"] == "flat_wall_fail":
-            # Preview run 42387613693 (frame 261): a close behind-car chase
-            # camera left the wall as a barely-visible sliver at the frame
-            # edge, mostly occluded by the car. A wide side-on angle,
-            # further back and well off to the near side of the road,
-            # keeps both the approaching car and the full wall face in
-            # frame together for the whole shot -- a classic crash-test
-            # side camera, not a chase cam.
+            # Real bug found by comparing actual production frames (run
+            # 42396471568, frames 181 vs 210): a camera that chases the car
+            # at a near-constant relative offset keeps the car almost fixed
+            # in frame, and against a featureless wall/road the picture
+            # barely changes even though the car is genuinely moving in
+            # world space. A STATIC side-on camera makes the car's own
+            # motion -- and now the reflector posts/stripes sliding past --
+            # unambiguous instead of relying on camera movement at all.
             flat_wall.hide_render = False
             set_car_visible(car_root, True)
             phase = min(1.0, t / 0.5)
@@ -348,8 +375,8 @@ def main():
             cy = lerp(-7.0, 0.0, min(1.0, phase))
             car_root.location = (cx, cy, 0)
             car_root.rotation_euler = (math.radians(-9.0 * settle), 0, math.radians(-14.0))
-            cam_pos = (cx - 6.5, cy - 3.2, 1.9)
-            target = (BARRIER_X - 0.3, cy + 0.3, 0.4)
+            cam_pos = (-6.5, -6.5, 1.9)
+            target = (BARRIER_X - 0.3, -3.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -426,11 +453,13 @@ def main():
             lift = math.sin(lift_phase * math.pi) * 0.22
             for w in front_wheels:
                 w.location.z = CAR_WHEEL_RADIUS + lift
-            # Same wide side-on camera device as flat_wall_fail (mirrored
+            # Same static side-on camera device as flat_wall_fail (mirrored
             # on purpose, see that shot's comment) so the two outcomes are
-            # a literal, legible before/after comparison.
-            cam_pos = (cx - 6.5, cy - 3.2, 1.9)
-            target = (BARRIER_X - 0.3, cy + 0.3, 0.4)
+            # a literal, legible before/after comparison -- pulled back a
+            # little further since this shot's car travels a wider y range
+            # (-7 to +7, not just -7 to 0) through the redirect.
+            cam_pos = (-7.5, -7.0, 2.1)
+            target = (BARRIER_X - 0.3, 0.0, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 

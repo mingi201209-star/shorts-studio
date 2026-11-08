@@ -33,16 +33,29 @@ jobs:
           curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
           echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
           tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
-      - name: Render one preview frame per shot (low sample, small resolution)
+      - name: Render first/mid/last single frame of each shot (low sample, small resolution)
+        # First-vs-last frame of each shot, not three contiguous frames: a
+        # contiguous triple (0.033s apart at 30fps) always looks "similar"
+        # even when a whole shot has no real motion over its full several-
+        # second span -- the exact way a motion bug slipped through the
+        # previous preview round here and was only caught after a full
+        # production render. Sampling each shot's start/middle/end directly
+        # tests the same whole-shot span the real visual_activity QA cares
+        # about, for the cost of a few extra single-frame renders.
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/preview"
-          for start in 80 260 398 540 760 878; do
-            end=$((start + 2))
+          for frame in \
+            1 83 165 \
+            166 248 330 \
+            331 398 465 \
+            466 540 615 \
+            616 705 795 \
+            796 878 960; do
             xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
               -P benchmarks/road_safety/render_jersey_barrier.py -- \
               --manifest examples/experiments/jersey-barrier-manifest.json \
-              --start "$start" --end "$end" --preview \
+              --start "$frame" --end "$frame" --preview \
               --out "$RUNNER_TEMP/preview" 2>&1 | tee -a "$RUNNER_TEMP/preview/render.log"
           done
       - if: always()
