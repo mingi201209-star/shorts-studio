@@ -595,8 +595,12 @@ def main():
             # device.
             # Same live-tracked target as flat_wall_fail's fix: a fixed aim
             # point leaves the car out of frame once the push-in narrows
-            # the field of view enough.
-            cam_pos = (lerp(-12.0, -2.2, t), lerp(-10.5, -1.8, t), lerp(3.1, 0.6, t))
+            # the field of view enough. Still under threshold at 7.6 with
+            # the same push amplitude as flat_wall_fail -- this shot's car
+            # covers a much wider y range (-7 to +7, not -7 to 0), so the
+            # same fixed camera path doesn't track proportionally as well.
+            # Widened the push further.
+            cam_pos = (lerp(-14.0, -1.3, t), lerp(-12.0, -0.9, t), lerp(3.5, 0.4, t))
             target = car_root.location
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
