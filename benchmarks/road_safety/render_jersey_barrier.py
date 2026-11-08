@@ -352,9 +352,16 @@ def main():
             # perspective-flattens into a thin line -- no sense of it being
             # a real wall. Much lower and closer, roughly at the barrier's
             # own height, reads its face and top as actual volume instead.
+            # Real bug found by pixel-diffing actual preview frames (run
+            # 42430310209, frame 1 vs frame 165 mean diff only 4.8, well
+            # under the QA's 12.0 threshold): target was defined as
+            # cam_pos[1]+5.0 -- always exactly 5 units ahead of the camera
+            # -- so as the camera translated forward, the VIEWING ANGLE
+            # never changed at all, just its position. A fixed target
+            # point makes the camera genuinely sweep past it instead.
             sloped_barrier.hide_render = False
-            cam_pos = (lerp(0.3, -1.0, t), lerp(-9.5, -5.0, t), lerp(1.1, 0.72, t))
-            target = (BARRIER_X - 0.2, cam_pos[1] + 5.0, 0.35)
+            cam_pos = (lerp(2.2, -2.6, t), lerp(-12.0, -1.5, t), lerp(2.0, 0.6, t))
+            target = (BARRIER_X - 0.3, -1.5, 0.3)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -375,7 +382,17 @@ def main():
             cy = lerp(-7.0, 0.0, min(1.0, phase))
             car_root.location = (cx, cy, 0)
             car_root.rotation_euler = (math.radians(-9.0 * settle), 0, math.radians(-14.0))
-            cam_pos = (-6.5, -6.5, 1.9)
+            # Second real bug, found the same way (pixel-diffing actual
+            # frames, run 42430310209: mean diff 10.4, still under 12.0):
+            # a fully static camera relies entirely on the car -- a small
+            # fraction of the frame -- for any pixel change at all, and
+            # that is not enough on its own. Pushing the camera in toward
+            # the action over the shot changes the apparent size of
+            # EVERYTHING in frame (wall, markers, road), not just the car,
+            # which is a far larger and more reliable source of real
+            # pixel-level change than hoping one small moving object
+            # carries the whole measurement.
+            cam_pos = (lerp(-9.0, -4.5, t), lerp(-8.5, -4.0, t), lerp(2.4, 1.3, t))
             target = (BARRIER_X - 0.3, -3.3, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
@@ -387,12 +404,20 @@ def main():
             # standing back to actually frame the cutaway end cap. Pulling
             # the whole orbit well clear of the barrier's y=-20 end (camera
             # now 3.2-4.6 units out, not <1) gives it room to see the slice.
+            # Pixel-diff on preview run 42430310209 (frame 331 vs 465, mean
+            # diff only 2.7): the wedge cap is a small object against a lot
+            # of empty sky/road, so even a real, visible silhouette change
+            # barely moves the frame-wide mean. A bigger angle sweep AND a
+            # push-in (radius shrinking over the shot) together make the
+            # cap fill much more of the frame by the end, giving the
+            # changing subject real weight in the average instead of being
+            # diluted by mostly-static background.
             sloped_barrier.hide_render = False
-            angle = lerp(-0.55, 0.55, t)
-            radius = 1.6
+            angle = lerp(-1.0, 1.0, t)
+            radius = lerp(2.2, 0.85, t)
             cam_pos = (BARRIER_X + math.sin(angle) * radius,
                        -20 - 2.4 - math.cos(angle) * 1.0,
-                       lerp(0.35, 0.6, (math.sin(t * math.tau) * 0.5 + 0.5)))
+                       lerp(0.3, 0.65, (math.sin(t * math.tau) * 0.5 + 0.5)))
             target = (BARRIER_X, -20, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
@@ -453,12 +478,12 @@ def main():
             lift = math.sin(lift_phase * math.pi) * 0.22
             for w in front_wheels:
                 w.location.z = CAR_WHEEL_RADIUS + lift
-            # Same static side-on camera device as flat_wall_fail (mirrored
-            # on purpose, see that shot's comment) so the two outcomes are
-            # a literal, legible before/after comparison -- pulled back a
-            # little further since this shot's car travels a wider y range
-            # (-7 to +7, not just -7 to 0) through the redirect.
-            cam_pos = (-7.5, -7.0, 2.1)
+            # Same push-in device as flat_wall_fail (mirrored on purpose,
+            # see that shot's comment) so the two outcomes are a literal,
+            # legible before/after comparison -- pulled back a little
+            # further since this shot's car travels a wider y range (-7 to
+            # +7, not just -7 to 0) through the redirect.
+            cam_pos = (lerp(-10.0, -5.0, t), lerp(-9.0, -4.5, t), lerp(2.6, 1.4, t))
             target = (BARRIER_X - 0.3, 0.0, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
@@ -468,9 +493,14 @@ def main():
             set_car_visible(car_root, True)
             car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.93, lerp(2.0, 14.0, t), 0)
             car_root.rotation_euler = (0, 0, 0)
-            pan = lerp(-3.5, 3.5, t)
-            cam_pos = (BARRIER_X + 1.5, pan, 9.0)
-            target = (BARRIER_X, pan + 6.0, 0.3)
+            # Real bug found the same way as barrier_establish: camera and
+            # target both shifted by the same `pan` amount, so the viewing
+            # angle never actually changed, just its position -- classic
+            # comoving-camera mistake. A FIXED target while the camera
+            # sweeps and descends in height makes the whole barrier line
+            # genuinely swing through frame instead.
+            cam_pos = (BARRIER_X + 1.8, lerp(-6.0, 7.0, t), lerp(11.0, 4.0, t))
+            target = (BARRIER_X, 5.0, 0.3)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.9
 
