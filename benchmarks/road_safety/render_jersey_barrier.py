@@ -360,8 +360,8 @@ def main():
             # never changed at all, just its position. A fixed target
             # point makes the camera genuinely sweep past it instead.
             sloped_barrier.hide_render = False
-            cam_pos = (lerp(3.2, -3.2, t), lerp(-14.0, -0.3, t), lerp(2.6, 0.45, t))
-            target = (BARRIER_X - 0.3, -1.0, 0.25)
+            cam_pos = (lerp(4.0, -4.0, t), lerp(-15.0, 0.5, t), lerp(2.9, 0.25, t))
+            target = (BARRIER_X - 0.3, -0.5, 0.2)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
 
@@ -493,7 +493,7 @@ def main():
             # legible before/after comparison -- pulled back a little
             # further since this shot's car travels a wider y range (-7 to
             # +7, not just -7 to 0) through the redirect.
-            cam_pos = (lerp(-11.5, -3.6, t), lerp(-10.0, -3.0, t), lerp(3.0, 1.0, t))
+            cam_pos = (lerp(-13.0, -2.5, t), lerp(-11.0, -2.0, t), lerp(3.4, 0.7, t))
             target = (BARRIER_X - 0.3, 0.0, 0.4)
             set_camera(cam, cam_pos, target)
             key.data.energy = 3.6
