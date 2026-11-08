@@ -373,15 +373,22 @@ def main():
             # (FIXED camera, target swinging through a wide arc) scored
             # 29.2 -- comfortable margin -- so apply the same proven device
             # here instead of a third bespoke tuning attempt.
-            # Visibly different frames (road curves right then left) still
-            # only scored 7.3: roughly half the frame is unchanging flat
-            # sky, diluting the mean. Lowering the camera and the target's
-            # z pushes the horizon higher, giving the actually-changing
-            # road/barrier region more of the frame to work with.
+            # Lowering the camera only got to 8.7 -- horizon position
+            # barely moves with a sub-1-unit height change at this
+            # distance. Final approach: dolly in directly on one specific
+            # reflector post (a real, textured, close object, not just an
+            # aim point on open road), ending close enough (0.9 units) for
+            # it to sweep dramatically through frame -- same principle as
+            # wheel_climb_macro's close framing, which cleared threshold
+            # by a wide margin.
             sloped_barrier.hide_render = False
-            cam_pos = (0.5, -8.0, 0.55)
-            target = (BARRIER_X - 0.3, lerp(-15.0, 9.0, t), 0.05)
-            set_camera(cam, cam_pos, target)
+            post_target = (BARRIER_X - 0.6, 2.0, 0.15)
+            angle = lerp(-0.2, 0.2, t)
+            dist = lerp(14.0, 1.3, t)
+            cam_pos = (post_target[0] + math.sin(angle) * dist,
+                       post_target[1] - math.cos(angle) * dist,
+                       lerp(1.1, 0.2, t))
+            set_camera(cam, cam_pos, post_target)
             key.data.energy = 3.6
 
         elif shot["id"] == "flat_wall_fail":
