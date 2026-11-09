@@ -7,21 +7,21 @@
   "resolution": [1080, 1920],
   "cycles_samples": 32,
   "total_frames": 960,
-  "_frame_plan_note": "A shorter 72-word narration (21.768s real speech) hit three different QA ceilings in turn when squeezed to a shorter target_seconds: LONG_DEAD_AIR, then EXCESSIVE_TOTAL_SILENCE, then UNEVEN_SHOT_LOUDNESS -- that last one traced to episode2_film.py's loudness() hardcoding six fixed 5-second measurement windows (0-30s), a project-wide assumption this shared QA function makes that every episode runs close to 30-32s; a shorter total duration leaves its later windows reading past the end of real speech into near-silence. Rewriting the narration to ~93 words (closer to road-paint's own 93-word/31.512s original) and returning to the proven 32.0s/960-frame shape, matching every other episode in this series, sidesteps that rather than fighting a shared assumption.",
+  "_frame_plan_note": "A shorter 72-word narration (21.768s real speech) hit three different QA ceilings in turn when squeezed to a shorter target_seconds: LONG_DEAD_AIR, then EXCESSIVE_TOTAL_SILENCE, then UNEVEN_SHOT_LOUDNESS -- that last one traced to episode2_film.py's loudness() hardcoding six fixed 5-second measurement windows (0-30s), a project-wide assumption this shared QA function makes that every episode runs close to 30-32s; a shorter total duration leaves its later windows reading past the end of real speech into near-silence. Rewriting the narration to ~93 words (closer to road-paint's own 93-word/31.512s original) and returning to the proven 32.0s/960-frame shape, matching every other episode in this series, sidesteps that rather than fighting a shared assumption. Real retention feedback on the existing rumble-road episode (20% watched, weak first 3 seconds that opened on exposition instead of the physical phenomenon) was applied here: flat_wall_fail and barrier_establish swapped frame ranges (both exactly 165 frames, so no camera-motion retuning needed) so the episode now opens on the dramatic failure first, then reveals what the barrier is, instead of opening on a static named-object shot.",
   "shots": [
     {
-      "id": "barrier_establish",
+      "id": "flat_wall_fail",
       "start": 1,
       "end": 165,
-      "visual_proof": "Wide 3/4 elevated angle on a straight barrier run receding into the distance, slow push-in -- the only wide establishing shot in the episode",
-      "narration_en": "This low concrete wall along the highway is called a Jersey barrier."
+      "visual_proof": "Low behind-car chase angle: a car approaches a flat-faced wall at a shallow angle and stops dead, nose dipping down on impact -- the only flat-wall shot, and the only low chase-cam shot used for the 'before' half of the comparison. Opens the episode: real feedback on the rumble-road episode's weak 20% retention named a slow, expository first 3 seconds as a likely cause, so this episode leads with the dramatic failure, not a static named-object shot.",
+      "narration_en": "Hit a flat wall at an angle, and the car just stops dead."
     },
     {
-      "id": "flat_wall_fail",
+      "id": "barrier_establish",
       "start": 166,
       "end": 330,
-      "visual_proof": "Low behind-car chase angle: a car approaches a flat-faced wall at a shallow angle and stops dead, nose dipping down on impact -- the only flat-wall shot, and the only low chase-cam shot used for the 'before' half of the comparison",
-      "narration_en": "Hit a flat wall at an angle, and the car just stops dead."
+      "visual_proof": "Wide 3/4 elevated angle on a straight barrier run receding into the distance, slow push-in -- the only wide establishing shot in the episode. Now the reveal beat (what just stopped that car), not the opener.",
+      "narration_en": "This low concrete wall along the highway is called a Jersey barrier."
     },
     {
       "id": "barrier_cross_section",
