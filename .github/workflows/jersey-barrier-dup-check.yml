@@ -1,5 +1,5 @@
 name: Jersey barrier duplicate-frame debug (contiguous render + encode check)
-# Debug tool: production run 42456615612 and 42464068889 both failed final
+# Debug tool (retry): production run 42456615612 and 42464068889 both failed final
 # assembly's DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE check even after
 # adding a small per-frame camera jitter. This renders a short CONTIGUOUS
 # block of real production-quality frames from a historically low-motion
