@@ -1,12 +1,15 @@
 name: Jersey barrier duplicate-frame debug (contiguous render + encode check)
-# Debug tool (retry): production run 42456615612 and 42464068889 both failed final
+# Debug tool: production runs 42456615612 and 42464068889 both failed final
 # assembly's DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE check even after
-# adding a small per-frame camera jitter. This renders a short CONTIGUOUS
-# block of real production-quality frames from a historically low-motion
-# span, encodes them with the same ffmpeg settings assemble_jersey_barrier.py
-# uses, and runs the same framemd5 duplicate check locally so the actual
-# fix can be verified before spending another full 32-shard production
-# cycle on a guess.
+# adding a small per-frame camera jitter. This renders short CONTIGUOUS
+# blocks of real production-quality frames (one per shot, in PARALLEL jobs
+# so no single job times out -- the real car renders far slower per frame
+# than the earlier stylized placeholder, which is what made the first,
+# sequential version of this workflow hit its own 30-minute timeout and
+# get reported as "cancelled"), encodes them with the same ffmpeg settings
+# assemble_jersey_barrier.py uses, and runs the same framemd5 duplicate
+# check locally so the actual fix can be verified before spending another
+# full 32-shard production cycle on a guess.
 on:
   push:
     branches: [road-paint-retroreflective-20261106]
@@ -20,7 +23,23 @@ env:
 jobs:
   check:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - block: flat_wall_fail
+            start: 1
+          - block: barrier_establish
+            start: 166
+          - block: barrier_cross_section
+            start: 331
+          - block: wheel_climb_macro
+            start: 466
+          - block: sloped_barrier_success
+            start: 616
+          - block: barrier_closing
+            start: 796
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install hash-pinned Blender 5.0.1
@@ -38,55 +57,31 @@ jobs:
           set -euo pipefail
           gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
           echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
-      - name: Render contiguous 20-frame blocks at PRODUCTION quality
-        # First pass (run 42491186459) tested blocks a (frames 1-20,
-        # barrier_establish) and b (616-635, sloped_barrier_success) --
-        # both came back duplicate-free (20/20 unique), so the real
-        # duplicate pair is elsewhere. Testing the other four shots' own
-        # openings, especially barrier_cross_section (half1 was the
-        # lowest measured, 3.04) and flat_wall_fail (6.43).
+      - name: Render 15 contiguous frames at PRODUCTION quality
+        timeout-minutes: 75
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/check/c" "$RUNNER_TEMP/check/d" "$RUNNER_TEMP/check/e" "$RUNNER_TEMP/check/f"
+          mkdir -p "$RUNNER_TEMP/check"
+          end=$((${{ matrix.start }} + 14))
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
             -P benchmarks/road_safety/render_jersey_barrier.py -- \
             --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
             --manifest examples/experiments/jersey-barrier-manifest.json \
-            --start 166 --end 185 \
-            --out "$RUNNER_TEMP/check/c" 2>&1 | tee "$RUNNER_TEMP/check/c/render.log"
-          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
-            -P benchmarks/road_safety/render_jersey_barrier.py -- \
-            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
-            --manifest examples/experiments/jersey-barrier-manifest.json \
-            --start 331 --end 350 \
-            --out "$RUNNER_TEMP/check/d" 2>&1 | tee "$RUNNER_TEMP/check/d/render.log"
-          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
-            -P benchmarks/road_safety/render_jersey_barrier.py -- \
-            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
-            --manifest examples/experiments/jersey-barrier-manifest.json \
-            --start 466 --end 485 \
-            --out "$RUNNER_TEMP/check/e" 2>&1 | tee "$RUNNER_TEMP/check/e/render.log"
-          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
-            -P benchmarks/road_safety/render_jersey_barrier.py -- \
-            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
-            --manifest examples/experiments/jersey-barrier-manifest.json \
-            --start 796 --end 815 \
-            --out "$RUNNER_TEMP/check/f" 2>&1 | tee "$RUNNER_TEMP/check/f/render.log"
-      - name: Encode each block with the real production ffmpeg settings and check framemd5 duplicates
+            --start ${{ matrix.start }} --end "$end" \
+            --out "$RUNNER_TEMP/check" 2>&1 | tee "$RUNNER_TEMP/check/render.log"
+      - name: Encode with the real production ffmpeg settings and check framemd5 duplicates
         run: |
           set -euo pipefail
-          for block in c d e f; do
-            dir="$RUNNER_TEMP/check/$block"
-            start=$(ls "$dir"/frame_*.png | head -1 | grep -oE '[0-9]{4}' | head -1)
-            ffmpeg -v error -framerate 30 -start_number "$start" -i "$dir/frame_%04d.png" \
-              -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p "$dir/test.mp4"
-            echo "=== Block $block framemd5 ==="
-            ffmpeg -v error -i "$dir/test.mp4" -map 0:v:0 -f framemd5 - > "$dir/hashes.txt"
-            total=$(grep -vc '^#' "$dir/hashes.txt" || true)
-            unique=$(grep -v '^#' "$dir/hashes.txt" | awk -F',' '{print $NF}' | sort -u | wc -l)
-            echo "block=$block total=$total unique=$unique"
-            if [ "$total" != "$unique" ]; then
-              echo "DUPLICATES FOUND in block $block"
-              grep -v '^#' "$dir/hashes.txt" | awk -F',' '{print $NF}' | sort | uniq -d
-            fi
-          done
+          dir="$RUNNER_TEMP/check"
+          start=${{ matrix.start }}
+          ffmpeg -v error -framerate 30 -start_number "$start" -i "$dir/frame_%04d.png" \
+            -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p "$dir/test.mp4"
+          echo "=== Block ${{ matrix.block }} (start ${{ matrix.start }}) framemd5 ==="
+          ffmpeg -v error -i "$dir/test.mp4" -map 0:v:0 -f framemd5 - > "$dir/hashes.txt"
+          total=$(grep -vc '^#' "$dir/hashes.txt" || true)
+          unique=$(grep -v '^#' "$dir/hashes.txt" | awk -F',' '{print $NF}' | sort -u | wc -l)
+          echo "block=${{ matrix.block }} total=$total unique=$unique"
+          if [ "$total" != "$unique" ]; then
+            echo "DUPLICATES FOUND in block ${{ matrix.block }}"
+            grep -v '^#' "$dir/hashes.txt" | awk -F',' '{print $NF}' | sort | uniq -d
+          fi
