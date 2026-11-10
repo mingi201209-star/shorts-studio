@@ -256,7 +256,13 @@ def load_source_car(source_path):
         "half_width": round((max(xs) - min(xs)) / 2, 3),
         "half_length": round((max(ys) - min(ys)) / 2, 3),
         "bottom_z": round(min(zs), 3), "top_z": round(max(zs), 3),
+        "right_x": round(max(xs), 3), "nose_y": round(max(ys), 3),
     }), flush=True)
+    # Shot code positions the car from these MEASURED extents (root-local,
+    # root at the origin here), not from the rounded-up constants above:
+    # with the constants the car stopped visibly short of the barrier.
+    root["right_x"] = max(xs)
+    root["nose_y"] = max(ys)
     return root, car
 
 
@@ -430,76 +436,101 @@ def main():
         # within the car's footprint, and no camera copies its subject's
         # motion.
         key.data.energy = 5.0
+        R = car_root["right_x"]
+        F = car_root["nose_y"]
+        FACE_X = BARRIER_X - BASE_HALF_WIDTH
+        # World offset of the front-right corner at the -14 degree approach.
+        corner_dx = R * math.cos(math.radians(14)) + F * math.sin(math.radians(14))
+        lane_x = FACE_X - R - 0.6
         if shot["id"] == "flat_wall_fail":
-            # The hook: the car rushes at a low camera placed just ahead of
-            # the impact point and slams into the wall inside the first two
-            # seconds, then the camera arcs out to show car and wall.
+            # The hook, cut as three setups so the first three seconds
+            # carry real change: (A) the car rushes a low camera and hits
+            # the wall at 1.2s, (B) cut to a high angle of the car jammed
+            # against the wall, (C) cut to the nose at the wall. The third
+            # preflight measured a single arcing camera here as 7.5s static.
             flat_wall.hide_render = False
             set_car_visible(car_root, True)
-            phase = min(1.0, t / 0.3)
-            after = max(0.0, (t - 0.3) / 0.7)
+            s = t * (shot["end"] - shot["start"]) / manifest["fps"]
+            phase = min(1.0, s / 1.2)
+            after = max(0.0, (s - 1.2) / 4.3)
             recoil = 1.0 - math.exp(-5.0 * after)
-            car_root.location = (lerp(0.2, 0.65, phase), lerp(-9.0, 0.0, phase) - 0.3 * recoil, 0)
-            dive = -4.0 * math.exp(-4.0 * after) * math.cos(9.0 * after) if after > 0 else 0.0
+            hit_x = FACE_X - corner_dx + 0.03
+            car_root.location = (lerp(hit_x - 0.5, hit_x, phase), lerp(-10.0, 0.0, phase) - 0.25 * recoil, 0)
+            dive = -3.5 * math.exp(-4.0 * after) * math.cos(9.0 * after) if after > 0 else 0.0
             car_root.rotation_euler = (math.radians(dive), 0, math.radians(-14.0))
-            cam_pos = (lerp(-1.2, -3.6, t), lerp(4.2, 2.6, t), lerp(0.55, 1.5, t))
-            target = Vector(car_root.location) + Vector((0.4, 0.0, 0.6))
+            if s < 1.3:
+                cam_pos = (hit_x - 0.9, F + 1.3, 0.5)
+                target = Vector(car_root.location) + Vector((0.3, 0.0, 0.5))
+            elif s < 3.4:
+                u = (s - 1.3) / 2.1
+                cam_pos = (lerp(-3.8, -2.6, u), lerp(-3.0, -2.0, u), lerp(5.0, 3.8, u))
+                target = (hit_x + 0.6, 0.6, 0.3)
+            else:
+                u = (s - 3.4) / 2.1
+                cam_pos = (lerp(0.9, 1.2, u), F + lerp(3.2, 2.2, u), lerp(0.7, 0.45, u))
+                target = (FACE_X - 0.1, F * 0.9, 0.35)
             set_camera(cam, cam_pos, target, frame)
 
         elif shot["id"] == "barrier_establish":
             # A car drives the lane beside the barrier and passes the
-            # camera, which pans with it: the barrier is shown doing its
-            # everyday job, and the frame keeps changing (the previous
-            # version, an empty dolly along the wall, measured as static).
+            # camera, which pans with it: the barrier doing its everyday
+            # job, with a frame that keeps changing.
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
             car_y = lerp(-16.0, 12.0, t)
-            car_root.location = (0.9, car_y, 0)
+            car_root.location = (lane_x, car_y, 0)
             car_root.rotation_euler = (0, 0, 0)
             cam_pos = (-2.4, lerp(-3.0, 1.0, t), lerp(1.5, 0.9, t))
             target = (1.8, car_y * 0.6, 0.5)
             set_camera(cam, cam_pos, target, frame)
 
         elif shot["id"] == "barrier_cross_section":
+            # The +Y end cap: with the sun travelling toward -Y it is the
+            # lit one (the -Y cap rendered as a dark wedge). The orbit
+            # stays on the road side and ends nearly head-on, where the
+            # profile reads as a shape.
             sloped_barrier.hide_render = False
-            angle = lerp(-0.95, 0.75, t)
-            dist = lerp(5.2, 1.5, t)
+            angle = lerp(-0.95, -0.12, t)
+            dist = lerp(5.2, 1.7, t)
             cam_pos = (BARRIER_X + math.sin(angle) * dist,
-                       -20 - math.cos(angle) * dist,
-                       lerp(1.7, 0.45, t))
-            target = (BARRIER_X, -20, 0.4)
+                       20 + math.cos(angle) * dist,
+                       lerp(1.7, 0.5, t))
+            target = (BARRIER_X, 20, 0.4)
             set_camera(cam, cam_pos, target, frame)
 
         elif shot["id"] == "wheel_climb_macro":
-            # Low camera fixed on the road ahead of the car, looking back at
-            # the front corner that meets the slope while the car creeps
-            # toward it and its barrier side rises. The whole car rolls (its
-            # wheels are not rigged individually) -- a stylized stand-in for
-            # the wheel riding up, not a simulated suspension.
+            # The car drifts sideways until its barrier-side wheels are on
+            # the sloped face and that side rides up. The whole body rolls
+            # about its road-side wheels (wheels are not rigged
+            # individually): a stylized stand-in for the wheel riding up
+            # the slope, not a simulated suspension.
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
-            cy = lerp(-1.5, 0.3, t)
-            rise = min(1.0, t * 1.4)
-            car_root.location = (1.16, cy, 0.115 * rise)
-            car_root.rotation_euler = (0, math.radians(-6.0 * rise), 0)
-            cam_pos = (lerp(1.0, 1.5, t), 3.6, lerp(0.5, 0.28, t))
-            target = (1.75, cy + 1.3, 0.35)
+            cy = lerp(-1.6, 0.0, t)
+            incursion = lerp(-0.25, 0.14, min(1.0, t / 0.8))
+            lift = max(0.0, incursion) * 1.5
+            roll = math.asin(min(1.0, lift / (2.0 * R)))
+            car_root.location = (FACE_X + incursion - R, cy, R * math.sin(roll))
+            car_root.rotation_euler = (0, -roll, 0)
+            cam_pos = (FACE_X - 1.1, F + lerp(3.4, 2.5, t), lerp(0.6, 0.42, t))
+            target = (FACE_X - 0.25, cy + F * 0.7, 0.32)
             set_camera(cam, cam_pos, target, frame)
 
         elif shot["id"] == "sloped_barrier_success":
-            # Same low camera as the opening failure, on purpose: same
-            # approach, opposite outcome. The car meets the slope, rolls up
-            # briefly, straightens and drives on past the camera.
+            # Same approach as the opening failure, opposite outcome: the
+            # car meets the slope, rolls up briefly, straightens and
+            # drives on past the camera.
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
             phase = min(1.0, t / 0.4)
             redirect = max(0.0, (t - 0.4) / 0.6)
+            hit_x = FACE_X + 0.12 - corner_dx
             heading = lerp(-14.0, 0.0, min(1.0, redirect / 0.35))
-            roll = -5.0 * math.sin(math.pi * min(1.0, redirect / 0.4)) if redirect > 0 else 0.0
-            car_root.location = (lerp(lerp(0.2, 0.72, phase), 0.3, redirect),
+            roll = 5.0 * math.sin(math.pi * min(1.0, redirect / 0.4)) if redirect > 0 else 0.0
+            car_root.location = (lerp(lerp(hit_x - 0.5, hit_x, phase), lane_x, min(1.0, redirect / 0.5)),
                                  lerp(lerp(-9.0, -1.0, phase), 9.0, redirect),
-                                 CAR_HALF_WIDTH * math.sin(math.radians(abs(roll))))
-            car_root.rotation_euler = (0, math.radians(roll), math.radians(heading))
+                                 R * math.sin(math.radians(roll)))
+            car_root.rotation_euler = (0, math.radians(-roll), math.radians(heading))
             cam_pos = (lerp(-1.2, -3.6, t), lerp(4.2, 2.6, t), lerp(0.55, 1.5, t))
             target = Vector(car_root.location) + Vector((0.4, 0.0, 0.6))
             set_camera(cam, cam_pos, target, frame)
@@ -507,7 +538,7 @@ def main():
         elif shot["id"] == "barrier_closing":
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
-            car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.93, lerp(2.0, 14.0, t), 0)
+            car_root.location = (lane_x, lerp(2.0, 14.0, t), 0)
             car_root.rotation_euler = (0, 0, 0)
             cam_pos = (BARRIER_X + 1.8, lerp(-6.0, 7.0, t), lerp(11.0, 4.0, t))
             target = (BARRIER_X, 5.0, 0.3)
