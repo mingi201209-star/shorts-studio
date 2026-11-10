@@ -455,7 +455,7 @@ def main():
             after = max(0.0, (s - 1.2) / 4.3)
             recoil = 1.0 - math.exp(-5.0 * after)
             hit_x = FACE_X - corner_dx + 0.03
-            car_root.location = (lerp(hit_x - 0.5, hit_x, phase), lerp(-10.0, 0.0, phase) - 0.25 * recoil, 0)
+            car_root.location = (lerp(hit_x - 0.5, hit_x, phase), lerp(-7.5, 0.0, phase) - 0.25 * recoil, 0)
             dive = -3.5 * math.exp(-4.0 * after) * math.cos(9.0 * after) if after > 0 else 0.0
             car_root.rotation_euler = (math.radians(dive), 0, math.radians(-14.0))
             if s < 1.3:
@@ -512,8 +512,16 @@ def main():
             roll = math.asin(min(1.0, lift / (2.0 * R)))
             car_root.location = (FACE_X + incursion - R, cy, R * math.sin(roll))
             car_root.rotation_euler = (0, -roll, 0)
-            cam_pos = (FACE_X - 1.1, F + lerp(3.4, 2.5, t), lerp(0.6, 0.42, t))
-            target = (FACE_X - 0.25, cy + F * 0.7, 0.32)
+            if t < 0.5:
+                cam_pos = (FACE_X - 1.1, F + lerp(3.4, 2.9, t * 2), lerp(0.6, 0.5, t * 2))
+                target = (FACE_X - 0.25, cy + F * 0.7, 0.32)
+            else:
+                # Second setup, close on the barrier-side front wheel. The
+                # fourth preflight passed with this whole 5.0s shot sitting
+                # exactly on the 5.0s static limit; the cut is the margin.
+                u = (t - 0.5) * 2
+                cam_pos = (FACE_X - 0.95, cy + F + lerp(1.5, 1.2, u), 0.3)
+                target = (FACE_X - 0.05, cy + F * 0.6, 0.3)
             set_camera(cam, cam_pos, target, frame)
 
         elif shot["id"] == "sloped_barrier_success":
