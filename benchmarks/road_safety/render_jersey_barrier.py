@@ -668,7 +668,18 @@ def main():
         print(f"BARRIER_NATIVE_FRAME {frame}/{manifest['total_frames']}", flush=True)
 
     if len({c["sha256"] for c in checksums}) != len(checksums):
-        raise ValueError("duplicate original Blender frames are forbidden")
+        first_seen: dict[str, int] = {}
+        pairs = []
+        for c in checksums:
+            if c["sha256"] in first_seen:
+                pairs.append([first_seen[c["sha256"]], c["frame"]])
+            else:
+                first_seen[c["sha256"]] = c["frame"]
+        print("BARRIER_DUPLICATE_SOURCE_FRAMES " + json.dumps(pairs), flush=True)
+        # A preview shard reports duplicates and carries on so the preflight
+        # can list every problem in one pass; production still fails closed.
+        if not args.preview:
+            raise ValueError("duplicate original Blender frames are forbidden")
 
     renderer_source_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     manifest_sha256 = hashlib.sha256(args.manifest.read_bytes()).hexdigest()

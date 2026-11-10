@@ -61,8 +61,19 @@ def collect_native_frames(native: Path, manifest: dict) -> dict[int, Path]:
     return frame_paths
 
 
-def assemble(native: Path, audio: Path, manifest_path: Path, out: Path) -> dict:
+def assemble(native: Path, audio: Path, manifest_path: Path, out: Path, preflight: bool = False) -> dict:
+    """preflight=True takes cheap low-resolution preview shards, upscales
+    them to the manifest resolution and runs every gate below, collecting
+    ALL failures into one report instead of stopping at the first. It never
+    produces a deliverable: the output is named and flagged as a preflight."""
     out.mkdir(parents=True, exist_ok=False)
+    problems: list[str] = []
+
+    def fail(message: str) -> None:
+        if not preflight:
+            raise ValueError(message)
+        problems.append(message)
+
     manifest = json.loads(manifest_path.read_text())
     frame_paths = collect_native_frames(native, manifest)
 
@@ -77,11 +88,15 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path) -> dict:
     if audio_report["status"] != "PASS":
         raise ValueError("audio capture did not PASS")
 
-    final = out / "jersey-barrier-ribbon.mp4"
+    final = out / ("jersey-barrier-preflight.mp4" if preflight else "jersey-barrier-ribbon.mp4")
+    video_filter = caption_filter(out)
+    if preflight:
+        width, height = manifest["resolution"]
+        video_filter = f"scale={width}:{height}:flags=lanczos,{video_filter}"
     run(["ffmpeg", "-v", "error", "-framerate", str(manifest["fps"]),
          "-i", str(flat / "frame_%04d.png"),
          "-i", str(out / "narration.wav"),
-         "-vf", caption_filter(out),
+         "-vf", video_filter,
          "-map", "0:v:0", "-map", "1:a:0",
          "-c:v", "libx264", "-preset", "fast", "-crf", "17", "-pix_fmt", "yuv420p",
          "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", final])
@@ -93,24 +108,42 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path) -> dict:
     if (video["width"], video["height"], video["r_frame_rate"], int(video["nb_read_frames"])) != (
         expected_w, expected_h, f"{manifest['fps']}/1", manifest["total_frames"]
     ):
-        raise ValueError("RESOLUTION_FPS_FRAMECOUNT_MISMATCH")
+        fail("RESOLUTION_FPS_FRAMECOUNT_MISMATCH")
     if audio_stream["codec_name"] != "aac" or audio_stream["sample_rate"] != "48000":
-        raise ValueError("AUDIO_CODEC_MISMATCH")
+        fail("AUDIO_CODEC_MISMATCH")
     if abs(float(info["format"]["duration"]) - manifest["total_frames"] / manifest["fps"]) > 0.04:
-        raise ValueError("DURATION_MISMATCH")
+        fail("DURATION_MISMATCH")
 
     run(["ffmpeg", "-v", "error", "-i", final, "-f", "null", "-"])
     hashes = run(["ffmpeg", "-v", "error", "-i", final, "-map", "0:v:0", "-f", "framemd5", "-"]).stdout
     unique = [x.split(",")[-1].strip() for x in hashes.splitlines() if x and not x.startswith("#")]
     if not (len(unique) == len(set(unique)) == manifest["total_frames"]):
-        raise ValueError("DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE")
+        seen: dict[str, int] = {}
+        pairs = []
+        for index, value in enumerate(unique, start=1):
+            if value in seen:
+                pairs.append([seen[value], index])
+            else:
+                seen[value] = index
+        print("BARRIER_DUPLICATE_FRAMES " + json.dumps(
+            {"decoded_frames": len(unique), "duplicate_pairs": pairs[:60]}), flush=True)
+        fail("DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE")
     black = run(["ffmpeg", "-hide_banner", "-i", final, "-vf",
                  "blackdetect=d=0.15:pix_th=0.06", "-an", "-f", "null", "-"]).stderr
     if "black_start:" in black:
-        raise ValueError("UNEXPECTED_BLACK_FRAMES")
+        print("BARRIER_BLACK_FRAMES " + json.dumps(
+            [line.split("blackdetect")[-1].strip() for line in black.splitlines() if "black_start:" in line]),
+            flush=True)
+        fail("UNEXPECTED_BLACK_FRAMES")
 
-    gaps = silence(final)
-    levels = check_loudness(loudness(final))
+    try:
+        gaps = silence(final)
+        levels = check_loudness(loudness(final))
+    except AssertionError as error:
+        if not preflight:
+            raise
+        gaps, levels = None, None
+        problems.append(f"AUDIO_QA_FAILED: {error}")
 
     cues = json.loads((out / "audio-validation.json").read_text())["cues"]
     picture = (0, 1400)
@@ -124,7 +157,16 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path) -> dict:
     print("BARRIER_ORIGINAL_QA " + json.dumps(original_qa), flush=True)
     failing = [k for k, v in original_qa.items() if v["status"] != "PASS"]
     if failing:
-        raise ValueError(f"ORIGINAL_VIDEO_QA_FAILED: {failing}")
+        fail(f"ORIGINAL_VIDEO_QA_FAILED: {failing}")
+
+    if preflight:
+        report = {"status": "FAIL" if problems else "PASS", "problems": problems,
+                  "is_preflight": True, "deliverable": False, "upload_authorized": False}
+        (out / "jersey-barrier-preflight.json").write_text(json.dumps(report, indent=2))
+        print("BARRIER_PREFLIGHT_REPORT " + json.dumps(report), flush=True)
+        if problems:
+            raise ValueError(f"PREFLIGHT_FAILED: {problems}")
+        return report
 
     result = {
         "video": str(final.resolve()),
@@ -154,8 +196,9 @@ def main() -> None:
     p.add_argument("--audio", type=Path, required=True)
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
+    p.add_argument("--preflight", action="store_true")
     args = p.parse_args()
-    assemble(args.native, args.audio, args.manifest, args.out)
+    assemble(args.native, args.audio, args.manifest, args.out, preflight=args.preflight)
 
 
 if __name__ == "__main__":

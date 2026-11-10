@@ -13,14 +13,13 @@ name: Jersey barrier production (full render + real audio + QA)
 on:
   push:
     branches: [road-paint-retroreflective-20261106]
+    # Production only starts when THIS file changes (flipping the gates on
+    # native/final below). Renderer, manifest and narration edits go through
+    # jersey-barrier-preflight.yml first: three production runs in a row were
+    # spent discovering failures a ten-minute low-resolution pass would have
+    # shown, because every such edit used to start a full render by itself.
     paths:
       - .github/workflows/jersey-barrier-production.yml
-      - examples/experiments/jersey-barrier-speech-plan.json
-      - examples/experiments/jersey-barrier-manifest.json
-      - benchmarks/road_safety/curious_mechanics_speech.py
-      - benchmarks/road_safety/curious_mechanics_audio.py
-      - benchmarks/road_safety/render_jersey_barrier.py
-      - benchmarks/road_safety/assemble_jersey_barrier.py
 permissions:
   contents: read
   actions: read
@@ -87,11 +86,10 @@ jobs:
           retention-days: 14
 
   native:
-    # Re-enabled: preview run 42456398034's first/mid/last frames per shot
-    # all pixel-diff above the real QA's 12.0 threshold (checked locally,
-    # AND every frame directly viewed -- an earlier pass scored 54.6 on
-    # the metric but was actually a fully black frame from the camera
-    # landing inside the car/barrier; this run's frames are real content).
+    if: false
+    # Gated: open only after jersey-barrier-preflight.yml reports
+    # BARRIER_PREFLIGHT_REPORT status PASS on the same renderer/manifest and
+    # its contact sheet has been looked at.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -138,6 +136,7 @@ jobs:
           retention-days: 14
 
   final:
+    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
