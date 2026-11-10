@@ -271,9 +271,10 @@ def barrier_markers(post_mat, stripe_mat):
     camera move in this episode something concrete to reveal passing by."""
     markers = []
     for y in range(-19, 20, 3):
-        post = cube(f"Barrier reflector post {y}", (BARRIER_X - 0.45, y, 0.14), (0.05, 0.05, 0.28), post_mat)
-        cap = cube(f"Barrier reflector cap {y}", (BARRIER_X - 0.45, y, 0.29), (0.09, 0.05, 0.03), post_mat)
-        markers += [post, cap]
+        # On the barrier top, not beside it: beside it they stood exactly
+        # where the car's barrier-side wheels travel.
+        post = cube(f"Barrier reflector post {y}", (BARRIER_X, y, BARRIER_HEIGHT + 0.06), (0.06, 0.06, 0.12), post_mat)
+        markers.append(post)
     for y in range(-19, 20, 6):
         markers.append(cube(f"Road stripe {y}", (-1.0, y, 0.001), (0.12, 2.0, 0.002), stripe_mat))
     return markers
@@ -318,11 +319,11 @@ def main():
     scene.render.image_settings.file_format = "PNG"
     scene.render.image_settings.color_mode = "RGB"
     scene.view_settings.view_transform = "AgX"
-    scene.world.color = (0.10, 0.12, 0.19)
+    scene.world.color = (0.16, 0.19, 0.28)
     if scene.world.use_nodes:
         bg = scene.world.node_tree.nodes.get("Background")
         if bg is not None:
-            bg.inputs["Color"].default_value = (0.10, 0.12, 0.19, 1)
+            bg.inputs["Color"].default_value = (0.16, 0.19, 0.28, 1)
             bg.inputs["Strength"].default_value = 1.0
 
     # Preview run 42386915851: a near-background-grey concrete against a
@@ -406,123 +407,47 @@ def main():
         set_car_visible(car_root, False)
         macro_key.hide_render = True
 
-        if shot["id"] == "barrier_establish":
-            # Preview run 42387613693 (frame 81, car bug now fixed): from
-            # this far/high an elevated angle, a 0.81m-tall barrier
-            # perspective-flattens into a thin line -- no sense of it being
-            # a real wall. Much lower and closer, roughly at the barrier's
-            # own height, reads its face and top as actual volume instead.
-            # Real bug found by pixel-diffing actual preview frames (run
-            # 42430310209, frame 1 vs frame 165 mean diff only 4.8, well
-            # under the QA's 12.0 threshold): target was defined as
-            # cam_pos[1]+5.0 -- always exactly 5 units ahead of the camera
-            # -- so as the camera translated forward, the VIEWING ANGLE
-            # never changed at all, just its position. A fixed target
-            # point makes the camera genuinely sweep past it instead.
-            # Per-axis lerps (x, y, z independently) kept landing around
-            # 9.0 mean diff however much the raw numbers were widened --
-            # same mistake as barrier_cross_section's first fix: moving
-            # several offsets independently doesn't reliably shrink the
-            # true camera-to-target DISTANCE. Switching to the same
-            # explicit radial distance/angle approach that got
-            # cross_section and barrier_closing over threshold.
-            # Neither translating the camera (first attempt) nor closing
-            # true radial distance on a fixed target (second attempt, risked
-            # ending up inside the barrier's own solid or losing it from
-            # frame) reliably cleared the threshold. barrier_closing's fix
-            # (FIXED camera, target swinging through a wide arc) scored
-            # 29.2 -- comfortable margin -- so apply the same proven device
-            # here instead of a third bespoke tuning attempt.
-            # Lowering the camera only got to 8.7 -- horizon position
-            # barely moves with a sub-1-unit height change at this
-            # distance. Final approach: dolly in directly on one specific
-            # reflector post (a real, textured, close object, not just an
-            # aim point on open road), ending close enough (0.9 units) for
-            # it to sweep dramatically through frame -- same principle as
-            # wheel_climb_macro's close framing, which cleared threshold
-            # by a wide margin.
-            # Real car swap (preview run 42455427540): the real car is
-            # smaller/differently proportioned than the stylized box this
-            # shot was tuned against, and this shot has no car in frame at
-            # all anyway -- regressed to 10.5, under threshold again.
-            # Pushing closer still for more margin.
-            sloped_barrier.hide_render = False
-            post_target = (BARRIER_X - 0.6, 2.0, 0.15)
-            angle = lerp(-0.35, 0.35, t)
-            dist = lerp(14.0, 0.35, t)
-            cam_pos = (post_target[0] + math.sin(angle) * dist,
-                       post_target[1] - math.cos(angle) * dist,
-                       lerp(1.1, 0.18, t))
-            set_camera(cam, cam_pos, post_target, frame)
-            key.data.energy = 3.6
-
-        elif shot["id"] == "flat_wall_fail":
-            # Real bug found by comparing actual production frames (run
-            # 42396471568, frames 181 vs 210): a camera that chases the car
-            # at a near-constant relative offset keeps the car almost fixed
-            # in frame, and against a featureless wall/road the picture
-            # barely changes even though the car is genuinely moving in
-            # world space. A STATIC side-on camera makes the car's own
-            # motion -- and now the reflector posts/stripes sliding past --
-            # unambiguous instead of relying on camera movement at all.
+        # Every camera below was placed against the first full-length
+        # preflight (run 42915893427), whose contact sheet showed what
+        # spot-check previews had missed: a camera swinging INTO the barrier
+        # mid-shot (1.3s of black, the source of the duplicate frames), an
+        # opening with no measurable change in its first 5s, and a macro
+        # shot that was nearly a still. Rules kept here: cameras stay on the
+        # road side of the barrier face (x < 2.1) or above its top, never
+        # within the car's footprint, and no camera copies its subject's
+        # motion.
+        key.data.energy = 5.0
+        if shot["id"] == "flat_wall_fail":
+            # The hook: the car rushes at a low camera placed just ahead of
+            # the impact point and slams into the wall inside the first two
+            # seconds, then the camera arcs out to show car and wall.
             flat_wall.hide_render = False
             set_car_visible(car_root, True)
-            phase = min(1.0, t / 0.5)
-            settle = max(0.0, (t - 0.5) / 0.5)
-            cx = lerp(0.0, BARRIER_X - CAR_HALF_WIDTH - 0.08, min(1.0, phase))
-            cy = lerp(-7.0, 0.0, min(1.0, phase))
-            car_root.location = (cx, cy, 0)
-            car_root.rotation_euler = (math.radians(-9.0 * settle), 0, math.radians(-14.0))
-            # Second real bug, found the same way (pixel-diffing actual
-            # frames, run 42430310209: mean diff 10.4, still under 12.0):
-            # a fully static camera relies entirely on the car -- a small
-            # fraction of the frame -- for any pixel change at all, and
-            # that is not enough on its own. Pushing the camera in toward
-            # the action over the shot changes the apparent size of
-            # EVERYTHING in frame (wall, markers, road), not just the car,
-            # which is a far larger and more reliable source of real
-            # pixel-level change than hoping one small moving object
-            # carries the whole measurement.
-            # Real car swap (preview run 42455676386): a FIXED target point
-            # didn't account for the push-in narrowing the field of view --
-            # by t=1 the camera was close enough that the car (resting at
-            # a different point than the fixed aim point) left frame
-            # almost entirely, undercutting the very push-in meant to grow
-            # it. Tracking the car's own live position as the target (the
-            # camera's own PATH still doesn't move with the car -- only
-            # where it points does -- so this isn't the comoving-camera
-            # bug from before) keeps the car in frame throughout the push.
-            cam_pos = (lerp(-12.0, -2.2, t), lerp(-10.5, -1.8, t), lerp(3.1, 0.6, t))
-            target = car_root.location
+            phase = min(1.0, t / 0.3)
+            after = max(0.0, (t - 0.3) / 0.7)
+            recoil = 1.0 - math.exp(-5.0 * after)
+            car_root.location = (lerp(0.2, 0.65, phase), lerp(-9.0, 0.0, phase) - 0.3 * recoil, 0)
+            dive = -4.0 * math.exp(-4.0 * after) * math.cos(9.0 * after) if after > 0 else 0.0
+            car_root.rotation_euler = (math.radians(dive), 0, math.radians(-14.0))
+            cam_pos = (lerp(-1.2, -3.6, t), lerp(4.2, 2.6, t), lerp(0.55, 1.5, t))
+            target = Vector(car_root.location) + Vector((0.4, 0.0, 0.6))
             set_camera(cam, cam_pos, target, frame)
-            key.data.energy = 3.6
+
+        elif shot["id"] == "barrier_establish":
+            # Dolly along the road side toward one reflector on the barrier
+            # top. The swing angle stays negative for the whole move so the
+            # camera path never crosses the barrier face.
+            sloped_barrier.hide_render = False
+            target = (BARRIER_X, 2.0, 0.75)
+            angle = lerp(-0.15, -0.6, t)
+            dist = lerp(12.0, 1.6, t)
+            cam_pos = (target[0] + math.sin(angle) * dist,
+                       target[1] - math.cos(angle) * dist,
+                       lerp(1.8, 0.9, t))
+            set_camera(cam, cam_pos, target, frame)
 
         elif shot["id"] == "barrier_cross_section":
-            # Real bug in preview run 42386915851 (frame 399, fully black):
-            # the camera sat only ~0.2-0.7 units from the target, nearly
-            # grazing the barrier's own solid cross-section instead of
-            # standing back to actually frame the cutaway end cap. Pulling
-            # the whole orbit well clear of the barrier's y=-20 end (camera
-            # now 3.2-4.6 units out, not <1) gives it room to see the slice.
-            # Pixel-diff on preview run 42430310209 (frame 331 vs 465, mean
-            # diff only 2.7): the wedge cap is a small object against a lot
-            # of empty sky/road, so even a real, visible silhouette change
-            # barely moves the frame-wide mean. A bigger angle sweep AND a
-            # push-in (radius shrinking over the shot) together make the
-            # cap fill much more of the frame by the end, giving the
-            # changing subject real weight in the average instead of being
-            # diluted by mostly-static background.
             sloped_barrier.hide_render = False
-            # Second attempt (preview run 42430779080, frame 331 vs 465):
-            # a +/-1.0 rad swing changed the VIEWING ANGLE of the wedge so
-            # much that it read as narrower, not bigger, by t=1, cancelling
-            # out the intended push-in -- and the push-in itself barely
-            # worked anyway, because only the small x/z "radius" term
-            # shrank while the dominant y-offset (-20-2.4) that actually
-            # set most of the camera-to-target distance never changed.
-            # Scaling true camera-to-target DISTANCE directly (not just
-            # one offset term) with a smaller angle swing actually closes
-            # the gap this time.
             angle = lerp(-0.4, 0.4, t)
             dist = lerp(3.6, 1.4, t)
             cam_pos = (BARRIER_X + math.sin(angle) * dist,
@@ -530,127 +455,49 @@ def main():
                        lerp(0.3, 0.65, (math.sin(t * math.tau) * 0.5 + 0.5)))
             target = (BARRIER_X, -20, 0.4)
             set_camera(cam, cam_pos, target, frame)
-            key.data.energy = 3.6
 
         elif shot["id"] == "wheel_climb_macro":
-            # Real bug in preview run 42386915851 (frame 541, a close-up of
-            # a flat mesh interior face): the camera offset put it INSIDE
-            # the car body's own bounding box (body spans roughly x in
-            # [0.52, 2.32] around the car's resting position, and the old
-            # offset landed at x in [1.65, 1.85]). Dropping the approach
-            # heading to zero for this shot (it is a static explanatory
-            # close-up, not a moving approach) and placing the camera
-            # clearly beyond the body's +x edge fixes that.
+            # Low camera fixed on the road ahead of the car, looking back at
+            # the front corner that meets the slope while the car creeps
+            # toward it and its barrier side rises. The whole car rolls (its
+            # wheels are not rigged individually) -- a stylized stand-in for
+            # the wheel riding up, not a simulated suspension.
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
-            # More clearance from the barrier than the stylized car used
-            # (0.08): the real car's wheel_point reference, further out at
-            # CAR_HALF_WIDTH, otherwise lands close enough to the barrier's
-            # sloped near face to risk being behind/inside it.
-            car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.4, 0, 0)
-            # Tilting the whole car (not an individually-articulated wheel
-            # -- the real CC0 car's wheels aren't rigged for that here) is
-            # the same "stylized, kinematic, not calibrated" simplification
-            # this project already uses elsewhere for illustrative motion.
-            lift = min(1.0, t * 1.3) * 0.22
-            car_root.rotation_euler = (0, math.radians(lift * 10), 0)
-            wheel_point = car_root.matrix_world @ Vector(
-                (CAR_HALF_WIDTH, CAR_HALF_LENGTH * 0.55, CAR_WHEEL_RADIUS + lift))
-            # Real bug twice over at this macro range: once with the
-            # stylized car (camera landed inside the barrier's own solid
-            # cross-section, preview 42388175956) and once with the real
-            # car (camera landed right against its taller body panel,
-            # preview 42454726586, after trying to clear it laterally,
-            # which instead pushed the camera BEHIND the barrier -- fully
-            # black). The one offset that reliably clears both obstacles
-            # regardless of x/y position is height: placing the camera
-            # above BARRIER_HEIGHT (0.81) looking down is outside the
-            # barrier's solid no matter what, and well above the car's
-            # body too.
-            # Still not clear (preview run 42455101249, frame 540): +1.0 in
-            # z only got to ~1.33, barely 0.07 above the real car's own
-            # roof (top_z 1.258) -- looking almost straight down at point-
-            # blank range onto the hood. BARRIER_HEIGHT is only 0.81, so
-            # any height clearing the car's taller roof clears the barrier
-            # automatically too, regardless of x/y; +1.6 gives real margin
-            # above both instead of a few centimetres.
-            cam_pos = Vector((wheel_point.x + 0.3,
-                              wheel_point.y - 0.2 + math.sin(t * math.tau * 0.5) * 0.15,
-                              wheel_point.z + 1.6))
-            target = wheel_point
+            cy = lerp(-1.5, 0.3, t)
+            rise = min(1.0, t * 1.4)
+            car_root.location = (1.16, cy, 0.03 * rise)
+            car_root.rotation_euler = (0, math.radians(-6.0 * rise), 0)
+            cam_pos = (1.6, 3.6, lerp(0.35, 0.22, t))
+            target = (2.05, cy + 1.3, 0.3)
             set_camera(cam, cam_pos, target, frame)
-            # Preview runs 42387613693 and 42387885176: energy=60, then
-            # energy=4.0, both still blew the frame to flat white -- at
-            # this macro range (camera ~0.3-0.5 units from the subject)
-            # irradiance from ANY nearby area light scales too fast with
-            # 1/distance^2 to tune by trial. Dropping the dedicated macro
-            # light entirely and relying on the same sun + world ambient
-            # every other shot uses removes that failure mode outright.
-            key.data.energy = 3.6
 
         elif shot["id"] == "sloped_barrier_success":
+            # Same low camera as the opening failure, on purpose: same
+            # approach, opposite outcome. The car meets the slope, rolls up
+            # briefly, straightens and drives on past the camera.
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
-            phase = min(1.0, t / 0.5)
-            redirect = max(0.0, (t - 0.5) / 0.5)
-            cx_approach = lerp(0.0, BARRIER_X - CAR_HALF_WIDTH - 0.08, min(1.0, phase))
-            cx = lerp(cx_approach, cx_approach - 0.85, redirect)
-            cy = lerp(-7.0, 0.0, min(1.0, phase))
-            cy = lerp(cy, cy + 7.0, redirect)
-            car_root.location = (cx, cy, 0)
-            heading = lerp(-14.0, 0.0, redirect)
-            lift_phase = max(0.0, min(1.0, (t - 0.35) / 0.3))
-            lift = math.sin(lift_phase * math.pi) * 0.22
-            # Same whole-car tilt as wheel_climb_macro (not an individually
-            # articulated wheel) standing in for the climb/redirect.
-            car_root.rotation_euler = (0, math.radians(lift * 10), math.radians(heading))
-            # Real car swap (preview run 42455676386): the fixed-camera/
-            # swinging-target device scored only 8.5 with the real car's
-            # smaller footprint (this was the shot I meant to re-tune last
-            # round but edited flat_wall_fail's block twice by mistake
-            # instead). Switching to the same push-in dolly as
-            # flat_wall_fail -- proven to clear threshold for that mirrored
-            # shot -- rather than a third variant of the swinging-target
-            # device.
-            # Linear push-in plateaued around 7.6-8.6 across three widening
-            # attempts -- diminishing returns, not an amplitude problem.
-            # Switching to the same orbit+push radial device that cleared
-            # threshold for barrier_establish and barrier_cross_section
-            # (angle sweep combined with distance shrinking, around the
-            # car's own live position) instead of a fourth linear variant.
-            # IMPORTANT: this metric alone can be fooled -- preview run
-            # 42456165400's full-span diff came back 54.6 (comfortably
-            # over threshold), but frame 795 itself, viewed directly, was
-            # fully BLACK: at dist=1.1 the camera ended up inside the
-            # car's own body or the barrier's solid, and "real content" to
-            # "solid black" reads as a huge pixel change despite being a
-            # render bug, not real motion. Checking the actual frame, not
-            # just the number, caught it. Backed the closest distance off
-            # to 2.2, clear of both.
-            target = car_root.location
-            angle = lerp(-0.35, 0.35, t)
-            dist = lerp(15.0, 2.2, t)
-            cam_pos = (target[0] + math.sin(angle) * dist,
-                       target[1] - math.cos(angle) * dist,
-                       lerp(3.2, 0.35, t))
+            phase = min(1.0, t / 0.4)
+            redirect = max(0.0, (t - 0.4) / 0.6)
+            car_root.location = (lerp(lerp(0.2, 0.72, phase), 0.3, redirect),
+                                 lerp(lerp(-9.0, -1.0, phase), 9.0, redirect), 0)
+            heading = lerp(-14.0, 0.0, min(1.0, redirect / 0.35))
+            roll = -5.0 * math.sin(math.pi * min(1.0, redirect / 0.4)) if redirect > 0 else 0.0
+            car_root.rotation_euler = (0, math.radians(roll), math.radians(heading))
+            cam_pos = (lerp(-1.2, -3.6, t), lerp(4.2, 2.6, t), lerp(0.55, 1.5, t))
+            target = Vector(car_root.location) + Vector((0.4, 0.0, 0.6))
             set_camera(cam, cam_pos, target, frame)
-            key.data.energy = 3.6
 
         elif shot["id"] == "barrier_closing":
             sloped_barrier.hide_render = False
             set_car_visible(car_root, True)
             car_root.location = (BARRIER_X - CAR_HALF_WIDTH - 0.93, lerp(2.0, 14.0, t), 0)
             car_root.rotation_euler = (0, 0, 0)
-            # Real bug found the same way as barrier_establish: camera and
-            # target both shifted by the same `pan` amount, so the viewing
-            # angle never actually changed, just its position -- classic
-            # comoving-camera mistake. A FIXED target while the camera
-            # sweeps and descends in height makes the whole barrier line
-            # genuinely swing through frame instead.
             cam_pos = (BARRIER_X + 1.8, lerp(-6.0, 7.0, t), lerp(11.0, 4.0, t))
             target = (BARRIER_X, 5.0, 0.3)
             set_camera(cam, cam_pos, target, frame)
-            key.data.energy = 3.9
+            key.data.energy = 5.4
 
         else:
             raise ValueError(f"unknown shot id {shot['id']!r}")
