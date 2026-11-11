@@ -10,12 +10,12 @@
   ],
   "cycles_samples": 32,
   "total_frames": 960,
-  "_frame_plan_note": "Six shots on the proven 32.0s/960-frame shape (shared loudness QA assumes six 5s windows). Each shot's narration_en is the sentence spoken over it; must_show_while_spoken lists the physical conditions that have to be true in the simulated state AND visible in the picture for at least min_seconds while that sentence is spoken. assemble_jersey_barrier.py enforces it from the renderer's per-frame telemetry.",
+  "_frame_plan_note": "Six shots on the proven 32.0s/960-frame shape (shared loudness QA assumes six 5s windows). Each shot's narration_en is the sentence spoken over it; must_show_while_spoken lists the physical conditions that have to be true in the simulated state AND visible in the picture for at least min_seconds while that sentence is spoken. assemble_jersey_barrier.py enforces it from the renderer's per-frame telemetry. Shot boundaries are set from the captured narration (beat durations 4.488/5.064/5.256/5.616/5.376/5.28s plus equal slack), so each sentence is spoken over its own shot; the narration gate fails the film if a sentence drifts more than 15% onto another shot.",
   "shots": [
     {
       "id": "tyre_only_hook",
       "start": 1,
-      "end": 165,
+      "end": 139,
       "visual_proof": "Slow motion (0.30x). Looking back along the barrier toe: the barrier-side front tyre reaches the sloped face and rises, the body corner lifts, and a gap stays open between body and wall; cut to the same line from behind as the car steers away.",
       "narration_en": "This car just drifted into a concrete wall but only its tire ever touched it.",
       "must_show_while_spoken": [
@@ -31,8 +31,8 @@
     },
     {
       "id": "flat_wall_strike",
-      "start": 166,
-      "end": 330,
+      "start": 140,
+      "end": 296,
       "visual_proof": "Slow motion (0.13x). Same car, same 4 degree approach, same two viewpoints as the hook, flat wall: nothing lifts; the front body corner strikes the wall, the car is turned, and the rear corner follows it in. Paint is left on the concrete only where the simulated contact force is above zero.",
       "narration_en": "On a flat wall the same hit lands on the body, front corner first and then the rear.",
       "must_show_while_spoken": [
@@ -44,8 +44,8 @@
     },
     {
       "id": "barrier_cross_section",
-      "start": 331,
-      "end": 465,
+      "start": 297,
+      "end": 458,
       "visual_proof": "The cut end of the barrier, no car: the real safety-shape profile (75 mm reveal, 55 degree lower slope to 330 mm, near-vertical upper face to 810 mm). The lower slope lights up as it is named.",
       "narration_en": "A Jersey barrier is shaped differently because its lower face leans back like a steep ramp.",
       "must_show_while_spoken": [
@@ -57,8 +57,8 @@
     },
     {
       "id": "wheel_climb_macro",
-      "start": 466,
-      "end": 615,
+      "start": 459,
+      "end": 631,
       "visual_proof": "Slow motion (0.13x). First with the body drawn see-through (a cutaway device, not a real view): the tyre rides onto the slope and is pushed up into its arch before the body follows. Then solid, close along the toe: the tyre running on the slope with the body held off the wall.",
       "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension and softening the hit.",
       "must_show_while_spoken": [
@@ -74,8 +74,8 @@
     },
     {
       "id": "sloped_barrier_redirect",
-      "start": 616,
-      "end": 795,
+      "start": 632,
+      "end": 797,
       "visual_proof": "0.42x. From above the barrier line: barrier-side tyres on the foot of the wall, the car peeling away; then from ahead as it settles back in its lane.",
       "narration_en": "The slope pushes back on the tire and steers the car toward its lane with the body untouched.",
       "must_show_while_spoken": [
@@ -91,7 +91,7 @@
     },
     {
       "id": "barrier_closing",
-      "start": 796,
+      "start": 798,
       "end": 960,
       "visual_proof": "Steady cruise beside the barrier from above; no contact.",
       "narration_en": "That is why this simple concrete shape lines highways and work zones all across America.",

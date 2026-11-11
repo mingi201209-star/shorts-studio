@@ -595,13 +595,18 @@ def main():
             # The cut end of the barrier, no car: the profile itself. The
             # lower sloped face lights up as the narration names it.
             set_visible(car_root, False)
-            lit = s >= 1.6
+            # Two setups: a wide orbit that shows it is the same wall, then
+            # close and nearly head-on, where the profile reads as a shape
+            # and the lower slope lights up as the narration reaches it.
+            lit = s >= 2.7
             set_visible(slope_mark, lit)
-            angle = lerp(-0.95, -0.12, t)
-            dist = lerp(5.2, 1.7, t)
-            cam_pos = (BARRIER_X + math.sin(angle) * dist,
-                       BARRIER_Y1 + math.cos(angle) * dist,
-                       lerp(1.7, 0.5, t))
+            if not lit:
+                u = s / 2.7
+                angle, dist, height = lerp(-0.95, -0.55, u), lerp(5.2, 3.4, u), lerp(1.7, 1.1, u)
+            else:
+                u = min(1.0, (s - 2.7) / 2.7)
+                angle, dist, height = lerp(-0.22, -0.08, u), lerp(1.9, 1.5, u), 0.45
+            cam_pos = (BARRIER_X + math.sin(angle) * dist, BARRIER_Y1 + math.cos(angle) * dist, height)
             set_camera(cam, cam_pos, (BARRIER_X, BARRIER_Y1, 0.4))
             slope_point = (FACE_X + run / 2, BARRIER_Y1, motion.REVEAL_HEIGHT + rise / 2)
             shot_events["slope_highlighted"] = (lit, [slope_point])
