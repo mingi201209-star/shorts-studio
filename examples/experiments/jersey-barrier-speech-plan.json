@@ -4,32 +4,32 @@
       "id": "jersey-barrier-ribbon",
       "beats": [
         {
-          "narration_en": "Hit a flat wall at a shallow angle, and the car doesn't glance off, it just stops dead.",
+          "narration_en": "This car just drifted into a concrete wall, yet its body never touched it. Only the tire did.",
           "start": 0,
           "end": 5.5
         },
         {
-          "narration_en": "Along the highway, this low concrete wall running beside the lane is called a Jersey barrier.",
+          "narration_en": "Against a flat wall, the same shallow hit lands on the body itself: first the front corner, then the rear.",
           "start": 5.5,
           "end": 11.0
         },
         {
-          "narration_en": "This barrier's face isn't flat at all. It's cut at an angle, rising like a ramp.",
+          "narration_en": "A Jersey barrier is shaped differently. Its lower face leans back like a short, steep ramp.",
           "start": 11.0,
           "end": 15.5
         },
         {
-          "narration_en": "A wheel that strikes that slope climbs up it, instead of digging straight into the concrete.",
+          "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension, which soaks up the hit.",
           "start": 15.5,
           "end": 20.5
         },
         {
-          "narration_en": "That small lift is enough to redirect the whole car, steering it back into its own lane.",
+          "narration_en": "Riding along the slope, the tire steers the car back toward its lane, with the body barely scratched.",
           "start": 20.5,
           "end": 26.5
         },
         {
-          "narration_en": "One carefully angled curve in a concrete wall keeps cars from becoming out of control projectiles.",
+          "narration_en": "That is why this simple concrete shape lines highways and work zones all across America.",
           "start": 26.5,
           "end": 32.0
         }

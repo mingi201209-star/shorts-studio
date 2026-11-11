@@ -4,52 +4,114 @@
   "series_id": "hidden-engineering-american-roads",
   "topic_id": "guardrail-deflection",
   "fps": 30,
-  "resolution": [1080, 1920],
+  "resolution": [
+    1080,
+    1920
+  ],
   "cycles_samples": 32,
   "total_frames": 960,
-  "_frame_plan_note": "A shorter 72-word narration (21.768s real speech) hit three different QA ceilings in turn when squeezed to a shorter target_seconds: LONG_DEAD_AIR, then EXCESSIVE_TOTAL_SILENCE, then UNEVEN_SHOT_LOUDNESS -- that last one traced to episode2_film.py's loudness() hardcoding six fixed 5-second measurement windows (0-30s), a project-wide assumption this shared QA function makes that every episode runs close to 30-32s; a shorter total duration leaves its later windows reading past the end of real speech into near-silence. Rewriting the narration to ~93 words (closer to road-paint's own 93-word/31.512s original) and returning to the proven 32.0s/960-frame shape, matching every other episode in this series, sidesteps that rather than fighting a shared assumption. Real retention feedback on the existing rumble-road episode (20% watched, weak first 3 seconds that opened on exposition instead of the physical phenomenon) was applied here: flat_wall_fail and barrier_establish swapped frame ranges (both exactly 165 frames, so no camera-motion retuning needed) so the episode now opens on the dramatic failure first, then reveals what the barrier is, instead of opening on a static named-object shot.",
+  "_frame_plan_note": "Six shots on the proven 32.0s/960-frame shape (shared loudness QA assumes six 5s windows). Each shot's narration_en is the sentence spoken over it; must_show_while_spoken lists the physical conditions that have to be true in the simulated state AND visible in the picture for at least min_seconds while that sentence is spoken. assemble_jersey_barrier.py enforces it from the renderer's per-frame telemetry.",
   "shots": [
     {
-      "id": "flat_wall_fail",
+      "id": "tyre_only_hook",
       "start": 1,
       "end": 165,
-      "visual_proof": "Low behind-car chase angle: a car approaches a flat-faced wall at a shallow angle and stops dead, nose dipping down on impact -- the only flat-wall shot, and the only low chase-cam shot used for the 'before' half of the comparison. Opens the episode: real feedback on the rumble-road episode's weak 20% retention named a slow, expository first 3 seconds as a likely cause, so this episode leads with the dramatic failure, not a static named-object shot.",
-      "narration_en": "Hit a flat wall at an angle, and the car just stops dead."
+      "visual_proof": "Slow motion (0.30x). Looking back along the barrier toe: the barrier-side front tyre reaches the sloped face and rises, the body corner lifts, and a gap stays open between body and wall; cut to the same line from behind as the car steers away.",
+      "narration_en": "This car just drifted into a concrete wall, yet its body never touched it. Only the tire did.",
+      "must_show_while_spoken": [
+        {
+          "event": "tyre_on_slope",
+          "min_seconds": 0.8
+        },
+        {
+          "event": "body_gap_open",
+          "min_seconds": 0.8
+        }
+      ]
     },
     {
-      "id": "barrier_establish",
+      "id": "flat_wall_strike",
       "start": 166,
       "end": 330,
-      "visual_proof": "Wide 3/4 elevated angle on a straight barrier run receding into the distance, slow push-in -- the only wide establishing shot in the episode. Now the reveal beat (what just stopped that car), not the opener.",
-      "narration_en": "This low concrete wall along the highway is called a Jersey barrier."
+      "visual_proof": "Slow motion (0.13x). Same car, same 4 degree approach, same two viewpoints as the hook, flat wall: nothing lifts; the front body corner strikes the wall, the car is turned, and the rear corner follows it in. Paint is left on the concrete only where the simulated contact force is above zero.",
+      "narration_en": "Against a flat wall, the same shallow hit lands on the body itself: first the front corner, then the rear.",
+      "must_show_while_spoken": [
+        {
+          "event": "body_on_wall",
+          "min_seconds": 0.8
+        }
+      ]
     },
     {
       "id": "barrier_cross_section",
       "start": 331,
       "end": 465,
-      "visual_proof": "Macro, orthogonal side-on cutaway of the barrier's profile with the camera orbiting ~30 degrees to reveal the sloped wedge shape in silhouette -- no car in frame, the only profile/cutaway shot",
-      "narration_en": "This barrier's face isn't flat. It's angled, like a ramp."
+      "visual_proof": "The cut end of the barrier, no car: the real safety-shape profile (75 mm reveal, 55 degree lower slope to 330 mm, near-vertical upper face to 810 mm). The lower slope lights up as it is named.",
+      "narration_en": "A Jersey barrier is shaped differently. Its lower face leans back like a short, steep ramp.",
+      "must_show_while_spoken": [
+        {
+          "event": "slope_highlighted",
+          "min_seconds": 1.0
+        }
+      ]
     },
     {
       "id": "wheel_climb_macro",
       "start": 466,
       "end": 615,
-      "visual_proof": "Extreme macro at wheel height, tight on the car's front tire riding up the sloped face -- the only extreme close-up shot and the only one with the wheel (not the whole car) as the subject",
-      "narration_en": "A wheel that hits it climbs the slope instead of digging in."
+      "visual_proof": "Slow motion (0.13x). First with the body drawn see-through (a cutaway device, not a real view): the tyre rides onto the slope and is pushed up into its arch before the body follows. Then solid, close along the toe: the tyre running on the slope with the body held off the wall.",
+      "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension, which soaks up the hit.",
+      "must_show_while_spoken": [
+        {
+          "event": "front_tyre_climbing",
+          "min_seconds": 1.0
+        },
+        {
+          "event": "suspension_compressed",
+          "min_seconds": 1.0
+        }
+      ]
     },
     {
-      "id": "sloped_barrier_success",
+      "id": "sloped_barrier_redirect",
       "start": 616,
       "end": 795,
-      "visual_proof": "Same low chase angle and approach geometry as flat_wall_fail, but against the sloped barrier: the car rides up and redirects, continuing forward roughly parallel to the barrier instead of stopping dead -- a deliberate mirrored pair with flat_wall_fail so the before/after comparison is literally on screen, same device as road-paint's with/without-beads comparison shot",
-      "narration_en": "That lifts the car just enough to steer it back into its lane."
+      "visual_proof": "0.42x. From above the barrier line: barrier-side tyres on the foot of the wall, the car peeling away; then from ahead as it settles back in its lane.",
+      "narration_en": "Riding along the slope, the tire steers the car back toward its lane, with the body barely scratched.",
+      "must_show_while_spoken": [
+        {
+          "event": "tyre_on_slope",
+          "min_seconds": 0.5
+        },
+        {
+          "event": "steered_away",
+          "min_seconds": 1.0
+        }
+      ]
     },
     {
       "id": "barrier_closing",
       "start": 796,
       "end": 960,
-      "visual_proof": "High overhead angle looking down the barrier line at dusk, slow lateral pan only -- the only overhead shot and the only pure-pan camera move in the episode",
-      "narration_en": "One curve in a concrete wall keeps cars from becoming projectiles."
+      "visual_proof": "Steady cruise beside the barrier from above; no contact.",
+      "narration_en": "That is why this simple concrete shape lines highways and work zones all across America.",
+      "must_show_while_spoken": [
+        {
+          "event": "barrier_beside_road",
+          "min_seconds": 1.5
+        }
+      ]
     }
-  ]
+  ],
+  "first_three_seconds": {
+    "min_distinct_visible_event_onsets": 2,
+    "min_separation_seconds": 0.3,
+    "counted_events": [
+      "tyre_on_slope",
+      "body_lifted",
+      "steered_away",
+      "body_on_wall"
+    ],
+    "note": "Counts physical events becoming true and visible, not cuts or camera moves."
+  }
 }

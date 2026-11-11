@@ -18,6 +18,8 @@ on:
       - examples/experiments/jersey-barrier-speech-plan.json
       - examples/experiments/jersey-barrier-manifest.json
       - benchmarks/road_safety/render_jersey_barrier.py
+      - benchmarks/road_safety/jersey_barrier_motion.py
+      - benchmarks/road_safety/jersey_barrier_gates.py
       - benchmarks/road_safety/assemble_jersey_barrier.py
 permissions:
   contents: read
