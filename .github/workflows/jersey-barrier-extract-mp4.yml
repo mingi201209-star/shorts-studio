@@ -1,7 +1,7 @@
 name: Extract jersey-barrier final mp4 (base64-in-log, read-only)
-# Downloads the completed jersey-barrier-final artifact (run 42432397061,
+# Downloads the completed jersey-barrier-final artifact (run 42924173540,
 # real BARRIER_FILM_PASS
-# c71e02426a8312983d42ae63a55a19d8b6af0f109a16f3d26b7db8e7dfda0026) and
+# b30ebcbc31cf2188efff77f79f11db7d23c9e05d4684ac432a32a4dd90a2d86f) and
 # prints the actual mp4 as base64 in the job log, since this sandbox cannot
 # download GitHub Actions artifacts directly.
 on:
@@ -23,7 +23,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/final"
-          gh run download 42432397061 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-final --dir "$RUNNER_TEMP/final"
+          gh run download 42924173540 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-final --dir "$RUNNER_TEMP/final"
           mp4="$RUNNER_TEMP/final/jersey-barrier-ribbon.mp4"
           ls -la "$mp4"
           sha256sum "$mp4"
