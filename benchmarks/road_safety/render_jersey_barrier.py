@@ -121,25 +121,13 @@ def lerp(a, b, t):
 
 
 def set_camera(cam, location, target, frame=None):
+    # No per-frame jitter. An earlier version added a few millimetres of
+    # sinusoidal camera offset here to work around duplicate frames; the
+    # preflight later showed those came from a camera inside the barrier,
+    # not from stillness, and on close shots the offset read as a shaking
+    # picture (viewer feedback on run 42924173540). `frame` stays in the
+    # signature for the callers.
     loc = Vector(location)
-    if frame is not None:
-        # Real bug found in production run 42456615612's final assembly:
-        # DUPLICATE_OR_MISSING_FRAMES_IN_FINAL_ENCODE. Several shots here
-        # front/back-load their real motion (e.g. the car moves in the
-        # first half of a shot, then holds while only the camera dollies),
-        # leaving some spans of consecutive 30fps frames visually close
-        # enough that h264 (CRF 17, lossy) reconstructed two or more of
-        # them to byte-identical decoded pixels -- framemd5 caught it even
-        # though the coarser 2fps visual_activity check never would. A
-        # tiny continuous per-frame camera jitter (a few millimetres,
-        # imperceptible on screen) guarantees every single frame's actual
-        # rendered content differs from its neighbours, without changing
-        # any shot's intended composition or motion design.
-        loc = loc + Vector((
-            math.sin(frame * 2.7) * 0.006,
-            math.sin(frame * 3.1 + 1.3) * 0.006,
-            math.sin(frame * 2.3 + 2.6) * 0.006,
-        ))
     cam.location = loc
     cam.rotation_euler = (Vector(target) - loc).to_track_quat("-Z", "Y").to_euler()
 

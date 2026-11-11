@@ -84,6 +84,17 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path, prefligh
 
     for name in ("narration.wav", "film.ass", "audio-validation.json"):
         (out / name).write_bytes((audio / name).read_bytes())
+    # Lift the captions clear of the YouTube Shorts overlay (title, channel
+    # and description cover roughly the bottom fifth of the frame). The
+    # shared caption builder puts the baseline 210px above the bottom edge;
+    # 420 places the line at about rows 1445-1500, still inside the black
+    # caption band (1400-1919) and above the overlay. Done here on this
+    # episode's copy so other episodes' caption layout is untouched.
+    ass_path = out / "film.ass"
+    ass_text = ass_path.read_text(encoding="utf8")
+    if ass_text.count(",2,90,90,210,1") != 1:
+        raise ValueError("caption style line not in the expected form")
+    ass_path.write_text(ass_text.replace(",2,90,90,210,1", ",2,90,90,420,1"), encoding="utf8")
     audio_report = json.loads((out / "audio-validation.json").read_text())
     if audio_report["status"] != "PASS":
         raise ValueError("audio capture did not PASS")
