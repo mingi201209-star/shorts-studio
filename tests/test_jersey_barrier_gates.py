@@ -118,7 +118,7 @@ def test_first_three_seconds_needs_two_things_starting_to_happen():
         if frame >= 22:
             names.add("tyre_on_slope")
         if frame >= 40:
-            names.add("suspension_compressed")
+            names.add("body_lifted")
         return names
     assert gates.first_three_seconds(MANIFEST, _telemetry(two))["status"] == "PASS"
     # Already true on frame 1 is a state, not a change; one onset is not two.
@@ -127,7 +127,7 @@ def test_first_three_seconds_needs_two_things_starting_to_happen():
     assert gates.first_three_seconds(MANIFEST, _telemetry(one))["status"] == "FAIL"
     # Two events switching on together are one visual change.
     def together(frame, shot_id):
-        return {"tyre_on_slope", "front_tyre_climbing"} if frame >= 22 else set()
+        return {"tyre_on_slope", "body_lifted"} if frame >= 22 else set()
     assert gates.first_three_seconds(MANIFEST, _telemetry(together))["status"] == "FAIL"
 
 
