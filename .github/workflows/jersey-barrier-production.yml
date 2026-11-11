@@ -86,10 +86,10 @@ jobs:
           retention-days: 14
 
   native:
-    # Gate opened after preflight run 43026151363 reported
-    # BARRIER_PREFLIGHT_REPORT status PASS on this renderer/manifest and its
-    # contact sheet was looked at. Close the native and final gates again
-    # before the next round of renderer edits.
+    # Gate closed again after the simulated-motion cut was delivered
+    # (production run 43027922317, assembled in run 43112905031). Re-open only
+    # after a new preflight PASS on the renderer/manifest being rendered.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -136,6 +136,7 @@ jobs:
           retention-days: 14
 
   final:
+    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
