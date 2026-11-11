@@ -39,9 +39,14 @@ jobs:
             # caption builder measured with).
             echo "apt unavailable; using static-ffmpeg from PyPI"
             python -m pip install static-ffmpeg==2.13 matplotlib
-            bin_dir="$(python -c 'import static_ffmpeg.run as r; f, p = r.get_or_fetch_platform_executables_else_raise(); import os; print(os.path.dirname(f))')"
-            sudo ln -sf "$bin_dir/ffmpeg" /usr/local/bin/ffmpeg
-            sudo ln -sf "$bin_dir/ffprobe" /usr/local/bin/ffprobe
+            python -c "
+          import os, subprocess, static_ffmpeg.run as r
+          ffmpeg, ffprobe = r.get_or_fetch_platform_executables_else_raise()
+          for src, name in ((ffmpeg, 'ffmpeg'), (ffprobe, 'ffprobe')):
+              src = os.path.abspath(src)
+              assert os.path.isfile(src), src
+              subprocess.check_call(['sudo', 'ln', '-sf', src, '/usr/local/bin/' + name])
+          "
             if [ ! -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]; then
               font_dir="$(python -c 'import matplotlib, os; print(os.path.join(matplotlib.get_data_path(), "fonts", "ttf"))')"
               sudo mkdir -p /usr/share/fonts/truetype/dejavu
