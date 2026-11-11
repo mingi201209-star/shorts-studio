@@ -17,7 +17,7 @@
       "start": 1,
       "end": 165,
       "visual_proof": "Slow motion (0.30x). Looking back along the barrier toe: the barrier-side front tyre reaches the sloped face and rises, the body corner lifts, and a gap stays open between body and wall; cut to the same line from behind as the car steers away.",
-      "narration_en": "This car just drifted into a concrete wall, but only its tire touched it.",
+      "narration_en": "This car just drifted into a concrete wall but only its tire ever touched it.",
       "must_show_while_spoken": [
         {
           "event": "tyre_on_slope",
@@ -34,7 +34,7 @@
       "start": 166,
       "end": 330,
       "visual_proof": "Slow motion (0.13x). Same car, same 4 degree approach, same two viewpoints as the hook, flat wall: nothing lifts; the front body corner strikes the wall, the car is turned, and the rear corner follows it in. Paint is left on the concrete only where the simulated contact force is above zero.",
-      "narration_en": "On a flat wall, the same hit lands on the body: front corner first, then the rear.",
+      "narration_en": "On a flat wall the same hit lands on the body, front corner first and then the rear.",
       "must_show_while_spoken": [
         {
           "event": "body_on_wall",
@@ -47,7 +47,7 @@
       "start": 331,
       "end": 465,
       "visual_proof": "The cut end of the barrier, no car: the real safety-shape profile (75 mm reveal, 55 degree lower slope to 330 mm, near-vertical upper face to 810 mm). The lower slope lights up as it is named.",
-      "narration_en": "A Jersey barrier is shaped differently. Its lower face leans back like a steep ramp.",
+      "narration_en": "A Jersey barrier is shaped differently because its lower face leans back like a steep ramp.",
       "must_show_while_spoken": [
         {
           "event": "slope_highlighted",
@@ -60,7 +60,7 @@
       "start": 466,
       "end": 615,
       "visual_proof": "Slow motion (0.13x). First with the body drawn see-through (a cutaway device, not a real view): the tyre rides onto the slope and is pushed up into its arch before the body follows. Then solid, close along the toe: the tyre running on the slope with the body held off the wall.",
-      "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension.",
+      "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension and softening the hit.",
       "must_show_while_spoken": [
         {
           "event": "front_tyre_climbing",
@@ -77,7 +77,7 @@
       "start": 616,
       "end": 795,
       "visual_proof": "0.42x. From above the barrier line: barrier-side tyres on the foot of the wall, the car peeling away; then from ahead as it settles back in its lane.",
-      "narration_en": "The slope pushes back on the tire, steering the car toward its lane, body untouched.",
+      "narration_en": "The slope pushes back on the tire and steers the car toward its lane with the body untouched.",
       "must_show_while_spoken": [
         {
           "event": "tyre_on_slope",

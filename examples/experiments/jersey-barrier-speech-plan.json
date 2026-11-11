@@ -4,27 +4,27 @@
       "id": "jersey-barrier-ribbon",
       "beats": [
         {
-          "narration_en": "This car just drifted into a concrete wall, but only its tire touched it.",
+          "narration_en": "This car just drifted into a concrete wall but only its tire ever touched it.",
           "start": 0,
           "end": 5.5
         },
         {
-          "narration_en": "On a flat wall, the same hit lands on the body: front corner first, then the rear.",
+          "narration_en": "On a flat wall the same hit lands on the body, front corner first and then the rear.",
           "start": 5.5,
           "end": 11.0
         },
         {
-          "narration_en": "A Jersey barrier is shaped differently. Its lower face leans back like a steep ramp.",
+          "narration_en": "A Jersey barrier is shaped differently because its lower face leans back like a steep ramp.",
           "start": 11.0,
           "end": 15.5
         },
         {
-          "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension.",
+          "narration_en": "The tire meets that slope first and climbs it, squeezing the suspension and softening the hit.",
           "start": 15.5,
           "end": 20.5
         },
         {
-          "narration_en": "The slope pushes back on the tire, steering the car toward its lane, body untouched.",
+          "narration_en": "The slope pushes back on the tire and steers the car toward its lane with the body untouched.",
           "start": 20.5,
           "end": 26.5
         },
