@@ -47,7 +47,7 @@
       "start": 297,
       "end": 458,
       "visual_proof": "The cut end of the barrier, no car: the real safety-shape profile (75 mm reveal, 55 degree lower slope to 330 mm, near-vertical upper face to 810 mm). The lower slope lights up as it is named.",
-      "narration_en": "A Jersey barrier is shaped differently because its lower face leans back like a steep ramp.",
+      "narration_en": "A Jersey barrier is shaped differently because its lower face leans back like a short steep ramp.",
       "must_show_while_spoken": [
         {
           "event": "slope_highlighted",
