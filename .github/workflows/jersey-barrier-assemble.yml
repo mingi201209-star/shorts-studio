@@ -1,3 +1,4 @@
+# retrigger: previous run stuck in queue
 name: Jersey barrier assemble-only (reuse rendered shards)
 # Production run 43027922317 rendered all 32 shards successfully, but its
 # final job was cancelled twice by its own 30-minute timeout while
