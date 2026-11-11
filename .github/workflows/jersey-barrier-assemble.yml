@@ -25,16 +25,33 @@ jobs:
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
         with:
           python-version: '3.12'
-      - name: Install ffmpeg and fonts (bounded, retried)
-        timeout-minutes: 8
+      - name: Install ffmpeg and fonts (apt, else a static build from PyPI)
+        timeout-minutes: 12
         run: |
           set -euo pipefail
-          opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o DPkg::Lock::Timeout=60"
-          for attempt in 1 2 3; do
-            if timeout 120 sudo apt-get $opts update -qq && timeout 240 sudo apt-get $opts install -y ffmpeg fonts-dejavu-core; then break; fi
-            echo "apt attempt $attempt failed"; sleep 10
-          done
+          opts="-o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o DPkg::Lock::Timeout=60"
+          if timeout 150 sudo apt-get $opts update && timeout 240 sudo apt-get $opts install -y ffmpeg fonts-dejavu-core; then
+            echo "ffmpeg from apt"
+          else
+            # The Ubuntu mirror stalled three runs in a row on 2026-11-11.
+            # Same tools from PyPI instead: static ffmpeg/ffprobe, and the
+            # DejaVu Sans files matplotlib ships (the same typeface the
+            # caption builder measured with).
+            echo "apt unavailable; using static-ffmpeg from PyPI"
+            python -m pip install static-ffmpeg==2.13 matplotlib
+            bin_dir="$(python -c 'import static_ffmpeg.run as r; f, p = r.get_or_fetch_platform_executables_else_raise(); import os; print(os.path.dirname(f))')"
+            sudo ln -sf "$bin_dir/ffmpeg" /usr/local/bin/ffmpeg
+            sudo ln -sf "$bin_dir/ffprobe" /usr/local/bin/ffprobe
+            if [ ! -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf ]; then
+              font_dir="$(python -c 'import matplotlib, os; print(os.path.join(matplotlib.get_data_path(), "fonts", "ttf"))')"
+              sudo mkdir -p /usr/share/fonts/truetype/dejavu
+              sudo cp "$font_dir"/DejaVuSans*.ttf /usr/share/fonts/truetype/dejavu/
+              sudo fc-cache -f || true
+            fi
+          fi
           ffmpeg -version | head -1
+          ffprobe -version | head -1
+          ffmpeg -hide_banner -filters | grep -E " ass |loudnorm|blackdetect" 
           test -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
       - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
       - name: Retrieve the 32 rendered shards and the audio from the production run
