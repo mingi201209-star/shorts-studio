@@ -1,0 +1,73 @@
+name: Jersey barrier assemble-only (reuse rendered shards)
+# Production run 43027922317 rendered all 32 shards successfully, but its
+# final job was cancelled twice by its own 30-minute timeout while
+# `apt-get update` hung (15:12-15:43 UTC on the second attempt; no step of
+# ours had started). This assembles from that run's shard and audio
+# artifacts instead of re-rendering, with bounded, retried package
+# installation so a stalled mirror fails in minutes, not half an hour.
+# Same assembler, same gates, nothing relaxed.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/jersey-barrier-assemble.yml
+permissions:
+  contents: read
+  actions: read
+env:
+  SOURCE_RUN_ID: "43027922317"
+jobs:
+  final:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Install ffmpeg and fonts (bounded, retried)
+        timeout-minutes: 8
+        run: |
+          set -euo pipefail
+          opts="-o Acquire::Retries=3 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 -o DPkg::Lock::Timeout=60"
+          for attempt in 1 2 3; do
+            if timeout 120 sudo apt-get $opts update -qq && timeout 240 sudo apt-get $opts install -y ffmpeg fonts-dejavu-core; then break; fi
+            echo "apt attempt $attempt failed"; sleep 10
+          done
+          ffmpeg -version | head -1
+          test -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
+      - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Retrieve the 32 rendered shards and the audio from the production run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern 'jersey-barrier-native-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 32
+          gh run download "$SOURCE_RUN_ID" --repo "$GITHUB_REPOSITORY" --name jersey-barrier-audio --dir "$RUNNER_TEMP/audio"
+      - name: Assemble final MP4 and run every gate
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_jersey_barrier.py \
+            --native "$RUNNER_TEMP/native" \
+            --audio "$RUNNER_TEMP/audio" \
+            --manifest examples/experiments/jersey-barrier-manifest.json \
+            --out "$RUNNER_TEMP/final"
+          sha256sum "$RUNNER_TEMP/final/jersey-barrier-ribbon.mp4"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: jersey-barrier-final
+          path: |
+            ${{ runner.temp }}/final/*.mp4
+            ${{ runner.temp }}/final/*.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: Print the mp4 as base64 (this sandbox cannot download artifacts)
+        run: |
+          set -euo pipefail
+          echo "MP4_B64_START jersey-barrier-ribbon.mp4"
+          base64 -w0 "$RUNNER_TEMP/final/jersey-barrier-ribbon.mp4"
+          echo ""
+          echo "MP4_B64_END jersey-barrier-ribbon.mp4"
