@@ -65,6 +65,8 @@ def arguments():
 
 
 CONTACT_LEAD = 1.0 / motion.SPEED     # start a slow-motion shot 1 m before contact
+LOOP_FROM = 4.2                       # s into the closing shot where the loop-back begins
+HOOK_SCALE = 0.10
 
 
 def segments_for(contact: float):
@@ -72,12 +74,18 @@ def segments_for(contact: float):
     Slow motion is a property of the shot, stated here, not of the physics."""
     return {
         "barrels_burst_hook": [(99.0, "array", contact - 1.0 / motion.SPEED, 0.10)],
-        "barrel_cutaway": [(99.0, "array", 0.0, 0.0)],
+        # Action stays on screen right after the hook: viewer-retention data from
+        # an earlier episode showed the steepest drop at 3.5-6 s, where the
+        # picture went from an event to an explanation.
         "sand_takes_speed": [(99.0, "array", contact - 0.7 / motion.SPEED, 0.05)],
+        "barrel_cutaway": [(99.0, "array", 0.0, 0.0)],
         "heavier_toward_back": [(99.0, "array", contact - 1.4 / motion.SPEED, 0.13)],
         "wall_vs_array": [(2.0, "wall", contact - 1.0 / motion.SPEED, 0.30),
                           (99.0, "array", contact - 1.0 / motion.SPEED, 0.30)],
-        "guarding_a_hazard": [(99.0, "cruise", 0.0, 1.0)],
+        # The last two seconds return to the hook's own camera with the car
+        # arriving again, ending one frame before the film's first frame, so
+        # the Short loops without a visible seam.
+        "guarding_a_hazard": [(LOOP_FROM, "cruise", 0.0, 1.0), (99.0, "loop", 0.0, 0.0)],
     }
 
 
@@ -478,6 +486,13 @@ def main():
                 break
             seg_start = until
         sim_t = sim_start + (s - seg_start) * scale if case != "cruise" else 0.0
+        record_sid = sid
+        if case == "loop":
+            # Drawn exactly like the hook's opening view, timed to end one
+            # frame before the hook's first frame.
+            shot_len = (shot["end"] - shot["start"]) / fps
+            sim_t = (contact - CONTACT_LEAD) - HOOK_SCALE * (shot_len - s) - HOOK_SCALE / fps
+            case, sid, s = "array", "barrels_burst_hook", 0.0
         translucent = sid == "heavier_toward_back"
         cut_view = sid == "barrel_cutaway"
         closing = sid == "guarding_a_hazard"
@@ -622,15 +637,15 @@ def main():
                 u = min(1.0, (s - 2.0) / 3.2)
                 set_camera(cam, (-3.2, lerp(-5.0, 0.8, u), 4.4), (0.0, lerp(2.2, 4.8, u), 0.2))
         elif sid == "guarding_a_hazard":
-            if s < 2.0:
-                u = s / 2.0
+            if s < 1.4:
+                u = s / 1.4
                 set_camera(cam, (-11.0, lerp(-2.5, -1.8, u), 4.2), (0.0, 5.2, 0.7))
-            elif s < 4.0:
+            elif s < 2.8:
                 # low and close: yellow barrels in front, the striped concrete end beyond
-                u = (s - 2.0) / 2.0
+                u = (s - 1.4) / 1.4
                 set_camera(cam, (lerp(-2.7, -2.3, u), lerp(-1.2, -0.2, u), 0.85), (0.0, 4.2, 0.8))
             else:
-                u = min(1.0, (s - 4.0) / 2.0)
+                u = min(1.0, (s - 2.8) / 1.4)
                 set_camera(cam, (lerp(-2.4, -3.2, u), lerp(-10.0, -9.0, u), lerp(5.4, 6.4, u)), (0.0, 5.6, 0.5))
         if sid == "guarding_a_hazard":
             cam.data.lens = 28
@@ -710,7 +725,11 @@ def main():
             tops = [next(b for b in barrel_nodes if b["row"] == r) for r in (0, 3, 6)]
             events["array_before_concrete"] = (True, [(0.0, CONCRETE_END_Y, 1.1)] + [(b["x"], b["y"], 0.98) for b in tops], 3, 12.0)
 
-        record = {"frame": frame, "shot_id": sid, "case": case, "sim_t": round(sim_t_clamped, 4),
+        if record_sid != sid:
+            events = {}
+            events["car_arriving_again"] = (state.nose < 0.0 and state.speed > 20.0,
+                                            [world((0, nose_len - 0.1, 0.6)), world((0, 0.2, geometry["roof"]))])
+        record = {"frame": frame, "shot_id": record_sid, "case": case, "sim_t": round(sim_t_clamped, 4),
                   "speed_mps": round(state.speed, 3), "nose_m": round(state.nose, 3), "pitch_deg": round(math.degrees(state.pitch), 3),
                   "events": {}}
         for name, spec in events.items():
@@ -729,7 +748,7 @@ def main():
         bpy.ops.render.render(write_still=True)
         elapsed = round(time.perf_counter() - start_time, 3)
         sha = hashlib.sha256(frame_path.read_bytes()).hexdigest()
-        checksums.append({"frame": frame, "shot_id": sid, "sha256": sha, "render_seconds": elapsed})
+        checksums.append({"frame": frame, "shot_id": record_sid, "sha256": sha, "render_seconds": elapsed})
         render_seconds.append(elapsed)
         print(f"CUSHION_NATIVE_FRAME {frame}/{manifest['total_frames']}", flush=True)
 

@@ -15,7 +15,7 @@
     {
       "id": "barrels_burst_hook",
       "start": 1,
-      "end": 187,
+      "end": 185,
       "visual_proof": "Slow motion at one tenth speed, from beside and just ahead of the car: the nose pushes into the first barrel, the barrel is squashed, its shell gives way and sand and shell chips fly forward while the car pitches nose-down and slows; cut to a raised view from behind as the cascade continues, then a low view from ahead looking back at the nose.",
       "narration_en": "This car hits a wall of plastic barrels at highway speed, and every single one bursts into flying sand.",
       "must_show_while_spoken": [
@@ -38,22 +38,9 @@
       ]
     },
     {
-      "id": "barrel_cutaway",
-      "start": 188,
-      "end": 310,
-      "visual_proof": "One real barrel drawn cut in half (cutaway device): the thin shell wall and the sand packed inside, seen in an orbit and then close on the cut face.",
-      "narration_en": "Each barrel is nothing but a thin plastic shell packed full of sand.",
-      "must_show_while_spoken": [
-        {
-          "event": "barrel_cutaway_visible",
-          "min_seconds": 2.0
-        }
-      ]
-    },
-    {
       "id": "sand_takes_speed",
-      "start": 311,
-      "end": 447,
+      "start": 186,
+      "end": 316,
       "visual_proof": "Twentieth-speed macro at the nose: the sand ahead of the bumper is thrown forward at about the car's own speed while the speed read-out falls and the car pitches nose-down.",
       "narration_en": "Each pile of sand it hits must be sped up, and that speed comes out of the car.",
       "must_show_while_spoken": [
@@ -72,9 +59,22 @@
       ]
     },
     {
+      "id": "barrel_cutaway",
+      "start": 317,
+      "end": 434,
+      "visual_proof": "One real barrel drawn cut in half (cutaway device): the thin shell wall and the sand packed inside, seen in an orbit and then close on the cut face.",
+      "narration_en": "Each barrel is nothing but a thin plastic shell packed full of sand.",
+      "must_show_while_spoken": [
+        {
+          "event": "barrel_cutaway_visible",
+          "min_seconds": 1.8
+        }
+      ]
+    },
+    {
       "id": "heavier_toward_back",
-      "start": 448,
-      "end": 621,
+      "start": 435,
+      "end": 603,
       "visual_proof": "Barrel shells drawn translucent (cutaway device) so the sand level in every barrel shows: little sand in front, much more toward the back, while the car works through the array. A speed read-out (from the simulation) counts down as it slows.",
       "narration_en": "The barrels toward the back hold more sand, so the car slows lightly at first and harder deeper in.",
       "must_show_while_spoken": [
@@ -94,8 +94,8 @@
     },
     {
       "id": "wall_vs_array",
-      "start": 622,
-      "end": 779,
+      "start": 604,
+      "end": 773,
       "visual_proof": "Straight-down view with metre ticks and a labelled length bar: the same simulated car (1,500 kg, 90 km/h, head-on) stops within the distance a rigid wall allows (orange bar, WALL ~1 m, an ASSUMED deceleration distance, read-out dropping to 0 almost at once); then a raised view from behind shows the barrel array and the read-out falling slowly while the car rolls to the green bar (BARRELS ~6 m). The on-screen note says the distance is measured from first contact.",
       "narration_en": "A concrete wall would stop this car in about one meter; these barrels stretch that stop to six.",
       "must_show_while_spoken": [
@@ -119,14 +119,18 @@
     },
     {
       "id": "guarding_a_hazard",
-      "start": 780,
+      "start": 774,
       "end": 960,
-      "visual_proof": "Three views of an intact array standing in front of a hard concrete barrier end with hazard stripes: a wide side view, a low close view along the barrels toward the striped end, and a raised view from behind, while a car passes safely in the next lane.",
-      "narration_en": "That is why barrels like these guard busy highway exits and the hard concrete ends of barriers.",
+      "visual_proof": "Wide, low and raised views of an intact array standing in front of a hard concrete barrier end with hazard stripes while a car passes in the next lane; the last two seconds return to the opening camera with the car arriving at the array again, ending one frame before the film's first frame so the Short loops.",
+      "narration_en": "So at highway exits, barrels like these stand guard in front of hard concrete, ready for the next car.",
       "must_show_while_spoken": [
         {
           "event": "array_before_concrete",
-          "min_seconds": 2.5
+          "min_seconds": 2.2
+        },
+        {
+          "event": "car_arriving_again",
+          "min_seconds": 0.4
         }
       ]
     }
@@ -141,5 +145,6 @@
       "nose_dive"
     ],
     "note": "Counts physical events becoming true and visible, not cuts or camera moves."
-  }
+  },
+  "_edit_order_note": "Shot order follows retention evidence from an earlier episode (steepest viewer loss at 3.5-6 s when the picture went from an event to an explanation; second loss at an 'and that is why' ending): the action macro follows the hook, the static cutaway moves to third and the ending loops back to the first frame."
 }
