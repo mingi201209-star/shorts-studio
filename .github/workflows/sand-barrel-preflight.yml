@@ -48,7 +48,8 @@ jobs:
           PYTHONPATH="$PWD" python -c "
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build
-          build(Path('$RUNNER_TEMP/speech/sand-barrel-cushion'), Path('$RUNNER_TEMP/audio'), target_seconds=32.0)
+          from benchmarks.road_safety.caption_phrases import phrase_groups
+          build(Path('$RUNNER_TEMP/speech/sand-barrel-cushion'), Path('$RUNNER_TEMP/audio'), target_seconds=32.0, grouper=phrase_groups)
           "
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

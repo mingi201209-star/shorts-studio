@@ -47,6 +47,9 @@ PITCH_STIFFNESS = 150e3    # N m/rad (wheel rate 28 kN/m, geometry of the sedan)
 PITCH_LIMIT = 0.06         # rad, bump stops
 PITCH_OMEGA = 2 * math.pi * 1.4
 PITCH_ZETA = 0.45
+BURST_DEPTH = 0.45         # m the nose has to push into a barrel before its shell gives way
+CRUSH_RATIO = 0.55         # fraction of the barrel's length it is squashed by at that moment
+GHOST_INTERVAL = 0.07      # s between the stroboscopic car positions shown in the comparison shots
 START_NOSE = -8.0          # m before the first barrel face
 DT = 1.0 / 2000.0
 
@@ -131,10 +134,11 @@ def sample(states: list[State], t: float, dt: float = DT) -> State:
 
 
 def burst_times(states: list[State]) -> list[float | None]:
-    """Time the nose first reaches each barrel's face (shell contact)."""
+    """Time each barrel's shell gives way: the nose has pushed BURST_DEPTH
+    into it. Until then the barrel is being squashed (see crush_fraction)."""
     times: list[float | None] = []
     for i in range(len(ROWS)):
-        hit = next((s.t for s in states if s.nose >= barrel_front(i)), None)
+        hit = next((s.t for s in states if s.nose >= barrel_front(i) + BURST_DEPTH), None)
         times.append(hit)
     return times
 
@@ -147,6 +151,17 @@ STOPPED_SPEED = 0.5
 
 def stop_state(states: list[State]) -> State:
     return next((s for s in states if s.speed <= STOPPED_SPEED), states[-1])
+
+
+def crush_fraction(nose: float, row: int) -> float:
+    """0 = untouched, 1 = at the moment the shell gives way."""
+    return max(0.0, min(1.0, (nose - barrel_front(row)) / BURST_DEPTH))
+
+
+def ghost_times(states: list[State]) -> list[float]:
+    """Times of the stroboscopic car positions: every GHOST_INTERVAL from first contact."""
+    contact = next(s.t for s in states if s.nose >= 0.0)
+    return [round(contact + k * GHOST_INTERVAL, 6) for k in range(1, 13)]
 
 
 def summary(states: list[State], case: str) -> dict:

@@ -6,7 +6,7 @@ from PIL import ImageFont
 from benchmarks.road_safety.episode2_film import run,probe,silence,loudness,check_loudness,stamp
 from shorts_studio.factory.rumble_episode2 import caption_groups
 
-def build(capture,out,target_seconds=30):
+def build(capture,out,target_seconds=30,grouper=caption_groups):
  out.mkdir(parents=True,exist_ok=True); (out/'audio-validation.json').unlink(missing_ok=True); report=json.loads((capture/'capture.json').read_text());beats=report['beats']
  slack=(target_seconds-sum(b['duration'] for b in beats))/6
  if slack<0:raise ValueError(f'Narration exceeds the {target_seconds}s target; edit text, never time stretch')
@@ -15,7 +15,7 @@ def build(capture,out,target_seconds=30):
   raw=capture/f'beat_{i:02}.mp3';assert hashlib.sha256(raw.read_bytes()).hexdigest()==b['audio_sha256']
   words=b['words'];tokens=b['text'].split();assert len(words)==len(tokens),'No invented/interpolated word timing'
   window=b['duration']+slack;end=target_seconds if i==6 else cursor+window
-  for j,k in caption_groups(b['text']):
+  for j,k in grouper(b['text']):
    group=words[j:k];text=' '.join(tokens[j:k]);assert len(text)<=31
    if len(text)>24:
     parts=text.split();text=' '.join(parts[:len(parts)//2])+r'\N'+' '.join(parts[len(parts)//2:])

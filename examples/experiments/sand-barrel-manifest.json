@@ -16,9 +16,13 @@
       "id": "barrels_burst_hook",
       "start": 1,
       "end": 187,
-      "visual_proof": "Slow motion at one tenth speed, from beside and just ahead of the car: the nose reaches the first barrel, it bursts, sand and shell chips fly forward, the car pitches nose-down and slows; cut to a raised view from behind as the cascade continues down the array.",
+      "visual_proof": "Slow motion at one tenth speed, from beside and just ahead of the car: the nose pushes into the first barrel, the barrel is squashed, its shell gives way and sand and shell chips fly forward while the car pitches nose-down and slows; cut to a raised view from behind as the cascade continues, then a low view from ahead looking back at the nose.",
       "narration_en": "This car hits a wall of plastic barrels at highway speed, and every single one bursts into flying sand.",
       "must_show_while_spoken": [
+        {
+          "event": "barrel_crushing",
+          "min_seconds": 0.5
+        },
         {
           "event": "barrel_burst",
           "min_seconds": 0.8
@@ -26,6 +30,10 @@
         {
           "event": "sand_in_air",
           "min_seconds": 1.5
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
         }
       ]
     },
@@ -46,7 +54,7 @@
       "id": "sand_takes_speed",
       "start": 311,
       "end": 447,
-      "visual_proof": "Twentieth-speed macro at the nose: the sand ahead of the bumper is thrown forward at about the car's own speed while the car slows and pitches nose-down.",
+      "visual_proof": "Twentieth-speed macro at the nose: the sand ahead of the bumper is thrown forward at about the car's own speed while the speed read-out falls and the car pitches nose-down.",
       "narration_en": "Each pile of sand it hits must be sped up, and that speed comes out of the car.",
       "must_show_while_spoken": [
         {
@@ -56,6 +64,10 @@
         {
           "event": "car_decelerating",
           "min_seconds": 1.2
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
         }
       ]
     },
@@ -63,7 +75,7 @@
       "id": "heavier_toward_back",
       "start": 448,
       "end": 621,
-      "visual_proof": "Barrel shells drawn translucent (cutaway device) so the sand level in every barrel shows: few kilograms in front, much more toward the back, while the car works through the array and slows.",
+      "visual_proof": "Barrel shells drawn translucent (cutaway device) so the sand level in every barrel shows: little sand in front, much more toward the back, while the car works through the array. A speed read-out (from the simulation) counts down as it slows.",
       "narration_en": "The barrels toward the back hold more sand, so the car slows lightly at first and harder deeper in.",
       "must_show_while_spoken": [
         {
@@ -73,6 +85,10 @@
         {
           "event": "car_decelerating",
           "min_seconds": 2.0
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
         }
       ]
     },
@@ -80,7 +96,7 @@
       "id": "wall_vs_array",
       "start": 622,
       "end": 779,
-      "visual_proof": "Straight-down view with metre ticks. First the same car, same speed, stopping within the distance a rigid wall allows (orange line); then the barrel array, where the car passes that orange line still rolling and only stops at the green line about six metres in.",
+      "visual_proof": "Straight-down view with metre ticks and a labelled length bar: the same car at the same speed stops within the distance a rigid wall allows (orange bar, WALL 1 m, read-out dropping to 0 almost at once); then a raised view from behind shows the barrel array and the read-out falling slowly while the car rolls to the green bar (BARRELS 6 m).",
       "narration_en": "A concrete wall would stop it in about one meter; these barrels stretch that to six.",
       "must_show_while_spoken": [
         {
@@ -92,8 +108,12 @@
           "min_seconds": 1.5
         },
         {
-          "event": "stop_line_marks_visible",
-          "min_seconds": 1.5
+          "event": "distance_bars_visible",
+          "min_seconds": 2.0
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
         }
       ]
     },

@@ -217,8 +217,6 @@ def main():
     glass.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.22
     wall_line_mat = material("Rigid-wall stopping line", (1.0, 0.36, 0.04), rough=0.5, emission=2.5)
     stop_line_mat = material("Actual stopping line", (0.15, 0.9, 0.3), rough=0.5, emission=2.5)
-    wall_panel_mat = material("Rigid-wall stopping plane", (1.0, 0.36, 0.04), rough=0.5, emission=1.2)
-    wall_panel_mat.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.28
     tick_mat = material("Distance tick", (0.9, 0.9, 0.85), rough=0.6)
 
     y_lo, y_hi = -60.0, 40.0
@@ -292,15 +290,44 @@ def main():
         ob.rotation_mode = "AXIS_ANGLE"
         particle_objects.append(ob)
 
-    # ----- reference lines -------------------------------------------------
-    wall_line = cube("Rigid wall stop line", (0, motion.WALL_CRUSH, 0.004), (5.0, 0.07, 0.008), wall_line_mat)
-    wall_panel = cube("Rigid wall stop plane", (0, motion.WALL_CRUSH + 0.03, 0.65), (5.0, 0.03, 1.3), wall_panel_mat)
-    stop_line = cube("Actual stop line", (0, stop.nose, 0.004), (5.0, 0.07, 0.008), stop_line_mat)
-    stop_panel = cube("Actual stop plane", (0, stop.nose + 0.03, 0.3), (5.0, 0.03, 0.6), wall_panel_mat)
-    stop_panel.data.materials.clear()
-    stop_panel.data.materials.append(material("Actual stopping plane", (0.15, 0.9, 0.3), rough=0.5, emission=1.2))
-    stop_panel.data.materials[0].node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.28
-    marks = [wall_line, wall_panel, stop_line, stop_panel]
+    # ----- reference marks: stop lines and two labelled length bars ---------
+    BAR_WALL_X, BAR_ARRAY_X = 2.8, 4.2
+    wall_line = cube("Rigid wall stop line", (0.65, motion.WALL_CRUSH, 0.004), (6.2, 0.07, 0.008), wall_line_mat)
+    stop_line = cube("Actual stop line", (0.65, stop.nose, 0.004), (6.2, 0.07, 0.008), stop_line_mat)
+    bar_wall = cube("Wall stop length bar", (BAR_WALL_X, motion.WALL_CRUSH / 2, 0.006),
+                    (0.24, motion.WALL_CRUSH, 0.012), wall_line_mat)
+    bar_array = cube("Barrel stop length bar", (BAR_ARRAY_X, stop.nose / 2, 0.006),
+                     (0.24, stop.nose, 0.012), stop_line_mat)
+    base_ticks = [cube("Bar base", (x, 0.0, 0.006), (0.6, 0.07, 0.012), tick_mat) for x in (BAR_WALL_X, BAR_ARRAY_X)]
+
+    def label(name, body, size, mat, location, upright):
+        curve = bpy.data.curves.new(name, "FONT")
+        curve.body = body
+        curve.size = size
+        curve.align_x = "CENTER"
+        curve.extrude = 0.012
+        ob = bpy.data.objects.new(name, curve)
+        bpy.context.collection.objects.link(ob)
+        ob.data.materials.append(mat)
+        ob.location = location
+        ob.rotation_euler = (math.radians(90.0), 0, 0) if upright else (0, 0, 0)
+        return ob
+
+    flat_labels = [label("Flat wall label", "WALL\n1 m", 0.75, wall_line_mat, (BAR_WALL_X, motion.WALL_CRUSH + 1.25, 0.01), False),
+                   label("Flat array label", "BARRELS\n6 m", 0.75, stop_line_mat, (BAR_ARRAY_X, stop.nose + 1.25, 0.01), False)]
+    up_labels = [label("Upright wall label", "WALL 1 m", 0.8, wall_line_mat, (BAR_WALL_X, motion.WALL_CRUSH + 0.1, 0.55), True),
+                 label("Upright array label", "BARRELS 6 m", 0.8, stop_line_mat, (BAR_ARRAY_X, stop.nose + 0.1, 0.55), True)]
+    marks = [wall_line, stop_line, bar_wall, bar_array, *base_ticks]
+
+    # ----- speed read-out: a text object parented to the camera ------------
+    hud_curve = bpy.data.curves.new("Speed read-out", "FONT")
+    hud_curve.body = "SPEED 90 km/h"
+    hud_curve.align_x = "CENTER"
+    hud_curve.size = 1.0
+    hud_mat = material("Read-out text", (1.0, 1.0, 1.0), rough=0.5, emission=3.0)
+    plate_mat = material("Read-out plate", (0.02, 0.02, 0.03), rough=0.9)
+    plate_mat.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.6
+    HUD_DEPTH = 0.3
 
     # ----- the concrete end the array protects (closing shot only) ---------
     end_block = cube("Concrete barrier end", (0, CONCRETE_END_Y + 1.5, 0.6), (3.0, 3.0, 1.2), concrete)
@@ -324,6 +351,15 @@ def main():
     cam.data.sensor_width = 36
     cam.data.lens = 32
     cam.data.shift_y = -260.0 / 1080.0      # picture centre sits at row 700 of 1920
+    cam.data.clip_start = 0.05
+    hud = bpy.data.objects.new("Speed read-out", hud_curve)
+    bpy.context.collection.objects.link(hud)
+    hud.data.materials.append(hud_mat)
+    hud.parent = cam
+    hud_plate = cube("Speed read-out plate", (0, 0, 0), (1.0, 1.0, 0.001), plate_mat)
+    hud_plate.parent = cam
+    hud_plate.visible_shadow = False
+    hud.visible_shadow = False
 
     def sun(name, direction, energy, angle):
         bpy.ops.object.light_add(type="SUN")
@@ -420,6 +456,11 @@ def main():
             intact = array_on and (closing or sim_t_clamped < t_hit)
             burst_now = array_on and (not closing) and sim_t_clamped >= t_hit
             set_visible(info["node"], False)
+            crush = motion.crush_fraction(state.nose, info["row"]) if (array_on and not closing and intact) else 0.0
+            sy = 1.0 - motion.CRUSH_RATIO * crush
+            info["node"].scale = (1.0, sy, 1.0)
+            info["node"].location = (info["x"], info["y"] + motion.BARREL_D / 2.0 * (1.0 - sy), 0.0)
+            info["crush"] = crush
             for part in info["shell_parts"]:
                 open_top = translucent and part.name.startswith(("Band", "Lid"))
                 part.hide_render = not intact or open_top
@@ -457,16 +498,22 @@ def main():
                 if pos[1] > state.nose + 0.1 and p.v0[1] >= 0.7 * max(state.speed, 1e-6):
                     flying_ahead.append(pos)
         # reference marks
-        marks_on = sid == "wall_vs_array" or (sid == "heavier_toward_back" and False)
+        marks_on = sid == "wall_vs_array"
         for mark in marks:
             set_visible(mark, marks_on)
-        for tk in ticks:
-            set_visible(tk, not closing and not cut_view)
+        top_view = marks_on and case == "wall"
+        raised_view = marks_on and case == "array"
+        for ob in flat_labels:
+            set_visible(ob, top_view)
+        for ob in up_labels:
+            set_visible(ob, raised_view)
+        set_visible(flat_labels[1], False)
+        if top_view:
+            set_visible(bar_array, False)
+            set_visible(stop_line, False)
+            set_visible(base_ticks[1], False)
         for ob in hazard:
             set_visible(ob, closing)
-        if sid == "wall_vs_array" and case == "wall":
-            set_visible(stop_line, False)
-            set_visible(stop_panel, False)
         key.data.energy = 5.0
         bpy.context.view_layer.update()
 
@@ -530,6 +577,19 @@ def main():
             cam.data.lens = 28
         elif sid != "heavier_toward_back" and sid != "wall_vs_array":
             cam.data.lens = 32
+        hud_on = sid in ("barrels_burst_hook", "sand_takes_speed", "heavier_toward_back", "wall_vs_array")
+        for ob in (hud, hud_plate):
+            ob.hide_render = not hud_on
+            ob.hide_viewport = True          # telemetry rays never see it
+        if hud_on:
+            hud_curve.body = f"SPEED {state.speed * 3.6:.0f} km/h"
+            span = HUD_DEPTH * cam.data.sensor_width / cam.data.lens       # frame width at the read-out depth
+            k = 0.60 * span / 7.4
+            hud.scale = (k, k, k)
+            y_off = span * (530.0 / 1080.0)
+            hud.location = (0.0, y_off - 0.45 * k, -HUD_DEPTH)
+            hud_plate.scale = (0.66 * span, 0.16 * span, 1.0)
+            hud_plate.location = (0.0, y_off, -HUD_DEPTH - 0.0005)
         bpy.context.view_layer.update()
         scene.frame_set(frame)
         bpy.context.view_layer.update()
@@ -548,6 +608,8 @@ def main():
             in_array = case == "array"
             cut_in = [b for b in barrel_nodes if 0.0 <= sim_t_clamped - burst[b["row"]] <= 0.06]
             events["barrel_burst"] = (in_array and bool(cut_in), [(b["x"], b["y"], 0.5) for b in cut_in])
+            squashed = [b for b in barrel_nodes if b.get("crush", 0.0) > 0.12 and sim_t_clamped < burst[b["row"]]]
+            events["barrel_crushing"] = (in_array and bool(squashed), [(b["x"], b["y"], 0.55) for b in squashed])
             events["sand_in_air"] = (len(airborne_sand) >= 12, [pos for _p, pos in airborne_sand[::max(1, len(airborne_sand) // 8)]][:8])
             events["sand_sped_up"] = (len(flying_ahead) >= 10, flying_ahead[::max(1, len(flying_ahead) // 8)][:8])
             slowing = state.accel < -2.0 and state.speed > 1.0 and state.nose >= -0.01
@@ -558,6 +620,8 @@ def main():
                                                     world((-geometry["body_half_width"], -1.2, 0.7))])
             events["nose_dive"] = (state.pitch > 0.012, [world((-geometry["body_half_width"], 1.2, 0.7)),
                                                          world((0, nose_len - 0.1, 0.55)), world((0, 0.2, geometry["roof"]))])
+            if hud_on:
+                events["speed_readout_visible"] = (True, [], 0, 0.0)
             if translucent:
                 intact_barrels = [b for b in barrel_nodes if sim_t_clamped < burst[b["row"]]]
                 events["fill_levels_visible"] = (len(intact_barrels) >= 4,
@@ -567,8 +631,15 @@ def main():
                 events["wall_case_stop"] = (at_line, [world((0, nose_len, 0.5)), (0.0, motion.WALL_CRUSH, 0.65)], 1, 25.0)
                 past = case == "array" and state.nose > motion.WALL_CRUSH + 0.15 and state.speed > motion.STOPPED_SPEED
                 events["past_wall_line_still_moving"] = (past, [world((0, nose_len, 0.5)), (0.0, motion.WALL_CRUSH, 0.65)], 1, 25.0)
-                events["stop_line_marks_visible"] = (case == "array",
-                                                     [(sx, ly, 0.004) for sx in (-2.2, 2.2) for ly in (motion.WALL_CRUSH, stop.nose)], 3, 25.0)
+                if case == "wall":
+                    events["distance_bars_visible"] = (True, [(BAR_WALL_X, motion.WALL_CRUSH, 0.006),
+                                                              (BAR_WALL_X, 0.05, 0.006),
+                                                              (BAR_WALL_X, motion.WALL_CRUSH + 1.25, 0.05)], 2, 25.0)
+                else:
+                    events["distance_bars_visible"] = (True, [(BAR_WALL_X, motion.WALL_CRUSH, 0.006),
+                                                              (BAR_ARRAY_X, stop.nose, 0.006),
+                                                              (BAR_WALL_X, motion.WALL_CRUSH + 0.1, 0.55),
+                                                              (BAR_ARRAY_X, stop.nose + 0.1, 0.55)], 3, 20.0)
         if cut_view:
             events["barrel_cutaway_visible"] = (True, [(0.25, 3.0, cut_fill_h * 0.5), (0.20, 3.0, cut_fill_h + 0.01),
                                                        (0.0, 3.0 - motion.BARREL_D / 2 + 0.015, 0.5)], 2)

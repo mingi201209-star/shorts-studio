@@ -76,3 +76,27 @@ def test_manifest_matches_plan_and_names_real_events():
     for shot in manifest["shots"]:
         for need in shot["must_show_while_spoken"]:
             assert f'events["{need["event"]}"]' in source, need["event"]
+
+
+def test_barrels_are_squashed_before_their_shell_gives_way():
+    states = motion.simulate()
+    times = motion.burst_times(states)
+    for row, t_burst in enumerate(times):
+        before = motion.sample(states, t_burst - 0.01)
+        after = motion.sample(states, t_burst + 0.001)
+        assert 0.0 < motion.crush_fraction(before.nose, row) <= 1.0
+        assert motion.crush_fraction(after.nose, row) == 1.0
+        # the squashed barrel's front face never lags behind the nose
+        front_face = motion.barrel_back(row) - motion.BARREL_D * (1 - motion.CRUSH_RATIO * motion.crush_fraction(after.nose, row))
+        assert front_face >= after.nose - 0.06
+
+
+def test_caption_phrases_cover_each_sentence_exactly_and_stay_short():
+    from benchmarks.road_safety.caption_phrases import phrase_groups
+    plan = json.loads((ROOT / "examples/experiments/sand-barrel-speech-plan.json").read_text())
+    for beat in plan["variants"][0]["beats"]:
+        text, tokens = beat["narration_en"], beat["narration_en"].split()
+        spans = phrase_groups(text)
+        assert spans[0][0] == 0 and spans[-1][1] == len(tokens)
+        assert all(a[1] == b[0] for a, b in zip(spans, spans[1:]))
+        assert all(len(" ".join(tokens[i:j])) <= 31 and j - i >= 2 for i, j in spans)
