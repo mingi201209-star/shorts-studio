@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "sand-barrel-cushion",
+      "beats": [
+        {
+          "narration_en": "This car hits a wall of plastic barrels at highway speed, and every one bursts into sand.",
+          "start": 0,
+          "end": 5.5
+        },
+        {
+          "narration_en": "Each barrel is only a thin plastic shell packed with sand.",
+          "start": 5.5,
+          "end": 11.0
+        },
+        {
+          "narration_en": "Each pile of sand it hits must be sped up, and that speed comes out of the car.",
+          "start": 11.0,
+          "end": 15.5
+        },
+        {
+          "narration_en": "Back barrels hold more sand, so the car slows lightly at first and harder deeper in.",
+          "start": 15.5,
+          "end": 20.5
+        },
+        {
+          "narration_en": "A concrete wall would stop it in about one meter; these barrels stretch that to six.",
+          "start": 20.5,
+          "end": 26.5
+        },
+        {
+          "narration_en": "That is why barrels like these guard highway exits and the hard concrete ends of barriers.",
+          "start": 26.5,
+          "end": 32.0
+        }
+      ]
+    }
+  ]
+}

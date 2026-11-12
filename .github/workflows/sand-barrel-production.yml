@@ -1,0 +1,174 @@
+name: Sand barrel cushion production (full render + real audio + QA)
+# Full production run for the sand-barrel-cushion episode (replacing
+# retroreflective-road-paint on this branch): real narration capture
+# (edge-tts, en-US-AndrewNeural, same voice/rate as every other episode in
+# this project), the full 960-frame procedural render (32 shards of 30
+# frames, matching the house shard layout), and final assembly + the real
+# technical QA this project uses everywhere (no CLIP semantic gate yet --
+# content_screen_match stays explicitly NOT_IMPLEMENTED).
+#
+# native/final re-enabled after a preview run's first/mid/last frames per
+# shot were pixel-diffed locally against the real visual_activity QA's own
+# 12.0 mean-abs-diff threshold, not just eyeballed.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    # Production only starts when THIS file changes (flipping the gates on
+    # native/final below). Renderer, manifest and narration edits go through
+    # sand-barrel-preflight.yml first: three production runs in a row were
+    # spent discovering failures a ten-minute low-resolution pass would have
+    # shown, because every such edit used to start a full render by itself.
+    paths:
+      - .github/workflows/sand-barrel-production.yml
+permissions:
+  contents: read
+  actions: read
+env:
+  BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
+jobs:
+  speech:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - run: python -m pip install edge-tts
+      - name: Capture real narration (edge-tts, Andrew voice, real WordBoundary timing)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/speech"
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
+            --plan examples/experiments/sand-barrel-speech-plan.json \
+            --target-seconds 32.0 \
+            --out "$RUNNER_TEMP/speech"
+          cat "$RUNNER_TEMP/speech/sand-barrel-cushion/capture.json"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sand-barrel-speech-capture
+          path: ${{ runner.temp }}/speech/
+          if-no-files-found: error
+          retention-days: 14
+
+  audio:
+    needs: speech
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install Pillow pydantic
+      - name: Download the captured narration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name sand-barrel-speech-capture --dir "$RUNNER_TEMP/speech"
+      - name: Assemble narration.wav + captions from the real captured beats
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/audio"
+          PYTHONPATH="$PWD" python -c "
+          from pathlib import Path
+          from benchmarks.road_safety.curious_mechanics_audio import build
+          build(Path('$RUNNER_TEMP/speech/sand-barrel-cushion'), Path('$RUNNER_TEMP/audio'), target_seconds=32.0)
+          "
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sand-barrel-audio
+          path: ${{ runner.temp }}/audio/
+          if-no-files-found: error
+          retention-days: 14
+
+  native:
+    # Gate closed again after the simulated-motion cut was delivered
+    # (production run 43027922317, assembled in run 43112905031). Re-open only
+    # after a new preflight PASS on the renderer/manifest being rendered.
+    if: false
+    runs-on: ubuntu-24.04
+    timeout-minutes: 100
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        start: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271, 301, 331, 361, 391, 421, 451, 481, 511, 541, 571, 601, 631, 661, 691, 721, 751, 781, 811, 841, 871, 901, 931]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install hash-pinned Blender 5.0.1
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Download pinned CC0 car scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render 30 contiguous absolute frames
+        timeout-minutes: 90
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native"
+          end=$((${{ matrix.start }} + 29))
+          if [ "$end" -gt 960 ]; then end=960; fi
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
+            -P benchmarks/road_safety/render_crash_cushion.py -- \
+            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
+            --manifest examples/experiments/sand-barrel-manifest.json \
+            --start ${{ matrix.start }} --end "$end" \
+            --out "$RUNNER_TEMP/native" 2>&1 | tee "$RUNNER_TEMP/native/render.log"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: sand-barrel-native-${{ matrix.start }}
+          path: ${{ runner.temp }}/native/
+          if-no-files-found: error
+          retention-days: 14
+
+  final:
+    if: false
+    needs: [native, audio]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Retrieve all 32 native shards and the real audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
+          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'sand-barrel-native-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 32
+          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name sand-barrel-audio --dir "$RUNNER_TEMP/audio"
+      - name: Assemble final MP4 and run real technical QA
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_crash_cushion.py \
+            --native "$RUNNER_TEMP/native" \
+            --audio "$RUNNER_TEMP/audio" \
+            --manifest examples/experiments/sand-barrel-manifest.json \
+            --out "$RUNNER_TEMP/final"
+          sha256sum "$RUNNER_TEMP/final/sand-barrel-cushion.mp4"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: sand-barrel-final
+          path: ${{ runner.temp }}/final/
+          if-no-files-found: error
+          retention-days: 14
