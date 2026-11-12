@@ -32,8 +32,9 @@ CURATED: dict[str, tuple[str, ...]] = {
     "The barrels toward the back hold more sand, so the car slows lightly at first and harder deeper in.": (
         "The barrels toward", "the back hold more sand,", "so the car slows lightly",
         "at first and harder", "deeper in."),
-    "A concrete wall would stop it in about one meter; these barrels stretch that to six.": (
-        "A concrete wall would", "stop it in about one", "meter; these barrels", "stretch that to six."),
+    "A concrete wall would stop this car in about one meter; these barrels stretch that stop to six.": (
+        "A concrete wall would", "stop this car in about", "one meter;", "these barrels stretch",
+        "that stop to six."),
     "That is why barrels like these guard busy highway exits and the hard concrete ends of barriers.": (
         "That is why barrels", "like these guard busy", "highway exits and the", "hard concrete ends",
         "of barriers."),

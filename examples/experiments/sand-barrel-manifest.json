@@ -96,8 +96,8 @@
       "id": "wall_vs_array",
       "start": 622,
       "end": 779,
-      "visual_proof": "Straight-down view with metre ticks and a labelled length bar: the same car at the same speed stops within the distance a rigid wall allows (orange bar, WALL 1 m, read-out dropping to 0 almost at once); then a raised view from behind shows the barrel array and the read-out falling slowly while the car rolls to the green bar (BARRELS 6 m).",
-      "narration_en": "A concrete wall would stop it in about one meter; these barrels stretch that to six.",
+      "visual_proof": "Straight-down view with metre ticks and a labelled length bar: the same simulated car (1,500 kg, 90 km/h, head-on) stops within the distance a rigid wall allows (orange bar, WALL ~1 m, an ASSUMED deceleration distance, read-out dropping to 0 almost at once); then a raised view from behind shows the barrel array and the read-out falling slowly while the car rolls to the green bar (BARRELS ~6 m). The on-screen note says the distance is measured from first contact.",
+      "narration_en": "A concrete wall would stop this car in about one meter; these barrels stretch that stop to six.",
       "must_show_while_spoken": [
         {
           "event": "wall_case_stop",

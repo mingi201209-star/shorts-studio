@@ -12,12 +12,22 @@ from benchmarks.road_safety.jersey_barrier_gates import (  # noqa: F401  (re-exp
 )
 
 #: Bounds the simulated motion has to stay inside for the film's claims to
-#: hold and for nothing to be exaggerated.
+#: hold and for nothing to be exaggerated. The oiv / average-deceleration /
+#: exit-speed limits are the ones sand-barrel arrays are evaluated against
+#: (occupant impact velocity under 40 ft/s = 12.2 m/s, average deceleration
+#: under 12 g, speed under 10 mph = 4.47 m/s at the end of the array). They
+#: are applied to the simulated trace as a plausibility check; they are not a
+#: certification and the model has not been compared with a crash-test trace.
 MOTION_LIMITS = {
     "array": {"stop_distance_m": (5.5, 7.0), "peak_decel_g": (4.0, 15.0), "peak_pitch_deg": (0.5, 5.0),
-              "speed_at_wall_line_mps": (18.0, None), "total_sand_kg": (3000.0, 8000.0)},
-    "wall": {"stop_distance_m": (0.6, 1.2), "peak_decel_g": (15.0, 60.0)},
+              "speed_at_wall_line_mps": (18.0, None), "total_sand_kg": (3000.0, 8000.0),
+              "avg_decel_g": (None, 12.0), "oiv_mps": (None, 12.2), "ridedown_g": (None, 20.0),
+              "speed_at_array_end_mps": (None, 4.47)},
+    "wall": {"stop_distance_m": (0.8, 1.2), "peak_decel_g": (15.0, 60.0),
+             "avg_decel_g": (20.0, None), "oiv_mps": (12.2, None)},
 }
+#: The sand drawn on screen must carry the momentum the car lost to it.
+SAND_MOMENTUM_RATIO = (0.9, 1.1)
 
 
 def motion_plausibility(summaries: dict) -> dict:
@@ -28,6 +38,9 @@ def motion_plausibility(summaries: dict) -> dict:
             if (low is not None and value < low) or (high is not None and value > high):
                 problems.append(f"{case}.{key}={value} outside [{low}, {high}]")
     a, w = summaries["array"], summaries["wall"]
+    ratio = a.get("sand_momentum_ratio")
+    if ratio is None or not SAND_MOMENTUM_RATIO[0] <= ratio <= SAND_MOMENTUM_RATIO[1]:
+        problems.append(f"array.sand_momentum_ratio={ratio} outside {SAND_MOMENTUM_RATIO}")
     # "slowed lightly at first and harder deeper in": the first third of the
     # stop is gentler than the middle third and the peak is not at the front.
     if not a["mean_decel_first_third_g"] < a["mean_decel_middle_third_g"]:

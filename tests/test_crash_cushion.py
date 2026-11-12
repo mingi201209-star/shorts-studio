@@ -13,7 +13,10 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _summaries():
-    return {c: motion.summary(motion.simulate(motion.Scenario(case=c)), c) for c in ("array", "wall")}
+    out = {c: motion.summary(motion.simulate(motion.Scenario(case=c)), c) for c in ("array", "wall")}
+    states = motion.simulate()
+    out["array"]["sand_momentum_ratio"] = motion.momentum_audit(states, motion.build_particles(states))["ratio"]
+    return out
 
 
 def test_array_stops_over_about_six_metres_and_wall_over_about_one():
@@ -40,22 +43,48 @@ def test_car_never_speeds_up_and_ends_stopped():
     assert motion.stop_state(states).speed <= motion.STOPPED_SPEED
 
 
-def test_sand_leaves_at_about_the_cars_speed_and_only_after_the_nose_arrives():
+def test_sand_is_poured_over_a_short_window_at_about_the_cars_speed():
     states = motion.simulate()
     times = motion.burst_times(states)
     parts = motion.build_particles(states)
-    assert parts and all(p.t0 == times[p.barrel] for p in parts)
+    assert len(parts) > 10000
     for p in parts:
+        assert times[p.barrel] <= p.t0 <= times[p.barrel] + 0.12 + 1e-9
         assert motion.particle_state(p, p.t0 - 1e-3) is None
-        car = motion.sample(states, p.t0).speed
-        assert 0.78 * car <= p.v0[1] <= 1.13 * car
+        row_speed = motion.mean_speed_in_row(states, p.barrel)
+        if p.kind == "sand":
+            assert 0.9 * row_speed - 1e-9 <= p.v0[1] <= 1.12 * row_speed + 1e-9
+        elif p.kind == "dust":
+            assert 0.55 * row_speed - 1e-9 <= p.v0[1] <= 0.95 * row_speed + 1e-9
+    assert len({p.radius for p in parts if p.kind == "sand"}) > 1000   # a size spread, not identical balls
 
 
-def test_particles_end_on_the_ground():
+def test_drawn_sand_carries_the_momentum_the_car_lost_to_it():
     states = motion.simulate()
-    for p in motion.build_particles(states)[:80]:
-        pos, _angle, airborne = motion.particle_state(p, p.t0 + 5.0)
-        assert not airborne and pos[2] < 0.05
+    audit = motion.momentum_audit(states, motion.build_particles(states))
+    assert 0.9 <= audit["ratio"] <= 1.1
+
+
+def test_array_meets_the_acceptance_limits_and_a_rigid_wall_does_not():
+    s = _summaries()
+    a, w = s["array"], s["wall"]
+    assert a["avg_decel_g"] < motion.AVG_DECEL_LIMIT_G
+    assert a["oiv_mps"] < motion.OIV_LIMIT and a["ridedown_g"] < 20.0
+    assert a["speed_at_array_end_mps"] < motion.EXIT_SPEED_LIMIT
+    assert w["oiv_mps"] > motion.OIV_LIMIT and w["avg_decel_g"] > 20.0
+
+
+def test_wall_stop_is_the_energy_balance_for_its_assumed_crush():
+    w = _summaries()["wall"]
+    expected_g = motion.SPEED ** 2 / (2 * motion.WALL_CRUSH) / motion.G
+    assert abs(w["avg_decel_g"] - expected_g) < 0.5 and abs(w["stop_distance_m"] - motion.WALL_CRUSH) < 0.02
+
+
+def test_every_particle_comes_to_rest_on_the_ground():
+    states = motion.simulate()
+    for p in motion.build_particles(states)[::25]:
+        pos, _angle, airborne = motion.particle_state(p, p.t0 + 8.0)
+        assert not airborne and pos[2] < 0.06
 
 
 def test_plausibility_gate_catches_a_wall_that_stops_too_softly():

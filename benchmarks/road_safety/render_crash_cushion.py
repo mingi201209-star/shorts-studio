@@ -156,11 +156,14 @@ def main():
     car_root, car_body, wheels, geometry = base.load_source_car(args.source)
     runs = {case: motion.simulate(motion.Scenario(case=case)) for case in ("array", "wall")}
     summaries = {case: motion.summary(runs[case], case) for case in runs}
+    particles = motion.build_particles(runs["array"])
+    audit = motion.momentum_audit(runs["array"], particles)
+    summaries["array"]["sand_momentum_ratio"] = audit["ratio"]
+    summaries["array"]["momentum_audit"] = audit
     print("CUSHION_MOTION_SUMMARY " + json.dumps(summaries), flush=True)
     contact = summaries["array"]["contact_s"]
     plans = segments_for(contact)
     burst = motion.burst_times(runs["array"])
-    particles = motion.build_particles(runs["array"])
     stop = motion.stop_state(runs["array"])
     barrels = motion.barrels()
     nose_len = geometry["nose"]
@@ -270,25 +273,59 @@ def main():
     for part in cut_parts:
         parent_to(part, cut_node)
 
-    # ----- ballistic particles -------------------------------------------
-    sand_mesh = bpy.data.meshes.new("Sand grain")
-    bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=motion.PARTICLE_RADIUS)
-    proto = bpy.context.object
-    sand_mesh = proto.data
-    sand_mesh.materials.append(sand_mat)
-    bpy.data.objects.remove(proto, do_unlink=True)
+    # ----- sand: one point cloud for every grain and dust mote -----------
+    # A mesh whose vertices are the grain positions, turned into render
+    # points by a Geometry Nodes group (Mesh to Points, per-point radius from
+    # the "grain_radius" attribute). One object instead of thousands.
+    grains = [p for p in particles if p.kind != "chip"]
+    chips = [p for p in particles if p.kind == "chip"]
+    grain_mesh = bpy.data.meshes.new("Sand grains")
+    grain_mesh.vertices.add(len(grains))
+    grain_mesh.attributes.new("grain_radius", "FLOAT", "POINT")
+    grain_obj = bpy.data.objects.new("Sand grains", grain_mesh)
+    bpy.context.collection.objects.link(grain_obj)
+    grain_mat = material("Sand grain", (0.66, 0.50, 0.28), rough=0.95)
+    gn = grain_mat.node_tree.nodes
+    point_info = gn.new("ShaderNodePointInfo")
+    ramp = gn.new("ShaderNodeValToRGB")
+    ramp.color_ramp.elements[0].color = (0.46, 0.33, 0.17, 1)
+    ramp.color_ramp.elements[1].color = (0.82, 0.66, 0.38, 1)
+    grain_mat.node_tree.links.new(point_info.outputs["Random"], ramp.inputs["Fac"])
+    grain_mat.node_tree.links.new(ramp.outputs["Color"], gn.get("Principled BSDF").inputs["Base Color"])
+    group = bpy.data.node_groups.new("Sand points", "GeometryNodeTree")
+    group.interface.new_socket("Geometry", in_out="INPUT", socket_type="NodeSocketGeometry")
+    group.interface.new_socket("Geometry", in_out="OUTPUT", socket_type="NodeSocketGeometry")
+    n_in, n_out = group.nodes.new("NodeGroupInput"), group.nodes.new("NodeGroupOutput")
+    to_points = group.nodes.new("GeometryNodeMeshToPoints")
+    to_points.mode = "VERTICES"
+    named = group.nodes.new("GeometryNodeInputNamedAttribute")
+    named.data_type = "FLOAT"
+    named.inputs["Name"].default_value = "grain_radius"
+    set_mat = group.nodes.new("GeometryNodeSetMaterial")
+    set_mat.inputs["Material"].default_value = grain_mat
+    links = group.links
+    links.new(n_in.outputs[0], to_points.inputs["Mesh"])
+    links.new(named.outputs["Attribute"], to_points.inputs["Radius"])
+    links.new(to_points.outputs["Points"], set_mat.inputs["Geometry"])
+    links.new(set_mat.outputs["Geometry"], n_out.inputs[0])
+    modifier = grain_obj.modifiers.new("Sand points", "NODES")
+    modifier.node_group = group
+    grain_obj.visible_shadow = True
+    grain_obj.hide_viewport = True      # telemetry rays pass through the sand
+
     chip_mesh = bpy.data.meshes.new("Shell chip")
     chip_mesh.from_pydata([(-.05, -.03, -.006), (.05, -.03, -.006), (.05, .03, -.006), (-.05, .03, -.006),
                            (-.05, -.03, .006), (.05, -.03, .006), (.05, .03, .006), (-.05, .03, .006)], [],
                           [(0, 1, 2, 3), (4, 7, 6, 5), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)])
     chip_mesh.update()
     chip_mesh.materials.append(chip_mat)
-    particle_objects = []
-    for i, p in enumerate(particles):
-        ob = bpy.data.objects.new(f"Particle {i}", sand_mesh if p.kind == "sand" else chip_mesh)
+    chip_objects = []
+    for i, p in enumerate(chips):
+        ob = bpy.data.objects.new(f"Shell chip {i}", chip_mesh)
         bpy.context.collection.objects.link(ob)
         ob.rotation_mode = "AXIS_ANGLE"
-        particle_objects.append(ob)
+        chip_objects.append(ob)
+    hidden_xyz = (0.0, 0.0, -5.0)
 
     # ----- reference marks: stop lines and two labelled length bars ---------
     BAR_WALL_X, BAR_ARRAY_X = 2.8, 4.2
@@ -313,10 +350,10 @@ def main():
         ob.rotation_euler = (math.radians(90.0), 0, 0) if upright else (0, 0, 0)
         return ob
 
-    flat_labels = [label("Flat wall label", "WALL\n1 m", 0.75, wall_line_mat, (BAR_WALL_X, motion.WALL_CRUSH + 1.25, 0.01), False),
-                   label("Flat array label", "BARRELS\n6 m", 0.75, stop_line_mat, (BAR_ARRAY_X, stop.nose + 1.25, 0.01), False)]
-    up_labels = [label("Upright wall label", "WALL 1 m", 0.8, wall_line_mat, (BAR_WALL_X, motion.WALL_CRUSH + 0.1, 0.55), True),
-                 label("Upright array label", "BARRELS 6 m", 0.8, stop_line_mat, (BAR_ARRAY_X, stop.nose + 0.1, 0.55), True)]
+    flat_labels = [label("Flat wall label", "WALL\n~1 m", 0.75, wall_line_mat, (BAR_WALL_X, motion.WALL_CRUSH + 1.25, 0.01), False),
+                   label("Flat array label", "BARRELS\n~6 m", 0.75, stop_line_mat, (BAR_ARRAY_X, stop.nose + 1.25, 0.01), False)]
+    up_labels = [label("Upright wall label", "WALL ~1 m", 0.8, wall_line_mat, (BAR_WALL_X, motion.WALL_CRUSH + 0.1, 0.55), True),
+                 label("Upright array label", "BARRELS ~6 m", 0.8, stop_line_mat, (BAR_ARRAY_X, stop.nose + 0.1, 0.55), True)]
     marks = [wall_line, stop_line, bar_wall, bar_array, *base_ticks]
 
     # ----- speed read-out: a text object parented to the camera ------------
@@ -324,6 +361,10 @@ def main():
     hud_curve.body = "SPEED 90 km/h"
     hud_curve.align_x = "CENTER"
     hud_curve.size = 1.0
+    hud2_curve = bpy.data.curves.new("Read-out note", "FONT")
+    hud2_curve.body = "SIMULATION | 1,500 kg CAR | HEAD-ON"
+    hud2_curve.align_x = "CENTER"
+    hud2_curve.size = 1.0
     hud_mat = material("Read-out text", (1.0, 1.0, 1.0), rough=0.5, emission=3.0)
     plate_mat = material("Read-out plate", (0.02, 0.02, 0.03), rough=0.9)
     plate_mat.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.6
@@ -356,6 +397,11 @@ def main():
     bpy.context.collection.objects.link(hud)
     hud.data.materials.append(hud_mat)
     hud.parent = cam
+    hud2 = bpy.data.objects.new("Read-out note", hud2_curve)
+    bpy.context.collection.objects.link(hud2)
+    hud2.data.materials.append(hud_mat)
+    hud2.parent = cam
+    hud2.visible_shadow = False
     hud_plate = cube("Speed read-out plate", (0, 0, 0), (1.0, 1.0, 0.001), plate_mat)
     hud_plate.parent = cam
     hud_plate.visible_shadow = False
@@ -483,20 +529,33 @@ def main():
         cut_node.hide_render = not cut_view
         # particles
         airborne_sand, flying_ahead = [], []
-        for p, ob in zip(particles, particle_objects):
-            st = motion.particle_state(p, sim_t_clamped) if (array_on and not closing) else None
+        coords = [0.0] * (3 * len(grains))
+        radii = [0.0] * len(grains)
+        drawing = array_on and not closing
+        for gi, p in enumerate(grains):
+            st = motion.particle_state(p, sim_t_clamped) if drawing else None
             if st is None:
-                ob.hide_render = ob.hide_viewport = True
+                coords[3 * gi:3 * gi + 3] = hidden_xyz
                 continue
-            pos, angle, airborne = st
-            ob.hide_render = ob.hide_viewport = False
-            ob.location = pos
-            if p.kind == "chip":
-                ob.rotation_axis_angle = (angle, *p.axis)
-            if p.kind == "sand" and airborne:
+            pos = st[0]
+            coords[3 * gi], coords[3 * gi + 1], coords[3 * gi + 2] = pos
+            radii[gi] = p.radius
+            if p.kind == "sand" and st[2]:
                 airborne_sand.append((p, pos))
                 if pos[1] > state.nose + 0.1 and p.v0[1] >= 0.7 * max(state.speed, 1e-6):
                     flying_ahead.append(pos)
+        grain_mesh.vertices.foreach_set("co", coords)
+        grain_mesh.attributes["grain_radius"].data.foreach_set("value", radii)
+        grain_mesh.update()
+        grain_obj.hide_render = not drawing
+        for p, ob in zip(chips, chip_objects):
+            st = motion.particle_state(p, sim_t_clamped) if drawing else None
+            if st is None:
+                ob.hide_render = ob.hide_viewport = True
+                continue
+            ob.hide_render = ob.hide_viewport = False
+            ob.location = st[0]
+            ob.rotation_axis_angle = (st[1], *p.axis)
         # reference marks
         marks_on = sid == "wall_vs_array"
         for mark in marks:
@@ -578,7 +637,7 @@ def main():
         elif sid != "heavier_toward_back" and sid != "wall_vs_array":
             cam.data.lens = 32
         hud_on = sid in ("barrels_burst_hook", "sand_takes_speed", "heavier_toward_back", "wall_vs_array")
-        for ob in (hud, hud_plate):
+        for ob in (hud, hud2, hud_plate):
             ob.hide_render = not hud_on
             ob.hide_viewport = True          # telemetry rays never see it
         if hud_on:
@@ -587,9 +646,13 @@ def main():
             k = 0.60 * span / 7.4
             hud.scale = (k, k, k)
             y_off = span * (530.0 / 1080.0)
-            hud.location = (0.0, y_off - 0.45 * k, -HUD_DEPTH)
-            hud_plate.scale = (0.66 * span, 0.16 * span, 1.0)
-            hud_plate.location = (0.0, y_off, -HUD_DEPTH - 0.0005)
+            hud.location = (0.0, y_off + 0.012 * span - 0.45 * k, -HUD_DEPTH)
+            hud2_curve.body = ("STOP DISTANCE FROM FIRST CONTACT" if sid == "wall_vs_array"
+                               else "SIMULATION | 1,500 kg CAR | HEAD-ON")
+            hud2.scale = (0.34 * k, 0.34 * k, 0.34 * k)
+            hud2.location = (0.0, y_off - 0.058 * span, -HUD_DEPTH)
+            hud_plate.scale = (0.70 * span, 0.215 * span, 1.0)
+            hud_plate.location = (0.0, y_off - 0.012 * span, -HUD_DEPTH - 0.0005)
         bpy.context.view_layer.update()
         scene.frame_set(frame)
         bpy.context.view_layer.update()
