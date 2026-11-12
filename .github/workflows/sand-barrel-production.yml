@@ -86,10 +86,11 @@ jobs:
           retention-days: 14
 
   native:
-    # Gate opened after preflight run 43208540621 reported
-    # CUSHION_PREFLIGHT_REPORT status PASS on this renderer/manifest and its
-    # contact sheet was looked at. Close the native and final gates again
-    # before the next round of renderer edits.
+    # Gate closed again: production run 43210308630 rendered all 32 shards
+    # (preflight 43208540621 PASS). Its final job died on a shell syntax error
+    # in the ffmpeg install block (truncated copy, fixed here); assembly was
+    # redone by sand-barrel-assemble.yml from that run's artifacts.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -136,6 +137,7 @@ jobs:
           retention-days: 14
 
   final:
+    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -172,6 +174,11 @@ jobs:
               sudo cp "$font_dir"/DejaVuSans*.ttf /usr/share/fonts/truetype/dejavu/
               sudo fc-cache -f || true
             fi
+          fi
+          ffmpeg -version | head -1
+          ffprobe -version | head -1
+          ffmpeg -hide_banner -filters | grep -E " ass |loudnorm|blackdetect" 
+          test -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
       - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
       - name: Retrieve all 32 native shards and the real audio
         env:
