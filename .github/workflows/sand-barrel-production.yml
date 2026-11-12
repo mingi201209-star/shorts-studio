@@ -87,11 +87,10 @@ jobs:
           retention-days: 14
 
   native:
-    # Gate closed again: production run 43210308630 rendered all 32 shards
-    # (preflight 43208540621 PASS). Its final job died on a shell syntax error
-    # in the ffmpeg install block (truncated copy, fixed here); assembly was
-    # redone by sand-barrel-assemble.yml from that run's artifacts.
-    if: false
+    # Gate opened for round 2 after preflight run 43229162635 reported
+    # CUSHION_PREFLIGHT_REPORT status PASS on this renderer/manifest and its
+    # contact sheet was looked at. Close the native and final gates again
+    # before the next round of renderer edits.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -138,7 +137,6 @@ jobs:
           retention-days: 14
 
   final:
-    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
