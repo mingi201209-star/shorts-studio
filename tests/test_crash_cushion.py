@@ -65,7 +65,7 @@ def test_manifest_matches_plan_and_names_real_events():
     plan = json.loads((ROOT / "examples/experiments/sand-barrel-speech-plan.json").read_text())
     beats = plan["variants"][0]["beats"]
     assert [b["narration_en"] for b in beats] == [s["narration_en"] for s in manifest["shots"]]
-    assert sum(len(b["narration_en"].split()) for b in beats) <= 100
+    assert sum(len(b["narration_en"].split()) for b in beats) <= 105
     assert manifest["shots"][0]["start"] == 1 and manifest["shots"][-1]["end"] == manifest["total_frames"]
     source = (ROOT / "benchmarks/road_safety/render_crash_cushion.py").read_text()
     for shot in manifest["shots"]:

@@ -17,7 +17,7 @@
       "start": 1,
       "end": 139,
       "visual_proof": "Slow motion at one tenth speed, from beside and just ahead of the car: the nose reaches the first barrel, it bursts, sand and shell chips fly forward, the car pitches nose-down and slows; cut to a raised view from behind as the cascade continues down the array.",
-      "narration_en": "This car hits a wall of plastic barrels at highway speed, and every one bursts into sand.",
+      "narration_en": "This car hits a wall of plastic barrels at highway speed, and every single one bursts into flying sand.",
       "must_show_while_spoken": [
         {
           "event": "barrel_burst",
@@ -102,7 +102,7 @@
       "start": 798,
       "end": 960,
       "visual_proof": "Raised aerial of an intact array standing in front of a hard concrete barrier end with hazard stripes, while a car passes safely in the next lane.",
-      "narration_en": "That is why barrels like these guard highway exits and the hard concrete ends of barriers.",
+      "narration_en": "That is why barrels like these guard busy highway exits and the hard concrete ends of barriers.",
       "must_show_while_spoken": [
         {
           "event": "array_before_concrete",
