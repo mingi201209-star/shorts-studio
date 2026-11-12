@@ -46,8 +46,8 @@ PICTURE_BOTTOM_ROW = base.PICTURE_BOTTOM_ROW
 material, cube, lerp, set_camera, set_visible = base.material, base.cube, base.lerp, base.set_camera, base.set_visible
 
 CONCRETE_END_Y = 10.2
-CRUISE_X = -4.3
-LANE_LINE_X = -2.6
+CRUISE_X = 4.3
+LANE_LINE_X = 2.6
 
 
 def arguments():
@@ -476,12 +476,15 @@ def main():
             n = max(-1.0, min(7.0, nose_y))
             if s < 2.4:
                 set_camera(cam, (-4.4, n + 1.2, 2.3), (0.1, n + 0.3, 0.45))
-            else:
+            elif s < 4.3:
                 set_camera(cam, (-2.9, n - 5.0, 3.0), (0.0, n + 1.6, 0.35))
+            else:
+                # low, from ahead and to the side, looking back at the nose
+                set_camera(cam, (-2.6, n + 3.4, 0.7), (0.0, n - 0.4, 0.55))
         elif sid == "barrel_cutaway":
             if s < 2.0:
                 u = s / 2.0
-                a, d, h = lerp(0.95, 0.45, u), lerp(3.4, 2.3, u), lerp(1.6, 1.1, u)
+                a, d, h = lerp(0.95, 0.45, u), lerp(2.6, 1.9, u), lerp(1.3, 0.95, u)
                 set_camera(cam, (-math.cos(a) * d, 3.0 - math.sin(a) * d, h), (0.0, 3.0, 0.5))
             else:
                 u = min(1.0, (s - 2.0) / 2.1)
@@ -513,11 +516,15 @@ def main():
                 u = min(1.0, (s - 2.0) / 3.2)
                 set_camera(cam, (-3.2, lerp(-5.0, 0.8, u), 4.4), (0.0, lerp(2.2, 4.8, u), 0.2))
         elif sid == "guarding_a_hazard":
-            if s < 3.0:
-                u = s / 3.0
-                set_camera(cam, (-11.0, lerp(-2.5, -1.0, u), 4.2), (0.0, 5.2, 0.7))
+            if s < 2.0:
+                u = s / 2.0
+                set_camera(cam, (-11.0, lerp(-2.5, -1.8, u), 4.2), (0.0, 5.2, 0.7))
+            elif s < 4.0:
+                # low and close: yellow barrels in front, the striped concrete end beyond
+                u = (s - 2.0) / 2.0
+                set_camera(cam, (lerp(-4.2, -3.6, u), lerp(-1.4, -0.6, u), 1.1), (0.0, 7.5, 0.9))
             else:
-                u = min(1.0, (s - 3.0) / 3.0)
+                u = min(1.0, (s - 4.0) / 2.0)
                 set_camera(cam, (lerp(-2.4, -3.2, u), lerp(-10.0, -9.0, u), lerp(5.4, 6.4, u)), (0.0, 5.6, 0.5))
         if sid == "guarding_a_hazard":
             cam.data.lens = 28
@@ -566,7 +573,8 @@ def main():
             events["barrel_cutaway_visible"] = (True, [(0.25, 3.0, cut_fill_h * 0.5), (0.20, 3.0, cut_fill_h + 0.01),
                                                        (0.0, 3.0 - motion.BARREL_D / 2 + 0.015, 0.5)], 2)
         if closing:
-            events["array_before_concrete"] = (True, [(0.0, CONCRETE_END_Y, 0.6), (0.0, 0.5, 0.9), (1.0, 3.5, 0.9)], 3, 12.0)
+            tops = [next(b for b in barrel_nodes if b["row"] == r) for r in (0, 3, 6)]
+            events["array_before_concrete"] = (True, [(0.0, CONCRETE_END_Y, 1.1)] + [(b["x"], b["y"], 0.98) for b in tops], 3, 12.0)
 
         record = {"frame": frame, "shot_id": sid, "case": case, "sim_t": round(sim_t_clamped, 4),
                   "speed_mps": round(state.speed, 3), "nose_m": round(state.nose, 3), "pitch_deg": round(math.degrees(state.pitch), 3),
