@@ -75,8 +75,8 @@ def segments_for(contact: float):
         "barrel_cutaway": [(99.0, "array", 0.0, 0.0)],
         "sand_takes_speed": [(99.0, "array", contact - 0.7 / motion.SPEED, 0.05)],
         "heavier_toward_back": [(99.0, "array", contact - 1.4 / motion.SPEED, 0.13)],
-        "wall_vs_array": [(2.0, "wall", contact - 1.0 / motion.SPEED, 0.25),
-                          (99.0, "array", contact - 1.0 / motion.SPEED, 0.25)],
+        "wall_vs_array": [(2.0, "wall", contact - 1.0 / motion.SPEED, 0.30),
+                          (99.0, "array", contact - 1.0 / motion.SPEED, 0.30)],
         "guarding_a_hazard": [(99.0, "cruise", 0.0, 1.0)],
     }
 
@@ -479,24 +479,24 @@ def main():
             else:
                 set_camera(cam, (-2.9, n - 5.0, 3.0), (0.0, n + 1.6, 0.35))
         elif sid == "barrel_cutaway":
-            if s < 2.7:
-                u = s / 2.7
+            if s < 2.0:
+                u = s / 2.0
                 a, d, h = lerp(0.95, 0.45, u), lerp(3.4, 2.3, u), lerp(1.6, 1.1, u)
                 set_camera(cam, (-math.cos(a) * d, 3.0 - math.sin(a) * d, h), (0.0, 3.0, 0.5))
             else:
-                u = min(1.0, (s - 2.7) / 2.5)
+                u = min(1.0, (s - 2.0) / 2.1)
                 set_camera(cam, (lerp(-1.9, -1.35, u), 3.0 + lerp(0.15, -0.1, u), lerp(0.62, 0.55, u)),
                            (0.0, 3.0, 0.50))
         elif sid == "sand_takes_speed":
             n = max(-0.6, min(6.0, nose_y))
-            if s < 2.8:
+            if s < 2.2:
                 set_camera(cam, (-2.3, n + 1.9, 0.5), (0.0, n + 0.2, 0.5))
             else:
                 set_camera(cam, (-1.5, n - 1.8, 0.55), (0.1, n + 1.6, 0.5))
         elif sid == "heavier_toward_back":
             n = max(-1.0, min(7.0, nose_y))
-            if s < 2.9:
-                cy = lerp(2.6, 3.7, min(1.0, s / 2.9))
+            if s < 3.0:
+                cy = lerp(3.5, 3.9, min(1.0, s / 3.0))
                 set_camera(cam, (-5.6, cy, 1.0), (0.0, cy, 0.5))
                 cam.data.lens = 24
             else:
@@ -504,19 +504,24 @@ def main():
                 cam.data.lens = 30
         elif sid == "wall_vs_array":
             # Straight down, +y up the screen: distance along the stop is the picture.
-            cam.data.lens = 26
-            yy = lerp(3.0, 3.4, t)
-            set_camera(cam, (-0.35, yy - 1.0, 8.2), (0.0, yy, 0.0))
+            if case == "wall":
+                cam.data.lens = 26
+                yy = lerp(3.0, 3.4, t)
+                set_camera(cam, (-0.35, yy - 1.0, 8.2), (0.0, yy, 0.0))
+            else:
+                cam.data.lens = 30
+                u = min(1.0, (s - 2.0) / 3.2)
+                set_camera(cam, (-3.2, lerp(-5.0, 0.8, u), 4.4), (0.0, lerp(2.2, 4.8, u), 0.2))
         elif sid == "guarding_a_hazard":
-            if s < 2.7:
-                u = s / 2.7
+            if s < 3.0:
+                u = s / 3.0
                 set_camera(cam, (-11.0, lerp(-2.5, -1.0, u), 4.2), (0.0, 5.2, 0.7))
             else:
-                u = min(1.0, (s - 2.7) / 2.7)
+                u = min(1.0, (s - 3.0) / 3.0)
                 set_camera(cam, (lerp(-2.4, -3.2, u), lerp(-10.0, -9.0, u), lerp(5.4, 6.4, u)), (0.0, 5.6, 0.5))
         if sid == "guarding_a_hazard":
             cam.data.lens = 28
-        elif sid not in ("heavier_toward_back", "wall_vs_array"):
+        elif sid != "heavier_toward_back" and sid != "wall_vs_array":
             cam.data.lens = 32
         bpy.context.view_layer.update()
         scene.frame_set(frame)
@@ -540,7 +545,10 @@ def main():
             events["sand_sped_up"] = (len(flying_ahead) >= 10, flying_ahead[::max(1, len(flying_ahead) // 8)][:8])
             slowing = state.accel < -2.0 and state.speed > 1.0 and state.nose >= -0.01
             events["car_decelerating"] = (slowing, [world((0, nose_len - 0.1, 0.6)), world((0, 0, motion.CG_HEIGHT + 0.6)),
-                                                    world((0, -geometry["tail"] + 0.1, 0.6))])
+                                                    world((0, -geometry["tail"] + 0.1, 0.6)),
+                                                    world((-geometry["body_half_width"], 1.2, 0.7)),
+                                                    world((-geometry["body_half_width"], 0.1, 0.9)),
+                                                    world((-geometry["body_half_width"], -1.2, 0.7))])
             events["nose_dive"] = (state.pitch > 0.012, [world((-geometry["body_half_width"], 1.2, 0.7)),
                                                          world((0, nose_len - 0.1, 0.55)), world((0, 0.2, geometry["roof"]))])
             if translucent:
