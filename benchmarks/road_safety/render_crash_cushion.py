@@ -522,7 +522,7 @@ def main():
             elif s < 4.0:
                 # low and close: yellow barrels in front, the striped concrete end beyond
                 u = (s - 2.0) / 2.0
-                set_camera(cam, (lerp(-4.2, -3.6, u), lerp(-1.4, -0.6, u), 1.1), (0.0, 7.5, 0.9))
+                set_camera(cam, (lerp(-2.7, -2.3, u), lerp(-1.2, -0.2, u), 0.85), (0.0, 4.2, 0.8))
             else:
                 u = min(1.0, (s - 4.0) / 2.0)
                 set_camera(cam, (lerp(-2.4, -3.2, u), lerp(-10.0, -9.0, u), lerp(5.4, 6.4, u)), (0.0, 5.6, 0.5))
