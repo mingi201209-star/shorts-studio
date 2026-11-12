@@ -191,6 +191,13 @@ jobs:
             --manifest examples/experiments/sand-barrel-manifest.json \
             --out "$RUNNER_TEMP/final"
           sha256sum "$RUNNER_TEMP/final/sand-barrel-cushion.mp4"
+      - name: Print the final MP4 as base64 (so it can be retrieved from the log)
+        run: |
+          set -euo pipefail
+          echo "MP4_B64_START sand-barrel-cushion.mp4"
+          base64 -w0 "$RUNNER_TEMP/final/sand-barrel-cushion.mp4"
+          echo ""
+          echo "MP4_B64_END sand-barrel-cushion.mp4"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
