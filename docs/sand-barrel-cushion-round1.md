@@ -79,3 +79,41 @@ Original QA PASS (visual_activity longest hold 3.0 s, black_opening, captions_vi
 - In the raised view the `WALL 1 m` label partly overlaps a line and can read as cut off.
 - Audience-retention numbers (e.g. "continue watching" share) are not available to this session; nothing in this record depends on them.
 - Process slip: editing the shared `curious_mechanics_audio.py` auto-started the old road-paint production workflow (its `paths` list that file); it was cancelled within minutes.
+
+---
+
+# Rounds 3 + 4 (combined render)
+
+Feedback after v2: sand texture and density weak; the basis of the speed numbers and of the 1 m vs 6 m comparison unclear. Then an owner-supplied retention graph of the earlier **rumble-strip** Short (a different episode) showed the steepest loss at about 3.5-6 s and a second loss in the last 3 s. Rounds 3 and 4 were rendered once, together (round 3's own production run 43310080522 was cancelled; round 4 contains all of its changes).
+
+| item | v2 | v4 (this cut) |
+|---|---|---|
+| sha256 | `722b353bdd4c53738eb4a46ffba7846822f994534fc71842a139e2867f269089` | `7f19aba0a29c376688d6edfad1c5cfecda0878f588601cd1f054dcebf01d030b` (matches `CUSHION_FILM_PASS`) |
+| preflight | run 43229162635 | run 43311238590 PASS (attempt 2; attempt 1 lost one TTS response) |
+| render | run 43230778727 | production run 43314073897 (attempt 2; one shard died on a 403 from the Blender download server and was re-run) |
+
+Same-timestamp comparison (top v2, bottom v4): `docs/evidence/sand-barrel-v2-vs-v4.jpg`.
+
+## Round 3: sand and the basis of the numbers
+
+- Sand is one Geometry-Nodes point cloud: about 12,000 grains and dust motes with a size spread, released over a short window after each shell gives way, dust under air drag, one bounce, then sliding to rest. Shell chips stay separate objects.
+- Test conditions are stated in code, on screen (`SIMULATION | 1,500 kg CAR | HEAD-ON`, `STOP DISTANCE FROM FIRST CONTACT`) and in the narration: 1,500 kg car, 90 km/h, centred head-on, no braking, distance from first contact to standstill.
+- The rigid-wall deceleration distance is **1.0 m, an assumption**. NHTSA NCAP frontal tests at 56 km/h list maximum crush of roughly 0.44-0.62 m for current cars (figures seen in the NCAP report listings); at 90 km/h the same structures would be asked for more, so "about one metre" is an order-of-magnitude stand-in, not a measurement.
+- Audits now gated: the sand drawn carries 0.97 of the momentum the car lost to it; average deceleration 5.1 g (limit 12 g), flail-space occupant impact velocity 8.95 m/s (limit 12.2 m/s = 40 ft/s), ridedown 9.4 g (limit 20 g), speed at the end of the array 0 (limit 4.47 m/s = 10 mph). The rigid wall gives 32 g and 19.4 m/s, i.e. it exceeds those limits. The limits are those sand-barrel arrays are evaluated against as summarised in a state-DOT research Q&A seen through search results; the original documents could not be opened from this session (hosts not reachable), so the criteria are second-hand.
+- **Not done:** comparison with a full-scale crash-test trace. `physically_calibrated` stays False.
+
+## Round 4: edit order and ending
+
+- The action macro (sand thrown at the car's speed, read-out falling) now follows the hook directly; the static cutaway moved to third and is shorter.
+- The last sentence no longer opens with "That is why"; the closing shot ends on the hook's own camera with the car arriving again, one frame before the film's first frame, so the Short loops (frame 960 and frame 1 are the same view, speed 90 km/h).
+- Whether the rumble-strip retention pattern transfers to this episode is **unverified**; it can only be checked with this video's own retention graph after upload.
+
+## Gates on the real v4 video
+
+Original QA PASS (visual_activity longest hold 3.0 s, black_opening, captions_visible), motion_plausibility PASS, narration_screen_match PASS (6 of 6), first_three_seconds PASS (first barrel burst at 0.60 s, sand thrown forward at 0.97 s), caption_safety PASS.
+
+## Still open
+
+- Barrel deformation is a squash of a rigid barrel plus a burst; energy absorption is shown through speed falling and sand thrown, not through a drawn energy graph.
+- The on-screen speed read-out is simulation output; it is counted as "visible" whenever it is shown (true by construction), not measured from pixels.
+- Planned but not yet built: two cars side by side for the 1 m vs 6 m comparison, impact sound effects, calibration against real test data (needs the test report or network access to the hosts above).
