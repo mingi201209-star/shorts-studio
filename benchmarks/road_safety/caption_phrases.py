@@ -10,6 +10,7 @@ still defaults to caption_groups(); an episode opts in with grouper=.
 from __future__ import annotations
 
 MAX_CHARS = 31
+SINGLE_LINE = 24   # longer cues wrap to two lines and rise into the picture's safe margin
 CLAUSE_WORDS = {"and", "so", "but", "because", "that", "while", "which"}
 
 
@@ -25,16 +26,16 @@ CURATED: dict[str, tuple[str, ...]] = {
         "This car hits a wall", "of plastic barrels", "at highway speed,", "and every single one",
         "bursts into flying sand."),
     "Each barrel is nothing but a thin plastic shell packed full of sand.": (
-        "Each barrel is nothing but", "a thin plastic shell", "packed full of sand."),
+        "Each barrel is nothing", "but a thin plastic shell", "packed full of sand."),
     "Each pile of sand it hits must be sped up, and that speed comes out of the car.": (
-        "Each pile of sand it hits", "must be sped up,", "and that speed", "comes out of the car."),
+        "Each pile of sand", "it hits must be sped up,", "and that speed", "comes out of the car."),
     "The barrels toward the back hold more sand, so the car slows lightly at first and harder deeper in.": (
-        "The barrels toward the back", "hold more sand,", "so the car slows lightly",
-        "at first and harder deeper in."),
+        "The barrels toward", "the back hold more sand,", "so the car slows lightly",
+        "at first and harder", "deeper in."),
     "A concrete wall would stop it in about one meter; these barrels stretch that to six.": (
-        "A concrete wall would stop it", "in about one meter;", "these barrels stretch", "that to six."),
+        "A concrete wall would", "stop it in about one", "meter; these barrels", "stretch that to six."),
     "That is why barrels like these guard busy highway exits and the hard concrete ends of barriers.": (
-        "That is why barrels like these", "guard busy highway exits", "and the hard concrete ends",
+        "That is why barrels", "like these guard busy", "highway exits and the", "hard concrete ends",
         "of barriers."),
 }
 
@@ -48,7 +49,7 @@ def phrase_groups(text: str) -> list[tuple[int, int]]:
             count = len(phrase.split())
             groups.append((cursor, cursor + count))
             cursor += count
-        if cursor != len(tokens) or " ".join(curated) != text or any(len(x) > MAX_CHARS for x in curated):
+        if cursor != len(tokens) or " ".join(curated) != text or any(len(x) > SINGLE_LINE for x in curated):
             raise ValueError(f"curated caption phrases do not match the sentence: {text!r}")
         return groups
     groups: list[tuple[int, int]] = []

@@ -99,4 +99,4 @@ def test_caption_phrases_cover_each_sentence_exactly_and_stay_short():
         spans = phrase_groups(text)
         assert spans[0][0] == 0 and spans[-1][1] == len(tokens)
         assert all(a[1] == b[0] for a, b in zip(spans, spans[1:]))
-        assert all(len(" ".join(tokens[i:j])) <= 31 and j - i >= 2 for i, j in spans)
+        assert all(len(" ".join(tokens[i:j])) <= 24 and j - i >= 2 for i, j in spans)
