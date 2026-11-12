@@ -87,10 +87,11 @@ jobs:
           retention-days: 14
 
   native:
-    # Gate opened for round 3 after preflight run 43308048823 reported
-    # CUSHION_PREFLIGHT_REPORT status PASS on this renderer/manifest and its
-    # contact sheet was looked at. Close the native and final gates again
-    # before the next round of renderer edits.
+    # Gate opened for the combined round 3+4 cut after preflight run
+    # 43311238590 (attempt 2; attempt 1 lost one TTS response) reported
+    # CUSHION_PREFLIGHT_REPORT status PASS. Round 3's own production run
+    # 43310080522 was cancelled: round 4 contains all of its changes.
+    # Close the native and final gates again before the next renderer edits.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
