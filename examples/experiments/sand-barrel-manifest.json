@@ -34,7 +34,7 @@
       "start": 140,
       "end": 296,
       "visual_proof": "One real barrel drawn cut in half (cutaway device): the thin shell wall and the sand packed inside, seen in an orbit and then close on the cut face.",
-      "narration_en": "Each barrel is only a thin plastic shell packed with sand.",
+      "narration_en": "Each barrel is nothing but a thin plastic shell packed full of sand.",
       "must_show_while_spoken": [
         {
           "event": "barrel_cutaway_visible",
@@ -64,7 +64,7 @@
       "start": 459,
       "end": 631,
       "visual_proof": "Barrel shells drawn translucent (cutaway device) so the sand level in every barrel shows: few kilograms in front, much more toward the back, while the car works through the array and slows.",
-      "narration_en": "Back barrels hold more sand, so the car slows lightly at first and harder deeper in.",
+      "narration_en": "The barrels toward the back hold more sand, so the car slows lightly at first and harder deeper in.",
       "must_show_while_spoken": [
         {
           "event": "fill_levels_visible",
