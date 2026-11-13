@@ -19,7 +19,7 @@
       "start": 1,
       "end": 180,
       "visual_proof": "Two identical cars (blue in the fixed-post lane, red in the breakaway lane) hit two identical-looking sign posts at the same instant, slow motion 0.12x: seen from ahead, then from the side as the freed post turns over the red car, then from behind with the blue car stopped at its post. Speed read-outs for both cars come from the simulation.",
-      "narration_en": "Two cars hit the same steel sign post at the same speed, but only one of them stops.",
+      "narration_en": "Two cars hit the same steel sign post at the same speed but only one of them stops.",
       "must_show_while_spoken": [
         {
           "event": "rigid_car_stopped",
@@ -44,7 +44,7 @@
       "start": 181,
       "end": 335,
       "visual_proof": "Extreme slow motion (0.008x) at the foot of the breakaway post: the bumper arrives, the upper plate slides off the lower plate, the three bolts are thrown clear and the foot of the post is carried forward.",
-      "narration_en": "The second post was built to let go: its base slips apart the instant the bumper hits.",
+      "narration_en": "The second post was built to let go because its base slips apart the instant the bumper hits.",
       "must_show_while_spoken": [
         {
           "event": "base_separating",
@@ -57,7 +57,7 @@
       "start": 336,
       "end": 490,
       "visual_proof": "Exploded view (diagram device): the post is lifted off its base and set back so the two plates and the three bolts between them can be seen. No car in this shot.",
-      "narration_en": "Its two plates are held by bolts in open notches, strong against wind, not against a car.",
+      "narration_en": "Its two plates are held by bolts in open notches that resist the wind but not a moving car.",
       "must_show_while_spoken": [
         {
           "event": "slip_base_exploded_visible",
@@ -70,7 +70,7 @@
       "start": 491,
       "end": 640,
       "visual_proof": "Side view at 0.14x: struck low, the freed post turns foot-first up and over the red car and comes down behind it. Translucent copies of the post every 0.06 s (stroboscopic marks, a diagram device) trace the arc.",
-      "narration_en": "Hit low, the freed post spins up and over the roof, and lands behind the car.",
+      "narration_en": "Hit low, the freed post spins up and over the roof and lands on the road behind the car.",
       "must_show_while_spoken": [
         {
           "event": "post_over_car",
@@ -87,7 +87,7 @@
       "start": 641,
       "end": 800,
       "visual_proof": "Both lanes again at 0.12x from behind and then from the side: the blue car's read-out falls to 0 within the assumed 0.8 m deceleration distance of a fixed post; the red car's read-out barely moves.",
-      "narration_en": "The fixed post took all of the car's speed in under a meter; the breakaway post took almost none.",
+      "narration_en": "The fixed post took all of the car's speed in under a meter while the breakaway post took almost none.",
       "must_show_while_spoken": [
         {
           "event": "rigid_car_stopped",

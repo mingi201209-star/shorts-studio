@@ -38,17 +38,16 @@ CURATED: dict[str, tuple[str, ...]] = {
     "So at highway exits, barrels like these stand guard in front of hard concrete, ready for the next car.": (
         "So at highway exits,", "barrels like these", "stand guard in front", "of hard concrete,",
         "ready for the next car."),
-    "Two cars hit the same steel sign post at the same speed, but only one of them stops.": (
-        "Two cars hit the same", "steel sign post", "at the same speed,", "but only one", "of them stops."),
-    "The second post was built to let go: its base slips apart the instant the bumper hits.": (
-        "The second post", "was built to let go:", "its base slips apart", "the instant", "the bumper hits."),
-    "Its two plates are held by bolts in open notches, strong against wind, not against a car.": (
-        "Its two plates", "are held by bolts", "in open notches,", "strong against wind,", "not against a car."),
-    "Hit low, the freed post spins up and over the roof, and lands behind the car.": (
-        "Hit low,", "the freed post spins up", "and over the roof,", "and lands", "behind the car."),
-    "The fixed post took all of the car's speed in under a meter; the breakaway post took almost none.": (
-        "The fixed post took all", "of the car's speed", "in under a meter;", "the breakaway post",
-        "took almost none."),
+    "Two cars hit the same steel sign post at the same speed but only one of them stops.": (
+        "Two cars hit the same", "steel sign post", "at the same speed", "but only one", "of them stops."),
+    "The second post was built to let go because its base slips apart the instant the bumper hits.": (
+        "The second post", "was built to let go", "because its base", "slips apart the instant", "the bumper hits."),
+    "Its two plates are held by bolts in open notches that resist the wind but not a moving car.": (
+        "Its two plates", "are held by bolts", "in open notches", "that resist the wind", "but not a moving car."),
+    "Hit low, the freed post spins up and over the roof and lands on the road behind the car.": (
+        "Hit low,", "the freed post spins up", "and over the roof", "and lands on the road", "behind the car."),
+    "The fixed post took all of the car's speed in under a meter while the breakaway post took almost none.": (
+        "The fixed post took all", "of the car's speed", "in under a meter", "while the breakaway post", "took almost none."),
     "So the signs along fast roads stand on bases like this, waiting to let go.": (
         "So the signs along", "fast roads stand", "on bases like this,", "waiting to let go."),
 }
