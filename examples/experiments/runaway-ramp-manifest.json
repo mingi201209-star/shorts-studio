@@ -8,7 +8,7 @@
     1080,
     1920
   ],
-  "cycles_samples": 48,
+  "cycles_samples": 32,
   "total_frames": 960,
   "_frame_plan_note": "960 frames at 30 fps; shot boundaries sit in the gaps between the measured spoken windows of the first preflight (0.10-4.44, 4.93-9.16, 9.65-14.04, 14.54-19.40, 19.90-25.88, 26.38-31.61 s).",
   "shots": [
