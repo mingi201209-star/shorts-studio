@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "breakaway-sign-post",
+      "beats": [
+        {
+          "narration_en": "Two cars hit the same steel sign post at the same speed, but only one of them stops.",
+          "start": 0,
+          "end": 5.5
+        },
+        {
+          "narration_en": "The second post was built to let go: its base slips apart the instant the bumper hits.",
+          "start": 5.5,
+          "end": 11.0
+        },
+        {
+          "narration_en": "Its two plates are held by bolts in open notches, strong against wind, not against a car.",
+          "start": 11.0,
+          "end": 15.5
+        },
+        {
+          "narration_en": "Hit low, the freed post spins up and over the roof, and lands behind the car.",
+          "start": 15.5,
+          "end": 20.5
+        },
+        {
+          "narration_en": "The fixed post took all of the car's speed in under a meter; the breakaway post took almost none.",
+          "start": 20.5,
+          "end": 26.5
+        },
+        {
+          "narration_en": "So the signs along fast roads stand on bases like this, waiting to let go.",
+          "start": 26.5,
+          "end": 32.0
+        }
+      ]
+    }
+  ]
+}
