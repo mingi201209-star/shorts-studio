@@ -68,3 +68,15 @@ def test_manifest_plan_captions_and_events_agree():
         spans = phrase_groups(shot["narration_en"])
         assert spans[0][0] == 0 and spans[-1][1] == len(tokens)
         assert all(len(" ".join(tokens[i:j])) <= 24 and j - i >= 2 for i, j in spans)
+
+
+def test_readout_audit_accepts_matching_numbers_and_rejects_a_wrong_one():
+    summary = {"breakaway": {"speed_after_mps": 24.509}}
+    frames = {}
+    for f in range(1, 401):
+        rigid = max(0.0, 25.0 - 0.1 * f)
+        frames[f] = {"frame": f, "rigid_speed_mps": rigid, "breakaway_speed_mps": 24.509,
+                     "hud_kmh": {"rigid": int(f"{rigid * 3.6:.0f}"), "breakaway": 88}}
+    assert gates.readout_audit(frames, summary)["status"] == "PASS"
+    frames[200]["hud_kmh"] = {**frames[200]["hud_kmh"], "rigid": 99}
+    assert gates.readout_audit(frames, summary)["status"] == "FAIL"

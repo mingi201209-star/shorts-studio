@@ -243,6 +243,7 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path, prefligh
         "narration_screen_match": gates.narration_screen_match(manifest, audio_report, telemetry),
         "first_three_seconds": gates.first_three_seconds(manifest, telemetry),
         "caption_safety": gates.caption_safety(cues, original_qa["captions_visible"]["evidence"]),
+        "readout_matches_simulation": gates.readout_audit(telemetry, summaries),
     }
     print("SIGN_SPOKEN_WINDOWS " + json.dumps(
         [[s["sentence"], s["spoken"], s["frames"]] for s in content_qa["narration_screen_match"]["sentences"]]),

@@ -50,6 +50,10 @@ CURATED: dict[str, tuple[str, ...]] = {
         "The fixed post took all", "of the car's speed", "in under a meter", "while the breakaway post", "took almost none."),
     "So the signs along fast roads stand on bases like this, waiting to let go.": (
         "So the signs along", "fast roads stand", "on bases like this,", "waiting to let go."),
+    "Why are some road signs designed to break the moment a car hits them?": (
+        "Why are some road", "signs designed to break", "the moment a car", "hits them?"),
+    "Two cars hit the same post at the same speed but only one of them stops.": (
+        "Two cars hit the same", "post at the same speed", "but only one", "of them stops."),
 }
 
 

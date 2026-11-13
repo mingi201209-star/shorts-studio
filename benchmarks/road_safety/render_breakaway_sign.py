@@ -43,6 +43,7 @@ CRUISE_X = -6.2
 HOOK_SCALE = 0.12
 HOOK_LEAD = 1.0 / motion.SPEED          # the hook starts 1 m before contact
 LOOP_FROM = 3.4
+HUD_AFTER = 1.5                        # s into the hook before the speed read-outs appear
 GHOST_INTERVAL = 0.06                   # s between stroboscopic copies of the post
 
 
@@ -68,10 +69,10 @@ def segments_for(contact: float):
     ending loops back to the first frame."""
     return {
         "two_posts_hook": [(99.0, "both", contact - HOOK_LEAD, HOOK_SCALE)],
-        "base_lets_go": [(99.0, "both", contact - 0.15 / motion.SPEED, 0.008)],
-        "slip_base_exploded": [(99.0, "exploded", 0.0, 0.0)],
-        "post_over_roof": [(99.0, "both", contact - 0.5 / motion.SPEED, 0.14)],
         "rigid_vs_breakaway": [(99.0, "both", contact - HOOK_LEAD, 0.12)],
+        "base_lets_go": [(99.0, "both", contact - 0.15 / motion.SPEED, 0.008)],
+        "post_over_roof": [(99.0, "both", contact - 0.5 / motion.SPEED, 0.14)],
+        "slip_base_exploded": [(99.0, "exploded", 0.0, 0.0)],
         "signs_stand_ready": [(LOOP_FROM, "cruise", 0.0, 1.0), (99.0, "loop", 0.0, 0.0)],
     }
 
@@ -467,8 +468,8 @@ def main():
                 lens = 34
         cam.data.lens = lens
 
-        hud_on = live and sid != "base_lets_go" or sid == "base_lets_go"
-        hud_on = hud_on and not exploded and not cruising
+        hud_on = live and not exploded and not cruising
+        hud_on = hud_on and not (sid == "two_posts_hook" and s < HUD_AFTER)   # first 1.5 s: collision and outcome only
         for ob in (hud_rigid, hud_break, hud_note, hud_plate):
             ob.hide_render = not hud_on
             ob.hide_viewport = True
@@ -476,6 +477,8 @@ def main():
             span = HUD_DEPTH * cam.data.sensor_width / cam.data.lens
             y_off = span * (520.0 / 1080.0)
             k = 0.052 * span
+            hud_note_curve.body = ("FIXED-POST STOP DISTANCE IS AN ASSUMED 0.8 m" if sid == "rigid_vs_breakaway"
+                                   else "SIMULATION | 1,500 kg CARS | 90 km/h HEAD-ON")
             hud_rigid_curve.body = f"FIXED POST  {state['rigid'].speed * 3.6:.0f} km/h"
             hud_break_curve.body = f"BREAKAWAY  {state['breakaway'].speed * 3.6:.0f} km/h"
             hud_rigid.scale = hud_break.scale = (k, k, k)
@@ -529,7 +532,9 @@ def main():
             events["signs_along_road"] = (True, [(6.0, sy, motion.PANEL_HEIGHT) for sy in (-14.0, 2.0, 18.0)], 1, 10.0)
 
         record = {"frame": frame, "shot_id": record_sid, "mode": mode, "sim_t": round(sim_now, 4),
-                  "rigid_speed_mps": round(state["rigid"].speed, 3), "breakaway_speed_mps": round(state["breakaway"].speed, 3),
+                  "hud_kmh": ({"rigid": int(f"{state['rigid'].speed * 3.6:.0f}"),
+                               "breakaway": int(f"{state['breakaway'].speed * 3.6:.0f}")} if hud_on else None),
+                  "rigid_speed_mps": state["rigid"].speed, "breakaway_speed_mps": state["breakaway"].speed,   # full precision: the audit compares rounded integers
                   "post_angle_deg": round(math.degrees(post.angle), 2), "events": {}}
         for name, spec in events.items():
             active, points = spec[0], spec[1]

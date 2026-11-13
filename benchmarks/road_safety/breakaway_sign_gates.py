@@ -38,3 +38,31 @@ def motion_plausibility(summaries: dict) -> dict:
     need(20.0 <= r["avg_decel_g"] <= 60.0, f"fixed-post deceleration {r['avg_decel_g']} g outside 20-60")
     need(r["delta_v_mps"] >= 0.95 * 25.0, "fixed post does not take (nearly) all of the car's speed")
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "summaries": summaries}
+
+
+def readout_audit(telemetry: dict[int, dict], summaries: dict) -> dict:
+    """The speed numbers drawn on screen are the simulation's numbers.
+    Every frame that shows the read-out records the integers it drew next to
+    the simulated speeds of that frame; they must agree exactly, the fixed
+    lane must reach 0 and the breakaway lane must end at the speed the
+    simulation says it keeps. (The pixels themselves are not read back; the
+    drawn text is built from the same values.)"""
+    shown = [r for r in telemetry.values() if r.get("hud_kmh")]
+    problems = []
+    if len(shown) < 300:
+        problems.append(f"read-out shown on only {len(shown)} frames")
+    for r in shown:
+        for lane, key in (("rigid", "rigid_speed_mps"), ("breakaway", "breakaway_speed_mps")):
+            expected = int(f"{r[key] * 3.6:.0f}")
+            if r["hud_kmh"][lane] != expected:
+                problems.append(f"frame {r['frame']}: {lane} shows {r['hud_kmh'][lane]} km/h, simulation says {expected}")
+                break
+        if len(problems) > 5:
+            break
+    if shown:
+        floor_breakaway = int(f"{summaries['breakaway']['speed_after_mps'] * 3.6:.0f}")
+        if min(r["hud_kmh"]["rigid"] for r in shown) != 0:
+            problems.append("the fixed lane's read-out never reaches 0 km/h")
+        if min(r["hud_kmh"]["breakaway"] for r in shown) != floor_breakaway:
+            problems.append(f"the breakaway lane's read-out does not end at {floor_breakaway} km/h")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "frames_with_readout": len(shown)}

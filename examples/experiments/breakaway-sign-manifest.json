@@ -11,15 +11,15 @@
   "cycles_samples": 32,
   "total_frames": 960,
   "_frame_plan_note": "Six shots on the proven 32.0s/960-frame shape. Each shot's narration_en is the sentence spoken over it; must_show_while_spoken lists the physical conditions that have to be true in the simulated state AND visible in the picture for at least min_seconds while that sentence is spoken.",
-  "_edit_order_note": "Shot order follows retention evidence from an earlier episode (steepest viewer loss at 3.5-6 s when the picture went from an event to an explanation; second loss at a closing summary): action continues after the hook, the diagram comes third, and the ending loops back to the first frame. Whether that pattern transfers to this episode is unverified.",
+  "_edit_order_note": "Shot order follows retention evidence from an earlier episode (steepest viewer loss at 3.5-6 s when the picture went from an event to an explanation; second loss at a closing summary): action continues after the hook, the diagram comes third, and the ending loops back to the first frame. Whether that pattern transfers to this episode is unverified. Round 2 (owner review of the first cut): hook narrated as a question, first 1.5 s without read-outs, the action explanation moved to second place and the exploded diagram to fifth.",
   "test_conditions": "Simulation. Two 1,500 kg cars at 90 km/h, head-on, no braking. Fixed post: assumed 0.8 m deceleration distance. Breakaway post: plastic impulse at bumper height plus an assumed 250 N s to shear the slip base.",
   "shots": [
     {
       "id": "two_posts_hook",
       "start": 1,
-      "end": 142,
-      "visual_proof": "Two identical cars (blue in the fixed-post lane, red in the breakaway lane) hit two identical-looking sign posts at the same instant, slow motion 0.12x: seen from ahead, then from the side as the freed post turns over the red car, then from behind with the blue car stopped at its post. Speed read-outs for both cars come from the simulation.",
-      "narration_en": "Two cars hit the same steel sign post at the same speed but only one of them stops.",
+      "end": 150,
+      "visual_proof": "Slow motion at 0.12x, seen from ahead: two cars hit two sign posts at the same instant; the blue car stops at its fixed post while the red car drives on as its post is released. For the first 1.5 s nothing else is on screen (no read-outs); then the two speed read-outs appear, then the view moves to the side and behind.",
+      "narration_en": "Why are some road signs designed to break the moment a car hits them?",
       "must_show_while_spoken": [
         {
           "event": "rigid_car_stopped",
@@ -35,59 +35,16 @@
         },
         {
           "event": "speed_readouts_visible",
-          "min_seconds": 3.0
-        }
-      ]
-    },
-    {
-      "id": "base_lets_go",
-      "start": 143,
-      "end": 301,
-      "visual_proof": "Extreme slow motion (0.008x) at the foot of the breakaway post: the bumper arrives, the upper plate slides off the lower plate, the three bolts are thrown clear and the foot of the post is carried forward.",
-      "narration_en": "The second post was built to let go because its base slips apart the instant the bumper hits.",
-      "must_show_while_spoken": [
-        {
-          "event": "base_separating",
-          "min_seconds": 1.5
-        }
-      ]
-    },
-    {
-      "id": "slip_base_exploded",
-      "start": 302,
-      "end": 466,
-      "visual_proof": "Exploded view (diagram device): the post is lifted off its base and set back so the two plates and the three bolts between them can be seen. No car in this shot.",
-      "narration_en": "Its two plates are held by bolts in open notches that resist the wind but not a moving car.",
-      "must_show_while_spoken": [
-        {
-          "event": "slip_base_exploded_visible",
-          "min_seconds": 1.5
-        }
-      ]
-    },
-    {
-      "id": "post_over_roof",
-      "start": 467,
-      "end": 632,
-      "visual_proof": "Side view at 0.14x: struck low, the freed post turns foot-first up and over the red car and comes down behind it. Translucent copies of the post every 0.06 s (stroboscopic marks, a diagram device) trace the arc.",
-      "narration_en": "Hit low, the freed post spins up and over the roof and lands on the road behind the car.",
-      "must_show_while_spoken": [
-        {
-          "event": "post_over_car",
-          "min_seconds": 1.0
-        },
-        {
-          "event": "post_landed_behind",
-          "min_seconds": 0.2
+          "min_seconds": 2.0
         }
       ]
     },
     {
       "id": "rigid_vs_breakaway",
-      "start": 633,
-      "end": 810,
-      "visual_proof": "Both lanes again at 0.12x from behind and then from the side: the blue car's read-out falls to 0 within the assumed 0.8 m deceleration distance of a fixed post; the red car's read-out barely moves.",
-      "narration_en": "The fixed post took all of the car's speed in under a meter while the breakaway post took almost none.",
+      "start": 151,
+      "end": 310,
+      "visual_proof": "Both lanes again at 0.12x from behind and then from the side: the blue car's read-out falls to 0 within the ASSUMED 0.8 m deceleration distance of a fixed post (stated on screen); the red car's read-out barely moves.",
+      "narration_en": "Two cars hit the same post at the same speed but only one of them stops.",
       "must_show_while_spoken": [
         {
           "event": "rigid_car_stopped",
@@ -104,8 +61,51 @@
       ]
     },
     {
+      "id": "base_lets_go",
+      "start": 311,
+      "end": 470,
+      "visual_proof": "Extreme slow motion (0.008x) at the foot of the breakaway post: the bumper arrives, the upper plate slides off the lower plate, the three bolts are thrown clear and the foot of the post is carried forward.",
+      "narration_en": "The second post was built to let go because its base slips apart the instant the bumper hits.",
+      "must_show_while_spoken": [
+        {
+          "event": "base_separating",
+          "min_seconds": 1.5
+        }
+      ]
+    },
+    {
+      "id": "post_over_roof",
+      "start": 471,
+      "end": 630,
+      "visual_proof": "Side view at 0.14x: struck low, the freed post turns foot-first up and over the red car and comes down behind it. Translucent copies of the post every 0.06 s (stroboscopic marks, a diagram device) trace the arc.",
+      "narration_en": "Hit low, the freed post spins up and over the roof and lands on the road behind the car.",
+      "must_show_while_spoken": [
+        {
+          "event": "post_over_car",
+          "min_seconds": 1.0
+        },
+        {
+          "event": "post_landed_behind",
+          "min_seconds": 0.2
+        }
+      ]
+    },
+    {
+      "id": "slip_base_exploded",
+      "start": 631,
+      "end": 800,
+      "visual_proof": "Exploded view (diagram device), placed after the action: the post is lifted off its base and set back so the two plates and the three bolts between them can be seen. No car in this shot.",
+      "narration_en": "Its two plates are held by bolts in open notches that resist the wind but not a moving car.",
+      "must_show_while_spoken": [
+        {
+          "event": "slip_base_exploded_visible",
+          "min_seconds": 1.5
+        }
+      ]
+    },
+    {
       "id": "signs_stand_ready",
-      "start": 811,
+      "start": 801,
       "end": 960,
       "visual_proof": "Three signs on slip bases along a roadside while a car passes; the last two seconds return to the opening camera with both cars arriving at the posts again, ending one frame before the film's first frame so the Short loops.",
       "narration_en": "So the signs along fast roads stand on bases like this, waiting to let go.",
