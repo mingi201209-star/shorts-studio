@@ -657,7 +657,13 @@ def main():
                 tau = sim_t - g["t0"]
                 if tau >= 0 and g["p0"][2] + g["v0"][2] * tau - 0.5 * motion.G * tau * tau > g["r"] + 0.02:
                     airborne_pts.append(motion.grain_position(g, sim_t))
-        step_pts = airborne_pts[::max(1, len(airborne_pts) // 8)][:8]
+        # check the stones nearest to where the camera is looking, not an arbitrary sample of all of them
+        aim = cc.AIM.get("target")
+        if aim is not None and airborne_pts:
+            airborne_pts = sorted(airborne_pts, key=lambda q: (Vector(q) - aim).length)
+            step_pts = airborne_pts[:8]
+        else:
+            step_pts = airborne_pts[::max(1, len(airborne_pts) // 8)][:8]
         if sid != "bed_cutaway":
             events["gravel_spray"] = (airborne_n >= 12, step_pts, 4, 8.0)
             events["gravel_cloud"] = (airborne_n >= 120, step_pts, 4, 8.0)
@@ -672,7 +678,7 @@ def main():
                 events["drag_label_visible"] = (True, [], 0, 0.0)
             if sid == "stop_distance":
                 events["paved_truck_moving_visible"] = (True, [other.matrix_world @ Vector(q) for q in
-                                                               ((0, -0.2, 1.6), (0, -7.0, 4.0), (0, -12.0, 2.5))], 1, 3.0)
+                                                               ((0, -0.2, 1.6), (0, -7.0, 4.0), (0, -12.0, 2.5))], 1, 1.0)   # a 14 m truck seen from above: 30 cm is ~3 px
                 events["truck_stopped"] = (v <= motion.STOPPED_SPEED, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0)), world((0, -12.0, 2.5))], 1, 3.0)
                 events["stop_bars_visible"] = (True, [(2.6, stop_x, 0.1), (2.6, stop_x - 20.0, 0.1), (2.6, stop_x - 40.0, 0.1),
                                                   (-2.6, stop_x - 20.0, 0.1), (-2.6, stop_x - 40.0, 0.1)], 3, 1.5)
