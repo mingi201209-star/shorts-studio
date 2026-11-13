@@ -3,7 +3,7 @@ name: Runaway truck ramp production (full render + real audio + QA)
 # real narration capture (edge-tts, en-US-AndrewNeural), the full 960-frame
 # cinematic render (32 shards of 30 frames, 32 samples, 1080x1920), final
 # assembly and the real technical QA. Opened after the full-length preflight
-# passed every gate (run 43452812617, attempt 2). content_screen_match is a
+# passed every gate (round 1: run 43452812617 attempt 2; round 2: run 43514943060 attempt 2). content_screen_match is a
 # simulation-state telemetry check, not image understanding. No upload.
 on:
   push:
@@ -82,7 +82,6 @@ jobs:
           retention-days: 14
 
   native:
-    if: false
     # Gate closed again: combined round 3+4 production run 43314073897 completed with every
     # gate PASS (preflight 43311238590). Re-open only after a new preflight PASS.
     runs-on: ubuntu-24.04
@@ -131,7 +130,6 @@ jobs:
           retention-days: 14
 
   final:
-    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
