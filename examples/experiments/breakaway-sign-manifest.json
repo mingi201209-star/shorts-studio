@@ -65,7 +65,7 @@
       "start": 311,
       "end": 470,
       "visual_proof": "Extreme slow motion (0.008x) at the foot of the breakaway post: the bumper arrives, the upper plate slides off the lower plate, the three bolts are thrown clear and the foot of the post is carried forward.",
-      "narration_en": "The second post was built to let go because its base slips apart the instant the bumper hits.",
+      "narration_en": "The second post was built to let go because its base simply slips apart the very instant the bumper hits.",
       "must_show_while_spoken": [
         {
           "event": "base_separating",
@@ -95,7 +95,7 @@
       "start": 631,
       "end": 800,
       "visual_proof": "Exploded view (diagram device), placed after the action: the post is lifted off its base and set back so the two plates and the three bolts between them can be seen. No car in this shot.",
-      "narration_en": "Its two plates are held by bolts in open notches that resist the wind but not a moving car.",
+      "narration_en": "Its two plates are held together by bolts in open notches that resist the wind but not a moving car.",
       "must_show_while_spoken": [
         {
           "event": "slip_base_exploded_visible",

@@ -58,6 +58,10 @@ CURATED: dict[str, tuple[str, ...]] = {
         "Two identical cars", "hit the same kind of", "post at the same speed", "but only one", "of them stops."),
     "So the signs along fast roads and highways stand on bases like this, quietly waiting to let go.": (
         "So the signs along", "fast roads and highways", "stand on bases", "like this, quietly", "waiting to let go."),
+    "The second post was built to let go because its base simply slips apart the very instant the bumper hits.": (
+        "The second post", "was built to let go", "because its base", "simply slips apart", "the very instant", "the bumper hits."),
+    "Its two plates are held together by bolts in open notches that resist the wind but not a moving car.": (
+        "Its two plates", "are held together", "by bolts in open notches", "that resist the wind", "but not a moving car."),
 }
 
 
