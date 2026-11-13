@@ -667,6 +667,10 @@ def main():
         if sid != "bed_cutaway":
             events["gravel_spray"] = (airborne_n >= 12, step_pts, 4, 8.0)
             events["gravel_cloud"] = (airborne_n >= 120, step_pts, 4, 8.0)
+            # a thick dust cloud builds only as the tyres keep digging (emission x lifetime), a second, later onset
+            dust_up = [q for q in dust_positions if q[2] > 0.12]
+            dust_up_near = sorted(dust_up, key=lambda q: (Vector(q) - aim).length)[:8] if (aim is not None and dust_up) else []
+            events["dust_cloud_thick"] = (len(dust_up) >= 3000, dust_up_near, 4, 6.0)
             wheel_pts = [world((wx, ay, 0.45)) for ay in motion.AXLES_Y for wx in motion.WHEEL_X]
             body_pts = [world((sx * 1.28, yy, 2.4)) for sx in (-1, 1) for yy in (-3.0, -6.0, -9.0, -12.0)]
             events["tyres_digging"] = (in_bed and sink_m > 0.10 and sid != "ramp_beside_road", wheel_pts, 2, 15.0)

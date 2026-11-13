@@ -141,7 +141,8 @@
     "counted_events": [
       "gravel_spray",
       "tyres_digging",
-      "gravel_cloud"
+      "gravel_cloud",
+      "dust_cloud_thick"
     ],
     "note": "Counts physical events becoming true and visible, not cuts or camera moves."
   },
