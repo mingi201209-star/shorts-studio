@@ -461,8 +461,10 @@ def main():
             if s < 1.4:
                 set_camera(cam, (-3.0, lerp(-13.0, -12.0, s / 1.4), 2.6), (5.5, 6.0, 2.2))
             elif s < 2.8:
-                set_camera(cam, (6.0 + 1.6, lerp(0.2, 0.9, (s - 1.4) / 1.4), 0.5), (6.0, 2.0, 0.9))
-                lens = 30
+                # close on the yellow sign face: a large saturated area, a real change of picture
+                u = (s - 1.4) / 1.4
+                set_camera(cam, (lerp(6.5, 6.2, u), lerp(0.55, 0.85, u), 3.35), (6.0, 2.0, motion.PANEL_HEIGHT))
+                lens = 32
             else:
                 set_camera(cam, (lerp(0.0, 1.0, (s - 2.8) / 1.4), -22.0, 7.5), (4.0, 6.0, 1.5))
                 lens = 34

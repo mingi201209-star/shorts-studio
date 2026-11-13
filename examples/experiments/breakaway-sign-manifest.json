@@ -17,7 +17,7 @@
     {
       "id": "two_posts_hook",
       "start": 1,
-      "end": 150,
+      "end": 99,
       "visual_proof": "Slow motion at 0.12x, seen from ahead: two cars hit two sign posts at the same instant; the blue car stops at its fixed post while the red car drives on as its post is released. For the first 1.5 s nothing else is on screen (no read-outs); then the two speed read-outs appear, then the view moves to the side and behind.",
       "narration_en": "Why are some road signs designed to break the moment a car hits them?",
       "must_show_while_spoken": [
@@ -35,14 +35,14 @@
         },
         {
           "event": "speed_readouts_visible",
-          "min_seconds": 2.0
+          "min_seconds": 1.2
         }
       ]
     },
     {
       "id": "rigid_vs_breakaway",
-      "start": 151,
-      "end": 310,
+      "start": 100,
+      "end": 251,
       "visual_proof": "Both lanes again at 0.12x from behind and then from the side: the blue car's read-out falls to 0 within the ASSUMED 0.8 m deceleration distance of a fixed post (stated on screen); the red car's read-out barely moves.",
       "narration_en": "Two identical cars hit the same kind of post at the same speed but only one of them stops.",
       "must_show_while_spoken": [
@@ -62,8 +62,8 @@
     },
     {
       "id": "base_lets_go",
-      "start": 311,
-      "end": 470,
+      "start": 252,
+      "end": 440,
       "visual_proof": "Extreme slow motion (0.008x) at the foot of the breakaway post: the bumper arrives, the upper plate slides off the lower plate, the three bolts are thrown clear and the foot of the post is carried forward.",
       "narration_en": "The second post was built to let go because its base simply slips apart the very instant the bumper hits.",
       "must_show_while_spoken": [
@@ -75,8 +75,8 @@
     },
     {
       "id": "post_over_roof",
-      "start": 471,
-      "end": 630,
+      "start": 441,
+      "end": 606,
       "visual_proof": "Side view at 0.14x: struck low, the freed post turns foot-first up and over the red car and comes down behind it. Translucent copies of the post every 0.06 s (stroboscopic marks, a diagram device) trace the arc.",
       "narration_en": "Hit low, the freed post spins up and over the roof and lands on the road behind the car.",
       "must_show_while_spoken": [
@@ -92,8 +92,8 @@
     },
     {
       "id": "slip_base_exploded",
-      "start": 631,
-      "end": 800,
+      "start": 607,
+      "end": 778,
       "visual_proof": "Exploded view (diagram device), placed after the action: the post is lifted off its base and set back so the two plates and the three bolts between them can be seen. No car in this shot.",
       "narration_en": "Its two plates are held together by bolts in open notches that resist the wind but not a moving car.",
       "must_show_while_spoken": [
@@ -105,7 +105,7 @@
     },
     {
       "id": "signs_stand_ready",
-      "start": 801,
+      "start": 779,
       "end": 960,
       "visual_proof": "Three signs on slip bases along a roadside while a car passes; the last two seconds return to the opening camera with both cars arriving at the posts again, ending one frame before the film's first frame so the Short loops.",
       "narration_en": "So the signs along fast roads and highways stand on bases like this, quietly waiting to let go.",
