@@ -93,3 +93,75 @@ def audit_energy(states: list[dict]) -> dict:
         work += resistance(prev_x, GRAVEL_C) * G * MASS * (s["x"] - prev_x)
         prev_x = s["x"]
     return {"ke_lost_J": ke0 - ke1, "work_J": work, "ratio": work / (ke0 - ke1)}
+
+
+# --------------------------------------------------------------- gravel spray
+import random  # noqa: E402
+
+WHEEL_R = 0.5
+AXLES_Y = (-1.4, -6.2, -7.5, -12.0, -13.3)    # axle positions behind the nose (m), from the truck model in the renderer
+WHEEL_X = (-1.05, 1.05)
+SINK_MAX = 0.16                                # tyre sink at full depth (m); drawn, not measured
+GRAINS_PER_WHEEL_PER_S = 36.0
+
+
+def sink(distance: float) -> float:
+    """Tyre sink (m): zero on pavement, SINK_MAX once resistance is at full depth."""
+    return SINK_MAX * min(max(distance / RAMP_IN, 0.0), 1.0)
+
+
+def build_gravel(states: list[dict], seed: int = 7) -> list[dict]:
+    """Stones kicked up by the tyres. A stone is launched from the leading edge
+    of a tyre that is in the bed, at a fraction of the truck's speed forward
+    (the tyre pushes the stones it digs into), a few m/s sideways and up, then
+    flies ballistically and lies where it lands. Emission is proportional to
+    speed times sink, so it fades as the truck stops. Pure bookkeeping for the
+    picture; not a granular-flow simulation."""
+    rng = random.Random(seed)
+    grains = []
+    carry = {(a, s): 0.0 for a in range(len(AXLES_Y)) for s in range(2)}
+    for i, st in enumerate(states):
+        t = i / FPS
+        s = sink(st["x"])
+        if s <= 0.0 or st["v"] <= 0.0:
+            continue
+        for a, ay in enumerate(AXLES_Y):
+            for side, wx in enumerate(WHEEL_X):
+                carry[(a, side)] += GRAINS_PER_WHEEL_PER_S / FPS * (st["v"] / SPEED0) * (s / SINK_MAX)
+                while carry[(a, side)] >= 1.0:
+                    carry[(a, side)] -= 1.0
+                    sx = 1 if wx > 0 else -1
+                    grains.append({
+                        "t0": t + rng.random() / FPS,
+                        "p0": (wx + sx * rng.uniform(0.0, 0.25), st["x"] + ay + WHEEL_R * 0.6, 0.05),
+                        "v0": (sx * rng.uniform(0.8, 3.4), st["v"] * rng.uniform(0.25, 0.7) + rng.uniform(-0.5, 0.5),
+                               rng.uniform(1.5, 4.8) * (0.5 + st["v"] / SPEED0)),
+                        "r": rng.uniform(0.012, 0.03)})
+    return grains
+
+
+def grain_position(g: dict, t: float) -> tuple[float, float, float] | None:
+    """Position at film-sim time t, None before launch. Lands and stays at rest."""
+    tau = t - g["t0"]
+    if tau < 0.0:
+        return None
+    x = g["p0"][0] + g["v0"][0] * tau
+    y = g["p0"][1] + g["v0"][1] * tau
+    z = g["p0"][2] + g["v0"][2] * tau - 0.5 * G * tau * tau
+    if z <= g["r"]:
+        # find landing time, hold position there
+        a, b, c = -0.5 * G, g["v0"][2], g["p0"][2] - g["r"]
+        tl = (-b - (b * b - 4 * a * c) ** 0.5) / (2 * a)
+        x = g["p0"][0] + g["v0"][0] * tl
+        y = g["p0"][1] + g["v0"][1] * tl
+        z = g["r"]
+    return (x, y, z)
+
+
+def airborne(grains: list[dict], t: float) -> int:
+    n = 0
+    for g in grains:
+        tau = t - g["t0"]
+        if 0.0 <= tau and g["p0"][2] + g["v0"][2] * tau - 0.5 * G * tau * tau > g["r"] + 0.02:
+            n += 1
+    return n

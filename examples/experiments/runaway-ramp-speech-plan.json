@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "runaway-truck-ramp",
+      "beats": [
+        {
+          "narration_en": "This truck has lost its brakes, and it is about to plow into a bed of loose gravel.",
+          "start": 0,
+          "end": 5.5
+        },
+        {
+          "narration_en": "Every wheel sinks into the stones, and digging through them drains the truck's speed.",
+          "start": 5.5,
+          "end": 11.0
+        },
+        {
+          "narration_en": "The bed is just a thick layer of round stones, piled deep and left loose.",
+          "start": 11.0,
+          "end": 15.5
+        },
+        {
+          "narration_en": "Loose gravel drags at about a quarter of the truck's weight, twenty-five times more than pavement.",
+          "start": 15.5,
+          "end": 20.5
+        },
+        {
+          "narration_en": "On pavement this truck would coast over three kilometers; the gravel stops it in about one hundred thirty meters.",
+          "start": 20.5,
+          "end": 26.5
+        },
+        {
+          "narration_en": "That is why steep mountain roads have ramps like this, waiting beside the highway for the next runaway truck.",
+          "start": 26.5,
+          "end": 32.0
+        }
+      ]
+    }
+  ]
+}
