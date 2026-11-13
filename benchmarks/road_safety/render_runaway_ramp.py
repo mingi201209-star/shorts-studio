@@ -457,7 +457,7 @@ def main():
                 ob.hide_render = ob.hide_viewport = False
             pose(truck, wheels, x, sink_m, x / motion.WHEEL_R, pitch)
         # second truck (closing shot, on the highway)
-        show_other = sid == "ramp_beside_road"
+        show_other = sid == "ramp_beside_road" and not loop_back
         for ob in (other, *other.children_recursive):
             ob.hide_render = ob.hide_viewport = not show_other
         if show_other:
@@ -514,36 +514,62 @@ def main():
             cc.AIM["target"] = Vector(tgt)
 
         nose_y = x
+
+        def seg(*edges):
+            return sum(1 for e in edges if t >= e)
+
+        def hook_camera(ny):
+            """The opening view: a low camera beside the bed entrance whose aim rides the near
+            front tyre and then drifts back along the truck. The closing shot returns to it."""
+            follow = min(1.0, max(0.0, (ny - 5.0) / 10.0))
+            set_cam((4.1, max(5.0, ny - 8.0), 1.0), (0.6, lerp(ny - 1.4, ny - 7.0, follow), 0.9), 24)
+
         if sid == "gravel_hook":
-            # fixed low camera beside the bed entrance; the aim point rides the near front tyre,
-            # then drifts back along the truck so the dust and stones it throws stay in frame
-            follow = min(1.0, max(0.0, (nose_y - 5.0) / 10.0))
-            cam_y = max(5.0, nose_y - 8.0)
-            aim_y = lerp(nose_y - 1.4, nose_y - 7.0, follow)
-            set_cam((4.1, cam_y, 1.0), (0.6, aim_y, 0.9), 24)
+            k = seg(0.42, 0.72)
+            if k == 0:
+                hook_camera(nose_y)
+            elif k == 1:      # a dolly ahead of the truck, looking back at its nose and tyres
+                set_cam((-3.2, nose_y + 11.0, 0.7), (0.3, nose_y - 3.0, 1.3), 28)
+            else:             # side-on to the rear wheels, stones and dust thrown toward the lens
+                set_cam((4.1, nose_y - 9.0, 1.0), (1.05, nose_y - 9.0, 0.6), 28)
         elif sid == "tyres_sink":
-            set_cam((3.4, nose_y - 6.9 + lerp(1.4, -1.0, t), 0.8), (1.05, nose_y - 6.9, 0.45), 30)
+            k = seg(0.40, 0.72)
+            if k == 0:
+                set_cam((3.4, nose_y - 6.9 + lerp(1.4, -1.0, t), 0.8), (1.05, nose_y - 6.9, 0.45), 30)
+            elif k == 1:      # low, ahead of the front tyre
+                set_cam((1.9, nose_y + 3.6, 0.45), (1.05, nose_y - 1.4, 0.45), 30)
+            else:             # raised over the rear tandem
+                set_cam((3.3, nose_y - 11.0, 3.6), (1.0, nose_y - 12.2, 0.2), 30)
         elif sid == "bed_cutaway":
             ang = math.radians(lerp(-35.0, 30.0, t))
             r = lerp(4.6, 3.2, t)
             set_cam((math.sin(ang) * r, CUT_Y + 0.8 - math.cos(ang) * r, lerp(1.7, 1.0, t)), (0.0, CUT_Y + 0.3, 0.35), 32)
         elif sid == "drag_numbers":
-            set_cam((3.1, nose_y - 15.0 + lerp(0.0, 3.0, t), 3.0), (0.0, nose_y - 4.0, 0.9), 32)
+            k = seg(0.36, 0.70)
+            if k == 0:
+                set_cam((3.1, nose_y - 15.0 + lerp(0.0, 3.0, t), 3.0), (0.0, nose_y - 4.0, 0.9), 32)
+            elif k == 1:
+                set_cam((-3.4, nose_y + 10.0, 0.9), (0.0, nose_y - 2.0, 1.3), 26)
+            else:
+                set_cam((3.8, nose_y - 8.0, 5.5), (0.5, nose_y - 8.0, 0.5), 30)
         elif sid == "stop_distance":
-            h = lerp(50.0, 135.0, t)
-            set_cam((0.0, lerp(stop_x - 10.0, 72.0, t), h), (0.0, lerp(stop_x - 10.0, 72.0, t) + 0.01, 0.0), 32)
+            k = seg(0.30, 0.78)
+            if k == 0:
+                set_cam((0.0, stop_x - 12.0, 52.0), (0.0, stop_x - 11.99, 0.0), 32)
+            elif k == 1:
+                set_cam((0.0, 72.0, lerp(95.0, 108.0, t)), (0.0, 72.01, 0.0), 32)
+            else:
+                set_cam((9.0, stop_x - 24.0, 3.5), (0.0, stop_x - 8.0, 0.8), 28)
         elif sid == "ramp_beside_road":
             local = (frame - shot["start"]) / fps
             total = (shot["end"] - shot["start"]) / fps
             if loop_back:
-                set_cam((-5.5, -9.0, 1.1), (0.0, 1.0, 0.9), 30)
-            elif local < 2.2:
-                set_cam((-30.0, lerp(-35.0, -22.0, local / 2.2), 6.0), (-6.0, 8.0, 1.0), 28)
-            elif local < total - 2.0 - 1.9:
-                u = (local - 2.2) / max(0.1, total - 4.1 - 2.2 + 2.2)
-                set_cam((lerp(-9.0, -7.0, u), 22.0, lerp(14.0, 18.0, u)), (-5.0, lerp(25.0, 40.0, u), 0.0), 30)
+                hook_camera(nose_y)
+            elif local < 2.0:
+                set_cam((-28.0, lerp(-32.0, -22.0, local / 2.0), 6.0), (-6.0, 8.0, 1.0), 28)
             else:
-                set_cam((-26.0, 5.0, 3.0), (-5.0, 18.0, 1.5), 30)
+                u = (local - 2.0) / max(0.1, total - 4.0)
+                set_cam((lerp(-9.0, -7.0, u), 22.0, lerp(14.0, 18.0, u)), (-5.0, lerp(25.0, 40.0, u), 0.0), 30)
         if look == cinematic.LOOK_CINEMATIC and "target" in cc.AIM:
             cinematic.apply_dof(cam, (cc.AIM["target"] - cam.location).length, fstop=2.4 if sid != "stop_distance" else 11.0)
 
@@ -586,25 +612,26 @@ def main():
         if sid != "bed_cutaway":
             events["gravel_spray"] = (airborne_n >= 12, step_pts, 4, 8.0)
             events["gravel_cloud"] = (airborne_n >= 120, step_pts, 4, 8.0)
-            events["tyres_digging"] = (in_bed and sink_m > 0.10 and sid != "ramp_beside_road",
-                                       [world((wx, ay, 0.1)) for ay in motion.AXLES_Y[:3] for wx in motion.WHEEL_X], 2, 20.0)
+            wheel_pts = [world((wx, ay, 0.45)) for ay in motion.AXLES_Y for wx in motion.WHEEL_X]
+            body_pts = [world((sx * 1.28, yy, 2.4)) for sx in (-1, 1) for yy in (-3.0, -6.0, -9.0, -12.0)]
+            events["tyres_digging"] = (in_bed and sink_m > 0.10 and sid != "ramp_beside_road", wheel_pts, 2, 15.0)
             events["truck_decelerating"] = (in_bed and a > 1.5 and v > 1.0 and sid != "ramp_beside_road",
-                                            [world((0, -0.2, 1.6)), world((0, -3.0, 3.4)), world((-1.25, -1.6, 2.2)),
-                                             world((1.25, -1.6, 2.2)), world((0, -8.0, 4.0))], 1, 20.0)
+                                            wheel_pts + body_pts, 2, 15.0)
             if hud_on:
                 events["speed_readout_visible"] = (True, [], 0, 0.0)
             if sid == "drag_numbers":
                 events["drag_label_visible"] = (True, [], 0, 0.0)
             if sid == "stop_distance":
-                events["truck_stopped"] = (v <= motion.STOPPED_SPEED, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0))], 1, 4.0)
-                events["stop_bars_visible"] = (True, [(2.6, stop_x, 0.1), (2.6, stop_x * 0.5, 0.1), (-2.6, 60.0, 0.1), (-2.6, 140.0, 0.1)], 3, 4.0)
+                events["truck_stopped"] = (v <= motion.STOPPED_SPEED, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0)), world((0, -12.0, 2.5))], 1, 3.0)
+                events["stop_bars_visible"] = (True, [(2.6, stop_x, 0.1), (2.6, stop_x - 20.0, 0.1), (2.6, stop_x - 40.0, 0.1),
+                                                  (-2.6, stop_x - 20.0, 0.1), (-2.6, stop_x - 40.0, 0.1)], 3, 1.5)
         else:
             events["bed_cutaway_visible"] = (True, [(0.0, CUT_Y, SLAB_D * 0.5), (0.9, CUT_Y, SLAB_D * 0.3), (-0.9, CUT_Y, SLAB_D * 0.7),
                                                     (0.3, CUT_Y + 0.8, SLAB_D + 0.4)], 3, 25.0)
         if sid == "ramp_beside_road":
-            events["ramp_beside_road_visible"] = (not loop_back, [(0.0, 10.0, 0.1), (-HIGHWAY_X * 0 - 4.0, 30.0, 0.1), (HIGHWAY_X, 30.0, 0.1),
-                                                                    (HIGHWAY_X + 2.0, ty, 2.0)], 3, 6.0)
-            events["truck_arriving_again"] = (loop_back and x < -2.0, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0))], 1, 20.0)
+            events["ramp_beside_road_visible"] = (not loop_back, [(0.0, 5.0, 0.05), (0.0, 40.0, 0.05), (HIGHWAY_X, 20.0, 0.05),
+                                                                    (HIGHWAY_X + 2.0, ty, 1.5)], 3, 2.0)
+            events["truck_arriving_again"] = (loop_back and x < -2.0, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0))], 1, 3.0)
         record = {"frame": frame, "shot_id": sid, "sim_t": round(sim_t, 4), "speed_mps": round(v, 3),
                   "nose_m": round(x, 3), "events": {}}
         for name, spec in events.items():

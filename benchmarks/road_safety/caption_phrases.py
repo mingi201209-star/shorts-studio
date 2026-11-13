@@ -22,6 +22,18 @@ def _length(tokens: list[str]) -> int:
 #: Each phrase is a run of whole words within the 31-character cue limit and
 #: the phrases of a sentence concatenate back to exactly that sentence.
 CURATED: dict[str, tuple[str, ...]] = {
+    "This truck has lost its brakes, and it is about to plow into a bed of loose gravel.": (
+        "This truck has lost", "its brakes, and it is", "about to plow into", "a bed of loose gravel."),
+    "Every wheel sinks into the stones, and digging through them drains the truck's speed.": (
+        "Every wheel sinks into", "the stones, and digging", "through them drains", "the truck's speed."),
+    "The bed is just a thick layer of round stones, piled deep and left loose.": (
+        "The bed is just a", "thick layer of round", "stones, piled deep", "and left loose."),
+    "Loose gravel drags at about a quarter of the truck's weight, twenty-five times more than pavement.": (
+        "Loose gravel drags at", "about a quarter of", "the truck's weight,", "twenty-five times", "more than pavement."),
+    "On pavement this truck would coast over three kilometers; the gravel stops it in about one hundred thirty meters.": (
+        "On pavement this truck", "would coast over three", "kilometers; the gravel", "stops it in about one", "hundred thirty meters."),
+    "That is why steep mountain roads have ramps like this, waiting beside the highway for the next runaway truck.": (
+        "That is why steep", "mountain roads have", "ramps like this,", "waiting beside the", "highway for the next", "runaway truck."),
     "This car hits a wall of plastic barrels at highway speed, and every single one bursts into flying sand.": (
         "This car hits a wall", "of plastic barrels", "at highway speed,", "and every single one",
         "bursts into flying sand."),
