@@ -1,0 +1,147 @@
+name: Runaway truck ramp preflight (full length, low resolution, every QA gate)
+# Renders ALL 960 frames at preview quality (360x640, 7 samples) in eight
+# parallel shards, assembles them with the real captured narration and runs
+# every gate the production assembly runs -- duplicate/black frames, visual
+# activity, black opening, captions, silence, loudness -- collecting all
+# failures into one RAMP_PREFLIGHT_REPORT instead of stopping at the
+# first. Costs minutes; a production run costs one to two hours and used to
+# be the only place these failures showed up.
+#
+# What it cannot promise: preview frames are noisier and smaller than
+# production frames, so a pass here is strong evidence, not proof, for the
+# pixel-exact duplicate check. It never produces a deliverable.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/runaway-ramp-preflight.yml
+      - examples/experiments/runaway-ramp-speech-plan.json
+      - examples/experiments/runaway-ramp-manifest.json
+      - benchmarks/road_safety/render_runaway_ramp.py
+      - benchmarks/road_safety/cinematic.py
+      - benchmarks/road_safety/render_crash_cushion.py
+      - benchmarks/road_safety/render_jersey_barrier.py
+      - benchmarks/road_safety/runaway_ramp_motion.py
+      - benchmarks/road_safety/runaway_ramp_gates.py
+      - benchmarks/road_safety/assemble_runaway_ramp.py
+      - benchmarks/road_safety/curious_mechanics_audio.py
+permissions:
+  contents: read
+  actions: read
+env:
+  BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
+jobs:
+  audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install edge-tts Pillow pydantic
+      - name: Capture narration and build narration.wav + captions
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
+            --plan examples/experiments/runaway-ramp-speech-plan.json \
+            --target-seconds 32.0 --out "$RUNNER_TEMP/speech"
+          PYTHONPATH="$PWD" python -c "
+          from pathlib import Path
+          from benchmarks.road_safety.curious_mechanics_audio import build
+          from benchmarks.road_safety.caption_phrases import phrase_groups
+          build(Path('$RUNNER_TEMP/speech/runaway-truck-ramp'), Path('$RUNNER_TEMP/audio'), target_seconds=32.0, grouper=phrase_groups)
+          "
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runaway-ramp-preflight-audio
+          path: ${{ runner.temp }}/audio/
+          if-no-files-found: error
+          retention-days: 3
+
+  frames:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        start: [1, 121, 241, 361, 481, 601, 721, 841]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install hash-pinned Blender 5.0.1
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Download pinned CC0 car scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render 120 contiguous frames at preview quality
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native"
+          end=$((${{ matrix.start }} + 119))
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
+            -P benchmarks/road_safety/render_runaway_ramp.py -- \
+            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
+            --manifest examples/experiments/runaway-ramp-manifest.json \
+            --start ${{ matrix.start }} --end "$end" --preview \
+            --out "$RUNNER_TEMP/native" > "$RUNNER_TEMP/native/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/native/render.log"; exit 1; }
+          grep -E "RAMP_(SHARD_DONE|DUPLICATE_SOURCE_FRAMES)" "$RUNNER_TEMP/native/render.log"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: runaway-ramp-preflight-frames-${{ matrix.start }}
+          path: ${{ runner.temp }}/native/
+          if-no-files-found: error
+          retention-days: 3
+
+  report:
+    needs: [audio, frames]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Retrieve preview shards and audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
+          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'runaway-ramp-preflight-frames-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 8
+          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name runaway-ramp-preflight-audio --dir "$RUNNER_TEMP/audio"
+      - name: Assemble and run every QA gate, reporting all failures
+        id: gates
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/road_safety/assemble_runaway_ramp.py \
+            --native "$RUNNER_TEMP/native" --audio "$RUNNER_TEMP/audio" \
+            --manifest examples/experiments/runaway-ramp-manifest.json \
+            --out "$RUNNER_TEMP/final" --preflight
+      - name: Contact sheet (one frame per second) as base64
+        run: |
+          set -euo pipefail
+          ffmpeg -v error -i "$RUNNER_TEMP/final/runaway-ramp-preflight.mp4" \
+            -vf "fps=1,scale=180:320,tile=8x4" -frames:v 1 -q:v 4 "$RUNNER_TEMP/sheet.jpg"
+          echo "SHEET_B64_START"
+          base64 -w0 "$RUNNER_TEMP/sheet.jpg"
+          echo ""
+          echo "SHEET_B64_END"
+      - name: Fail the run if any gate failed
+        if: steps.gates.outcome != 'success'
+        run: exit 1

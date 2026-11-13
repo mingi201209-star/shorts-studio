@@ -132,6 +132,7 @@ def main():
     summary["paved_stop_distance_m"] = round(motion.stop_distance(motion.PAVED_C), 0)
     summary["energy_ratio"] = round(motion.audit_energy(states)["ratio"], 4)
     gravel = motion.build_gravel(states)
+    dust = motion.build_dust(states)
     summary["gravel_grains"] = len(gravel)
     stop_x = states[-1]["x"]
     print("RAMP_MOTION_SUMMARY " + json.dumps(summary), flush=True)
@@ -162,8 +163,8 @@ def main():
     asphalt = material("Asphalt", (0.07, 0.07, 0.075), rough=0.9)
     base.asphalt_grain(asphalt)
     line_mat = material("Road line", (0.8, 0.78, 0.72), rough=0.6)
-    earth = material("Hillside", (0.30, 0.25, 0.18), rough=1.0)
-    forest = material("Forest", (0.10, 0.16, 0.09), rough=1.0)
+    earth = material("Hillside", (0.17, 0.15, 0.085), rough=1.0)
+    forest = material("Forest", (0.06, 0.12, 0.06), rough=1.0)
     gravel_slab = material("Gravel bed", (0.55, 0.50, 0.42), rough=0.95)
     gnodes = gravel_slab.node_tree.nodes
     noise = gnodes.new("ShaderNodeTexNoise")
@@ -174,8 +175,8 @@ def main():
     bump.inputs["Strength"].default_value = 0.9
     bump.inputs["Distance"].default_value = 0.03
     ramp = gnodes.new("ShaderNodeValToRGB")
-    ramp.color_ramp.elements[0].color = (0.30, 0.27, 0.23, 1)
-    ramp.color_ramp.elements[1].color = (0.72, 0.66, 0.55, 1)
+    ramp.color_ramp.elements[0].color = (0.48, 0.38, 0.26, 1)
+    ramp.color_ramp.elements[1].color = (0.98, 0.80, 0.52, 1)
     gl = gravel_slab.node_tree.links
     gl.new(geo.outputs["Position"], noise.inputs["Vector"])
     gl.new(noise.outputs["Fac"], ramp.inputs["Fac"])
@@ -211,8 +212,8 @@ def main():
         cube(f"Edge L {y}", (-3.35, y + 2.5, 0.04), (0.12, 5.0, 0.01), line_mat)
         cube(f"Edge R {y}", (3.35, y + 2.5, 0.04), (0.12, 5.0, 0.01), line_mat)
     bed = cube("Gravel bed", (0, BED_Y1 / 2, -0.04), (2 * BED_HALF, BED_Y1, 0.1), gravel_slab)
-    for sx in (-1, 1):
-        cube(f"Berm {sx}", (sx * (BED_HALF + 0.9), BED_Y1 / 2, 0.35), (1.6, BED_Y1, 0.8), earth)
+    # a berm only on the far (left) side: a berm on the camera side hides the bed from low cameras
+    cube("Berm", (-(BED_HALF + 0.9), BED_Y1 / 2, 0.35), (1.6, BED_Y1, 0.8), earth)
     cube("Bed end berm", (0, BED_Y1 + 3.0, 1.0), (10.0, 6.0, 2.0), earth)
     ticks = []
     for m in range(0, int(BED_Y1) + 1, 10):
@@ -252,20 +253,39 @@ def main():
     sn = stone_mat.node_tree.nodes
     pinfo = sn.new("ShaderNodePointInfo")
     sramp = sn.new("ShaderNodeValToRGB")
-    sramp.color_ramp.elements[0].color = (0.28, 0.25, 0.21, 1)
-    sramp.color_ramp.elements[1].color = (0.80, 0.74, 0.62, 1)
+    sramp.color_ramp.elements[0].color = (0.50, 0.38, 0.24, 1)
+    sramp.color_ramp.elements[1].color = (1.0, 0.80, 0.50, 1)
     stone_mat.node_tree.links.new(pinfo.outputs["Random"], sramp.inputs["Fac"])
     stone_mat.node_tree.links.new(sramp.outputs["Color"], sn.get("Principled BSDF").inputs["Base Color"])
-    srng = random.Random(11)
-    static_pos = [(srng.uniform(-BED_HALF, BED_HALF), srng.uniform(0.0, 60.0), 0.0) for _ in range(16000)]
-    static_r = [srng.uniform(0.022, 0.05) for _ in static_pos]
-    static_pos = [(x, y, r * 0.6) for (x, y, _), r in zip(static_pos, static_r)]
-    static_ob, _ = point_cloud("Static stones", static_pos, static_r, stone_mat)
+    WINDOW_ROWS, STONES_PER_CELL = 44, 190          # 1 m rows along the bed, 7 cells across
+    CELLS_ACROSS = int(2 * BED_HALF)
+
+    def window_stones(first_row):
+        """Stones of a 44 m stretch of the bed starting at row `first_row`. Each 1 m cell
+        draws its stones from its own seed, so a stone stays where it is whichever
+        window it appears in."""
+        pos, radii = [], []
+        for row in range(first_row, first_row + WINDOW_ROWS):
+            for col in range(CELLS_ACROSS):
+                r = random.Random(row * 977 + col * 31 + 5)
+                for _ in range(STONES_PER_CELL):
+                    rad = r.uniform(0.014, 0.032)
+                    pos.append((-BED_HALF + col + r.random(), row + r.random(), rad * 0.6))
+                    radii.append(rad)
+        return pos, radii
+
+    static_pos, static_r = window_stones(0)
+    static_ob, static_mesh = point_cloud("Static stones", static_pos, static_r, stone_mat)
     static_ob.hide_viewport = True
+    window_state = {"row": 0}
+    srng = random.Random(11)
 
     grains_ob, grains_mesh = point_cloud("Flying stones", [(0, 0, -5)] * len(gravel), [0.02] * len(gravel), stone_mat)
     grains_mesh.attributes["grain_radius"].data.foreach_set("value", [g["r"] for g in gravel])
     grains_ob.hide_viewport = True
+    dust_mat = material("Dust", (0.74, 0.66, 0.50), rough=1.0)
+    dust_ob, dust_mesh = point_cloud("Dust", [(0, 0, -5)] * len(dust), [d["r"] for d in dust], dust_mat)
+    dust_ob.hide_viewport = True
 
     # ----- cutaway slice of the bed (shot 3) ------------------------------
     SLAB_D = 0.6
@@ -308,7 +328,7 @@ def main():
     bar_green = cube("Stop bar", (2.6, stop_x / 2, 0.06), (0.9, stop_x, 0.1), green)
     bar_orange = cube("Pavement bar", (-2.6, 450.0, 0.06), (0.9, 900.0, 0.1), orange)
     label_objs = [*flat_labels, stop_label, paved_label, bar_green, bar_orange]
-    cut_label = label("Cut label", "BED DEPTH ~0.6 m (DRAWN)", 0.16, tick_mat, (0.0, CUT_Y - 0.06, SLAB_D + 0.2), False)
+    cut_label = label("Cut label", "BED DEPTH ~0.6 m (DRAWN)", 0.12, tick_mat, (0.0, CUT_Y - 0.9, 0.12), False)
 
     # ----- HUD ------------------------------------------------------------
     hud_curve = bpy.data.curves.new("Speed read-out", "FONT")
@@ -354,11 +374,11 @@ def main():
 
     if look == cinematic.LOOK_CINEMATIC:
         sun_to = cinematic.sun_vector((-0.55, 0.8), 26.0)
-        cinematic.apply_sky(scene, sun_to, strength=0.22, dust=0.6)
-        key = sun("Low sun", cinematic.light_direction(sun_to), 2.4, 0.03)
+        cinematic.apply_sky(scene, sun_to, strength=0.14, dust=0.6)
+        key = sun("Low sun", cinematic.light_direction(sun_to), 3.6, 0.03)
         key.data.color = (1.0, 0.82, 0.62)
         scene.view_settings.view_transform = "Standard"
-        scene.view_settings.exposure = -1.2
+        scene.view_settings.exposure = -0.55
     else:
         sun("Sun", (0.45, -0.55, -0.7), 5.0, 0.2)
         sun("Fill", (0.2, 0.7, -0.6), 2.4, 0.6)
@@ -447,6 +467,13 @@ def main():
             for w in other_wheels:
                 w.rotation_euler = (-ty / motion.WHEEL_R, 0, 0)
 
+        want_row = int(max(0, min(BED_Y1 - WINDOW_ROWS, (x if sid != "stop_distance" else stop_x) - 28.0)))
+        if want_row != window_state["row"] and sid != "bed_cutaway":
+            pos_w, rad_w = window_stones(want_row)
+            static_mesh.vertices.foreach_set("co", [c for p in pos_w for c in p])
+            static_mesh.attributes["grain_radius"].data.foreach_set("value", rad_w)
+            static_mesh.update()
+            window_state["row"] = want_row
         # flying stones: positions at sim time (stones only exist for sim_t >= 0)
         grain_positions = []
         if sid in ("gravel_hook", "tyres_sink", "drag_numbers", "stop_distance") and sim_t > 0:
@@ -455,6 +482,16 @@ def main():
                 grain_positions.append(p if p is not None else (0.0, 0.0, -5.0))
         else:
             grain_positions = [(0.0, 0.0, -5.0)] * len(gravel)
+        dust_positions = []
+        if sid in ("gravel_hook", "tyres_sink", "drag_numbers", "stop_distance") and sim_t > 0:
+            for d in dust:
+                p = motion.grain_position(d, sim_t)
+                dust_positions.append(p if p is not None else (0.0, 0.0, -5.0))
+        else:
+            dust_positions = [(0.0, 0.0, -5.0)] * len(dust)
+        dust_mesh.vertices.foreach_set("co", [c for p in dust_positions for c in p])
+        dust_mesh.update()
+        dust_ob.hide_render = False
         flat = [c for p in grain_positions for c in p]
         grains_mesh.vertices.foreach_set("co", flat)
         grains_mesh.update()
@@ -478,21 +515,20 @@ def main():
 
         nose_y = x
         if sid == "gravel_hook":
-            if t < 0.5:
-                u = t / 0.5
-                set_cam((lerp(-5.5, -4.6, u), lerp(-9.0, -3.0, u), 1.1), (0.0, 1.0, 0.9), 30)
-            else:
-                u = (t - 0.5) / 0.5
-                set_cam((lerp(-4.2, 3.4, u), lerp(8.0, 5.5, u), 1.5), (0.0, nose_y - 3.0, 0.8), 32)
+            # fixed low camera beside the bed entrance; the aim point rides the near front tyre,
+            # then drifts back along the truck so the dust and stones it throws stay in frame
+            follow = min(1.0, max(0.0, (nose_y - 5.0) / 10.0))
+            cam_y = max(5.0, nose_y - 8.0)
+            aim_y = lerp(nose_y - 1.4, nose_y - 7.0, follow)
+            set_cam((4.1, cam_y, 1.0), (0.6, aim_y, 0.9), 24)
         elif sid == "tyres_sink":
-            u = t
-            set_cam((lerp(-3.2, -2.9, u), nose_y - 6.2 + 4.0, 0.55), (-1.05, nose_y - 6.2, 0.4), 34)
+            set_cam((3.4, nose_y - 6.9 + lerp(1.4, -1.0, t), 0.8), (1.05, nose_y - 6.9, 0.45), 30)
         elif sid == "bed_cutaway":
             ang = math.radians(lerp(-35.0, 30.0, t))
             r = lerp(4.6, 3.2, t)
             set_cam((math.sin(ang) * r, CUT_Y + 0.8 - math.cos(ang) * r, lerp(1.7, 1.0, t)), (0.0, CUT_Y + 0.3, 0.35), 32)
         elif sid == "drag_numbers":
-            set_cam((-5.2, nose_y - 24.0 + lerp(0.0, 4.0, t), 6.5), (0.0, nose_y - 5.0, 0.8), 30)
+            set_cam((3.1, nose_y - 15.0 + lerp(0.0, 3.0, t), 3.0), (0.0, nose_y - 4.0, 0.9), 32)
         elif sid == "stop_distance":
             h = lerp(50.0, 135.0, t)
             set_cam((0.0, lerp(stop_x - 10.0, 72.0, t), h), (0.0, lerp(stop_x - 10.0, 72.0, t) + 0.01, 0.0), 32)

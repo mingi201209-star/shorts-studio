@@ -141,21 +141,52 @@ def build_gravel(states: list[dict], seed: int = 7) -> list[dict]:
 
 
 def grain_position(g: dict, t: float) -> tuple[float, float, float] | None:
-    """Position at film-sim time t, None before launch. Lands and stays at rest."""
+    """Position at film-sim time t, None before launch (or after a dust mote's
+    life is over). Lands and stays at rest."""
     tau = t - g["t0"]
-    if tau < 0.0:
+    if tau < 0.0 or tau > g.get("life", 1e9):
         return None
+    gg = G * g.get("gscale", 1.0)
     x = g["p0"][0] + g["v0"][0] * tau
     y = g["p0"][1] + g["v0"][1] * tau
-    z = g["p0"][2] + g["v0"][2] * tau - 0.5 * G * tau * tau
+    z = g["p0"][2] + g["v0"][2] * tau - 0.5 * gg * tau * tau
     if z <= g["r"]:
-        # find landing time, hold position there
-        a, b, c = -0.5 * G, g["v0"][2], g["p0"][2] - g["r"]
+        a, b, c = -0.5 * gg, g["v0"][2], g["p0"][2] - g["r"]
         tl = (-b - (b * b - 4 * a * c) ** 0.5) / (2 * a)
         x = g["p0"][0] + g["v0"][0] * tl
         y = g["p0"][1] + g["v0"][1] * tl
         z = g["r"]
     return (x, y, z)
+
+
+DUST_PER_WHEEL_PER_S = 160.0
+
+
+def build_dust(states: list[dict], seed: int = 21) -> list[dict]:
+    """Fine dust lifted by the tyres: many tiny motes that sink slowly (reduced
+    gravity stands in for air drag) and disappear after a couple of seconds.
+    Picture only."""
+    rng = random.Random(seed)
+    motes = []
+    carry = {(a, s): 0.0 for a in range(len(AXLES_Y)) for s in range(2)}
+    for i, st in enumerate(states):
+        t = i / FPS
+        s = sink(st["x"])
+        if s <= 0.0 or st["v"] <= 0.0:
+            continue
+        for a, ay in enumerate(AXLES_Y):
+            for side, wx in enumerate(WHEEL_X):
+                carry[(a, side)] += DUST_PER_WHEEL_PER_S / FPS * (st["v"] / SPEED0) ** 0.5 * (s / SINK_MAX)
+                while carry[(a, side)] >= 1.0:
+                    carry[(a, side)] -= 1.0
+                    sx = 1 if wx > 0 else -1
+                    motes.append({
+                        "t0": t + rng.random() / FPS, "life": rng.uniform(1.2, 3.0), "gscale": 0.10,
+                        "p0": (wx + sx * rng.uniform(-0.1, 0.35), st["x"] + ay + rng.uniform(-0.4, 0.4), 0.08),
+                        "v0": (sx * rng.uniform(0.1, 2.2), st["v"] * rng.uniform(0.05, 0.35),
+                               rng.uniform(0.5, 2.4)),
+                        "r": rng.uniform(0.012, 0.03)})
+    return motes
 
 
 def airborne(grains: list[dict], t: float) -> int:
