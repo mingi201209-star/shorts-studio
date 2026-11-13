@@ -44,7 +44,7 @@
       "start": 151,
       "end": 310,
       "visual_proof": "Both lanes again at 0.12x from behind and then from the side: the blue car's read-out falls to 0 within the ASSUMED 0.8 m deceleration distance of a fixed post (stated on screen); the red car's read-out barely moves.",
-      "narration_en": "Two cars hit the same post at the same speed but only one of them stops.",
+      "narration_en": "Two identical cars hit the same kind of post at the same speed but only one of them stops.",
       "must_show_while_spoken": [
         {
           "event": "rigid_car_stopped",
@@ -108,7 +108,7 @@
       "start": 801,
       "end": 960,
       "visual_proof": "Three signs on slip bases along a roadside while a car passes; the last two seconds return to the opening camera with both cars arriving at the posts again, ending one frame before the film's first frame so the Short loops.",
-      "narration_en": "So the signs along fast roads stand on bases like this, waiting to let go.",
+      "narration_en": "So the signs along fast roads and highways stand on bases like this, quietly waiting to let go.",
       "must_show_while_spoken": [
         {
           "event": "signs_along_road",
