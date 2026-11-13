@@ -41,9 +41,17 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.road_safety import crash_cushion_motion as motion  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402  (car rig + helpers)
+from benchmarks.road_safety import cinematic  # noqa: E402
 
 PICTURE_BOTTOM_ROW = base.PICTURE_BOTTOM_ROW
-material, cube, lerp, set_camera, set_visible = base.material, base.cube, base.lerp, base.set_camera, base.set_visible
+material, cube, lerp, set_visible = base.material, base.cube, base.lerp, base.set_visible
+AIM = {}
+
+
+def set_camera(cam, location, target):
+    """base.set_camera, remembering the aim point so depth of field can focus on it."""
+    base.set_camera(cam, location, target)
+    AIM["target"] = Vector(target)
 
 CONCRETE_END_Y = 10.2
 CRUISE_X = 4.3
@@ -60,6 +68,8 @@ def arguments():
     p.add_argument("--preview", action="store_true")
     p.add_argument("--telemetry-only", action="store_true")
     p.add_argument("--step", type=int, default=1, help="render every Nth frame (local look-dev only)")
+    p.add_argument("--look", choices=("standard", "cinematic"), default=None,
+                   help="overrides the manifest's look (default: manifest, else standard)")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
 
@@ -154,6 +164,39 @@ def parent_to(child, parent):
     child.matrix_parent_inverse = parent.matrix_world.inverted()
 
 
+def composite_hud_pass(scene, cam, hud_objects, frame_path, out):
+    """Render the speed read-out alone on a transparent film (no depth of field,
+    low samples) and lay it over the finished frame. The read-out is closer to
+    the lens than the focus plane, so in the main pass it would be blurred."""
+    from PIL import Image
+    states = [(ob, ob.hide_render) for ob in bpy.data.objects]
+    samples, transparent, dof = scene.cycles.samples, scene.render.film_transparent, cam.data.dof.use_dof
+    colour_mode = scene.render.image_settings.color_mode
+    hud_path = out / f"_hud_{frame_path.stem}.png"
+    try:
+        for ob, _ in states:
+            ob.hide_render = ob not in hud_objects
+        for ob in hud_objects:
+            ob.hide_render = False
+        scene.cycles.samples = 12
+        scene.render.film_transparent = True
+        scene.render.image_settings.color_mode = "RGBA"
+        cam.data.dof.use_dof = False
+        scene.render.filepath = str(hud_path)
+        bpy.ops.render.render(write_still=True)
+    finally:
+        for ob, hidden in states:
+            ob.hide_render = hidden
+        scene.cycles.samples, scene.render.film_transparent = samples, transparent
+        scene.render.image_settings.color_mode = colour_mode
+        cam.data.dof.use_dof = dof
+        scene.render.filepath = str(frame_path)
+    base_image = Image.open(frame_path).convert("RGBA")
+    hud_image = Image.open(hud_path).convert("RGBA")
+    Image.alpha_composite(base_image, hud_image).convert("RGB").save(frame_path)
+    hud_path.unlink()
+
+
 def main():
     args = arguments()
     manifest = json.loads(args.manifest.read_text(encoding="utf8"))
@@ -179,12 +222,17 @@ def main():
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
+    look = args.look or manifest.get("look", cinematic.LOOK_STANDARD)
     scene.cycles.samples = 7 if args.preview else manifest["cycles_samples"]
+    if os.environ.get("CUSHION_DEV_SAMPLES"):          # local look-dev only; never set in CI
+        scene.cycles.samples = int(os.environ["CUSHION_DEV_SAMPLES"])
     scene.cycles.use_denoising = True
     scene.cycles.transparent_max_bounces = 16
     scene.render.threads_mode = "FIXED"
     scene.render.threads = 4
     width, height = (360, 640) if args.preview else tuple(manifest["resolution"])
+    if os.environ.get("CUSHION_DEV_RES"):               # local look-dev only; never set in CI
+        width, height = (int(v) for v in os.environ["CUSHION_DEV_RES"].split("x"))
     scene.render.resolution_x, scene.render.resolution_y = width, height
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = "PNG"
@@ -423,8 +471,19 @@ def main():
         ob.rotation_euler = Vector(direction).to_track_quat("-Z", "Y").to_euler()
         return ob
 
-    key = sun("Low dusk sun", (0.45, -0.55, -0.7), 5.0, 0.2)     # travels toward +x, -y: lights fronts facing the car
-    sun("Fill", (0.2, 0.7, -0.6), 2.4, 0.6)
+    if look == cinematic.LOOK_CINEMATIC:
+        sun_to = cinematic.sun_vector((-0.62, 0.75), 24.0)      # low, warm sun behind the camera side of the array
+        tune = {"sky": 0.22, "sun": 2.4, "exposure": -1.2, "dust": 0.6, "transform": "Standard"}   # chosen from a four-way look-dev comparison
+        if os.environ.get("CUSHION_DEV_LOOK"):            # local look-dev only
+            tune.update(json.loads(os.environ["CUSHION_DEV_LOOK"]))
+        cinematic.apply_sky(scene, sun_to, strength=tune["sky"], dust=tune["dust"])
+        key = sun("Low sun", cinematic.light_direction(sun_to), tune["sun"], 0.03)
+        key.data.color = (1.0, 0.82, 0.62)
+        scene.view_settings.view_transform = tune["transform"]
+        scene.view_settings.exposure = tune["exposure"]
+    else:
+        key = sun("Low dusk sun", (0.45, -0.55, -0.7), 5.0, 0.2)     # travels toward +x, -y: lights fronts facing the car
+        sun("Fill", (0.2, 0.7, -0.6), 2.4, 0.6)
 
     body_materials = {ob: [slot.material for slot in ob.material_slots]
                       for ob in car_body.children_recursive if ob.type == "MESH"}
@@ -651,9 +710,12 @@ def main():
             cam.data.lens = 28
         elif sid != "heavier_toward_back" and sid != "wall_vs_array":
             cam.data.lens = 32
+        if look == cinematic.LOOK_CINEMATIC and "target" in AIM:
+            cinematic.apply_dof(cam, (AIM["target"] - cam.location).length, fstop=2.4)
         hud_on = sid in ("barrels_burst_hook", "sand_takes_speed", "heavier_toward_back", "wall_vs_array")
-        for ob in (hud, hud2, hud_plate):
-            ob.hide_render = not hud_on
+        hud_objects = (hud, hud2, hud_plate)
+        for ob in hud_objects:
+            ob.hide_render = not hud_on or look == cinematic.LOOK_CINEMATIC   # cinematic: separate pass below
             ob.hide_viewport = True          # telemetry rays never see it
         if hud_on:
             hud_curve.body = f"SPEED {state.speed * 3.6:.0f} km/h"
@@ -746,6 +808,8 @@ def main():
         scene.render.filepath = str(frame_path)
         start_time = time.perf_counter()
         bpy.ops.render.render(write_still=True)
+        if look == cinematic.LOOK_CINEMATIC and hud_on:
+            composite_hud_pass(scene, cam, hud_objects, frame_path, out)
         elapsed = round(time.perf_counter() - start_time, 3)
         sha = hashlib.sha256(frame_path.read_bytes()).hexdigest()
         checksums.append({"frame": frame, "shot_id": record_sid, "sha256": sha, "render_seconds": elapsed})

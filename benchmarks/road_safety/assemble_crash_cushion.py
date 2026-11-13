@@ -123,6 +123,11 @@ def assemble(native: Path, audio: Path, manifest_path: Path, out: Path, prefligh
 
     final = out / ("sand-barrel-preflight.mp4" if preflight else "sand-barrel-cushion.mp4")
     video_filter = caption_filter(out)
+    if manifest.get("look") == "cinematic":
+        # Grade first; caption_filter then repaints the black band and burns
+        # the captions, so the grade never touches the YouTube-safe area.
+        from benchmarks.road_safety import cinematic
+        video_filter = f"{cinematic.GRADE_FILTER},{video_filter}"
     if preflight:
         width, height = manifest["resolution"]
         video_filter = f"scale={width}:{height}:flags=lanczos,{video_filter}"
