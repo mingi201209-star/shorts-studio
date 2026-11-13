@@ -396,7 +396,7 @@ def main():
             else:
                 bolt["ob"].location = bolt["home"] + Vector((0, 0, lift / 2.0))
                 bolt["ob"].rotation_euler = (0, 0, 0)
-        ghosts_on = sid == "post_over_roof"
+        ghosts_on = sid == "post_over_roof" and not (1.8 <= s < 3.4)   # off in the close-up, where they would hide the post itself
         shown_ghosts = []
         for tk, g_node in ghosts:
             on = ghosts_on and sim_now >= tk
@@ -436,11 +436,18 @@ def main():
             set_camera(cam, (bx + 0.95 * math.cos(a), -0.95 * math.sin(a), lerp(0.45, 0.32, t)), (bx, 0.0, 0.11))
             lens = 40
         elif sid == "post_over_roof":
-            if s < 3.0:
-                set_camera(cam, (bx + 9.0, lerp(2.2, 3.0, min(1.0, s / 3.0)), 1.9), (bx, lerp(2.2, 3.0, min(1.0, s / 3.0)), 1.9))
+            if s < 1.8:
+                u = s / 1.8
+                set_camera(cam, (bx + 9.0, lerp(1.6, 2.4, u), 1.9), (bx, lerp(1.6, 2.4, u), 1.9))
                 lens = 24
+            elif s < 3.4:
+                # low and close at the foot of the post: the bumper arrives, the post tips and leaves
+                u = (s - 1.8) / 1.6
+                set_camera(cam, (bx + 2.6, lerp(-0.4, 3.2, u), 0.7), (bx, lerp(0.6, 4.0, u), lerp(1.0, 1.6, u)))
+                lens = 28
             else:
-                set_camera(cam, (bx + 2.2, -7.5, 3.4), (bx, 4.0, 1.3))
+                u = min(1.0, (s - 3.4) / 2.2)
+                set_camera(cam, (lerp(bx + 2.2, bx - 3.0, u), -7.5, lerp(3.4, 2.4, u)), (bx, lerp(4.0, 7.0, u), 1.3))
                 lens = 30
         elif sid == "rigid_vs_breakaway":
             if s < 2.9:
