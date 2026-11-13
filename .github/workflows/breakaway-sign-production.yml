@@ -87,9 +87,9 @@ jobs:
           retention-days: 14
 
   native:
-    # Gate opened after preflight run 43382142649 reported SIGN_PREFLIGHT_REPORT status PASS
-    # on this renderer/manifest and its contact sheet was looked at. Close the native and final
-    # gates again before the next round of renderer edits.
+    # Gate closed again: production run 43383407475 completed with every gate PASS (preflight
+    # 43382142649). Re-open only after a new breakaway-sign preflight PASS.
+    if: false
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
@@ -136,6 +136,7 @@ jobs:
           retention-days: 14
 
   final:
+    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
