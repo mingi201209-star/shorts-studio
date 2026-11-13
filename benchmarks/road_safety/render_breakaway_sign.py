@@ -42,7 +42,7 @@ LANE = {"rigid": -2.1, "breakaway": 2.1}
 CRUISE_X = -6.2
 HOOK_SCALE = 0.12
 HOOK_LEAD = 1.0 / motion.SPEED          # the hook starts 1 m before contact
-LOOP_FROM = 4.2
+LOOP_FROM = 3.4
 GHOST_INTERVAL = 0.06                   # s between stroboscopic copies of the post
 
 
