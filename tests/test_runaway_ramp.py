@@ -77,3 +77,19 @@ def test_manifest_shots_match_the_renderer_and_cover_every_frame():
     for a, b in zip(man["shots"], man["shots"][1:]):
         assert b["start"] == a["end"] + 1
     assert man["look"] == "cinematic" and man.get("physically_calibrated", False) is False
+
+
+def test_cut_grains_land_on_the_slab_top_and_wheel_sinks_in():
+    s = m.cut_wheel_state(0.0)
+    e = m.cut_wheel_state(1.0)
+    assert s["sink"] == 0.0 and abs(e["sink"] - m.SINK_MAX) < 1e-9 and e["x"] > s["x"]
+    gr = m.build_cut_grains(4.9, 230.8)
+    assert 100 < len(gr) < 400
+    for g in gr[::10]:
+        x, y, z = m.grain_position(g, 9.0)
+        assert abs(z - (m.CUT_SLAB_D + g["r"])) < 1e-9
+
+
+def test_gravel_floor_default_unchanged():
+    g = {"t0": 0.0, "p0": (0, 0, 0.05), "v0": (0, 0, 2.0), "r": 0.02}
+    assert abs(m.grain_position(g, 5.0)[2] - 0.02) < 1e-9

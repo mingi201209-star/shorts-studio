@@ -102,7 +102,7 @@ WHEEL_R = 0.5
 AXLES_Y = (-1.4, -6.2, -7.5, -12.0, -13.3)    # axle positions behind the nose (m), from the truck model in the renderer
 WHEEL_X = (-1.05, 1.05)
 SINK_MAX = 0.16                                # tyre sink at full depth (m); drawn, not measured
-GRAINS_PER_WHEEL_PER_S = 36.0
+GRAINS_PER_WHEEL_PER_S = 70.0
 
 
 def sink(distance: float) -> float:
@@ -147,19 +147,20 @@ def grain_position(g: dict, t: float) -> tuple[float, float, float] | None:
     if tau < 0.0 or tau > g.get("life", 1e9):
         return None
     gg = G * g.get("gscale", 1.0)
+    floor = g.get("floor", 0.0)
     x = g["p0"][0] + g["v0"][0] * tau
     y = g["p0"][1] + g["v0"][1] * tau
     z = g["p0"][2] + g["v0"][2] * tau - 0.5 * gg * tau * tau
-    if z <= g["r"]:
-        a, b, c = -0.5 * gg, g["v0"][2], g["p0"][2] - g["r"]
+    if z <= floor + g["r"]:
+        a, b, c = -0.5 * gg, g["v0"][2], g["p0"][2] - g["r"] - floor
         tl = (-b - (b * b - 4 * a * c) ** 0.5) / (2 * a)
         x = g["p0"][0] + g["v0"][0] * tl
         y = g["p0"][1] + g["v0"][1] * tl
-        z = g["r"]
+        z = floor + g["r"]
     return (x, y, z)
 
 
-DUST_PER_WHEEL_PER_S = 160.0
+DUST_PER_WHEEL_PER_S = 260.0
 
 
 def build_dust(states: list[dict], seed: int = 21) -> list[dict]:
@@ -196,3 +197,32 @@ def airborne(grains: list[dict], t: float) -> int:
         if 0.0 <= tau and g["p0"][2] + g["v0"][2] * tau - 0.5 * G * tau * tau > g["r"] + 0.02:
             n += 1
     return n
+
+
+# ------------------------------------------------- cutaway: a wheel rolling over the bed
+CUT_SLAB_D = 0.6          # drawn bed depth (m)
+CUT_ROLL_X = (-0.9, 0.9)  # the wheel rolls across the slab between these x positions
+
+
+def cut_wheel_state(u: float) -> dict:
+    """Wheel on the cutaway slab at fraction u (0..1) of the shot: x position, sink, spin angle."""
+    x = CUT_ROLL_X[0] + (CUT_ROLL_X[1] - CUT_ROLL_X[0]) * u
+    sink_m = SINK_MAX * min(1.0, u / 0.15)
+    return {"x": x, "sink": sink_m, "z": CUT_SLAB_D + WHEEL_R - sink_m, "spin": (x - CUT_ROLL_X[0]) / WHEEL_R}
+
+
+def build_cut_grains(seconds: float, y_center: float, seed: int = 5, per_second: float = 70.0) -> list[dict]:
+    """Stones thrown ahead of the rolling wheel in the cutaway shot; they land on the slab top."""
+    rng = random.Random(seed)
+    out = []
+    n = int(seconds * per_second)
+    for i in range(n):
+        t0 = i / per_second + rng.random() / per_second
+        u = min(1.0, t0 / seconds)
+        w = cut_wheel_state(u)
+        if w["sink"] < 0.02:
+            continue
+        out.append({"t0": t0, "floor": CUT_SLAB_D, "r": rng.uniform(0.012, 0.03),
+                    "p0": (w["x"] + 0.28, y_center + rng.uniform(-0.15, 0.15), CUT_SLAB_D + 0.04),
+                    "v0": (rng.uniform(0.25, 1.1), rng.uniform(-0.9, 0.9), rng.uniform(0.7, 2.0))})
+    return out

@@ -16,7 +16,7 @@
       "id": "gravel_hook",
       "start": 1,
       "end": 140,
-      "visual_proof": "Slow motion from beside and just ahead of the truck: its front tyres leave the pavement, dig into the stones, and gravel sprays up while the truck slows.",
+      "visual_proof": "Slow motion from beside the bed entrance with a red BRAKES FAILED warning over the speed read-out for the first seconds: the truck arrives close at 90 km/h, its tyres dig into the stones and gravel and dust spray up; then a dolly ahead of the truck and a side-on view of the rear wheels.",
       "narration_en": "This truck has lost its brakes, and it is about to plow into a bed of loose gravel.",
       "must_show_while_spoken": [
         {
@@ -58,12 +58,16 @@
       "id": "bed_cutaway",
       "start": 283,
       "end": 428,
-      "visual_proof": "A cutaway slice of the bed (cutaway device): loose rounded stones packed in a layer with a wheel resting in it, seen in an orbit and then close on the cut face.",
+      "visual_proof": "A cutaway slice of the bed (cutaway device): a wheel rolls across the loose rounded stones, sinks into them and throws stones ahead of it, seen in an orbit and then close on the cut face.",
       "narration_en": "The bed is just a thick layer of round stones, piled deep and left loose.",
       "must_show_while_spoken": [
         {
           "event": "bed_cutaway_visible",
           "min_seconds": 1.8
+        },
+        {
+          "event": "wheel_rolling_visible",
+          "min_seconds": 2.0
         }
       ]
     },
@@ -92,7 +96,7 @@
       "id": "stop_distance",
       "start": 590,
       "end": 783,
-      "visual_proof": "Straight-down view with a green bar to where the truck actually stops (about 133 m) and an orange bar that runs off the end of the picture for the paved coast.",
+      "visual_proof": "Straight-down view with a green bar to where the truck actually stops (about 133 m) while a second, orange truck (the same truck coasting on pavement at constant speed, an illustration) keeps running down the paved lane and out of the picture; the orange bar runs off the end of the picture for the paved coast.",
       "narration_en": "On pavement this truck would coast over three kilometers; the gravel stops it in about one hundred thirty meters.",
       "must_show_while_spoken": [
         {
@@ -106,6 +110,10 @@
         {
           "event": "speed_readout_visible",
           "min_seconds": 3.0
+        },
+        {
+          "event": "paved_truck_moving_visible",
+          "min_seconds": 1.5
         }
       ]
     },

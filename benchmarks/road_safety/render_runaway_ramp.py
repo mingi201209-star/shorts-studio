@@ -60,7 +60,7 @@ def arguments():
 
 
 #: film frame -> simulated time (s since the first tyre touches gravel), per shot.
-SIM_RANGE = {"gravel_hook": (-0.55, 3.2), "tyres_sink": (3.2, 5.6), "bed_cutaway": (5.6, 5.6),
+SIM_RANGE = {"gravel_hook": (-0.30, 3.2), "tyres_sink": (3.2, 5.6), "bed_cutaway": (5.6, 5.6),
              "drag_numbers": (5.6, 10.4), "stop_distance": (10.4, 12.0), "ramp_beside_road": (12.0, 12.0)}
 
 
@@ -297,13 +297,30 @@ def main():
         face_r.append(r)
     face_ob, _ = point_cloud("Cut face stones", face_pos, face_r, stone_mat)
     face_ob.hide_viewport = True
-    bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=motion.WHEEL_R, depth=0.34,
-                                        location=(0.3, CUT_Y + 0.8, SLAB_D + motion.WHEEL_R - motion.SINK_MAX))
-    cut_wheel = bpy.context.object
-    cut_wheel.rotation_euler = (0, math.radians(90), 0)
-    cut_wheel.data.materials.append(mats["rubber"])
-    cut_hub = cc.cylinder("Cut hub", 0.2, 0.36, cut_wheel.location, mats["hub"], vertices=16)
-    cut_hub.rotation_euler = (0, math.radians(90), 0)
+    CUT_YC = CUT_Y + 0.8                       # the wheel rolls across the middle of the slab, axle along y
+    cut_spin = bpy.data.objects.new("Cut wheel spin", None)
+    bpy.context.collection.objects.link(cut_spin)
+    cut_spin.location = (motion.CUT_ROLL_X[0], CUT_YC, motion.CUT_SLAB_D + motion.WHEEL_R)
+    bpy.ops.mesh.primitive_cylinder_add(vertices=32, radius=motion.WHEEL_R, depth=0.34, location=cut_spin.location)
+    cut_tyre = bpy.context.object
+    cut_tyre.rotation_euler = (math.radians(90), 0, 0)
+    cut_tyre.data.materials.append(mats["rubber"])
+    cut_hub = cc.cylinder("Cut hub", 0.2, 0.36, cut_spin.location, mats["hub"], vertices=16)
+    cut_hub.rotation_euler = (math.radians(90), 0, 0)
+    for part in (cut_tyre, cut_hub):
+        cc.parent_to(part, cut_spin)
+    for k in range(4):                          # white marks on the sidewall so the spin shows
+        ang = math.radians(k * 90.0)
+        mark = cube("Cut sidewall mark", (0, 0, 0), (0.09, 0.02, 0.09), mats["rim"])
+        mark.location = (cut_spin.location.x + 0.33 * math.sin(ang), cut_spin.location.y - 0.175,
+                         cut_spin.location.z + 0.33 * math.cos(ang))
+        cc.parent_to(mark, cut_spin)
+    cut_seconds = (shots[2]["end"] - shots[2]["start"] + 1) / manifest["fps"]
+    cut_grains = motion.build_cut_grains(cut_seconds, CUT_YC)
+    cut_stones_ob, cut_stones_mesh = point_cloud("Cut stones", [(0, 0, -5)] * len(cut_grains),
+                                                 [g["r"] for g in cut_grains], stone_mat)
+    cut_stones_ob.hide_viewport = True
+    cut_objs = [slab, face_ob, cut_stones_ob, cut_spin, *cut_spin.children_recursive]
 
     truck, wheels = build_truck(mats)
 
@@ -356,6 +373,18 @@ def main():
     hud_plate = cube("Speed read-out plate", (0, 0, 0), (1.0, 1.0, 0.001), plate_mat)
     hud_plate.parent = cam
     hud_plate.visible_shadow = False
+    hud4_curve = bpy.data.curves.new("Brake warning", "FONT")
+    hud4_curve.body, hud4_curve.align_x, hud4_curve.size = "BRAKES FAILED", "CENTER", 1.0
+    warn_mat = material("Warning text", (1.0, 0.12, 0.05), rough=0.5, emission=4.0)
+    warn_plate_mat = material("Warning plate", (0.03, 0.0, 0.0), rough=0.9)
+    hud4 = bpy.data.objects.new("Brake warning", hud4_curve)
+    bpy.context.collection.objects.link(hud4)
+    hud4.data.materials.append(warn_mat)
+    hud4.parent = cam
+    hud4.visible_shadow = False
+    hud4_plate = cube("Brake warning plate", (0, 0, 0), (1.0, 1.0, 0.001), warn_plate_mat)
+    hud4_plate.parent = cam
+    hud4_plate.visible_shadow = False
     hud3_curve = bpy.data.curves.new("Drag note", "FONT")
     hud3_curve.body, hud3_curve.align_x, hud3_curve.size = "GRAVEL 0.25 g   |   PAVEMENT 0.01 g (ASSUMED)", "CENTER", 1.0
     hud3 = bpy.data.objects.new("Drag note", hud3_curve)
@@ -384,7 +413,8 @@ def main():
         sun("Fill", (0.2, 0.7, -0.6), 2.4, 0.6)
 
     # second, passing truck on the highway (closing shot only)
-    other, other_wheels = build_truck(mats)
+    mats_orange = dict(mats, cab=material("Cab orange", (1.0, 0.36, 0.04), metal=0.2, rough=0.35))
+    other, other_wheels = build_truck(mats_orange)
 
     fps = manifest["fps"]
     out = args.out
@@ -458,9 +488,12 @@ def main():
             pose(truck, wheels, x, sink_m, x / motion.WHEEL_R, pitch)
         # second truck (closing shot, on the highway)
         ty = lerp(-60.0, 120.0, t)       # the passing highway truck's position (only used in the closing shot)
-        show_other = sid == "ramp_beside_road" and not loop_back
+        show_other = (sid == "ramp_beside_road" and not loop_back) or sid == "stop_distance"
         for ob in (other, *other.children_recursive):
             ob.hide_render = ob.hide_viewport = not show_other
+        if sid == "stop_distance":
+            # the same truck coasting on pavement at constant speed (illustration, real-time): it keeps going
+            ty = -45.0 + motion.SPEED0 * ((frame - shot["start"]) / fps)
         if show_other:
             other.location = (HIGHWAY_X + 2.0, ty, 0.0)
             other.rotation_euler = (0, 0, 0)
@@ -498,9 +531,18 @@ def main():
         grains_ob.hide_render = False
         grains_ob.hide_viewport = True
         static_ob.hide_render = sid == "bed_cutaway"
-        for ob in (slab, face_ob, cut_wheel, cut_hub, cut_label):
+        for ob in (*cut_objs, cut_label):
             ob.hide_render = ob.hide_viewport = sid != "bed_cutaway"
         face_ob.hide_viewport = True
+        cut_stones_ob.hide_viewport = True
+        cut_w = motion.cut_wheel_state(t)
+        if sid == "bed_cutaway":
+            cut_spin.location = (cut_w["x"], CUT_YC, cut_w["z"])
+            cut_spin.rotation_euler = (0, -cut_w["spin"], 0)
+            local_cut = (frame - shot["start"]) / fps
+            cut_stones_mesh.vertices.foreach_set("co", [c for g in cut_grains for c in (
+                motion.grain_position(g, local_cut) or (0.0, 0.0, -5.0))])
+            cut_stones_mesh.update()
         for ob in label_objs:
             ob.hide_render = ob.hide_viewport = sid != "stop_distance"
 
@@ -574,8 +616,10 @@ def main():
             cinematic.apply_dof(cam, (cc.AIM["target"] - cam.location).length, fstop=2.4 if sid != "stop_distance" else 11.0)
 
         hud_on = sid in ("gravel_hook", "tyres_sink", "drag_numbers", "stop_distance")
-        hud_objects = (hud, hud2, hud_plate) + ((hud3,) if sid == "drag_numbers" else ())
-        for ob in (hud, hud2, hud_plate, hud3):
+        warn_on = sid == "gravel_hook" and (frame - shot["start"]) / fps <= 2.4
+        hud_objects = ((hud, hud2, hud_plate) + ((hud3,) if sid == "drag_numbers" else ())
+                       + ((hud4, hud4_plate) if warn_on else ()))
+        for ob in (hud, hud2, hud_plate, hud3, hud4, hud4_plate):
             ob.hide_render = (ob not in hud_objects) or (not hud_on) or look == cinematic.LOOK_CINEMATIC
             ob.hide_viewport = True
         if hud_on:
@@ -591,6 +635,11 @@ def main():
             hud_plate.location = (0.0, y_off - 0.012 * span, -HUD_DEPTH - 0.0005)
             hud3.scale = (0.30 * k, 0.30 * k, 0.30 * k)
             hud3.location = (0.0, y_off - 0.100 * span, -HUD_DEPTH)
+            pulse = 1.0 + 0.07 * math.sin(frame * 0.9)
+            hud4.scale = (0.62 * k * pulse, 0.62 * k * pulse, 0.62 * k * pulse)
+            hud4.location = (0.0, y_off - 0.205 * span - 0.2 * k, -HUD_DEPTH)
+            hud4_plate.scale = (0.56 * span * pulse, 0.12 * span * pulse, 1.0)
+            hud4_plate.location = (0.0, y_off - 0.175 * span, -HUD_DEPTH - 0.004)   # well behind the text: coplanar faces z-fight
             if sid == "drag_numbers":
                 hud_plate.scale = (0.9 * span, 0.28 * span, 1.0)
                 hud_plate.location = (0.0, y_off - 0.040 * span, -HUD_DEPTH - 0.0005)
@@ -622,10 +671,14 @@ def main():
             if sid == "drag_numbers":
                 events["drag_label_visible"] = (True, [], 0, 0.0)
             if sid == "stop_distance":
+                events["paved_truck_moving_visible"] = (True, [other.matrix_world @ Vector(q) for q in
+                                                               ((0, -0.2, 1.6), (0, -7.0, 4.0), (0, -12.0, 2.5))], 1, 3.0)
                 events["truck_stopped"] = (v <= motion.STOPPED_SPEED, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0)), world((0, -12.0, 2.5))], 1, 3.0)
                 events["stop_bars_visible"] = (True, [(2.6, stop_x, 0.1), (2.6, stop_x - 20.0, 0.1), (2.6, stop_x - 40.0, 0.1),
                                                   (-2.6, stop_x - 20.0, 0.1), (-2.6, stop_x - 40.0, 0.1)], 3, 1.5)
         else:
+            events["wheel_rolling_visible"] = (True, [(cut_w["x"], CUT_YC, motion.CUT_SLAB_D + motion.WHEEL_R),
+                                                      (cut_w["x"], CUT_YC - 0.17, motion.CUT_SLAB_D + motion.WHEEL_R + 0.3)], 1, 25.0)
             events["bed_cutaway_visible"] = (True, [(0.0, CUT_Y, SLAB_D * 0.5), (0.9, CUT_Y, SLAB_D * 0.3), (-0.9, CUT_Y, SLAB_D * 0.7),
                                                     (0.3, CUT_Y + 0.8, SLAB_D + 0.4)], 3, 25.0)
         if sid == "ramp_beside_road":
