@@ -52,3 +52,43 @@ Five preflights before the PASS: (1) audio server returned no audio for one sent
 
 - Human review; upload decision (not done).
 - If this episode's retention graph is shared after upload, compare it with the earlier Short's.
+
+---
+
+# Round 2 (after the owner's comparison of the two Shorts)
+
+Owner review (supplied in chat; the owner's scores are subjective and not a retention prediction): sand-barrel 84/100, breakaway sign 78/100. The sand-barrel Short is reported by the owner to have **62.8% stayed to watch, 1,332 views, 18 likes** (numbers not visible to this session, recorded as supplied). Points raised for the sign Short: the start screen carried too much (two cars, two signs, speed read-outs together); the comparison needed explaining after the collision; the fixed-post result and the speed read-outs needed a stated basis. Recommendation followed: strengthen the first 3 seconds rather than remake everything; keep the caption safe area unchanged.
+
+| item | v1 | v2 (this cut) |
+|---|---|---|
+| sha256 | `f6312d35b9d3c853cf485781d0d43ec4e0928366c732ed373a5729684e8d85c9` | `d9ed541f037963bc7af7d52bd52b680fa331ae494ca699408fb713cb4f8ec387` (matches `SIGN_FILM_PASS`) |
+| preflight | run 43382142649 | run 43427562214 PASS |
+| render | run 43383407475 | production run 43429090955 (first attempt, all gates PASS) |
+
+Frames of v2 at 20 timestamps: `docs/evidence/breakaway-sign-v2-frames.jpg`.
+
+## What changed
+
+- **First 3 seconds:** hook narrated as the question "Why are some road signs designed to break the moment a car hits them?"; for the first 1.5 s only the two cars and two signs are on screen (no read-outs); the collision and the two outcomes happen inside that time (post released at 0.33 s, fixed car stopped at 0.87 s); the read-outs appear at 1.5 s.
+- **Order:** the plain-language comparison is now shot 2 (right after the hook), the base-release shot 3, post-over-roof shot 4, the exploded diagram moved to shot 5, then the looping ending.
+- **Read-out basis:** every frame that shows the read-out records the integers drawn next to the simulated speeds of that frame, and a new gate (`readout_matches_simulation`) requires exact agreement on all 585+ frames that show it, requires the fixed lane to reach 0 and the breakaway lane to end at the simulated speed it keeps. This also found one precision artefact in the audit's own input (speeds rounded to 3 decimals sat on a .5 boundary at frame 165); the telemetry now keeps full precision. A tampered number is rejected (unit test). The pixels themselves are not read back: the drawn text is built from the same values.
+- **Fixed-post stop distance:** the shot that compares the lanes states on screen that 0.8 m is an assumed deceleration distance.
+- **Closing shot:** cuts to a full-frame view of the yellow sign face (the earlier closing views were too similar for the visual-activity rule).
+
+## Gates on the real v2 video
+
+Original QA PASS (visual_activity longest hold 3.5 s, black_opening, captions_visible, silence and loudness inside the film QA; integrated -16.5 LUFS, true peak -1.7 dBFS with the effects), motion_plausibility PASS, narration_screen_match PASS (6 of 6), first_three_seconds PASS, caption_safety PASS, readout_matches_simulation PASS. First vs last frame mean difference 0.59 (loop).
+
+## Still open
+
+- The assumed fixed-post crush distance (0.8 m), post and panel masses, slip force and base impulse are unchanged assumptions; no comparison with a test trace.
+- Whether "comparison first, question narrated" retains better than v1 is unverified; it needs this video's own retention graph.
+- The two lanes still replay the same collision in shot 2 (an instant replay from other cameras, same slow motion).
+
+## Topic-selection note for planning
+
+From the owner's comparison: a topic whose result is **visible destruction the viewer understands at once** (sand barrels bursting) held attention better than a topic whose interest depends on **understanding two structures** (fixed vs breakaway), and the latter needs a stronger and simpler first 3 seconds. Proposed criteria for choosing the next topics: (1) what is the single visible event in the first second; (2) can a viewer name the difference without narration; (3) does the explanation shot come after, not before, the event; (4) is there a number or length the screen can show honestly. This is an observation from one pair of videos, not a rule.
+
+## Process record (round 2)
+
+Six preflights: three audio server no-response events (re-run), long gaps then total silence (two narration lengthenings), sentence/shot spill and a read-out minimum (boundaries moved to the measured windows), and a 6.0 s hold in the closing shot (sign close-up). A GitHub API 502 made the watcher decode an old job's log once; the stale result was recognised (wrong hash, missing new gate) and discarded before anything was reported, and the real job log was fetched afresh. Production gates are closed again.
