@@ -82,6 +82,7 @@ jobs:
           retention-days: 14
 
   native:
+    if: false
     # Gate closed again: combined round 3+4 production run 43314073897 completed with every
     # gate PASS (preflight 43311238590). Re-open only after a new preflight PASS.
     runs-on: ubuntu-24.04
@@ -130,6 +131,7 @@ jobs:
           retention-days: 14
 
   final:
+    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
