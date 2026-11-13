@@ -569,7 +569,7 @@ def main():
                 set_cam((-28.0, lerp(-32.0, -22.0, local / 2.0), 6.0), (-6.0, 8.0, 1.0), 28)
             else:
                 u = (local - 2.0) / max(0.1, total - 4.0)
-                set_cam((lerp(-9.0, -7.0, u), 22.0, lerp(14.0, 18.0, u)), (-5.0, lerp(25.0, 40.0, u), 0.0), 30)
+                set_cam((lerp(-13.0, -11.0, u), lerp(-14.0, -8.0, u), lerp(15.0, 19.0, u)), (-5.0, lerp(24.0, 34.0, u), 0.0), 30)
         if look == cinematic.LOOK_CINEMATIC and "target" in cc.AIM:
             cinematic.apply_dof(cam, (cc.AIM["target"] - cam.location).length, fstop=2.4 if sid != "stop_distance" else 11.0)
 
