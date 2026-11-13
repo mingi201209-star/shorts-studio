@@ -457,11 +457,11 @@ def main():
                 ob.hide_render = ob.hide_viewport = False
             pose(truck, wheels, x, sink_m, x / motion.WHEEL_R, pitch)
         # second truck (closing shot, on the highway)
+        ty = lerp(-60.0, 120.0, t)       # the passing highway truck's position (only used in the closing shot)
         show_other = sid == "ramp_beside_road" and not loop_back
         for ob in (other, *other.children_recursive):
             ob.hide_render = ob.hide_viewport = not show_other
         if show_other:
-            ty = lerp(-60.0, 120.0, t)
             other.location = (HIGHWAY_X + 2.0, ty, 0.0)
             other.rotation_euler = (0, 0, 0)
             for w in other_wheels:
