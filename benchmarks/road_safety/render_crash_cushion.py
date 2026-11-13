@@ -164,11 +164,40 @@ def parent_to(child, parent):
     child.matrix_parent_inverse = parent.matrix_world.inverted()
 
 
+def _overlay_png(base_path, overlay_path):
+    """Alpha-composite overlay_path (straight alpha) over base_path and save as
+    RGB PNG, using only Blender's own image API and numpy: the Python that ships
+    with Blender has no Pillow."""
+    import numpy as np
+    images = []
+    for path in (base_path, overlay_path):
+        img = bpy.data.images.load(str(path))
+        img.colorspace_settings.name = "Non-Color"        # no colour conversion on read or write
+        images.append(img)
+    base_img, over_img = images
+    over_img.alpha_mode = "STRAIGHT"
+    w, h = base_img.size
+    base_px = np.empty(w * h * 4, np.float32)
+    over_px = np.empty(w * h * 4, np.float32)
+    base_img.pixels.foreach_get(base_px)
+    over_img.pixels.foreach_get(over_px)
+    base_px, over_px = base_px.reshape(-1, 4), over_px.reshape(-1, 4)
+    alpha = over_px[:, 3:4]
+    out_px = base_px.copy()
+    out_px[:, :3] = over_px[:, :3] * alpha + base_px[:, :3] * (1.0 - alpha)
+    out_px[:, 3] = 1.0
+    base_img.pixels.foreach_set(out_px.reshape(-1))
+    base_img.filepath_raw = str(base_path)
+    base_img.file_format = "PNG"
+    base_img.save()
+    for img in images:
+        bpy.data.images.remove(img)
+
+
 def composite_hud_pass(scene, cam, hud_objects, frame_path, out):
     """Render the speed read-out alone on a transparent film (no depth of field,
     low samples) and lay it over the finished frame. The read-out is closer to
     the lens than the focus plane, so in the main pass it would be blurred."""
-    from PIL import Image
     states = [(ob, ob.hide_render) for ob in bpy.data.objects]
     samples, transparent, dof = scene.cycles.samples, scene.render.film_transparent, cam.data.dof.use_dof
     colour_mode = scene.render.image_settings.color_mode
@@ -191,9 +220,7 @@ def composite_hud_pass(scene, cam, hud_objects, frame_path, out):
         scene.render.image_settings.color_mode = colour_mode
         cam.data.dof.use_dof = dof
         scene.render.filepath = str(frame_path)
-    base_image = Image.open(frame_path).convert("RGBA")
-    hud_image = Image.open(hud_path).convert("RGBA")
-    Image.alpha_composite(base_image, hud_image).convert("RGB").save(frame_path)
+    _overlay_png(frame_path, hud_path)
     hud_path.unlink()
 
 
