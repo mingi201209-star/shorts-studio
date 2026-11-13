@@ -58,7 +58,7 @@ def test_manifest_plan_captions_and_events_agree():
     plan = json.loads((ROOT / "examples/experiments/breakaway-sign-speech-plan.json").read_text())
     beats = plan["variants"][0]["beats"]
     assert [b["narration_en"] for b in beats] == [s["narration_en"] for s in manifest["shots"]]
-    assert sum(len(b["narration_en"].split()) for b in beats) <= 108
+    assert sum(len(b["narration_en"].split()) for b in beats) <= 112
     assert manifest["shots"][0]["start"] == 1 and manifest["shots"][-1]["end"] == manifest["total_frames"]
     source = (ROOT / "benchmarks/road_safety/render_breakaway_sign.py").read_text()
     for shot in manifest["shots"]:

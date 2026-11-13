@@ -22,7 +22,6 @@ on:
       - benchmarks/road_safety/crash_cushion_motion.py
       - benchmarks/road_safety/crash_cushion_gates.py
       - benchmarks/road_safety/assemble_crash_cushion.py
-      - benchmarks/road_safety/caption_phrases.py
       - benchmarks/road_safety/curious_mechanics_audio.py
 permissions:
   contents: read
