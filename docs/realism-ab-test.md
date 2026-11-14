@@ -68,3 +68,31 @@ Offline gates before CI: narration_screen_match and first_three_seconds PASS. CI
 
 Not done / not verified: no full-resolution render of this version, no side-by-side with the 2360a2f8 film yet, audio pronunciation / noise / sync not
 verified (only the existing loudness and silence gates), nothing about viewer quality. Preflight only: deliverable false, upload not authorised.
+
+## Opening (frames 1-285, 0-9.5 s) at 1080x1920: old B vs continuous camera (branch road-ramp-captions-camera-20261114)
+Rendered on free runners, 32 samples, 1080x1920. Run 43613410543 rendered 7 of 10 shards; shards 91, 121, 211 hit the 90-minute step
+limit (the early frames cost about 3 min each). Run 43622223172 re-rendered frames 119-120, 147-150 and 236-240 and the clip was encoded from
+the first run's frames overlaid with them (285 frames, 1080x1920, 30 fps, h264; clip sha256 `ca8e14768d58...4063` as printed in the job log; frame list
+sha256 `0c37bb7a...ec67`). **The clip file itself was not recovered** (the log tool cuts a log at ~530k characters; the log hosts vary per job and are
+not all allowed), so this comparison rests on 12 real frames (rows 0-1400, downscaled to 360x467) and measurements computed on the runner.
+Evidence: `docs/evidence/ramp-opening-old-vs-new-continuous.jpg` (rows: old B, new; same frame numbers).
+
+Motion profile of the opening (motion_profile.py, 15 fps, same crop for both):
+
+| | median frame change | share > 12 | registered beats | longest without a beat |
+|---|---|---|---|---|
+| old B opening | 11.01 | 0.33 | 15 | 1.5 s |
+| new continuous opening | 13.68 | 0.79 | 19 | 0.5 s |
+
+Reading (honest, from the 12 frames; a viewer test has not been done):
+- Better: frames 1-50. The truck looms larger and head-on (frame 26), BRAKES FAILED stays legible over the red cab (frame 50), no hard cut, one move.
+- Worse: frames 80-285. The old film kept re-establishing the truck's whole shape charging down the gravel (frames 80, 200, 230: front view with a spray
+  plume). The new move hugs the wheels and the trailer wall from about frame 110 on; the truck's face and silhouette are never seen again, and the
+  last ~6 s look alike (trailer wall on top, two wheels, stones below). The motion numbers rise partly because the ground streams past, which says
+  nothing about whether a viewer understands the danger. So this version is not clearly better than the old B opening; it is better at the start and
+  weaker in the middle and end.
+- Wheel tread reads as blotchy dark patches with white stone dots at this size.
+- HUD plate and BRAKES FAILED text are legible in every frame sampled.
+
+Proposed partial fix (not done yet): keep frames 1-60, then pull the camera out/up so the truck's silhouette and the gravel plume are in frame, and sweep once around the
+front (the old frame-200 view) before settling beside the rear wheels, re-audited offline and checked locally at 540x960 before any new CI render.
