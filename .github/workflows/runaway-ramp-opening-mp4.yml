@@ -1,0 +1,87 @@
+name: Runaway truck ramp opening - review MP4 recovery (chunked through job logs)
+# Builds a review MP4 of the opening from existing frame artifacts and prints it in numbered chunks, one job per chunk, because the
+# job-log reader cuts a log at ~530k characters (so one job cannot carry a whole clip) and the log hosts differ per job. Each chunk
+# is base64 in 76-character lines with its own sha256; the encode job prints the sha256 of the whole file so the pieces can be
+# reassembled and verified. A full-resolution clip is also kept as an artifact. Review only; not a deliverable; never uploaded.
+# Which frames: BASE_RUN_ID (shards) overlaid with PATCH_RUN_ID (patch frames, optional).
+on:
+  push:
+    branches: [road-ramp-captions-camera-20261114]
+    paths:
+      - examples/experiments/runaway-ramp-opening-mp4-request.json
+      - .github/workflows/runaway-ramp-opening-mp4.yml
+permissions:
+  contents: read
+  actions: read
+env:
+  BASE_RUN_ID: "43613410543"
+  PATCH_RUN_ID: "43622223172"
+  CHUNK_BYTES: "300000"
+jobs:
+  encode:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: runaway-ramp-opening-*
+          path: ${{ runner.temp }}/base
+          merge-multiple: true
+          run-id: ${{ env.BASE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: env.PATCH_RUN_ID != ''
+        with:
+          pattern: runaway-ramp-opening-patch-*
+          path: ${{ runner.temp }}/patch
+          merge-multiple: true
+          run-id: ${{ env.PATCH_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Encode the full-resolution clip and a 720x1280 review copy
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          rm -f base/_hud_frame_*.png
+          if [ -d patch ]; then rm -f patch/_hud_frame_*.png; cp patch/frame_*.png base/; fi
+          cd base
+          test "$(ls frame_*.png | wc -l)" = 285
+          GRADE=$(PYTHONPATH="$GITHUB_WORKSPACE" python3 -c "from benchmarks.road_safety import cinematic; print(cinematic.GRADE_FILTER)")
+          mkdir -p "$RUNNER_TEMP/out"
+          ffmpeg -v error -framerate 30 -i frame_%04d.png -vf "$GRADE,drawbox=x=0:y=1400:w=1080:h=520:color=black:t=fill" \
+            -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p -movflags +faststart "$RUNNER_TEMP/out/opening-1080x1920.mp4"
+          ffmpeg -v error -i "$RUNNER_TEMP/out/opening-1080x1920.mp4" -vf "scale=720:1280:flags=lanczos" \
+            -c:v libx264 -preset slow -crf 24 -pix_fmt yuv420p -movflags +faststart "$RUNNER_TEMP/out/opening-720x1280-review.mp4"
+          ls -l "$RUNNER_TEMP/out"
+          sha256sum "$RUNNER_TEMP/out/"*.mp4
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of csv=p=0 "$RUNNER_TEMP/out/opening-720x1280-review.mp4"
+          echo "REVIEW_MP4_BYTES $(stat -c %s "$RUNNER_TEMP/out/opening-720x1280-review.mp4")"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: opening-mp4
+          path: ${{ runner.temp }}/out/
+          retention-days: 3
+  chunk:
+    needs: encode
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: opening-mp4
+          path: ${{ runner.temp }}/out
+      - name: Print chunk ${{ matrix.index }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/out"
+          split -b "$CHUNK_BYTES" -d -a 2 opening-720x1280-review.mp4 part_
+          f=$(printf 'part_%02d' ${{ matrix.index }})
+          if [ ! -f "$f" ]; then echo "CHUNK_NONE ${{ matrix.index }}"; exit 0; fi
+          echo "CHUNK_START ${{ matrix.index }} $(stat -c %s "$f") $(sha256sum "$f" | cut -d' ' -f1)"
+          base64 -w 76 "$f"
+          echo "CHUNK_END ${{ matrix.index }}"
