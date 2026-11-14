@@ -51,7 +51,22 @@ jobs:
             -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p -movflags +faststart "$RUNNER_TEMP/opening.mp4"
           ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of csv=p=0 "$RUNNER_TEMP/opening.mp4"
           sha256sum "$RUNNER_TEMP/opening.mp4"
-          echo "MP4_B64_START opening.mp4"
-          ls -l "$RUNNER_TEMP/opening.mp4"
-          base64 -w 76 "$RUNNER_TEMP/opening.mp4"
-          echo "MP4_B64_END opening.mp4"
+          # the log tool cuts a log at ~530k characters, so the clip itself cannot be read back; print measurements and
+          # a few small real frames (rows 0-1400, downscaled JPEG) instead
+          pip install -q numpy pillow
+          PYTHONPATH="$GITHUB_WORKSPACE" python3 - <<'PY'
+          import json, os, pathlib
+          from benchmarks.road_safety import motion_profile as mp
+          clip = pathlib.Path(os.environ["RUNNER_TEMP"]) / "opening.mp4"
+          print("OPENING_MOTION_PROFILE " + json.dumps(mp.profile([clip], "860:1100:0:320")), flush=True)
+          PY
+          mkdir -p "$RUNNER_TEMP/jpg"
+          for n in 1 26 50 80 110 140 170 200 230 255 275 285; do
+            ffmpeg -v error -i "$RUNNER_TEMP/opening.mp4" -vf "select=eq(n\,$((n-1))),crop=1080:1400:0:0,scale=360:467" -frames:v 1 -q:v 6 "$RUNNER_TEMP/jpg/f_$(printf %04d $n).jpg"
+          done
+          ls -l "$RUNNER_TEMP/jpg"
+          for f in "$RUNNER_TEMP"/jpg/f_*.jpg; do
+            echo "JPG_B64_START $(basename "$f")"
+            base64 -w 76 "$f"
+            echo "JPG_B64_END $(basename "$f")"
+          done

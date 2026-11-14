@@ -1,1 +1,1 @@
-{"purpose": "encode-only of the existing opening frames (base run 43613410543 + patch run 43622223172), short base64 log lines; review only", "upload_authorized": false}
+{"purpose": "encode-only again: print motion profile and 12 real frames instead of the clip (log tool truncation); review only", "upload_authorized": false}
