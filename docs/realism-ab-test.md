@@ -51,3 +51,20 @@ Still true: stylised box truck, sphere stones, assumed (not calibrated) coeffici
 test; audio pronunciation/noise/sync not verified. Callouts "25x MORE DRAG" (resistance ratio) and "24x FARTHER" (distance ratio) are
 different quantities but read as inconsistent. Not uploaded, not merged, no PR. Production gates are open and should be closed again
 (`if: false`) unless another run is wanted.
+
+## Captions + continuous opening camera (branch road-ramp-captions-camera-20261114, preflight run 43610425893, commit e30a14c)
+Changes: callouts computed from the model ("25x MORE DRAG THAN PAVEMENT" = ratio of the assumed coefficients 0.25/0.01; "PAVEMENT GOES 24x FARTHER" =
+3,184 m / 133 m, smaller than 25 because the bed's resistance ramps in over 12 m and the tyres sink; the pavement distance matches the closed-form
+v^2/(2 c g) within 1 %); frames 1-285 are one continuous truck-anchored camera move (ramp_camera.py, audited: no hold, subject visible 100 %,
+max acceleration 103 m/s^2 <= 120) with a smooth playback-rate ease instead of a hard step and a continuous nose track through first tyre contact.
+Offline gates before CI: narration_screen_match and first_three_seconds PASS. CI preflight (360x640, free runner, all 10 jobs green): every gate PASS
+(visual_activity, black_opening, captions_visible, motion_plausibility, narration_screen_match, first_three_seconds, caption_safety).
+
+| | previous B preflight | now |
+|---|---|---|
+| average beat | 0.97 s | 0.84 s |
+| changes in the first 5 s | 7 | 9 |
+| longest static stretch | 2.5 s | 2.5 s (unchanged, now elsewhere in the film) |
+
+Not done / not verified: no full-resolution render of this version, no side-by-side with the 2360a2f8 film yet, audio pronunciation / noise / sync not
+verified (only the existing loudness and silence gates), nothing about viewer quality. Preflight only: deliverable false, upload not authorised.
