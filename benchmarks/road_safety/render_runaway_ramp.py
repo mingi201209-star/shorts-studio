@@ -33,6 +33,7 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_crash_cushion as cc  # noqa: E402  (HUD pass, primitives)
+from benchmarks.road_safety import realism  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 from benchmarks.road_safety import runaway_ramp_motion as motion  # noqa: E402
 
@@ -56,6 +57,8 @@ def arguments():
     p.add_argument("--telemetry-only", action="store_true")
     p.add_argument("--step", type=int, default=1)
     p.add_argument("--look", choices=("standard", "cinematic"), default=None)
+    p.add_argument("--realism", choices=realism.LEVELS, default="A",
+                   help="A = existing look; B = bevels, tread, dirty clear-coat, mixed stones; C = B + sprung body")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
 
@@ -263,6 +266,8 @@ def main():
     sramp.color_ramp.elements[1].color = (1.0, 0.80, 0.50, 1)
     stone_mat.node_tree.links.new(pinfo.outputs["Random"], sramp.inputs["Fac"])
     stone_mat.node_tree.links.new(sramp.outputs["Color"], sn.get("Principled BSDF").inputs["Base Color"])
+    if args.realism != "A":
+        realism.upgrade_materials(mats, gravel_slab, stone_mat)
     WINDOW_ROWS, STONES_PER_CELL = 44, 190          # 1 m rows along the bed, 7 cells across
     CELLS_ACROSS = int(2 * BED_HALF)
 
@@ -341,6 +346,8 @@ def main():
     cut_objs = [slab, slice_ob, cut_stones_ob, cut_spin, *cut_spin.children_recursive, arrow_root, *arrow_root.children_recursive]
 
     truck, wheels = build_truck(mats)
+    if args.realism != "A":
+        realism.bevel_edges([truck, *truck.children_recursive])
 
     # ----- text -----------------------------------------------------------
     def label(name, body, size, mat, location, flat):
@@ -457,6 +464,8 @@ def main():
     # second, passing truck on the highway (closing shot only)
     mats_orange = dict(mats, cab=material("Cab orange", (1.0, 0.36, 0.04), metal=0.2, rough=0.35))
     other, other_wheels = build_truck(mats_orange)
+    if args.realism != "A":
+        realism.bevel_edges([other, *other.children_recursive])
 
     fps = manifest["fps"]
     out = args.out
@@ -531,7 +540,8 @@ def main():
                 ob.hide_render = ob.hide_viewport = False
             path_x = motion.exit_path_x(x) if sid == "ramp_beside_road" else 0.0
             path_yaw = motion.exit_path_yaw(x) if sid == "ramp_beside_road" else 0.0
-            pose(truck, wheels, x, sink_m, x / motion.WHEEL_R, pitch, path_x, path_yaw)
+            pitch, heave = realism.suspension(sim_t, pitch, args.realism)
+            pose(truck, wheels, x, sink_m - heave, x / motion.WHEEL_R, pitch, path_x, path_yaw)
         # second truck (closing shot, on the highway)
         ty = lerp(-60.0, 120.0, t)       # the passing highway truck's position (only used in the closing shot)
         show_other = sid == "stop_distance"
