@@ -128,3 +128,13 @@ def test_exit_path_runs_from_the_highway_lane_onto_the_ramp_axis():
     assert all(b >= a - 1e-12 for a, b in zip(xs, xs[1:]))
     assert m.exit_path_yaw(-100.0) < 0 and abs(m.exit_path_yaw(-100.0)) < math.radians(25)
     assert abs(m.exit_path_yaw(-20.0)) < 1e-9
+
+
+def test_every_ramp_sentence_has_single_line_curated_caption_phrases():
+    import json
+    from benchmarks.road_safety.caption_phrases import CURATED, SINGLE_LINE
+    man = json.loads((Path(__file__).resolve().parents[1] / "examples/experiments/runaway-ramp-manifest.json").read_text())
+    for shot in man["shots"]:
+        phrases = CURATED[shot["narration_en"]]
+        assert " ".join(phrases) == shot["narration_en"], shot["id"]
+        assert all(len(p) <= SINGLE_LINE and len(p.split()) >= 2 for p in phrases), (shot["id"], phrases)
