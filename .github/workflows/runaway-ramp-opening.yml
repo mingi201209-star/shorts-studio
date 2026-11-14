@@ -1,7 +1,7 @@
 name: Runaway truck ramp opening (frames 1-285 at 1080x1920, review clip only)
 # Renders ONLY the opening (frames 1-285 = 0-9.5 s) at production quality (32 samples, 1080x1920) on free standard
-# runners, grades it exactly like the final assembly (cinematic grade, black band repainted) and prints the clip as base64
-# in the job log. No narration, no captions, no QA gates, not a deliverable, never uploaded. Starts only when the request
+# runners, grades it exactly like the final assembly (cinematic grade, black band repainted) and keeps the clip as an artifact (the
+# separate opening-mp4 workflow recovers a review copy through job-log chunks). No narration, no captions, no QA gates, not a deliverable, never uploaded. Starts only when the request
 # file below changes.
 on:
   push:
@@ -20,9 +20,9 @@ jobs:
     timeout-minutes: 100
     strategy:
       fail-fast: false
-      max-parallel: 10
+      max-parallel: 19
       matrix:
-        start: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271]
+        start: [1, 16, 31, 46, 61, 76, 91, 106, 121, 136, 151, 166, 181, 196, 211, 226, 241, 256, 271]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install hash-pinned Blender 5.0.1
@@ -51,12 +51,12 @@ jobs:
           set -euo pipefail
           gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
           echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
-      - name: Render 30 contiguous absolute frames
+      - name: Render 15 contiguous absolute frames
         timeout-minutes: 90
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/native"
-          end=$((${{ matrix.start }} + 29))
+          end=$((${{ matrix.start }} + 14))
           if [ "$end" -gt 285 ]; then end=285; fi
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
             -P benchmarks/road_safety/render_runaway_ramp.py -- \
@@ -97,7 +97,3 @@ jobs:
             -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p -movflags +faststart "$RUNNER_TEMP/opening.mp4"
           ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of csv=p=0 "$RUNNER_TEMP/opening.mp4"
           sha256sum "$RUNNER_TEMP/opening.mp4"
-          echo "MP4_B64_START opening.mp4"
-          base64 -w 0 "$RUNNER_TEMP/opening.mp4"
-          echo
-          echo "MP4_B64_END opening.mp4"
