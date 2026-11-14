@@ -83,6 +83,23 @@ def summary(states: list[dict]) -> dict:
     }
 
 
+def drag_ratio() -> float:
+    """Gravel's rolling-resistance coefficient over pavement's. Both are ASSUMED values (see the constants above)."""
+    return GRAVEL_C / PAVED_C
+
+
+def callout_texts(stop_m: float, paved_m: float) -> dict:
+    """The on-screen numbers, each tied to the quantity it is. Two ratios, two different things:
+    drag = ratio of the assumed coefficients (25x); distance = pavement coast distance over the simulated gravel stop
+    (about 24x, a little smaller because the bed's resistance builds up over RAMP_IN metres and the tyres sink in)."""
+    return {
+        "drag": f"{drag_ratio():.0f}\u00d7 MORE DRAG THAN PAVEMENT",
+        "gravel": f"GRAVEL BED:  {stop_m:.0f} m",
+        "paved": f"PAVEMENT:  {paved_m:,.0f} m",
+        "distance": f"PAVEMENT GOES {paved_m / stop_m:.0f}\u00d7 FARTHER",
+    }
+
+
 def audit_energy(states: list[dict]) -> dict:
     """Work done by resistance must equal the kinetic energy lost."""
     ke0 = 0.5 * MASS * SPEED0 ** 2

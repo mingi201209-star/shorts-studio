@@ -712,11 +712,12 @@ def main():
             callouts_on.append((0, ["1  THE WHEEL SINKS IN", "2  STONES PILE UP AHEAD", "3  THE PILE PUSHES BACK"][step],
                                 1190, "yellow", 0.86))
         elif sid == "drag_numbers":
-            callouts_on.append((0, "25\u00d7 MORE DRAG THAN PAVEMENT", 1190, "yellow", 0.86))
+            callouts_on.append((0, motion.callout_texts(stop_x, paved_m)["drag"], 1190, "yellow", 0.86))
         elif sid == "stop_distance":
-            callouts_on += [(0, f"GRAVEL BED:  {stop_x:.0f} m", 1040, "green", 0.62),
-                            (1, f"PAVEMENT:  {paved_m:,.0f} m", 1175, "orange", 0.62),
-                            (2, f"{paved_m / stop_x:.0f}\u00d7 FARTHER", 1310, "white", 0.42)]
+            texts = motion.callout_texts(stop_x, paved_m)
+            callouts_on += [(0, texts["gravel"], 1040, "green", 0.62),
+                            (1, texts["paved"], 1175, "orange", 0.62),
+                            (2, texts["distance"], 1310, "white", 0.84)]
         elif sid == "ramp_beside_road" and not loop_back:
             callouts_on.append((0, "RUNAWAY TRUCK RAMP", 1190, "yellow", 0.72))
         hud_objects = (((hud, hud2, hud_plate) + ((hud3,) if sid == "drag_numbers" else ())

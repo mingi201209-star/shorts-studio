@@ -138,3 +138,28 @@ def test_every_ramp_sentence_has_single_line_curated_caption_phrases():
         phrases = CURATED[shot["narration_en"]]
         assert " ".join(phrases) == shot["narration_en"], shot["id"]
         assert all(len(p) <= SINGLE_LINE and len(p.split()) >= 2 for p in phrases), (shot["id"], phrases)
+
+
+def test_callout_numbers_are_two_different_derived_ratios():
+    s = m.simulate()
+    stop = s[-1]["x"]
+    paved = m.stop_distance(m.PAVED_C)
+    t = m.callout_texts(stop, paved)
+    # drag: the ratio of the assumed coefficients, computed, not typed
+    assert m.drag_ratio() == 25.0 and t["drag"].startswith("25")
+    # distance: an independent check from the closed-form pavement coast distance v^2 / (2 c g)
+    closed = m.SPEED0 ** 2 / (2 * m.PAVED_C * m.G)
+    assert abs(paved - closed) / closed < 0.01
+    ratio = paved / stop
+    assert t["distance"] == f"PAVEMENT GOES {ratio:.0f}× FARTHER"
+    # the two ratios differ because the bed's resistance ramps in over RAMP_IN m and the tyres sink; say so, do not hide it
+    assert 20 < ratio < m.drag_ratio() and ratio != m.drag_ratio()
+    assert t["gravel"] == f"GRAVEL BED:  {stop:.0f} m" and t["paved"].startswith("PAVEMENT:  3,18")
+
+
+def test_narration_numbers_agree_with_the_callouts():
+    import json
+    man = json.loads((Path(__file__).resolve().parents[1] / "examples/experiments/runaway-ramp-manifest.json").read_text())
+    drag = next(s for s in man["shots"] if s["id"] == "drag_numbers")["narration_en"]
+    assert "twenty-five times" in drag and m.drag_ratio() == 25.0
+    assert "0.25 g" in next(s for s in man["shots"] if s["id"] == "drag_numbers")["visual_proof"]
