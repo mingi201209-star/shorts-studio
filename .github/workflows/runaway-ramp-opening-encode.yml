@@ -1,0 +1,57 @@
+name: Runaway truck ramp opening - encode only (existing frames, short log lines)
+# Re-encodes the opening from frames that already exist as artifacts: base run 43613410543 (7 complete shards + 3 shards cut
+# off by the 90-minute limit) overlaid with the patch frames of run 43622223172. No rendering. The clip is printed as base64 in
+# short (76-character) lines so the job log can be read back without truncation. Review only; not a deliverable; never uploaded.
+on:
+  push:
+    branches: [road-ramp-captions-camera-20261114]
+    paths:
+      - examples/experiments/runaway-ramp-opening-encode-request.json
+      - .github/workflows/runaway-ramp-opening-encode.yml
+permissions:
+  contents: read
+  actions: read
+env:
+  BASE_RUN_ID: "43613410543"
+  PATCH_RUN_ID: "43622223172"
+jobs:
+  encode:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: runaway-ramp-opening-*
+          path: ${{ runner.temp }}/base
+          merge-multiple: true
+          run-id: ${{ env.BASE_RUN_ID }}
+          github-token: ${{ github.token }}
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: runaway-ramp-opening-patch-*
+          path: ${{ runner.temp }}/patch
+          merge-multiple: true
+          run-id: ${{ env.PATCH_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Overlay the patched frames, encode the graded opening and print it
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          rm -f base/_hud_frame_*.png patch/_hud_frame_*.png
+          ls patch/frame_*.png
+          cp patch/frame_*.png base/
+          cd base
+          test "$(ls frame_*.png | wc -l)" = 285
+          sha256sum frame_*.png > "$RUNNER_TEMP/frames.sha256"
+          sha256sum "$RUNNER_TEMP/frames.sha256"
+          GRADE=$(PYTHONPATH="$GITHUB_WORKSPACE" python3 -c "from benchmarks.road_safety import cinematic; print(cinematic.GRADE_FILTER)")
+          ffmpeg -v error -framerate 30 -i frame_%04d.png -vf "$GRADE,drawbox=x=0:y=1400:w=1080:h=520:color=black:t=fill" \
+            -c:v libx264 -preset fast -crf 17 -pix_fmt yuv420p -movflags +faststart "$RUNNER_TEMP/opening.mp4"
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames -of csv=p=0 "$RUNNER_TEMP/opening.mp4"
+          sha256sum "$RUNNER_TEMP/opening.mp4"
+          echo "MP4_B64_START opening.mp4"
+          ls -l "$RUNNER_TEMP/opening.mp4"
+          base64 -w 76 "$RUNNER_TEMP/opening.mp4"
+          echo "MP4_B64_END opening.mp4"
