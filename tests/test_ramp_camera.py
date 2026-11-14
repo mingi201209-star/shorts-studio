@@ -29,12 +29,21 @@ def test_nose_track_is_continuous_through_first_tyre_contact():
     assert min(abs(y) for y in ys) < 0.5                                   # passes through 0 (the contact point)
 
 
-def test_camera_keeps_the_established_opening_and_ends_beside_the_rear_tandem():
+def test_camera_keeps_the_established_opening_and_ends_behind_the_nose_on_the_right():
     first = rc.relative_path()[0]
     assert first.position == (2.7, 18.0, 0.45) and first.lens == 24.0
     last = rc.relative_path()[-1]
-    assert last.position[1] < -10 and last.position[2] > 3.0
+    assert last.position[1] < -5 and last.position[0] > 5.0           # out on the right side, level with the rear half
     assert len(rc.relative_path()) == rc.LAST_FRAME - rc.FIRST_FRAME + 1
+
+
+def test_the_truck_outline_stays_readable_after_the_first_two_seconds():
+    """Round-2 finding: hugging the wheels made the truck vanish. The outline (>= 4 of 8 bounding-box corners in the picture)
+    must be on screen in most frames after frame 60, never gone for long, and the truck must not shrink to a speck."""
+    rep = rc.silhouette_report(m.simulate(), min_corners=4)
+    assert rep["share_from_frame_61"] >= 0.85
+    assert rep["longest_run_without_s"] <= 1.5
+    assert rep["truck_width_fraction_median_from_61"] >= 0.5 and rep["truck_width_fraction_p10_from_61"] >= 0.35
 
 
 def test_manifest_selects_the_continuous_camera_and_keeps_shot_coverage():
