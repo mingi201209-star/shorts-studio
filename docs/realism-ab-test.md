@@ -32,3 +32,22 @@ black_opening, captions_visible, motion_plausibility, narration_screen_match, fi
 Report: `RAMP_PREFLIGHT_REPORT status PASS`, preflight only (`deliverable: false`, `upload_authorized: false`).
 Not yet done: a full-resolution production render at level B (production workflow `native`/`final` stay closed), and a viewer-level
 judgement of the realism. Level C is not enabled in the manifest.
+
+## Production render, realism B (run 43583071422, commit 504f1fe, 1080x1920, 30 fps, 32 s)
+All 35 jobs succeeded. Every QA gate PASS (visual_activity: average beat 0.97 s, longest static 2.5 s, 7 changes in the first 5 s;
+black_opening, captions_visible, motion_plausibility, narration_screen_match, first_three_seconds, caption_safety).
+MP4 recovered from the final-job log and **verified**: SHA-256 `2360a2f8426eba57083a2dbb8062eb975aff3ede703003d32e9bfcea3689251f`
+equals the hash the run reported (`RAMP_FILM_PASS`); h264 1080x1920 30 fps 32.0 s + aac. Frames reviewed: `docs/evidence/runaway-ramp-round4-realismB-contact-sheet.jpg`.
+
+Motion profile (`motion_profile.py`, picture rows, 15 fps):
+
+| | median frame change | share < 4 | registered beats | longest without a beat |
+|---|---|---|---|---|
+| round 3 (A) | 5.36 | 0.39 | 31 | 5.0 s |
+| round 4 (B) | 6.54 | 0.31 | 37 | 2.0 s |
+| reference clip (earlier measurement) | 14.7 | - | - | - |
+
+Still true: stylised box truck, sphere stones, assumed (not calibrated) coefficients; far below the reference's motion; no viewer
+test; audio pronunciation/noise/sync not verified. Callouts "25x MORE DRAG" (resistance ratio) and "24x FARTHER" (distance ratio) are
+different quantities but read as inconsistent. Not uploaded, not merged, no PR. Production gates are open and should be closed again
+(`if: false`) unless another run is wanted.
