@@ -25,3 +25,23 @@ A 20,000 kg truck with failed brakes enters a level gravel bed at 90 km/h. Its t
 
 ## Open items
 `upload_authorized: false`. Production gates (`native`, `final`) in `.github/workflows/runaway-ramp-production.yml` are re-closed (`if: false`).
+
+---
+
+# Round 2 (review-driven)
+
+Review of round 1 (77/100): first 3 s too calm, 10-22 s (cutaway + comparison) too static. Round 2 changes, no QA gate relaxed:
+
+- Opening: truck starts closer (contact at ~0.4 s), spray and dust roughly doubled, a red "BRAKES FAILED" warning over the speed read-out for the first ~2.4 s.
+- Cutaway: a wheel rolls across the slab, sinks in and throws stones ahead of it (replaces the static slice).
+- Comparison: a second, orange truck (the same truck coasting on pavement at constant speed, an illustration) keeps running down the paved lane while the green truck stops.
+- Two new telemetry events are required by the manifest (`wheel_rolling_visible`, `paved_truck_moving_visible`); `dust_cloud_thick` is counted as a later opening onset.
+
+Evidence:
+- Offline (local telemetry, 960 frames) predicted the telemetry gates; it also caught two real problems before CI: opening events clustering inside 0.3 s (first_three_seconds FAIL by 0.034 s; fixed by counting the later dust onset) and the warning text vanishing (z-fighting with its plate; fixed).
+- Preflight run 43514943060 attempt 2: every gate PASS (attempt 1: three shards failed only at the Blender download, `curl: (22) ... 403`).
+- Production run 43520329487 attempt 3: 32 shards, 1080x1920, 32 samples. 9 shard-attempts failed at the Blender download with the same 403 and were re-run; the production workflow now retries the download (`--retry-all-errors`). Final MP4 sha256 `2dc2795ffaf3231da8fc747b3962a7b2f3e63fbc45fe231fc34c2218add4e221` (decoded from the job log, re-hashed: identical), 960 frames, 30 fps, 32.0 s.
+- Gates in the final run: visual_activity PASS (max static still 5.0 s, at the limit), black_opening PASS, captions_visible PASS, motion_plausibility PASS, narration_screen_match PASS, first_three_seconds PASS (onsets at 0.667, 0.767, 0.933, 2.367 s), caption_safety PASS.
+- Comparison image: `docs/evidence/runaway-ramp-round1-vs-round2.jpg` (top round 1, bottom round 2, same timestamps).
+
+Honest limits: the change is incremental (warning, closer start, rolling wheel); the truck is still primitives and the terrain flat. Human first-view and retention are UNVERIFIED. The 133 m / 3 km figures rest on assumed resistance coefficients. `upload_authorized: false`; production gates closed.
