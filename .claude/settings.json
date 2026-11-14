@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl *productionresultssa30.blob.core.windows.net*)"
+    ]
+  }
+}
