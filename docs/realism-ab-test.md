@@ -21,8 +21,7 @@ chase of the pavement truck. Local 360x640, every 8th frame, shared visual-activ
 | | registered beats in the shot | longest stretch without one | median change between samples |
 |---|---|---|---|
 | A (old) | 2 | 5.07 s | 0.24 |
-| B (continuous move) | 7 | 3.47 s | 2.49 |
+| B (continuous move, first half only) | 7 | 3.47 s | 2.49 |
+| B (also the opening of the shot rises from oblique to top-down) | 10 | 1.60 s | - |
 
-Local measurement only: the full-film gates (narration/screen match, first three seconds, QA) have not been re-run with this camera
-and the level is not yet selectable from the manifest or the Actions workflow. 3.47 s is better, not good: the first part of
-the shot (top-down follow) is still slow.
+Local measurement only; the manifest now carries `"realism": "B"` (the renderer reads it when `--realism` is not given), so the CI preflight renders level B and runs all gates.

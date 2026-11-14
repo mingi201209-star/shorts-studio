@@ -163,5 +163,6 @@
     "note": "Counts physical events becoming true and visible, not cuts or camera moves."
   },
   "_edit_order_note": "Shot order follows retention evidence from an earlier episode (steepest viewer loss at 3.5-6 s when the picture went from an event to an explanation; second loss at an 'and that is why' ending): the action macro follows the hook, the static cutaway moves to third and the ending loops back to the first frame.",
-  "look": "cinematic"
+  "look": "cinematic",
+  "realism": "B"
 }

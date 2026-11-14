@@ -57,7 +57,7 @@ def arguments():
     p.add_argument("--telemetry-only", action="store_true")
     p.add_argument("--step", type=int, default=1)
     p.add_argument("--look", choices=("standard", "cinematic"), default=None)
-    p.add_argument("--realism", choices=realism.LEVELS, default="A",
+    p.add_argument("--realism", choices=realism.LEVELS, default=None,
                    help="A = existing look; B = bevels, tread, dirty clear-coat, mixed stones; C = B + sprung body")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
@@ -149,6 +149,7 @@ def main():
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
     look = args.look or manifest.get("look", cinematic.LOOK_STANDARD)
+    args.realism = args.realism or manifest.get("realism", "A")
     scene.cycles.samples = 7 if args.preview else manifest["cycles_samples"]
     if os.environ.get("CUSHION_DEV_SAMPLES"):
         scene.cycles.samples = int(os.environ["CUSHION_DEV_SAMPLES"])
@@ -674,7 +675,12 @@ def main():
         elif sid == "stop_distance":
             k = seg(0.30, 0.78)
             if k == 0:
-                set_cam((0.0, stop_x - 12.0, 52.0), (0.0, stop_x - 11.99, 0.0), 32)
+                if args.realism == "A":
+                    set_cam((0.0, stop_x - 12.0, 52.0), (0.0, stop_x - 11.99, 0.0), 32)
+                else:      # rise from an oblique view of the stopped truck to the top-down view in one move
+                    e = (t / 0.30) ** 2 * (3.0 - 2.0 * (t / 0.30))
+                    set_cam((lerp(7.0, 0.0, e), lerp(stop_x - 45.0, stop_x - 12.0, e), lerp(16.0, 52.0, e)),
+                            (0.0, lerp(stop_x - 10.0, stop_x - 11.99, e), lerp(0.8, 0.0, e)), 32)
             elif k == 1:
                 if args.realism == "A":
                     set_cam((0.0, 72.0, lerp(95.0, 108.0, t)), (0.0, 72.01, 0.0), 32)
