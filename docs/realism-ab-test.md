@@ -13,3 +13,16 @@ texture is used, and nothing here is calibrated physics. B is better than A on m
 
 Run it: `--realism A|B|C` on `render_runaway_ramp.py` (default A, so existing manifests and CI render exactly as before).
 Evidence: `docs/evidence/realism-A-vs-B-frames90-120.jpg` (left A, right B; frames 90 and 120).
+
+## Static top-down comparison (frames 605-793), level B/C only
+At level A the camera holds a high top-down view for ~3 s. At B/C one continuous move eases from that view down into an oblique
+chase of the pavement truck. Local 360x640, every 8th frame, shared visual-activity rule (cropped to the picture rows):
+
+| | registered beats in the shot | longest stretch without one | median change between samples |
+|---|---|---|---|
+| A (old) | 2 | 5.07 s | 0.24 |
+| B (continuous move) | 7 | 3.47 s | 2.49 |
+
+Local measurement only: the full-film gates (narration/screen match, first three seconds, QA) have not been re-run with this camera
+and the level is not yet selectable from the manifest or the Actions workflow. 3.47 s is better, not good: the first part of
+the shot (top-down follow) is still slow.

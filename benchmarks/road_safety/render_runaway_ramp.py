@@ -676,7 +676,15 @@ def main():
             if k == 0:
                 set_cam((0.0, stop_x - 12.0, 52.0), (0.0, stop_x - 11.99, 0.0), 32)
             elif k == 1:
-                set_cam((0.0, 72.0, lerp(95.0, 108.0, t)), (0.0, 72.01, 0.0), 32)
+                if args.realism == "A":
+                    set_cam((0.0, 72.0, lerp(95.0, 108.0, t)), (0.0, 72.01, 0.0), 32)
+                else:
+                    # one continuous move (no still stretch): the high top-down view eases down into an oblique
+                    # chase of the pavement truck, which is the anchor, instead of holding the map for 3 s
+                    u = min(1.0, max(0.0, (t - 0.30) / 0.48))
+                    e = u * u * (3.0 - 2.0 * u)
+                    set_cam((lerp(0.0, 9.0, e), lerp(72.0, ty - 30.0, e), lerp(95.0, 11.0, e)),
+                            (0.0, lerp(72.01, ty + 12.0, e), lerp(0.0, 0.8, e)), lerp(32.0, 30.0, e))
             else:
                 set_cam((9.0, stop_x - 24.0, 3.5), (0.0, stop_x - 8.0, 0.8), 28)
         elif sid == "ramp_beside_road":
