@@ -10,13 +10,13 @@
   ],
   "cycles_samples": 32,
   "total_frames": 960,
-  "_frame_plan_note": "960 frames at 30 fps; shot boundaries sit in the gaps between the measured spoken windows of the first preflight (0.10-4.44, 4.93-9.16, 9.65-14.04, 14.54-19.40, 19.90-25.88, 26.38-31.61 s).",
+  "_frame_plan_note": "960 frames at 30 fps; boundaries sit between the expected spoken windows (0.10-4.44, 4.93-9.16, 9.65-14.55, 15.1-19.97, 20.5-26.5, 27.0-31.4 s); re-measured by the preflight.",
   "shots": [
     {
       "id": "gravel_hook",
       "start": 1,
       "end": 140,
-      "visual_proof": "Slow motion from beside the bed entrance with a red BRAKES FAILED warning over the speed read-out for the first seconds: the truck arrives close at 90 km/h, its tyres dig into the stones and gravel and dust spray up; then a dolly ahead of the truck and a side-on view of the rear wheels.",
+      "visual_proof": "A ground-level camera at the bed entrance looks back at the truck charging in head-on at 90 km/h (red BRAKES FAILED warning over the speed read-out, focus following the truck); just before it reaches the gravel a hard cut to a low side view as the tyres hit the stones and gravel and dust explode; then a dolly ahead of the truck and a side-on view of the rear wheels.",
       "narration_en": "This truck has lost its brakes, and it is about to plow into a bed of loose gravel.",
       "must_show_while_spoken": [
         {
@@ -57,9 +57,9 @@
     {
       "id": "bed_cutaway",
       "start": 283,
-      "end": 428,
-      "visual_proof": "A cutaway slice of the bed (cutaway device): a wheel rolls across the loose rounded stones, sinks into them and throws stones ahead of it, seen in an orbit and then close on the cut face.",
-      "narration_en": "The bed is just a thick layer of round stones, piled deep and left loose.",
+      "end": 444,
+      "visual_proof": "Cutaway (device): a thin slice of the bed seen side-on with a wheel rolling through it. Big on-screen steps appear in turn: 1 THE WHEEL SINKS IN (the wheel settles into the stones), 2 STONES PILE UP AHEAD (the wheel shoves the stones it meets into a growing pile in front of it, leaving a rut behind), 3 THE PILE PUSHES BACK (a red arrow points back at the wheel).",
+      "narration_en": "Each wheel must shove a pile of stones ahead of it, and the pile pushes back.",
       "must_show_while_spoken": [
         {
           "event": "bed_cutaway_visible",
@@ -68,13 +68,25 @@
         {
           "event": "wheel_rolling_visible",
           "min_seconds": 2.0
+        },
+        {
+          "event": "pile_visible",
+          "min_seconds": 1.5
+        },
+        {
+          "event": "drag_arrow_visible",
+          "min_seconds": 1.0
+        },
+        {
+          "event": "step_callout_visible",
+          "min_seconds": 3.0
         }
       ]
     },
     {
       "id": "drag_numbers",
-      "start": 429,
-      "end": 589,
+      "start": 445,
+      "end": 606,
       "visual_proof": "Raised tracking view from behind: the truck keeps slowing while a read-out compares gravel drag (0.25 g) with pavement (0.01 g, assumed values).",
       "narration_en": "Loose gravel drags at about a quarter of the truck's weight, twenty-five times more than pavement.",
       "must_show_while_spoken": [
@@ -94,9 +106,9 @@
     },
     {
       "id": "stop_distance",
-      "start": 590,
-      "end": 783,
-      "visual_proof": "Straight-down view with a green bar to where the truck actually stops (about 133 m) while a second, orange truck (the same truck coasting on pavement at constant speed, an illustration) keeps running down the paved lane and out of the picture; the orange bar runs off the end of the picture for the paved coast.",
+      "start": 607,
+      "end": 802,
+      "visual_proof": "Straight-down view: a green bar to where the truck actually stops and an orange bar that runs off the end of the picture for the paved coast, a second (orange) truck coasting down the paved lane out of the picture, and three big read-outs: GRAVEL BED 133 m, PAVEMENT 3,184 m, 24x FARTHER (all from the simulation).",
       "narration_en": "On pavement this truck would coast over three kilometers; the gravel stops it in about one hundred thirty meters.",
       "must_show_while_spoken": [
         {
@@ -114,15 +126,19 @@
         {
           "event": "paved_truck_moving_visible",
           "min_seconds": 1.5
+        },
+        {
+          "event": "numbers_callout_visible",
+          "min_seconds": 3.0
         }
       ]
     },
     {
       "id": "ramp_beside_road",
-      "start": 784,
+      "start": 803,
       "end": 960,
-      "visual_proof": "Wide, low and raised views of the ramp branching from a highway with a truck passing in the next lane; the last two seconds return to the opening camera with a truck arriving again, ending one frame before the film's first frame so the Short loops.",
-      "narration_en": "That is why steep mountain roads have ramps like this, waiting beside the highway for the next runaway truck.",
+      "visual_proof": "The truck (the same one) drives along the highway lane, swings off onto the ramp approach and heads for the gravel bed, under a big RUNAWAY TRUCK RAMP read-out; the last two seconds return to the opening ground-level camera with the truck charging in again, ending one frame before the film's first frame so the Short loops.",
+      "narration_en": "That is why steep mountain roads have ramps like this, waiting for the next runaway truck.",
       "must_show_while_spoken": [
         {
           "event": "ramp_beside_road_visible",

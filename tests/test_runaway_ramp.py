@@ -93,3 +93,38 @@ def test_cut_grains_land_on_the_slab_top_and_wheel_sinks_in():
 def test_gravel_floor_default_unchanged():
     g = {"t0": 0.0, "p0": (0, 0, 0.05), "v0": (0, 0, 2.0), "r": 0.02}
     assert abs(m.grain_position(g, 5.0)[2] - 0.02) < 1e-9
+
+
+def test_plow_pushes_stones_ahead_of_the_wheel_and_leaves_no_stone_inside_it():
+    import numpy as np
+    st = m.slice_stones()
+    n = len(st["x"])
+    x0, _, moved0 = m.plow(st, m.CUT_ROLL_X[0], 0.0)
+    assert not moved0.any()
+    wx, sink = 0.0, m.SINK_MAX
+    x, z, moved = m.plow(st, wx, sink)
+    assert moved.sum() > 100
+    zc = m.CUT_SLAB_D + m.WHEEL_R - sink
+    d2 = (x - wx) ** 2 + (z - zc) ** 2
+    assert (d2[moved] >= (m.WHEEL_R - 1e-6) ** 2).all()            # nothing pushed into the wheel
+    assert (x[moved] >= st["x"][moved]).all()                       # pushed forward only
+    assert z[moved].max() > m.CUT_SLAB_D                            # a pile rises above the original surface
+    below = st["z"] < zc - m.WHEEL_R
+    assert (x[below] == st["x"][below]).all()                       # stones under the wheel stay put
+
+
+def test_pile_grows_as_the_wheel_rolls_on():
+    st = m.slice_stones()
+    _, zA, mA = m.plow(st, -0.3, m.SINK_MAX)
+    _, zB, mB = m.plow(st, 0.8, m.SINK_MAX)
+    assert mB.sum() > mA.sum() and zB.max() >= zA.max()
+
+
+def test_exit_path_runs_from_the_highway_lane_onto_the_ramp_axis():
+    import math
+    assert m.exit_path_x(-200.0) == m.EXIT_LANE_X and m.exit_path_x(-20.0) == 0.0
+    ys = [-140 + i for i in range(0, 80)]
+    xs = [m.exit_path_x(y) for y in ys]
+    assert all(b >= a - 1e-12 for a, b in zip(xs, xs[1:]))
+    assert m.exit_path_yaw(-100.0) < 0 and abs(m.exit_path_yaw(-100.0)) < math.radians(25)
+    assert abs(m.exit_path_yaw(-20.0)) < 1e-9

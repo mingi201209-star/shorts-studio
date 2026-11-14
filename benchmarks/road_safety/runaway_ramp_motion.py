@@ -226,3 +226,57 @@ def build_cut_grains(seconds: float, y_center: float, seed: int = 5, per_second:
                     "p0": (w["x"] + 0.28, y_center + rng.uniform(-0.15, 0.15), CUT_SLAB_D + 0.04),
                     "v0": (rng.uniform(0.25, 1.1), rng.uniform(-0.9, 0.9), rng.uniform(0.7, 2.0))})
     return out
+
+
+# ------------------------------------------- cutaway slice: a wheel plowing a pile of stones
+SLICE_HALF_W = 1.25        # slice half width (m)
+SLICE_THICK = 0.34        # slice thickness (m): the wheel is wider, so its face covers the stones
+PILE_FULL = 0.6           # pushed distance (m) at which the pile has reached its full height / depth
+
+
+def slice_stones(n: int = 12000, seed: int = 9) -> dict:
+    """Random stones filling the slice: x, z (m), y offset in the slice, radius and two random numbers."""
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    r = rng.uniform(0.014, 0.030, n)
+    return {"x": rng.uniform(-SLICE_HALF_W, SLICE_HALF_W, n), "z": rng.uniform(r, CUT_SLAB_D - r),
+            "y": rng.uniform(0.02, SLICE_THICK - 0.02, n), "r": r,
+            "u": rng.random(n), "v": rng.random(n)}
+
+
+def plow(st: dict, wheel_x: float, wheel_sink: float):
+    """Stone positions (x, z) with the wheel at wheel_x, sunk by wheel_sink. A stone the wheel reaches is pushed
+    ahead of it along the wheel's front edge; the more it has been pushed, the higher and deeper the pile it joins.
+    Kinematic picture of a bow wave, not a granular-flow simulation."""
+    import numpy as np
+    x, z, u, v = st["x"], st["z"], st["u"], st["v"]
+    zc = CUT_SLAB_D + WHEEL_R - wheel_sink
+    start = CUT_ROLL_X[0]
+    eligible = (x >= start) & (z > zc - WHEEL_R)
+    # first estimate of how far each stone is pushed, to size its lift
+    dz0 = np.clip(z - zc, -WHEEL_R, WHEEL_R)
+    front0 = wheel_x + np.sqrt(np.maximum(WHEEL_R ** 2 - dz0 ** 2, 0.0))
+    pushed = np.where(eligible, np.maximum(front0 - x, 0.0), 0.0)
+    grow = np.minimum(1.0, pushed / PILE_FULL)
+    z1 = np.minimum(z + 0.40 * grow * u, zc + 0.95 * WHEEL_R)
+    dz1 = np.clip(z1 - zc, -WHEEL_R, WHEEL_R)
+    front1 = wheel_x + np.sqrt(np.maximum(WHEEL_R ** 2 - dz1 ** 2, 0.0)) + 0.14 * grow * v
+    moved = eligible & (pushed > 0.0)
+    return np.where(moved, np.maximum(x, front1), x), np.where(moved, z1, z), moved
+
+
+# ------------------------------------------- closing shot: the truck leaves the highway for the ramp
+EXIT_LANE_X = -11.0
+EXIT_BLEND_Y = (-135.0, -70.0)     # the connector runs between these y values (m)
+
+
+def exit_path_x(y: float) -> float:
+    """Lane centre x for a truck whose nose is at y: on the highway lane, then a smooth S onto the ramp axis."""
+    s = min(max((y - EXIT_BLEND_Y[0]) / (EXIT_BLEND_Y[1] - EXIT_BLEND_Y[0]), 0.0), 1.0)
+    return EXIT_LANE_X * (1.0 - s * s * (3.0 - 2.0 * s))
+
+
+def exit_path_yaw(y: float) -> float:
+    """Yaw (rad, about +z) that points the truck along the path at y."""
+    import math
+    return -math.atan2(exit_path_x(y + 0.5) - exit_path_x(y - 0.5), 1.0)
