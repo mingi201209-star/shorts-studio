@@ -12,7 +12,7 @@ name: Runaway truck ramp preflight (full length, low resolution, every QA gate)
 # pixel-exact duplicate check. It never produces a deliverable.
 on:
   push:
-    branches: [road-paint-retroreflective-20261106]
+    branches: [road-paint-retroreflective-20261106, road-ramp-captions-camera-20261114]
     paths:
       - .github/workflows/runaway-ramp-preflight.yml
       - examples/experiments/runaway-ramp-speech-plan.json
@@ -22,6 +22,9 @@ on:
       - benchmarks/road_safety/render_crash_cushion.py
       - benchmarks/road_safety/render_jersey_barrier.py
       - benchmarks/road_safety/runaway_ramp_motion.py
+      - benchmarks/road_safety/ramp_camera.py
+      - benchmarks/road_safety/realism.py
+      - benchmarks/road_safety/cinematic_camera.py
       - benchmarks/road_safety/runaway_ramp_gates.py
       - benchmarks/road_safety/assemble_runaway_ramp.py
       - benchmarks/road_safety/curious_mechanics_audio.py
