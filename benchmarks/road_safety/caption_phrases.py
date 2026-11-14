@@ -22,6 +22,10 @@ def _length(tokens: list[str]) -> int:
 #: Each phrase is a run of whole words within the 31-character cue limit and
 #: the phrases of a sentence concatenate back to exactly that sentence.
 CURATED: dict[str, tuple[str, ...]] = {
+    "Every wheel sinks into the stones, and digging through them quickly drains the truck's speed.": (
+        "Every wheel sinks into", "the stones, and digging", "through them quickly", "drains the truck's speed."),
+    "Each wheel must shove a pile of loose stones ahead of it, and the pile pushes back.": (
+        "Each wheel must shove", "a pile of loose stones", "ahead of it, and", "the pile pushes back."),
     "Each wheel must shove a pile of stones ahead of it, and the pile pushes back.": (
         "Each wheel must shove", "a pile of stones", "ahead of it, and", "the pile pushes back."),
     "That is why steep mountain roads have ramps like this, waiting for the next runaway truck.": (

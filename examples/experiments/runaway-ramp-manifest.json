@@ -10,7 +10,7 @@
   ],
   "cycles_samples": 32,
   "total_frames": 960,
-  "_frame_plan_note": "960 frames at 30 fps; boundaries sit between the expected spoken windows (0.10-4.44, 4.93-9.16, 9.65-14.55, 15.1-19.97, 20.5-26.5, 27.0-31.4 s); re-measured by the preflight.",
+  "_frame_plan_note": "960 frames at 30 fps; boundaries sit at the expected beat edges (4.68, 9.51, 14.94, 20.14, 26.45 s); re-measured by the preflight.",
   "shots": [
     {
       "id": "gravel_hook",
@@ -36,9 +36,9 @@
     {
       "id": "tyres_sink",
       "start": 141,
-      "end": 282,
+      "end": 285,
       "visual_proof": "Macro at the drive wheels: the tyres sit below the surface of the gravel and push a wave of stones aside while the read-out falls.",
-      "narration_en": "Every wheel sinks into the stones, and digging through them drains the truck's speed.",
+      "narration_en": "Every wheel sinks into the stones, and digging through them quickly drains the truck's speed.",
       "must_show_while_spoken": [
         {
           "event": "tyres_digging",
@@ -56,10 +56,10 @@
     },
     {
       "id": "bed_cutaway",
-      "start": 283,
-      "end": 444,
+      "start": 286,
+      "end": 448,
       "visual_proof": "Cutaway (device): a thin slice of the bed seen side-on with a wheel rolling through it. Big on-screen steps appear in turn: 1 THE WHEEL SINKS IN (the wheel settles into the stones), 2 STONES PILE UP AHEAD (the wheel shoves the stones it meets into a growing pile in front of it, leaving a rut behind), 3 THE PILE PUSHES BACK (a red arrow points back at the wheel).",
-      "narration_en": "Each wheel must shove a pile of stones ahead of it, and the pile pushes back.",
+      "narration_en": "Each wheel must shove a pile of loose stones ahead of it, and the pile pushes back.",
       "must_show_while_spoken": [
         {
           "event": "bed_cutaway_visible",
@@ -85,8 +85,8 @@
     },
     {
       "id": "drag_numbers",
-      "start": 445,
-      "end": 606,
+      "start": 449,
+      "end": 604,
       "visual_proof": "Raised tracking view from behind: the truck keeps slowing while a read-out compares gravel drag (0.25 g) with pavement (0.01 g, assumed values).",
       "narration_en": "Loose gravel drags at about a quarter of the truck's weight, twenty-five times more than pavement.",
       "must_show_while_spoken": [
@@ -106,8 +106,8 @@
     },
     {
       "id": "stop_distance",
-      "start": 607,
-      "end": 802,
+      "start": 605,
+      "end": 793,
       "visual_proof": "Straight-down view: a green bar to where the truck actually stops and an orange bar that runs off the end of the picture for the paved coast, a second (orange) truck coasting down the paved lane out of the picture, and three big read-outs: GRAVEL BED 133 m, PAVEMENT 3,184 m, 24x FARTHER (all from the simulation).",
       "narration_en": "On pavement this truck would coast over three kilometers; the gravel stops it in about one hundred thirty meters.",
       "must_show_while_spoken": [
@@ -135,10 +135,10 @@
     },
     {
       "id": "ramp_beside_road",
-      "start": 803,
+      "start": 794,
       "end": 960,
       "visual_proof": "The truck (the same one) drives along the highway lane, swings off onto the ramp approach and heads for the gravel bed, under a big RUNAWAY TRUCK RAMP read-out; the last two seconds return to the opening ground-level camera with the truck charging in again, ending one frame before the film's first frame so the Short loops.",
-      "narration_en": "That is why steep mountain roads have ramps like this, waiting for the next runaway truck.",
+      "narration_en": "That is why steep mountain roads have ramps like this, waiting beside the highway for the next runaway truck.",
       "must_show_while_spoken": [
         {
           "event": "ramp_beside_road_visible",
