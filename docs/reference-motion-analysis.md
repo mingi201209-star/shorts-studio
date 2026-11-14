@@ -42,3 +42,44 @@ The reference almost never holds: a new beat at nearly every half second.
    (`cinematic_camera.py`) is the tool for the first part.
 3. Any new "continuous motion" gate must be added, never replace an existing one, and its target must be
    calibrated on more than one reference before it can fail a film.
+
+
+---
+
+## Second pass (a second set of three recordings of the same clip, frame-level at 30 fps)
+
+Corrections to the first pass:
+- The "large change at 0.3 s" was **not** in the film: the phone's player UI shifted for ~0.2 s as the clip restarted.
+  The earlier list of ~10 large changes was over-counted; the film has **7** (below).
+- "The picture almost always moves" was too strong: 18.9-25.0 s (the anatomy cutaway) has a median frame change of only
+  2.9; there the motion is local (a light beam, a white flood inside the diagram), not camera motion.
+
+Transitions, found where the correlation between adjacent frames collapses and then checked frame by frame:
+
+| time (s) | what happens (observed) |
+|---|---|
+| 0.5-9.4 | **one uninterrupted camera move, 8.9 s** (no frame pair below correlation 0.53): across the deer, onto the car head-on, back to the deer |
+| 9.4 | fast push-in (~0.3 s) from the deer's head onto its eye; the eye stays anchored in the frame |
+| 11.1 | out of the eye with the eyelashes staying in frame while the background becomes a blue scene with a white light bar |
+| 14.7 | push-in onto the eye from a dusk-lit head shot |
+| 18.9 | fast pull-out (~0.25 s) from the head to a wide shot of the deer on the road |
+| 25.0 | pull-out from an eye macro while the head turns |
+| 28.9 | **the only hard cut** (deer on a car hood -> deer head on grass) |
+| 29.9 | headlights switch on behind the deer, slow push-in, then the clip loops to its first frame |
+
+Pattern: transitions keep an **anchor** (the eye, the lashes, the deer) in frame while the surroundings change in
+0.1-0.3 s; one hard cut in 30.9 s; one 8.9 s continuous move.
+
+The explanation device is used **twice with different parameters**: a light beam enters the eye and the anatomy cutaway
+shows it passing through (slow sunrise, "plenty of time"), then the same cutaway floods white (headlights, "all at once").
+
+Audio: integrated loudness -14.1 to -14.8 LUFS (phone speaker, so not a reliable level), loudness range 1.1-3.8 LU.
+Whether sound effects are timed to the transitions could not be determined: speech and music produce ~50 loud onsets in
+30 s, and 4 of the 7 transitions fall within 0.25 s of one, no better than chance (~55 %).
+
+## What this changes for our next film (hypotheses)
+1. A long uninterrupted camera move (8-9 s) and anchor-based transitions are the measurable differences from our
+   films, which hold a fixed camera for up to 5 s between hard cuts.
+2. Show the same device twice with different parameters: the plowing-wheel cutaway on gravel and on pavement.
+3. Our static top-down comparison (20.5-25.5 s in round 3) is the opposite pattern; moving the camera with an anchor
+   (the truck) while the numbers appear is the fix to test, measured with `motion_profile.py`.
