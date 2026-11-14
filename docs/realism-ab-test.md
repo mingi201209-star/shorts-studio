@@ -25,3 +25,10 @@ chase of the pavement truck. Local 360x640, every 8th frame, shared visual-activ
 | B (also the opening of the shot rises from oblique to top-down) | 10 | 1.60 s | - |
 
 Local measurement only; the manifest now carries `"realism": "B"` (the renderer reads it when `--realism` is not given), so the CI preflight renders level B and runs all gates.
+
+## CI preflight with realism B (run 43575903085, commit bd3c095, 360x640, free runner)
+All gates PASS: visual_activity (average beat 0.97 s, **longest static stretch 2.5 s, previously 5.0 s**, 7 changes in the first 5 s),
+black_opening, captions_visible, motion_plausibility, narration_screen_match, first_three_seconds, caption_safety.
+Report: `RAMP_PREFLIGHT_REPORT status PASS`, preflight only (`deliverable: false`, `upload_authorized: false`).
+Not yet done: a full-resolution production render at level B (production workflow `native`/`final` stay closed), and a viewer-level
+judgement of the realism. Level C is not enabled in the manifest.
