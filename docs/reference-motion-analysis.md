@@ -12,6 +12,7 @@ only numbers and our own observations are.
 | our sand barrels v4 | 2.8 | 64 % | 1 % | 27 in 32 s (1.19 s each) | 3.0 s |
 | our runaway ramp, round 1 | 4.2 | 48 % | 3 % | 30 in 32 s | 3.0 s |
 | our runaway ramp, round 2 | 4.5 | 45 % | 4 % | 32 in 32 s | 3.0 s |
+| our runaway ramp, round 3 | 5.4 | 39 % | 4 % | 31 in 32 s | **5.0 s** (20.5-25.5 s, the top-down comparison) |
 
 The shared visual_activity QA only requires a new beat within 5 s, so a film that holds a view for 3-5 s passes it.
 The reference almost never holds: a new beat at nearly every half second.

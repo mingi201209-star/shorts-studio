@@ -45,3 +45,27 @@ Evidence:
 - Comparison image: `docs/evidence/runaway-ramp-round1-vs-round2.jpg` (top round 1, bottom round 2, same timestamps).
 
 Honest limits: the change is incremental (warning, closer start, rolling wheel); the truck is still primitives and the terrain flat. Human first-view and retention are UNVERIFIED. The 133 m / 3 km figures rest on assumed resistance coefficients. `upload_authorized: false`; production gates closed.
+
+---
+
+# Round 3 (review 72/100: danger intensity, intuition of the resistance principle, one-screen comparison)
+
+Changes, no QA gate relaxed:
+- First seconds: a ground-level camera at the bed entrance looks back at the truck charging in head-on (focus follows it), a hard cut to a low side view just before the tyres hit the stones, red BRAKES FAILED warning, roughly doubled spray and dust.
+- Principle (cutaway, narration rewritten to "Each wheel must shove a pile of loose stones ahead of it, and the pile pushes back"): a thin slice of the bed seen side-on, a wheel rolls through it and shoves the stones it meets into a growing pile (a kinematic picture, not a granular-flow simulation), leaving a rut; a line marks the original surface; big steps "1 THE WHEEL SINKS IN", "2 STONES PILE UP AHEAD", "3 THE PILE PUSHES BACK" with a red arrow. The sink is the same 0.16 m as the truck's.
+- Comparison: three big read-outs computed from the simulation (GRAVEL BED 133 m, PAVEMENT 3,184 m, 24x FARTHER) and a "25x MORE DRAG THAN PAVEMENT" read-out; the closing shot follows the truck off the highway onto the ramp under RUNAWAY TRUCK RAMP.
+- Narration lengthened (104 words) because the shared total-silence QA failed at 5.96 s > 5 s with the shorter text; the gate is unchanged.
+
+Evidence:
+- Offline telemetry predicted every telemetry gate and caught two real faults before CI (closing-shot visibility points occluded by the truck itself; a 25-character caption phrase that would wrap to two lines).
+- Preflight run 43559750857: every gate PASS; measured spoken windows matched the estimated shot boundaries (largest spill 8.9 %).
+- Production run 43561675915: 32 shards, 1080x1920, 32 samples, no re-runs. Final MP4 sha256 `20b45ab0f986f59fb12e90d41d0032ec4e4c120c9872df5139a5e37f368b086f` (decoded from the job log, re-hashed: identical), 960 frames, 30 fps, 32.0 s. All gates PASS: visual_activity (max static 5.0 s, at the limit), black_opening, captions_visible, motion_plausibility, narration_screen_match, first_three_seconds (onsets 1.1, 1.2, 1.33, 2.2 s), caption_safety.
+- Frames: `docs/evidence/runaway-ramp-round3-final-frames.jpg`.
+
+Infrastructure notes: download.blender.org returned a persistent 403 to some runners (nine shard attempts across rounds 2-3); the workflows now fall back to public mirrors and every source must match the pinned SHA-256. A GitHub artifact egress limit (HTTP 503) once stopped a report job before any gate ran.
+
+Honest limits:
+- The motion profile (`benchmarks/road_safety/motion_profile.py`) shows round 3 is still far from the reference clip: median frame change 5.4 vs 14.7, 39 % almost-still frame pairs vs 11 %, and the longest stretch without a new beat grew from 3.0 s to 5.0 s (20.5-25.5 s, the top-down comparison: clarity bought with a fixed camera). The cutaway is more intuitive; it is not more kinetic.
+- Not verified: narration pronunciation, background noise and caption/audio sync (the gates check telemetry, loudness and silence, not how it sounds); retention; any viewer effect.
+- The 133 m / 3,184 m figures rest on assumed rolling-resistance coefficients (0.25 and 0.01).
+- The truck is still primitives on flat terrain. `upload_authorized: false`; production gates closed.
