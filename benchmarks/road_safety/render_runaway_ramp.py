@@ -33,6 +33,7 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_crash_cushion as cc  # noqa: E402  (HUD pass, primitives)
+from benchmarks.road_safety import ramp_camera  # noqa: E402
 from benchmarks.road_safety import realism  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 from benchmarks.road_safety import runaway_ramp_motion as motion  # noqa: E402
@@ -150,6 +151,8 @@ def main():
     scene.cycles.device = "CPU"
     look = args.look or manifest.get("look", cinematic.LOOK_STANDARD)
     args.realism = args.realism or manifest.get("realism", "A")
+    continuous = manifest.get("camera", "cuts") == "continuous"      # one uninterrupted move over frames 1-285
+    opening_path = ramp_camera.relative_path() if continuous else None
     scene.cycles.samples = 7 if args.preview else manifest["cycles_samples"]
     if os.environ.get("CUSHION_DEV_SAMPLES"):
         scene.cycles.samples = int(os.environ["CUSHION_DEV_SAMPLES"])
@@ -528,7 +531,12 @@ def main():
             sim_t = (nose_end - motion.SPEED0 * (total_s - local_s)) / motion.SPEED0
         else:
             sim_t = lerp(s_a, s_b, t)
+        in_opening = continuous and ramp_camera.FIRST_FRAME <= frame <= ramp_camera.LAST_FRAME
+        if in_opening:
+            sim_t = ramp_camera.sim_time(frame)
         x, v, a = truck_nose(states, sim_t)
+        if in_opening:
+            x = ramp_camera.nose_y(states, frame)      # continuous through the first tyre contact
         distance = max(x, 0.0)
         sink_m = motion.sink(distance)
         pitch = -math.radians(1.6) * min(1.0, a / (motion.GRAVEL_C * motion.G)) if x > 0 else 0.0
@@ -644,7 +652,10 @@ def main():
             follow = min(1.0, max(0.0, (ny - 5.0) / 10.0))
             set_cam((4.1, max(5.0, ny - 8.0), 1.0), (0.6, lerp(ny - 1.4, ny - 7.0, follow), 0.9), 24)
 
-        if sid == "gravel_hook":
+        if in_opening:
+            wp = ramp_camera.world_pose(opening_path[frame - ramp_camera.FIRST_FRAME], nose_y)
+            set_cam(wp.position, wp.aim, wp.lens)
+        elif sid == "gravel_hook":
             k = seg(0.42, 0.72)
             if k == 0:
                 hook_camera(nose_y)

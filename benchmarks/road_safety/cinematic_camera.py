@@ -183,10 +183,13 @@ class Audit:
 
 
 def audit(poses: Sequence[Pose], fps: int, subject: Callable[[float], Vec] | None = None,
-          obstacles: Sequence[Sphere] = (), limits: Limits = Limits()) -> Audit:
+          obstacles: Sequence[Sphere] = (), limits: Limits = Limits(), moving_start: bool = False) -> Audit:
+    """`moving_start`: the first frame is already in motion (a camera carried along with a moving subject), so the
+    speed before the first step is taken to be the first step's speed instead of 0."""
     problems: list[str] = []
     n = len(poses)
-    speeds, aim_rates = [0.0], [0.0]
+    first = _len(_sub(poses[1].position, poses[0].position)) * fps if (moving_start and n > 1) else 0.0
+    speeds, aim_rates = [first], [0.0]
     for a, b in zip(poses, poses[1:]):
         step = _len(_sub(b.position, a.position))
         if step > limits.max_jump and not b.cut:
