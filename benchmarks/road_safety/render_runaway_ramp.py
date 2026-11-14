@@ -491,7 +491,9 @@ def main():
         count = sum(1 for v in seen if v["visible"])
         top = max(seen, key=lambda v: (v["visible"], v["px_per_30cm"])) if seen else {
             "in_frame": False, "clear": False, "px_per_30cm": 0.0, "visible": False}
-        return {**top, "visible": count >= need, "visible_points": count, "needed": need}
+        extra = {"per_point": [{"p": [round(float(c), 1) for c in q], **{k: v for k, v in sv.items() if k in ("in_frame", "clear")}}
+                               for q, sv in zip(points, seen)]} if os.environ.get("RAMP_DEBUG") else {}
+        return {**top, "visible": count >= need, "visible_points": count, "needed": need, **extra}
 
     def pose(root, wheel_nodes, y, sink_m, spin, pitch, px=0.0, yaw=0.0):
         root.location = (px, y, -sink_m)
@@ -787,11 +789,13 @@ def main():
             events["numbers_callout_visible"] = (True, [], 0, 0.0)
         if sid == "ramp_beside_road":
             local = (frame - shot["start"]) / fps
-            tr = world((0, -7.0, 2.0))
-            if local < 2.0:
-                pts = [(-11.0, -128.0, 0.05), (-11.0, -118.0, 0.05), (-6.0, -108.0, 0.05), tr]
+            tr = world((-1.3, -7.0, 2.5))                  # the truck's side facing the camera (not a point inside its body)
+            if local < 2.0:                                # road edge points beside the lane, around where the camera looks
+                ya = lerp(-132.0, -118.0, local / 2.0)
+                pts = [(-14.5, ya + d, 0.05) for d in (-6.0, 0.0, 6.0)] + [tr]
             else:
-                pts = [(-5.5, -102.0, 0.05), (-3.0, -86.0, 0.05), (-1.0, -72.0, 0.05), tr]
+                ya = lerp(-100.0, -82.0, (local - 2.0) / 1.9)
+                pts = [(motion.exit_path_x(ya + d) - 2.9, ya + d, 0.05) for d in (-6.0, 0.0, 6.0)] + [tr]
             events["ramp_beside_road_visible"] = (not loop_back, pts, 3, 2.0)
             events["truck_arriving_again"] = (loop_back and x < -2.0, [world((0, -0.2, 1.6)), world((0, -7.0, 4.0))], 1, 1.0)
         record = {"frame": frame, "shot_id": sid, "sim_t": round(sim_t, 4), "speed_mps": round(v, 3),
