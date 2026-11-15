@@ -20,13 +20,15 @@ jobs:
       - name: Capture narration and build narration.wav + captions
         run: |
           set -euo pipefail
+          PLAN=$(python3 -c "import json;print(json.load(open('examples/experiments/speed-bump-audio-check.json')).get('plan','examples/experiments/speed-bump-speech-plan.json'))")
+          echo "PLAN $PLAN"
           mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
           # the free TTS service sometimes returns no audio; start from a clean folder and try up to 3 times
           ok=0
           for attempt in 1 2 3; do
             rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
-                 --plan examples/experiments/speed-bump-speech-plan.json --target-seconds 32.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+                 --plan "$PLAN" --target-seconds 32.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
             echo "speech capture attempt $attempt failed"; sleep 20
           done
           test "$ok" = 1
@@ -51,5 +53,5 @@ jobs:
           for x in d:
               starts.append(round(t, 2)); t += x + slack
           print("BEAT_CHECK durations", [round(x, 2) for x in d], "sum", round(sum(d), 2), "slack", round(slack, 3))
-          print("BEAT_CHECK starts", starts, "picture starts [0, 10.67, 16.0, 21.33, 26.67] for beats 3-6 -> beats 3..6 should be within 1.2 s")
+          print("BEAT_CHECK starts", starts, "")
           PY

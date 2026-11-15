@@ -3,6 +3,19 @@ from __future__ import annotations
 
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
+CURATED_XRAY = {
+    "Now look inside. Every wheel hangs on a spring and a damper that soak up the bump.": (
+        "Now look inside.", "Every wheel hangs on", "a spring and a damper", "that soak up the bump."),
+    "The short bump squeezes the spring in a flash while the long hump squeezes it slowly.": (
+        "The short bump squeezes", "the spring in a flash", "while the long hump", "squeezes it slowly."),
+    "At thirty kilometers per hour the short bump hits about twice as hard as the long one.": (
+        "At thirty kilometers", "per hour the short bump", "hits about twice as hard", "as the long one."),
+    "At ten the long hump turns gentle but the short bump still jolts the car.": (
+        "At ten the long hump", "turns gentle but the", "short bump still", "jolts the car."),
+    "So it is how quickly the road lifts the car, in this computer simulation with assumed values.": (
+        "So it is how quickly", "the road lifts the car,", "in this computer", "simulation with", "assumed values."),
+}
+
 CURATED = {
     "Same car, same speed. A long hump on the left, a short bump on the right.": (
         "Same car, same speed.", "A long hump on", "the left, a short bump", "on the right."),
@@ -20,7 +33,7 @@ CURATED = {
 
 
 def single_line_groups(text: str) -> list[tuple[int, int]]:
-    phrases = CURATED.get(text)
+    phrases = CURATED.get(text) or CURATED_XRAY.get(text)
     if phrases is None:
         return phrase_groups(text)
     tokens = text.split()
