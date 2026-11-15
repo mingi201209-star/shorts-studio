@@ -3,12 +3,12 @@
     {
       "id": "speed-bump-shapes",
       "beats": [
-        {"narration_en": "Same car, same speed. Watch what these two bumps do to it.", "start": 0, "end": 5.3},
-        {"narration_en": "The short bump jolts the wheels in a flash; the long one lifts the car slowly.", "start": 5.3, "end": 10.7},
-        {"narration_en": "At thirty kilometers per hour, the short bump hits about twice as hard.", "start": 10.7, "end": 16.0},
-        {"narration_en": "At ten, the long hump turns gentle, but the short bump still jolts.", "start": 16.0, "end": 21.3},
-        {"narration_en": "In this simulation the short bump is two to six times harsher at every speed.", "start": 21.3, "end": 26.7},
-        {"narration_en": "It is not just the height. It is how quickly the road lifts your car.", "start": 26.7, "end": 32.0}
+        {"narration_en": "Same car, same speed. Watch closely what these two different bumps do to it.", "start": 0, "end": 5.0},
+        {"narration_en": "The short bump jolts the wheels in a flash, while the long one lifts the whole car slowly.", "start": 5.0, "end": 11.0},
+        {"narration_en": "At thirty kilometers per hour, the short bump still hits about twice as hard as the long one.", "start": 11.0, "end": 16.5},
+        {"narration_en": "At ten, the long hump turns gentle, but the short bump still jolts the car.", "start": 16.5, "end": 22.0},
+        {"narration_en": "In this simulation the short bump is about two to six times harsher at every speed.", "start": 22.0, "end": 27.6},
+        {"narration_en": "So it is not just the height. It is how quickly the road lifts your car.", "start": 27.6, "end": 32.0}
       ]
     }
   ]
