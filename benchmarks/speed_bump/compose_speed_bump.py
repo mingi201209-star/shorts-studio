@@ -87,6 +87,40 @@ def draw_trace(img, tl: Timeline, seg, t_sim, frame):
     d.text((x0 + 40, y1 - 34), "SIMULATION, ASSUMED CAR - NOT A MEASUREMENT", font=font(18), fill=(190, 200, 215))
 
 
+def banners(tl: Timeline) -> list[tuple[int, int, str]]:
+    """(first frame, last frame, text): plain statements about what is on screen at that moment; numbers come from the simulation."""
+    rb = tl.peaks["B"]["short"]["peak_body_g"] / tl.peaks["B"]["hump"]["peak_body_g"]
+    gc = tl.peaks["C"]["hump"]["peak_body_g"]
+    return [(61, 110, "THE WHEELS JUMP FIRST"), (156, 205, "THEN THE BODY TILTS"),
+            (321, 355, "NOW 30 km/h"), (400, 445, f"SHORT BUMP: {rb:.1f}x THE PEAK"),
+            (481, 515, "NOW 10 km/h"), (565, 610, f"LONG HUMP: ONLY {gc:.2f} g")]
+
+
+def draw_banner(d, frame: int, tl: Timeline):
+    for a, b, text in banners(tl):
+        if a <= frame <= b:
+            edge = min(frame - a, b - frame, 6) / 6.0
+            plate(d, (40, 565, W - 40, 675), alpha_fill=(10, 14, 22, int(235 * edge)))
+            text_c(d, (W / 2, 589), text, font(56), fill=(255, 255, 255))
+
+
+def spotlight_dim(n: int, group: int) -> float:
+    """Card frames 90-240: one speed group at a time stays lit (10, 20, 30 km/h, 50 frames each); otherwise everything is lit."""
+    if 90 <= n < 240:
+        lit = (n - 90) // 50
+        return 1.0 if group == lit else 0.25
+    return 1.0
+
+
+def spotlight_text(n: int, tl: Timeline) -> str:
+    if 90 <= n < 240:
+        sid = ("C", "A", "B")[(n - 90) // 50]
+        kmh = {"A": 20, "B": 30, "C": 10}[sid]
+        r = tl.peaks[sid]["short"]["peak_body_g"] / tl.peaks[sid]["hump"]["peak_body_g"]
+        return f"{kmh} km/h: SHORT BUMP {r:.1f}x HARSHER"
+    return ""
+
+
 def compose_card(frame: int, tl: Timeline) -> Image.Image:
     """Frames after the last pass: bars of PEAK BODY ACCELERATION for both bumps at 10/20/30 km/h (simulation values, assumed car)."""
     n = frame - sim.PASS_FRAMES            # 1..320
@@ -110,7 +144,9 @@ def compose_card(frame: int, tl: Timeline) -> Image.Image:
             val = tl.peaks[sid][key]["peak_body_g"]
             hgt = val / gmax * (y_base - y_top) * grow
             bx0 = gx + 40 + j * 150
-            d.rectangle((bx0, y_base - hgt, bx0 + 120, y_base), fill=COLORS[key] + (255,))
+            dim = spotlight_dim(n, i)
+            col = tuple(int(c * dim + 14 * (1 - dim)) for c in COLORS[key])
+            d.rectangle((bx0, y_base - hgt, bx0 + 120, y_base), fill=col + (255,))
             if grow >= 1.0:
                 text_c(d, (bx0 + 60, y_base - hgt - 40), f"{val:.2f}", font(34), fill=(255, 255, 255))
         text_c(d, (gx + group_w / 2 - 10, y_base + 22), f"{kmh} km/h", font(38), fill=(255, 255, 255))
@@ -120,10 +156,17 @@ def compose_card(frame: int, tl: Timeline) -> Image.Image:
     plate(d, (500, 1272, 1000, 1330))
     d.rectangle((520, 1290, 550, 1312), fill=COLORS["short"] + (255,))
     d.text((564, 1286), "SHORT BUMP 0.9 m", font=font(26), fill=(255, 255, 255))
-    sweep = int((n * 7) % (W + 200)) - 100            # a thin moving highlight keeps every frame unique and the chart alive
-    d.rectangle((sweep, 200, sweep + 3, 1200), fill=(255, 255, 255, 38))
+    sweep = int((n * 7) % (W + 200)) - 100            # a moving highlight and a progress bar keep every frame unique
+    d.rectangle((sweep, 200, sweep + 6, 1200), fill=(255, 255, 255, 70))
+    d.rectangle((0, 1392, int(W * n / 320.0), 1398), fill=(255, 220, 120, 255))
+    spot = spotlight_text(n, tl)
+    if spot:
+        text_c(d, (W / 2, 190), spot, font(40), fill=(255, 220, 120))
     if frame >= 801:
         text_c(d, (W / 2, 1340), "SHAPE CHANGES THE RIDE", font(44), fill=(255, 220, 120))
+    if frame >= 880:
+        plate(d, (40, 168, W - 40, 224))
+        text_c(d, (W / 2, 178), "IT IS HOW QUICKLY THE ROAD LIFTS YOUR CAR", font(32), fill=(255, 255, 255))
     return img
 
 
@@ -137,9 +180,10 @@ def compose(frame: int, hump: Image.Image | None, short: Image.Image | None, tl:
     d = ImageDraw.Draw(img, "RGBA")
     for key, y in (("hump", TOP_Y), ("short", BOT_Y)):
         b = sim.BUMPS[key]
-        plate(d, (24, y + 20, 24 + 520, y + 100))
-        d.text((42, y + 26), b["label"], font=font(34), fill=COLORS[key] + (255,))
-        d.text((42, y + 66), f"{b['length']:.1f} m long, {b['height'] * 100:.1f} cm high", font=font(22), fill=(225, 230, 240))
+        ly = y + 20 if key == "hump" else y + PANEL_H - 100      # the lower panel's label sits at its bottom so the centre banner never covers it
+        plate(d, (24, ly, 24 + 520, ly + 80))
+        d.text((42, ly + 6), b["label"], font=font(34), fill=COLORS[key] + (255,))
+        d.text((42, ly + 46), f"{b['length']:.1f} m long, {b['height'] * 100:.1f} cm high", font=font(22), fill=(225, 230, 240))
         if t_sim >= tl.peak_time[(seg["id"], key)]:
             peak = tl.peaks[seg["id"]][key]["peak_body_g"]
             plate(d, (W - 24 - 500, y + PANEL_H - 80, W - 24, y + PANEL_H - 16))
@@ -149,8 +193,9 @@ def compose(frame: int, hump: Image.Image | None, short: Image.Image | None, tl:
     d.text((W - 24 - 340, 74), f"SLOW MOTION x{seg['slow']:.2f}", font=font(20), fill=(200, 210, 225))
     if frame <= int(HOOK_SECONDS * sim.FPS):
         fade = 1.0 if frame < int(HOOK_SECONDS * sim.FPS) - 8 else max(0.0, (int(HOOK_SECONDS * sim.FPS) - frame) / 8)
-        plate(d, (40, 540, W - 40, 640), alpha_fill=(10, 14, 22, int(235 * fade)))
-        text_c(d, (W / 2, 566), "SAME CAR. SAME SPEED.", font(58), fill=(255, 255, 255))
+        plate(d, (40, 565, W - 40, 675), alpha_fill=(10, 14, 22, int(235 * fade)))
+        text_c(d, (W / 2, 589), "SAME CAR. SAME SPEED.", font(58), fill=(255, 255, 255))
+    draw_banner(d, frame, tl)
     draw_trace(img, tl, seg, t_sim, frame)
     return img
 

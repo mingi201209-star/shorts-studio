@@ -28,7 +28,7 @@ def test_first_three_seconds_needs_hook_and_motion():
     rng = np.random.default_rng(0)
     a = rng.integers(60, 200, (1920, 1080, 3), dtype=np.uint8)
     b = rng.integers(60, 200, (1920, 1080, 3), dtype=np.uint8)
-    a[540:640, 40:1040] = 250
-    b[540:640, 40:1040] = 20
+    a[565:675, 40:1040] = 250
+    b[565:675, 40:1040] = 20
     assert g.first_three_seconds({10: a, 90: b, 120: b}, 1.0)["status"] == "PASS"
     assert g.first_three_seconds({10: b, 90: b, 120: b}, 1.0)["status"] == "FAIL"

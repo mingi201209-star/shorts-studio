@@ -44,13 +44,13 @@ def first_three_seconds(frames: dict[int, np.ndarray], first_contact_film_s: flo
     """frames: film frame number -> RGB array (1080x1920). Hook text visible early and gone later, both panels not empty,
     and the first jolt (front wheel meets the short bump) happens inside 3 s."""
     problems = []
-    region = (slice(540, 640), slice(40, 1040))
+    region = (slice(565, 675), slice(40, 1040))
 
     def plate_mean(f):
         return float(frames[f][region].mean())
 
     early, late = plate_mean(10), plate_mean(120)
-    if early - late < 25:
+    if abs(early - late) < 25:   # the plate is dark with white text over a bright picture, so the change can go either way
         problems.append(f"hook text not visible in the first second (plate region mean {early:.0f} vs {late:.0f} later)")
     for name, rows in (("top", slice(0, 560)), ("bottom", slice(570, 1130))):
         if float(frames[10][rows].std()) < 12:
