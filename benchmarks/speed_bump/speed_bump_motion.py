@@ -167,6 +167,40 @@ if FILM == "xray":
     FILM_FILES = {"video": "speed-bump-xray.mp4", "review": "speed-bump-xray-540x960-review.mp4", "validation": "speed-bump-xray-validation.json"}
 
 
+#: frames over which a 3D trail (a glowing tube) is drawn behind a moving point: (first, last, "hub" = front wheel hub, "roof" = roof of the car)
+TRAILS: list = []
+
+if FILM == "explain":
+    # "explain" = the X-ray film plus two new principle scenes (the wheel's own path over each bump, the roof's path afterwards) and no repeated passes.
+    SEGMENTS = [
+        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 300, "lead_m": 1.4},    # intro, dive to the wheel, body turns translucent
+        {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 200, "lead_m": 1.4},    # NEW: the wheel's path (hub trail), X-ray still on
+        {"id": "B", "kmh": 30.0, "slow": 0.50, "frames": 170, "lead_m": 1.4},    # thirty km/h, roof trail, body opaque again
+        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 160, "lead_m": 1.4},    # ten km/h
+        {"id": "E", "kmh": 20.0, "slow": 0.25, "frames": 250, "lead_m": 1.4},    # closing: same height, how quickly it lifts
+    ]
+    PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
+    SHOTS = [
+        (1, 105, "rear3q", "side"), (106, 300, "wheel", "side"),
+        (301, 410, "profile", "stack"), (411, 500, "front3q", "side"),
+        (501, 590, "side", "stack"), (591, 670, "tyre", "side"),
+        (671, 750, "top", "side"), (751, 830, "high3q", "side"),
+        (831, 930, "tyre", "stack"), (931, 1010, "front3q", "side"), (1011, 1080, "side", "stack"),
+    ]
+    XRAY_RAMPS = (139, 171, 480, 505)
+    TRAILS = [(301, 500, "hub"), (501, 830, "roof")]
+    BEAT_PICTURE_START = {3: 301, 4: 501, 5: 671, 6: 831}
+    BEAT2_BEFORE_FRAME = 300
+    FILM_FILES = {"video": "speed-bump-explain.mp4", "review": "speed-bump-explain-540x960-review.mp4", "validation": "speed-bump-explain-validation.json"}
+
+
+def trail_mode(frame: int):
+    for a, b, kind in TRAILS:
+        if a <= frame <= b:
+            return kind
+    return None
+
+
 def xray_factor(frame: int) -> float:
     """0 = opaque exterior, 1 = fully translucent with the suspension showing."""
     a, b, c, d = XRAY_RAMPS

@@ -122,6 +122,28 @@ class XRay:
             self.live.append(rod)
 
 
+class Trail:
+    """A glowing 3D tube drawn behind a moving point (the front wheel hub, or the roof of the car): the path that point has travelled so far in this pass."""
+
+    def __init__(self, name, color):
+        self.mat = material(name, color, rough=0.3, emission=5.0)
+        self.cu = bpy.data.curves.new(name, "CURVE")
+        self.cu.dimensions, self.cu.bevel_depth, self.cu.bevel_resolution = "3D", 0.022, 2
+        self.ob = bpy.data.objects.new(name, self.cu)
+        bpy.context.collection.objects.link(self.ob)
+        self.ob.data.materials.append(self.mat)
+
+    def set(self, pts):
+        self.cu.splines.clear()
+        self.ob.hide_render = len(pts) < 2
+        if len(pts) < 2:
+            return
+        sp = self.cu.splines.new("POLY")
+        sp.points.add(len(pts) - 1)
+        for pt, co in zip(sp.points, pts):
+            pt.co = (co[0], co[1], co[2], 1)
+
+
 def pose_car(root, body, wheels, geom, rec, idx):
     y_front = float(rec["x"][idx])
     root.location = (0.0, y_front - geom["front_axle"], 0.0)
@@ -150,6 +172,15 @@ def place_camera(cam, kind, y):
     elif kind == "wheel":                   # close on the front wheel
         d.lens = 45
         base.set_camera(cam, (3.6, y - 0.1, 0.5), (0.5, y + 0.35, 0.3))
+    elif kind == "profile":                 # low side view that keeps the wheel and the path it has just travelled in frame
+        d.lens = 32
+        base.set_camera(cam, (6.0, y - 0.3, 0.55), (0.0, y - 0.9, 0.4))
+    elif kind == "tyre":                    # very close on the front tyre climbing the face of the bump
+        d.lens = 38
+        base.set_camera(cam, (2.4, y + 0.5, 0.3), (0.0, y + 0.05, 0.28))
+    elif kind == "high3q":                  # high front 3/4 looking down on the car and the bump
+        d.lens = 38
+        base.set_camera(cam, (3.0, y + 3.0, 2.4), (0.0, y - 0.3, 0.4))
     elif kind == "top":                     # straight down, travel up the screen
         d.lens = 45
         cam.location = (0.0, y - 0.6, 8.5)
@@ -200,7 +231,14 @@ def main():
     scene.camera = cam
 
     tl = Timeline(geom["wheelbase"], hz=sim.RENDER_HZ)
-    xray = XRay(root, wheels) if sim.FILM == "xray" else None
+    xray = XRay(root, wheels) if sim.FILM in ("xray", "explain") else None
+    hub_trail, roof_trail = Trail("Hub trail", (0.2, 0.9, 1.0)), Trail("Roof trail", (1.0, 0.7, 0.1))
+    hub_key = next(k for k in wheels if k.startswith("front") and wheels[k]["base"].x > 0)
+    bpy.context.view_layer.update()
+    corners = [body.matrix_world @ Vector(c) for o in body.children_recursive if o.type == "MESH" for c in o.bound_box] or [body.matrix_world.translation]
+    roof_world0 = Vector((sum(c.x for c in corners) / len(corners), sum(c.y for c in corners) / len(corners), max(c.z for c in corners)))
+    roof_local = body.matrix_world.inverted() @ roof_world0
+    step = max(1, sim.RENDER_HZ // 100)
     frames = [int(x) for x in args.frames.split(",")] if args.frames else list(range(args.start, args.end + 1))
     result, checks = [], []
     for f in frames:
@@ -220,6 +258,20 @@ def main():
                 xf = sim.xray_factor(f)
                 xray.set_factor(xf)
                 xray.build(body, xf)
+            hub_trail.set([]), roof_trail.set([])
+            mode = sim.trail_mode(f)
+            if mode:
+                bpy.context.view_layer.update()
+                j0 = max(0, int((sim.SIM_LEAD_M - seg["lead_m"]) / (seg["kmh"] / 3.6) * sim.RENDER_HZ))
+                js = list(range(j0, idx + 1, step)) + ([idx] if (idx - j0) % step else [])
+                if mode == "hub":
+                    h = wheels[hub_key]["node"].matrix_world.translation
+                    hub_trail.set([(h.x + 0.06, h.y + float(rec["x"][j] - rec["x"][idx]), h.z + float(rec["wf"][j] - rec["wf"][idx])) for j in js])
+                else:
+                    r = body.matrix_world @ roof_local
+                    roof_trail.set([(r.x, r.y + float(rec["x"][j] - rec["x"][idx]),
+                                     r.z + float(0.5 * (rec["zf"][j] + rec["zr"][j]) - 0.5 * (rec["zf"][idx] + rec["zr"][idx])) + roof_local.y * float(rec["pitch"][j] - rec["pitch"][idx]))
+                                    for j in js])
             place_camera(cam, kind, y_front)
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)
