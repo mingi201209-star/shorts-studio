@@ -4,16 +4,16 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED_XRAY = {
-    "Now look inside. Every wheel hangs on a spring and a damper that soak up the bump.": (
-        "Now look inside.", "Every wheel hangs on", "a spring and a damper", "that soak up the bump."),
-    "The short bump squeezes the spring in a flash while the long hump squeezes it slowly.": (
-        "The short bump squeezes", "the spring in a flash", "while the long hump", "squeezes it slowly."),
+    "Now look inside. Every wheel hangs on a spring and a damper that work together to soak up the bump.": (
+        "Now look inside.", "Every wheel hangs on", "a spring and a damper", "that work together", "to soak up the bump."),
+    "The short bump squeezes the spring in a flash while the long hump squeezes it slowly and gently.": (
+        "The short bump squeezes", "the spring in a flash", "while the long hump", "squeezes it slowly", "and gently."),
     "At thirty kilometers per hour the short bump hits about twice as hard as the long one.": (
         "At thirty kilometers", "per hour the short bump", "hits about twice as hard", "as the long one."),
-    "At ten the long hump turns gentle but the short bump still jolts the car.": (
-        "At ten the long hump", "turns gentle but the", "short bump still", "jolts the car."),
-    "So it is how quickly the road lifts the car, in this computer simulation with assumed values.": (
-        "So it is how quickly", "the road lifts the car,", "in this computer", "simulation with", "assumed values."),
+    "At ten the long hump turns gentle but the short bump still jolts the car noticeably.": (
+        "At ten the long hump", "turns gentle but the", "short bump still jolts", "the car noticeably."),
+    "It is how quickly the road lifts the car. This is a computer simulation with assumed values.": (
+        "It is how quickly", "the road lifts the car.", "This is a computer", "simulation with", "assumed values."),
 }
 
 CURATED = {
