@@ -34,7 +34,8 @@ Low-res preview of both passes (4-6 frames/s, small res) -> scene QA -> parallel
 | run 1 | side view, both lanes | not measured | scene a thin band, white sky: FAIL (looked at) |
 | run 2 | chase from behind, high | not measured | cars small, no body motion visible: FAIL |
 | run 3 | chase from behind, low | cars fill 10.8 % of height (need >= 22 %), body motion not visible | FAIL: full render on hold |
-| run 5 | split: one side camera per car, stacked | see below | pending |
+| run 5 | split: one side camera per car, stacked (primitive car) | cars 24 % of panel height (width fully used); body motion hump 1.9 % ok, short 0.9 % (< 1.2 %); bump mask failed on the hump panel (looked at: bump IS visible, pale yellow, gate colour threshold needs calibration) | composition better, pitch visible on the hump at 1:1, car looks like a toy -> upgrade the car model first |
+| run 6 | split, pinned CC0 sedan | pending | pending |
 
 Evaluation department, new mandatory checks for this episode (`benchmarks/speed_bump/preview_gates.py`): both cars and both bump shapes visible in the first frame, cars fill >= 22 % of the panel height, body motion visible, bump shapes differ on screen (objective, pixels); question text within 1 s, a visible difference within 3 s, narration hook within 0.5 s (UNVERIFIED until a person confirms on the real video).
 Not allowed to be exaggerated: the body motion must be drawn 1:1 with the model (no vertical scaling). If it is too small to see at 1:1, the scene must get closer (wheel arch close-up) or add a true-scale reference graph, never a magnified body.
