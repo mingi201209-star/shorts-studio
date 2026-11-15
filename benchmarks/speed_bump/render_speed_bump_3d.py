@@ -61,14 +61,14 @@ def place_camera(cam, kind, y):
         d.lens = 42
         base.set_camera(cam, (6.2, y - 1.0, 0.95), (0.0, y - 1.0, 0.62))
     elif kind == "rear3q":                  # behind and to the left, looking ahead along the bump
-        d.lens = 45
-        base.set_camera(cam, (-3.4, y - 7.2, 2.2), (0.0, y + 1.6, 0.45))
-    elif kind == "front3q":                 # ahead of the car, looking back at it
         d.lens = 40
-        base.set_camera(cam, (3.3, y + 6.8, 1.25), (0.0, y - 0.6, 0.55))
+        base.set_camera(cam, (-2.7, y - 4.6, 1.55), (0.0, y + 1.1, 0.5))
+    elif kind == "front3q":                 # ahead of the car, looking back at it
+        d.lens = 38
+        base.set_camera(cam, (2.4, y + 4.4, 1.0), (0.0, y - 0.4, 0.5))
     elif kind == "wheel":                   # close on the front wheel
-        d.lens = 50
-        base.set_camera(cam, (4.1, y - 0.2, 0.55), (0.7, y, 0.34))
+        d.lens = 45
+        base.set_camera(cam, (3.6, y - 0.1, 0.5), (0.5, y + 0.35, 0.3))
     elif kind == "top":                     # straight down, travel up the screen
         d.lens = 45
         cam.location = (0.0, y - 0.6, 8.5)
