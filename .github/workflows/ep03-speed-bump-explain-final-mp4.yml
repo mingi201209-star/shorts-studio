@@ -50,6 +50,7 @@ jobs:
           split -b "$CHUNK_BYTES" -d -a 2 speed-bump-explain-540x960-review.mp4 part_
           f=$(printf 'part_%02d' ${{ matrix.index }})
           if [ ! -f "$f" ]; then echo "CHUNK_NONE ${{ matrix.index }}"; exit 0; fi
+          yes PADDING_SO_THE_LOG_IS_SAVED_TO_A_FILE_0123456789_0123456789 | head -n 3000
           echo "CHUNK_START ${{ matrix.index }} $(stat -c %s "$f") $(sha256sum "$f" | cut -d' ' -f1)"
           base64 -w 76 "$f"
           echo "CHUNK_END ${{ matrix.index }}"
