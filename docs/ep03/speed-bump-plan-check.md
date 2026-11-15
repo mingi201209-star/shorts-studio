@@ -60,3 +60,16 @@ Not allowed to be exaggerated: the body motion must be drawn 1:1 with the model 
 - Film sha256 `ed2c52761ac23fe6572a2b60774a2a1d59fea97e542c92a78a10492853f76a17`; review MP4 (540x960) sha256 `d08d42694f9946e86a6cb58419e7d2245ccc5d302c6a186f0395376c13301f34` recovered through job logs and hash-verified; no black frames or silence gaps in the review copy.
 - Fallback v1 film kept: `79e3d759b2cb133094f3435ae6551461f99c018b67a8f49f44e481a96b9cae09`.
 - UNVERIFIED: voice pronunciation/sync, human first view, whether the X-ray reveal reads well, noise in translucent frames. Not uploaded.
+
+## v3 (explain) production result — run 43716546602
+
+Owner feedback on v2 (X-ray): scenes repeat and the picture stutters like lag; asked to remove repeats and add new scenes explaining the principle.
+
+- Cause of the stutter: the simulation pose was sampled at 30 Hz and held for ~4 frames under slow motion (motion only every 4th frame). Fix: pose sampled at 600 Hz (`RENDER_HZ`). Measured on the recovered videos: v2 consecutive-frame diff pattern 0.0 0.0 0.1 1.1 (burst every 4th frame); v3 continuous 0.3-0.4 every frame (share of frames with motion >0.3: 0.35 -> 0.65).
+- Repeats removed: five passes of the same bump became A, P, B, C, E with different cameras (rear3q, wheel, front3q, profile, side, tyre, top, high3q); new principle scene: the front wheel hub path drawn as a 3D tube (short bump = steep rise, long hump = gentle), no graphs, no text plates.
+- Narration rewritten as six single-sentence beats (total-silence gate), 36.5 s, 1095 frames; spoken starts [0, 4.59, 10.62, 16.8, 24.13, 29.27] s.
+- Gate history (none relaxed): static 7.0 s in the wheel shot -> shot split with a new camera; total silence 6 s -> fewer sentence pauses; shard range fixed to 1095 frames.
+- Final gates PASS: visual activity (19 cuts, avg 1.92 s, max static 3.5 s), narration numbers (2.2 / 2.1 / 5.5), picture timing, first three seconds (first contact 1.48 s), caption safety, assumptions declared, all 3D / no overlays, loudness -16.4 LUFS.
+- Film sha256 `8ca41a1c26db07f61ec2d281e44cb79f2c5c4425af8f181e4a1fb04cb55fc598`; review MP4 sha256 `a406426e49f4ae36a8b366eefbb17068b9944f04d79febf8361fd7e90667c47c` (recovered from job logs, chunk and whole-file hashes verified; no black frames, no silence gaps).
+- Fallbacks kept: v2 X-ray `ed2c52761ac23fe6572a2b60774a2a1d59fea97e542c92a78a10492853f76a17`, v1 `79e3d759b2cb133094f3435ae6551461f99c018b67a8f49f44e481a96b9cae09`.
+- UNVERIFIED: voice pronunciation and sync, human first view, whether the hub-path trail reads well on a phone. Not uploaded.
