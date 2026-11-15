@@ -6,16 +6,16 @@ from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 CURATED = {
     "Same car, same speed. A long hump on the left, a short bump on the right.": (
         "Same car, same speed.", "A long hump on", "the left, a short bump", "on the right."),
-    "The short bump jolts the wheels in a flash, while the long hump lifts the whole car slowly.": (
-        "The short bump jolts", "the wheels in a flash,", "while the long hump", "lifts the whole", "car slowly."),
-    "Now at thirty kilometers per hour, the short bump hits about twice as hard as the long one.": (
-        "Now at thirty", "kilometers per hour,", "the short bump hits", "about twice as hard", "as the long one."),
-    "Slow down to ten, and the long hump turns gentle, but the short bump still jolts the car.": (
-        "Slow down to ten,", "and the long hump", "turns gentle, but the", "short bump still", "jolts the car."),
-    "This is a computer simulation with assumed values, and the short bump is about two to six times harsher.": (
-        "This is a computer", "simulation with", "assumed values, and", "the short bump is", "about two to six", "times harsher."),
-    "So it is not just the height. It is how quickly the road lifts your car.": (
-        "So it is not", "just the height.", "It is how quickly", "the road lifts your car."),
+    "The short bump jolts the wheels in a flash while the long hump lifts the whole car slowly.": (
+        "The short bump jolts", "the wheels in a flash", "while the long hump", "lifts the whole", "car slowly."),
+    "Now at thirty kilometers per hour the short bump hits about twice as hard as the long one.": (
+        "Now at thirty", "kilometers per hour", "the short bump hits", "about twice as hard", "as the long one."),
+    "Slow down to ten and the long hump turns gentle but the short bump still jolts the car.": (
+        "Slow down to ten", "and the long hump", "turns gentle but the", "short bump still", "jolts the car."),
+    "This is a computer simulation with assumed values and the short bump is about two to six times harsher.": (
+        "This is a computer", "simulation with", "assumed values and", "the short bump is", "about two to six", "times harsher."),
+    "So it is not just the height of the bump. It is how quickly the road lifts your car and that changes the ride.": (
+        "So it is not just", "the height of the bump.", "It is how quickly", "the road lifts your car", "and that changes", "the ride."),
 }
 
 
