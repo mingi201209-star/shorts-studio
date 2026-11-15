@@ -12,7 +12,7 @@ checked, (2) the owner approves it, (3) the owner posts it. No agent action uplo
 | 3 | No clipped captions, no black frames | `caption_safety`, `captions_visible`, `black_opening`, blackdetect clean on the final MP4 | **PASS** - gates PASS; blackdetect on the recovered copy found nothing; captions are single-line inside the black band. Cosmetic: on the cutaway shots the "BED DEPTH ~0.6 m (DRAWN)" label runs past the picture edge and "ORIGINAL SURFACE" overlaps the wheel (not a caption, not blocking) |
 | 4 | Voice: pronunciation, noise, sync | loudness/silence gates PASS **and** a person listens once | gates PASS: -16.7 LUFS integrated (about 2.7 dB under -14), LRA 1.6 LU, no clipping flagged; silences between sentences at 4.48-4.98, 9.54-10.04, 14.07-14.57, 19.42-19.94, 25.90-26.42 s match the gaps of RAMP_SPOKEN_WINDOWS within 0.04 s. **Pronunciation and how the voice sounds are NOT verified** (neural TTS; I cannot listen); caption-to-speech sync checked only through these windows, not by ear |
 | 5 | No serious visual error | frame-by-frame look at the whole clip (continuous playback, not stills), including the cutaway and the closing loop | **partly done** - 1 frame/s contact sheets of the whole recovered copy plus scene-change detection (cuts at 9.5, 14.9, 18.6, 26.4, 30.0 s, all at planned shot changes) show no serious error and a clean loop back to the distant-truck opening. A real-time playback by a person is still needed (not PASS until the owner watches) |
-| 6 | Owner approval | explicit "yes, upload" after watching the final MP4 | waiting |
+| 6 | Owner approval | explicit "yes, upload" after watching the final MP4 | **conditional (2026-11-15)**: owner watched the review MP4, no further round-3/realism work; posts after (a) listening once to the voice (pronunciation, noise, caption sync) and (b) the assumption disclosure below is in the posted text. Upload not executed |
 
 Allowed to be imperfect: realism (box-model truck, sphere stones). Not allowed: narration that the picture does not show, awkward cuts, clipped text, black frames.
 
@@ -21,6 +21,11 @@ Allowed to be imperfect: realism (box-model truck, sphere stones). Not allowed: 
   "25x more drag" is the ratio of those two assumptions; "24x farther" is the simulated stopping distances (3,184 m vs 133 m).
 - It is 3D animation, not footage. Decide in YouTube Studio whether the "altered or synthetic content" disclosure applies (the narration is a synthetic voice);
   the answer is the owner's.
+
+## Assumption disclosure (condition b)
+- In the picture: the HUD shows `GRAVEL 0.25 g | PAVEMENT 0.01 g (ASSUMED)` from about 15 s, and `SIMULATION | 20,000 kg TRUCK | NO BRAKES` from the start (small text). The narration does not say "assumed".
+- Therefore put it in the posted text: first line of the description and the pinned comment (draft below). "25x" = ratio of the two assumed resistance values; "24x" = simulated distances, not a guarantee for any real road.
+- Pinned-comment draft: "Simulation with assumed values (gravel 0.25 g, pavement 0.01 g, 20 t, 90 km/h). The 25x and 24x figures come from those assumptions, not from a measured road."
 
 ## Draft metadata (edit freely; not posted)
 - Title options: "Why Truck Runaway Ramps Are Made of Gravel" / "How Gravel Stops a Truck With No Brakes" / "A Runaway Truck Hits Gravel: Why It Stops in 130 m".
