@@ -12,8 +12,8 @@ permissions:
   contents: read
   actions: read
 env:
-  BASE_RUN_ID: "43613410543"
-  PATCH_RUN_ID: "43622223172"
+  BASE_RUN_ID: "43653893421"
+  PATCH_RUN_ID: ""
 jobs:
   encode:
     runs-on: ubuntu-24.04
@@ -29,6 +29,7 @@ jobs:
           run-id: ${{ env.BASE_RUN_ID }}
           github-token: ${{ github.token }}
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: env.PATCH_RUN_ID != ''
         with:
           pattern: runaway-ramp-opening-patch-*
           path: ${{ runner.temp }}/patch
@@ -39,9 +40,8 @@ jobs:
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP"
-          rm -f base/_hud_frame_*.png patch/_hud_frame_*.png
-          ls patch/frame_*.png
-          cp patch/frame_*.png base/
+          rm -f base/_hud_frame_*.png
+          if [ -d patch ]; then rm -f patch/_hud_frame_*.png; ls patch/frame_*.png; cp patch/frame_*.png base/; fi
           cd base
           test "$(ls frame_*.png | wc -l)" = 285
           sha256sum frame_*.png > "$RUNNER_TEMP/frames.sha256"
