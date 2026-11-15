@@ -1,5 +1,5 @@
 name: EP03 speed bump film (preflight = low resolution, production = full resolution)
-# Starts only when the request file changes. mode "preflight": 360x187 panels, 7 samples, every QA gate, all failures in one report, never a deliverable.
+# 100% 3D: every picture element is a Blender object (render_speed_bump_3d.py); compose only stacks images. Starts only when the request file changes. mode "preflight": 360x187 panels, 7 samples, every QA gate, all failures in one report, never a deliverable.
 # mode "production": 1080x560 panels, 24 samples, 16-frame shards, final assembly + every gate + a 540x960 review copy. Never uploads.
 on:
   push:
@@ -28,10 +28,10 @@ jobs:
           mode = json.load(open("examples/experiments/speed-bump-request.json"))["mode"]
           assert mode in ("preflight", "production")
           size = 80 if mode == "preflight" else 16
-          starts = list(range(1, 641, size))
+          starts = list(range(1, 961, size))
           print("mode=" + mode)
           print("shards=" + str(len(starts)))
-          print("matrix=" + json.dumps({"include": [{"start": s, "end": min(s + size - 1, 640)} for s in starts]}))
+          print("matrix=" + json.dumps({"include": [{"start": s, "end": min(s + size - 1, 960)} for s in starts]}))
           PY
   audio:
     runs-on: ubuntu-24.04
@@ -110,7 +110,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/native"
           flag=""; if [ "${{ needs.plan.outputs.mode }}" = "preflight" ]; then flag="--preview"; fi
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
-            -P benchmarks/speed_bump/render_speed_bump_cc0.py -- \
+            -P benchmarks/speed_bump/render_speed_bump_3d.py -- \
             --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
             --start ${{ matrix.start }} --end ${{ matrix.end }} $flag --out "$RUNNER_TEMP/native" > "$RUNNER_TEMP/native/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/native/render.log"; exit 1; }
           grep -c BUMP_FRAME "$RUNNER_TEMP/native/render.log"
