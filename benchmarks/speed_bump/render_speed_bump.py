@@ -84,6 +84,7 @@ def main():
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.exposure = -0.4
 
+    scene.world = bpy.data.worlds.new("World")
     sun_to = cinematic.sun_vector((-0.4, -0.9), 38.0)
     cinematic.apply_sky(scene, sun_to, strength=0.25, dust=0.5)
     bpy.ops.object.light_add(type="SUN")
@@ -103,7 +104,6 @@ def main():
     for key_, bump in sim.BUMPS.items():
         n = 40
         pts = [(i / n * bump["length"], bump["height"] * math.sin(math.pi * i / n)) for i in range(n + 1)]
-        profile = [(x, z) for x, z in pts] + [(bump["length"], 0.0), (0.0, 0.0)]
         profile = pts + [(bump["length"], 0.0)]
         base.extruded_profile(f"Bump {key_}", profile, LANE_Y[key_] - 1.5, LANE_Y[key_] + 1.5, yellow)
 
