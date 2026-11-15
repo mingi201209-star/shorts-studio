@@ -23,9 +23,9 @@ jobs:
           PLAN=$(python3 -c "import json;print(json.load(open('examples/experiments/speed-bump-audio-check.json')).get('plan','examples/experiments/speed-bump-speech-plan.json'))")
           echo "PLAN $PLAN"
           mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
-          # the free TTS service sometimes returns no audio; start from a clean folder and try up to 3 times
+          # the free TTS service sometimes returns no audio; start from a clean folder and try up to 4 times
           ok=0
-          for attempt in 1 2 3; do
+          for attempt in 1 2 3 4; do
             rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
                  --plan "$PLAN" --target-seconds 32.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi

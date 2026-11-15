@@ -1,1 +1,1 @@
-{"plan": "examples/experiments/speed-bump-xray-speech-plan.json", "note": "x-ray narration audio check 1"}
+{"plan": "examples/experiments/speed-bump-xray-speech-plan.json", "note": "x-ray narration audio check 2 (TTS service returned no audio 3 times; more retries)"}
