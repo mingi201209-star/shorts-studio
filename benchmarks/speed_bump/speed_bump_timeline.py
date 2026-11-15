@@ -8,9 +8,10 @@ from benchmarks.speed_bump import speed_bump_motion as sim
 
 
 class Timeline:
-    def __init__(self, wheelbase: float):
+    def __init__(self, wheelbase: float, hz: int = sim.FPS):
+        self.hz = hz
         self.car = dict(sim.CAR, wheelbase=wheelbase)
-        self.recs = {(s["id"], k): sim.simulate(b, speed_kmh=s["kmh"], car=self.car) for s in sim.SEGMENTS for k, b in sim.BUMPS.items()}
+        self.recs = {(s["id"], k): sim.simulate(b, speed_kmh=s["kmh"], car=self.car, hz=hz) for s in sim.SEGMENTS for k, b in sim.BUMPS.items()}
         self.peaks = sim.pass_summaries(self.car)
         self.range, self.peak_time = {}, {}
         start = 1

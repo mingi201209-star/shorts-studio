@@ -199,7 +199,7 @@ def main():
     scene.collection.objects.link(cam)
     scene.camera = cam
 
-    tl = Timeline(geom["wheelbase"])
+    tl = Timeline(geom["wheelbase"], hz=sim.RENDER_HZ)
     xray = XRay(root, wheels) if sim.FILM == "xray" else None
     frames = [int(x) for x in args.frames.split(",")] if args.frames else list(range(args.start, args.end + 1))
     result, checks = [], []
@@ -214,7 +214,7 @@ def main():
             for kb, ob in bumps.items():
                 base.set_visible(ob, kb == panel)
             rec = tl.recs[(seg["id"], panel)]
-            idx = min(int(t_sim * sim.FPS), len(rec["t"]) - 1)
+            idx = min(int(round(t_sim * sim.RENDER_HZ)), len(rec["t"]) - 1)
             y_front = pose_car(root, body, wheels, geom, rec, idx)
             if xray is not None:
                 xf = sim.xray_factor(f)

@@ -21,6 +21,7 @@ BUMPS = {
 SPEED_KMH = 20.0
 DT = 1e-4
 FPS = 30
+RENDER_HZ = 600   # pose sampling rate for rendering (slow-motion needs far more than 30 samples/s)
 
 
 def profile(x: float, bump: dict) -> float:
@@ -29,14 +30,14 @@ def profile(x: float, bump: dict) -> float:
     return bump["height"] * math.sin(math.pi * x / bump["length"])
 
 
-def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: float = 3.0, tail_s: float = 3.2):
-    """Return dict of arrays sampled at FPS (real time): t, x (front axle, m, 0 = bump start), z_body_front/rear (m), body_height, pitch (rad),
+def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: float = 3.0, tail_s: float = 3.2, hz: int = FPS):
+    """Return dict of arrays sampled at `hz` (real time; the film is slowed down, so the renderer asks for a much higher rate than FPS or the pose would hold for several frames and the picture would judder): t, x (front axle, m, 0 = bump start), z_body_front/rear (m), body_height, pitch (rad),
     wheel_front/rear road height (m), body acceleration (g) at the front axle."""
     v = speed_kmh / 3.6
     wb = car["wheelbase"]
     total = (lead_m + bump["length"] + wb) / v + tail_s
     n = int(total / DT)
-    out_n = int(total * FPS) + 1
+    out_n = int(total * hz) + 1
     state = {"f": [0.0] * 4, "r": [0.0] * 4}  # zs, vs, zu, vu
     rec = {k: np.zeros(out_n) for k in ("t", "x", "zf", "zr", "wf", "wr", "gf")}
     next_i = 0
@@ -58,7 +59,7 @@ def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: 
             state[key] = [zs, vs, zu, vu]
             if key == "f":
                 af = a_s
-        if i * DT * FPS >= next_i and next_i < out_n:
+        if i * DT * hz >= next_i and next_i < out_n:
             rec["t"][next_i] = t
             rec["x"][next_i] = v * t - lead_m
             rec["zf"][next_i] = state["f"][0]
