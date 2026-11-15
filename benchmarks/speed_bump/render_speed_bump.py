@@ -116,7 +116,7 @@ def main():
     cam = bpy.data.objects.new("Cam", cam_data)
     bpy.context.collection.objects.link(cam)
     scene.camera = cam
-    cam_data.lens, cam_data.sensor_fit, cam_data.sensor_width = 40, "HORIZONTAL", 36
+    cam_data.lens, cam_data.sensor_fit, cam_data.sensor_width = 38, "HORIZONTAL", 36
 
     result = []
     for f in [int(s) for s in args.frames.split(",")]:
@@ -138,8 +138,8 @@ def main():
                 node.rotation_euler = (0, -(x_front - wb / 2 + wx) / R, 0)
             info[k] = {"x_front": round(float(x_front), 3), "body_rise_cm": round(100 * 0.5 * float(zf + zr), 2),
                        "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3)}
-        cam_x = -11.0 + 0.55 * float(recs["short"]["x"][min(int(t_sim * sim.FPS), len(recs["short"]["t"]) - 1)])
-        base.set_camera(cam, (cam_x, 1.7, 2.3), (cam_x + 10.0, 1.7, 0.45))
+        cam_x = -10.5 + 0.85 * float(recs["short"]["x"][min(int(t_sim * sim.FPS), len(recs["short"]["t"]) - 1)])
+        base.set_camera(cam, (cam_x, 1.7, 1.45), (cam_x + 10.0, 1.7, 0.55))
         scene.render.filepath = str(args.out / f"frame_{f:04d}.png")
         t_start = time.time()
         bpy.ops.render.render(write_still=True)
