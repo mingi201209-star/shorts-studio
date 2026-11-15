@@ -172,7 +172,7 @@ TRAILS: list = []
 
 if FILM == "explain":
     # "explain" = the X-ray film plus a new principle scene (the wheel's own path over each bump, drawn as a glowing 3D tube) and no repeated passes.
-    # Frame boundaries follow the measured spoken beat starts [0, 4.64, 10.56, 16.84, 24.17, 29.37] s of a 36.5 s film.
+    # Frame boundaries follow the measured spoken beat starts [0, 4.59, 10.62, 16.8, 24.13, 29.27] s of a 36.5 s film (audio check 2).
     SEGMENTS = [
         {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 317, "lead_m": 1.4},    # intro, dive to the wheel, body turns translucent
         {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 188, "lead_m": 1.4},    # NEW: the wheel's path (hub trail), X-ray still on
