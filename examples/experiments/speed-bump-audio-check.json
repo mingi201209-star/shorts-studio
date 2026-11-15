@@ -1,1 +1,1 @@
-{"plan": "examples/experiments/speed-bump-explain-speech-plan.json", "note": "explain film audio timing check"}
+{"plan":"examples/experiments/speed-bump-explain-speech-plan.json","note":"explain audio check 2: fewer sentence pauses (total-silence gate)"}

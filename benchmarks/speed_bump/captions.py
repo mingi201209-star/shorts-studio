@@ -4,6 +4,16 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED_XRAY = {
+    'Same car and same speed with a long hump on the left and a short bump on the right.': (
+        'Same car and same speed', 'with a long hump on', 'the left and a short', 'bump on the right.'),
+    'Now look inside where every wheel hangs on a spring and a damper that work together to soak up the bump.': (
+        'Now look inside where', 'every wheel hangs on', 'a spring and a damper', 'that work together', 'to soak up the bump.'),
+    'The wheel has to follow the road so the short bump throws it up in a split second but the long hump lifts it gently.': (
+        'The wheel has to', 'follow the road so the', 'short bump throws it up', 'in a split second but', 'the long hump lifts', 'it gently.'),
+    'That jolt travels up into the car and at thirty kilometers per hour the short bump hits about twice as hard as the long one.': (
+        'That jolt travels up', 'into the car and at', 'thirty kilometers per', 'hour the short bump hits', 'about twice as hard', 'as the long one.'),
+    'Both are the same height and what matters is how quickly the road lifts the car. This is a computer simulation with assumed values.': (
+        'Both are the same height', 'and what matters is how', 'quickly the road lifts', 'the car. This is a', 'computer simulation', 'with assumed values.'),
     "Now look inside. Every wheel hangs on a spring and a damper that work together to soak up the bump.": (
         "Now look inside.", "Every wheel hangs on", "a spring and a damper", "that work together", "to soak up the bump."),
     "The short bump squeezes the spring in a flash while the long hump squeezes it slowly and gently.": (

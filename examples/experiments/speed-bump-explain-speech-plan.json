@@ -4,22 +4,22 @@
       "id": "speed-bump-shapes",
       "beats": [
         {
-          "narration_en": "Same car, same speed. A long hump on the left, a short bump on the right.",
+          "narration_en": "Same car and same speed with a long hump on the left and a short bump on the right.",
           "start": 0,
           "end": 6
         },
         {
-          "narration_en": "Now look inside. Every wheel hangs on a spring and a damper that work together to soak up the bump.",
+          "narration_en": "Now look inside where every wheel hangs on a spring and a damper that work together to soak up the bump.",
           "start": 6,
           "end": 12
         },
         {
-          "narration_en": "The wheel has to follow the road. The short bump throws it up in a split second but the long hump lifts it gently.",
+          "narration_en": "The wheel has to follow the road so the short bump throws it up in a split second but the long hump lifts it gently.",
           "start": 12,
           "end": 18
         },
         {
-          "narration_en": "That jolt travels up into the car. At thirty kilometers per hour the short bump hits about twice as hard as the long one.",
+          "narration_en": "That jolt travels up into the car and at thirty kilometers per hour the short bump hits about twice as hard as the long one.",
           "start": 18,
           "end": 24
         },
@@ -29,7 +29,7 @@
           "end": 30
         },
         {
-          "narration_en": "Both are the same height. What matters is how quickly the road lifts the car. This is a computer simulation with assumed values.",
+          "narration_en": "Both are the same height and what matters is how quickly the road lifts the car. This is a computer simulation with assumed values.",
           "start": 30,
           "end": 36
         }
