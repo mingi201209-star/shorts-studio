@@ -196,10 +196,16 @@ def pose_car(root, body, wheels, geom, rec, idx):
     return y_front
 
 
-def place_camera(cam, kind, y):
+#: lens shift (in sensor widths) per camera kind in the tall 540x1920 "side" layout: the subject sits low in a very tall panel, so the view is moved down
+#: to put the car in the middle of the panel instead of under two thirds of sky
+SIDE_SHIFT = {"front3q": -0.85, "rear3q": -0.85, "high3q": -0.5, "wheel": -0.4, "tyre": -0.4, "low3q": -0.7, "spring": -0.4}
+
+
+def place_camera(cam, kind, y, layout="stack"):
     """y: the front axle's position along the road. Travel is +Y."""
     d = cam.data
     d.sensor_fit, d.sensor_width = "HORIZONTAL", 36
+    d.shift_y = SIDE_SHIFT.get(kind, 0.0) if layout == "side" else 0.0
     if kind == "side":                      # low side view, travel left to right
         d.lens = 42
         base.set_camera(cam, (6.2, y - 1.0, 0.95), (0.0, y - 1.0, 0.62))
@@ -318,7 +324,7 @@ def main():
                     roof_trail.set([(r.x, r.y + float(rec["x"][j] - rec["x"][idx]),
                                      r.z + float(0.5 * (rec["zf"][j] + rec["zr"][j]) - 0.5 * (rec["zf"][idx] + rec["zr"][idx])) + roof_local.y * float(rec["pitch"][j] - rec["pitch"][idx]))
                                     for j in js])
-            place_camera(cam, kind, y_front)
+            place_camera(cam, kind, y_front, layout)
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)
             bpy.ops.render.render(write_still=True)
