@@ -182,8 +182,8 @@ if FILM == "explain":
     ]
     PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
     SHOTS = [
-        (1, 105, "rear3q", "side"), (106, 317, "wheel", "side"),
-        (318, 420, "profile", "stack"), (421, 505, "front3q", "side"),
+        (1, 105, "rear3q", "side"), (106, 205, "wheel", "side"), (206, 317, "front3q", "side"),
+        (318, 420, "profile", "stack"), (421, 505, "rear3q", "side"),
         (506, 590, "side", "stack"), (591, 660, "tyre", "side"), (661, 725, "top", "side"),
         (726, 800, "high3q", "side"), (801, 881, "profile", "stack"),
         (882, 970, "tyre", "stack"), (971, 1040, "high3q", "side"), (1041, 1095, "side", "stack"),
