@@ -1,11 +1,7 @@
 name: EP03 speed bump preview (two cars, same speed, low resolution)
 # Renders 12 preview stills of the comparison shot and prints a contact sheet + telemetry. Preview only; never a deliverable.
 on:
-  push:
-    branches: [ep03-speed-bump-build-20261115]
-    paths:
-      - .github/workflows/ep03-speed-bump-preview.yml
-      - benchmarks/speed_bump/**
+  workflow_dispatch:
 permissions:
   contents: read
   actions: read
@@ -49,7 +45,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/out"
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
-            -P benchmarks/speed_bump/render_speed_bump_cc0.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --out "$RUNNER_TEMP/out" \
+            -P benchmarks/speed_bump/render_speed_bump.py -- --out "$RUNNER_TEMP/out" \
             --frames 48,62,76,90,104,118,132,146,160,174,188,202 > "$RUNNER_TEMP/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/render.log"; exit 1; }
           grep BUMP_FRAME "$RUNNER_TEMP/render.log"
       - name: Contact sheet

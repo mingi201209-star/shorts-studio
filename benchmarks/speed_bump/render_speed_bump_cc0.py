@@ -7,6 +7,7 @@ The model is not calibrated ("physically_calibrated": False); slow motion (SLOW)
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import sys
@@ -22,18 +23,18 @@ from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 from benchmarks.speed_bump import speed_bump_motion as sim  # noqa: E402
 
 material, cube = base.material, base.cube
-SLOW = 0.25
+PANEL = (1080, 560)
+SAMPLES = 24
 
 
 def arguments():
     p = argparse.ArgumentParser()
     p.add_argument("--source", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
-    p.add_argument("--frames", type=str, required=True)
-    p.add_argument("--width", type=int, default=360)
-    p.add_argument("--height", type=int, default=640)
-    p.add_argument("--samples", type=int, default=7)
-    p.add_argument("--t0", type=float, default=0.0)
+    p.add_argument("--start", type=int, required=True)
+    p.add_argument("--end", type=int, required=True)
+    p.add_argument("--step", type=int, default=1)
+    p.add_argument("--preview", action="store_true", help="360x187 panels, 7 samples")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
 
@@ -45,12 +46,13 @@ def main():
     scene = bpy.context.scene
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
-    scene.cycles.samples = args.samples
+    pw, ph = (360, 187) if args.preview else PANEL
+    scene.cycles.samples = 7 if args.preview else SAMPLES
     scene.cycles.use_denoising = True
-    scene.render.resolution_x, scene.render.resolution_y = args.width, args.height // 2
+    scene.render.resolution_x, scene.render.resolution_y = pw, ph
     scene.render.image_settings.file_format = "PNG"
     scene.view_settings.view_transform = "Standard"
-    scene.view_settings.exposure = -1.0
+    scene.view_settings.exposure = -1.3
     if scene.world is None:
         scene.world = bpy.data.worlds.new("World")
     sun_to = cinematic.sun_vector((-0.5, -0.8), 36.0)
@@ -75,7 +77,8 @@ def main():
         bumps[k] = ob
 
     car_params = dict(sim.CAR, wheelbase=geom["wheelbase"])
-    recs = {k: sim.simulate(b, car=car_params) for k, b in sim.BUMPS.items()}
+    recs = {(seg["id"], k): sim.simulate(b, speed_kmh=seg["kmh"], car=car_params) for seg in sim.SEGMENTS for k, b in sim.BUMPS.items()}
+    renderer_sha256 = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     cam_data = bpy.data.cameras.new("Cam")
     cam = bpy.data.objects.new("Cam", cam_data)
     bpy.context.collection.objects.link(cam)
@@ -84,14 +87,15 @@ def main():
 
     LANE_X = 0.0
     result = []
-    for f in [int(s) for s in args.frames.split(",")]:
-        t_sim = args.t0 + f / 30.0 * SLOW
-        info = {"frame": f, "sim_time": round(t_sim, 4)}
+    checks = []
+    for f in range(args.start, args.end + 1, args.step):
+        seg, t_sim = sim.frame_to_pass(f)
+        info = {"frame": f, "segment": seg["id"], "sim_time": round(t_sim, 4)}
         t_start = time.time()
         for panel in ("hump", "short"):
             for k, ob in bumps.items():
                 base.set_visible(ob, k == panel)
-            rec = recs[panel]
+            rec = recs[(seg["id"], panel)]
             idx = min(int(t_sim * sim.FPS), len(rec["t"]) - 1)
             y_front = float(rec["x"][idx])
             root.location = (LANE_X, y_front - geom["front_axle"], 0.0)
@@ -103,15 +107,20 @@ def main():
                 w["node"].location = (w["base"].x, w["base"].y, w["base"].z + road_z)
                 w["node"].rotation_euler = (-(y_front - geom["front_axle"] + w["base"].y) / geom["tyre_radius"], 0, 0)
             cy = y_front - 1.0
-            base.set_camera(cam, (LANE_X - 6.2, cy, 0.95), (LANE_X, cy, 0.62))
-            scene.render.filepath = str(args.out / f"frame_{f:04d}_{panel}.png")
+            # camera on the +X side looking toward -X: travel (+Y) runs left to right on screen
+            base.set_camera(cam, (LANE_X + 6.2, cy, 0.95), (LANE_X, cy, 0.62))
+            path = args.out / f"frame_{f:04d}_{panel}.png"
+            scene.render.filepath = str(path)
             bpy.ops.render.render(write_still=True)
+            checks.append({"frame": f, "panel": panel, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             info[panel] = {"y_front": round(y_front, 3), "body_rise_cm": round(100 * float(0.5 * (rec["zf"][idx] + rec["zr"][idx])), 2),
-                           "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2)}
+                           "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3)}
         info["render_seconds"] = round(time.time() - t_start, 1)
         result.append(info)
         print("BUMP_FRAME " + json.dumps(info), flush=True)
-    (args.out / "frames.json").write_text(json.dumps(result, indent=1))
+    proof = {"renderer_source_sha256": renderer_sha256, "geometry": geom, "panel": [pw, ph], "preview": bool(args.preview),
+             "checksums": checks, "telemetry": result, "physically_calibrated": False}
+    (args.out / "bump-proof.json").write_text(json.dumps(proof, indent=1))
 
 
 main()

@@ -28,7 +28,7 @@ def profile(x: float, bump: dict) -> float:
     return bump["height"] * math.sin(math.pi * x / bump["length"])
 
 
-def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: float = 3.0, tail_s: float = 1.2):
+def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: float = 3.0, tail_s: float = 3.2):
     """Return dict of arrays sampled at FPS (real time): t, x (front axle, m, 0 = bump start), z_body_front/rear (m), body_height, pitch (rad),
     wheel_front/rear road height (m), body acceleration (g) at the front axle."""
     v = speed_kmh / 3.6
@@ -78,3 +78,37 @@ def summary(rec) -> dict:
 
 
 CLAIMS = {"physically_calibrated": False, "assumed": "typical passenger car, 7.5 cm bump height, 20 km/h"}
+
+
+# ----------------------------------------------------------------------------- film timeline (960 frames at 30 fps = 32 s)
+TOTAL_FRAMES = 960
+#: three slow-motion passes of the SAME car over the SAME two bumps; only the approach speed changes.
+#: `lead_m` is how far before the bump the front axle starts (the shot begins close to the action); `slow` is the playback rate (film shows
+#: the simulation `slow` times as fast as real time). All of it is a property of the shot, not of the physics.
+SEGMENTS = [
+    {"id": "A", "kmh": 20.0, "slow": 0.25, "frames": 320, "lead_m": 1.4},
+    {"id": "B", "kmh": 30.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
+    {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 160, "lead_m": 1.4},
+]
+PASS_FRAMES = sum(s["frames"] for s in SEGMENTS)   # frames 1..640 are rendered; 641..960 are the comparison card (composed, not rendered)
+SIM_LEAD_M = 3.0   # simulate() starts the front axle 3 m before the bump
+
+
+def frame_to_pass(frame: int) -> tuple[dict, float]:
+    """Film frame (1-based) -> (segment, simulated time in s measured from simulate()'s start)."""
+    n = frame - 1
+    for seg in SEGMENTS:
+        if n < seg["frames"]:
+            v = seg["kmh"] / 3.6
+            t0 = (SIM_LEAD_M - seg["lead_m"]) / v
+            return seg, t0 + n / FPS * seg["slow"]
+        n -= seg["frames"]
+    raise ValueError(frame)
+
+
+def pass_summaries(car: dict = CAR) -> dict:
+    """Peak numbers per pass and bump, from the same simulation that poses the cars (used by narration and gates)."""
+    out = {}
+    for seg in SEGMENTS:
+        out[seg["id"]] = {k: summary(simulate(b, speed_kmh=seg["kmh"], car=car)) for k, b in BUMPS.items()}
+    return out

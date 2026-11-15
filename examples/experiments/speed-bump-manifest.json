@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "episode_id": "speed-bump-shapes",
+  "series_id": "hidden-engineering-american-roads",
+  "topic_id": "speed-bump-shape-vs-ride",
+  "fps": 30,
+  "resolution": [1080, 1920],
+  "total_frames": 960,
+  "claims": "Same car, same 7.5 cm bump height; a 0.9 m bump gives a higher peak body acceleration than a 3.7 m hump at 10, 20 and 30 km/h in a simple quarter-car simulation with assumed car values (not calibrated, not a safety statement).",
+  "physically_calibrated": false,
+  "frame_plan_note": "frames 1-640 = three slow-motion passes (A 20 km/h 1-320, B 30 km/h 321-480, C 10 km/h 481-640), 641-960 = peak-acceleration comparison card"
+}
