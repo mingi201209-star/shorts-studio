@@ -47,3 +47,9 @@ Not allowed to be exaggerated: the body motion must be drawn 1:1 with the model 
 4. Hook: question text in the first second ("SAME CAR. SAME SPEED."), narration revised to "short bump = sharp jolt, long hump = slow rise and tilt" (not "gentler"), assumptions line ("simulation, assumed car").
 5. Calibrate the pixel gates for the grey sedan; add speech plan, manifest, assembler and QA gates for this episode.
 6. Voice and first-3-seconds items stay UNVERIFIED until the owner confirms.
+
+## Final film (2026-11-15): 100 % 3D, no text/graphs; production run 43691317419
+- Picture = CC0 sedan + two bumps + road + sky, five cameras (rear 3/4, side, wheel close-up, front 3/4, top); layouts hump-left/short-right or hump-top/short-bottom. Only the burned-in captions of the narration are 2D.
+- Full-res final `speed-bump-shapes.mp4` sha256 `79e3d759b2cb133094f3435ae6551461f99c018b67a8f49f44e481a96b9cae09` (960 frames, 1080x1920, 32 s); 540x960 review copy `8e24d9ae…582d` recovered through job logs, every chunk hash and the whole-file hash matched.
+- Gates PASS: narration numbers vs simulation (2.2x / 2.1x / 5.5x), narration-picture timing (spoken starts 0, 4.55, 9.66, 14.96, 20.45, 26.32 s), first 3 s (first contact 1.01 s), captions single-line in the safe area, visual activity (cuts every 2.5-3.5 s), black opening, duplicate frames, assumed values spoken, all-3D/no overlays, loudness -16.5 LUFS.
+- NOT verified: voice pronunciation and sync (a person must listen), human first view, whether the short-vs-long difference reads without any on-screen text. Weak spots: car small in the rear/front 3/4 shots; the bump/car identification relies on the narration. Simulation values are assumed (not calibrated).
