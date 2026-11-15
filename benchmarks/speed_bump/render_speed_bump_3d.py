@@ -265,11 +265,11 @@ class CardScene:
                 lab = text3d(self.sc, f"val {sid}{key}", f"{val:.2f}", 0.42, (gx + (-0.55 if j == 0 else 0.55), -0.6, 1.0), WHITE, "CENTER", rot=(math.pi / 2, 0, 0))
                 self.bars[(sid, key)] = (bar, m, lab, val)
             text3d(self.sc, f"kmh {sid}", f"{kmh} km/h", 0.5, (gx, -1.35, 0.02), WHITE, "CENTER", rot=(math.pi / 2, 0, 0))
-        text3d(self.sc, "card title", "PEAK BODY ACCELERATION", 0.62, (0, 0, 6.9), WHITE, "CENTER", rot=(math.pi / 2, 0, 0))
-        text3d(self.sc, "card sub", "same car, same 7.5 cm height (simulation, assumed values)", 0.27, (0, 0, 6.35), SOFT, "CENTER", rot=(math.pi / 2, 0, 0))
-        self.spot = text3d(self.sc, "card spot", "", 0.4, (0, 0, 5.75), (1.0, 0.86, 0.47), "CENTER", rot=(math.pi / 2, 0, 0))
-        self.how = text3d(self.sc, "card how", "IT IS HOW QUICKLY THE ROAD LIFTS YOUR CAR", 0.3, (0, 0, 5.75), WHITE, "CENTER", rot=(math.pi / 2, 0, 0))
-        self.shape = text3d(self.sc, "card shape", "SHAPE CHANGES THE RIDE", 0.5, (0, 0, 5.15), (1.0, 0.86, 0.47), "CENTER", rot=(math.pi / 2, 0, 0))
+        text3d(self.sc, "card title", "PEAK BODY ACCELERATION", 0.62, (0, 0, 8.4), WHITE, "CENTER", rot=(math.pi / 2, 0, 0))
+        text3d(self.sc, "card sub", "same car, same 7.5 cm height (simulation, assumed values)", 0.27, (0, 0, 7.75), SOFT, "CENTER", rot=(math.pi / 2, 0, 0))
+        self.spot = text3d(self.sc, "card spot", "", 0.4, (0, 0, 7.1), (1.0, 0.86, 0.47), "CENTER", rot=(math.pi / 2, 0, 0))
+        self.how = text3d(self.sc, "card how", "IT IS HOW QUICKLY THE ROAD LIFTS YOUR CAR", 0.3, (0, 0, 7.1), WHITE, "CENTER", rot=(math.pi / 2, 0, 0))
+        self.shape = text3d(self.sc, "card shape", "SHAPE CHANGES THE RIDE", 0.5, (0, 0, 6.35), (1.0, 0.86, 0.47), "CENTER", rot=(math.pi / 2, 0, 0))
         text3d(self.sc, "leg1", "LONG HUMP 3.7 m", 0.3, (-4.4, -2.9, 0.02), COLORS["hump"], "LEFT", rot=(math.pi / 2, 0, 0))
         text3d(self.sc, "leg2", "SHORT BUMP 0.9 m", 0.3, (0.4, -2.9, 0.02), COLORS["short"], "LEFT", rot=(math.pi / 2, 0, 0))
         self.progress = cube("progress", (0, -3.9, 0.05), (1.0, 0.12, 0.1), emissive("progress mat", (1.0, 0.86, 0.47), 1.0))
@@ -289,7 +289,7 @@ class CardScene:
             dim = 1.0 if lit is None or lit == gi else 0.2
             for key in ("hump", "short"):
                 bar, m, lab, val = self.bars[(sid, key)]
-                h = max(0.001, val / 1.2 * 4.2 * grow)
+                h = max(0.001, val / 1.2 * 5.0 * grow)
                 bar.scale = (1.0, 1.0, h)
                 bar.location.z = h / 2
                 col = tuple(c * dim for c in COLORS[key])
@@ -305,8 +305,8 @@ class CardScene:
         self.progress.scale = (max(w, 0.01), 0.12, 0.1)
         self.progress.location.x = -4.8 + w / 2
         sway = 0.9 * math.sin(n / 320.0 * math.pi * 2 * 0.75)
-        self.cam.location = (sway, -9.6, 6.4)
-        self.cam.rotation_euler = (Vector((0, -0.4, 3.0)) - self.cam.location).to_track_quat("-Z", "Y").to_euler()
+        self.cam.location = (sway, -11.8, 6.2)
+        self.cam.rotation_euler = (Vector((0, -1.3, 3.2)) - self.cam.location).to_track_quat("-Z", "Y").to_euler()
         return render(self.sc, path)
 
 
