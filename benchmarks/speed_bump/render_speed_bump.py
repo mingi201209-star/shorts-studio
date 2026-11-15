@@ -19,7 +19,7 @@ from benchmarks.speed_bump import speed_bump_motion as sim  # noqa: E402
 
 material, cube = base.material, base.cube
 SLOW = 0.25            # film plays the simulation at 1/4 speed in the comparison shot
-LANE_Y = {"short": 0.0, "hump": 4.2}
+LANE_Y = {"short": 0.0, "hump": 3.4}
 R = 0.32               # tyre radius (m)
 BODY_Z0 = 0.30
 
@@ -82,7 +82,7 @@ def main():
     scene.render.resolution_x, scene.render.resolution_y = args.width, args.height
     scene.render.image_settings.file_format = "PNG"
     scene.view_settings.view_transform = "Standard"
-    scene.view_settings.exposure = -0.4
+    scene.view_settings.exposure = -1.4
 
     scene.world = bpy.data.worlds.new("World")
     sun_to = cinematic.sun_vector((-0.4, -0.9), 38.0)
@@ -94,18 +94,18 @@ def main():
 
     road = material("Asphalt", (0.07, 0.07, 0.075), rough=0.85)
     base.asphalt_grain(road)
-    cube("Road", (0, 2.1, -0.05), (60, 9.0, 0.1), road)
+    cube("Road", (0, 1.7, -0.05), (80, 7.4, 0.1), road)
     verge = material("Verge", (0.22, 0.2, 0.14), rough=1.0)
-    cube("Verge near", (0, -4.2, -0.06), (60, 2.4, 0.1), verge)
-    cube("Verge far", (0, 8.6, -0.06), (60, 2.4, 0.1), verge)
+    cube("Verge near", (0, -3.2, -0.06), (80, 2.4, 0.1), verge)
+    cube("Verge far", (0, 6.6, -0.06), (80, 2.4, 0.1), verge)
     paint_white = material("Line", (0.8, 0.8, 0.78), rough=0.6)
-    cube("Centre line", (0, 2.1, 0.002), (60, 0.12, 0.004), paint_white)
+    cube("Centre line", (0, 1.7, 0.002), (80, 0.12, 0.004), paint_white)
     yellow = material("Bump paint", (0.9, 0.62, 0.05), rough=0.5)
     for key_, bump in sim.BUMPS.items():
         n = 40
         pts = [(i / n * bump["length"], bump["height"] * math.sin(math.pi * i / n)) for i in range(n + 1)]
         profile = pts + [(bump["length"], 0.0)]
-        base.extruded_profile(f"Bump {key_}", profile, LANE_Y[key_] - 1.5, LANE_Y[key_] + 1.5, yellow)
+        base.extruded_profile(f"Bump {key_}", profile, LANE_Y[key_] - 1.4, LANE_Y[key_] + 1.4, yellow)
 
     paints = {"short": material("Car A", (0.12, 0.28, 0.65), metal=0.3, rough=0.3),
               "hump": material("Car B", (0.12, 0.28, 0.65), metal=0.3, rough=0.3)}   # identical paint: same car
@@ -116,8 +116,7 @@ def main():
     cam = bpy.data.objects.new("Cam", cam_data)
     bpy.context.collection.objects.link(cam)
     scene.camera = cam
-    cam_data.lens, cam_data.sensor_fit, cam_data.sensor_width = 24, "HORIZONTAL", 36
-    base.set_camera(cam, (1.4, -7.5, 4.6), (1.4, 2.1, 0.6))
+    cam_data.lens, cam_data.sensor_fit, cam_data.sensor_width = 40, "HORIZONTAL", 36
 
     result = []
     for f in [int(s) for s in args.frames.split(",")]:
@@ -139,6 +138,8 @@ def main():
                 node.rotation_euler = (0, -(x_front - wb / 2 + wx) / R, 0)
             info[k] = {"x_front": round(float(x_front), 3), "body_rise_cm": round(100 * 0.5 * float(zf + zr), 2),
                        "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3)}
+        cam_x = -11.0 + 0.55 * float(recs["short"]["x"][min(int(t_sim * sim.FPS), len(recs["short"]["t"]) - 1)])
+        base.set_camera(cam, (cam_x, 1.7, 2.3), (cam_x + 10.0, 1.7, 0.45))
         scene.render.filepath = str(args.out / f"frame_{f:04d}.png")
         t_start = time.time()
         bpy.ops.render.render(write_still=True)

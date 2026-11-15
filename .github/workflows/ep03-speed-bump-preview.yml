@@ -42,7 +42,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/out"
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
             -P benchmarks/speed_bump/render_speed_bump.py -- --out "$RUNNER_TEMP/out" \
-            --frames 0,24,48,72,96,120,144,168,192,216,240,264 > "$RUNNER_TEMP/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/render.log"; exit 1; }
+            --frames 48,62,76,90,104,118,132,146,160,174,188,202 > "$RUNNER_TEMP/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/render.log"; exit 1; }
           grep BUMP_FRAME "$RUNNER_TEMP/render.log"
       - name: Contact sheet
         run: |
