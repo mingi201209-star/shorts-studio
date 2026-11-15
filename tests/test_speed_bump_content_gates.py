@@ -18,9 +18,9 @@ def test_first_contact_inside_three_seconds():
 
 
 def test_timing_gate():
-    beats = [{"start": s} for s in (0, 5.0, 11.3, 16.5, 21.9, 27.4)]
+    beats = [{"start": s} for s in (0, 4.55, 9.66, 14.96, 20.45, 26.32)]
     assert g.narration_picture_timing({"beats": beats})["status"] == "PASS"
-    beats[3]["start"] = 19.5
+    beats[3]["start"] = 18.0
     assert g.narration_picture_timing({"beats": beats})["status"] == "FAIL"
 
 

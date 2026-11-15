@@ -85,11 +85,11 @@ TOTAL_FRAMES = 960
 #: five slow-motion passes of the SAME car over the SAME two bumps; only the approach speed changes. `lead_m`: how far before the bump the front axle starts;
 #: `slow`: playback rate (the film shows the simulation `slow` times as fast as real time). A property of the shot, not of the physics.
 SEGMENTS = [
-    {"id": "A", "kmh": 20.0, "slow": 0.25, "frames": 320, "lead_m": 1.4},
+    {"id": "A", "kmh": 20.0, "slow": 0.25, "frames": 296, "lead_m": 1.4},
     {"id": "B", "kmh": 30.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
     {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 160, "lead_m": 1.4},
     {"id": "D", "kmh": 20.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
-    {"id": "E", "kmh": 30.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
+    {"id": "E", "kmh": 30.0, "slow": 0.50, "frames": 184, "lead_m": 1.4},
 ]
 PASS_FRAMES = sum(s["frames"] for s in SEGMENTS)   # every frame is a rendered pass: no charts, no text, only the 3D scene
 SIM_LEAD_M = 3.0   # simulate() starts the front axle 3 m before the bump
@@ -97,11 +97,11 @@ SIM_LEAD_M = 3.0   # simulate() starts the front axle 3 m before the bump
 #: camera work. layout "stack": long hump on top, short bump below (1080x700 each); "side": long hump left, short bump right (540x1400 each).
 #: (first frame, last frame, camera kind, layout)
 SHOTS = [
-    (1, 105, "rear3q", "side"), (106, 210, "side", "stack"), (211, 320, "wheel", "side"),
-    (321, 400, "front3q", "side"), (401, 480, "side", "stack"),
-    (481, 560, "rear3q", "side"), (561, 640, "wheel", "side"),
-    (641, 720, "top", "side"), (721, 800, "front3q", "side"),
-    (801, 880, "rear3q", "side"), (881, 960, "side", "stack"),
+    (1, 105, "rear3q", "side"), (106, 210, "side", "stack"), (211, 296, "wheel", "side"),
+    (297, 376, "front3q", "side"), (377, 456, "side", "stack"),
+    (457, 536, "rear3q", "side"), (537, 616, "wheel", "side"),
+    (617, 696, "top", "side"), (697, 776, "front3q", "side"),
+    (777, 856, "rear3q", "side"), (857, 960, "side", "stack"),
 ]
 
 
