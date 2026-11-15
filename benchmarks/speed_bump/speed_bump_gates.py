@@ -7,7 +7,7 @@ import numpy as np
 from benchmarks.speed_bump import speed_bump_motion as sim
 
 #: spoken beat -> the frame at which its picture starts (card = comparison chart)
-BEAT_PICTURE_START = {3: 297, 4: 457, 5: 617, 6: 777}
+BEAT_PICTURE_START = sim.BEAT_PICTURE_START   # per film profile (EP03_FILM)
 START_TOLERANCE_S = 1.2
 
 
@@ -34,7 +34,7 @@ def narration_picture_timing(audio_report: dict) -> dict:
         want = (frame - 1) / sim.FPS
         if abs(start - want) > START_TOLERANCE_S:
             problems.append(f"beat {beat_no} starts at {start:.2f}s, its picture starts at {want:.2f}s")
-    if beats[1]["start"] > 296 / sim.FPS:
+    if beats[1]["start"] > sim.BEAT2_BEFORE_FRAME / sim.FPS:
         problems.append("beat 2 must start while pass A is still on screen")
     return {"status": "FAIL" if problems else "PASS", "problems": problems,
             "beat_starts": [round(b["start"], 2) for b in beats]}

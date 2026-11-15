@@ -8,6 +8,7 @@ never "this is what your car feels".
 from __future__ import annotations
 
 import math
+import os
 
 import numpy as np
 
@@ -130,3 +131,52 @@ def pass_summaries(car: dict = CAR) -> dict:
     for seg in SEGMENTS:
         out[seg["id"]] = {k: summary(simulate(b, speed_kmh=seg["kmh"], car=car)) for k, b in BUMPS.items()}
     return out
+
+
+# ----------------------------------------------------------------------------- film profiles
+#: "v1" = the finished film (exterior only). "xray" (env EP03_FILM=xray) = the X-ray explainer: the body turns translucent while the narration says
+#: "look inside" and a spring + damper per wheel shows how the simulated suspension moves. The profile only changes the timeline; physics is identical.
+FILM = os.environ.get("EP03_FILM", "v1")
+#: (first frame, last frame) of the frames over which the body fades to translucent and back (0 = never)
+XRAY_RAMPS = (0, 0, 0, 0)
+#: spoken beat -> the first frame of the picture it talks about, and the frame before which beat 2 must start
+BEAT_PICTURE_START = {3: 297, 4: 457, 5: 617, 6: 777}
+BEAT2_BEFORE_FRAME = 296
+FILM_FILES = {"video": "speed-bump-shapes.mp4", "review": "speed-bump-540x960-review.mp4", "validation": "speed-bump-validation.json"}
+
+if FILM == "xray":
+    SEGMENTS = [
+        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 300, "lead_m": 1.4},    # 0-10.0 s: intro, dive to the wheel, body turns translucent
+        {"id": "A2", "kmh": 20.0, "slow": 0.25, "frames": 188, "lead_m": 1.4},   # 10.0-16.3 s: "squeezes the spring in a flash / slowly"
+        {"id": "B", "kmh": 30.0, "slow": 0.50, "frames": 157, "lead_m": 1.4},    # 16.3-21.5 s: thirty kilometres per hour
+        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 155, "lead_m": 1.4},    # 21.5-26.7 s: at ten
+        {"id": "D", "kmh": 30.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},    # 26.7-32.0 s: back to the exterior
+    ]
+    PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
+    SHOTS = [
+        (1, 105, "rear3q", "side"), (106, 190, "wheel", "side"), (191, 300, "side", "stack"),
+        (301, 380, "wheel", "side"), (381, 488, "side", "stack"),
+        (489, 566, "wheel", "side"), (567, 645, "side", "stack"),
+        (646, 705, "wheel", "side"), (706, 800, "rear3q", "side"),
+        (801, 880, "front3q", "side"), (881, 960, "side", "stack"),
+    ]
+    XRAY_RAMPS = (139, 171, 690, 720)
+    BEAT_PICTURE_START = {3: 301, 4: 489, 5: 646, 6: 801}
+    BEAT2_BEFORE_FRAME = 300
+    FILM_FILES = {"video": "speed-bump-xray.mp4", "review": "speed-bump-xray-540x960-review.mp4", "validation": "speed-bump-xray-validation.json"}
+
+
+def xray_factor(frame: int) -> float:
+    """0 = opaque exterior, 1 = fully translucent with the suspension showing."""
+    a, b, c, d = XRAY_RAMPS
+    if a == 0 and b == 0:
+        return 0.0
+    if frame <= a:
+        return 0.0
+    if frame < b:
+        return (frame - a) / (b - a)
+    if frame <= c:
+        return 1.0
+    if frame < d:
+        return 1.0 - (frame - c) / (d - c)
+    return 0.0

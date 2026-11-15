@@ -56,7 +56,7 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
     if audio_report["status"] != "PASS":
         raise ValueError("audio capture did not PASS")
 
-    final = out / ("speed-bump-preflight.mp4" if preflight else "speed-bump-shapes.mp4")
+    final = out / ("speed-bump-preflight.mp4" if preflight else sim.FILM_FILES["video"])
     run(["ffmpeg", "-v", "error", "-framerate", str(manifest["fps"]), "-i", str(flat / "frame_%04d.png"), "-i", str(out / "narration.wav"),
          "-vf", caption_filter(out), "-map", "0:v:0", "-map", "1:a:0",
          "-c:v", "libx264", "-preset", "fast", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", final])
@@ -133,7 +133,7 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
               "motion_model": "quarter-car simulation, assumed car values; not calibrated", "editorial_status": "HOLD_ACTUAL_REVIEW",
               "human_first_view": "UNVERIFIED", "voice_pronunciation": "UNVERIFIED", "upload_authorized": False,
               "duration_seconds": float(pinfo["format"]["duration"]), "silence_gaps": gaps, "loudness": levels, "frame_count": total}
-    (out / "speed-bump-validation.json").write_text(json.dumps(result, indent=2))
+    (out / sim.FILM_FILES["validation"]).write_text(json.dumps(result, indent=2))
     print("BUMP_FILM_PASS " + result["sha256"], flush=True)
     return result
 

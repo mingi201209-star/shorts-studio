@@ -41,6 +41,87 @@ def arguments():
     return p.parse_args(argv)
 
 
+def spring_curve(name, bottom, top, mat, turns=7, radius=0.07):
+    """Helical coil spring as a beveled curve between two points."""
+    cu = bpy.data.curves.new(name, "CURVE")
+    cu.dimensions, cu.bevel_depth, cu.bevel_resolution = "3D", 0.011, 2
+    sp = cu.splines.new("POLY")
+    n = turns * 16
+    sp.points.add(n)
+    for i, pt in enumerate(sp.points):
+        t = i / n
+        a = 2 * math.pi * turns * t
+        pt.co = (bottom[0] + radius * math.cos(a), bottom[1] + radius * math.sin(a), bottom[2] + (top[2] - bottom[2]) * t, 1)
+    ob = bpy.data.objects.new(name, cu)
+    bpy.context.collection.objects.link(ob)
+    ob.data.materials.append(mat)
+    return ob
+
+
+class XRay:
+    """Translucent body (the sedan's body materials copied with a lower alpha and a fresnel edge glow) and a spring + damper per wheel that follow the
+    simulation: spring bottom on the wheel hub, top on the body mount above it. Wheels, tyres and brakes stay solid. A generic suspension drawing."""
+
+    def __init__(self, root, wheels):
+        self.wheels = wheels
+        wheel_parts = set()
+        for w in wheels.values():
+            wheel_parts.update(o.name for o in w["node"].children_recursive)
+        self.ctrl = []
+        seen = {}
+        for o in [m for m in root.children_recursive if m.type == "MESH"]:
+            if o.name in wheel_parts:
+                continue
+            for i, m in enumerate(o.data.materials):
+                if m is None:
+                    continue
+                if m.name not in seen:
+                    c = m.copy()
+                    c.name = m.name + " xray"
+                    bsdf = c.node_tree.nodes.get("Principled BSDF")
+                    lw = c.node_tree.nodes.new("ShaderNodeLayerWeight")
+                    lw.inputs["Blend"].default_value = 0.35
+                    mul = c.node_tree.nodes.new("ShaderNodeMath")
+                    mul.operation = "MULTIPLY"
+                    mul.inputs[1].default_value = 0.0
+                    c.node_tree.links.new(lw.outputs["Facing"], mul.inputs[0])
+                    c.node_tree.links.new(mul.outputs[0], bsdf.inputs["Emission Strength"])
+                    bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
+                    self.ctrl.append((bsdf, mul, bsdf.inputs["Alpha"].default_value))
+                    seen[m.name] = c
+                o.data.materials[i] = seen[m.name]
+        self.red = material("Spring", (1.0, 0.25, 0.1), rough=0.4, emission=0.6)
+        self.cyan = material("Damper", (0.2, 0.8, 1.0), rough=0.4, emission=0.4)
+        self.live = []
+
+    def set_factor(self, xf):
+        for bsdf, mul, alpha0 in self.ctrl:
+            bsdf.inputs["Alpha"].default_value = alpha0 * (1.0 - 0.78 * xf)
+            mul.inputs[1].default_value = 3.0 * xf
+
+    def clear(self):
+        for ob in self.live:
+            bpy.data.objects.remove(ob, do_unlink=True)
+        self.live = []
+
+    def build(self, body, xf):
+        self.clear()
+        if xf < 0.02:
+            return
+        bpy.context.view_layer.update()
+        for wkey, w in self.wheels.items():
+            side = 1.0 if w["base"].x > 0 else -1.0
+            hub = w["node"].matrix_world.translation
+            mount = body.matrix_world @ Vector((w["base"].x - 0.05 * side, w["base"].y, w["base"].z + 0.42))
+            dx = 0.12 * side
+            self.live.append(spring_curve(f"spring {wkey}", (hub.x + dx, hub.y, hub.z + 0.05), (mount.x + dx, mount.y, mount.z), self.red))
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.022, depth=1.0, location=((hub.x + mount.x) / 2 + dx, hub.y + 0.1, (hub.z + mount.z) / 2))
+            rod = bpy.context.object
+            rod.scale = (1, 1, max(0.05, mount.z - hub.z))
+            rod.data.materials.append(self.cyan)
+            self.live.append(rod)
+
+
 def pose_car(root, body, wheels, geom, rec, idx):
     y_front = float(rec["x"][idx])
     root.location = (0.0, y_front - geom["front_axle"], 0.0)
@@ -119,6 +200,7 @@ def main():
     scene.camera = cam
 
     tl = Timeline(geom["wheelbase"])
+    xray = XRay(root, wheels) if sim.FILM == "xray" else None
     frames = [int(x) for x in args.frames.split(",")] if args.frames else list(range(args.start, args.end + 1))
     result, checks = [], []
     for f in frames:
@@ -134,6 +216,10 @@ def main():
             rec = tl.recs[(seg["id"], panel)]
             idx = min(int(t_sim * sim.FPS), len(rec["t"]) - 1)
             y_front = pose_car(root, body, wheels, geom, rec, idx)
+            if xray is not None:
+                xf = sim.xray_factor(f)
+                xray.set_factor(xf)
+                xray.build(body, xf)
             place_camera(cam, kind, y_front)
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)
@@ -145,7 +231,7 @@ def main():
         result.append(info)
         print("BUMP_FRAME " + json.dumps(info), flush=True)
     proof = {"renderer_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "geometry": geom, "preview": bool(args.preview),
-             "checksums": checks, "telemetry": result, "physically_calibrated": False, "all_3d": True, "overlays": "none"}
+             "checksums": checks, "telemetry": result, "physically_calibrated": False, "all_3d": True, "overlays": "none", "film": sim.FILM}
     (args.out / "bump-proof.json").write_text(json.dumps(proof, indent=1))
 
 
