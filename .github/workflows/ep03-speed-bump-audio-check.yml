@@ -24,6 +24,7 @@ jobs:
           echo "PLAN $PLAN"
           mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
           # the free TTS service sometimes returns no audio; start from a clean folder and try up to 4 times
+          export SPEECH_REQUEST_GAP=9
           ok=0
           for attempt in 1 2 3 4; do
             rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"

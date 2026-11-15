@@ -1,5 +1,5 @@
 """Capture existing Andrew voice and real word boundaries; never invent timings."""
-import argparse, asyncio, hashlib, json, re, subprocess, shutil
+import argparse, asyncio, hashlib, json, os, re, subprocess, shutil
 from pathlib import Path
 import edge_tts
 
@@ -25,6 +25,7 @@ async def capture(plan, out, target_seconds=30):
                 words=rec['words']
             else:
                 if audio.exists() or timing.exists(): raise RuntimeError('Unreconciled capture output')
+                await asyncio.sleep(float(os.environ.get('SPEECH_REQUEST_GAP','0')))   # the free service stops answering after a few quick requests in a row
                 async def request():
                     words=[];data=bytearray()
                     async for chunk in edge_tts.Communicate(beat['narration_en'], 'en-US-AndrewNeural', rate='+5%', boundary='WordBoundary').stream():
