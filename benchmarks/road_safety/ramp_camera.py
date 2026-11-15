@@ -102,8 +102,16 @@ def _track(ts, vals, v0):
     return tg
 
 
-def relative_path() -> list:
-    """Truck-relative camera poses, one per frame 1-285: the round-2 path up to JOIN_FRAME, then the round-3 tail."""
+#: Which opening is used. 2 = the verified round-2 camera (what the film ships with). 3 = the round-3 tail (frames 190-285), kept for later
+#: but not selected: it was put on hold by the owner on 2026-11-15 after the round-2 opening was judged good enough to test with viewers.
+ACTIVE_ROUND = 2
+
+
+def relative_path(round_: int | None = None) -> list:
+    """Truck-relative camera poses, one per frame 1-285. round_=2: the round-2 path. round_=3: round-2 up to JOIN_FRAME, then the round-3 tail.
+    Default: ACTIVE_ROUND."""
+    if (round_ or ACTIVE_ROUND) == 2:
+        return _round2_path()
     old = _round2_path()
     path = list(old[:JOIN_FRAME])
     j = JOIN_FRAME - 1                                   # index of the join frame
@@ -130,10 +138,10 @@ def relative_path() -> list:
     return path
 
 
-def junction_report(states) -> dict:
+def junction_report(states, round_: int | None = 3) -> dict:
     """Step, speed and turn-rate change across JOIN_FRAME -> JOIN_FRAME + 1 (world coordinates, as the viewer sees it)."""
     import math
-    path = world_path(states)
+    path = world_path(states, round_)
     j = JOIN_FRAME - 1
     def step(a, b): return cam._len(cam._sub(b.position, a.position))
     def turn(a, b):
@@ -153,8 +161,8 @@ def world_pose(rel: "cam.Pose", ny: float) -> "cam.Pose":
                     (rel.aim[0], rel.aim[1] + ny, rel.aim[2]), rel.lens, rel.cut)
 
 
-def world_path(states) -> list:
-    rel = relative_path()
+def world_path(states, round_: int | None = None) -> list:
+    rel = relative_path(round_)
     return [world_pose(p, nose_y(states, FIRST_FRAME + i)) for i, p in enumerate(rel)]
 
 
@@ -271,10 +279,10 @@ def composition(pose: "cam.Pose", ny: float) -> dict:
     return {name: round(float((label == i).mean()), 3) for i, name in enumerate(LABELS)}
 
 
-def composition_report(states, first: int, last: int) -> dict:
+def composition_report(states, first: int, last: int, round_: int | None = None) -> dict:
     """Median shares over a frame range, and how many frames show a wheel, gravel and truck body together."""
     import numpy as np
-    path = relative_path()          # truck-relative poses: the boxes are in truck coordinates
+    path = relative_path(round_)    # truck-relative poses: the boxes are in truck coordinates
     rows = [composition(path[f - FIRST_FRAME], nose_y(states, f)) for f in range(first, last + 1)]
     med = {k: round(float(np.median([r[k] for r in rows])), 3) for k in LABELS}
     together = [r["wheel"] >= 0.02 and r["gravel"] >= 0.20 and (r["trailer"] + r["body"]) >= 0.15 for r in rows]
@@ -282,10 +290,10 @@ def composition_report(states, first: int, last: int) -> dict:
             "max_trailer": round(max(r["trailer"] for r in rows), 3), "max_earth": round(max(r["earth"] for r in rows), 3)}
 
 
-def aim_point(states, t: float) -> tuple:
+def aim_point(states, t: float, round_: int | None = None) -> tuple:
     """What the camera claims to look at, in the world, at film time t (the keyed aim point riding the truck)."""
     f = min(LAST_FRAME, FIRST_FRAME + int(round(t * FPS)))
-    rel = relative_path()[f - FIRST_FRAME]
+    rel = relative_path(round_)[f - FIRST_FRAME]
     return world_pose(rel, nose_y(states, f)).aim
 
 

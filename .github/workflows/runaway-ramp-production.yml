@@ -7,7 +7,7 @@ name: Runaway truck ramp production (full render + real audio + QA)
 # simulation-state telemetry check, not image understanding. No upload.
 on:
   push:
-    branches: [road-paint-retroreflective-20261106]
+    branches: [road-paint-retroreflective-20261106, road-ramp-captions-camera-20261114]
     # Production only starts when THIS file changes (flipping the gates on
     # native/final below). Renderer, manifest and narration edits go through
     # runaway-ramp-preflight.yml first: three production runs in a row were
@@ -82,16 +82,15 @@ jobs:
           retention-days: 14
 
   native:
-    if: false
-    # Gate closed again: realism-B production run 43583071422 completed with every gate PASS (preflight
-    # 43575903085). Re-open only after a new preflight PASS.
+    # Open for the final cut of the shipping film (docs/upload-prep). Frames 1-285 are NOT rendered here: they come from the verified
+    # opening render (run 43653893421); this job renders frames 286-960 only.
     runs-on: ubuntu-24.04
     timeout-minutes: 100
     strategy:
       fail-fast: false
       max-parallel: 20
       matrix:
-        start: [1, 31, 61, 91, 121, 151, 181, 211, 241, 271, 301, 331, 361, 391, 421, 451, 481, 511, 541, 571, 601, 631, 661, 691, 721, 751, 781, 811, 841, 871, 901, 931]
+        start: [286, 316, 346, 376, 406, 436, 466, 496, 526, 556, 586, 616, 646, 676, 706, 736, 766, 796, 826, 856, 886, 916, 946]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: Install hash-pinned Blender 5.0.1
@@ -142,7 +141,6 @@ jobs:
           retention-days: 14
 
   final:
-    if: false
     needs: [native, audio]
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -185,14 +183,17 @@ jobs:
           ffmpeg -hide_banner -filters | grep -E " ass |loudnorm|blackdetect" 
           test -f /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
       - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
-      - name: Retrieve all 32 native shards and the real audio
+      - name: Retrieve the native shards (frames 286-960 from this run, frames 1-285 from the verified opening render) and the real audio
         env:
           GH_TOKEN: ${{ github.token }}
+          OPENING_RUN_ID: "43653893421"
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'runaway-ramp-native-*' --dir "$RUNNER_TEMP/native"
-          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 32
+          # frames 1-285 were rendered in run $OPENING_RUN_ID (19 shards of 15 frames, same renderer file: the assembler refuses mixed renderer hashes)
+          gh run download "$OPENING_RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern 'runaway-ramp-opening-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = 42   # 23 shards of this run + 19 opening shards
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name runaway-ramp-audio --dir "$RUNNER_TEMP/audio"
       - name: Assemble final MP4 and run real technical QA
         run: |
@@ -203,13 +204,20 @@ jobs:
             --manifest examples/experiments/runaway-ramp-manifest.json \
             --out "$RUNNER_TEMP/final"
           sha256sum "$RUNNER_TEMP/final/runaway-truck-ramp.mp4"
-      - name: Print the final MP4 as base64 (so it can be retrieved from the log)
+      - name: Checks printed for review (the log reader cannot carry the MP4 itself)
         run: |
           set -euo pipefail
-          echo "MP4_B64_START runaway-truck-ramp.mp4"
-          base64 -w0 "$RUNNER_TEMP/final/runaway-truck-ramp.mp4"
-          echo ""
-          echo "MP4_B64_END runaway-truck-ramp.mp4"
+          f="$RUNNER_TEMP/final/runaway-truck-ramp.mp4"
+          ls -l "$f"; sha256sum "$f"
+          ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,nb_frames,duration -of csv=p=0 "$f"
+          echo "LOUDNESS_EBUR128"; ffmpeg -hide_banner -nostats -i "$f" -af ebur128=peak=true -f null - 2>&1 | tail -12
+          echo "SILENCE_DETECT"; ffmpeg -hide_banner -nostats -i "$f" -af silencedetect=noise=-45dB:d=0.4 -f null - 2>&1 | grep -E "silence_(start|end)" || echo "none >=0.4s"
+          echo "BLACKDETECT"; ffmpeg -hide_banner -nostats -i "$f" -vf blackdetect=d=0.1:pix_th=0.06 -an -f null - 2>&1 | grep blackdetect || echo "none"
+          ffmpeg -v error -i "$f" -vf "fps=1,scale=180:320,tile=8x4" -frames:v 1 -q:v 4 "$RUNNER_TEMP/sheet.jpg"
+          echo "SHEET_B64_START"; base64 -w76 "$RUNNER_TEMP/sheet.jpg"; echo "SHEET_B64_END"
+          # a 540x960 review copy for recovery through short log chunks (the full-resolution file stays in the artifact)
+          ffmpeg -v error -i "$f" -vf "scale=540:960:flags=lanczos" -c:v libx264 -preset slow -crf 30 -pix_fmt yuv420p -c:a aac -b:a 64k -movflags +faststart "$RUNNER_TEMP/final/runaway-truck-ramp-540x960-review.mp4"
+          ls -l "$RUNNER_TEMP/final/runaway-truck-ramp-540x960-review.mp4"; sha256sum "$RUNNER_TEMP/final/runaway-truck-ramp-540x960-review.mp4"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
