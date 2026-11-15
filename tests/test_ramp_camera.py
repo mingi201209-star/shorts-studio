@@ -29,11 +29,11 @@ def test_nose_track_is_continuous_through_first_tyre_contact():
     assert min(abs(y) for y in ys) < 0.5                                   # passes through 0 (the contact point)
 
 
-def test_camera_keeps_the_established_opening_and_ends_behind_the_nose_on_the_right():
+def test_camera_keeps_the_established_opening_and_ends_inside_the_gravel_bed_on_the_right():
     first = rc.relative_path()[0]
     assert first.position == (2.7, 18.0, 0.45) and first.lens == 24.0
     last = rc.relative_path()[-1]
-    assert last.position[1] < -5 and last.position[0] > 5.0           # out on the right side, level with the rear half
+    assert 2.5 < last.position[0] <= 3.6 and last.position[1] > -2.0   # round 3: still inside the bed (gravel under the camera), near the nose
     assert len(rc.relative_path()) == rc.LAST_FRAME - rc.FIRST_FRAME + 1
 
 
@@ -51,3 +51,44 @@ def test_manifest_selects_the_continuous_camera_and_keeps_shot_coverage():
     man = json.loads((Path(__file__).resolve().parents[1] / "examples/experiments/runaway-ramp-manifest.json").read_text())
     assert man["camera"] == "continuous" and man["realism"] == "B"
     assert man["shots"][0]["start"] == rc.FIRST_FRAME and man["shots"][1]["end"] == rc.LAST_FRAME
+
+
+# ---------------------------------------------------------------- round 3 (frames 190-285)
+
+def test_round3_keeps_frames_1_to_189_exactly_as_round_2():
+    old = rc._round2_path()
+    new = rc.relative_path()
+    assert len(new) == len(old) == 285
+    for a, b in zip(new[:189], old[:189]):
+        assert a.position == b.position and a.aim == b.aim and a.lens == b.lens
+
+
+def test_round3_joins_the_old_path_without_a_jump():
+    rep = rc.junction_report(m.simulate())
+    assert rep["speed_change_across_join_mps"] <= 1.0
+    assert rep["turn_rate_change_across_join_dps"] <= 10.0
+    assert abs(rep["lens"][1] - rep["lens"][2]) < 0.2
+
+
+def test_round3_audit_still_passes_on_the_whole_opening():
+    a = rc.audit(m.simulate())
+    assert a.status == "PASS", a.problems
+
+
+def test_round3_picture_is_gravel_wheels_and_body_not_wall_and_empty_ground():
+    """Measured with ray casting into the simplified scene; thresholds come from the review of the round-2 clip (earth ~33 %, gravel ~13 %)."""
+    s = m.simulate()
+    for first, last in ((190, 230), (231, 285)):
+        rep = rc.composition_report(s, first, last)
+        med = rep["median"]
+        assert med["gravel"] >= 0.30, (first, rep)
+        assert med["earth"] <= 0.12, (first, rep)
+        assert med["trailer"] <= 0.12, (first, rep)
+        assert rep["wheel_gravel_body_together"] >= 0.9, (first, rep)
+    rows = [rc.composition(rc.relative_path()[f - 1], rc.nose_y(s, f)) for f in range(190, 286)]
+    assert min(r["wheel"] for r in rows) >= 0.015
+
+
+def test_projection_centre_matches_the_renderers_shift():
+    from benchmarks.road_safety import cinematic_camera as cc
+    assert cc.PICTURE_CENTER_ROW == 700.0

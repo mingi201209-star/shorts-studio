@@ -23,6 +23,9 @@ Vec = tuple[float, float, float]
 SENSOR_WIDTH = 36.0          # mm, matches the renderers
 PICTURE_ROWS = (0.0, 1400.0)  # rows of the 1080x1920 frame that carry picture (the rest is the caption band)
 FRAME = (1080.0, 1920.0)
+#: the renderers set camera.shift_y = -260/1080 (in frame widths), which puts the optical axis 260 rows above the middle of the
+#: 1920-row frame, i.e. at the middle of the 1400-row picture area. Rows below are measured from the top of the frame.
+PICTURE_CENTER_ROW = FRAME[1] / 2.0 - 260.0
 
 
 def _sub(a: Vec, b: Vec) -> Vec: return (a[0] - b[0], a[1] - b[1], a[2] - b[2])
@@ -135,7 +138,7 @@ def project(pose: Pose, point: Vec) -> tuple[float, float, float]:
         return (0.5, 0.0, depth)
     fx = pose.lens / SENSOR_WIDTH              # focal length in frame widths
     x = 0.5 + fx * _dot(rel, right) / depth
-    row = FRAME[1] / 2.0 - (fx * _dot(rel, up) / depth) * FRAME[0]
+    row = PICTURE_CENTER_ROW - (fx * _dot(rel, up) / depth) * FRAME[0]
     return (x, row, depth)
 
 

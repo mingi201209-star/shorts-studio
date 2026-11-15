@@ -93,7 +93,7 @@ def test_a_whip_pan_fails_on_aim_rate():
 def test_projection_puts_the_aim_point_in_the_middle_of_the_frame():
     pose = cc.Pose(0.0, (0.0, -10.0, 1.0), (0.0, 0.0, 1.0), 32.0)
     x, row, depth = cc.project(pose, (0.0, 0.0, 1.0))
-    assert abs(x - 0.5) < 1e-9 and abs(row - 960.0) < 1e-6 and abs(depth - 10.0) < 1e-9
+    assert abs(x - 0.5) < 1e-9 and abs(row - cc.PICTURE_CENTER_ROW) < 1e-6 and cc.PICTURE_CENTER_ROW == 700.0 and abs(depth - 10.0) < 1e-9
     assert cc.project(pose, (0.0, -20.0, 1.0))[2] < 0           # behind the camera
 
 
