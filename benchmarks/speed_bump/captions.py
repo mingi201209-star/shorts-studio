@@ -4,6 +4,10 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED_XRAY = {
+    'These two bumps are exactly the same height so why does one hit so much harder.': (
+        'These two bumps are', 'exactly the same height', 'so why does one hit', 'so much harder.'),
+    'What matters is how quickly the road lifts the car. This is a computer simulation with assumed values.': (
+        'What matters is how', 'quickly the road lifts', 'the car. This is a', 'computer simulation', 'with assumed values.'),
     'Same car and same speed with a long hump on the left and a short bump on the right.': (
         'Same car and same speed', 'with a long hump on', 'the left and a short', 'bump on the right.'),
     'Now look inside where every wheel hangs on a spring and a damper that work together to soak up the bump.': (
