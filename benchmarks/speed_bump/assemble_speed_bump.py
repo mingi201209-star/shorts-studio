@@ -39,7 +39,8 @@ def verify_captions_over_picture(video: Path, frames_dir: Path, sample_points: l
     for i, (ts, band) in enumerate(sample_points):
         n = int(round(ts * fps))
         grab = build_dir / f"_capdiff_{i}.png"
-        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{n / fps:.4f}", "-i", str(video), "-frames:v", "1", str(grab)])
+        # exactly frame n (0-based) of the encoded video, so it lines up with composed frame n + 1 pixel for pixel
+        run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-vf", f"select=eq(n\\,{n})", "-vsync", "0", "-frames:v", "1", str(grab)])
         shot = np.asarray(Image.open(grab).convert("L"), dtype=np.int16)
         source = np.asarray(Image.open(frames_dir / f"frame_{n + 1:04d}.png").convert("L"), dtype=np.int16)
         if shot.shape != source.shape:
