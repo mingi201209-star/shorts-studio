@@ -171,27 +171,31 @@ if FILM == "xray":
 TRAILS: list = []
 
 if FILM == "explain":
-    # "explain" = the X-ray film plus two new principle scenes (the wheel's own path over each bump, the roof's path afterwards) and no repeated passes.
+    # "explain" = the X-ray film plus a new principle scene (the wheel's own path over each bump, drawn as a glowing 3D tube) and no repeated passes.
+    # Frame boundaries follow the measured spoken beat starts [0, 4.64, 10.56, 16.84, 24.17, 29.37] s of a 36.5 s film.
     SEGMENTS = [
-        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 300, "lead_m": 1.4},    # intro, dive to the wheel, body turns translucent
-        {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 200, "lead_m": 1.4},    # NEW: the wheel's path (hub trail), X-ray still on
-        {"id": "B", "kmh": 30.0, "slow": 0.50, "frames": 170, "lead_m": 1.4},    # thirty km/h, roof trail, body opaque again
-        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 160, "lead_m": 1.4},    # ten km/h
-        {"id": "E", "kmh": 20.0, "slow": 0.25, "frames": 250, "lead_m": 1.4},    # closing: same height, how quickly it lifts
+        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 317, "lead_m": 1.4},    # intro, dive to the wheel, body turns translucent
+        {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 188, "lead_m": 1.4},    # NEW: the wheel's path (hub trail), X-ray still on
+        {"id": "B", "kmh": 30.0, "slow": 0.40, "frames": 220, "lead_m": 1.4},    # thirty km/h, body opaque again
+        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 156, "lead_m": 1.4},    # ten km/h
+        {"id": "E", "kmh": 20.0, "slow": 0.25, "frames": 214, "lead_m": 1.4},    # closing: same height, how quickly it lifts
     ]
     PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
     SHOTS = [
-        (1, 105, "rear3q", "side"), (106, 300, "wheel", "side"),
-        (301, 410, "profile", "stack"), (411, 500, "front3q", "side"),
-        (501, 590, "side", "stack"), (591, 670, "tyre", "side"),
-        (671, 750, "top", "side"), (751, 830, "high3q", "side"),
-        (831, 930, "tyre", "stack"), (931, 1010, "front3q", "side"), (1011, 1080, "side", "stack"),
+        (1, 105, "rear3q", "side"), (106, 317, "wheel", "side"),
+        (318, 420, "profile", "stack"), (421, 505, "front3q", "side"),
+        (506, 590, "side", "stack"), (591, 660, "tyre", "side"), (661, 725, "top", "side"),
+        (726, 800, "high3q", "side"), (801, 881, "profile", "stack"),
+        (882, 970, "tyre", "stack"), (971, 1040, "high3q", "side"), (1041, 1095, "side", "stack"),
     ]
     XRAY_RAMPS = (139, 171, 480, 505)
-    TRAILS = [(301, 500, "hub"), (501, 830, "roof")]
-    BEAT_PICTURE_START = {3: 301, 4: 501, 5: 671, 6: 831}
-    BEAT2_BEFORE_FRAME = 300
+    TRAILS = [(318, 1095, "hub")]
+    BEAT_PICTURE_START = {3: 318, 4: 506, 5: 726, 6: 882}
+    BEAT2_BEFORE_FRAME = 317
     FILM_FILES = {"video": "speed-bump-explain.mp4", "review": "speed-bump-explain-540x960-review.mp4", "validation": "speed-bump-explain-validation.json"}
+
+
+TOTAL_FRAMES = PASS_FRAMES   # every film frame is a rendered pass, whichever profile is active
 
 
 def trail_mode(frame: int):

@@ -126,9 +126,9 @@ class Trail:
     """A glowing 3D tube drawn behind a moving point (the front wheel hub, or the roof of the car): the path that point has travelled so far in this pass."""
 
     def __init__(self, name, color):
-        self.mat = material(name, color, rough=0.3, emission=5.0)
+        self.mat = material(name, color, rough=0.3, emission=9.0)
         self.cu = bpy.data.curves.new(name, "CURVE")
-        self.cu.dimensions, self.cu.bevel_depth, self.cu.bevel_resolution = "3D", 0.022, 2
+        self.cu.dimensions, self.cu.bevel_depth, self.cu.bevel_resolution = "3D", 0.03, 2
         self.ob = bpy.data.objects.new(name, self.cu)
         bpy.context.collection.objects.link(self.ob)
         self.ob.data.materials.append(self.mat)
@@ -173,8 +173,8 @@ def place_camera(cam, kind, y):
         d.lens = 45
         base.set_camera(cam, (3.6, y - 0.1, 0.5), (0.5, y + 0.35, 0.3))
     elif kind == "profile":                 # low side view that keeps the wheel and the path it has just travelled in frame
-        d.lens = 32
-        base.set_camera(cam, (6.0, y - 0.3, 0.55), (0.0, y - 0.9, 0.4))
+        d.lens = 38
+        base.set_camera(cam, (5.2, y - 0.4, 0.5), (0.0, y - 0.9, 0.38))
     elif kind == "tyre":                    # very close on the front tyre climbing the face of the bump
         d.lens = 38
         base.set_camera(cam, (2.4, y + 0.5, 0.3), (0.0, y + 0.05, 0.28))
@@ -266,7 +266,7 @@ def main():
                 js = list(range(j0, idx + 1, step)) + ([idx] if (idx - j0) % step else [])
                 if mode == "hub":
                     h = wheels[hub_key]["node"].matrix_world.translation
-                    hub_trail.set([(h.x + 0.06, h.y + float(rec["x"][j] - rec["x"][idx]), h.z + float(rec["wf"][j] - rec["wf"][idx])) for j in js])
+                    hub_trail.set([(h.x + 0.2, h.y + float(rec["x"][j] - rec["x"][idx]), h.z + float(rec["wf"][j] - rec["wf"][idx])) for j in js])
                 else:
                     r = body.matrix_world @ roof_local
                     roof_trail.set([(r.x, r.y + float(rec["x"][j] - rec["x"][idx]),
