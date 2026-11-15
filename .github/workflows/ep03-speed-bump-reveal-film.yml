@@ -29,10 +29,10 @@ jobs:
           mode = json.load(open("examples/experiments/speed-bump-reveal-request.json"))["mode"]
           assert mode in ("preflight", "production")
           size = 80 if mode == "preflight" else 16
-          starts = list(range(1, 1096, size))
+          starts = list(range(1, 1051, size))
           print("mode=" + mode)
           print("shards=" + str(len(starts)))
-          print("matrix=" + json.dumps({"include": [{"start": s, "end": min(s + size - 1, 1095)} for s in starts]}))
+          print("matrix=" + json.dumps({"include": [{"start": s, "end": min(s + size - 1, 1050)} for s in starts]}))
           PY
   audio:
     runs-on: ubuntu-24.04
@@ -54,7 +54,7 @@ jobs:
           for attempt in 1 2 3 4; do
             rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
-                 --plan examples/experiments/speed-bump-reveal-speech-plan.json --target-seconds 36.5 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+                 --plan examples/experiments/speed-bump-reveal-speech-plan.json --target-seconds 35.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
             echo "speech capture attempt $attempt failed"; sleep 20
           done
           test "$ok" = 1
@@ -62,7 +62,7 @@ jobs:
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build
           from benchmarks.speed_bump.captions import single_line_groups as phrase_groups
-          build(Path('$RUNNER_TEMP/speech/speed-bump-shapes'), Path('$RUNNER_TEMP/audio'), target_seconds=36.5, grouper=phrase_groups)
+          build(Path('$RUNNER_TEMP/speech/speed-bump-shapes'), Path('$RUNNER_TEMP/audio'), target_seconds=35.0, grouper=phrase_groups)
           "
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -142,7 +142,7 @@ jobs:
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'speedbump-reveal-panels-*' --dir "$RUNNER_TEMP/native"
           test "$(ls "$RUNNER_TEMP/native" | wc -l)" = "${{ needs.plan.outputs.shards }}"
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name speedbump-reveal-audio --dir "$RUNNER_TEMP/audio"
-      - name: Compose the 1095 film frames
+      - name: Compose the 1050 film frames
         run: PYTHONPATH="$PWD" python benchmarks/speed_bump/compose_speed_bump.py --panels "$RUNNER_TEMP/native" --out "$RUNNER_TEMP/composed"
       - name: Assemble and run every QA gate
         id: gates

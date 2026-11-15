@@ -1,1 +1,1 @@
-{"plan": "examples/experiments/speed-bump-reveal-speech-plan.json", "note": "reveal film audio check 1"}
+{"plan":"examples/experiments/speed-bump-reveal-speech-plan.json","note":"reveal audio check 2: target 35.0 s (less slack = less silence)"}

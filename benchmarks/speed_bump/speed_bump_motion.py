@@ -198,27 +198,27 @@ if FILM == "explain":
 if FILM == "reveal":
     # "reveal" = the explain film re-cut after the owner's review: full-height 1080x1920 picture (captions sit on the picture, no black band), a first three seconds
     # with both cars big over their bumps followed at once by the scan-line X-ray reveal, springs that glow with their compression, a tight spring close-up.
-    # Frame boundaries follow the measured spoken beat starts (see BEAT_STARTS_S).
-    BEAT_STARTS_S = [0.0, 4.1, 10.1, 16.3, 23.7, 28.9]
+    # 35.0 s / 1050 frames; frame boundaries follow the measured spoken beat starts (a longer film adds slack = silence and breaks the total-silence gate).
+    BEAT_STARTS_S = [0.0, 4.47, 10.51, 16.71, 24.06, 29.23]
     SEGMENTS = [
-        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 300, "lead_m": 1.4},
-        {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 200, "lead_m": 1.4},
-        {"id": "B", "kmh": 30.0, "slow": 0.40, "frames": 225, "lead_m": 1.4},
-        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 156, "lead_m": 1.4},
-        {"id": "E", "kmh": 20.0, "slow": 0.25, "frames": 214, "lead_m": 1.4},
+        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 315, "lead_m": 1.4},
+        {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 186, "lead_m": 1.4},
+        {"id": "B", "kmh": 30.0, "slow": 0.40, "frames": 221, "lead_m": 1.4},
+        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 155, "lead_m": 1.4},
+        {"id": "E", "kmh": 20.0, "slow": 0.25, "frames": 173, "lead_m": 1.4},
     ]
     PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
     SHOTS = [
-        (1, 105, "low3q", "stack"), (106, 200, "spring", "stack"), (201, 300, "front3q", "side"),
-        (301, 410, "profile", "stack"), (411, 500, "wheel", "side"),
-        (501, 590, "side", "stack"), (591, 660, "tyre", "side"), (661, 725, "top", "side"),
-        (726, 800, "high3q", "side"), (801, 881, "profile", "stack"),
-        (882, 970, "tyre", "stack"), (971, 1040, "low3q", "side"), (1041, 1095, "side", "stack"),
+        (1, 120, "low3q", "stack"), (121, 215, "spring", "stack"), (216, 315, "front3q", "side"),
+        (316, 410, "profile", "stack"), (411, 501, "wheel", "side"),
+        (502, 585, "side", "stack"), (586, 655, "tyre", "side"), (656, 722, "top", "side"),
+        (723, 795, "high3q", "side"), (796, 877, "profile", "stack"),
+        (878, 960, "tyre", "stack"), (961, 1010, "low3q", "side"), (1011, 1050, "side", "stack"),
     ]
-    XRAY_RAMPS = (70, 100, 690, 725)
-    TRAILS = [(301, 1095, "hub")]
-    BEAT_PICTURE_START = {3: 301, 4: 501, 5: 726, 6: 882}
-    BEAT2_BEFORE_FRAME = 300
+    XRAY_RAMPS = (88, 118, 700, 722)
+    TRAILS = [(316, 1050, "hub")]
+    BEAT_PICTURE_START = {3: 316, 4: 502, 5: 723, 6: 878}
+    BEAT2_BEFORE_FRAME = 315
     FILM_FILES = {"video": "speed-bump-reveal.mp4", "review": "speed-bump-reveal-540x960-review.mp4", "validation": "speed-bump-reveal-validation.json"}
 
 

@@ -29,7 +29,7 @@ jobs:
           for attempt in 1 2 3 4; do
             rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
-                 --plan "$PLAN" --target-seconds 36.5 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+                 --plan "$PLAN" --target-seconds 35.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
             echo "speech capture attempt $attempt failed"; sleep 20
           done
           test "$ok" = 1
@@ -37,7 +37,7 @@ jobs:
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build
           from benchmarks.speed_bump.captions import single_line_groups as phrase_groups
-          build(Path('$RUNNER_TEMP/speech/speed-bump-shapes'), Path('$RUNNER_TEMP/audio'), target_seconds=36.5, grouper=phrase_groups)
+          build(Path('$RUNNER_TEMP/speech/speed-bump-shapes'), Path('$RUNNER_TEMP/audio'), target_seconds=35.0, grouper=phrase_groups)
           "
       - name: Predicted beat starts vs picture starts
         if: always()
@@ -49,7 +49,7 @@ jobs:
               print("BEAT_CHECK no capture"); raise SystemExit
           beats = json.load(open(caps[0]))["beats"]
           d = [b["duration"] for b in beats]
-          slack = (36.5 - sum(d)) / 6
+          slack = (35.0 - sum(d)) / 6
           starts, t = [], 0.0
           for x in d:
               starts.append(round(t, 2)); t += x + slack
