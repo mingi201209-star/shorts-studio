@@ -48,7 +48,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/out"
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
             -P benchmarks/speed_bump/render_xray_test.py -- \
-            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --frames 25,60,95,130 --out "$RUNNER_TEMP/out" > "$RUNNER_TEMP/render.log" 2>&1 || { tail -60 "$RUNNER_TEMP/render.log"; exit 1; }
+            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --frames 30,48,62,80 --out "$RUNNER_TEMP/out" > "$RUNNER_TEMP/render.log" 2>&1 || { tail -60 "$RUNNER_TEMP/render.log"; exit 1; }
           grep -E "XRAY_" "$RUNNER_TEMP/render.log" | cut -c1-2500
       - name: Contact sheet
         run: |

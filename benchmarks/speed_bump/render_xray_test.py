@@ -61,10 +61,10 @@ def main():
     scene.cycles.use_denoising = True
     scene.cycles.transparent_max_bounces = 16
     scene.render.resolution_x, scene.render.resolution_y = 1080, 700
-    scene.view_settings.view_transform, scene.view_settings.exposure = "Standard", -1.0
+    scene.view_settings.view_transform, scene.view_settings.exposure = "Standard", -1.3
     scene.world = scene.world or bpy.data.worlds.new("World")
     sun_to = cinematic.sun_vector((-0.5, -0.8), 36.0)
-    cinematic.apply_sky(scene, sun_to, strength=0.3, dust=0.5)
+    cinematic.apply_sky(scene, sun_to, strength=0.14, dust=0.5)
     bpy.ops.object.light_add(type="SUN")
     sun = bpy.context.object
     sun.data.energy = 3.0
@@ -95,7 +95,16 @@ def main():
                 if c.use_nodes:
                     bsdf = c.node_tree.nodes.get("Principled BSDF")
                     if bsdf:
-                        bsdf.inputs["Alpha"].default_value = 0.10
+                        bsdf.inputs["Alpha"].default_value = 0.22
+                        # edge glow: a fresnel-weighted blue emission keeps the silhouette readable while the inside shows through
+                        lw = c.node_tree.nodes.new("ShaderNodeLayerWeight")
+                        lw.inputs["Blend"].default_value = 0.35
+                        mul = c.node_tree.nodes.new("ShaderNodeMath")
+                        mul.operation = "MULTIPLY"
+                        mul.inputs[1].default_value = 3.0
+                        c.node_tree.links.new(lw.outputs["Facing"], mul.inputs[0])
+                        c.node_tree.links.new(mul.outputs[0], bsdf.inputs["Emission Strength"])
+                        bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
                 seen[m.name] = c
             o.data.materials[i] = seen[m.name]
 
@@ -138,6 +147,8 @@ def main():
         base.set_camera(cam, (6.2, y_front - 1.0, 0.95), (0.0, y_front - 1.0, 0.62))
         scene.render.filepath = str(args.out / f"xray_{f:04d}.png")
         bpy.ops.render.render(write_still=True)
+        print("XRAY_SPRING " + json.dumps({"frame": f, "sim_zs_minus_zu_cm": round(100 * float(rec["zf"][idx]) - 100 * float(rec["wf"][idx]), 2),
+              "drawn_hub_z": round(float(wheels["front_right"]["node"].matrix_world.translation.z), 3), "drawn_mount_z": round(float((body.matrix_world @ Vector((0, 0, wheels["front_right"]["base"].z + 0.42))).z), 3)}), flush=True)
         print("XRAY_FRAME " + json.dumps({"frame": f, "y_front": round(y_front, 3), "wheel_rise_cm": round(100 * float(rec["wf"][idx]), 2),
                                          "body_rise_cm": round(100 * float(0.5 * (rec["zf"][idx] + rec["zr"][idx])), 2)}), flush=True)
 
