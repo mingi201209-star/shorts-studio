@@ -35,7 +35,15 @@ Low-res preview of both passes (4-6 frames/s, small res) -> scene QA -> parallel
 | run 2 | chase from behind, high | not measured | cars small, no body motion visible: FAIL |
 | run 3 | chase from behind, low | cars fill 10.8 % of height (need >= 22 %), body motion not visible | FAIL: full render on hold |
 | run 5 | split: one side camera per car, stacked (primitive car) | cars 24 % of panel height (width fully used); body motion hump 1.9 % ok, short 0.9 % (< 1.2 %); bump mask failed on the hump panel (looked at: bump IS visible, pale yellow, gate colour threshold needs calibration) | composition better, pitch visible on the hump at 1:1, car looks like a toy -> upgrade the car model first |
-| run 6 | split, pinned CC0 sedan | pending | pending |
+| run 6 | split, pinned CC0 sedan (same car posed from both sims) | not run (gate colour thresholds still to be calibrated for the grey car) | looked at: car reads as a real sedan, hump pitch visible at 1:1, short bump = wheel jolt with almost no body motion (model result), bump shapes readable. Candidate for the full render; open items below |
 
 Evaluation department, new mandatory checks for this episode (`benchmarks/speed_bump/preview_gates.py`): both cars and both bump shapes visible in the first frame, cars fill >= 22 % of the panel height, body motion visible, bump shapes differ on screen (objective, pixels); question text within 1 s, a visible difference within 3 s, narration hook within 0.5 s (UNVERIFIED until a person confirms on the real video).
 Not allowed to be exaggerated: the body motion must be drawn 1:1 with the model (no vertical scaling). If it is too small to see at 1:1, the scene must get closer (wheel arch close-up) or add a true-scale reference graph, never a magnified body.
+
+## Open items before a full render (from run 6)
+1. Cars travel toward screen-left; put the camera on the other side so travel is left to right.
+2. Panels at 1080x720 (not 1080x960) so the lower band carries a true-scale suspension/body-height trace and captions.
+3. Sky is nearly white at the horizon; lower exposure or a slightly deeper sky.
+4. Hook: question text in the first second ("SAME CAR. SAME SPEED."), narration revised to "short bump = sharp jolt, long hump = slow rise and tilt" (not "gentler"), assumptions line ("simulation, assumed car").
+5. Calibrate the pixel gates for the grey sedan; add speech plan, manifest, assembler and QA gates for this episode.
+6. Voice and first-3-seconds items stay UNVERIFIED until the owner confirms.
