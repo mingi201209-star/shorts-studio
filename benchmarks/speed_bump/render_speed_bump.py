@@ -31,6 +31,8 @@ def arguments():
     p.add_argument("--width", type=int, default=360)
     p.add_argument("--height", type=int, default=640)
     p.add_argument("--samples", type=int, default=7)
+    p.add_argument("--layout", choices=("chase", "split"), default="chase",
+                   help="split: one low side camera per car (same lens, same distance), stacked 2 panels in the film")
     p.add_argument("--t0", type=float, default=0.0, help="sim time (s) shown at film frame 0")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
@@ -79,7 +81,7 @@ def main():
     scene.cycles.device = "CPU"
     scene.cycles.samples = args.samples
     scene.cycles.use_denoising = True
-    scene.render.resolution_x, scene.render.resolution_y = args.width, args.height
+    scene.render.resolution_x, scene.render.resolution_y = args.width, (args.height if args.layout == "chase" else args.height // 2)
     scene.render.image_settings.file_format = "PNG"
     scene.view_settings.view_transform = "Standard"
     scene.view_settings.exposure = -1.4
@@ -101,11 +103,12 @@ def main():
     paint_white = material("Line", (0.8, 0.8, 0.78), rough=0.6)
     cube("Centre line", (0, 1.7, 0.002), (80, 0.12, 0.004), paint_white)
     yellow = material("Bump paint", (0.9, 0.62, 0.05), rough=0.5)
+    bumps = {}
     for key_, bump in sim.BUMPS.items():
         n = 40
         pts = [(i / n * bump["length"], bump["height"] * math.sin(math.pi * i / n)) for i in range(n + 1)]
         profile = pts + [(bump["length"], 0.0)]
-        base.extruded_profile(f"Bump {key_}", profile, LANE_Y[key_] - 1.4, LANE_Y[key_] + 1.4, yellow)
+        bumps[key_] = base.extruded_profile(f"Bump {key_}", profile, LANE_Y[key_] - 1.4, LANE_Y[key_] + 1.4, yellow)
 
     paints = {"short": material("Car A", (0.12, 0.28, 0.65), metal=0.3, rough=0.3),
               "hump": material("Car B", (0.12, 0.28, 0.65), metal=0.3, rough=0.3)}   # identical paint: same car
@@ -116,7 +119,7 @@ def main():
     cam = bpy.data.objects.new("Cam", cam_data)
     bpy.context.collection.objects.link(cam)
     scene.camera = cam
-    cam_data.lens, cam_data.sensor_fit, cam_data.sensor_width = 38, "HORIZONTAL", 36
+    cam_data.lens, cam_data.sensor_fit, cam_data.sensor_width = (38 if args.layout == "chase" else 42), "HORIZONTAL", 36
 
     result = []
     for f in [int(s) for s in args.frames.split(",")]:
@@ -138,11 +141,26 @@ def main():
                 node.rotation_euler = (0, -(x_front - wb / 2 + wx) / R, 0)
             info[k] = {"x_front": round(float(x_front), 3), "body_rise_cm": round(100 * 0.5 * float(zf + zr), 2),
                        "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3)}
-        cam_x = -10.5 + 0.85 * float(recs["short"]["x"][min(int(t_sim * sim.FPS), len(recs["short"]["t"]) - 1)])
-        base.set_camera(cam, (cam_x, 1.7, 1.45), (cam_x + 10.0, 1.7, 0.55))
-        scene.render.filepath = str(args.out / f"frame_{f:04d}.png")
         t_start = time.time()
-        bpy.ops.render.render(write_still=True)
+        if args.layout == "chase":
+            cam_x = -10.5 + 0.85 * float(recs["short"]["x"][min(int(t_sim * sim.FPS), len(recs["short"]["t"]) - 1)])
+            base.set_camera(cam, (cam_x, 1.7, 1.45), (cam_x + 10.0, 1.7, 0.55))
+            scene.render.filepath = str(args.out / f"frame_{f:04d}.png")
+            bpy.ops.render.render(write_still=True)
+        else:
+            # one panel per car: identical lens/distance/height, camera on the car's own lane, the other lane hidden
+            for panel in ("hump", "short"):
+                for k, (root, _b, _w) in cars.items():
+                    base.set_visible(root, k == panel)
+                    base.set_visible(bumps[k], k == panel)
+                x_front = float(recs[panel]["x"][min(int(t_sim * sim.FPS), len(recs[panel]["t"]) - 1)])
+                cx = x_front - 1.0
+                base.set_camera(cam, (cx, LANE_Y[panel] - 6.2, 0.95), (cx, LANE_Y[panel], 0.62))
+                scene.render.filepath = str(args.out / f"frame_{f:04d}_{panel}.png")
+                bpy.ops.render.render(write_still=True)
+            for k, (root, _b, _w) in cars.items():
+                base.set_visible(root, True)
+                base.set_visible(bumps[k], True)
         info["render_seconds"] = round(time.time() - t_start, 1)
         result.append(info)
         print("BUMP_FRAME " + json.dumps(info), flush=True)

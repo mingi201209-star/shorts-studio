@@ -42,13 +42,14 @@ jobs:
           mkdir -p "$RUNNER_TEMP/out"
           xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
             -P benchmarks/speed_bump/render_speed_bump.py -- --out "$RUNNER_TEMP/out" \
-            --frames 48,62,76,90,104,118,132,146,160,174,188,202 > "$RUNNER_TEMP/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/render.log"; exit 1; }
+            --layout split --frames 48,62,76,90,104,118,132,146,160,174,188,202 > "$RUNNER_TEMP/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/render.log"; exit 1; }
           grep BUMP_FRAME "$RUNNER_TEMP/render.log"
       - name: Contact sheet
         run: |
           set -euo pipefail
           cd "$RUNNER_TEMP/out"
-          montage frame_*.png -tile 6x2 -geometry 240x427+2+2 -background black sheet.png
+          for f in $(ls frame_*_hump.png | sed 's/_hump.png//'); do convert ${f}_hump.png ${f}_short.png -append comp_${f#frame_}.png; done
+          montage comp_*.png -tile 6x2 -geometry 240x427+2+2 -background black sheet.png
           convert sheet.png -quality 62 sheet.jpg
           echo "SHEET_BYTES $(stat -c %s sheet.jpg)"
           echo SHEET_B64_START; base64 -w 0 sheet.jpg; echo; echo SHEET_B64_END

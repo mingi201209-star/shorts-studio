@@ -27,3 +27,14 @@ Caution: body rise comes out above the bump height (about 10 cm for 7.5 cm) beca
 
 ## Next steps (waiting for owner choice)
 Low-res preview of both passes (4-6 frames/s, small res) -> scene QA -> parallel full render on free runners -> edit -> final QA -> owner approval. No upload by the agent.
+
+## Preview log (2026-11-15) and required gates
+| preview | layout | pixel gate result | verdict |
+|---|---|---|---|
+| run 1 | side view, both lanes | not measured | scene a thin band, white sky: FAIL (looked at) |
+| run 2 | chase from behind, high | not measured | cars small, no body motion visible: FAIL |
+| run 3 | chase from behind, low | cars fill 10.8 % of height (need >= 22 %), body motion not visible | FAIL: full render on hold |
+| run 5 | split: one side camera per car, stacked | see below | pending |
+
+Evaluation department, new mandatory checks for this episode (`benchmarks/speed_bump/preview_gates.py`): both cars and both bump shapes visible in the first frame, cars fill >= 22 % of the panel height, body motion visible, bump shapes differ on screen (objective, pixels); question text within 1 s, a visible difference within 3 s, narration hook within 0.5 s (UNVERIFIED until a person confirms on the real video).
+Not allowed to be exaggerated: the body motion must be drawn 1:1 with the model (no vertical scaling). If it is too small to see at 1:1, the scene must get closer (wheel arch close-up) or add a true-scale reference graph, never a magnified body.
