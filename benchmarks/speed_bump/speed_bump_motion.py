@@ -82,16 +82,34 @@ CLAIMS = {"physically_calibrated": False, "assumed": "typical passenger car, 7.5
 
 # ----------------------------------------------------------------------------- film timeline (960 frames at 30 fps = 32 s)
 TOTAL_FRAMES = 960
-#: three slow-motion passes of the SAME car over the SAME two bumps; only the approach speed changes.
-#: `lead_m` is how far before the bump the front axle starts (the shot begins close to the action); `slow` is the playback rate (film shows
-#: the simulation `slow` times as fast as real time). All of it is a property of the shot, not of the physics.
+#: five slow-motion passes of the SAME car over the SAME two bumps; only the approach speed changes. `lead_m`: how far before the bump the front axle starts;
+#: `slow`: playback rate (the film shows the simulation `slow` times as fast as real time). A property of the shot, not of the physics.
 SEGMENTS = [
     {"id": "A", "kmh": 20.0, "slow": 0.25, "frames": 320, "lead_m": 1.4},
     {"id": "B", "kmh": 30.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
     {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 160, "lead_m": 1.4},
+    {"id": "D", "kmh": 20.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
+    {"id": "E", "kmh": 30.0, "slow": 0.50, "frames": 160, "lead_m": 1.4},
 ]
-PASS_FRAMES = sum(s["frames"] for s in SEGMENTS)   # frames 1..640 are rendered; 641..960 are the comparison card (composed, not rendered)
+PASS_FRAMES = sum(s["frames"] for s in SEGMENTS)   # every frame is a rendered pass: no charts, no text, only the 3D scene
 SIM_LEAD_M = 3.0   # simulate() starts the front axle 3 m before the bump
+
+#: camera work. layout "stack": long hump on top, short bump below (1080x700 each); "side": long hump left, short bump right (540x1400 each).
+#: (first frame, last frame, camera kind, layout)
+SHOTS = [
+    (1, 105, "rear3q", "side"), (106, 210, "side", "stack"), (211, 320, "wheel", "side"),
+    (321, 400, "front3q", "side"), (401, 480, "side", "stack"),
+    (481, 560, "rear3q", "side"), (561, 640, "wheel", "side"),
+    (641, 720, "top", "side"), (721, 800, "front3q", "side"),
+    (801, 880, "rear3q", "side"), (881, 960, "side", "stack"),
+]
+
+
+def shot_at(frame: int) -> tuple[str, str]:
+    for a, b, kind, layout in SHOTS:
+        if a <= frame <= b:
+            return kind, layout
+    raise ValueError(frame)
 
 
 def frame_to_pass(frame: int) -> tuple[dict, float]:

@@ -56,10 +56,10 @@ jobs:
           set -euo pipefail
           cd "$RUNNER_TEMP/out"
           for f in $(ls frame_*_hump.png | sed 's/_hump.png//'); do
-            convert ${f}_hump.png ${f}_short.png ${f}_trace.png -background black -append stack_${f#frame_}.png
+            w=$(identify -format %w ${f}_hump.png)
+            if [ "$w" -gt 600 ]; then convert ${f}_hump.png ${f}_short.png -append stack_${f#frame_}.png; else convert ${f}_hump.png ${f}_short.png +append stack_${f#frame_}.png; fi
           done
-          for f in $(ls frame_*_card.png | sed 's/_card.png//'); do convert ${f}_card.png -background black -gravity north -extent 1080x1400 stack_${f#frame_}.png; done
-          montage stack_*.png -tile 4x -geometry 360x467+2+2 -background gray20 sheet.png
+          montage stack_*.png -tile 4x -geometry 330x430+2+2 -background gray20 sheet.png
           convert sheet.png -quality 70 sheet.jpg
           echo "SHEET_BYTES $(stat -c %s sheet.jpg)"
           echo SHEET_B64_START; base64 -w 0 sheet.jpg; echo; echo SHEET_B64_END

@@ -7,7 +7,7 @@ import numpy as np
 from benchmarks.speed_bump import speed_bump_motion as sim
 
 #: spoken beat -> the frame at which its picture starts (card = comparison chart)
-BEAT_PICTURE_START = {3: 321, 4: 481, 5: sim.PASS_FRAMES + 1}
+BEAT_PICTURE_START = {3: 321, 4: 481, 5: 641, 6: 801}
 START_TOLERANCE_S = 1.2
 
 
@@ -41,30 +41,30 @@ def narration_picture_timing(audio_report: dict) -> dict:
 
 
 def first_three_seconds(frames: dict[int, np.ndarray], first_contact_film_s: float) -> dict:
-    """frames: film frame number -> RGB array (1080x1920). Hook text visible early and gone later, both panels not empty,
-    and the first jolt (front wheel meets the short bump) happens inside 3 s."""
+    """frames: film frame number -> RGB array (1080x1920). The picture is 3D only (no text): both cars must be on screen from the first moments (left and
+    right halves of the side-by-side opening both busy), the picture must move, and the first jolt (front wheel meets the short bump) is inside 3 s."""
     problems = []
-    region = (slice(565, 675), slice(40, 1040))
-
-    def plate_mean(f):
-        return float(frames[f][region].mean())
-
-    early, late = plate_mean(10), plate_mean(120)
-    if abs(early - late) < 25:   # the plate is dark with white text over a bright picture, so the change can go either way
-        problems.append(f"hook text not visible in the first second (plate region mean {early:.0f} vs {late:.0f} later)")
-    for name, rows in (("top", slice(0, 560)), ("bottom", slice(570, 1130))):
-        if float(frames[10][rows].std()) < 12:
-            problems.append(f"{name} panel looks empty at frame 10")
+    first = frames[10][0:1400]
+    for name, cols in (("left", slice(0, 540)), ("right", slice(540, 1080))):
+        if float(first[:, cols].std()) < 12:
+            problems.append(f"{name} half of the opening picture looks empty at frame 10")
     if first_contact_film_s > 3.0:
         problems.append(f"first wheel/bump contact at {first_contact_film_s:.2f}s, later than 3 s")
-    moved = float(np.abs(frames[90][0:1130].astype(int) - frames[10][0:1130].astype(int)).mean())
+    moved = float(np.abs(frames[90][0:1400].astype(int) - frames[10][0:1400].astype(int)).mean())
     if moved < 2.0:
         problems.append(f"almost nothing changes between frame 10 and 90 (mean diff {moved:.2f})")
     return {"status": "FAIL" if problems else "PASS", "problems": problems,
             "first_contact_film_s": round(first_contact_film_s, 2), "editorial_items": {
-                "question_text_on_screen_within_1s": "pixel-checked only; the wording quality is UNVERIFIED",
+                "same_car_same_speed_stated_in_first_sentence": "from the speech plan (beat 1)",
                 "difference_visible_within_3s": "UNVERIFIED (a person must look)",
                 "narration_hook_starts_within_0.5s": "from captured speech timing (beat 1 starts at 0)"}}
+
+
+def assumptions_in_narration(audio_report: dict) -> dict:
+    """The picture carries no text, so the simulation / assumed-values disclosure has to be spoken (and repeated in the description)."""
+    text = " ".join(b["narration_en"].lower() for b in audio_report["beats"])
+    problems = [w for w in ("simulation", "assumed") if w not in text]
+    return {"status": "FAIL" if problems else "PASS", "problems": [f"narration never says '{w}'" for w in problems]}
 
 
 def first_contact_film_seconds() -> float:

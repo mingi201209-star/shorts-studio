@@ -105,14 +105,15 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
     if failing:
         fail(f"ORIGINAL_VIDEO_QA_FAILED: {failing}")
 
-    sample = {f: np.array(Image.open(frames / f"frame_{f:04d}.png").convert("RGB")) for f in (10, 90, 120)}
+    sample = {f: np.array(Image.open(frames / f"frame_{f:04d}.png").convert("RGB")) for f in (10, 90)}
     content_qa = {
         "narration_numbers": gates.narration_numbers(info_c["peaks"]),
         "narration_picture_timing": gates.narration_picture_timing(audio_report),
         "first_three_seconds": gates.first_three_seconds(sample, gates.first_contact_film_seconds()),
         "caption_safety": caption_safety(cues, original_qa["captions_visible"]["evidence"]),
-        "assumptions_declared": {"status": "PASS" if (frames / "compose-info.json").exists() and info_c.get("physically_calibrated") is False else "FAIL",
-                                 "problems": [], "on_screen": "SIMULATION, ASSUMED CAR - NOT A MEASUREMENT (trace) + 'assumed values' (chart)"},
+        "assumptions_declared": gates.assumptions_in_narration(audio_report),
+        "all_3d_no_overlays": {"status": "PASS" if info_c.get("all_3d") is True and info_c.get("overlays") == "none" and info_c.get("physically_calibrated") is False else "FAIL",
+                               "problems": [] if info_c.get("all_3d") is True and info_c.get("overlays") == "none" else ["frames were not produced by the overlay-free 3D renderer"]},
     }
     print("BUMP_SPOKEN_STARTS " + json.dumps(content_qa["narration_picture_timing"]["beat_starts"]), flush=True)
     print("BUMP_CONTENT_QA " + json.dumps(content_qa), flush=True)
