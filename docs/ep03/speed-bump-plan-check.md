@@ -53,3 +53,10 @@ Not allowed to be exaggerated: the body motion must be drawn 1:1 with the model 
 - Full-res final `speed-bump-shapes.mp4` sha256 `79e3d759b2cb133094f3435ae6551461f99c018b67a8f49f44e481a96b9cae09` (960 frames, 1080x1920, 32 s); 540x960 review copy `8e24d9ae…582d` recovered through job logs, every chunk hash and the whole-file hash matched.
 - Gates PASS: narration numbers vs simulation (2.2x / 2.1x / 5.5x), narration-picture timing (spoken starts 0, 4.55, 9.66, 14.96, 20.45, 26.32 s), first 3 s (first contact 1.01 s), captions single-line in the safe area, visual activity (cuts every 2.5-3.5 s), black opening, duplicate frames, assumed values spoken, all-3D/no overlays, loudness -16.5 LUFS.
 - NOT verified: voice pronunciation and sync (a person must listen), human first view, whether the short-vs-long difference reads without any on-screen text. Weak spots: car small in the rear/front 3/4 shots; the bump/car identification relies on the narration. Simulation values are assumed (not calibrated).
+
+## v2 (X-ray) production result — run 43703551974
+
+- All gates PASS on the real encoded video: original QA (13 cuts, average 2.46 s, longest static 4.0 s), content QA (ratios 2.2 / 2.1 / 5.5; picture timing; first contact 1.48 s; caption rows 1447-1498; assumptions declared; all 3D, no overlays), loudness -16.4 LUFS.
+- Film sha256 `ed2c52761ac23fe6572a2b60774a2a1d59fea97e542c92a78a10492853f76a17`; review MP4 (540x960) sha256 `d08d42694f9946e86a6cb58419e7d2245ccc5d302c6a186f0395376c13301f34` recovered through job logs and hash-verified; no black frames or silence gaps in the review copy.
+- Fallback v1 film kept: `79e3d759b2cb133094f3435ae6551461f99c018b67a8f49f44e481a96b9cae09`.
+- UNVERIFIED: voice pronunciation/sync, human first view, whether the X-ray reveal reads well, noise in translucent frames. Not uploaded.
