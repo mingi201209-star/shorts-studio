@@ -26,6 +26,34 @@ def digest(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def verify_captions_over_picture(video: Path, frames_dir: Path, sample_points: list[tuple[float, tuple[int, int]]], build_dir: Path, fps: int = 30,
+                                 diff_threshold: int = 110) -> dict:
+    """The captions sit ON the picture (no black band), so "bright pixels in the band" (the check for a black caption band) would also count sky, white
+    paint or the reveal's glow. Instead the caption pixels are measured directly: the encoded video frame is compared with the caption-free composed frame
+    it was made from, and the rows that changed (white text and its black outline) are the caption rows. Same two requirements as the band check: real
+    caption pixels exist in the expected band, and they do not touch the bottom edge."""
+    import numpy as np
+    from PIL import Image
+
+    evidence = []
+    for i, (ts, band) in enumerate(sample_points):
+        n = int(round(ts * fps))
+        grab = build_dir / f"_capdiff_{i}.png"
+        run(["ffmpeg", "-v", "error", "-y", "-ss", f"{n / fps:.4f}", "-i", str(video), "-frames:v", "1", str(grab)])
+        shot = np.asarray(Image.open(grab).convert("L"), dtype=np.int16)
+        source = np.asarray(Image.open(frames_dir / f"frame_{n + 1:04d}.png").convert("L"), dtype=np.int16)
+        if shot.shape != source.shape:
+            return {"status": "FAIL", "reason": f"frame size mismatch at t={ts}", "evidence": evidence}
+        rows = np.where((np.abs(shot - source) > diff_threshold).any(axis=1))[0]
+        rows = rows[(rows >= band[0]) & (rows <= band[1])]
+        evidence.append({"t": ts, "rows_in_band": [int(rows.min()), int(rows.max())] if len(rows) else None})
+        if len(rows) == 0:
+            return {"status": "FAIL", "reason": f"no caption pixels found in the expected band at t={ts}", "evidence": evidence}
+        if rows.max() >= shot.shape[0] - 2:
+            return {"status": "FAIL", "reason": f"caption pixels touch the very bottom edge at t={ts} (clipped)", "evidence": evidence}
+    return {"status": "PASS", "method": "encoded frame vs caption-free composed frame", "evidence": evidence}
+
+
 def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, preflight: bool = False) -> dict:
     out.mkdir(parents=True, exist_ok=False)
     problems: list[str] = []
@@ -99,7 +127,7 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
     original_qa = {
         "visual_activity": verify_visual_activity(measure_visual_activity(final, picture, out)),
         "black_opening": verify_no_black_opening(final, picture, out),
-        "captions_visible": verify_captions_visible(final, [((c["start"] + c["end"]) / 2, band) for c in cues], out),
+        "captions_visible": verify_captions_over_picture(final, flat, [((c["start"] + c["end"]) / 2, band) for c in cues], out),
     }
     print("BUMP_ORIGINAL_QA " + json.dumps(original_qa), flush=True)
     failing = [k for k, v in original_qa.items() if v["status"] != "PASS"]

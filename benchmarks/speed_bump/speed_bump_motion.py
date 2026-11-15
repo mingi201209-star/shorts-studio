@@ -209,11 +209,11 @@ if FILM == "reveal":
     ]
     PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
     SHOTS = [
-        (1, 120, "low3q", "stack"), (121, 215, "spring", "stack"), (216, 315, "front3q", "side"),
-        (316, 410, "profile", "stack"), (411, 501, "wheel", "side"),
+        (1, 120, "low3q", "stack"), (121, 215, "spring", "stack"), (216, 315, "front3q", "stack"),
+        (316, 410, "profile", "stack"), (411, 501, "wheel", "stack"),
         (502, 585, "side", "stack"), (586, 655, "tyre", "side"), (656, 722, "top", "side"),
-        (723, 795, "high3q", "side"), (796, 877, "profile", "stack"),
-        (878, 960, "tyre", "stack"), (961, 1010, "low3q", "side"), (1011, 1050, "side", "stack"),
+        (723, 795, "high3q", "stack"), (796, 877, "profile", "stack"),
+        (878, 960, "tyre", "stack"), (961, 1010, "low3q", "stack"), (1011, 1050, "side", "stack"),
     ]
     XRAY_RAMPS = (88, 118, 700, 722)
     TRAILS = [(316, 1050, "hub")]
