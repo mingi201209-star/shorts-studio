@@ -47,8 +47,15 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
-          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
-            --plan examples/experiments/speed-bump-speech-plan.json --target-seconds 32.0 --out "$RUNNER_TEMP/speech"
+          # the free TTS service sometimes returns no audio; start from a clean folder and try up to 3 times
+          ok=0
+          for attempt in 1 2 3; do
+            rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
+            if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
+                 --plan examples/experiments/speed-bump-speech-plan.json --target-seconds 32.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+            echo "speech capture attempt $attempt failed"; sleep 20
+          done
+          test "$ok" = 1
           PYTHONPATH="$PWD" python -c "
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build

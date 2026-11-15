@@ -1,1 +1,1 @@
-{"mode": "preflight", "note": "EP.03 preflight 4: total silence 5.5 s > 5 s gate, more speech"}
+{"mode": "preflight", "note": "EP.03 preflight 5: TTS service returned no audio (infra), capture now retries"}
