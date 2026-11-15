@@ -12,6 +12,12 @@ CURATED_XRAY = {
         "At thirty kilometers", "per hour the short bump", "hits about twice as hard", "as the long one."),
     "At ten the long hump turns gentle but the short bump still jolts the car noticeably.": (
         "At ten the long hump", "turns gentle but the", "short bump still jolts", "the car noticeably."),
+    "The wheel has to follow the road. The short bump throws it up in a split second but the long hump lifts it gently.": (
+        "The wheel has to", "follow the road.", "The short bump throws", "it up in a split second", "but the long hump", "lifts it gently."),
+    "That jolt travels up into the car. At thirty kilometers per hour the short bump hits about twice as hard as the long one.": (
+        "That jolt travels", "up into the car.", "At thirty kilometers", "per hour the short bump", "hits about twice as hard", "as the long one."),
+    "Both are the same height. What matters is how quickly the road lifts the car. This is a computer simulation with assumed values.": (
+        "Both are the same height.", "What matters is how", "quickly the road lifts", "the car. This is", "a computer simulation", "with assumed values."),
     "It is how quickly the road lifts the car. This is a computer simulation with assumed values.": (
         "It is how quickly", "the road lifts the car.", "This is a computer", "simulation with", "assumed values."),
 }

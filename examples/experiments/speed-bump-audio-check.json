@@ -1,1 +1,1 @@
-{"plan": "examples/experiments/speed-bump-xray-speech-plan.json", "note": "x-ray audio check 4: pause 9 s between TTS requests (service stops answering after 4-5 quick requests)"}
+{"plan": "examples/experiments/speed-bump-explain-speech-plan.json", "note": "explain film audio timing check"}
