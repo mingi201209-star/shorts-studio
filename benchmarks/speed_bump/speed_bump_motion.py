@@ -195,6 +195,33 @@ if FILM == "explain":
     FILM_FILES = {"video": "speed-bump-explain.mp4", "review": "speed-bump-explain-540x960-review.mp4", "validation": "speed-bump-explain-validation.json"}
 
 
+if FILM == "reveal":
+    # "reveal" = the explain film re-cut after the owner's review: full-height 1080x1920 picture (captions sit on the picture, no black band), a first three seconds
+    # with both cars big over their bumps followed at once by the scan-line X-ray reveal, springs that glow with their compression, a tight spring close-up.
+    # Frame boundaries follow the measured spoken beat starts (see BEAT_STARTS_S).
+    BEAT_STARTS_S = [0.0, 4.1, 10.1, 16.3, 23.7, 28.9]
+    SEGMENTS = [
+        {"id": "A", "kmh": 20.0, "slow": 0.17, "frames": 300, "lead_m": 1.4},
+        {"id": "P", "kmh": 20.0, "slow": 0.22, "frames": 200, "lead_m": 1.4},
+        {"id": "B", "kmh": 30.0, "slow": 0.40, "frames": 225, "lead_m": 1.4},
+        {"id": "C", "kmh": 10.0, "slow": 0.60, "frames": 156, "lead_m": 1.4},
+        {"id": "E", "kmh": 20.0, "slow": 0.25, "frames": 214, "lead_m": 1.4},
+    ]
+    PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
+    SHOTS = [
+        (1, 105, "low3q", "stack"), (106, 200, "spring", "stack"), (201, 300, "front3q", "side"),
+        (301, 410, "profile", "stack"), (411, 500, "wheel", "side"),
+        (501, 590, "side", "stack"), (591, 660, "tyre", "side"), (661, 725, "top", "side"),
+        (726, 800, "high3q", "side"), (801, 881, "profile", "stack"),
+        (882, 970, "tyre", "stack"), (971, 1040, "low3q", "side"), (1041, 1095, "side", "stack"),
+    ]
+    XRAY_RAMPS = (70, 100, 690, 725)
+    TRAILS = [(301, 1095, "hub")]
+    BEAT_PICTURE_START = {3: 301, 4: 501, 5: 726, 6: 882}
+    BEAT2_BEFORE_FRAME = 300
+    FILM_FILES = {"video": "speed-bump-reveal.mp4", "review": "speed-bump-reveal-540x960-review.mp4", "validation": "speed-bump-reveal-validation.json"}
+
+
 TOTAL_FRAMES = PASS_FRAMES   # every film frame is a rendered pass, whichever profile is active
 
 

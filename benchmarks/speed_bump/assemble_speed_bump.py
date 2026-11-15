@@ -49,16 +49,17 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
         (out / name).write_bytes((audio / name).read_bytes())
     ass = out / "film.ass"
     text = ass.read_text(encoding="utf8")
-    if text.count(",2,90,90,210,1") != 1:
+    if text.count(",0,0,1,3,0,2,90,90,210,1") != 1:
         raise ValueError("caption style line not in the expected form")
-    ass.write_text(text.replace(",2,90,90,210,1", ",2,90,90,420,1"), encoding="utf8")
+    # captions sit on the picture itself (full-height 1080x1920 frame, no black band): thick black outline + shadow, baseline lifted clear of the Shorts overlay
+    ass.write_text(text.replace(",0,0,1,3,0,2,90,90,210,1", ",0,0,1,6,2,2,90,90,420,1"), encoding="utf8")
     audio_report = json.loads((out / "audio-validation.json").read_text())
     if audio_report["status"] != "PASS":
         raise ValueError("audio capture did not PASS")
 
     final = out / ("speed-bump-preflight.mp4" if preflight else sim.FILM_FILES["video"])
     run(["ffmpeg", "-v", "error", "-framerate", str(manifest["fps"]), "-i", str(flat / "frame_%04d.png"), "-i", str(out / "narration.wav"),
-         "-vf", caption_filter(out), "-map", "0:v:0", "-map", "1:a:0",
+         "-vf", f"setpts=N/(30*TB),ass={out / 'film.ass'}", "-map", "0:v:0", "-map", "1:a:0",
          "-c:v", "libx264", "-preset", "fast", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", final])
     pinfo = probe(final)
     video = next(s for s in pinfo["streams"] if s["codec_type"] == "video")
@@ -94,7 +95,7 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
         problems.append(f"AUDIO_QA_FAILED: {error}")
 
     cues = audio_report["cues"]
-    picture, band = (0, 1400), (1400, 1919)
+    picture, band = (0, 1440), (1400, 1919)
     original_qa = {
         "visual_activity": verify_visual_activity(measure_visual_activity(final, picture, out)),
         "black_opening": verify_no_black_opening(final, picture, out),

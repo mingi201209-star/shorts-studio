@@ -26,7 +26,7 @@ from benchmarks.speed_bump import speed_bump_motion as sim  # noqa: E402
 from benchmarks.speed_bump.speed_bump_timeline import Timeline  # noqa: E402
 
 material, cube = base.material, base.cube
-SIZES = {"stack": (1080, 700), "side": (540, 1400)}
+SIZES = {"stack": (1080, 960), "side": (540, 1920)}
 
 
 def arguments():
@@ -59,15 +59,21 @@ def spring_curve(name, bottom, top, mat, turns=7, radius=0.07):
 
 
 class XRay:
-    """Translucent body (the sedan's body materials copied with a lower alpha and a fresnel edge glow) and a spring + damper per wheel that follow the
-    simulation: spring bottom on the wheel hub, top on the body mount above it. Wheels, tyres and brakes stay solid. A generic suspension drawing."""
+    """Translucent body (the sedan's body materials copied) with a scan-line reveal: a plane sweeps from the front of the car to the rear (in world space, so it
+    follows the car); everything the sweep has passed turns almost transparent with a blue edge glow, and the sweep line itself flares. A spring + damper per
+    wheel follow the simulation (spring bottom on the wheel hub, top on the body mount); the spring glows hotter the more it is compressed. Wheels, tyres and
+    brakes stay solid. A generic suspension drawing."""
+
+    SOFT = 0.35      # width (m) of the sweep line
+    FRONT = 1.6      # sweep position ahead of the front axle when nothing is translucent yet
+    REAR = 4.3       # ... and behind it when the whole body is translucent
 
     def __init__(self, root, wheels):
         self.wheels = wheels
         wheel_parts = set()
         for w in wheels.values():
             wheel_parts.update(o.name for o in w["node"].children_recursive)
-        self.ctrl = []
+        self.wipes = []
         seen = {}
         for o in [m for m in root.children_recursive if m.type == "MESH"]:
             if o.name in wheel_parts:
@@ -76,49 +82,83 @@ class XRay:
                 if m is None:
                     continue
                 if m.name not in seen:
-                    c = m.copy()
-                    c.name = m.name + " xray"
-                    bsdf = c.node_tree.nodes.get("Principled BSDF")
-                    lw = c.node_tree.nodes.new("ShaderNodeLayerWeight")
-                    lw.inputs["Blend"].default_value = 0.35
-                    mul = c.node_tree.nodes.new("ShaderNodeMath")
-                    mul.operation = "MULTIPLY"
-                    mul.inputs[1].default_value = 0.0
-                    c.node_tree.links.new(lw.outputs["Facing"], mul.inputs[0])
-                    c.node_tree.links.new(mul.outputs[0], bsdf.inputs["Emission Strength"])
-                    bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
-                    self.ctrl.append((bsdf, mul, bsdf.inputs["Alpha"].default_value))
-                    seen[m.name] = c
+                    seen[m.name] = self._reveal_material(m)
                 o.data.materials[i] = seen[m.name]
-        self.red = material("Spring", (1.0, 0.25, 0.1), rough=0.4, emission=0.6)
-        self.cyan = material("Damper", (0.2, 0.8, 1.0), rough=0.4, emission=0.4)
         self.live = []
+        self.live_mats = []
 
-    def set_factor(self, xf):
-        for bsdf, mul, alpha0 in self.ctrl:
-            bsdf.inputs["Alpha"].default_value = alpha0 * (1.0 - 0.78 * xf)
-            mul.inputs[1].default_value = 3.0 * xf
+    def _reveal_material(self, m):
+        c = m.copy()
+        c.name = m.name + " reveal"
+        nt = c.node_tree
+        bsdf = nt.nodes.get("Principled BSDF")
+        alpha0 = bsdf.inputs["Alpha"].default_value
+
+        def node(kind, **kw):
+            n = nt.nodes.new(kind)
+            for k, v in kw.items():
+                setattr(n, k, v)
+            return n
+
+        def math(op, a=None, b=None, clamp=False):
+            n = node("ShaderNodeMath", operation=op, use_clamp=clamp)
+            for i, v in enumerate((a, b)):
+                if v is None:
+                    continue
+                if isinstance(v, (int, float)):
+                    n.inputs[i].default_value = v
+                else:
+                    nt.links.new(v, n.inputs[i])
+            return n.outputs[0]
+
+        geo = node("ShaderNodeNewGeometry")
+        sep = node("ShaderNodeSeparateXYZ")
+        nt.links.new(geo.outputs["Position"], sep.inputs[0])
+        wipe = node("ShaderNodeValue")
+        self.wipes.append(wipe)
+        mask = math("MULTIPLY", math("SUBTRACT", sep.outputs[1], wipe.outputs[0]), 1.0 / self.SOFT, clamp=True)
+        nt.links.new(math("ADD", math("MULTIPLY", mask, -0.9 * alpha0), alpha0), bsdf.inputs["Alpha"])
+        lw = node("ShaderNodeLayerWeight")
+        lw.inputs["Blend"].default_value = 0.35
+        edge = math("MULTIPLY", math("MULTIPLY", lw.outputs["Facing"], mask), 3.0)
+        flare = math("MULTIPLY", math("MULTIPLY", mask, math("SUBTRACT", 1.0, mask)), 28.0)
+        nt.links.new(math("ADD", edge, flare), bsdf.inputs["Emission Strength"])
+        bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
+        return c
+
+    def set_factor(self, xf, y_front):
+        wipe = y_front + self.FRONT - (self.FRONT + self.REAR) * xf
+        for w in self.wipes:
+            w.outputs[0].default_value = wipe
 
     def clear(self):
         for ob in self.live:
             bpy.data.objects.remove(ob, do_unlink=True)
-        self.live = []
+        for m in self.live_mats:
+            bpy.data.materials.remove(m)
+        self.live, self.live_mats = [], []
 
-    def build(self, body, xf):
+    def build(self, body, xf, comp):
+        """comp: spring compression (m, signed) of the front and the rear axle at this frame."""
         self.clear()
         if xf < 0.02:
             return
         bpy.context.view_layer.update()
+        damper = material("Damper", (0.2, 0.8, 1.0), rough=0.4, emission=0.4)
+        self.live_mats.append(damper)
         for wkey, w in self.wheels.items():
             side = 1.0 if w["base"].x > 0 else -1.0
             hub = w["node"].matrix_world.translation
             mount = body.matrix_world @ Vector((w["base"].x - 0.05 * side, w["base"].y, w["base"].z + 0.42))
             dx = 0.12 * side
-            self.live.append(spring_curve(f"spring {wkey}", (hub.x + dx, hub.y, hub.z + 0.05), (mount.x + dx, mount.y, mount.z), self.red))
+            heat = min(1.0, abs(comp["front" if wkey.startswith("front") else "rear"]) / 0.04)
+            spring = material("Spring " + wkey, (1.0, 0.25 + 0.7 * heat, 0.05 + 0.65 * heat), rough=0.4, emission=0.8 + 5.0 * heat)
+            self.live_mats.append(spring)
+            self.live.append(spring_curve(f"spring {wkey}", (hub.x + dx, hub.y, hub.z + 0.05), (mount.x + dx, mount.y, mount.z), spring))
             bpy.ops.mesh.primitive_cylinder_add(radius=0.022, depth=1.0, location=((hub.x + mount.x) / 2 + dx, hub.y + 0.1, (hub.z + mount.z) / 2))
             rod = bpy.context.object
             rod.scale = (1, 1, max(0.05, mount.z - hub.z))
-            rod.data.materials.append(self.cyan)
+            rod.data.materials.append(damper)
             self.live.append(rod)
 
 
@@ -181,6 +221,12 @@ def place_camera(cam, kind, y):
     elif kind == "high3q":                  # high front 3/4 looking down on the car and the bump
         d.lens = 38
         base.set_camera(cam, (3.0, y + 3.0, 2.4), (0.0, y - 0.3, 0.4))
+    elif kind == "low3q":                   # low front 3/4 close to the bump: the car fills the panel
+        d.lens = 36
+        base.set_camera(cam, (3.6, y + 2.2, 0.75), (0.0, y - 0.4, 0.5))
+    elif kind == "spring":                  # tight on the front wheel arch: spring and damper fill the panel
+        d.lens = 40
+        base.set_camera(cam, (3.3, y + 0.05, 0.52), (0.0, y + 0.05, 0.4))
     elif kind == "top":                     # straight down, travel up the screen
         d.lens = 45
         cam.location = (0.0, y - 0.6, 8.5)
@@ -231,7 +277,7 @@ def main():
     scene.camera = cam
 
     tl = Timeline(geom["wheelbase"], hz=sim.RENDER_HZ)
-    xray = XRay(root, wheels) if sim.FILM in ("xray", "explain") else None
+    xray = XRay(root, wheels) if sim.FILM in ("xray", "explain", "reveal") else None
     hub_trail, roof_trail = Trail("Hub trail", (0.2, 0.9, 1.0)), Trail("Roof trail", (1.0, 0.7, 0.1))
     hub_key = next(k for k in wheels if k.startswith("front") and wheels[k]["base"].x > 0)
     bpy.context.view_layer.update()
@@ -256,8 +302,8 @@ def main():
             y_front = pose_car(root, body, wheels, geom, rec, idx)
             if xray is not None:
                 xf = sim.xray_factor(f)
-                xray.set_factor(xf)
-                xray.build(body, xf)
+                xray.set_factor(xf, y_front)
+                xray.build(body, xf, {"front": float(rec["zf"][idx] - rec["wf"][idx]), "rear": float(rec["zr"][idx] - rec["wr"][idx])})
             hub_trail.set([]), roof_trail.set([])
             mode = sim.trail_mode(f)
             if mode:

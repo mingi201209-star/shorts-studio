@@ -44,13 +44,17 @@ def first_three_seconds(frames: dict[int, np.ndarray], first_contact_film_s: flo
     """frames: film frame number -> RGB array (1080x1920). The picture is 3D only (no text): both cars must be on screen from the first moments (left and
     right halves of the side-by-side opening both busy), the picture must move, and the first jolt (front wheel meets the short bump) is inside 3 s."""
     problems = []
-    first = frames[10][0:1400]
-    for name, cols in (("left", slice(0, 540)), ("right", slice(540, 1080))):
-        if float(first[:, cols].std()) < 12:
-            problems.append(f"{name} half of the opening picture looks empty at frame 10")
+    first = frames[10][0:1440]          # the caption sits on the picture below row 1440
+    if sim.shot_at(10)[1] == "stack":   # long hump on top, short bump below
+        regions = (("top (long hump)", (slice(0, 960), slice(None))), ("bottom (short bump)", (slice(960, 1440), slice(None))))
+    else:                               # long hump left, short bump right
+        regions = (("left", (slice(None), slice(0, 540))), ("right", (slice(None), slice(540, 1080))))
+    for name, (rows, cols) in regions:
+        if float(first[rows, cols].std()) < 12:
+            problems.append(f"{name} part of the opening picture looks empty at frame 10")
     if first_contact_film_s > 3.0:
         problems.append(f"first wheel/bump contact at {first_contact_film_s:.2f}s, later than 3 s")
-    moved = float(np.abs(frames[90][0:1400].astype(int) - frames[10][0:1400].astype(int)).mean())
+    moved = float(np.abs(frames[90][0:1440].astype(int) - frames[10][0:1440].astype(int)).mean())
     if moved < 2.0:
         problems.append(f"almost nothing changes between frame 10 and 90 (mean diff {moved:.2f})")
     return {"status": "FAIL" if problems else "PASS", "problems": problems,

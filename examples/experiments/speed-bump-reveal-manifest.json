@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "episode_id": "speed-bump-reveal",
+  "series_id": "hidden-engineering-american-roads",
+  "topic_id": "speed-bump-shape-vs-ride",
+  "fps": 30,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "total_frames": 1095,
+  "claims": "Same car, same 7.5 cm bump height; a 0.9 m bump gives a higher peak body acceleration than a 3.7 m hump at 10, 20 and 30 km/h in a quarter-car simulation with assumed values (not calibrated, not a safety statement). X-ray reveal view: translucent body with a spring and a damper per wheel following the simulation.",
+  "physically_calibrated": false,
+  "frame_plan_note": "A 1-300 (20 km/h hook over the bumps, scan-line X-ray reveal 70-100), P 301-500 (wheel path trail), B 501-725 (30 km/h), C 726-881 (10 km/h), E 882-1095 (closing); full-height 1080x1920 picture, captions on the picture"
+}

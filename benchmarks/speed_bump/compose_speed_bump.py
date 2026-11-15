@@ -14,8 +14,8 @@ from benchmarks.speed_bump import speed_bump_motion as sim
 from benchmarks.speed_bump.speed_bump_timeline import Timeline
 
 W, H = 1080, 1920
-PLACE = {"stack": {"hump": (0, 0, 1080, 700), "short": (0, 700, 1080, 700)},
-         "side": {"hump": (0, 0, 540, 1400), "short": (540, 0, 540, 1400)}}
+PLACE = {"stack": {"hump": (0, 0, 1080, 960), "short": (0, 960, 1080, 960)},
+         "side": {"hump": (0, 0, 540, 1920), "short": (540, 0, 540, 1920)}}
 
 
 def stack_frame(layout: str, images: dict[str, Path]) -> Image.Image:
