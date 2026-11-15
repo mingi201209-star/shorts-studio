@@ -96,3 +96,33 @@ Reading (honest, from the 12 frames; a viewer test has not been done):
 
 Proposed partial fix (not done yet): keep frames 1-60, then pull the camera out/up so the truck's silhouette and the gravel plume are in frame, and sweep once around the
 front (the old frame-200 view) before settling beside the rear wheels, re-audited offline and checked locally at 540x960 before any new CI render.
+
+## Opening, round 2 camera (truck outline kept in frame), 1080x1920 render and recovered MP4
+Run 43653893421 (19 shards of 15 frames, 1080x1920, 32 samples, free runners): **19 of 19 shards succeeded, none needed a re-run** (15-frame shards stay well
+under the 90-minute step limit). CI preflight 43653264571 (all gates PASS; average beat 0.91 s, longest static 2.5 s, first-5s changes 8).
+Offline camera checks before rendering: audit PASS (no hold, max acceleration 103 m/s^2), truck outline (>= 4 of 8 bounding-box corners in the picture)
+in 88 % of frames after frame 60, longest stretch without it 1.1 s, truck width fraction median 0.87 / p10 0.44; narration_screen_match and first_three_seconds PASS.
+
+**MP4 recovered and verified**: the 720x1280 review copy (2,394,436 bytes, h264, 285 frames, 9.5 s) came back through 12 job-log chunks of 200,000 bytes;
+every chunk sha256 matched and the reassembled file's sha256 `ed7adb5eeb8611f5cd521e9acd85b25c115b77b13ccc426a3b1eaba7c7a3eeea` equals the value printed by the encode job.
+The full-resolution clip (`opening-1080x1920.mp4`, sha256 `62cd292168d0e7ebc4ad80061db145f46f9bf96eada95d9e0804623bc493ad78`) stays an Actions artifact (artifact download is blocked from this
+session: the blob hosts differ per artifact and are not on the allow-list).
+
+Measured on the 1080x1920 frames (same crop for both):
+
+| | median frame change | share > 12 | registered beats | longest without a beat |
+|---|---|---|---|---|
+| old B opening | 11.01 | 0.33 | 15 | 1.5 s |
+| round 1 continuous camera (wheels and wall) | 13.68 | 0.79 | 19 | 0.5 s |
+| round 2 camera (this) | 6.94 | 0.33 | 15 | 1.0 s |
+
+Camera smoothness (phase-correlation shift between consecutive frames of the recovered clip; the change of that shift from one frame to the next):
+old B p95 33 px (it has hard cuts), new p95 9 px; the single large value (frame 79) was checked frame by frame (70-89): a smooth pull-out, no cut.
+
+Reading (frames at 12 positions and the 20-frame seam, plus the recovered clip; a viewer test has not been done):
+- Better than old B: frames 1-170. The truck's face and front wheel loom large and the whole truck on the gravel is readable (frames 80-170), where the old film
+  showed wheels and a wall; no hard cuts; BRAKES FAILED and the speed plate are legible throughout.
+- Weaker than old B: frames ~200-285. The trailer wall fills the frame and about the lower third is empty dark ground; the stones gripping the wheels are small, and the old film's
+  frame 200-230 (front view with a spray plume) is more dramatic. The lower motion number reflects this calmer, farther view; it is not the goal, but the late part needs more impact.
+- Verdict: clearer and smoother than old B, not yet clearly better overall. Proposed round 3 for frames 190-285 only: lower and closer at the wheels, aim down so the stones fill the frame,
+  and one low front 3/4 pass with the spray before settling.
