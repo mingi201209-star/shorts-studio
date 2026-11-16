@@ -127,3 +127,147 @@ def first_contact_film_seconds() -> float:
     t_contact = sim.SIM_LEAD_M / v          # front axle reaches the bump (simulate() starts 3 m before it)
     t0 = (sim.SIM_LEAD_M - seg["lead_m"]) / v
     return (t_contact - t0) / seg["slow"]
+
+
+# ----------------------------------------------------------------------------- final-cut gates (owner review of 1000020414.mp4): pure simulation checks + pixel checks
+def _pass_rec(bump: str, seg: dict):
+    return sim.simulate(sim.BUMPS[bump], speed_kmh=seg["kmh"], car=sim.CAR, hz=sim.RENDER_HZ)
+
+
+def tyre_road_contact(info_c: dict | None = None) -> dict:
+    """The rendered wheel follows the rigid tyre envelope (|gap| <= 5 mm in every frame of every pass): no tyre inside the bump, no floating tyre. The simulated
+    tyre compliance that is NOT drawn is reported so the picture and the description stay honest."""
+    worst, compliance = 0.0, 0.0
+    for key in sorted({(s["kmh"]) for s in sim.SEGMENTS}):
+        seg = next(s for s in sim.SEGMENTS if s["kmh"] == key)
+        for bump in sim.BUMPS:
+            rec = _pass_rec(bump, seg)
+            for u, w in (("uf", "wf"), ("ur", "wr")):
+                vis = np.array([sim.visual_wheel_z(a, b) for a, b in zip(rec[u], rec[w])])
+                worst = max(worst, float(np.max(np.abs(vis - rec[w]))))
+                compliance = max(compliance, float(np.max(np.abs(rec[u] - rec[w]))))
+    problems = []
+    if worst > 0.005:
+        problems.append(f"drawn wheel is {1000 * worst:.1f} mm off the tyre envelope (limit 5 mm)")
+    if info_c is not None and info_c.get("rendered_wheel_gap_mm_max", 0.0) > 5.0:
+        problems.append(f"rendered telemetry reports a {info_c['rendered_wheel_gap_mm_max']} mm wheel gap")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "max_drawn_gap_mm": round(1000 * worst, 2),
+            "simulated_tyre_compliance_not_drawn_mm": round(1000 * compliance, 1),
+            "rendered_gap_mm_max": None if info_c is None else info_c.get("rendered_wheel_gap_mm_max")}
+
+
+def suspension_timing(max_lag_s: float = 0.06) -> dict:
+    """Spring squeeze must follow the wheel: on the short bump the peak squeeze RATE comes after the peak wheel-lift rate and within max_lag_s of it
+    (simulated seconds; the film is slowed 5x, so 0.06 s is about 9 film frames); the spring then returns to within 25 % of its peak squeeze."""
+    seg = sim.SEGMENTS[0]
+    rec = _pass_rec("short", seg)
+    t = rec["t"]
+    hub_rate = np.gradient(rec["wf"], t)
+    squeeze_rate = np.gradient(-rec["df"], t)
+    t_hub, t_spring = float(t[int(np.argmax(hub_rate))]), float(t[int(np.argmax(squeeze_rate))])
+    peak = float(np.max(-rec["df"]))
+    i_peak = int(np.argmax(-rec["df"]))
+    restored = float(np.min(np.abs(rec["df"][i_peak:])))
+    problems = []
+    if not 0.0 <= t_spring - t_hub <= max_lag_s:
+        problems.append(f"spring squeeze peaks {t_spring - t_hub:+.3f}s after the wheel lift (allowed 0 to {max_lag_s}s)")
+    if restored > 0.25 * peak:
+        problems.append("spring does not return towards rest after the peak squeeze")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "wheel_lift_peak_t": round(t_hub, 3), "spring_squeeze_peak_t": round(t_spring, 3),
+            "lag_film_frames": round((t_spring - t_hub) / sim.SEGMENTS[0]["slow"] * sim.FPS, 1)}
+
+
+def _sky_fraction(p: np.ndarray) -> float:
+    r, g, b = (p[..., i].astype(int) for i in range(3))
+    return float(((g > 140) & (b > 150) & (b >= r)).mean())
+
+
+def xray_readability(load, frames=(180, 230, 290, 360, 440, 520, 600), max_median=0.40, max_each=0.55) -> dict:
+    """The ghost body must be seen against the road, not against the sky: the share of sky-coloured pixels in each panel of X-ray frames stays low
+    (measured on the rendered frames; the previous cut had 0.44-0.65)."""
+    rows = []
+    for f in frames:
+        img = load(f)
+        rows.append({"frame": f, "top": round(_sky_fraction(img[0:960]), 3), "bottom": round(_sky_fraction(img[960:1400]), 3)})
+    vals = [r[k] for r in rows for k in ("top", "bottom")]
+    problems = []
+    if float(np.median(vals)) > max_median:
+        problems.append(f"median sky share {np.median(vals):.2f} > {max_median}")
+    if max(vals) > max_each:
+        problems.append(f"a panel has {max(vals):.2f} sky share > {max_each}")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "median_sky_share": round(float(np.median(vals)), 3), "frames": rows}
+
+
+def _spring_extent(p: np.ndarray):
+    r, g, b = (p[..., i].astype(int) for i in range(3))
+    m = (r > 200) & (r - b > 40) & (g > 60) & (g < 250)
+    rows = np.where(m.sum(axis=1) >= 3)[0]
+    return None if len(rows) < 4 else float(rows.max() - rows.min())
+
+
+def spring_tracks_simulation(load, wheelbase: float, first=203, last=262, min_r_short=0.8, min_r_hump=0.6) -> dict:
+    """Continuous-motion check: in the spring close-up the drawn spring's length on screen (orange pixels, measured on the composed frames) must move together
+    with the simulated spring length (Pearson r), and the picture must actually show a length change."""
+    from benchmarks.speed_bump.speed_bump_timeline import Timeline
+    tl = Timeline(wheelbase, hz=sim.RENDER_HZ)
+    out, problems = {}, []
+    for panel, rows, need in (("hump", slice(0, 960), min_r_hump), ("short", slice(960, 1920), min_r_short)):
+        px, sm = [], []
+        for f in range(first, last + 1):
+            ext = _spring_extent(load(f)[rows])
+            seg, t = sim.frame_to_pass(f)
+            rec = tl.recs[(seg["id"], panel)]
+            i = min(int(round(t * sim.RENDER_HZ)), len(rec["t"]) - 1)
+            px.append(ext)
+            sm.append(0.37 + float(rec["zf"][i]) - sim.visual_wheel_z(rec["uf"][i], rec["wf"][i]))
+        ok = [(a, b) for a, b in zip(px, sm) if a is not None]
+        if len(ok) < 0.8 * len(px):
+            problems.append(f"{panel}: spring not found in {len(px) - len(ok)} of {len(px)} close-up frames")
+            out[panel] = {"found": len(ok)}
+            continue
+        a, b = np.array([x for x, _ in ok]), np.array([y for _, y in ok])
+        r = float(np.corrcoef(a, b)[0, 1]) if a.std() > 0 and b.std() > 0 else 0.0
+        out[panel] = {"found": len(ok), "pearson_r": round(r, 3), "pixel_range": round(float(a.max() - a.min()), 1), "required_r": need}
+        if r < need:
+            problems.append(f"{panel}: on-screen spring length follows the simulation only with r={r:.2f} (need {need})")
+        if a.max() - a.min() < 3:
+            problems.append(f"{panel}: the drawn spring changes by less than 3 px")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, **out}
+
+
+def _sign_pixels(p: np.ndarray) -> int:
+    r, g, b = (p[..., i].astype(int) for i in range(3))
+    return int(((g > 200) & (g - r > 30) & (g - b > 80) & (b < 170)).sum())
+
+
+def signs_visible(load, in_view: dict, min_px=40, min_frames=150) -> dict:
+    """LONG / SHORT signs: the panel order is fixed (long on top); in every frame where the renderer reports a sign inside the camera view the sign pixels
+    must really be in the picture, and the signs must be on screen for most of the comparison (including 19-25 s and the closing replay)."""
+    both = [int(f) for f, v in in_view.items() if v["hump"] and v["short"]]
+    problems = []
+    if len(both) < min_frames:
+        problems.append(f"both signs are in view in only {len(both)} frames (need {min_frames})")
+    for lo, hi, name in ((570, 750, "19-25 s"), (783, 930, "closing replay")):
+        if sum(1 for f in both if lo <= f <= hi) < 30:
+            problems.append(f"fewer than 30 frames with both signs in view during {name}")
+    sample = both[:: max(1, len(both) // 24)] if both else []
+    missing = []
+    for f in sample:
+        img = load(f)
+        if _sign_pixels(img[0:960]) < min_px or _sign_pixels(img[960:1920]) < min_px:
+            missing.append(f)
+    if sample and len(missing) > 0.15 * len(sample):
+        problems.append(f"sign pixels missing in frames {missing[:8]} although the renderer says they are in view")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "frames_with_both_signs": len(both), "sampled": len(sample), "missing": missing}
+
+
+def shots_are_distinct() -> dict:
+    """No two neighbouring shots use the same camera, and no shot is longer than 105 frames (3.5 s) without a cut."""
+    problems = []
+    for (a1, b1, k1, _), (a2, b2, k2, _) in zip(sim.SHOTS, sim.SHOTS[1:]):
+        if k1 == k2:
+            problems.append(f"shots {a1}-{b1} and {a2}-{b2} use the same camera {k1!r}")
+    for a, b, k, _ in sim.SHOTS:
+        if b - a + 1 > 105:
+            problems.append(f"shot {a}-{b} is longer than 3.5 s")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "shots": len(sim.SHOTS)}

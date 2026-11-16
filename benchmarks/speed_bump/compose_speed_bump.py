@@ -38,6 +38,7 @@ def main():
     if not proofs:
         raise SystemExit("no shards")
     sha = wheelbase = None
+    signs, gap_mm = {}, 0.0
     index: dict[tuple[int, str], Path] = {}
     for pp in proofs:
         proof = json.loads(pp.read_text())
@@ -47,6 +48,9 @@ def main():
             sha, wheelbase = proof["renderer_source_sha256"], proof["geometry"]["wheelbase"]
         elif proof["renderer_source_sha256"] != sha or proof["geometry"]["wheelbase"] != wheelbase:
             raise SystemExit("mixed renderer/geometry across shards")
+        for t in proof["telemetry"]:
+            signs[t["frame"]] = {k: bool(t[k].get("sign_in_view")) for k in ("hump", "short")}
+            gap_mm = max(gap_mm, t["hump"].get("wheel_gap_mm", 0.0), t["short"].get("wheel_gap_mm", 0.0))
         for c in proof["checksums"]:
             path = pp.parent / f"frame_{c['frame']:04d}_{c['panel']}.png"
             if hashlib.sha256(path.read_bytes()).hexdigest() != c["sha256"]:
@@ -62,6 +66,7 @@ def main():
     tl = Timeline(wheelbase)
     (args.out / "compose-info.json").write_text(json.dumps({
         "renderer_source_sha256": sha, "wheelbase": wheelbase, "peaks": tl.peaks, "all_3d": True, "overlays": "none", "physically_calibrated": False,
+        "sign_in_view": {str(k): v for k, v in sorted(signs.items())}, "rendered_wheel_gap_mm_max": gap_mm,
         "peak_time": {f"{a}:{b}": t for (a, b), t in tl.peak_time.items()}}, indent=1))
     print("SPEEDBUMP_COMPOSED", sim.TOTAL_FRAMES, flush=True)
 

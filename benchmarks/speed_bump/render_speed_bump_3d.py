@@ -17,6 +17,8 @@ import time
 from pathlib import Path
 
 import bpy
+import numpy as np
+from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
@@ -86,6 +88,8 @@ class XRay:
                 o.data.materials[i] = seen[m.name]
         self.live = []
         self.live_mats = []
+        self.mark = material("Rest mark", (0.95, 0.95, 1.0), rough=0.4, emission=3.0)
+        self.peak_mat = material("Peak mark", (1.0, 0.1, 0.1), rough=0.4, emission=6.0)
 
     def _reveal_material(self, m):
         c = m.copy()
@@ -117,10 +121,10 @@ class XRay:
         wipe = node("ShaderNodeValue")
         self.wipes.append(wipe)
         mask = math("MULTIPLY", math("SUBTRACT", sep.outputs[1], wipe.outputs[0]), 1.0 / self.SOFT, clamp=True)
-        nt.links.new(math("ADD", math("MULTIPLY", mask, -0.9 * alpha0), alpha0), bsdf.inputs["Alpha"])
+        nt.links.new(math("ADD", math("MULTIPLY", mask, -0.8 * alpha0), alpha0), bsdf.inputs["Alpha"])
         lw = node("ShaderNodeLayerWeight")
         lw.inputs["Blend"].default_value = 0.35
-        edge = math("MULTIPLY", math("MULTIPLY", lw.outputs["Facing"], mask), 3.0)
+        edge = math("MULTIPLY", math("MULTIPLY", lw.outputs["Facing"], mask), 8.0)
         flare = math("MULTIPLY", math("MULTIPLY", mask, math("SUBTRACT", 1.0, mask)), 28.0)
         nt.links.new(math("ADD", edge, flare), bsdf.inputs["Emission Strength"])
         bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
@@ -138,7 +142,7 @@ class XRay:
             bpy.data.materials.remove(m)
         self.live, self.live_mats = [], []
 
-    def build(self, body, xf, comp):
+    def build(self, body, xf, comp, road_dz, mount_dz, peak):
         """comp: spring compression (m, signed) of the front and the rear axle at this frame."""
         self.clear()
         if xf < 0.02:
@@ -152,7 +156,7 @@ class XRay:
             mount = body.matrix_world @ Vector((w["base"].x - 0.05 * side, w["base"].y, w["base"].z + 0.42))
             dx = 0.12 * side
             heat = min(1.0, abs(comp["front" if wkey.startswith("front") else "rear"]))      # comp = spring squeeze rate / the short bump's peak rate
-            spring = material("Spring " + wkey, (1.0, 0.25 + 0.7 * heat, 0.05 + 0.65 * heat), rough=0.4, emission=0.8 + 5.0 * heat)
+            spring = material("Spring " + wkey, (1.0, 0.25 + 0.45 * heat, 0.05 + 0.1 * heat), rough=0.4, emission=0.8 + 3.0 * heat)   # stays orange-yellow (never white) at the peak
             self.live_mats.append(spring)
             self.live.append(spring_curve(f"spring {wkey}", (hub.x + dx, hub.y, hub.z + 0.05), (mount.x + dx, mount.y, mount.z), spring))
             bpy.ops.mesh.primitive_cylinder_add(radius=0.022, depth=1.0, location=((hub.x + mount.x) / 2 + dx, hub.y + 0.1, (hub.z + mount.z) / 2))
@@ -160,6 +164,28 @@ class XRay:
             rod.scale = (1, 1, max(0.05, mount.z - hub.z))
             rod.data.materials.append(damper)
             self.live.append(rod)
+            # rest-length marks (in the scene, not an overlay): a thin white ruler beside the live spring that spans the spring's length at rest, a tick at the
+            # body's rest mount height, and (after the peak) a red tick at the height the body mount reached at the peak compression
+            rest_bottom = hub.z - road_dz[wkey] + 0.05
+            rest_top = mount.z - mount_dz[wkey]
+            ruler_y = hub.y - 0.2
+            bpy.ops.mesh.primitive_cylinder_add(radius=0.007, depth=1.0, location=(hub.x + dx, ruler_y, (rest_bottom + rest_top) / 2))
+            ruler = bpy.context.object
+            ruler.scale = (1, 1, max(0.05, rest_top - rest_bottom))
+            ruler.data.materials.append(self.mark)
+            self.live.append(ruler)
+            for zt in (rest_bottom, rest_top):
+                bpy.ops.mesh.primitive_cube_add(size=1.0, location=(hub.x + dx, ruler_y, zt))
+                tick = bpy.context.object
+                tick.scale = (0.05, 0.12, 0.008)
+                tick.data.materials.append(self.mark)
+                self.live.append(tick)
+            if peak["active"][wkey]:
+                bpy.ops.mesh.primitive_cube_add(size=1.0, location=(hub.x + dx, ruler_y, rest_top + peak["dz"][wkey]))
+                pk = bpy.context.object
+                pk.scale = (0.05, 0.2, 0.012)
+                pk.data.materials.append(self.peak_mat)
+                self.live.append(pk)
 
 
 class Trail:
@@ -190,14 +216,20 @@ def spring_rate(rec, key, idx, span=6):
     return float(rec[key][b] - rec[key][a]) / float(rec["t"][b] - rec["t"][a]) if b > a else 0.0
 
 
-def pose_car(root, body, wheels, geom, rec, idx):
+def pose_car(root, body, wheels, geom, rec, idx, gaps=None, road_dz=None):
+    gaps = {} if gaps is None else gaps
     y_front = float(rec["x"][idx])
     root.location = (0.0, y_front - geom["front_axle"], 0.0)
     body.location = (0, 0, float(0.5 * (rec["zf"][idx] + rec["zr"][idx])))
     body.rotation_euler = (float(rec["pitch"][idx]), 0, 0)
     for wkey, w in wheels.items():
-        road_z = float(rec["uf"][idx] if wkey.startswith("front") else rec["ur"][idx])   # unsprung (wheel) displacement: includes tyre compliance and wheel hop
+        front = wkey.startswith("front")
+        # unsprung (wheel) displacement, drawn on the rigid tyre envelope (+-4 mm): the tyre never cuts into the bump and never floats
+        road_z = sim.visual_wheel_z(rec["uf"][idx] if front else rec["ur"][idx], rec["wf"][idx] if front else rec["wr"][idx])
+        gaps[wkey] = road_z - float(rec["wf"][idx] if front else rec["wr"][idx])
         w["node"].location = (w["base"].x, w["base"].y, w["base"].z + road_z)
+        if road_dz is not None:
+            road_dz[wkey] = road_z
         w["node"].rotation_euler = (-(y_front - geom["front_axle"] + w["base"].y) / geom["tyre_radius"], 0, 0)
     return y_front
 
@@ -236,9 +268,21 @@ def place_camera(cam, kind, y, layout="stack"):
     elif kind == "low3q":                   # low front 3/4 close to the bump: the car fills the panel
         d.lens = 36
         base.set_camera(cam, (3.6, y + 2.2, 0.75), (0.0, y - 0.4, 0.5))
-    elif kind == "spring":                  # tight on the front wheel arch: spring and damper fill the panel
+    elif kind == "spring":                  # tight on the front wheel arch, looking slightly down so the ghost body is seen against the road, not the sky
         d.lens = 40
-        base.set_camera(cam, (3.3, y + 0.05, 0.52), (0.0, y + 0.05, 0.4))
+        base.set_camera(cam, (3.3, y + 0.05, 1.0), (0.0, y + 0.05, 0.28))
+    elif kind == "front3q_hi":              # raised front 3/4 looking down: asphalt behind the ghost body
+        d.lens = 38
+        base.set_camera(cam, (2.3, y + 3.3, 2.3), (0.0, y - 0.5, 0.3))
+    elif kind == "left":                    # low view from the other side: body heave and pitch against the hub path
+        d.lens = 38
+        base.set_camera(cam, (-5.2, y - 0.9, 1.5), (0.0, y - 0.9, 0.4))
+    elif kind == "side_xray":               # wide side view, raised and looking down: car, ghost body and the spring marks in one frame
+        d.lens = 34
+        base.set_camera(cam, (5.0, y - 0.9, 1.9), (0.0, y - 0.9, 0.3))
+    elif kind == "side_far":                # side view from further back and higher: both bumps and the whole pass
+        d.lens = 32
+        base.set_camera(cam, (8.0, y - 1.2, 2.2), (0.0, y - 1.2, 0.35))
     elif kind == "top":                     # straight down, travel up the screen
         d.lens = 45
         cam.location = (0.0, y - 0.6, 8.5)
@@ -284,6 +328,15 @@ def main():
         ob = base.extruded_profile(f"Bump {kb}", pts, -1.4, 1.4, yellow)
         ob.rotation_euler = (0, 0, math.pi / 2)
         bumps[kb] = ob
+    sign = material("Sign", (0.45, 1.0, 0.15), rough=0.5, emission=1.0)
+    labels = {}
+    for kb, text in (("hump", "LONG"), ("short", "SHORT")):
+        cu = bpy.data.curves.new("Sign " + kb, "FONT")
+        cu.body, cu.size, cu.extrude, cu.align_x, cu.align_y = text, 0.4, 0.03, "CENTER", "CENTER"
+        ob = bpy.data.objects.new("Sign " + kb, cu)
+        bpy.context.collection.objects.link(ob)
+        ob.data.materials.append(sign)
+        labels[kb] = ob
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -312,32 +365,46 @@ def main():
                 base.set_visible(ob, kb == panel)
             rec = tl.recs[(seg["id"], panel)]
             idx = min(int(round(t_sim * sim.RENDER_HZ)), len(rec["t"]) - 1)
-            y_front = pose_car(root, body, wheels, geom, rec, idx)
+            gaps, road_dz = {}, {}
+            y_front = pose_car(root, body, wheels, geom, rec, idx, gaps, road_dz)
             if xray is not None:
                 xf = sim.xray_factor(f)
                 xray.set_factor(xf, y_front)
-                xray.build(body, xf, {"front": spring_rate(rec, "df", idx) / rate_ref, "rear": spring_rate(rec, "dr", idx) / rate_ref})
+                mount_dz = {k: float(rec["zf"][idx] if k.startswith("front") else rec["zr"][idx]) for k in wheels}
+                ip_f, ip_r = int(np.argmin(rec["df"])), int(np.argmin(rec["dr"]))       # peak compression (spring deflection most negative)
+                peak = {"dz": {k: float(rec["zf"][ip_f] if k.startswith("front") else rec["zr"][ip_r]) for k in wheels},
+                        "active": {k: bool(idx >= (ip_f if k.startswith("front") else ip_r)) for k in wheels}}
+                xray.build(body, xf, {"front": spring_rate(rec, "df", idx) / rate_ref, "rear": spring_rate(rec, "dr", idx) / rate_ref}, road_dz, mount_dz, peak)
             hub_trail.set([]), roof_trail.set([])
             mode = sim.trail_mode(f)
             if mode:
                 bpy.context.view_layer.update()
                 j0 = max(0, int((sim.SIM_LEAD_M - seg["lead_m"]) / (seg["kmh"] / 3.6) * sim.RENDER_HZ))
                 js = list(range(j0, idx + 1, step)) + ([idx] if (idx - j0) % step else [])
-                if mode == "hub":
+                if mode in ("hub", "both"):
                     h = wheels[hub_key]["node"].matrix_world.translation
                     hub_trail.set([(h.x + 0.2, h.y + float(rec["x"][j] - rec["x"][idx]), h.z + float(rec["wf"][j] - rec["wf"][idx])) for j in js])
-                else:
+                if mode in ("roof", "both"):
                     r = body.matrix_world @ roof_local
                     roof_trail.set([(r.x, r.y + float(rec["x"][j] - rec["x"][idx]),
                                      r.z + float(0.5 * (rec["zf"][j] + rec["zr"][j]) - 0.5 * (rec["zf"][idx] + rec["zr"][idx])) + roof_local.y * float(rec["pitch"][j] - rec["pitch"][idx]))
                                     for j in js])
             place_camera(cam, kind, y_front, layout)
+            for kb, lab in labels.items():                      # the LONG / SHORT sign of this panel: a 3D sign beside the bump, turned to the camera
+                lab.hide_render = kb != panel
+            lab = labels[panel]
+            lab.location = (math.copysign(2.0, cam.location.x if abs(cam.location.x) > 0.1 else 1.0), sim.BUMPS[panel]["length"] / 2, 0.75)
+            lab.rotation_euler = (cam.location - Vector(lab.location)).to_track_quat("Z", "Y").to_euler()
+            bpy.context.view_layer.update()
+            co = world_to_camera_view(scene, cam, Vector(lab.location))
+            sign_in_view = bool(co.z > 0 and 0.08 < co.x < 0.92 and 0.08 < co.y < 0.92)
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)
             bpy.ops.render.render(write_still=True)
             checks.append({"frame": f, "panel": panel, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             info[panel] = {"y_front": round(y_front, 3), "body_rise_cm": round(100 * float(0.5 * (rec["zf"][idx] + rec["zr"][idx])), 2),
-                           "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3)}
+                           "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3),
+                           "wheel_gap_mm": round(1000 * max(abs(g) for g in gaps.values()), 2), "sign_in_view": sign_in_view}
         info["render_seconds"] = round(time.time() - t_start, 1)
         result.append(info)
         print("BUMP_FRAME " + json.dumps(info), flush=True)

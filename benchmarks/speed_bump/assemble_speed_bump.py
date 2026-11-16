@@ -55,6 +55,24 @@ def verify_captions_over_picture(video: Path, frames_dir: Path, sample_points: l
     return {"status": "PASS", "method": "encoded frame vs caption-free composed frame", "evidence": evidence}
 
 
+def final_cut_checks(flat: Path, info_c: dict) -> dict:
+    """Owner review of 1000020414.mp4: first impact within a second, X-ray against the road, spring motion that tracks the simulation, tyre contact,
+    consistent LONG / SHORT signs, no repeated neighbouring camera."""
+    def load(n):
+        return np.array(Image.open(flat / f"frame_{n:04d}.png").convert("RGB"))
+    first = gates.first_contact_film_seconds()
+    return {
+        "first_impact_within_1s": {"status": "PASS" if first <= 1.0 else "FAIL", "problems": [] if first <= 1.0 else [f"first wheel/bump contact at {first:.2f}s"],
+                                    "first_contact_film_s": round(first, 2)},
+        "tyre_road_contact": gates.tyre_road_contact(info_c),
+        "suspension_timing": gates.suspension_timing(),
+        "xray_readability": gates.xray_readability(load),
+        "spring_tracks_simulation": gates.spring_tracks_simulation(load, info_c["wheelbase"]),
+        "signs_visible": gates.signs_visible(load, {int(k): v for k, v in info_c["sign_in_view"].items()}),
+        "shots_are_distinct": gates.shots_are_distinct(),
+    }
+
+
 def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, preflight: bool = False) -> dict:
     out.mkdir(parents=True, exist_ok=False)
     problems: list[str] = []
@@ -141,6 +159,7 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
         "narration_picture_timing": gates.narration_picture_timing(audio_report),
         **({"picture_events_match_cues": gates.picture_events_match_cues(audio_report)} if sim.SYNC_EVENTS else {}),
         "first_three_seconds": gates.first_three_seconds(sample, gates.first_contact_film_seconds()),
+        **(final_cut_checks(flat, info_c) if sim.FILM == "final" else {}),
         "caption_safety": caption_safety(cues, original_qa["captions_visible"]["evidence"]),
         "assumptions_declared": (gates.assumptions_in_description(manifest["description_file"]) if manifest.get("description_file")
                                  else gates.assumptions_in_narration(audio_report)),

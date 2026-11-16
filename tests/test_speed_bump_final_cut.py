@@ -51,3 +51,30 @@ def test_sync_gate_flags_a_late_event():
             "print('ok')\n") % str(ROOT)
     out = subprocess.run([sys.executable, "-I", "-c", code], env=dict(os.environ, EP03_FILM="final"), capture_output=True, text=True)
     assert out.returncode == 0, out.stderr
+
+
+def test_final_cut_new_gates_hold_on_the_simulation_and_shot_list():
+    code = ("import sys; sys.path.insert(0, %r)\n"
+            "from benchmarks.speed_bump import speed_bump_gates as g\n"
+            "from benchmarks.speed_bump import speed_bump_motion as m\n"
+            "for r in (g.tyre_road_contact(), g.suspension_timing(), g.shots_are_distinct()):\n"
+            "    assert r['status'] == 'PASS', r\n"
+            "assert g.first_contact_film_seconds() <= 1.0\n"
+            "assert m.visual_wheel_z(0.05, 0.0) == m.VISUAL_CONTACT_TOL_M and m.visual_wheel_z(-0.05, 0.0) == -m.VISUAL_CONTACT_TOL_M\n"
+            "ids = [s['id'] for s in m.SEGMENTS]; assert len(ids) == len(set(ids))\n"
+            "print('ok')\n") % str(ROOT)
+    out = subprocess.run([sys.executable, "-I", "-c", code], env=dict(os.environ, EP03_FILM="final"), capture_output=True, text=True)
+    assert out.returncode == 0, out.stderr + out.stdout
+    assert "ok" in out.stdout
+
+
+def test_xray_gate_rejects_sky_heavy_frames_and_signs_gate_needs_pixels():
+    import numpy as np
+    sys.path.insert(0, str(ROOT))
+    from benchmarks.speed_bump import speed_bump_gates as g
+    sky = np.zeros((1920, 1080, 3), np.uint8)
+    sky[..., 0], sky[..., 1], sky[..., 2] = 150, 200, 255
+    assert g.xray_readability(lambda f: sky)["status"] == "FAIL"
+    road = np.full((1920, 1080, 3), 40, np.uint8)
+    assert g.xray_readability(lambda f: road)["status"] == "PASS"
+    assert g.signs_visible(lambda f: road, {f: {"hump": True, "short": True} for f in range(1, 300)})["status"] == "FAIL"
