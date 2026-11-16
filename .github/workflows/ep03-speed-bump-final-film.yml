@@ -29,7 +29,7 @@ jobs:
           mode = json.load(open("examples/experiments/speed-bump-final-request.json"))["mode"]
           assert mode in ("preflight", "production")
           size = 80 if mode == "preflight" else 16
-          starts = list(range(1, 1051, size))
+          starts = list(range(1, 931, size))
           print("mode=" + mode)
           print("shards=" + str(len(starts)))
           print("matrix=" + json.dumps({"include": [{"start": s, "end": min(s + size - 1, 930)} for s in starts]}))
