@@ -57,7 +57,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
     t = cm.frame_time(frame)
     xf = cm.xray_factor(frame)
     cam = ccams.camera(seg["camera"], frame)
-    metrics, in_view, panels = {"xray.factor": xf}, {}, {}
+    metrics, in_view, panels = {"xray.factor": xf, "cell.highlight": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the green safety-cell cage is drawn together with the ghost body
     for panel in seg["panels"]:
         rec = recs[panel]
         i = min(int(round(t * cm.RENDER_HZ)), len(rec["t"]) - 1)

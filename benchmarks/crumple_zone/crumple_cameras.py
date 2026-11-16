@@ -18,7 +18,9 @@ def camera(kind: str, frame: int = 1) -> dict:
     if kind == "compare":
         return {"loc": (-3.4, -2.8, 1.0), "target": (0.0, -0.7, 0.5), "lens": 30.0, "shift_y": -0.25}
     if kind == "xray":
-        k = min(1.0, max(0.0, (frame - cm.XRAY_RAMP[0]) / (cm.TOTAL_FRAMES - cm.XRAY_RAMP[0])))
+        seg = cm.segment_at(frame)
+        seg_len = seg["last"] - seg["first"] + 1
+        k = min(1.0, max(0.0, (frame - seg["first"]) / max(74.0, seg_len)))      # slow push-in that keeps going over the whole X-ray segment (the first segment keeps its original 74-frame span)
         loc = tuple(float(v) * (1 - 0.06 * k) for v in (-5.0, -5.2, 2.4))        # found by a search that keeps nose, rails and cell inside the frame for every X-ray frame
         return {"loc": loc, "target": (0.0, -1.3, 0.45), "lens": 34.0, "shift_y": 0.0}
     raise ValueError(kind)

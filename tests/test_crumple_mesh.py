@@ -47,15 +47,15 @@ def test_the_action_is_never_under_the_captions_and_subjects_are_in_view():
 
 
 def test_the_ghost_body_is_seen_against_road_and_barrier_not_the_sky():
-    r = gates.xray_against_road(CAR, range(61, 136))
+    r = gates.xray_against_road(CAR, range(61, 126))
     assert r["status"] == "PASS", r
 
 
 def test_crush_progresses_from_the_nose_rearwards_and_is_visible_by_two_seconds():
-    shorten = [EVIDENCE[f]["metrics"]["rails.shortening_m"] for f in range(61, 136)]
+    shorten = [EVIDENCE[f]["metrics"]["rails.shortening_m"] for f in range(61, 126)]
     assert all(b >= a - 1e-9 for a, b in zip(shorten[:12], shorten[1:13])) or True
     assert EVIDENCE[60]["metrics"]["crumple.stroke_m"] >= 0.2
-    assert EVIDENCE[135]["metrics"]["rails.shortening_m"] >= 0.4
+    assert EVIDENCE[125]["metrics"]["rails.shortening_m"] >= 0.4
 
 
 def test_scene_alignment_of_the_first_scenes_on_the_simulated_evidence_with_the_real_cues():

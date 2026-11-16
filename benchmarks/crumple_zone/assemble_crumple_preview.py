@@ -1,4 +1,4 @@
-"""EP.04: low-cost contiguous preview of the first 4.5 s (135 frames): composes the rendered panels, muxes the first 4.5 s of the narration with the burned-in captions,
+"""EP.04: the ONE low-cost contiguous preview of the whole film (26 s = TOTAL_FRAMES, low resolution): composes the rendered panels, muxes the narration with the burned-in captions,
 and runs every gate that can be decided from this clip. Never a deliverable for publishing; never uploads."""
 from __future__ import annotations
 
@@ -119,7 +119,7 @@ def main():
     plan = json.loads((ROOT / "examples/experiments/crumple-zone-speech-plan.json").read_text())
     beats = [b["narration_en"] for b in plan["variants"][0]["beats"]]
     spec_problems = validate_spec(spec, beats)
-    alignment = evaluate_episode(spec, audio_report["cues"], float(audio_report["target_seconds"]) if "target_seconds" in audio_report else 30.0, evidence)
+    alignment = evaluate_episode(spec, audio_report["cues"], float(audio_report.get("target_seconds", cm.TOTAL_FRAMES / cm.FPS)), evidence)
     (a.out / "scene-alignment-report.json").write_text(json.dumps(alignment, indent=1))
     registry = update_registry(a.out / "scene-registry.json", spec.episode, a.out.name, alignment)
     allowed, reasons = full_render_allowed(spec, registry, CAPABILITIES, beats)

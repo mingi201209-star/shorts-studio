@@ -201,12 +201,12 @@
     },
     {
      "id": "s02b-shortening",
-     "description": "the crush rails shorten by at least 40 cm",
+     "description": "the crush rails shorten by at least 40 cm while the folding is narrated (the whole scene window; the next replay starts at the next cue)",
      "kind": "metric_increase",
      "criterion": "action_performed",
      "metric": "rails.shortening_m",
      "value": 0.4,
-     "window": "first_2s"
+     "window": "scene"
     },
     {
      "id": "s02b-onset",
@@ -289,7 +289,7 @@
     {
      "id": "s02c-action",
      "description": "the crumple front keeps crushing for at least 0.3 m",
-     "kind": "metric_at_least",
+     "kind": "metric_reaches",
      "criterion": "action_performed",
      "metric": "crumple.crushed_depth_m",
      "value": 0.3
@@ -327,21 +327,22 @@
    "cue": "For the same change",
    "subjects": [
     "car_front",
-    "rigid_car_front"
+    "crush_rails"
    ],
    "phenomenon": {
-    "kind": "two_situation_comparison",
-    "description": "Replay of both crashes: the long crush of the crumple car is the longer stopping time; no graphics beyond the real deformation",
+    "kind": "structure_folding",
+    "description": "X-ray replay of the same crash: the structures fold over the whole stopping time (the narrated momentum/force idea is explained by the voice; no graphics are added)",
     "onset_metric": "crumple.crushed_depth_m",
     "onset_threshold": 0.01,
     "explanation_only": false
    },
    "camera": {
-    "kind": "compare",
-    "movement": "CRUMPLE / RIGID side by side"
+    "kind": "xray",
+    "movement": "X-ray replay of the same crash from the other side of the barrier line"
    },
    "effects": [
-    "two_situation_comparison"
+    "xray_reveal",
+    "structure_folding"
    ],
    "success": [
     {
@@ -351,14 +352,14 @@
      "criterion": "subject_present",
      "subjects": [
       "car_front",
-      "rigid_car_front"
+      "crush_rails"
      ],
      "value": 0.8
     },
     {
      "id": "s03-action",
      "description": "the crumple front crushes at least 0.3 m",
-     "kind": "metric_at_least",
+     "kind": "metric_reaches",
      "criterion": "action_performed",
      "metric": "crumple.crushed_depth_m",
      "value": 0.3
@@ -535,8 +536,8 @@
    "phenomenon": {
     "kind": "protected_cell_highlight",
     "description": "The safety cell stays intact while the front is crushed (cell displacement measured on the deformed mesh); belts and airbags are only named in the narration",
-    "onset_metric": "cell.highlight",
-    "onset_threshold": 0.5,
+    "onset_metric": "crumple.crushed_depth_m",
+    "onset_threshold": 0.01,
     "explanation_only": false
    },
    "camera": {
@@ -567,11 +568,11 @@
     },
     {
      "id": "s05b-onset",
-     "description": "the picture event starts when the sentence is spoken",
+     "description": "a second X-ray replay of the crash starts when the belts and airbags are mentioned",
      "kind": "onset_near_cue",
      "criterion": "timing",
-     "metric": "cell.highlight",
-     "onset_threshold": 0.5,
+     "metric": "crumple.crushed_depth_m",
+     "onset_threshold": 0.01,
      "value": 0.5
     },
     {

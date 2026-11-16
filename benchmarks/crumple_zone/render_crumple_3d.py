@@ -279,6 +279,7 @@ def main():
             em, ev_view = evidence[f]["metrics"], evidence[f]["in_view"]
             em[f"{panel}.stroke_m"] = s
             em["xray.factor"] = xf
+            em["cell.highlight"] = 1.0 if xf >= 0.5 else 0.0
             em["nose.penetration_mm"] = max(em.get("nose.penetration_mm", 0.0), round(1000 * max(0.0, nose_world), 2))
             em["cell.max_displacement_mm"] = max(em.get("cell.max_displacement_mm", 0.0), ev["cell_mm"])
             em["caption.overlap"] = max(em.get("caption.overlap", 0.0), ev["caption_overlap"])

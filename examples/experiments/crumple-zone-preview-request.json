@@ -1,1 +1,1 @@
-{"mode":"range","ranges":[[66,67],[90,91]],"note":"EP.04: re-check the two shard-first frames after the camera-matrix update fix (in_view mismatch was a one-frame-stale camera in the evidence, not the picture)"}
+{"mode":"range","ranges":[[66,67],[90,91],[126,140],[224,250],[366,385],[503,515],[691,712],[745,765]],"note":"EP.04 partial check of the new timeline: shard-first frames after the camera update fix (66/90) and the first second of every new replay segment (C2, X2, C3, X3, H2, X5); model vs Blender consistency, no full preview"}

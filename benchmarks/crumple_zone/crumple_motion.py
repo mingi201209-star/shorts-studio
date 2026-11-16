@@ -97,16 +97,40 @@ def wheel_y(y_wheel: float, s: float, nose: float, radius: float = 0.281, cleara
 # ----------------------------------------------------------------------------- film timeline (preview of the first 4.5 s = 135 frames at 30 fps)
 SLOW = 0.09
 FILM = os.environ.get("EP04_FILM", "preview")
-#: (id, first frame, last frame, lead_m (nose distance to the barrier at the segment's first frame), profiles drawn, layout)
+#: Full film = 26.0 s = 780 frames at 30 fps, planned against the REAL spoken cues (audio-cues run): every replay segment starts on a spoken cue.
+#: Segments 1-3 are the already validated opening (4.5 s -> cut at the cue "slow the car down" = frame 126); the later ones are replays of the SAME crash
+#: (same physics, same sim) from the other cameras; each replay uses its own playback speed so that the crush fills the beat (no frozen frame, nothing invented).
+T_MOTION_END_S = 0.09      # simulated time AFTER CONTACT at which the crumple car has stopped (stop time 87 ms; asserted against simulate() in the tests)
+CONTACT_FILM_S = 0.30      # a replay shows the car touching the barrier 0.3 s after the cue (real onset inside the sync tolerance)
+_REPLAYS = [               # id, first frame, last frame, panels, layout, camera (first frame = round(cue * 30) + 1)
+    ("C2", 126, 223, ("crumple", "rigid"), "stack", "compare"),   # "slow the car down"      4.17 s
+    ("X2", 224, 365, ("crumple",), "full", "xray"),               # "For the same change"    7.42 s
+    ("C3", 366, 502, ("crumple", "rigid"), "stack", "compare"),   # "The rigid front stops" 12.15 s
+    ("X3", 503, 586, ("crumple",), "full", "xray"),               # "The passenger"         16.72 s
+    ("X4", 587, 690, ("crumple",), "full", "xray"),               # "while seat belts and"  19.53 s
+    ("H2", 691, 744, ("crumple",), "full", "hero"),               # "The front is meant"    22.99 s
+    ("X5", 745, 780, ("crumple",), "full", "xray"),               # "The cabin isn't."      24.80 s
+]
+
+
+def _replay(seg_id, first, last, panels, layout, camera):
+    film_s = (last - first + 1) / FPS
+    slow = T_MOTION_END_S / (1.03 * film_s - CONTACT_FILM_S)      # the motion lasts to the last frame of the segment: no frozen frame
+    return {"id": seg_id, "first": first, "last": last, "lead_m": round(CONTACT_FILM_S * slow * V0_KMH / 3.6, 4), "slow": round(slow, 5), "panels": panels, "layout": layout, "camera": camera}
+
+
 SEGMENTS = [
     {"id": "H", "first": 1, "last": 18, "lead_m": 0.30, "panels": ("crumple",), "layout": "full", "camera": "hero"},
     {"id": "C", "first": 19, "last": 60, "lead_m": 0.30, "panels": ("crumple", "rigid"), "layout": "stack", "camera": "compare"},
-    {"id": "X", "first": 61, "last": 135, "lead_m": 1.00, "panels": ("crumple",), "layout": "full", "camera": "xray"},
-]
+    {"id": "X", "first": 61, "last": 125, "lead_m": 1.00, "panels": ("crumple",), "layout": "full", "camera": "xray"},      # contact 1.0 s into the segment (= 3.0 s, the cue "structures fold and"), crush finished before the cut at 4.17 s
+] + [_replay(*r) for r in _REPLAYS]
 TOTAL_FRAMES = SEGMENTS[-1]["last"]
-XRAY_RAMP = (61, 91)       # frames over which the body turns into a ghost (scan line from the nose to the tail)
+XRAY_RAMP = (61, 91)       # frames over which the body turns into a ghost (scan line from the nose to the tail) - first X-ray segment only
 #: (spoken cue text, picture event, first film frame): each event must start within SYNC_TOLERANCE_S of the cue (gate, measured speech timing)
-SYNC_EVENTS = [("Inside, hidden", "scan-line X-ray reveal starts", 61)]
+SYNC_EVENTS = [("Inside, hidden", "scan-line X-ray reveal starts", 61), ("slow the car down", "comparison replay starts", 126), ("For the same change", "X-ray replay starts", 224),
+               ("The rigid front stops", "rigid comparison replay starts", 366), ("The passenger", "X-ray view of the protected cabin starts", 503),
+               ("while seat belts and", "second X-ray replay starts", 587), ("The front is meant", "hero replay of the front deforming starts", 691),
+               ("The cabin isn't.", "closing X-ray view of the intact cabin starts", 745)]
 SYNC_TOLERANCE_S = 0.4
 
 
@@ -121,15 +145,21 @@ def frame_time(frame: int) -> float:
     """Film frame (1-based) -> simulated time (s) since simulate()'s start."""
     seg = segment_at(frame)
     v0 = V0_KMH / 3.6
-    return (LEAD_SIM - seg["lead_m"]) / v0 + (frame - seg["first"]) / FPS * SLOW
+    return (LEAD_SIM - seg["lead_m"]) / v0 + (frame - seg["first"]) / FPS * seg.get("slow", SLOW)
 
 
 def first_contact_film_s(seg_id: str = "H") -> float:
     seg = next(s for s in SEGMENTS if s["id"] == seg_id)
-    return seg["lead_m"] / (V0_KMH / 3.6) / SLOW
+    return seg["lead_m"] / (V0_KMH / 3.6) / seg.get("slow", SLOW)
 
 
 def xray_factor(frame: int) -> float:
+    """0 outside the X-ray segments; the first X-ray segment ramps the scan line in, the later ones are X-ray from their first frame."""
+    seg = segment_at(frame)
+    if seg["camera"] != "xray":
+        return 0.0
+    if seg["id"] != "X":
+        return 1.0
     a, b = XRAY_RAMP
     if frame <= a:
         return 0.0

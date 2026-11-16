@@ -30,7 +30,7 @@ jobs:
           mode = req["mode"]
           assert mode in ("preview", "range")
           if mode == "preview":
-              size, shards = 68, [(1, 135)]
+              size, shards = 65, [(1, 780)]      # the whole 26 s film, 12 shards; the test pins 780 to crumple_motion.TOTAL_FRAMES
           else:
               size, shards = 24, [tuple(r) for r in req["ranges"]]      # only the frames a change touched
           include = []
