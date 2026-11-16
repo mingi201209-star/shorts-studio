@@ -54,7 +54,7 @@ jobs:
           for attempt in 1 2 3 4 5 6; do
             rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
-                 --plan examples/experiments/crumple-zone-speech-plan.json --target-seconds 27.5 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+                 --plan examples/experiments/crumple-zone-speech-plan.json --target-seconds 26.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
             echo "speech capture attempt $attempt failed"
             # keep the beats that were captured completely: the capture script reuses them from speech-v*/<variant>/ on the next attempt
             mkdir -p "$RUNNER_TEMP/speech-v$attempt/crumple-zone"; cp "$RUNNER_TEMP"/speech/crumple-zone/beat_*.json "$RUNNER_TEMP"/speech/crumple-zone/beat_*.mp3 "$RUNNER_TEMP/speech-v$attempt/crumple-zone/" 2>/dev/null || true
@@ -65,7 +65,7 @@ jobs:
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build
           from benchmarks.crumple_zone.captions import single_line_groups as phrase_groups
-          build(Path('$RUNNER_TEMP/speech/crumple-zone'), Path('$RUNNER_TEMP/audio'), target_seconds=27.5, grouper=phrase_groups)
+          build(Path('$RUNNER_TEMP/speech/crumple-zone'), Path('$RUNNER_TEMP/audio'), target_seconds=26.0, grouper=phrase_groups)
           "
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
