@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "crumple-zone",
+      "beats": [
+        {
+          "narration_en": "Cars are designed to crush.",
+          "start": 0,
+          "end": 5
+        },
+        {
+          "narration_en": "Inside, hidden structures fold and slow the car down over a longer distance and time.",
+          "start": 5,
+          "end": 10
+        },
+        {
+          "narration_en": "For the same change in momentum, more stopping time can mean less average force.",
+          "start": 10,
+          "end": 15
+        },
+        {
+          "narration_en": "The rigid front stops in a tiny distance, so its average force is far higher.",
+          "start": 15,
+          "end": 20
+        },
+        {
+          "narration_en": "The passenger compartment is built to stay protective, while seat belts and airbags help protect the people inside.",
+          "start": 20,
+          "end": 25
+        },
+        {
+          "narration_en": "The front is meant to deform. The cabin isn't.",
+          "start": 25,
+          "end": 30
+        }
+      ]
+    }
+  ]
+}
