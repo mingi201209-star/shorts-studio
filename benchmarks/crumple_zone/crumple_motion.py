@@ -134,3 +134,56 @@ def xray_factor(frame: int) -> float:
     if frame <= a:
         return 0.0
     return 1.0 if frame >= b else (frame - a) / (b - a)
+
+
+# ----------------------------------------------------------------------------- explanatory models (NOT crash-test results)
+TIME_BAR_SCALE = 7.0          # m of road drawn per second of (real) stopping time, the same for both cars: bar length is proportional to the stopping time
+ARROW_PER_KN = 1.9 / 3535.0    # m of arrow per kN of AVERAGE stopping force (linear): the rigid car's ~3500 kN is a 1.9 m arrow, the crumple car's ~220 kN about 0.12 m
+
+
+def stop_phase(rec: dict) -> tuple[int, int]:
+    """(index of first contact, index at which the car has stopped) in a simulation record."""
+    contact = int(np.argmax(rec["d"] > rec["lead"]))
+    stop = int(np.argmax(rec["v"] <= 0)) if np.any(rec["v"] <= 0) else len(rec["t"]) - 1
+    return contact, stop
+
+
+def stopping_distance_time(rec: dict, i: int) -> tuple[float, float]:
+    """Stopping distance (m) and stopping time (s) the car has used up at sample i (both grow from first contact until the car has stopped, then hold)."""
+    contact, stop = stop_phase(rec)
+    j = min(i, stop)
+    if j <= contact:
+        return 0.0, 0.0
+    return float(rec["s"][j]), float(rec["t"][j] - rec["t"][contact])
+
+
+def average_force_kn(profile: str) -> float:
+    return summary(simulate(profile))["average_force_kn"]
+
+
+# simplified occupant held by a belt and an airbag in the CRUMPLE car: relative motion in the car frame, m x'' = m a_decel - belt - airbag
+OCC = {"mass": 75.0, "belt_k": 55e3, "belt_c": 1.8e3, "bag_gap": 0.22, "bag_k": 120e3, "bag_c": 2.5e3, "bag_fire_s": 0.012}
+
+
+def occupant_sim(rec: dict) -> dict:
+    """Forward travel x (m) of the occupant relative to the car, sampled like the record. Belt: spring + damper from the start of the crash; airbag: fires bag_fire_s after first
+    contact and pushes back once the occupant has travelled bag_gap."""
+    dt = 1.0 / rec["hz"]
+    contact, _ = stop_phase(rec)
+    x = v = 0.0
+    out = np.zeros(len(rec["t"]))
+    for i in range(len(rec["t"])):
+        t_since = rec["t"][i] - rec["t"][contact]
+        a_car = rec["g"][i] * G                               # deceleration of the car (the occupant is pushed forward relative to it)
+        f = OCC["belt_k"] * x + OCC["belt_c"] * v
+        if t_since > OCC["bag_fire_s"] and x > OCC["bag_gap"]:
+            f += OCC["bag_k"] * (x - OCC["bag_gap"]) + OCC["bag_c"] * v
+        sub = 20
+        for _ in range(sub):
+            a = a_car - f / OCC["mass"] if rec["t"][i] >= rec["t"][contact] else 0.0
+            v += a * dt / sub
+            x = max(0.0, x + v * dt / sub)
+            if x == 0.0 and v < 0:
+                v = 0.0
+        out[i] = x
+    return {"x": out, "bag_open": np.array([1.0 if rec["t"][i] - rec["t"][contact] > OCC["bag_fire_s"] and rec["t"][i] >= rec["t"][contact] else 0.0 for i in range(len(rec["t"]))])}
