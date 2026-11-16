@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "episode_id": "speed-bump-final",
+  "series_id": "hidden-engineering-american-roads",
+  "topic_id": "speed-bump-shape-vs-ride",
+  "fps": 30,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "total_frames": 930,
+  "claims": "Same car, same 20 km/h, same suspension and 7.5 cm bump height; a 0.9 m bump lifts the wheel about 4x faster, squeezes the spring more than 2x as fast and gives the body a peak acceleration more than 2x as high as a 3.7 m hump, in a quarter-car simulation with assumed values (not calibrated, not a safety statement); rigid-tyre envelope hub path.",
+  "physically_calibrated": false,
+  "frame_plan_note": "A 1-322 hook+reveal+spring/damper, P 323-486 wheel path, B 487-664 spring squeeze + body jolt, C 665-782 exterior, E 783-930 conclusion; all 20 km/h, slow 0.2; sync events checked against spoken cues",
+  "description_file": "examples/experiments/speed-bump-description.txt"
+}

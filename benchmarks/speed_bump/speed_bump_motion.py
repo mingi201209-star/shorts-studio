@@ -178,6 +178,8 @@ XRAY_RAMPS = (0, 0, 0, 0)
 #: spoken beat -> the first frame of the picture it talks about, and the frame before which beat 2 must start
 BEAT_PICTURE_START = {3: 297, 4: 457, 5: 617, 6: 777}
 BEAT2_BEFORE_FRAME = 296
+SYNC_EVENTS: list = []      # film profiles with cue-synced picture events fill this in (see "final")
+SYNC_TOLERANCE_S = 0.4
 FILM_FILES = {"video": "speed-bump-shapes.mp4", "review": "speed-bump-540x960-review.mp4", "validation": "speed-bump-validation.json"}
 
 if FILM == "xray":
@@ -260,21 +262,35 @@ if FILM == "reveal":
 if FILM == "final":
     # "final" = the quality-improvement cut: ONE condition for the whole film (same car, 20 km/h, same suspension, same 7.5 cm height; only the bump LENGTH differs),
     # one playback rate (slow = 0.2) for every pass, wheel placed on the tyre-envelope path (no tyre cutting into the bump), spring colour = squeeze RATE.
-    # Frame boundaries and events follow the measured spoken cues (see SYNC_EVENTS, checked by a gate).
+    # 31.0 s / 930 frames. Boundaries and events follow the measured spoken cues (audio check 2: beat starts 0, 4.603, 10.717, 16.208, 22.155, 26.085 s).
     SEGMENTS = [
-        {"id": "A", "kmh": 20.0, "slow": 0.20, "frames": 300, "lead_m": 1.4},
-        {"id": "P", "kmh": 20.0, "slow": 0.20, "frames": 200, "lead_m": 1.4},
-        {"id": "B", "kmh": 20.0, "slow": 0.20, "frames": 200, "lead_m": 1.4},
-        {"id": "C", "kmh": 20.0, "slow": 0.20, "frames": 190, "lead_m": 1.4},
-        {"id": "E", "kmh": 20.0, "slow": 0.20, "frames": 160, "lead_m": 1.4},
+        {"id": "A", "kmh": 20.0, "slow": 0.20, "frames": 322, "lead_m": 1.4},   # beats 1-2: hook, reveal, spring and damper
+        {"id": "P", "kmh": 20.0, "slow": 0.20, "frames": 164, "lead_m": 1.4},   # beat 3: the wheel path, four times faster
+        {"id": "B", "kmh": 20.0, "slow": 0.20, "frames": 178, "lead_m": 1.4},   # beat 4: spring squeezed twice as fast, body jolt
+        {"id": "C", "kmh": 20.0, "slow": 0.20, "frames": 118, "lead_m": 1.4},   # beat 5: exterior, smooth lift vs kick
+        {"id": "E", "kmh": 20.0, "slow": 0.20, "frames": 148, "lead_m": 1.4},   # beat 6: conclusion
     ]
     PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
-    SHOTS = [(1, PASS_FRAMES, "side", "stack")]       # provisional: replaced once the spoken cue times are measured
-    XRAY_RAMPS = (90, 120, 700, 720)
-    TRAILS = [(300, PASS_FRAMES, "hub")]
-    BEAT_PICTURE_START = {3: 300, 4: 500, 5: 700, 6: 890}
-    BEAT2_BEFORE_FRAME = 299
-    SYNC_EVENTS: list = []       # (cue text, event name, film frame): the picture event must start within SYNC_TOLERANCE_S of the cue start
+    SHOTS = [
+        (1, 75, "low3q", "stack"), (76, 176, "rear3q", "stack"), (177, 202, "wheel", "stack"), (203, 262, "spring", "stack"), (263, 322, "front3q", "stack"),
+        (323, 407, "profile", "stack"), (408, 486, "tyre", "stack"),
+        (487, 576, "spring", "stack"), (577, 664, "front3q", "stack"),
+        (665, 732, "side", "stack"), (733, 782, "high3q", "stack"),
+        (783, 860, "tyre", "stack"), (861, 930, "low3q", "stack"),
+    ]
+    XRAY_RAMPS = (142, 172, 650, 675)
+    TRAILS = [(323, 930, "hub")]
+    BEAT_PICTURE_START = {3: 323, 4: 487, 5: 665, 6: 783}
+    BEAT2_BEFORE_FRAME = 322
+    #: (spoken cue text, picture event, film frame where the event starts): each event must start within SYNC_TOLERANCE_S of the cue's start (gate)
+    SYNC_EVENTS = [
+        ("Now look inside where", "scan-line reveal starts", 142),
+        ("a spring and a damper", "spring and damper close-up", 203),
+        ("The wheel has to", "wheel path trail starts", 323),
+        ("The spring is squeezed", "spring close-up, squeeze rate colour", 487),
+        ("The long hump lifts", "body opaque again, exterior view", 665),
+        ("What matters is how", "closing tyre close-up", 783),
+    ]
     SYNC_TOLERANCE_S = 0.4
     FILM_FILES = {"video": "speed-bump-final.mp4", "review": "speed-bump-final-540x960-review.mp4", "validation": "speed-bump-final-validation.json"}
 

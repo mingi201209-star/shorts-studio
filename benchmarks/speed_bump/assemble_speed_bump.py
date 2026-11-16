@@ -139,6 +139,7 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
     content_qa = {
         "narration_numbers": gates.narration_numbers(info_c["peaks"]),
         "narration_picture_timing": gates.narration_picture_timing(audio_report),
+        **({"picture_events_match_cues": gates.picture_events_match_cues(audio_report)} if sim.SYNC_EVENTS else {}),
         "first_three_seconds": gates.first_three_seconds(sample, gates.first_contact_film_seconds()),
         "caption_safety": caption_safety(cues, original_qa["captions_visible"]["evidence"]),
         "assumptions_declared": (gates.assumptions_in_description(manifest["description_file"]) if manifest.get("description_file")

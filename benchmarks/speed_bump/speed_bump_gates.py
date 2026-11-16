@@ -61,6 +61,23 @@ def narration_picture_timing(audio_report: dict) -> dict:
             "beat_starts": [round(b["start"], 2) for b in beats]}
 
 
+def picture_events_match_cues(audio_report: dict) -> dict:
+    """Narration sync: every picture event the film profile declares (SYNC_EVENTS) must start within SYNC_TOLERANCE_S of the start of the spoken phrase it
+    illustrates, measured from the captured speech timing (the same cues that time the captions)."""
+    problems, rows = [], []
+    cues = {c["text"].replace("\\N", " "): c for c in audio_report["cues"]}
+    for text, event, frame in sim.SYNC_EVENTS:
+        cue = cues.get(text)
+        if cue is None:
+            problems.append(f"no spoken cue {text!r} for picture event {event!r}")
+            continue
+        delta = (frame - 1) / sim.FPS - cue["start"]
+        rows.append({"cue": text, "event": event, "cue_start_s": round(cue["start"], 2), "picture_start_s": round((frame - 1) / sim.FPS, 2), "delta_s": round(delta, 2)})
+        if abs(delta) > sim.SYNC_TOLERANCE_S:
+            problems.append(f"{event!r} starts {delta:+.2f}s from the spoken cue {text!r}")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "events": rows}
+
+
 def first_three_seconds(frames: dict[int, np.ndarray], first_contact_film_s: float) -> dict:
     """frames: film frame number -> RGB array (1080x1920). The picture is 3D only (no text): both cars must be on screen from the first moments (left and
     right halves of the side-by-side opening both busy), the picture must move, and the first jolt (front wheel meets the short bump) is inside 3 s."""
