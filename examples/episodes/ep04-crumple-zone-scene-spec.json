@@ -257,52 +257,51 @@
    "narration": "slow the car down over a longer distance and time.",
    "cue": "slow the car down",
    "subjects": [
-    "distance_bar",
-    "time_bar"
+    "car_front",
+    "rigid_car_front"
    ],
    "phenomenon": {
-    "kind": "distance_time_bars",
-    "description": "Two bars grow on the road for each car: how far the car travels while stopping and for how long; the crumple car's bars become much longer than the rigid car's",
-    "onset_metric": "bars.distance_ratio",
-    "onset_threshold": 1.0,
-    "explanation_only": true
+    "kind": "two_situation_comparison",
+    "description": "The crumple car keeps crushing over a long distance while the rigid car stops almost at once (same speed, mass, barrier)",
+    "onset_metric": "crumple.crushed_depth_m",
+    "onset_threshold": 0.01,
+    "explanation_only": false
    },
    "camera": {
     "kind": "compare",
     "movement": "CRUMPLE / RIGID side by side"
    },
    "effects": [
-    "distance_time_bars",
     "two_situation_comparison"
    ],
    "success": [
     {
      "id": "s02c-subjects",
-     "description": "the distance and time bars are on screen",
+     "description": "the shown subjects are on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "distance_bar",
-      "time_bar"
+      "car_front",
+      "rigid_car_front"
      ],
      "value": 0.8
     },
     {
-     "id": "s02c-ratio",
-     "description": "the crumple car's stopping distance bar ends at least 5x the rigid car's",
+     "id": "s02c-action",
+     "description": "the crumple front keeps crushing for at least 0.3 m",
      "kind": "metric_at_least",
      "criterion": "action_performed",
-     "metric": "bars.distance_ratio",
-     "value": 5.0
+     "metric": "crumple.crushed_depth_m",
+     "value": 0.3
     },
     {
      "id": "s02c-onset",
-     "description": "the bars start growing when 'slow the car down' is spoken",
+     "description": "the picture event starts when the sentence is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
-     "metric": "bars.distance_ratio",
-     "onset_threshold": 1.0,
-     "value": 0.4
+     "metric": "crumple.crushed_depth_m",
+     "onset_threshold": 0.01,
+     "value": 0.5
     },
     {
      "id": "s02c-not-obscured",
@@ -314,7 +313,7 @@
     },
     {
      "id": "s02c-sound-off",
-     "description": "with the sound off the longer bars read as 'longer stop'",
+     "description": "with the sound off the picture shows the idea",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }
@@ -327,52 +326,51 @@
    "narration": "For the same change in momentum, more stopping time can mean less average force.",
    "cue": "For the same change",
    "subjects": [
-    "force_arrow_crumple",
-    "force_arrow_rigid"
+    "car_front",
+    "rigid_car_front"
    ],
    "phenomenon": {
-    "kind": "force_arrows",
-    "description": "Same change in momentum: arrows at the nose show the average stopping force of each car; the long stopping time of the crumple car gives a much shorter arrow",
-    "onset_metric": "arrows.force_ratio",
-    "onset_threshold": 1.0,
-    "explanation_only": true
+    "kind": "two_situation_comparison",
+    "description": "Replay of both crashes: the long crush of the crumple car is the longer stopping time; no graphics beyond the real deformation",
+    "onset_metric": "crumple.crushed_depth_m",
+    "onset_threshold": 0.01,
+    "explanation_only": false
    },
    "camera": {
     "kind": "compare",
     "movement": "CRUMPLE / RIGID side by side"
    },
    "effects": [
-    "force_arrows",
-    "distance_time_bars"
+    "two_situation_comparison"
    ],
    "success": [
     {
      "id": "s03-subjects",
-     "description": "both force arrows are on screen",
+     "description": "the shown subjects are on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "force_arrow_crumple",
-      "force_arrow_rigid"
+      "car_front",
+      "rigid_car_front"
      ],
      "value": 0.8
     },
     {
-     "id": "s03-ratio",
-     "description": "the rigid car's average-force arrow is at least 5x the crumple car's",
+     "id": "s03-action",
+     "description": "the crumple front crushes at least 0.3 m",
      "kind": "metric_at_least",
      "criterion": "action_performed",
-     "metric": "arrows.force_ratio",
-     "value": 5.0
+     "metric": "crumple.crushed_depth_m",
+     "value": 0.3
     },
     {
      "id": "s03-onset",
-     "description": "the arrows appear when the sentence starts",
+     "description": "the picture event starts when the sentence is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
-     "metric": "arrows.force_ratio",
-     "onset_threshold": 1.0,
-     "value": 0.4
+     "metric": "crumple.crushed_depth_m",
+     "onset_threshold": 0.01,
+     "value": 0.5
     },
     {
      "id": "s03-not-obscured",
@@ -384,7 +382,7 @@
     },
     {
      "id": "s03-sound-off",
-     "description": "with the sound off the short arrow versus the long arrow reads as 'less force'",
+     "description": "with the sound off the picture shows the idea",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }
@@ -397,8 +395,7 @@
    "narration": "The rigid front stops in a tiny distance, so its average force is far higher.",
    "cue": "The rigid front stops",
    "subjects": [
-    "rigid_car_front",
-    "force_arrow_rigid"
+    "rigid_car_front"
    ],
    "phenomenon": {
     "kind": "two_situation_comparison",
@@ -412,18 +409,16 @@
     "movement": "replay of the same crash, CRUMPLE / RIGID side by side"
    },
    "effects": [
-    "two_situation_comparison",
-    "force_arrows"
+    "two_situation_comparison"
    ],
    "success": [
     {
      "id": "s04-subjects",
-     "description": "the rigid front and its force arrow are on screen",
+     "description": "the rigid front is on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "rigid_car_front",
-      "force_arrow_rigid"
+      "rigid_car_front"
      ],
      "value": 0.8
     },
@@ -535,52 +530,48 @@
    "narration": "while seat belts and airbags help protect the people inside.",
    "cue": "while seat belts and",
    "subjects": [
-    "occupant",
-    "seat_belt",
-    "airbag"
+    "safety_cell"
    ],
    "phenomenon": {
-    "kind": "restraint_occupant",
-    "description": "A simplified occupant is held by the belt and cushioned by the airbag while the car stops (explanatory model, not a crash-test dummy result)",
-    "onset_metric": "occupant.forward_travel_m",
-    "onset_threshold": 0.01,
-    "explanation_only": true
+    "kind": "protected_cell_highlight",
+    "description": "The safety cell stays intact while the front is crushed (cell displacement measured on the deformed mesh); belts and airbags are only named in the narration",
+    "onset_metric": "cell.highlight",
+    "onset_threshold": 0.5,
+    "explanation_only": false
    },
    "camera": {
-    "kind": "cutaway",
-    "movement": "side cutaway of the cabin"
+    "kind": "xray",
+    "movement": "slow close view of the intact cell"
    },
    "effects": [
-    "restraint_occupant"
+    "protected_cell_highlight"
    ],
    "success": [
     {
      "id": "s05b-subjects",
-     "description": "occupant, belt and airbag are on screen",
+     "description": "the shown subjects are on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "occupant",
-      "seat_belt",
-      "airbag"
+      "safety_cell"
      ],
      "value": 0.8
     },
     {
-     "id": "s05b-restrained",
-     "description": "the occupant moves forward and is stopped by the belt and airbag",
-     "kind": "metric_increase",
+     "id": "s05b-intact",
+     "description": "the cell is unchanged (<= 1 mm)",
+     "kind": "metric_at_most",
      "criterion": "action_performed",
-     "metric": "occupant.forward_travel_m",
-     "value": 0.05
+     "metric": "cell.max_displacement_mm",
+     "value": 1.0
     },
     {
      "id": "s05b-onset",
-     "description": "the occupant starts to move when the belts and airbags are mentioned",
+     "description": "the picture event starts when the sentence is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
-     "metric": "occupant.forward_travel_m",
-     "onset_threshold": 0.01,
+     "metric": "cell.highlight",
+     "onset_threshold": 0.5,
      "value": 0.5
     },
     {
@@ -593,7 +584,7 @@
     },
     {
      "id": "s05b-sound-off",
-     "description": "with the sound off a viewer sees something holding the person",
+     "description": "with the sound off the picture shows the idea",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }
@@ -738,6 +729,7 @@
  "assumptions": [
   "Illustrative one-dimensional crash simulation: 50 km/h, 1400 kg, rigid barrier; crush stroke 0.62 m (crumple) versus 0.05 m (rigid counterfactual).",
   "Not calibrated to any real vehicle or crash test; the rigid counterfactual is not a measured crash. No real injury figures are claimed.",
-  "The occupant, belt and airbag are explanatory models, not a dummy test result."
+  "The occupant, belt and airbag are explanatory models, not a dummy test result.",
+  "Scope fixed by the owner (2026-11-16): 3D distance/time bars, force arrows and an occupant model are optional and NOT part of EP.04. Scenes s02c/s03/s04/s05b were re-described with the implemented real deformation, comparison stack and cell highlight; no check was weakened (same not_obscured, timing, sound-off criteria, cell <=1 mm, rigid stroke <=6 cm)."
  ]
 }

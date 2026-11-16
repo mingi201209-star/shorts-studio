@@ -40,7 +40,8 @@ def test_a_scene_without_a_phenomenon_is_rejected():
 def test_unimplemented_capabilities_block_production():
     spec = load_spec(SPEC)
     blockers = production_blockers(spec, CAPABILITIES)
-    assert any("distance_time_bars" in b for b in blockers) and any("force_arrows" in b for b in blockers) and any("restraint_occupant" in b for b in blockers)
+    assert blockers == []  # owner scope (2026-11-16): bars/arrows/occupant are not part of EP.04, every scene uses an implemented capability
+    assert production_blockers(spec, {**CAPABILITIES, "two_situation_comparison": False})  # a missing capability still blocks
     ok, reasons = full_render_allowed(spec, {"scenes": {}}, CAPABILITIES, beats())
     assert not ok and any("no low-cost preview evidence" in r for r in reasons)
 
