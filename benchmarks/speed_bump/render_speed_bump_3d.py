@@ -395,8 +395,14 @@ def main():
             for kb, lab in labels.items():                      # the LONG / SHORT sign of this panel: a 3D sign beside the bump, turned to the camera
                 lab.hide_render = kb != panel
             lab = labels[panel]
-            side = (-1.0 if kind in ("rear3q", "front3q") else 1.0) * (cam.location.x if abs(cam.location.x) > 0.1 else 1.0)   # these cameras look along the road: the sign on the far side stays in frame
-            lab.location = (math.copysign(1.7, side), sim.BUMPS[panel]["length"] / 2, 0.3)
+            cx = cam.location.x if abs(cam.location.x) > 0.1 else 1.0
+            if kind == "front3q":       # looks back along the road: the far-side sign stays in frame
+                sx = -math.copysign(1.7, cx)
+            elif kind == "rear3q":      # the far side is hidden by the car: the near-side sign close to the lane
+                sx = math.copysign(1.25, cx)
+            else:
+                sx = math.copysign(1.7, cx)
+            lab.location = (sx, sim.BUMPS[panel]["length"] / 2, 0.3)
             lab.rotation_euler = (cam.location - Vector(lab.location)).to_track_quat("Z", "Y").to_euler()
             bpy.context.view_layer.update()
             co = world_to_camera_view(scene, cam, Vector(lab.location))
