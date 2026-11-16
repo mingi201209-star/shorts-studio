@@ -61,6 +61,7 @@ jobs:
             sleep 20
           done
           test "$ok" = 1
+          PYTHONPATH="$PWD" python benchmarks/crumple_zone/level_beats.py --folder "$RUNNER_TEMP/speech/crumple-zone"
           PYTHONPATH="$PWD" python -c "
           from pathlib import Path
           from benchmarks.road_safety.curious_mechanics_audio import build

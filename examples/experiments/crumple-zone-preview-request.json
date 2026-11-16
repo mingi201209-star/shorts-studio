@@ -1,1 +1,1 @@
-{"mode":"preview","note":"EP.04 preview 5: target 26.0 s so total silence stays under the unchanged 5 s limit (27.5 s gave 6.2 s of silence)"}
+{"mode":"preview","note":"EP.04 preview 6: per-sentence level matching before the unchanged even-loudness gate (preview 5 passed silence, failed 3.4 LU spread)"}
