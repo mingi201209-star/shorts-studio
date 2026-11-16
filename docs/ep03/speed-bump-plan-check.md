@@ -113,3 +113,22 @@ Evidence (run 43823830373, production, head 36adb83)
 History: a shard-range slip (1051/960 left over from the reveal copy) was caught and fixed before production; audio gates failed twice on length and were fixed by shortening, never relaxed.
 
 UNVERIFIED: voice pronunciation and sync were not heard; human first view; phone readability; spring heat legibility; tyre contact at full resolution.
+
+## Final cut v2 (v6, 31.0 s, 930 frames) - owner review of 1000020414.mp4 (6 more problems, merged with the first 4)
+
+Plan: `docs/ep03/speed-bump-final-v2-fix-plan.md`. Revert point to v5: commit 7fb7781 (film sha 2ba58ef4…).
+
+Changes
+- Impact at 0.63 s (first pass lead 0.7 m). A second pass (frames 142-322, lead 2.2 m) puts the front wheel on the bump exactly as the spring close-up starts: in v5 both bumps were already behind the car when the spring was explained.
+- X-ray shots look down onto asphalt; brighter body rim; sky share median 0.20 (v5: 0.44-0.65).
+- Camera list: no two neighbouring shots share a camera; new views: left side (body heave), raised side (spring rest-length ruler, body rest tick, red peak tick), closing replay with hub + body trails.
+- 3D LONG / SHORT signs beside the bumps (long on top in every shot); hidden in the wheel/spring close-ups.
+- Drawn wheel follows the rigid tyre envelope within 4 mm (v5 drew the wheel up to 17 mm above and 21 mm into the short bump because the simulated tyre compliance was drawn as rigid motion). The simulated 21 mm tyre flex is not drawn; the description says so.
+
+Evidence (production run 43859190581, head c690615; all 14 gates PASS)
+- first_impact_within_1s 0.63 s; tyre_road_contact 4.0 mm (rendered telemetry 4.0 mm); suspension_timing: spring squeeze peaks 5 film frames after the wheel lift and returns to rest; xray_readability 0.20; spring_tracks_simulation r=0.997 (long) / 1.0 (short), 25 / 52 px change, spring pixels found in 100 % of frames; signs_visible 419 frames with both signs, pixels found in every sampled frame; shots_are_distinct; plus every earlier gate (narration numbers 4.06 / 2.39 / 2.38, cue sync, captions, loudness).
+- Film sha256 0581d5dfd359b5bff2e8e364263978c110a2cb0b5709a9c45b9654e8d22b5b71; review 540x960 fe5516db297f0148d23f5e36af250e1871aba3fbed3f2627750ac4458941c887 (recovered by run 43872947943, whole-file sha verified).
+- Smoothness (mean gray frame diff): median 0.819 (v5 0.607), frozen frames 0, no silence over 0.9 s.
+- Preflight history: 4 low-resolution preflights; failures were sign size and visibility (one sign hidden behind the car), a spring-length gate that measured the yellow bump paint, and a sky-share measure on a cropped panel. Thresholds set blind were changed only after reading rendered frames; the pass criteria themselves were not relaxed.
+
+UNVERIFIED: English TTS pronunciation/naturalness and sync as heard; human first view; phone readability; tyre contact at full resolution seen by a person; the signs are cut at the picture edge in some wide frames; spring colour change legibility.
