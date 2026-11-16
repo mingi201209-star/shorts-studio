@@ -1,1 +1,1 @@
-{"mode": "preflight", "note": "final cut preflight 2: shard range fixed to 930 frames (the plan job still had the reveal range)"}
+{"mode": "production", "note": "final cut full-resolution render (preflight 2 passed every gate incl. cue sync)"}
