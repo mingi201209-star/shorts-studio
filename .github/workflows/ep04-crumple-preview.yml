@@ -52,10 +52,13 @@ jobs:
           export SPEECH_REQUEST_GAP=20
           ok=0
           for attempt in 1 2 3 4 5 6; do
-            mkdir -p "$RUNNER_TEMP/speech"
+            rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
                  --plan examples/experiments/crumple-zone-speech-plan.json --target-seconds 31.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
-            echo "speech capture attempt $attempt failed"; sleep 20
+            echo "speech capture attempt $attempt failed"
+            # keep the beats that were captured completely: the capture script reuses them from speech-v*/<variant>/ on the next attempt
+            mkdir -p "$RUNNER_TEMP/speech-v$attempt/crumple-zone"; cp "$RUNNER_TEMP"/speech/crumple-zone/beat_*.json "$RUNNER_TEMP"/speech/crumple-zone/beat_*.mp3 "$RUNNER_TEMP/speech-v$attempt/crumple-zone/" 2>/dev/null || true
+            sleep 20
           done
           test "$ok" = 1
           PYTHONPATH="$PWD" python -c "
