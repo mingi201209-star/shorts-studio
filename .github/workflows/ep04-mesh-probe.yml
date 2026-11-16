@@ -1,0 +1,50 @@
+name: EP04 mesh fixture probe (loads the sedan, dumps its vertices; no render)
+# Dumps the real vertex data of the pinned sedan so that crush / wall / camera checks run as plain Python tests. Starts only when its request file changes.
+on:
+  push:
+    branches: [ep04-crumple-build-20261116]
+    paths:
+      - examples/experiments/crumple-zone-mesh-probe-request.json
+permissions:
+  contents: read
+  actions: read
+env:
+  BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
+jobs:
+  probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install hash-pinned Blender 5.0.1
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          # official site first, then public mirrors: some runners get a persistent 403 from download.blender.org.
+          # Whatever the source, the pinned SHA-256 below decides whether the file is accepted.
+          got=0
+          for base in https://download.blender.org/release https://ftp.nluug.nl/pub/graphics/blender/release \
+                      https://mirror.clarkson.edu/blender/release https://ftp.halifax.rwth-aachen.de/blender/release; do
+            rm -f "$RUNNER_TEMP/blender.tar.xz"
+            if curl -fLsS --retry 2 --retry-delay 10 --retry-all-errors --max-time 280 "$base/Blender5.0/blender-5.0.1-linux-x64.tar.xz" -o "$RUNNER_TEMP/blender.tar.xz" \
+               && echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -; then
+              echo "Blender downloaded from $base"; got=1; break
+            fi
+            echo "download from $base failed or did not match the pinned hash; trying the next source"
+          done
+          test "$got" = 1
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Download pinned CC0 car scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Dump the mesh fixture
+        run: |
+          set -euo pipefail
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b --python-exit-code 1 -P benchmarks/crumple_zone/dump_mesh_fixture.py -- \
+            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" > "$RUNNER_TEMP/probe.log" 2>&1 || { tail -40 "$RUNNER_TEMP/probe.log"; exit 1; }
+          grep -E "^(MESH_FIXTURE|MF )" "$RUNNER_TEMP/probe.log"
