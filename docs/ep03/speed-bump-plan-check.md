@@ -91,3 +91,25 @@ Final gates PASS: visual activity (22 cuts, avg 1.59 s, max static 3.5 s, 3 chan
 - Film sha256 `4a95b721420615eadb30b85350a552f76612e7420897c27e4e68fd81fbb12b36`; review MP4 sha256 `1f1eda775aca1a1e889ce1ad91cd26887dd2f5a9fecdbb1afdc26cbc6e639113` (chunk and whole-file hashes verified).
 - Fallbacks kept: v3 explain `8ca41a1c26db07f61ec2d281e44cb79f2c5c4425af8f181e4a1fb04cb55fc598`, v2 X-ray `ed2c5276…`, v1 `79e3d759…`.
 - UNVERIFIED: voice pronunciation and sync, human first view (curiosity in the first 3 s), whether the reveal reads as dramatic on a phone, whether the spring difference between the two bumps is clear enough in continuous playback. Not uploaded.
+
+## Final cut (v5, 31.0 s, 930 frames) - owner request "final quality pass"
+
+Baseline: reveal v4 (film 4a95b721…, review 1f1eda77…). The file 1000020413.mp4 could not be opened in this session.
+
+What changed
+- One condition for both bumps: same car, 20 km/h, same suspension, same 7.5 cm height; only length differs (0.9 m vs 3.7 m).
+- Narration claims are rate based and checked by a gate: hub lift 4.06x, spring squeeze 2.39x, body jolt 2.38x (single-speed variant of `narration_numbers`).
+- New gate `picture_events_match_cues`: each structure appears when its words are spoken (6 cues, delta 0.0 s).
+- Six single-sentence narration beats, 31.0 s. The simulation disclosure is in `examples/experiments/speed-bump-description.txt` (posted description), not in the voice.
+- Captions burned over the picture (no black band); caption safety rows 1408-1540.
+- Shot list has no repeated camera back to back; longest static 3.0 s; average cut 1.4 s.
+
+Evidence (run 43823830373, production, head 36adb83)
+- All 10 QA gates PASS: visual_activity, black_opening, captions_visible, narration_numbers, narration_picture_timing, picture_events_match_cues, first_three_seconds, caption_safety, assumptions_declared, all_3d_no_overlays.
+- Loudness -16.3 LUFS; no silence over 0.9 s; no black frames.
+- Film sha256 2ba58ef424a7649bbf8a2f70c39ae0b72406c0b12569bd7b9b037adc0c05705c; review 91b10d3c637c570313715a8393b1828b70bf805b0c178918e6ab1cf82315af80 (recovered by run 43837853072, whole-file sha verified).
+- Smoothness (mean gray frame diff): median 0.607 as reveal, frozen frames 0 vs 33 in reveal.
+
+History: a shard-range slip (1051/960 left over from the reveal copy) was caught and fixed before production; audio gates failed twice on length and were fixed by shortening, never relaxed.
+
+UNVERIFIED: voice pronunciation and sync were not heard; human first view; phone readability; spring heat legibility; tyre contact at full resolution.
