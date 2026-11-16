@@ -14,6 +14,7 @@ from PIL import Image
 from benchmarks.crumple_zone import crumple_gates as gates
 from benchmarks.crumple_zone.capabilities import CAPABILITIES
 from benchmarks.crumple_zone import crumple_motion as cm
+from benchmarks.crumple_zone import evidence_sim as es
 from benchmarks.road_safety.episode2_film import probe, run
 from benchmarks.speed_bump.assemble_speed_bump import verify_captions_over_picture
 from shorts_studio.final_video_qa import verify_no_black_opening
@@ -107,7 +108,7 @@ def main():
         "crush_map_keeps_the_cell": gates.crush_map_keeps_the_cell(),
         "telemetry_geometry": gates.telemetry_geometry(telemetry),
         "deformation_visible_by_2s": gates.deformation_visible_by(telemetry),
-        "xray_against_road": gates.xray_against_road(load),
+        "xray_against_road": gates.xray_against_road(es.Car(es.load_fixture()), range(61, cm.TOTAL_FRAMES + 1)),
         "labels_visible": gates.labels_visible(load, telemetry),
         "smoothness": gates.smoothness(gray_diffs(video)),
         "sync_to_speech": gates.sync_to_speech(audio_report["cues"]),

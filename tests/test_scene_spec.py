@@ -65,8 +65,9 @@ def test_alignment_passes_what_is_measured_and_never_passes_what_only_a_person_c
     rep = evaluate_episode(spec, cues, 30.0, _evidence(135))
     s01 = rep["scenes"]["s01"]
     assert s01["verdict"] == "AUTO_PASS_HUMAN_REVIEW_PENDING" and s01["criteria"]["sound_off_understandable"] == "NOT_VERIFIED"
-    assert rep["scenes"]["s02c"]["verdict"] == "PENDING_MORE_FRAMES"      # windows beyond the evidence are not evaluated
-    assert rep["overall"] in ("PENDING_MORE_FRAMES", "AUTO_PASS_HUMAN_REVIEW_PENDING")
+    assert rep["scenes"]["s03"]["verdict"] == "PENDING_MORE_FRAMES"       # windows beyond the evidence are not evaluated
+    assert rep["scenes"]["s02c"]["verdict"] == "FAIL"                      # its cue is inside the evidence but nothing (no bars) ever happens
+    assert rep["overall"] == "FAIL"
 
 
 def test_alignment_fails_when_the_object_exists_but_does_not_move_or_is_late():

@@ -18,7 +18,9 @@ from bpy_extras.object_utils import world_to_camera_view
 from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks.crumple_zone import crumple_cameras as ccams  # noqa: E402
 from benchmarks.crumple_zone import crumple_motion as cm  # noqa: E402
+from benchmarks.crumple_zone import structure_geometry as sg  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 
@@ -39,25 +41,8 @@ def arguments():
 
 def tube(name, p0, p1, radius, mat, parent, n_seg=48, n_ring=8):
     """Tube mesh between two car-frame points with many rings along its length (so the crush map can fold it). Returns (object, rest vertices (N, 3))."""
-    a, b = np.array(p0, float), np.array(p1, float)
-    axis = b - a
-    length = float(np.linalg.norm(axis))
-    axis /= length
-    helper = np.array([0.0, 0.0, 1.0]) if abs(axis[2]) < 0.9 else np.array([1.0, 0.0, 0.0])
-    e1 = np.cross(axis, helper)
-    e1 /= np.linalg.norm(e1)
-    e2 = np.cross(axis, e1)
-    verts = []
-    for i in range(n_seg + 1):
-        c = a + axis * length * i / n_seg
-        for j in range(n_ring):
-            ang = 2 * math.pi * j / n_ring
-            verts.append(c + radius * (math.cos(ang) * e1 + math.sin(ang) * e2))
-    faces = []
-    for i in range(n_seg):
-        for j in range(n_ring):
-            k = (j + 1) % n_ring
-            faces.append((i * n_ring + j, i * n_ring + k, (i + 1) * n_ring + k, (i + 1) * n_ring + j))
+    verts = sg.tube_vertices(p0, p1, radius, n_seg, n_ring)
+    faces = sg.tube_faces(n_seg, n_ring)
     mesh = bpy.data.meshes.new(name)
     mesh.from_pydata([tuple(v) for v in verts], [], faces)
     mesh.update()
@@ -66,7 +51,7 @@ def tube(name, p0, p1, radius, mat, parent, n_seg=48, n_ring=8):
     ob = bpy.data.objects.new(name, mesh)
     bpy.context.collection.objects.link(ob)
     ob.parent = parent
-    return ob, np.array(verts)
+    return ob, verts
 
 
 class Ghost:
@@ -164,23 +149,11 @@ class Deformable:
 
 
 def place_camera(cam, kind, frame):
+    c = ccams.camera(kind, frame)
     d = cam.data
-    d.sensor_fit, d.sensor_width = "HORIZONTAL", 36
-    d.shift_y = 0.0
-    if kind == "hero":                      # close 3/4 on the nose meeting the barrier
-        d.lens = 34
-        base.set_camera(cam, (-2.7, -2.3, 0.8), (0.0, -0.25, 0.5))
-    elif kind == "compare":                 # same camera for both panels
-        d.lens = 30
-        d.shift_y = -0.25                   # subject higher in the panel: the lower panel's action must stay above the caption band
-        base.set_camera(cam, (-3.4, -2.8, 1.0), (0.0, -0.7, 0.5))
-    elif kind == "xray":                    # raised, slowly pushing in; looks down so the ghost body is seen against the road
-        k = min(1.0, max(0.0, (frame - cm.XRAY_RAMP[0]) / (cm.TOTAL_FRAMES - cm.XRAY_RAMP[0])))
-        d.lens = 36
-        loc = Vector((-3.0, -2.9, 2.0)) * (1 - 0.18 * k) + Vector((0.0, 0.0, 0.0))
-        base.set_camera(cam, loc, (0.0, -0.55, 0.35))
-    else:
-        raise ValueError(kind)
+    d.sensor_fit, d.sensor_width = "HORIZONTAL", ccams.SENSOR_W
+    d.lens, d.shift_y = c["lens"], c["shift_y"]
+    base.set_camera(cam, c["loc"], c["target"])
 
 
 def main():
@@ -235,23 +208,11 @@ def main():
     cabin_y = nose - cm.CRUSH_LENGTH
     rail_mat = material("Crush rail", (1.0, 0.45, 0.05), rough=0.4, emission=2.0)
     cell_mat = material("Safety cell", (0.1, 1.0, 0.55), rough=0.4, emission=1.6)
-    structure = []
-    for sx in (-0.38, 0.38):
-        ob, v0 = tube(f"Crush rail {sx}", (sx, nose - 0.10, 0.47), (sx, cabin_y - 0.55, 0.47), 0.05, rail_mat, root, n_seg=64)
-        structure.append((ob, v0))
-    ob, v0 = tube("Bumper beam", (-0.62, nose - 0.12, 0.50), (0.62, nose - 0.12, 0.50), 0.055, rail_mat, root, n_seg=24)
-    structure.append((ob, v0))
+    structure, cell_objs = [], []
+    for name, it in sg.structure(nose).items():
+        ob, v0 = tube(name, it["p0"], it["p1"], it["radius"], rail_mat if it["deforms"] else cell_mat, root, n_seg=it["n_seg"])
+        (structure if it["deforms"] else cell_objs).append(ob if not it["deforms"] else (ob, v0))
     hx, y1, y0, z0, z1 = 0.74, cabin_y - 0.05, cabin_y - 1.95, 0.40, 1.22
-    cell_edges = []
-    for xs in (-hx, hx):
-        for zs in (z0, z1):
-            cell_edges.append(((xs, y0, zs), (xs, y1, zs)))
-        for ys in (y0, y1):
-            cell_edges.append(((xs, ys, z0), (xs, ys, z1)))
-    for zs in (z0, z1):
-        for ys in (y0, y1):
-            cell_edges.append(((-hx, ys, zs), (hx, ys, zs)))
-    cell_objs = [tube(f"Cell edge {i}", a, b, 0.028, cell_mat, root, n_seg=2)[0] for i, (a, b) in enumerate(cell_edges)]
     cell_y0, cell_y1 = y0, y1
     structure_def = [Deformable(ob, nose, local_is_car_frame=True) for ob, _ in structure]
     ghost = Ghost([o for o in parts])
@@ -292,7 +253,7 @@ def main():
             top_parts = sorted(((round(root.location.y + float(dm.sub[:, 1].max()), 3), dm.ob.name) for dm in deformables if len(dm.sub)), reverse=True)[:3]
             for key, wh in wheels.items():
                 base_pt = np.array([[wh["base"].x, wh["base"].y, wh["base"].z]])
-                y_new = float(cm.crush_map(base_pt, s, nose)[0, 1])
+                y_new = cm.wheel_y(float(wh["base"].y), s, nose, wheel_r) if key.startswith("front") else float(wh["base"].y)
                 wh["node"].location = (wh["base"].x, y_new, wh["base"].z)
                 wh["node"].rotation_euler = (-d / wheel_r, 0, 0)
             show = xf > 0.02 and panel == "crumple"

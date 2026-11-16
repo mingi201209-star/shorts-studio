@@ -88,6 +88,12 @@ def crush_map(p0: np.ndarray, s: float, nose: float, length: float = CRUSH_LENGT
     return p
 
 
+def wheel_y(y_wheel: float, s: float, nose: float, radius: float = 0.281, clearance: float = 0.02) -> float:
+    """Front wheel position after a crush of stroke s: the tyre is rigid, so once the crushed nose line (nose - s) reaches the front of the tyre the wheel is pushed back with it
+    (it never ends up in front of the crushed nose, i.e. never through the barrier)."""
+    return min(y_wheel, nose - s - radius - clearance)
+
+
 # ----------------------------------------------------------------------------- film timeline (preview of the first 4.5 s = 135 frames at 30 fps)
 SLOW = 0.09
 FILM = os.environ.get("EP04_FILM", "preview")

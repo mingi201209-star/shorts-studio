@@ -26,15 +26,24 @@ jobs:
         run: |
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
           import json
-          mode = json.load(open("examples/experiments/crumple-zone-preview-request.json"))["mode"]
-          assert mode == "preview"
-          size = 68
-          starts = list(range(1, 136, size))
+          req = json.load(open("examples/experiments/crumple-zone-preview-request.json"))
+          mode = req["mode"]
+          assert mode in ("preview", "range")
+          if mode == "preview":
+              size, shards = 68, [(1, 135)]
+          else:
+              size, shards = 24, [tuple(r) for r in req["ranges"]]      # only the frames a change touched
+          include = []
+          for lo, hi in shards:
+              for s in range(lo, hi + 1, size):
+                  include.append({"start": s, "end": min(s + size - 1, hi)})
           print("mode=" + mode)
-          print("shards=" + str(len(starts)))
-          print("matrix=" + json.dumps({"include": [{"start": s, "end": min(s + size - 1, 135)} for s in starts]}))
+          print("shards=" + str(len(include)))
+          print("matrix=" + json.dumps({"include": include}))
           PY
   audio:
+    needs: plan
+    if: needs.plan.outputs.mode == 'preview'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -130,6 +139,7 @@ jobs:
           retention-days: 7
   final:
     needs: [plan, audio, frames]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && needs.frames.result == 'success' && (needs.audio.result == 'success' || needs.audio.result == 'skipped') }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
@@ -147,15 +157,26 @@ jobs:
           mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
           gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'crumple-preview-panels-*' --dir "$RUNNER_TEMP/native"
           test "$(ls "$RUNNER_TEMP/native" | wc -l)" = "${{ needs.plan.outputs.shards }}"
-          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name crumple-preview-audio --dir "$RUNNER_TEMP/audio"
+          if [ "${{ needs.plan.outputs.mode }}" = "preview" ]; then
+            gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name crumple-preview-audio --dir "$RUNNER_TEMP/audio"
+          fi
       - name: Compose, mux the first 4.5 s and run every gate that this clip can decide
         id: gates
+        if: needs.plan.outputs.mode == 'preview'
         continue-on-error: true
         run: |
           set -euo pipefail
           PYTHONPATH="$PWD" python benchmarks/crumple_zone/assemble_crumple_preview.py --panels "$RUNNER_TEMP/native" --audio "$RUNNER_TEMP/audio" \
             --frames-dir "$RUNNER_TEMP/composed" --out "$RUNNER_TEMP/final"
+      - name: Partial render check (model vs Blender on the rendered frames) and contact sheet
+        id: range
+        if: needs.plan.outputs.mode == 'range'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/crumple_zone/check_range.py --panels "$RUNNER_TEMP/native" --out "$RUNNER_TEMP/final"
       - name: Contact sheet and hashes
+        if: needs.plan.outputs.mode == 'preview'
         run: |
           set -euo pipefail
           f="$RUNNER_TEMP/final/crumple-preview-1080x1920.mp4"
@@ -170,5 +191,5 @@ jobs:
           if-no-files-found: error
           retention-days: 14
       - name: Fail the run if any gate failed
-        if: steps.gates.outcome != 'success'
+        if: steps.gates.outcome == 'failure' || steps.range.outcome == 'failure'
         run: exit 1

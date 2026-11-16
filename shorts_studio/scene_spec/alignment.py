@@ -59,7 +59,10 @@ def evaluate_check(check: Check, scene: Scene, window: dict, evidence: dict[int,
     if check.kind == "manual":
         return {**row, "status": "NOT_VERIFIED", "reason": "needs a person watching the continuous video"}
     w = _clip_window(check, window)
-    if int(round(w["end"] * FPS)) > last_frame:
+    onset_kind = check.kind in ("onset_near_cue", "onset_within_s")
+    # an onset check only needs the evidence up to the cue (plus tolerance), not the whole window of the scene
+    need_until = (cue_start + (check.value if check.kind == "onset_near_cue" else 0.0)) if onset_kind else w["end"]
+    if int(round(need_until * FPS)) > last_frame:
         return {**row, "status": "NOT_EVALUATED_YET", "reason": f"window ends at {w['end']:.2f}s but the evidence covers only {last_frame / FPS:.2f}s"}
     frames = _frames(w, last_frame)
     if not frames:

@@ -1,1 +1,1 @@
-{"mode":"preview","note":"EP.04 preview 8: root cause found - the registration plate was 1e-7 m ahead of the measured nose and was not pushed back; crush_map now includes points up to 5 cm ahead of the nose"}
+{"mode":"range","ranges":[[44,56],[66,100]],"note":"EP.04 partial render: crush end with the pushed-back front wheel (44-56) and the new X-ray camera (66-100); model vs Blender consistency"}

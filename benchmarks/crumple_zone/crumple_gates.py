@@ -100,16 +100,22 @@ def deformation_visible_by(telemetry: list[dict], frame: int = 60, min_stroke_m:
             "stroke_m_at_frame": s, "frame": frame}
 
 
-def xray_against_road(load, frames=(80, 95, 110, 125), max_median=0.40, max_each=0.50, rows=(0, 1400)) -> dict:
-    """Share of sky-coloured pixels in the picture area above the captions (rows 0-1399 of the full-height frame): the ghost body must stand against road and barrier."""
-    vals = [{"frame": f, "sky_share": round(sbg._sky_fraction(load(f)[rows[0]:rows[1]]), 3)} for f in frames]
-    v = [r["sky_share"] for r in vals]
-    problems = []
-    if float(np.median(v)) > max_median:
-        problems.append(f"median sky share {np.median(v):.2f} > {max_median}")
-    if max(v) > max_each:
-        problems.append(f"a frame has {max(v):.2f} sky share > {max_each}")
-    return {"status": "FAIL" if problems else "PASS", "problems": problems, "median_sky_share": round(float(np.median(v)), 3), "frames": vals}
+def xray_against_road(car, frames, max_sky_backed=0.15) -> dict:
+    """The ghost body must be seen against the road and the barrier, not against the sky: share of body vertices whose view ray leaves the scene (geometry, from the real sedan
+    vertices and the camera data). The earlier pixel version counted the ghost's own light-blue colour as sky and could not tell the two apart."""
+    from benchmarks.crumple_zone import evidence_sim as es
+    recs = {k: cm.simulate(k) for k in cm.PROFILES}
+    rows = []
+    for f in frames:
+        seg = cm.segment_at(f)
+        if "crumple" not in seg["panels"] or cm.xray_factor(f) < 0.5:
+            continue
+        r = recs["crumple"]
+        i = min(int(round(cm.frame_time(f) * cm.RENDER_HZ)), len(r["t"]) - 1)
+        rows.append({"frame": f, "sky_backed": round(es.sky_backed_fraction(car, f, -cm.LEAD_SIM + float(r["d"][i]) - car.nose), 3)})
+    worst = max((r["sky_backed"] for r in rows), default=0.0)
+    problems = [f"{worst:.2f} of the ghost body is seen against the sky (limit {max_sky_backed})"] if worst > max_sky_backed else []
+    return {"status": "FAIL" if problems else "PASS" if rows else "NOT_EVALUATED_YET", "problems": problems, "worst_sky_backed": worst, "frames": rows[:6]}
 
 
 def labels_visible(load, telemetry: list[dict], min_frames=25, min_px=40) -> dict:
