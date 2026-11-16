@@ -67,7 +67,7 @@ def final_cut_checks(flat: Path, info_c: dict) -> dict:
         "tyre_road_contact": gates.tyre_road_contact(info_c),
         "suspension_timing": gates.suspension_timing(),
         "xray_readability": gates.xray_readability(load),
-        "spring_tracks_simulation": gates.spring_tracks_simulation(load, info_c["wheelbase"]),
+        "spring_tracks_simulation": gates.spring_tracks_simulation(load, info_c["wheelbase"], info_c["spring_proj"]),
         "signs_visible": gates.signs_visible(load, {int(k): v for k, v in info_c["sign_in_view"].items()}),
         "shots_are_distinct": gates.shots_are_distinct(),
     }

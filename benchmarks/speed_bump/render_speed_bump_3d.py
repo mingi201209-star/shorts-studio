@@ -88,6 +88,7 @@ class XRay:
                 o.data.materials[i] = seen[m.name]
         self.live = []
         self.live_mats = []
+        self.ends = {}
         self.mark = material("Rest mark", (0.95, 0.95, 1.0), rough=0.4, emission=3.0)
         self.peak_mat = material("Peak mark", (1.0, 0.1, 0.1), rough=0.4, emission=6.0)
 
@@ -159,6 +160,7 @@ class XRay:
             spring = material("Spring " + wkey, (1.0, 0.25 + 0.45 * heat, 0.05 + 0.1 * heat), rough=0.4, emission=0.8 + 3.0 * heat)   # stays orange-yellow (never white) at the peak
             self.live_mats.append(spring)
             self.live.append(spring_curve(f"spring {wkey}", (hub.x + dx, hub.y, hub.z + 0.05), (mount.x + dx, mount.y, mount.z), spring))
+            self.ends[wkey] = (Vector((hub.x + dx, hub.y, hub.z + 0.05)), Vector((mount.x + dx, mount.y, mount.z)))
             bpy.ops.mesh.primitive_cylinder_add(radius=0.022, depth=1.0, location=((hub.x + mount.x) / 2 + dx, hub.y + 0.1, (hub.z + mount.z) / 2))
             rod = bpy.context.object
             rod.scale = (1, 1, max(0.05, mount.z - hub.z))
@@ -252,13 +254,13 @@ def place_camera(cam, kind, y, layout="stack"):
         base.set_camera(cam, (-3.0, y - 4.9, 1.5), (0.35, y + 0.1, 0.5))
     elif kind == "front3q":                 # ahead of the car, looking back at it
         d.lens = 38
-        base.set_camera(cam, (2.0, y + 3.7, 0.95), (0.0, y - 0.5, 0.5))
+        base.set_camera(cam, (2.0, y + 3.6, 1.7), (0.0, y - 0.5, 0.3))
     elif kind == "wheel":                   # close on the front wheel
         d.lens = 45
         base.set_camera(cam, (3.6, y - 0.1, 0.5), (0.5, y + 0.35, 0.3))
     elif kind == "profile":                 # low side view that keeps the wheel and the path it has just travelled in frame
         d.lens = 38
-        base.set_camera(cam, (5.2, y - 0.4, 0.5), (0.0, y - 0.9, 0.38))
+        base.set_camera(cam, (5.0, y - 0.4, 1.5), (0.0, y - 0.9, 0.2))
     elif kind == "tyre":                    # very close on the front tyre climbing the face of the bump
         d.lens = 38
         base.set_camera(cam, (2.4, y + 0.5, 0.3), (0.0, y + 0.05, 0.28))
@@ -270,16 +272,16 @@ def place_camera(cam, kind, y, layout="stack"):
         base.set_camera(cam, (3.6, y + 2.2, 0.75), (0.0, y - 0.4, 0.5))
     elif kind == "spring":                  # tight on the front wheel arch, looking slightly down so the ghost body is seen against the road, not the sky
         d.lens = 40
-        base.set_camera(cam, (3.3, y + 0.05, 1.0), (0.0, y + 0.05, 0.28))
+        base.set_camera(cam, (3.1, y + 0.05, 1.4), (0.0, y + 0.05, 0.2))
     elif kind == "front3q_hi":              # raised front 3/4 looking down: asphalt behind the ghost body
         d.lens = 38
         base.set_camera(cam, (2.3, y + 3.3, 2.3), (0.0, y - 0.5, 0.3))
     elif kind == "left":                    # low view from the other side: body heave and pitch against the hub path
         d.lens = 38
-        base.set_camera(cam, (-5.2, y - 0.9, 1.5), (0.0, y - 0.9, 0.4))
+        base.set_camera(cam, (-5.0, y - 0.9, 2.3), (0.0, y - 0.9, 0.2))
     elif kind == "side_xray":               # wide side view, raised and looking down: car, ghost body and the spring marks in one frame
         d.lens = 34
-        base.set_camera(cam, (5.0, y - 0.9, 1.9), (0.0, y - 0.9, 0.3))
+        base.set_camera(cam, (5.0, y - 0.9, 2.7), (0.0, y - 0.9, 0.2))
     elif kind == "side_far":                # side view from further back and higher: both bumps and the whole pass
         d.lens = 32
         base.set_camera(cam, (8.0, y - 1.2, 2.2), (0.0, y - 1.2, 0.35))
@@ -332,7 +334,7 @@ def main():
     labels = {}
     for kb, text in (("hump", "LONG"), ("short", "SHORT")):
         cu = bpy.data.curves.new("Sign " + kb, "FONT")
-        cu.body, cu.size, cu.extrude, cu.align_x, cu.align_y = text, 0.4, 0.03, "CENTER", "CENTER"
+        cu.body, cu.size, cu.extrude, cu.align_x, cu.align_y = text, 0.22, 0.02, "CENTER", "CENTER"
         ob = bpy.data.objects.new("Sign " + kb, cu)
         bpy.context.collection.objects.link(ob)
         ob.data.materials.append(sign)
@@ -393,18 +395,24 @@ def main():
             for kb, lab in labels.items():                      # the LONG / SHORT sign of this panel: a 3D sign beside the bump, turned to the camera
                 lab.hide_render = kb != panel
             lab = labels[panel]
-            lab.location = (math.copysign(2.0, cam.location.x if abs(cam.location.x) > 0.1 else 1.0), sim.BUMPS[panel]["length"] / 2, 0.75)
+            lab.location = (math.copysign(1.7, cam.location.x if abs(cam.location.x) > 0.1 else 1.0), sim.BUMPS[panel]["length"] / 2, 0.3)
             lab.rotation_euler = (cam.location - Vector(lab.location)).to_track_quat("Z", "Y").to_euler()
             bpy.context.view_layer.update()
             co = world_to_camera_view(scene, cam, Vector(lab.location))
-            sign_in_view = bool(co.z > 0 and 0.08 < co.x < 0.92 and 0.08 < co.y < 0.92)
+            spring_proj = None
+            if xray is not None and sim.xray_factor(f) >= 0.05 and hub_key in xray.ends:
+                a_, b_ = (world_to_camera_view(scene, cam, pt) for pt in xray.ends[hub_key])
+                spring_proj = [round(abs(a_.y - b_.y), 5), round(min(a_.x, b_.x), 4), round(min(a_.y, b_.y), 4), round(max(a_.x, b_.x), 4), round(max(a_.y, b_.y), 4)]
+            sign_in_view = bool(kind not in ("spring", "wheel") and co.z > 0 and 0.08 < co.x < 0.92 and 0.08 < co.y < 0.92)
+            if kind in ("spring", "wheel"):
+                lab.hide_render = True                           # close-ups stay clean: the sign would cover the wheel
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)
             bpy.ops.render.render(write_still=True)
             checks.append({"frame": f, "panel": panel, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             info[panel] = {"y_front": round(y_front, 3), "body_rise_cm": round(100 * float(0.5 * (rec["zf"][idx] + rec["zr"][idx])), 2),
                            "pitch_deg": round(math.degrees(float(rec["pitch"][idx])), 2), "accel_g": round(float(rec["gf"][idx]), 3),
-                           "wheel_gap_mm": round(1000 * max(abs(g) for g in gaps.values()), 2), "sign_in_view": sign_in_view}
+                           "wheel_gap_mm": round(1000 * max(abs(g) for g in gaps.values()), 2), "sign_in_view": sign_in_view, "spring_proj": spring_proj}
         info["render_seconds"] = round(time.time() - t_start, 1)
         result.append(info)
         print("BUMP_FRAME " + json.dumps(info), flush=True)
