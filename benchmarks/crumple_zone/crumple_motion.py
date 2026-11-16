@@ -75,7 +75,7 @@ def crush_map(p0: np.ndarray, s: float, nose: float, length: float = CRUSH_LENGT
     s = min(s, rho * d_c)
     y, z, x = p0[:, 1], p0[:, 2], p0[:, 0]
     depth = nose - y
-    inside = (depth >= 0) & (depth < d_c)
+    inside = (depth > -0.05) & (depth < d_c)      # points a hair ahead of the measured nose (float error, plate thickness) are pushed back with the nose
     u = np.clip(depth / d_c, 0.0, 1.0)
     p[:, 1] = np.where(inside, (nose - d_c) + (1.0 - u) * (d_c - s), y)
     prog = min(1.0, d_c / length)

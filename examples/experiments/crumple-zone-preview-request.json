@@ -1,1 +1,1 @@
-{"mode":"preview","note":"EP.04 preview 7: debug probe of the crush zone (nose clipped into the barrier in preview 6), darker barrier, compare camera moved up, X pass lead 1.0 m, sky share measured above the captions"}
+{"mode":"preview","note":"EP.04 preview 8: root cause found - the registration plate was 1e-7 m ahead of the measured nose and was not pushed back; crush_map now includes points up to 5 cm ahead of the nose"}

@@ -43,3 +43,12 @@ def test_gates_reject_bad_input():
 def test_captions_match_the_narration():
     for text in captions.CURATED:
         assert captions.single_line_groups(text)
+
+
+def test_a_vertex_at_or_a_hair_ahead_of_the_measured_nose_is_pushed_back_with_the_nose():
+    # preview 6: the registration plate sat 1e-7 m ahead of the measured nose, was not moved and stuck 0.62 m into the barrier
+    nose = 1.926
+    pts = np.array([[0.0, nose + 1e-7, 0.5], [0.0, nose, 0.5], [0.0, nose - 0.02, 0.5]])
+    out = cm.crush_map(pts, 0.35, nose)
+    assert np.all(out[:, 1] <= nose - 0.35 + 0.02 + 1e-9)
+    assert abs(out[0, 1] - (nose - 0.35)) < 1e-6
