@@ -266,6 +266,7 @@ def main():
                 lab.hide_render = not (seg["layout"] == "stack" and kind == panel)
             sign_in_view = False
             place_camera(cam, seg["camera"], f)
+            bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
             if seg["layout"] == "stack":
                 lab = labels[panel]
                 lab.location = (-1.55, -2.0, 0.25)

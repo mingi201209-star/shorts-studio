@@ -1,1 +1,1 @@
-{"mode":"range","ranges":[[44,56],[66,100]],"note":"EP.04 partial render: crush end with the pushed-back front wheel (44-56) and the new X-ray camera (66-100); model vs Blender consistency"}
+{"mode":"range","ranges":[[66,67],[90,91]],"note":"EP.04: re-check the two shard-first frames after the camera-matrix update fix (in_view mismatch was a one-frame-stale camera in the evidence, not the picture)"}
