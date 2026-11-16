@@ -1,1 +1,1 @@
-{"mode":"range","ranges":[[66,67],[90,91],[126,140],[224,250],[366,385],[503,515],[691,712],[745,765]],"note":"EP.04 partial check of the new timeline: shard-first frames after the camera update fix (66/90) and the first second of every new replay segment (C2, X2, C3, X3, H2, X5); model vs Blender consistency, no full preview"}
+{"mode":"range","ranges":[[30,32],[126,128],[366,368]],"note":"EP.04 text audit: smaller comparison signs moved off the caption rows; check sign visibility and model-vs-Blender on one comparison frame set"}

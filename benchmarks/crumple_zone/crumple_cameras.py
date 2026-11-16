@@ -11,6 +11,35 @@ SENSOR_W = 36.0
 PANEL_PX = {"full": (1080, 1920), "stack": (1080, 960)}
 
 
+#: The only on-screen words besides the narration captions: one word per car in the comparison, as a 3D sign on the road under each car.
+#: Placed (by search) in the free band between the tyres and the caption rows of BOTH stacked panels, away from the Shorts interface zones.
+SIGN = {"pos": (-1.2, -2.0, 0.25), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
+FRAME_W, FRAME_H = 1080, 1920
+CAPTION_ROWS = (1408, 1540)
+#: mobile safe area of a 1080x1920 Short: keep clear of the top ~8 %, the bottom ~20 % and the right ~11 % (like/comment buttons)
+SAFE = {"left": 54, "right": 960, "top": 150, "bottom": 1540}
+PANEL_OFFSET = {"crumple": 0, "rigid": 960}
+
+
+def sign_boxes(frame: int = 30) -> dict:
+    """Frame-pixel box (rows, cols) of each sign in the stacked comparison: billboard facing the camera, width = chars * size * char_w."""
+    cam = camera("compare", frame)
+    c = np.array(SIGN["pos"], float)
+    toc = np.array(cam["loc"]) - c
+    toc /= np.linalg.norm(toc)
+    rr = np.cross([0, 0, 1], toc)
+    rr /= np.linalg.norm(rr)
+    uu = np.cross(toc, rr)
+    out = {}
+    for kind, word in SIGN["words"].items():
+        w, h = len(word) * SIGN["size"] * SIGN["char_w"], SIGN["size"]
+        pts = np.array([c + sx * rr * w / 2 + sy * uu * h / 2 for sx in (-1, 1) for sy in (-1, 1)])
+        p = project(pts, cam, "stack")
+        rows = PANEL_OFFSET[kind] + (1 - p[:, 1]) * 960
+        out[kind] = {"rows": (float(rows.min()), float(rows.max())), "cols": (float(p[:, 0].min() * 1080), float(p[:, 0].max() * 1080))}
+    return out
+
+
 def camera(kind: str, frame: int = 1) -> dict:
     """{'loc', 'target', 'lens', 'shift_y'} for a camera kind at a film frame."""
     if kind == "hero":

@@ -87,3 +87,15 @@ def test_every_segment_keeps_moving_and_the_workflow_covers_all_frames():
         assert cm.CONTACT_FILM_S + cm.T_MOTION_END_S / slow >= (seg["last"] - seg["first"]) / cm.FPS      # still moving at the last frame
     wf = (Path(__file__).resolve().parents[1] / ".github/workflows/ep04-crumple-preview.yml").read_text()
     assert f"(1, {cm.TOTAL_FRAMES})" in wf
+
+
+def test_only_the_two_comparison_signs_exist_besides_captions_and_they_are_in_the_mobile_safe_area():
+    from benchmarks.crumple_zone import crumple_cameras as cc
+    assert cc.SIGN["words"] == {"crumple": "CRUMPLE", "rigid": "RIGID"}      # one word per car, nothing else is drawn as text in the scene
+    assert g.text_safe_area()["status"] == "PASS"
+    old = dict(cc.SIGN, pos=(-1.55, -2.0, 0.25), size=0.3)      # the first placement: it sat on the caption rows
+    try:
+        cc.SIGN = old
+        assert g.text_safe_area()["status"] == "FAIL"
+    finally:
+        cc.SIGN = {"pos": (-1.2, -2.0, 0.25), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}

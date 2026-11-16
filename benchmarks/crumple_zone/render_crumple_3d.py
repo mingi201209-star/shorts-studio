@@ -219,9 +219,9 @@ def main():
 
     sign_mat = material("Sign", (0.45, 1.0, 0.15), rough=0.5, emission=1.0)
     labels = {}
-    for kind, text in (("crumple", "CRUMPLE"), ("rigid", "RIGID")):
+    for kind, text in ccams.SIGN["words"].items():
         cu = bpy.data.curves.new("Sign " + kind, "FONT")
-        cu.body, cu.size, cu.extrude, cu.align_x, cu.align_y = text, 0.3, 0.02, "CENTER", "CENTER"
+        cu.body, cu.size, cu.extrude, cu.align_x, cu.align_y = text, ccams.SIGN["size"], 0.01, "CENTER", "CENTER"
         ob = bpy.data.objects.new("Sign " + kind, cu)
         bpy.context.collection.objects.link(ob)
         ob.data.materials.append(sign_mat)
@@ -269,7 +269,7 @@ def main():
             bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
             if seg["layout"] == "stack":
                 lab = labels[panel]
-                lab.location = (-1.55, -2.0, 0.25)
+                lab.location = ccams.SIGN["pos"]
                 lab.rotation_euler = (cam.location - Vector(lab.location)).to_track_quat("Z", "Y").to_euler()
                 bpy.context.view_layer.update()
                 co = world_to_camera_view(scene, cam, Vector(lab.location))

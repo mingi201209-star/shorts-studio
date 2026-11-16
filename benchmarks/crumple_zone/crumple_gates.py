@@ -156,3 +156,18 @@ def sync_to_speech(cues: list[dict]) -> dict:
         if abs(delta) > cm.SYNC_TOLERANCE_S:
             problems.append(f"{event!r} starts {delta:+.2f}s from the spoken cue {text!r}")
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "events": rows}
+
+
+def text_safe_area() -> dict:
+    """The only words in the picture besides the narration captions are the two comparison signs. They must stay inside the mobile safe area and out of the caption rows
+    (checked on the camera data: no render needed)."""
+    from benchmarks.crumple_zone import crumple_cameras as cc
+    problems = []
+    for kind, b in cc.sign_boxes().items():
+        r0, r1 = b["rows"]
+        c0, c1 = b["cols"]
+        if c0 < cc.SAFE["left"] or c1 > cc.SAFE["right"] or r0 < cc.SAFE["top"] or r1 > cc.SAFE["bottom"]:
+            problems.append(f"{kind} sign leaves the safe area: rows {r0:.0f}-{r1:.0f}, cols {c0:.0f}-{c1:.0f}")
+        if min(r1, cc.CAPTION_ROWS[1]) - max(r0, cc.CAPTION_ROWS[0]) > 0:
+            problems.append(f"{kind} sign (rows {r0:.0f}-{r1:.0f}) overlaps the caption rows {cc.CAPTION_ROWS}")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "boxes": cc.sign_boxes()}

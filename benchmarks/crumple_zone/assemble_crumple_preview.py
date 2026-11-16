@@ -110,6 +110,7 @@ def main():
         "deformation_visible_by_2s": gates.deformation_visible_by(telemetry),
         "xray_against_road": gates.xray_against_road(es.Car(es.load_fixture()), range(61, cm.TOTAL_FRAMES + 1)),
         "labels_visible": gates.labels_visible(load, telemetry),
+        "text_safe_area": gates.text_safe_area(),
         "smoothness": gates.smoothness(gray_diffs(video)),
         "sync_to_speech": gates.sync_to_speech(audio_report["cues"]),
         "black_opening": verify_no_black_opening(video, (0, 1440), a.out),
