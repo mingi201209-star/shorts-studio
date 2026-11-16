@@ -4,6 +4,8 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED_XRAY = {
+    "What matters is how quickly the road lifts the car so a short bump feels far harsher.": (
+        "What matters is how", "quickly the road lifts", "the car so a short", "bump feels far harsher."),
     'These two bumps are exactly the same height so why does one hit so much harder.': (
         'These two bumps are', 'exactly the same height', 'so why does one hit', 'so much harder.'),
     'What matters is how quickly the road lifts the car. This is a computer simulation with assumed values.': (

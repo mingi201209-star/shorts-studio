@@ -1,0 +1,101 @@
+name: EP03 speed bump REVEAL recut (new narration ending, same picture)
+# The picture of production run 43776644423 is reused as it is; only the audio changes (the owner moved the simulation / assumed-values disclosure from the
+# narration into the posted description). Runs the same compose and every QA gate; produces the full-resolution film and a 540x960 review copy. Never uploads.
+on:
+  push:
+    branches: [ep03-speed-bump-build-20261115]
+    paths:
+      - examples/experiments/speed-bump-reveal-recut-request.json
+permissions:
+  contents: read
+  actions: read
+env:
+  EP03_FILM: reveal
+jobs:
+  audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install edge-tts Pillow pydantic
+      - name: Capture narration and build narration.wav + captions
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
+          # the free TTS service sometimes returns no audio; start from a clean folder and try up to 4 times
+          export SPEECH_REQUEST_GAP=9
+          ok=0
+          for attempt in 1 2 3 4; do
+            rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
+            if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
+                 --plan examples/experiments/speed-bump-reveal-speech-plan.json --target-seconds 35.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+            echo "speech capture attempt $attempt failed"; sleep 20
+          done
+          test "$ok" = 1
+          PYTHONPATH="$PWD" python -c "
+          from pathlib import Path
+          from benchmarks.road_safety.curious_mechanics_audio import build
+          from benchmarks.speed_bump.captions import single_line_groups as phrase_groups
+          build(Path('$RUNNER_TEMP/speech/speed-bump-shapes'), Path('$RUNNER_TEMP/audio'), target_seconds=35.0, grouper=phrase_groups)
+          "
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: speedbump-reveal-recut-audio
+          path: ${{ runner.temp }}/audio/
+          if-no-files-found: error
+          retention-days: 7
+  final:
+    needs: [audio]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      PANELS_RUN_ID: "43776644423"
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93 numpy
+      - name: Retrieve panel shards and audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
+          # the picture is unchanged: reuse the full-resolution panel shards of the production run (same renderer source, hashes are re-verified by compose)
+          gh run download "$PANELS_RUN_ID" --repo "$GITHUB_REPOSITORY" --pattern 'speedbump-reveal-panels-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = "66"
+          gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --name speedbump-reveal-recut-audio --dir "$RUNNER_TEMP/audio"
+      - name: Compose the 1050 film frames
+        run: PYTHONPATH="$PWD" python benchmarks/speed_bump/compose_speed_bump.py --panels "$RUNNER_TEMP/native" --out "$RUNNER_TEMP/composed"
+      - name: Assemble and run every QA gate
+        id: gates
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          flag=""
+          PYTHONPATH="$PWD" python benchmarks/speed_bump/assemble_speed_bump.py --frames "$RUNNER_TEMP/composed" --audio "$RUNNER_TEMP/audio" \
+            --manifest examples/experiments/speed-bump-reveal-manifest.json --out "$RUNNER_TEMP/final" $flag
+      - name: Contact sheet, spoken windows, loudness
+        run: |
+          set -euo pipefail
+          f=$(ls "$RUNNER_TEMP"/final/*.mp4 | head -1)
+          ffmpeg -v error -i "$f" -vf "fps=1,scale=180:320,tile=8x4" -frames:v 1 -q:v 4 "$RUNNER_TEMP/sheet.jpg"
+          echo "SHEET_B64_START"; base64 -w0 "$RUNNER_TEMP/sheet.jpg"; echo ""; echo "SHEET_B64_END"
+          ffmpeg -hide_banner -nostats -i "$f" -af ebur128 -f null - 2>&1 | grep -A3 "Integrated loudness" | sed 's/^/LOUDNESS_EBUR128 /' || true
+          ffmpeg -v error -i "$f" -vf scale=540:960 -c:v libx264 -crf 24 -preset fast -c:a aac -b:a 96k "$RUNNER_TEMP/final/speed-bump-reveal-540x960-review.mp4"
+          sha256sum "$RUNNER_TEMP"/final/*.mp4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: speedbump-reveal-recut-final
+          path: ${{ runner.temp }}/final/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Fail the run if any gate failed
+        if: steps.gates.outcome != 'success'
+        run: exit 1

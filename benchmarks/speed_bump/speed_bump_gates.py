@@ -71,6 +71,18 @@ def assumptions_in_narration(audio_report: dict) -> dict:
     return {"status": "FAIL" if problems else "PASS", "problems": [f"narration never says '{w}'" for w in problems]}
 
 
+def assumptions_in_description(path) -> dict:
+    """The owner moved the simulation / assumed-values disclosure out of the narration into the posted description (the picture carries no text and the
+    narration should end on the explanation). The description file that goes with the film must still say it."""
+    from pathlib import Path
+    p = Path(path)
+    if not p.is_file():
+        return {"status": "FAIL", "problems": [f"description file {p} is missing"]}
+    text = p.read_text(encoding="utf8").lower()
+    problems = [f"description never says '{w}'" for w in ("simulation", "assumed") if w not in text]
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "description_file": str(p)}
+
+
 def first_contact_film_seconds() -> float:
     seg = sim.SEGMENTS[0]
     v = seg["kmh"] / 3.6

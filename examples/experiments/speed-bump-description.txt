@@ -1,0 +1,7 @@
+Same height, very different jolt. Why does a short speed bump hit so much harder than a long speed hump?
+
+Look inside the suspension: the wheel has to follow the road. A short bump throws it up in a split second, a long hump lifts it gently, and the spring and damper have far less time to soak up the short one.
+
+This is an illustrative computer simulation with assumed values (a typical passenger car, 7.5 cm bump height, simplified suspension), not a measurement of a real car or a safety statement. The picture is a 3D animation.
+
+#shorts #engineering #speedbump #cars #howitworks

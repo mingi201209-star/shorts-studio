@@ -141,7 +141,8 @@ def assemble(frames: Path, audio: Path, manifest_path: Path, out: Path, prefligh
         "narration_picture_timing": gates.narration_picture_timing(audio_report),
         "first_three_seconds": gates.first_three_seconds(sample, gates.first_contact_film_seconds()),
         "caption_safety": caption_safety(cues, original_qa["captions_visible"]["evidence"]),
-        "assumptions_declared": gates.assumptions_in_narration(audio_report),
+        "assumptions_declared": (gates.assumptions_in_description(manifest["description_file"]) if manifest.get("description_file")
+                                 else gates.assumptions_in_narration(audio_report)),
         "all_3d_no_overlays": {"status": "PASS" if info_c.get("all_3d") is True and info_c.get("overlays") == "none" and info_c.get("physically_calibrated") is False else "FAIL",
                                "problems": [] if info_c.get("all_3d") is True and info_c.get("overlays") == "none" else ["frames were not produced by the overlay-free 3D renderer"]},
     }
