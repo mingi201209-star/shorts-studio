@@ -1,1 +1,1 @@
-{"mode":"preview","note":"EP.04 preview 3: TTS capture keeps completed beats between attempts (preview 2 failed with Unreconciled capture output)"}
+{"mode":"preview","note":"EP.04 preview 4: narration is 25.1 s of speech; target 27.5 s keeps every gap under the unchanged 0.9 s dead-air limit (31 s target gave 1.4 s gaps)"}
