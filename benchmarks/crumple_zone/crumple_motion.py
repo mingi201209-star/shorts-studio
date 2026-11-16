@@ -95,7 +95,7 @@ FILM = os.environ.get("EP04_FILM", "preview")
 SEGMENTS = [
     {"id": "H", "first": 1, "last": 18, "lead_m": 0.30, "panels": ("crumple",), "layout": "full", "camera": "hero"},
     {"id": "C", "first": 19, "last": 60, "lead_m": 0.30, "panels": ("crumple", "rigid"), "layout": "stack", "camera": "compare"},
-    {"id": "X", "first": 61, "last": 135, "lead_m": 0.50, "panels": ("crumple",), "layout": "full", "camera": "xray"},
+    {"id": "X", "first": 61, "last": 135, "lead_m": 1.00, "panels": ("crumple",), "layout": "full", "camera": "xray"},
 ]
 TOTAL_FRAMES = SEGMENTS[-1]["last"]
 XRAY_RAMP = (61, 91)       # frames over which the body turns into a ghost (scan line from the nose to the tail)

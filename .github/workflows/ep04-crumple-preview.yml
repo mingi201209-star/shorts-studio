@@ -120,6 +120,8 @@ jobs:
             --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
             --start ${{ matrix.start }} --end ${{ matrix.end }} $flag --out "$RUNNER_TEMP/native" > "$RUNNER_TEMP/native/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/native/render.log"; exit 1; }
           grep -c CRUMPLE_FRAME "$RUNNER_TEMP/native/render.log"
+          grep -E "CRUMPLE_(PROBE|PART|GEOMETRY)" "$RUNNER_TEMP/native/render.log" | head -60
+          grep CRUMPLE_FRAME "$RUNNER_TEMP/native/render.log" | awk 'NR % 17 == 1' | cut -c1-700
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: crumple-preview-panels-${{ matrix.start }}

@@ -100,8 +100,16 @@ def deformation_visible_by(telemetry: list[dict], frame: int = 60, min_stroke_m:
             "stroke_m_at_frame": s, "frame": frame}
 
 
-def xray_against_road(load, frames=(80, 95, 110, 125), max_median=0.40, max_each=0.50) -> dict:
-    return sbg.xray_readability(load, frames=frames, max_median=max_median, max_each=max_each)
+def xray_against_road(load, frames=(80, 95, 110, 125), max_median=0.40, max_each=0.50, rows=(0, 1400)) -> dict:
+    """Share of sky-coloured pixels in the picture area above the captions (rows 0-1399 of the full-height frame): the ghost body must stand against road and barrier."""
+    vals = [{"frame": f, "sky_share": round(sbg._sky_fraction(load(f)[rows[0]:rows[1]]), 3)} for f in frames]
+    v = [r["sky_share"] for r in vals]
+    problems = []
+    if float(np.median(v)) > max_median:
+        problems.append(f"median sky share {np.median(v):.2f} > {max_median}")
+    if max(v) > max_each:
+        problems.append(f"a frame has {max(v):.2f} sky share > {max_each}")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "median_sky_share": round(float(np.median(v)), 3), "frames": vals}
 
 
 def labels_visible(load, telemetry: list[dict], min_frames=25, min_px=40) -> dict:

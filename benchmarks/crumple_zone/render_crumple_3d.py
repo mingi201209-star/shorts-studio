@@ -166,11 +166,13 @@ class Deformable:
 def place_camera(cam, kind, frame):
     d = cam.data
     d.sensor_fit, d.sensor_width = "HORIZONTAL", 36
+    d.shift_y = 0.0
     if kind == "hero":                      # close 3/4 on the nose meeting the barrier
         d.lens = 34
         base.set_camera(cam, (-2.7, -2.3, 0.8), (0.0, -0.25, 0.5))
     elif kind == "compare":                 # same camera for both panels
         d.lens = 30
+        d.shift_y = -0.25                   # subject higher in the panel: the lower panel's action must stay above the caption band
         base.set_camera(cam, (-3.4, -2.8, 1.0), (0.0, -0.7, 0.5))
     elif kind == "xray":                    # raised, slowly pushing in; looks down so the ghost body is seen against the road
         k = min(1.0, max(0.0, (frame - cm.XRAY_RAMP[0]) / (cm.TOTAL_FRAMES - cm.XRAY_RAMP[0])))
@@ -207,7 +209,7 @@ def main():
     road = material("Asphalt", (0.07, 0.07, 0.075), rough=0.85)
     base.asphalt_grain(road)
     cube("Road", (0, -10, -0.05), (14.0, 60, 0.1), road)
-    concrete = material("Barrier", (0.55, 0.55, 0.52), rough=0.9)
+    concrete = material("Barrier", (0.12, 0.12, 0.115), rough=0.9)
     cube("Barrier", (0, 0.5, 1.0), (9.0, 1.0, 2.0), concrete)       # front face at y = 0
     cube("Barrier stripe", (0, -0.002, 0.5), (9.0, 0.004, 0.18), material("Stripe", (0.9, 0.62, 0.05), rough=0.5))
     nose, front_axle = geom["nose"], geom["front_axle"]
@@ -221,6 +223,10 @@ def main():
     deformables = [Deformable(o, nose) for o in parts]
     total_verts = sum(len(d.mesh.vertices) for d in deformables)
     active = sum(1 for d in deformables if len(d.idx))
+    for dm in deformables:
+        if len(dm.idx):
+            print("CRUMPLE_PART " + json.dumps({"name": dm.ob.name, "verts": len(dm.mesh.vertices), "y_min": round(float(dm.p0[:, 1].min()), 3), "y_max": round(float(dm.p0[:, 1].max()), 3),
+                                                "in_zone": int(len(dm.idx)), "parent": dm.ob.parent.name if dm.ob.parent else None}), flush=True)
     print("CRUMPLE_PROBE " + json.dumps({"body_meshes": len(parts), "vertices": total_verts, "meshes_in_crush_zone": active,
                                           "zone_vertices": int(sum(len(d.idx) for d in deformables)), "nose": nose, "front_axle": front_axle,
                                           "half_width": geom["body_half_width"], "roof": geom["roof"]}), flush=True)
@@ -283,6 +289,7 @@ def main():
             for dm in structure_def:
                 dm.apply(s, nose)
             nose_world = root.location.y + max(float(p[:, 1].max()) for p in deformed if len(p))
+            top_parts = sorted(((round(root.location.y + float(dm.sub[:, 1].max()), 3), dm.ob.name) for dm in deformables if len(dm.sub)), reverse=True)[:3]
             for key, wh in wheels.items():
                 base_pt = np.array([[wh["base"].x, wh["base"].y, wh["base"].z]])
                 y_new = float(cm.crush_map(base_pt, s, nose)[0, 1])
@@ -327,7 +334,7 @@ def main():
             checks.append({"frame": f, "panel": panel, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             front_wheel = wheels["front_right"]["node"].location
             info[panel] = {"cabin_advance_m": round(d, 4), "stroke_m": round(s, 4), "decel_g": round(float(rec["g"][i]), 2),
-                           "nose_world_y_mm": round(1000 * nose_world, 2), "nose_penetration_mm": round(1000 * max(0.0, nose_world), 2),
+                           "nose_world_y_mm": round(1000 * nose_world, 2), "top_parts": top_parts, "root_y": round(root.location.y, 3), "nose_penetration_mm": round(1000 * max(0.0, nose_world), 2),
                            "front_wheel_y": round(float(front_wheel.y), 3), "wheel_z_gap_mm": round(1000 * abs(front_wheel.z - wheels["front_right"]["base"].z), 3),
                            "sign_in_view": sign_in_view}
         info["render_seconds"] = round(time.time() - t0, 1)
