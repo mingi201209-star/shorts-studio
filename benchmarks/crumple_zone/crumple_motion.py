@@ -21,7 +21,7 @@ PROFILES = {
 }
 CRUSH_LENGTH = 0.95         # m of nose structure ahead of the passenger cell that may crush
 COMPACTION = 0.75           # fraction of the crushed zone that is squeezed out at full crush
-LEAD_SIM = 0.6              # simulate() starts the nose this far from the barrier
+LEAD_SIM = 1.2              # simulate() starts the nose this far from the barrier
 
 
 def simulate(profile: str, v0_kmh: float = V0_KMH, mass: float = MASS, lead: float = LEAD_SIM, hz: int = RENDER_HZ, tail_s: float = 0.25) -> dict:

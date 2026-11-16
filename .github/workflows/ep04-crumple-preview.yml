@@ -48,11 +48,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
-          # the free TTS service sometimes returns no audio; start from a clean folder and try up to 4 times
-          export SPEECH_REQUEST_GAP=9
+          # the free TTS service sometimes returns no audio; finished beats are reused on a retry; up to 6 attempts
+          export SPEECH_REQUEST_GAP=20
           ok=0
-          for attempt in 1 2 3 4; do
-            rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
+          for attempt in 1 2 3 4 5 6; do
+            mkdir -p "$RUNNER_TEMP/speech"
             if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
                  --plan examples/experiments/crumple-zone-speech-plan.json --target-seconds 31.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
             echo "speech capture attempt $attempt failed"; sleep 20

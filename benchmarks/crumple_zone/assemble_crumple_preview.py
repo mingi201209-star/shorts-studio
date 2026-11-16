@@ -12,11 +12,15 @@ import numpy as np
 from PIL import Image
 
 from benchmarks.crumple_zone import crumple_gates as gates
+from benchmarks.crumple_zone.capabilities import CAPABILITIES
 from benchmarks.crumple_zone import crumple_motion as cm
 from benchmarks.road_safety.episode2_film import probe, run
 from benchmarks.speed_bump.assemble_speed_bump import verify_captions_over_picture
 from shorts_studio.final_video_qa import verify_no_black_opening
+from shorts_studio.scene_spec import evaluate_episode, full_render_allowed, load_spec, update_registry
+from shorts_studio.scene_spec import validate as validate_spec
 
+ROOT = Path(__file__).resolve().parents[2]
 W, H = 1080, 1920
 PLACE = {"full": {"crumple": (0, 0, 1080, 1920)}, "stack": {"crumple": (0, 0, 1080, 960), "rigid": (0, 960, 1080, 960)}}
 
@@ -25,7 +29,7 @@ def compose(panels: Path, out: Path):
     proofs = sorted(panels.rglob("crumple-proof.json"))
     if not proofs:
         raise SystemExit("no shards")
-    index, telemetry, sha = {}, [], None
+    index, telemetry, sha, evidence = {}, [], None, {}
     for pp in proofs:
         proof = json.loads(pp.read_text())
         if not proof.get("all_3d") or proof.get("overlays") != "none":
@@ -35,6 +39,7 @@ def compose(panels: Path, out: Path):
         elif proof["renderer_source_sha256"] != sha:
             raise SystemExit("mixed renderer versions across shards")
         telemetry += proof["telemetry"]
+        evidence.update({int(k): v for k, v in proof["evidence"].items()})
         for c in proof["checksums"]:
             path = pp.parent / f"frame_{c['frame']:04d}_{c['panel']}.png"
             if hashlib.sha256(path.read_bytes()).hexdigest() != c["sha256"]:
@@ -52,7 +57,7 @@ def compose(panels: Path, out: Path):
                 im = im.resize((w, h), Image.LANCZOS)
             img.paste(im, (x, y))
         img.save(out / f"frame_{f:04d}.png")
-    return telemetry, sha
+    return telemetry, sha, evidence
 
 
 def gray_diffs(video: Path) -> np.ndarray:
@@ -70,7 +75,7 @@ def main():
     a = p.parse_args()
     a.out.mkdir(parents=True, exist_ok=True)
     frames = a.frames_dir or (a.out / "frames")
-    telemetry, sha = compose(a.panels, frames)
+    telemetry, sha, evidence = compose(a.panels, frames)
     audio_report = json.loads((a.audio / "audio-validation.json").read_text())
     for name in ("narration.wav", "film.ass"):
         (a.out / name).write_bytes((a.audio / name).read_bytes())
@@ -109,7 +114,21 @@ def main():
         "black_opening": verify_no_black_opening(video, (0, 1440), a.out),
         "captions_visible": verify_captions_over_picture(video, frames, [((c["start"] + c["end"]) / 2, (1400, 1919)) for c in cues], a.out),
     }
-    report["preview_status"] = "PASS" if not problems and all(v["status"] == "PASS" for k, v in report.items()) else "FAIL"
+    spec = load_spec(ROOT / "examples/episodes/ep04-crumple-zone-scene-spec.json")
+    plan = json.loads((ROOT / "examples/experiments/crumple-zone-speech-plan.json").read_text())
+    beats = [b["narration_en"] for b in plan["variants"][0]["beats"]]
+    spec_problems = validate_spec(spec, beats)
+    alignment = evaluate_episode(spec, audio_report["cues"], float(audio_report["target_seconds"]) if "target_seconds" in audio_report else 30.0, evidence)
+    (a.out / "scene-alignment-report.json").write_text(json.dumps(alignment, indent=1))
+    registry = update_registry(a.out / "scene-registry.json", spec.episode, a.out.name, alignment)
+    allowed, reasons = full_render_allowed(spec, registry, CAPABILITIES, beats)
+    report["scene_spec"] = {"status": "FAIL" if spec_problems else "PASS", "problems": spec_problems, "scenes": len(spec.scenes)}
+    report["narration_visual_alignment"] = {"status": "FAIL" if alignment["overall"] == "FAIL" else alignment["overall"], "problems": [
+        f"{sid}: {r['check']} {r.get('reason') or ''} {r.get('measured', '')} {r.get('delta_s', '')}" for sid, sc in alignment["scenes"].items() for r in sc["checks"] if r["status"] == "FAIL"],
+        "verdicts": {sid: sc["verdict"] for sid, sc in alignment["scenes"].items()}, "covered_seconds": alignment["covered_seconds"]}
+    report["full_render_allowed"] = {"status": "PASS" if allowed else "BLOCKED", "reasons": reasons}
+    ok_status = ("PASS", "PENDING_MORE_FRAMES", "AUTO_PASS_HUMAN_REVIEW_PENDING", "BLOCKED")
+    report["preview_status"] = "PASS" if not problems and all(v["status"] in ok_status for k, v in report.items() if isinstance(v, dict) and "status" in v) else "FAIL"
     report["problems"] = problems
     report["renderer_source_sha256"] = sha
     report["caption_cues_in_clip"] = [(round(c["start"], 2), round(c["end"], 2), c["text"]) for c in cues]
@@ -117,6 +136,8 @@ def main():
     (a.out / "crumple-preview-report.json").write_text(json.dumps(report, indent=1, default=str))
     print("CRUMPLE_PREVIEW_REPORT " + json.dumps({k: (v["status"] if isinstance(v, dict) and "status" in v else v) for k, v in report.items() if k not in ("caption_cues_in_clip",)}, default=str), flush=True)
     print("CRUMPLE_PREVIEW_DETAIL " + json.dumps({k: v for k, v in report.items() if isinstance(v, dict) and v.get("status") != "PASS"}, default=str), flush=True)
+    print("SCENE_ALIGNMENT " + json.dumps(report["narration_visual_alignment"]), flush=True)
+    print("FULL_RENDER_GATE " + json.dumps(report["full_render_allowed"]), flush=True)
     print("CRUMPLE_AUDIO_CUES " + json.dumps(report["caption_cues_in_clip"]), flush=True)
     video_review = a.out / "crumple-preview-540x960-review.mp4"
     run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-vf", "scale=540:960", "-c:v", "libx264", "-crf", "26", "-preset", "fast", "-c:a", "aac", "-b:a", "96k", video_review])

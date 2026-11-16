@@ -151,9 +151,11 @@ class Deformable:
 
     def apply(self, s, nose):
         """Poses the vertices for crush stroke s; returns the deformed car-frame points of the affected vertices."""
+        self.sub = self.p0[:0]
         if len(self.idx) == 0:
-            return self.p0[:0]
+            return self.sub
         sub = cm.crush_map(self.p0[self.idx], s, nose)
+        self.sub = sub
         out = self.local0.copy()
         out[self.idx] = (sub - self.t) @ self.minv.T
         self.mesh.vertices.foreach_set("co", out.ravel())
@@ -244,6 +246,7 @@ def main():
         for ys in (y0, y1):
             cell_edges.append(((-hx, ys, zs), (hx, ys, zs)))
     cell_objs = [tube(f"Cell edge {i}", a, b, 0.028, cell_mat, root, n_seg=2)[0] for i, (a, b) in enumerate(cell_edges)]
+    cell_y0, cell_y1 = y0, y1
     structure_def = [Deformable(ob, nose, local_is_car_frame=True) for ob, _ in structure]
     ghost = Ghost([o for o in parts])
 
@@ -262,7 +265,7 @@ def main():
 
     recs = {kind: cm.simulate(kind) for kind in cm.PROFILES}
     wheel_r = geom["tyre_radius"]
-    result, checks = [], []
+    result, checks, evidence = [], [], {}
     for f in range(args.start, args.end + 1):
         t0 = time.time()
         seg = cm.segment_at(f)
@@ -302,6 +305,22 @@ def main():
                 bpy.context.view_layer.update()
                 co = world_to_camera_view(scene, cam, Vector(lab.location))
                 sign_in_view = bool(co.z > 0 and 0.08 < co.x < 0.92 and 0.08 < co.y < 0.92)
+            ev = measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y, s, xf, seg, panel, (cell_y0, cell_y1))
+            evidence.setdefault(f, {"metrics": {}, "in_view": {}})
+            em, ev_view = evidence[f]["metrics"], evidence[f]["in_view"]
+            em[f"{panel}.stroke_m"] = s
+            em["xray.factor"] = xf
+            em["nose.penetration_mm"] = max(em.get("nose.penetration_mm", 0.0), round(1000 * max(0.0, nose_world), 2))
+            em["cell.max_displacement_mm"] = max(em.get("cell.max_displacement_mm", 0.0), ev["cell_mm"])
+            em["caption.overlap"] = max(em.get("caption.overlap", 0.0), ev["caption_overlap"])
+            if panel == "crumple":
+                em["rails.shortening_m"] = ev["rail_shortening"]
+                em["crumple.crushed_depth_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH)
+                for name in ("car_front", "crush_rails", "bumper_beam", "safety_cell"):
+                    ev_view[name] = ev["in_view"][name]
+            else:
+                ev_view["rigid_car_front"] = ev["in_view"]["car_front"]
+            ev_view["barrier"] = ev_view.get("barrier", False) or ev["in_view"]["barrier"]
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)
             bpy.ops.render.render(write_still=True)
@@ -315,8 +334,54 @@ def main():
         result.append(info)
         print("CRUMPLE_FRAME " + json.dumps(info), flush=True)
     proof = {"renderer_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "geometry": geom, "preview": bool(args.preview), "checksums": checks,
-             "telemetry": result, "physically_calibrated": False, "all_3d": True, "overlays": "none", "film": cm.FILM}
+             "telemetry": result, "evidence": {str(k): v for k, v in evidence.items()}, "physically_calibrated": False, "all_3d": True, "overlays": "none", "film": cm.FILM}
     (args.out / "crumple-proof.json").write_text(json.dumps(proof, indent=1))
+
+
+CAPTION_ROWS = (1408, 1540)       # rows of the 1080x1920 frame where the captions sit
+PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}}
+
+
+def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y, s, xf, seg, panel, cell_span):
+    """What the picture of this panel really contains, measured from the deformed geometry and the camera: used by the narration-visual alignment check."""
+    shift = Vector(root.location)
+
+    def project(p):
+        co = world_to_camera_view(scene, cam, Vector((p[0], p[1], p[2])) + shift)
+        return co.x, co.y, co.z
+
+    def inside(p, margin=0.03):
+        x, y, z = project(p)
+        return bool(z > 0 and margin < x < 1 - margin and margin < y < 1 - margin)
+
+    rail, beam = structure_def[0], structure_def[2]
+    rail_full = rail.p0.copy()
+    rail_full[rail.idx] = rail.sub
+    beam_full = beam.p0.copy()
+    beam_full[beam.idx] = beam.sub
+    rail_len0 = float(rail.p0[:, 1].max() - rail.p0[:, 1].min())
+    shortening = rail_len0 - float(rail_full[:, 1].max() - rail_full[:, 1].min())
+    cell_mm = 0.0
+    pts = []
+    for dm in deformables:
+        if len(dm.idx) == 0:
+            continue
+        behind = dm.p0[dm.idx, 1] <= cabin_y
+        if behind.any():
+            cell_mm = max(cell_mm, 1000 * float(np.abs(dm.sub[behind] - dm.p0[dm.idx][behind]).max()))
+        pts.append(dm.sub[:: max(1, len(dm.sub) // 300)])
+    zone = np.vstack(pts) if pts else np.zeros((1, 3))
+    proj = np.array([project(p)[:2] for p in zone])
+    y0_, y1_ = float(proj[:, 1].min()), float(proj[:, 1].max())
+    off, h = PANEL_ROWS[seg["layout"]][panel]
+    top, bottom = off + (1 - y1_) * h, off + (1 - y0_) * h
+    overlap = max(0.0, min(bottom, CAPTION_ROWS[1]) - max(top, CAPTION_ROWS[0])) / max(1.0, bottom - top)
+    ghost_on = xf >= 0.5 and panel == "crumple"
+    cell_c = (0.0, 0.5 * (cell_span[0] + cell_span[1]), 0.8)
+    return {"cell_mm": cell_mm, "rail_shortening": shortening, "caption_overlap": round(overlap, 3),
+            "in_view": {"car_front": inside((0.0, nose - s, 0.5)), "barrier": bool(project((0.0, -shift.y, 1.0))[2] > 0 and 0.0 < project((0.0, -shift.y, 1.0))[0] < 1.0),
+                        "crush_rails": ghost_on and inside(rail_full.mean(axis=0)), "bumper_beam": ghost_on and inside(beam_full.mean(axis=0)),
+                        "safety_cell": ghost_on and inside(cell_c)}}
 
 
 def _ancestors(ob):
