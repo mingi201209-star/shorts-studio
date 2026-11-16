@@ -4,6 +4,14 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED_XRAY = {
+    'Same car and speed and bump height so why does one bump hit so much harder.': (
+        'Same car and speed', 'and bump height so why', 'does one bump hit', 'so much harder.'),
+    'The wheel has to follow the road so the short bump lifts it about four times faster than the long hump.': (
+        'The wheel has to', 'follow the road so the', 'short bump lifts it', 'about four times faster', 'than the long hump.'),
+    'The spring is squeezed more than twice as fast and the car body gets a jolt more than twice as hard.': (
+        'The spring is squeezed', 'more than twice as fast', 'and the car body gets', 'a jolt more than twice', 'as hard.'),
+    'The long hump lifts the car smoothly while the short bump kicks it.': (
+        'The long hump lifts', 'the car smoothly while', 'the short bump kicks it.'),
     "What matters is how quickly the road lifts the car so a short bump feels far harsher.": (
         "What matters is how", "quickly the road lifts", "the car so a short", "bump feels far harsher."),
     'These two bumps are exactly the same height so why does one hit so much harder.': (

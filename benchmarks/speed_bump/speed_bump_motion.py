@@ -13,7 +13,7 @@ import os
 import numpy as np
 
 G = 9.81
-CAR = {"ms": 400.0, "mu": 40.0, "ks": 22000.0, "cs": 1500.0, "kt": 200000.0, "wheelbase": 2.7, "track": 1.55}
+CAR = {"ms": 400.0, "mu": 40.0, "ks": 22000.0, "cs": 1500.0, "kt": 200000.0, "wheelbase": 2.7, "track": 1.55, "tyre_radius": 0.281}
 BUMPS = {
     "short": {"label": "SHORT BUMP", "length": 0.9, "height": 0.075, "kind": "round"},
     "hump": {"label": "LONG HUMP", "length": 3.7, "height": 0.075, "kind": "round"},
@@ -30,6 +30,34 @@ def profile(x: float, bump: dict) -> float:
     return bump["height"] * math.sin(math.pi * x / bump["length"])
 
 
+_HUB_TABLES: dict = {}
+
+
+def hub_profile(x: float, bump: dict, radius: float) -> float:
+    """Height of the wheel CENTRE (above its rest height) of a rigid round tyre rolling over the bump: the envelope of the road, not the road under the axle.
+    A tyre of radius R touches the bump face before its axle is above it, so the hub path is smoother and starts earlier than the road profile. The simulation
+    uses this as the road input and the renderer uses it to place the wheel, so the tyre never cuts into the bump."""
+    key = (bump["length"], bump["height"], radius)
+    tab = _HUB_TABLES.get(key)
+    if tab is None:
+        dx = 0.001
+        x0 = -radius - dx
+        n = int((bump["length"] + 2 * radius) / dx) + 4
+        xs = x0 + dx * np.arange(n)
+        xr = np.arange(0.0, bump["length"] + dx, dx)
+        zr = bump["height"] * np.sin(np.pi * xr / bump["length"])
+        hub = np.zeros(n)
+        for i, xc in enumerate(xs):
+            m = np.abs(xr - xc) <= radius
+            if m.any():
+                hub[i] = max(0.0, float(np.max(zr[m] + np.sqrt(radius ** 2 - (xr[m] - xc) ** 2)) - radius))
+        tab = (x0, dx, hub)
+        _HUB_TABLES[key] = tab
+    x0, dx, hub = tab
+    i = int((x - x0) / dx)
+    return float(hub[i]) if 0 <= i < len(hub) else 0.0
+
+
 def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: float = 3.0, tail_s: float = 3.2, hz: int = FPS):
     """Return dict of arrays sampled at `hz` (real time; the film is slowed down, so the renderer asks for a much higher rate than FPS or the pose would hold for several frames and the picture would judder): t, x (front axle, m, 0 = bump start), z_body_front/rear (m), body_height, pitch (rad),
     wheel_front/rear road height (m), body acceleration (g) at the front axle."""
@@ -39,14 +67,14 @@ def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: 
     n = int(total / DT)
     out_n = int(total * hz) + 1
     state = {"f": [0.0] * 4, "r": [0.0] * 4}  # zs, vs, zu, vu
-    rec = {k: np.zeros(out_n) for k in ("t", "x", "zf", "zr", "wf", "wr", "gf")}
+    rec = {k: np.zeros(out_n) for k in ("t", "x", "zf", "zr", "wf", "wr", "gf", "uf", "ur")}
     next_i = 0
     af = 0.0
     for i in range(n):
         t = i * DT
         for key, delay in (("f", 0.0), ("r", wb / v)):
             x = v * (t - delay) - lead_m
-            zr = profile(x, bump)
+            zr = hub_profile(x, bump, car.get("tyre_radius", CAR["tyre_radius"]))
             zs, vs, zu, vu = state[key]
             fs = car["ks"] * (zu - zs) + car["cs"] * (vu - vs)
             ft = car["kt"] * (zr - zu)
@@ -64,10 +92,14 @@ def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: 
             rec["x"][next_i] = v * t - lead_m
             rec["zf"][next_i] = state["f"][0]
             rec["zr"][next_i] = state["r"][0]
-            rec["wf"][next_i] = profile(v * t - lead_m, bump)
-            rec["wr"][next_i] = profile(v * (t - wb / v) - lead_m, bump)
+            rec["wf"][next_i] = hub_profile(v * t - lead_m, bump, car.get("tyre_radius", CAR["tyre_radius"]))
+            rec["wr"][next_i] = hub_profile(v * (t - wb / v) - lead_m, bump, car.get("tyre_radius", CAR["tyre_radius"]))
+            rec["uf"][next_i] = state["f"][2]
+            rec["ur"][next_i] = state["r"][2]
             rec["gf"][next_i] = af / G
             next_i += 1
+    rec["df"] = rec["zf"] - rec["uf"]      # spring deflection (sprung minus unsprung), front / rear
+    rec["dr"] = rec["zr"] - rec["ur"]
     rec["body"] = 0.5 * (rec["zf"] + rec["zr"])
     rec["pitch"] = np.arctan2(rec["zf"] - rec["zr"], wb)
     rec["speed"] = v
@@ -75,7 +107,10 @@ def simulate(bump: dict, speed_kmh: float = SPEED_KMH, car: dict = CAR, lead_m: 
 
 
 def summary(rec) -> dict:
-    return {"peak_body_g": float(np.max(np.abs(rec["gf"]))), "peak_body_rise_m": float(np.max(np.abs(rec["body"]))),
+    dt = float(rec["t"][1] - rec["t"][0])
+    spring_rate = float(np.max(np.abs(np.gradient(rec["df"], dt))))     # how fast the spring is squeezed (m/s)
+    hub_rate = float(np.max(np.abs(np.gradient(rec["wf"], dt))))        # how fast the road lifts the wheel (m/s)
+    return {"peak_spring_rate_ms": spring_rate, "peak_hub_rate_ms": hub_rate, "peak_spring_deflection_m": float(np.max(np.abs(rec["df"]))), "peak_body_g": float(np.max(np.abs(rec["gf"]))), "peak_body_rise_m": float(np.max(np.abs(rec["body"]))),
             "peak_pitch_deg": float(np.degrees(np.max(np.abs(rec["pitch"]))))}
 
 
@@ -130,7 +165,7 @@ def pass_summaries(car: dict = CAR) -> dict:
     """Peak numbers per pass and bump, from the same simulation that poses the cars (used by narration and gates)."""
     out = {}
     for seg in SEGMENTS:
-        out[seg["id"]] = {k: summary(simulate(b, speed_kmh=seg["kmh"], car=car)) for k, b in BUMPS.items()}
+        out[seg["id"]] = {k: summary(simulate(b, speed_kmh=seg["kmh"], car=car, hz=RENDER_HZ)) for k, b in BUMPS.items()}
     return out
 
 
@@ -220,6 +255,28 @@ if FILM == "reveal":
     BEAT_PICTURE_START = {3: 316, 4: 502, 5: 723, 6: 878}
     BEAT2_BEFORE_FRAME = 315
     FILM_FILES = {"video": "speed-bump-reveal.mp4", "review": "speed-bump-reveal-540x960-review.mp4", "validation": "speed-bump-reveal-validation.json"}
+
+
+if FILM == "final":
+    # "final" = the quality-improvement cut: ONE condition for the whole film (same car, 20 km/h, same suspension, same 7.5 cm height; only the bump LENGTH differs),
+    # one playback rate (slow = 0.2) for every pass, wheel placed on the tyre-envelope path (no tyre cutting into the bump), spring colour = squeeze RATE.
+    # Frame boundaries and events follow the measured spoken cues (see SYNC_EVENTS, checked by a gate).
+    SEGMENTS = [
+        {"id": "A", "kmh": 20.0, "slow": 0.20, "frames": 300, "lead_m": 1.4},
+        {"id": "P", "kmh": 20.0, "slow": 0.20, "frames": 200, "lead_m": 1.4},
+        {"id": "B", "kmh": 20.0, "slow": 0.20, "frames": 200, "lead_m": 1.4},
+        {"id": "C", "kmh": 20.0, "slow": 0.20, "frames": 190, "lead_m": 1.4},
+        {"id": "E", "kmh": 20.0, "slow": 0.20, "frames": 160, "lead_m": 1.4},
+    ]
+    PASS_FRAMES = sum(x["frames"] for x in SEGMENTS)
+    SHOTS = [(1, PASS_FRAMES, "side", "stack")]       # provisional: replaced once the spoken cue times are measured
+    XRAY_RAMPS = (90, 120, 700, 720)
+    TRAILS = [(300, PASS_FRAMES, "hub")]
+    BEAT_PICTURE_START = {3: 300, 4: 500, 5: 700, 6: 890}
+    BEAT2_BEFORE_FRAME = 299
+    SYNC_EVENTS: list = []       # (cue text, event name, film frame): the picture event must start within SYNC_TOLERANCE_S of the cue start
+    SYNC_TOLERANCE_S = 0.4
+    FILM_FILES = {"video": "speed-bump-final.mp4", "review": "speed-bump-final-540x960-review.mp4", "validation": "speed-bump-final-validation.json"}
 
 
 TOTAL_FRAMES = PASS_FRAMES   # every film frame is a rendered pass, whichever profile is active

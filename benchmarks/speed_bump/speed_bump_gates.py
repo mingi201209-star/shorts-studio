@@ -12,6 +12,8 @@ START_TOLERANCE_S = 1.2
 
 
 def narration_numbers(peaks: dict) -> dict:
+    if sim.FILM == "final":
+        return narration_numbers_single_speed(peaks)
     problems = []
     ratio_b = peaks["B"]["short"]["peak_body_g"] / peaks["B"]["hump"]["peak_body_g"]
     if not 1.8 <= ratio_b <= 2.4:
@@ -23,6 +25,25 @@ def narration_numbers(peaks: dict) -> dict:
     if not (c["hump"]["peak_body_g"] < 0.15 and c["short"]["peak_body_g"] > 0.4):
         problems.append("at 10 km/h the long hump must be gentle (<0.15 g) while the short bump still jolts (>0.4 g)")
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "ratios": ratios}
+
+
+def narration_numbers_single_speed(peaks: dict) -> dict:
+    """The final cut compares the two bumps at ONE speed (20 km/h, pass A). Narration: the short bump lifts the wheel 'about four times faster', squeezes the
+    spring 'more than twice as fast' and gives the body 'a jolt more than twice as hard' (peak body acceleration). Each claim is checked against the simulation."""
+    a = peaks["A"]
+    hub = a["short"]["peak_hub_rate_ms"] / a["hump"]["peak_hub_rate_ms"]
+    spring = a["short"]["peak_spring_rate_ms"] / a["hump"]["peak_spring_rate_ms"]
+    body = a["short"]["peak_body_g"] / a["hump"]["peak_body_g"]
+    problems = []
+    if not 3.5 <= hub <= 4.6:
+        problems.append(f"'about four times faster' (wheel lift rate) but the simulated ratio is {hub:.2f}")
+    if spring < 2.05:
+        problems.append(f"'more than twice as fast' (spring squeeze rate) but the simulated ratio is {spring:.2f}")
+    if body < 2.05:
+        problems.append(f"'more than twice as hard' (peak body acceleration) but the simulated ratio is {body:.2f}")
+    if not all(abs(peaks[k]["short"]["peak_hub_rate_ms"] - a["short"]["peak_hub_rate_ms"]) < 1e-9 for k in peaks):
+        problems.append("passes do not share one speed")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "ratios": [round(hub, 2), round(spring, 2), round(body, 2)]}
 
 
 def narration_picture_timing(audio_report: dict) -> dict:

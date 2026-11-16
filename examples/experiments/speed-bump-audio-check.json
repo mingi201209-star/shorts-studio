@@ -1,1 +1,1 @@
-{"plan":"examples/experiments/speed-bump-reveal-speech-plan.json","note":"reveal audio check 2: target 35.0 s (less slack = less silence)"}
+{"plan":"examples/experiments/speed-bump-final-speech-plan.json","note":"final cut audio check: single-speed narration + cue times"}

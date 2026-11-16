@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "speed-bump-shapes",
+      "beats": [
+        {
+          "narration_en": "Same car and speed and bump height so why does one bump hit so much harder.",
+          "start": 0,
+          "end": 6
+        },
+        {
+          "narration_en": "Now look inside where every wheel hangs on a spring and a damper that work together to soak up the bump.",
+          "start": 6,
+          "end": 12
+        },
+        {
+          "narration_en": "The wheel has to follow the road so the short bump lifts it about four times faster than the long hump.",
+          "start": 12,
+          "end": 18
+        },
+        {
+          "narration_en": "The spring is squeezed more than twice as fast and the car body gets a jolt more than twice as hard.",
+          "start": 18,
+          "end": 24
+        },
+        {
+          "narration_en": "The long hump lifts the car smoothly while the short bump kicks it.",
+          "start": 24,
+          "end": 30
+        },
+        {
+          "narration_en": "What matters is how quickly the road lifts the car so a short bump feels far harsher.",
+          "start": 30,
+          "end": 36
+        }
+      ]
+    }
+  ]
+}

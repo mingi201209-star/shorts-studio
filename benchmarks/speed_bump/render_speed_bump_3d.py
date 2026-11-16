@@ -151,7 +151,7 @@ class XRay:
             hub = w["node"].matrix_world.translation
             mount = body.matrix_world @ Vector((w["base"].x - 0.05 * side, w["base"].y, w["base"].z + 0.42))
             dx = 0.12 * side
-            heat = min(1.0, abs(comp["front" if wkey.startswith("front") else "rear"]) / 0.04)
+            heat = min(1.0, abs(comp["front" if wkey.startswith("front") else "rear"]))      # comp = spring squeeze rate / the short bump's peak rate
             spring = material("Spring " + wkey, (1.0, 0.25 + 0.7 * heat, 0.05 + 0.65 * heat), rough=0.4, emission=0.8 + 5.0 * heat)
             self.live_mats.append(spring)
             self.live.append(spring_curve(f"spring {wkey}", (hub.x + dx, hub.y, hub.z + 0.05), (mount.x + dx, mount.y, mount.z), spring))
@@ -184,13 +184,19 @@ class Trail:
             pt.co = (co[0], co[1], co[2], 1)
 
 
+def spring_rate(rec, key, idx, span=6):
+    """How fast the spring is being squeezed or released (m/s, signed) around sample idx."""
+    a, b = max(0, idx - span), min(len(rec[key]) - 1, idx + span)
+    return float(rec[key][b] - rec[key][a]) / float(rec["t"][b] - rec["t"][a]) if b > a else 0.0
+
+
 def pose_car(root, body, wheels, geom, rec, idx):
     y_front = float(rec["x"][idx])
     root.location = (0.0, y_front - geom["front_axle"], 0.0)
     body.location = (0, 0, float(0.5 * (rec["zf"][idx] + rec["zr"][idx])))
     body.rotation_euler = (float(rec["pitch"][idx]), 0, 0)
     for wkey, w in wheels.items():
-        road_z = float(rec["wf"][idx] if wkey.startswith("front") else rec["wr"][idx])
+        road_z = float(rec["uf"][idx] if wkey.startswith("front") else rec["ur"][idx])   # unsprung (wheel) displacement: includes tyre compliance and wheel hop
         w["node"].location = (w["base"].x, w["base"].y, w["base"].z + road_z)
         w["node"].rotation_euler = (-(y_front - geom["front_axle"] + w["base"].y) / geom["tyre_radius"], 0, 0)
     return y_front
@@ -283,7 +289,7 @@ def main():
     scene.camera = cam
 
     tl = Timeline(geom["wheelbase"], hz=sim.RENDER_HZ)
-    xray = XRay(root, wheels) if sim.FILM in ("xray", "explain", "reveal") else None
+    xray = XRay(root, wheels) if sim.FILM in ("xray", "explain", "reveal", "final") else None
     hub_trail, roof_trail = Trail("Hub trail", (0.2, 0.9, 1.0)), Trail("Roof trail", (1.0, 0.7, 0.1))
     hub_key = next(k for k in wheels if k.startswith("front") and wheels[k]["base"].x > 0)
     bpy.context.view_layer.update()
@@ -291,6 +297,7 @@ def main():
     roof_world0 = Vector((sum(c.x for c in corners) / len(corners), sum(c.y for c in corners) / len(corners), max(c.z for c in corners)))
     roof_local = body.matrix_world.inverted() @ roof_world0
     step = max(1, sim.RENDER_HZ // 100)
+    rate_ref = max(v["short"]["peak_spring_rate_ms"] for v in tl.peaks.values())
     frames = [int(x) for x in args.frames.split(",")] if args.frames else list(range(args.start, args.end + 1))
     result, checks = [], []
     for f in frames:
@@ -309,7 +316,7 @@ def main():
             if xray is not None:
                 xf = sim.xray_factor(f)
                 xray.set_factor(xf, y_front)
-                xray.build(body, xf, {"front": float(rec["zf"][idx] - rec["wf"][idx]), "rear": float(rec["zr"][idx] - rec["wr"][idx])})
+                xray.build(body, xf, {"front": spring_rate(rec, "df", idx) / rate_ref, "rear": spring_rate(rec, "dr", idx) / rate_ref})
             hub_trail.set([]), roof_trail.set([])
             mode = sim.trail_mode(f)
             if mode:

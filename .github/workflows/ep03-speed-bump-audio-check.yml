@@ -56,3 +56,12 @@ jobs:
           print("BEAT_CHECK durations", [round(x, 2) for x in d], "sum", round(sum(d), 2), "slack", round(slack, 3))
           print("BEAT_CHECK starts", starts, "")
           PY
+      - name: Spoken cues (phrase start/end, seconds) for the picture sync plan
+        run: |
+          python3 - <<'PY'
+          import json, os
+          d = json.load(open(os.environ["RUNNER_TEMP"] + "/audio/audio-validation.json"))
+          print("AUDIO_BEATS", json.dumps([[round(b["start"], 3), round(b["end"], 3)] for b in d["beats"]]))
+          print("AUDIO_CUES", json.dumps([[round(c["start"], 3), round(c["end"], 3), c["text"]] for c in d["cues"]]))
+          print("AUDIO_SILENCE", json.dumps(d.get("silence_gaps")))
+          PY
