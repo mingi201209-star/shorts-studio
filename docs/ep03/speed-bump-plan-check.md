@@ -73,3 +73,21 @@ Owner feedback on v2 (X-ray): scenes repeat and the picture stutters like lag; a
 - Film sha256 `8ca41a1c26db07f61ec2d281e44cb79f2c5c4425af8f181e4a1fb04cb55fc598`; review MP4 sha256 `a406426e49f4ae36a8b366eefbb17068b9944f04d79febf8361fd7e90667c47c` (recovered from job logs, chunk and whole-file hashes verified; no black frames, no silence gaps).
 - Fallbacks kept: v2 X-ray `ed2c52761ac23fe6572a2b60774a2a1d59fea97e542c92a78a10492853f76a17`, v1 `79e3d759b2cb133094f3435ae6551461f99c018b67a8f49f44e481a96b9cae09`.
 - UNVERIFIED: voice pronunciation and sync, human first view, whether the hub-path trail reads well on a phone. Not uploaded.
+
+## v4 (reveal) production result — run 43776644423
+
+Owner feedback on v3 (explain), from 12 extracted frames: weak first 3 s (two cars side by side give no reason to watch), X-ray not dramatic enough, suspension difference between the bumps not clear enough, black band at the bottom too big (captions look detached from the picture).
+
+Changes:
+- First 3 s: low front 3/4 camera, both cars big (long hump on top, short bump below), first contact 1.48 s; hook narration "These two bumps are exactly the same height so why does one hit so much harder."
+- X-ray: scan-line reveal sweeping front to rear (world-space plane, glowing edge), 88-118 frames (about 3.0-4.0 s), then a tight spring/damper close-up; springs glow hotter with compression.
+- Full-height 1080x1920 picture, captions on the picture (black outline + shadow, rows 1441-1506, above the Shorts overlay); no black band.
+- Wide shots moved from the tall 540x1920 layout to the 1080x960 stack layout (the tall panel left two thirds empty); lens shift for the remaining tall shots.
+- 35.0 s / 1050 frames: a 36.5 s target added slack = silence and broke the total-silence gate (5.45 s > 5 s); 35.0 s passes. Gates not relaxed.
+- Caption measurement: the "bright pixels in the band" check assumed a black band; with captions on the picture it counted sky and glow. Now measured against the caption-free composed frame, same frame number (same two requirements: caption pixels exist in the band, none at the bottom edge).
+
+Final gates PASS: visual activity (22 cuts, avg 1.59 s, max static 3.5 s, 3 changes in the first 5 s), narration numbers 2.2 / 2.1 / 5.5, picture timing (starts 0, 4.47, 10.51, 16.71, 24.05, 29.21 s), first three seconds, caption safety (rows 1441-1506), assumptions declared, all 3D / no overlays, loudness -16.2 LUFS. Recovered review MP4: no black frames, no silence gaps; per-frame motion median 0.68 (v3 0.40), the reveal frames show per-frame diff 4-5 against a 0.6 baseline.
+
+- Film sha256 `4a95b721420615eadb30b85350a552f76612e7420897c27e4e68fd81fbb12b36`; review MP4 sha256 `1f1eda775aca1a1e889ce1ad91cd26887dd2f5a9fecdbb1afdc26cbc6e639113` (chunk and whole-file hashes verified).
+- Fallbacks kept: v3 explain `8ca41a1c26db07f61ec2d281e44cb79f2c5c4425af8f181e4a1fb04cb55fc598`, v2 X-ray `ed2c5276…`, v1 `79e3d759…`.
+- UNVERIFIED: voice pronunciation and sync, human first view (curiosity in the first 3 s), whether the reveal reads as dramatic on a phone, whether the spring difference between the two bumps is clear enough in continuous playback. Not uploaded.
