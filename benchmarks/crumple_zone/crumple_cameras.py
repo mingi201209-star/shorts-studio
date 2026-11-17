@@ -1,6 +1,9 @@
-"""EP.04 cameras as plain data plus a pinhole projection that matches Blender's world_to_camera_view (horizontal sensor fit, 36 mm, lens shift in sensor-width units).
+"""EP.04 cameras as plain data plus a pinhole projection that matching Blender's world_to_camera_view (horizontal sensor fit, 36 mm, lens shift in sensor-width units).
 The renderer places its cameras from these numbers, and the Python tests project the real sedan vertices through the same numbers: a camera problem (action under the captions,
-subject out of frame) shows up in a test in milliseconds instead of in a 17-minute preview."""
+subject out of frame) shows up in a test in milliseconds instead of in a 17-minute preview.
+
+v2: three camera paths (K = the crumple crash, R = the rigid crash, C = the closing view), each a list of keys in film seconds since the segment start. A key's pose is either
+relative to the nose line of the car (rel: the camera follows the car into the wall) or absolute; poses are blended with smoothstep easing, orbits by arc keys."""
 from __future__ import annotations
 
 import numpy as np
@@ -8,77 +11,100 @@ import numpy as np
 from benchmarks.crumple_zone import crumple_motion as cm
 
 SENSOR_W = 36.0
-PANEL_PX = {"full": (1080, 1920), "stack": (1080, 960), "sequential": (1080, 1920)}
-
-
-#: The only on-screen words besides the narration captions: one word per car in the comparison, as a 3D sign on the road under each car.
-#: Placed (by search) in the free band between the tyres and the caption rows of BOTH stacked panels, away from the Shorts interface zones.
-SIGN = {"pos": (-1.4, -1.6, 0.32), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
+PANEL_PX = {"full": (1080, 1920)}
 FRAME_W, FRAME_H = 1080, 1920
 CAPTION_ROWS = (1408, 1540)
 #: mobile safe area of a 1080x1920 Short: keep clear of the top ~8 %, the bottom ~20 % and the right ~11 % (like/comment buttons)
 SAFE = {"left": 54, "right": 960, "top": 150, "bottom": 1540}
-PANEL_OFFSET = {"crumple": 0, "rigid": 960}
+NO_SCENE_TEXT = True      # the owner banned on-screen words other than the narration captions: the renderer creates no text objects (gate: no_scene_text)
 
 
-def sign_boxes(frame: int = 30) -> dict:
-    """Frame-pixel box (rows, cols) of each comparison sign: billboard facing the camera, width = chars * size * char_w."""
-    cam = camera("compare", frame)
-    c = np.array(SIGN["pos"], float)
-    toc = np.array(cam["loc"]) - c
-    toc /= np.linalg.norm(toc)
-    rr = np.cross([0, 0, 1], toc)
-    rr /= np.linalg.norm(rr)
-    uu = np.cross(toc, rr)
-    out = {}
-    for kind, word in SIGN["words"].items():
-        w, h = len(word) * SIGN["size"] * SIGN["char_w"], SIGN["size"]
-        pts = np.array([c + sx * rr * w / 2 + sy * uu * h / 2 for sx in (-1, 1) for sy in (-1, 1)])
-        layout = cm.segment_at(frame)["layout"]
-        p = project(pts, cam, "sequential" if layout == "sequential" else "stack")
-        rows = (1 - p[:, 1]) * 1920 if layout == "sequential" else PANEL_OFFSET[kind] + (1 - p[:, 1]) * 960
-        out[kind] = {"rows": (float(rows.min()), float(rows.max())), "cols": (float(p[:, 0].min() * 1080), float(p[:, 0].max() * 1080))}
+def _key(t, loc, target, lens=34.0, shift=0.0, rel=False):
+    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "shift_y": float(shift), "rel": bool(rel)}
+
+
+def _orbit(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, shift=0.0, target_z=0.55):
+    """Keys on an arc around a pivot (angles in degrees, 0 = camera on the -X side looking +X, positive turns towards -Y)."""
+    out = []
+    for k in range(n + 1):
+        u = k / n
+        a = np.radians(a0 + (a1 - a0) * u)
+        loc = (pivot[0] - radius * np.cos(a), pivot[1] - radius * np.sin(a), z0 + (z1 - z0) * u)
+        out.append(_key(t0 + (t1 - t0) * u, loc, (pivot[0], pivot[1], target_z), lens, shift))
     return out
 
 
-def _base_camera(kind: str, frame: int = 1) -> dict:
-    """{'loc', 'target', 'lens', 'shift_y'} for a camera kind at a film frame."""
-    if kind == "hero":
-        return {"loc": (-2.7, -2.3, 0.8), "target": (0.0, -0.25, 0.5), "lens": 34.0, "shift_y": 0.0}
-    if kind == "compare":
-        return {"loc": (-3.4, -2.8, 1.0), "target": (0.0, -0.7, 0.5), "lens": 30.0, "shift_y": -0.25}
-    if kind == "xray":
-        seg = cm.segment_at(frame)
-        seg_len = seg["last"] - seg["first"] + 1
-        k = min(1.0, max(0.0, (frame - seg["first"]) / max(74.0, seg_len)))      # slow push-in that keeps going over the whole X-ray segment (the first segment keeps its original 74-frame span)
-        loc = tuple(float(v) * (1 - 0.06 * k) for v in (-5.0, -5.2, 2.4))        # found by a search that keeps nose, rails and cell inside the frame for every X-ray frame
-        return {"loc": loc, "target": (0.0, -1.3, 0.45), "lens": 34.0, "shift_y": 0.0}
-    raise ValueError(kind)
+def _seg_tau(seconds: float, seg_id: str) -> float:
+    """Spoken moment (film seconds from the start of the film) -> film seconds since the start of segment seg_id."""
+    seg = next(s for s in cm.SEGMENTS if s["id"] == seg_id)
+    return seconds - (seg["first"] - 1) / cm.FPS
 
 
-ORBIT_DEG = 16.0      # replay segments: the camera sweeps this many degrees around the subject over the segment (the first three segments keep their validated fixed cameras)
+def paths() -> dict:
+    cue = cm.cue_start
+    k = lambda s: _seg_tau(s, "K")
+    r = lambda s: _seg_tau(s, "R")
+    c = lambda s: _seg_tau(s, "C")
+    t_b2, t_b3, t_b4 = cue("Watch the hood"), cue("Hidden rails"), cue(cm.CABIN_BEAT)
+    K = [
+        _key(0.0, (-3.9, -2.6, 1.0), (0.0, -0.2, 0.5), 32, rel=True),
+        _key(cm.HOOK_CONTACT_S, (-3.9, -2.6, 1.0), (0.0, -0.2, 0.5), 32, rel=True),
+        _key(k(t_b2) + 0.4, (-2.9, -2.0, 0.8), (0.0, 0.1, 0.55), 34, rel=True),
+        _key(k(t_b3) + 0.2, (-3.4, -2.6, 1.0), (0.0, -0.3, 0.5), 34, rel=True),
+        _key(k(t_b3) + 2.4, (-4.4, -3.2, 1.8), (0.0, -0.8, 0.45), 34, rel=True),
+        _key(k(t_b4), (-4.6, -3.4, 1.9), (0.0, -0.9, 0.5), 34, rel=True),
+    ]
+    K += _orbit(k(t_b4), k(cue(cm.RIGID_BEAT)) - 0.01, (0.0, -1.6), 4.9, 1.9, 2.1, 0.0, 70.0, 32, n=6)[1:]
+    R = [
+        _key(0.0, (-3.9, -2.6, 1.0), (0.0, -0.2, 0.5), 32, rel=True),
+    ]
+    C = [
+        _key(0.0, (-3.0, -4.2, 1.5), (0.0, -1.3, 0.55), 32),
+        _key(c(cm.TARGET_S), (-4.2, -3.4, 1.9), (0.0, -1.2, 0.55), 32),
+    ]
+    return {"K": K, "R": R, "C": C}
+
+
+_PATHS = None
+
+
+def _smooth(x):
+    x = min(1.0, max(0.0, x))
+    return x * x * (3 - 2 * x)
 
 
 def camera(kind: str, frame: int = 1) -> dict:
-    """Camera of a film frame: the base camera of its kind, plus a slow orbit in the replay segments (the replays are long slow motion; without camera motion the picture changes too little from frame to frame)."""
-    cam = _base_camera(kind, frame)
+    """{'loc', 'target', 'lens', 'shift_y'} of a film frame for the camera path `kind` of its segment."""
+    global _PATHS
+    if _PATHS is None:
+        _PATHS = paths()
+    keys = _PATHS[kind]
     seg = cm.segment_at(frame)
-    if seg["id"] in ("H", "C", "X"):
-        return cam
-    duration = seg["last"] - seg["first"]
-    if kind == "compare":
-        crumple = next(s for s in cm.SEGMENTS if s["id"] == "C2")
-        duration = crumple["last"] - crumple["first"]
-    k = min(1.0, (frame - seg["first"]) / max(1, duration))
-    a = np.radians(ORBIT_DEG * (k - 0.5))
-    tx, ty, _ = cam["target"]
-    x, y, z = cam["loc"]
-    dx, dy = x - tx, y - ty
-    loc = (tx + dx * np.cos(a) - dy * np.sin(a), ty + dx * np.sin(a) + dy * np.cos(a), z)
-    return {**cam, "loc": tuple(float(v) for v in loc)}
+    tau = (frame - seg["first"]) / cm.FPS
+    ny = cm.nose_y(frame)
+    off = np.array([0.0, ny, 0.0])
+
+    def absolute(key, name):
+        v = np.array(key[name], float)
+        return v + off if key["rel"] else v
+
+    if tau <= keys[0]["t"]:
+        a = b = keys[0]
+        w = 0.0
+    elif tau >= keys[-1]["t"]:
+        a = b = keys[-1]
+        w = 0.0
+    else:
+        i = next(j for j in range(len(keys) - 1) if keys[j]["t"] <= tau < keys[j + 1]["t"])
+        a, b = keys[i], keys[i + 1]
+        w = _smooth((tau - a["t"]) / (b["t"] - a["t"]))
+    loc = absolute(a, "loc") * (1 - w) + absolute(b, "loc") * w
+    target = absolute(a, "target") * (1 - w) + absolute(b, "target") * w
+    return {"loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": a["lens"] * (1 - w) + b["lens"] * w,
+            "shift_y": a["shift_y"] * (1 - w) + b["shift_y"] * w}
 
 
-def project(points: np.ndarray, cam: dict, layout: str) -> np.ndarray:
+def project(points: np.ndarray, cam: dict, layout: str = "full") -> np.ndarray:
     """(N, 3) world points -> (N, 3): x, y in [0, 1] (y up, like world_to_camera_view) and depth (> 0 in front of the camera)."""
     w, h = PANEL_PX[layout]
     loc, target = np.array(cam["loc"], float), np.array(cam["target"], float)

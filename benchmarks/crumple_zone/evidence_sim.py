@@ -14,7 +14,7 @@ from benchmarks.crumple_zone import structure_geometry as sg
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "sedan_mesh.json.gz"
 CAPTION_ROWS = (1408, 1540)
-PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}, "sequential": {"crumple": (0, 1920), "rigid": (0, 1920)}}
+PANEL_ROWS = {"full": {"crumple": (0, 1920), "rigid": (0, 1920)}}
 TYRE_RADIUS = 0.281
 
 
@@ -54,14 +54,12 @@ def deformed_geometry(car: Car, s: float) -> dict:
 
 def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
     seg = cm.segment_at(frame)
-    t = cm.frame_time(frame)
     xf = cm.xray_factor(frame)
     cam = ccams.camera(seg["camera"], frame)
     metrics, in_view, panels = {"xray.factor": xf, "cell.highlight": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the green safety-cell cage is drawn together with the ghost body
     for panel in cm.visible_panels(frame):
-        rec = recs[panel]
-        i = min(int(round(t * cm.RENDER_HZ)), len(rec["t"]) - 1)
-        d, s = float(rec["d"][i]), float(rec["s"][i])
+        ps = cm.pose(frame, panel)
+        d, s = ps["d"], ps["s"]
         root_y = -cm.LEAD_SIM + d - car.nose
         g = deformed_geometry(car, s)
         zone_all = np.vstack(g["zone"])
@@ -72,6 +70,8 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
             behind = z0[:, 1] <= car.cabin_y
             if behind.any():
                 cell_mm = max(cell_mm, 1000 * float(np.abs(z1[behind] - z0[behind]).max()))
+        rise = max(float((z1[:, 2] - z0[:, 2]).max()) for z0, z1 in zip(car.zone, g["zone"]))
+        wheel_back = cm.wheel_y(float(car.wheels["front_right"][1]), s, car.nose, TYRE_RADIUS) - float(car.wheels["front_right"][1])
         shift = np.array([0.0, root_y, 0.0])
         sample = zone_all[:: max(1, len(zone_all) // 300)] + shift
         pr = ccams.project(sample, cam, seg["layout"])
@@ -92,9 +92,9 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
         wall = ccams.project(np.array([[0.0, 0.0, 1.0]]), cam, seg["layout"])[0]
         views = {"car_front": inside((0.0, car.nose - s, 0.5)), "barrier": bool(wall[2] > 0 and 0 < wall[0] < 1),
                  "crush_rails": ghost_on and inside(rail.mean(axis=0)), "bumper_beam": ghost_on and inside(g["tubes"]["bumper beam"].mean(axis=0)),
-                 "safety_cell": ghost_on and inside(cell_c)}
+                 "safety_cell": ghost_on and inside(cell_c), "whole_car": all(inside((0.0, y, z)) for y in (car.nose - s, -car.geom["tail"]) for z in (0.5,))}
         panels[panel] = {"stroke_m": s, "nose_world_y_mm": 1000 * nose_world, "wheel_front_world_y_mm": 1000 * wheel_front, "caption_overlap": overlap, "cell_mm": cell_mm,
-                         "rail_shortening": shortening, "in_view": views}
+                         "rail_shortening": shortening, "in_view": views, "root_y": root_y}
         metrics[f"{panel}.stroke_m"] = s
         metrics["nose.penetration_mm"] = max(metrics.get("nose.penetration_mm", 0.0), 1000 * max(0.0, nose_world, wheel_front))
         metrics["cell.max_displacement_mm"] = max(metrics.get("cell.max_displacement_mm", 0.0), cell_mm)
@@ -102,17 +102,21 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
         if panel == "crumple":
             metrics["rails.shortening_m"] = shortening
             metrics["crumple.crushed_depth_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH)
-            for name in ("car_front", "crush_rails", "bumper_beam", "safety_cell"):
+            metrics["body.max_rise_m"] = rise
+            metrics["wheels.pushback_m"] = -wheel_back
+            for name in ("car_front", "crush_rails", "bumper_beam", "safety_cell", "whole_car"):
                 in_view[name] = views[name]
         else:
             in_view["rigid_car_front"] = views["car_front"]
+            in_view["rigid_whole_car"] = views["whole_car"]
             metrics["rigid.rebound_m"] = cm.rebound_distance(d, s)
+            metrics["rigid.speed_away_mps"] = max(0.0, -ps["v"])
         in_view["barrier"] = in_view.get("barrier", False) or views["barrier"]
     return {"metrics": metrics, "in_view": in_view, "panels": panels}
 
 
 def timeline_evidence(car: Car, frames=range(1, cm.TOTAL_FRAMES + 1)) -> dict[int, dict]:
-    recs = {k: cm.simulate(k) for k in cm.PROFILES}
+    recs = cm.recs()
     return {f: frame_evidence(car, recs, f) for f in frames}
 
 
