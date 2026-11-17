@@ -3,7 +3,7 @@ name: EP04 crumple zone PREVIEW (first 4.5 s, low resolution, contiguous)
 # every gate that can be decided from this clip, contact sheet. Never a deliverable, never uploads. Starts only when the request file changes.
 on:
   push:
-    branches: [ep04-crumple-build-20261116]
+    branches: [ep04-crumple-build-20261116, fix/ep04-narration-visual-contract-20261117]
     paths:
       - examples/experiments/crumple-zone-preview-request.json
 permissions:

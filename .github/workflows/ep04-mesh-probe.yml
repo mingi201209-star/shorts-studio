@@ -2,7 +2,7 @@ name: EP04 mesh fixture probe (loads the sedan, dumps its vertices; no render)
 # Dumps the real vertex data of the pinned sedan so that crush / wall / camera checks run as plain Python tests. Starts only when its request file changes.
 on:
   push:
-    branches: [ep04-crumple-build-20261116]
+    branches: [ep04-crumple-build-20261116, fix/ep04-narration-visual-contract-20261117]
     paths:
       - examples/experiments/crumple-zone-mesh-probe-request.json
 permissions:

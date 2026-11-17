@@ -5,14 +5,13 @@ from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED = {
     "Cars are designed to crush.": ("Cars are designed", "to crush."),
-    "Inside, hidden structures fold and slow the car down over a longer distance and time.": (
-        "Inside, hidden", "structures fold and", "slow the car down", "over a longer distance", "and time."),
-    "Watch the front rails buckle and fold as the car slows all the way to a stop.": (
-        "Watch the front rails", "buckle and fold", "as the car slows", "all the way to a stop."),
-    "The rigid front stops in a tiny distance. The car bounces back almost immediately.": (
-        "The rigid front stops", "in a tiny distance.", "The car bounces back", "almost immediately."),
-    "The passenger compartment keeps its shape. While the front folds inward, the cabin stays intact.": (
-        "The passenger", "compartment keeps", "its shape.", "While the front", "folds inward,", "the cabin stays intact."),
+    "Watch the hood buckle, and the front wheels get shoved back.": ("Watch the hood buckle,", "and the front wheels", "get shoved back."),
+    "Hidden rails inside fold like an accordion, stretching the stop over a longer distance and time.": (
+        "Hidden rails inside", "fold like an accordion,", "stretching the stop", "over a longer distance", "and time."),
+    "Meanwhile, the passenger compartment keeps its shape. Pillars and doors stay where they were.": (
+        "Meanwhile, the passenger", "compartment keeps", "its shape.", "Pillars and doors", "stay where they were."),
+    "Now the same speed, the same wall, but a rigid front. It stops almost instantly, and the car bounces back.": (
+        "Now the same speed,", "the same wall,", "but a rigid front.", "It stops almost", "instantly, and the car", "bounces back."),
     "The front is meant to deform. The cabin isn't.": ("The front is meant", "to deform.", "The cabin isn't."),
 }
 
