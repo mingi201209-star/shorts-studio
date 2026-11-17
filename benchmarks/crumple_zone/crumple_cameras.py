@@ -19,9 +19,9 @@ SAFE = {"left": 54, "right": 960, "top": 150, "bottom": 1540}
 NO_SCENE_TEXT = True      # the owner banned on-screen words other than the narration captions: the renderer creates no text objects (gate: no_scene_text)
 
 
-def _key(t, loc, target, lens=34.0, at=0.40, rel=False):
+def _key(t, loc, target, lens=34.0, at=0.40, rel=False, cut=False):
     """at: fraction of the frame height, from the top, where the look-at point lands (lens shift is derived from it): the subject sits in the upper-middle, above the captions."""
-    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": bool(rel)}
+    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": bool(rel), "cut": bool(cut)}
 
 
 def _orbit(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, at=0.40, target_z=0.55):
@@ -49,9 +49,17 @@ def paths() -> dict:
     t_b2, t_b3, t_b4, t_b5 = cue("to watch the hood"), cue("Hidden rails"), cue(cm.CABIN_BEAT), cue(cm.RIGID_BEAT)
     near = dict(lens=34)      # poses are relative to the front of the car (rel=True) unless noted
     K = [
-        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # run-up: tracking three-quarter view, the wall rushes towards the nose
-        _key(cm.HOOK_CONTACT_S, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(k(t_b2) + 0.3, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),             # close high three-quarter view of the hood and the front wheel
+        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # 1 run-up: tracking three-quarter view, the wall rushes towards the nose
+        _key(cm.HOOK_CONTACT_S - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
+        _key(cm.HOOK_CONTACT_S, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),        # 2 CUT at contact: fixed low side profile, the nose meets the wall
+        _key(2.6 - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
+        _key(2.6, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True, cut=True),            # 3 CUT: close high three-quarter view of the hood and the front wheel
+        _key(4.4 - 0.01, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),
+        _key(4.4, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                      # 4 CUT: from the wall looking back along the folding flank
+        _key(k(t_b2) - 0.01, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45),
+        _key(k(t_b2), (-1.5, -1.6, 0.5), (0.0, -0.2, 0.45), 34, at=0.45, rel=True, cut=True),       # 5 CUT: low front-left view of the buckling hood
+        _key(k(t_b2) + 1.7, (-1.5, -1.6, 0.5), (0.0, -0.2, 0.45), 34, at=0.45, rel=True),
+        _key(k(t_b2) + 1.71, (-2.0, -1.7, 1.45), (0.0, -0.3, 0.5), 34, at=0.45, rel=True, cut=True),  # 6 CUT: high three-quarter view again, steady until the rails
         _key(k(t_b3) - 0.4, (-2.0, -1.7, 1.45), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),
         _key(k(t_b3) + 0.6, (-3.2, -3.2, 2.6), (0.0, -0.7, 0.45), 34, at=0.48, rel=True),             # step out and up (never through the car) while the scan line passes
         _key(k(t_b3) + 2.8, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),             # high chase view over the folding rails, the whole car in frame
@@ -60,9 +68,10 @@ def paths() -> dict:
     K += _orbit(k(t_b4) - 0.2, k(t_b5) - 0.01, (0.0, -1.6), 4.1, 3.6, 1.5, 51.0, -15.0, 34, n=8, at=0.45)[1:]      # slow orbit from behind-left round to the crushed front
     R = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.4, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 0.3, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),   # the same close view of the nose as the first crash
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 2.4, (-3.0, -3.0, 1.4), (0.0, 1.0, 0.6), 30, at=0.45, rel=True),     # the camera follows the car as it moves away, looking back at the wall
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
+        _key(r(cue(cm.RIGID_CONTACT_CUE)), (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),    # CUT at contact: the same fixed side profile, the car stops and bounces back
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 1.4 - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 1.4, (-3.0, -3.0, 1.4), (0.0, 1.0, 0.6), 30, at=0.45, rel=True, cut=True),   # CUT: the camera follows the car as it moves away, looking back at the wall
     ]
     C = [
         _key(0.0, (-2.6, -3.0, 1.5), (0.0, -0.9, 0.5), 34, at=0.45),
@@ -104,7 +113,7 @@ def camera(kind: str, frame: int = 1) -> dict:
     else:
         i = next(j for j in range(len(keys) - 1) if keys[j]["t"] <= tau < keys[j + 1]["t"])
         a, b = keys[i], keys[i + 1]
-        w = _smooth((tau - a["t"]) / (b["t"] - a["t"]))
+        w = 0.0 if b.get("cut") else _smooth((tau - a["t"]) / (b["t"] - a["t"]))      # a cut keeps the old shot until its own time, then jumps
     loc = absolute(a, "loc") * (1 - w) + absolute(b, "loc") * w
     target = absolute(a, "target") * (1 - w) + absolute(b, "target") * w
     at = a["at"] * (1 - w) + b["at"] * w
