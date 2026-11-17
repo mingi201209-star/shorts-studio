@@ -1,13 +1,13 @@
 {
  "episode": "ep04-crumple-zone",
  "title": "This Car Is Designed to Crush.",
- "target_seconds": 31.3,
+ "target_seconds": 32.0,
  "narration": [
   "Cars are designed to crush.",
   "The real crash lasts a tenth of a second so we slow it way down. Watch the hood buckle and the whole front fold back.",
   "Hidden rails inside fold like an accordion absorbing the crash energy and stretch the stop over a longer distance and time.",
-  "The cabin keeps its shape. Pillars, doors and roof stay exactly put.",
-  "Now a rigid front at the same speed. It has almost nothing to crush so it stops almost instantly and bounces right back.",
+  "The cabin keeps its shape. Pillars, doors and roof stay put.",
+  "Now a rigid front at the same speed. It has almost nothing to crush so it stops almost instantly and bounces back.",
   "The front is meant to deform and absorb the crash. The cabin isn't."
  ],
  "scenes": [
@@ -458,7 +458,7 @@
   {
    "id": "s04b",
    "beat": 4,
-   "narration": "Pillars, doors and roof stay exactly put.",
+   "narration": "Pillars, doors and roof stay put.",
    "cue": "Pillars, doors and roof",
    "subjects": [
     "safety_cell",
@@ -678,7 +678,7 @@
   {
    "id": "s05c",
    "beat": 5,
-   "narration": "instantly and bounces right back.",
+   "narration": "instantly and bounces back.",
    "cue": "instantly and bounces",
    "subjects": [
     "rigid_car_front"

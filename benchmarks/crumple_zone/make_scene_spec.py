@@ -49,7 +49,7 @@ S.append(scene("s04a",4,"The cabin keeps its shape.","The cabin keeps",["safety_
   chk("s04a-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   chk("s04a-cage-on","the cage is on screen during the whole sentence","metric_at_least","timing",metric="cell.highlight",value=0.99),
   noobs("s04a"),mute("s04a","with the sound off the crushed front and the intact cabin are seen together")]))
-S.append(scene("s04b",4,"Pillars, doors and roof stay exactly put.","Pillars, doors and roof",["safety_cell","whole_car"],"protected_cell_highlight",
+S.append(scene("s04b",4,"Pillars, doors and roof stay put.","Pillars, doors and roof",["safety_cell","whole_car"],"protected_cell_highlight",
  "The orbit shows the cabin from other sides: pillars, doors and roof line are exactly where they were","cell.highlight",0.5,{"kind":"K","movement":"slow orbit around the deformed car"},["protected_cell_highlight"],
  [subj("s04b",["safety_cell","whole_car"],0.8),
   chk("s04b-front-still-crushed","the crushed front is still seen (the cabin is compared with it)","metric_reaches","action_performed",metric="crumple.crushed_depth_m",value=0.8),
@@ -69,7 +69,7 @@ S.append(scene("s05b",5,"It has almost nothing to crush so it stops almost","alm
   chk("s05b-short","the rigid car crushes by less than 6 cm","metric_at_most","action_performed",metric="rigid.stroke_m",value=0.06),
   chk("s05b-no-penetration","the nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s05b"),mute("s05b","with the sound off the blue car stops dead at the wall")]))
-S.append(scene("s05c",5,"instantly and bounces right back.","instantly and bounces",["rigid_car_front"],"rigid_stop_rebound",
+S.append(scene("s05c",5,"instantly and bounces back.","instantly and bounces",["rigid_car_front"],"rigid_stop_rebound",
  "After the stop the car moves back away from the wall (simulated rebound) and the camera follows it","rigid.rebound_m",0.05,{"kind":"R","movement":"the camera follows the car as it moves away from the wall"},["rigid_stop_rebound"],
  [subj("s05c",["rigid_car_front","barrier"],0.6),
   chk("s05c-rebound","the car moves back at least 1 m from the wall while it is narrated","metric_reaches","action_performed",metric="rigid.rebound_m",value=1.0),
@@ -89,7 +89,7 @@ S.append(scene("s06b",6,"The cabin isn't.","The cabin isn't.",["safety_cell"],"p
   chk("s06b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   chk("s06b-onset","the cage appears when 'the cabin' is spoken","onset_near_cue","timing",metric="cell.highlight",onset_threshold=0.5,value=1.0),
   noobs("s06b"),mute("s06b","with the sound off the cage shows the cabin untouched")]))
-spec={"episode":"ep04-crumple-zone","title":"This Car Is Designed to Crush.","target_seconds":31.3,"narration":beats,"scenes":S,
+spec={"episode":"ep04-crumple-zone","title":"This Car Is Designed to Crush.","target_seconds":32.0,"narration":beats,"scenes":S,
  "assumptions":["Scope (owner, 2026-11-16/17): no on-screen text except the narration captions; no bars, arrows or occupant; X-ray only where the rails are hidden (continuing the same crash, never a replay); the two crashes are shown once each, one after the other, full screen.",
   "The film is slow motion with a changing time scale (run-up at real speed, crash roughly 200x slower, bounce at a readable speed); both cars use the same crush time scale. Illustrative simulation, not a calibrated crash test; stated in the description file, not on screen.",
   "Gates and thresholds of the earlier spec (cell <= 1 mm, no penetration, rigid stroke <= 6 cm, captions not obscured) are kept; checks that depended on the old structure were replaced by the checks above."]}
