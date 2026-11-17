@@ -25,7 +25,7 @@ from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 
 material, cube = base.material, base.cube
-SIZES = {"full": (1080, 1920), "stack": (1080, 960)}
+SIZES = {"full": (1080, 1920), "stack": (1080, 960), "sequential": (1080, 1920)}
 
 
 def arguments():
@@ -241,7 +241,7 @@ def main():
         t = cm.frame_time(f)
         xf = cm.xray_factor(f)
         info = {"frame": f, "segment": seg["id"], "camera": seg["camera"], "layout": seg["layout"], "sim_time": round(t, 5), "xray": round(xf, 3)}
-        for panel in seg["panels"]:
+        for panel in cm.visible_panels(f):
             rec = recs[panel]
             i = min(int(round(t * cm.RENDER_HZ)), len(rec["t"]) - 1)
             d, s = float(rec["d"][i]), float(rec["s"][i])
@@ -263,11 +263,11 @@ def main():
                 ob.hide_render = not show
             ghost.set_factor(xf, root.location.y + nose, car_len)
             for kind, lab in labels.items():
-                lab.hide_render = not (seg["layout"] == "stack" and kind == panel)
+                lab.hide_render = not (seg["layout"] in ("stack", "sequential") and kind == panel)
             sign_in_view = False
             place_camera(cam, seg["camera"], f)
             bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
-            if seg["layout"] == "stack":
+            if seg["layout"] in ("stack", "sequential"):
                 lab = labels[panel]
                 lab.location = ccams.SIGN["pos"]
                 lab.rotation_euler = (cam.location - Vector(lab.location)).to_track_quat("Z", "Y").to_euler()
@@ -309,7 +309,7 @@ def main():
 
 
 CAPTION_ROWS = (1408, 1540)       # rows of the 1080x1920 frame where the captions sit
-PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}}
+PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}, "sequential": {"crumple": (0, 1920), "rigid": (0, 1920)}}
 
 
 def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y, s, xf, seg, panel, cell_span):
