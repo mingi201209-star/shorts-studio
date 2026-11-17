@@ -23,7 +23,7 @@ from shorts_studio.scene_spec import validate as validate_spec
 
 ROOT = Path(__file__).resolve().parents[2]
 W, H = 1080, 1920
-PLACE = {"full": {"crumple": (0, 0, 1080, 1920)}, "stack": {"crumple": (0, 0, 1080, 960), "rigid": (0, 960, 1080, 960)}}
+PLACE = {"full": {"crumple": (0, 0, 1080, 1920)}, "stack": {"crumple": (0, 0, 1080, 960), "rigid": (0, 960, 1080, 960)}, "sequential": {"crumple": (0, 0, 1080, 1920), "rigid": (0, 0, 1080, 1920)}}
 
 
 def compose(panels: Path, out: Path):
@@ -51,7 +51,7 @@ def compose(panels: Path, out: Path):
     for f in range(1, cm.TOTAL_FRAMES + 1):
         seg = cm.segment_at(f)
         img = Image.new("RGB", (W, H), (0, 0, 0))
-        for panel in seg["panels"]:
+        for panel in cm.visible_panels(f):
             x, y, w, h = PLACE[seg["layout"]][panel]
             im = Image.open(index[(f, panel)]).convert("RGB")
             if im.size != (w, h):
