@@ -63,9 +63,9 @@ def main():
     for f in sorted(evidence):
         seg = cm.segment_at(f)
         im = Image.new("RGB", (360, 640))
-        for panel in seg["panels"]:
+        for panel in cm.visible_panels(f):
             src = Image.open(paths[(f, panel)]).convert("RGB")
-            if seg["layout"] == "full":
+            if seg["layout"] in ("full", "sequential"):
                 im.paste(src.resize((360, 640)), (0, 0))
             else:
                 im.paste(src.resize((360, 320)), (0, 0 if panel == "crumple" else 320))
