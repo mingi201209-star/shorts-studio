@@ -34,8 +34,9 @@ def sign_boxes(frame: int = 30) -> dict:
     for kind, word in SIGN["words"].items():
         w, h = len(word) * SIGN["size"] * SIGN["char_w"], SIGN["size"]
         pts = np.array([c + sx * rr * w / 2 + sy * uu * h / 2 for sx in (-1, 1) for sy in (-1, 1)])
-        p = project(pts, cam, "stack")
-        rows = PANEL_OFFSET[kind] + (1 - p[:, 1]) * 960
+        layout = cm.segment_at(frame)["layout"]
+        p = project(pts, cam, "full" if layout == "sequential" else "stack")
+        rows = (1 - p[:, 1]) * 1920 if layout == "sequential" else PANEL_OFFSET[kind] + (1 - p[:, 1]) * 960
         out[kind] = {"rows": (float(rows.min()), float(rows.max())), "cols": (float(p[:, 0].min() * 1080), float(p[:, 0].max() * 1080))}
     return out
 
