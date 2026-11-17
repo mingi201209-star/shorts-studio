@@ -4,32 +4,32 @@
    "id": "crumple-zone",
    "beats": [
     {
-     "narration_en": "A car hits a wall. In real life it takes a tenth of a second, so we slow it down.",
+     "narration_en": "A car hits a wall and a tenth of a second is slowed way down.",
      "start": 0,
      "end": 5
     },
     {
-     "narration_en": "The hood buckles and the front folds back, then hidden rails fold like an accordion.",
+     "narration_en": "The hood buckles and the front folds as hidden rails fold like an accordion.",
      "start": 5,
      "end": 10
     },
     {
-     "narration_en": "The rails soak up the crash over a longer stop, and the cabin keeps its shape.",
+     "narration_en": "Rails absorb the crash over a longer stop as the cabin keeps its shape.",
      "start": 10,
      "end": 15
     },
     {
-     "narration_en": "Pillars, doors and roof stay put. Now a rigid front hits the same wall.",
+     "narration_en": "Pillars doors and roof stay put as a rigid front hits the same wall.",
      "start": 15,
      "end": 20
     },
     {
-     "narration_en": "It has almost nothing to crush, so it stops almost instantly and bounces back.",
+     "narration_en": "It has almost nothing to crush so it stops almost instantly and bounces back.",
      "start": 20,
      "end": 25
     },
     {
-     "narration_en": "The front is meant to deform and absorb the crash. The cabin isn't.",
+     "narration_en": "The front is meant to deform and absorb the crash but the cabin isn't.",
      "start": 25,
      "end": 30
     }
