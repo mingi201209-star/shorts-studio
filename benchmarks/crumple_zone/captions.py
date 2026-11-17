@@ -7,12 +7,12 @@ CURATED = {
     "Cars are designed to crush.": ("Cars are designed", "to crush."),
     "Inside, hidden structures fold and slow the car down over a longer distance and time.": (
         "Inside, hidden", "structures fold and", "slow the car down", "over a longer distance", "and time."),
-    "For the same change in momentum, more stopping time can mean less average force.": (
-        "For the same change", "in momentum, more", "stopping time can mean", "less average force."),
-    "The rigid front stops in a tiny distance, so its average force is far higher.": (
-        "The rigid front stops", "in a tiny distance,", "so its average force", "is far higher."),
-    "The passenger compartment is built to stay protective, while seat belts and airbags help protect the people inside.": (
-        "The passenger", "compartment is built", "to stay protective,", "while seat belts and", "airbags help protect", "the people inside."),
+    "Watch the front keep folding as the car slows all the way to a stop.": (
+        "Watch the front", "keep folding", "as the car slows", "all the way to a stop."),
+    "The rigid front stops in a tiny distance. The car bounces back almost immediately.": (
+        "The rigid front stops", "in a tiny distance.", "The car bounces back", "almost immediately."),
+    "The passenger compartment keeps its shape. While the front folds inward, the cabin stays intact.": (
+        "The passenger", "compartment keeps", "its shape.", "While the front", "folds inward,", "the cabin stays intact."),
     "The front is meant to deform. The cabin isn't.": ("The front is meant", "to deform.", "The cabin isn't."),
 }
 
