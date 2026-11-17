@@ -29,7 +29,7 @@
    },
    "camera": {
     "kind": "hero",
-    "movement": "close 3/4 on the nose, then a synchronized CRUMPLE (top) / RIGID (bottom) comparison"
+    "movement": "close 3/4 on the nose, then a full-screen shot of the front crushing"
    },
    "effects": [
     "structure_deformation",
@@ -257,19 +257,18 @@
    "narration": "slow the car down over a longer distance and time.",
    "cue": "slow the car down",
    "subjects": [
-    "car_front",
-    "rigid_car_front"
+    "car_front"
    ],
    "phenomenon": {
     "kind": "two_situation_comparison",
-    "description": "The crumple car keeps crushing over a long distance while the rigid car stops almost at once (same speed, mass, barrier)",
+    "description": "The CRUMPLE car keeps crushing over a long distance. The matched RIGID replay follows at the rigid-front cue.",
     "onset_metric": "crumple.crushed_depth_m",
     "onset_threshold": 0.01,
     "explanation_only": false
    },
    "camera": {
     "kind": "compare",
-    "movement": "CRUMPLE / RIGID side by side"
+    "movement": "full-screen CRUMPLE replay"
    },
    "effects": [
     "two_situation_comparison"
@@ -277,12 +276,11 @@
    "success": [
     {
      "id": "s02c-subjects",
-     "description": "the shown subjects are on screen",
+     "description": "the crumple front is on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "car_front",
-      "rigid_car_front"
+      "car_front"
      ],
      "value": 0.8
     },
@@ -400,14 +398,14 @@
    ],
    "phenomenon": {
     "kind": "two_situation_comparison",
-    "description": "The rigid-front car stops within centimetres and its average-force arrow is far longer than the crumple car's",
+    "description": "The rigid-front car stops within centimetres at the same playback speed as the CRUMPLE replay. The voice explains average force.",
     "onset_metric": "rigid.stroke_m",
     "onset_threshold": 0.01,
     "explanation_only": false
    },
    "camera": {
     "kind": "compare",
-    "movement": "replay of the same crash, CRUMPLE / RIGID side by side"
+    "movement": "full-screen RIGID replay with matching framing and playback time scale"
    },
    "effects": [
     "two_situation_comparison"
@@ -731,6 +729,6 @@
   "Illustrative one-dimensional crash simulation: 50 km/h, 1400 kg, rigid barrier; crush stroke 0.62 m (crumple) versus 0.05 m (rigid counterfactual).",
   "Not calibrated to any real vehicle or crash test; the rigid counterfactual is not a measured crash. No real injury figures are claimed.",
   "The occupant, belt and airbag are explanatory models, not a dummy test result.",
-  "Scope fixed by the owner (2026-11-16): 3D distance/time bars, force arrows and an occupant model are optional and NOT part of EP.04. Scenes s02c/s03/s04/s05b were re-described with the implemented real deformation, comparison stack and cell highlight; no check was weakened (same not_obscured, timing, sound-off criteria, cell <=1 mm, rigid stroke <=6 cm)."
+  "Scope fixed by the owner (2026-11-16): 3D distance/time bars, force arrows and an occupant model are optional and NOT part of EP.04. Scenes s02c/s03/s04/s05b were re-described with the implemented real deformation, sequential comparison and cell highlight; no check was weakened (same not_obscured, timing, sound-off criteria, cell <=1 mm, rigid stroke <=6 cm)."
  ]
 }

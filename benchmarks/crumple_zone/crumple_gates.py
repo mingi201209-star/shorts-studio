@@ -121,17 +121,19 @@ def xray_against_road(car, frames, max_sky_backed=0.15) -> dict:
 def labels_visible(load, telemetry: list[dict], min_frames=25, min_px=40) -> dict:
     """Check the ONE visible full-height comparison sign, not two stacked signs."""
     comparison = [t for t in telemetry if t["layout"] == "sequential"]
-    visible = [t["frame"] for t in comparison
-               if t.get(cm.visible_panel(t["frame"]), {}).get("sign_in_view", False)]
-    problems = []
-    if len(visible) < min_frames:
-        problems.append(f"sign visible in only {len(visible)} sequential comparison frames (need {min_frames})")
-    sample = visible[::max(1, len(visible) // 12)]
-    missing = [f for f in sample if sbg._sign_pixels(load(f)) < min_px]
-    if sample and len(missing) > 0.15 * len(sample):
-        problems.append(f"sign pixels missing in frames {missing[:6]}")
+    problems, missing, counts = [], [], {}
+    for kind in cm.PROFILES:
+        visible = [t["frame"] for t in comparison if t.get(kind, {}).get("sign_in_view", False)]
+        counts[kind] = len(visible)
+        if len(visible) < min_frames:
+            problems.append(f"{kind} sign visible in only {len(visible)} frames (need {min_frames})")
+        sample = visible[::max(1, len(visible) // 12)]
+        absent = [f for f in sample if sbg._sign_pixels(load(f)) < min_px]
+        if len(absent) > 0.15 * len(sample):
+            problems.append(f"{kind} sign pixels missing in frames {absent[:6]}")
+        missing.extend(absent)
     return {"status": "FAIL" if problems else "PASS", "problems": problems,
-            "frames_with_sign": len(visible), "missing": missing}
+            "frames_with_sign": sum(counts.values()), "frames_by_car": counts, "missing": missing}
 
 
 def smoothness(frame_diffs: np.ndarray, min_median=0.3) -> dict:

@@ -26,7 +26,7 @@ CLAIMS = (
           "Consecutive X-ray frames show rail deformation large enough to see on a phone"),
     Claim("longer distance and time", "Comparison visibly communicates longer deceleration", ("C2", "C3"),
           "Matched playback of two cars with distinct stop distances; labels alone are insufficient"),
-    Claim("less average force", "Average-force comparison is actually conveyed", ("X2", "C3"),
+    Claim("less average force", "Average force comparison is actually conveyed", ("X2", "C3"),
           "Inspect whether a viewer can distinguish *average force* from crush depth; don't infer it from labels"),
     Claim("rigid front stops", "Rigid and crumple cars visibly stop differently", ("C3",),
           "Matched rigid/crumple stop positions and timing in consecutive frames"),

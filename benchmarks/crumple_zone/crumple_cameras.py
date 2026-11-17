@@ -8,7 +8,7 @@ import numpy as np
 from benchmarks.crumple_zone import crumple_motion as cm
 
 SENSOR_W = 36.0
-PANEL_PX = {"full": (1080, 1920), "stack": (1080, 960)}
+PANEL_PX = {"full": (1080, 1920), "stack": (1080, 960), "sequential": (1080, 1920)}
 
 
 #: The only on-screen words besides the narration captions: one word per car in the comparison, as a 3D sign on the road under each car.
@@ -22,7 +22,7 @@ PANEL_OFFSET = {"crumple": 0, "rigid": 960}
 
 
 def sign_boxes(frame: int = 30) -> dict:
-    """Frame-pixel box (rows, cols) of each sign in the stacked comparison: billboard facing the camera, width = chars * size * char_w."""
+    """Frame-pixel box (rows, cols) of each comparison sign: billboard facing the camera, width = chars * size * char_w."""
     cam = camera("compare", frame)
     c = np.array(SIGN["pos"], float)
     toc = np.array(cam["loc"]) - c
@@ -35,7 +35,7 @@ def sign_boxes(frame: int = 30) -> dict:
         w, h = len(word) * SIGN["size"] * SIGN["char_w"], SIGN["size"]
         pts = np.array([c + sx * rr * w / 2 + sy * uu * h / 2 for sx in (-1, 1) for sy in (-1, 1)])
         layout = cm.segment_at(frame)["layout"]
-        p = project(pts, cam, "full" if layout == "sequential" else "stack")
+        p = project(pts, cam, "sequential" if layout == "sequential" else "stack")
         rows = (1 - p[:, 1]) * 1920 if layout == "sequential" else PANEL_OFFSET[kind] + (1 - p[:, 1]) * 960
         out[kind] = {"rows": (float(rows.min()), float(rows.max())), "cols": (float(p[:, 0].min() * 1080), float(p[:, 0].max() * 1080))}
     return out
@@ -65,7 +65,11 @@ def camera(kind: str, frame: int = 1) -> dict:
     seg = cm.segment_at(frame)
     if seg["id"] in ("H", "C", "X"):
         return cam
-    k = (frame - seg["first"]) / max(1, seg["last"] - seg["first"])
+    duration = seg["last"] - seg["first"]
+    if kind == "compare":
+        crumple = next(s for s in cm.SEGMENTS if s["id"] == "C2")
+        duration = crumple["last"] - crumple["first"]
+    k = min(1.0, (frame - seg["first"]) / max(1, duration))
     a = np.radians(ORBIT_DEG * (k - 0.5))
     tx, ty, _ = cam["target"]
     x, y, z = cam["loc"]

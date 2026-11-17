@@ -103,9 +103,9 @@ FILM = os.environ.get("EP04_FILM", "preview")
 T_MOTION_END_S = 0.09      # simulated time AFTER CONTACT at which the crumple car has stopped (stop time 87 ms; asserted against simulate() in the tests)
 CONTACT_FILM_S = 0.30      # a replay shows the car touching the barrier 0.3 s after the cue (real onset inside the sync tolerance)
 _REPLAYS = [               # id, first frame, last frame, panels, layout, camera (first frame = round(cue * 30) + 1)
-    ("C2", 126, 223, ("crumple", "rigid"), "sequential", "compare"),   # "slow the car down"      4.17 s
+    ("C2", 126, 223, ("crumple",), "sequential", "compare"),   # "slow the car down"      4.17 s
     ("X2", 224, 365, ("crumple",), "full", "xray"),               # "For the same change"    7.42 s
-    ("C3", 366, 502, ("crumple", "rigid"), "sequential", "compare"),   # "The rigid front stops" 12.15 s
+    ("C3", 366, 502, ("rigid",), "sequential", "compare"),   # "The rigid front stops" 12.15 s
     ("X3", 503, 586, ("crumple",), "full", "xray"),               # "The passenger"         16.72 s
     ("X4", 587, 690, ("crumple",), "full", "xray"),               # "while seat belts and"  19.53 s
     ("H2", 691, 744, ("crumple",), "full", "hero"),               # "The front is meant"    22.99 s
@@ -115,13 +115,17 @@ _REPLAYS = [               # id, first frame, last frame, panels, layout, camera
 
 def _replay(seg_id, first, last, panels, layout, camera):
     film_s = (last - first + 1) / FPS
+    if seg_id == "C3":
+        # Match the CRUMPLE replay's contact point and time scale.
+        _, crumple_first, crumple_last, *_ = _REPLAYS[0]
+        film_s = (crumple_last - crumple_first + 1) / FPS
     slow = T_MOTION_END_S / (1.03 * film_s - CONTACT_FILM_S)      # the motion lasts to the last frame of the segment: no frozen frame
     return {"id": seg_id, "first": first, "last": last, "lead_m": round(CONTACT_FILM_S * slow * V0_KMH / 3.6, 4), "slow": round(slow, 5), "panels": panels, "layout": layout, "camera": camera}
 
 
 SEGMENTS = [
     {"id": "H", "first": 1, "last": 18, "lead_m": 0.30, "panels": ("crumple",), "layout": "full", "camera": "hero"},
-    {"id": "C", "first": 19, "last": 60, "lead_m": 0.30, "panels": ("crumple", "rigid"), "layout": "sequential", "camera": "compare"},
+    {"id": "C", "first": 19, "last": 60, "lead_m": 0.30, "panels": ("crumple",), "layout": "sequential", "camera": "compare"},
     {"id": "X", "first": 61, "last": 125, "lead_m": 1.00, "panels": ("crumple",), "layout": "full", "camera": "xray"},      # contact 1.0 s into the segment (= 3.0 s, the cue "structures fold and"), crush finished before the cut at 4.17 s
 ] + [_replay(*r) for r in _REPLAYS]
 TOTAL_FRAMES = SEGMENTS[-1]["last"]
@@ -135,16 +139,12 @@ SYNC_TOLERANCE_S = 0.4
 
 
 def visible_panel(frame: int) -> str:
-    """Exactly one full-screen car per comparison frame: crumple first, rigid second."""
-    seg = segment_at(frame)
-    if seg["layout"] != "sequential":
-        return seg["panels"][0]
-    midpoint = (seg["first"] + seg["last"] + 1) // 2
-    return "crumple" if frame < midpoint else "rigid"
+    """The car featured in the current full-screen shot."""
+    return segment_at(frame)["panels"][0]
 
 
 def visible_panels(frame: int) -> tuple[str, ...]:
-    return (visible_panel(frame),)
+    return segment_at(frame)["panels"]
 
 
 def segment_at(frame: int) -> dict:
@@ -158,14 +158,6 @@ def frame_time(frame: int) -> float:
     """Film frame (1-based) -> simulated time (s) since simulate()'s start."""
     seg = segment_at(frame)
     v0 = V0_KMH / 3.6
-    if seg["layout"] == "sequential":
-        # Each car gets its own approach, contact and stopping action.
-        midpoint = (seg["first"] + seg["last"] + 1) // 2
-        start = seg["first"] if frame < midpoint else midpoint
-        beat_s = (midpoint - seg["first"] if frame < midpoint else seg["last"] - midpoint + 1) / FPS
-        slow = T_MOTION_END_S / max(0.1, 1.03 * beat_s - CONTACT_FILM_S)
-        lead_m = CONTACT_FILM_S * slow * v0
-        return (LEAD_SIM - lead_m) / v0 + (frame - start) / FPS * slow
     return (LEAD_SIM - seg["lead_m"]) / v0 + (frame - seg["first"]) / FPS * seg.get("slow", SLOW)
 
 

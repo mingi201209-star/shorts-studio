@@ -84,7 +84,15 @@ def test_every_segment_keeps_moving_and_the_workflow_covers_all_frames():
     for seg in cm.SEGMENTS[3:]:
         slow = seg["slow"]
         assert abs(cm.first_contact_film_s(seg["id"]) - cm.CONTACT_FILM_S) < 0.01
-        assert cm.CONTACT_FILM_S + cm.T_MOTION_END_S / slow >= (seg["last"] - seg["first"]) / cm.FPS      # still moving at the last frame
+        if seg["panels"] == ("rigid",):
+            # This pass keeps moving after impact through the simulated rebound.
+            rigid = cm.simulate("rigid")
+            elapsed = cm.frame_time(seg["last"])
+            prior = cm.frame_time(seg["last"] - 1)
+            assert elapsed < rigid["t"][-1]
+            assert np.interp(elapsed, rigid["t"], rigid["d"]) < np.interp(prior, rigid["t"], rigid["d"])
+        else:
+            assert cm.CONTACT_FILM_S + cm.T_MOTION_END_S / slow >= (seg["last"] - seg["first"]) / cm.FPS
     wf = (Path(__file__).resolve().parents[1] / ".github/workflows/ep04-crumple-preview.yml").read_text()
     assert f"(1, {cm.TOTAL_FRAMES})" in wf
 
@@ -99,3 +107,14 @@ def test_only_the_two_comparison_signs_exist_besides_captions_and_they_are_in_th
         assert g.text_safe_area()["status"] == "FAIL"
     finally:
         cc.SIGN = {"pos": (-1.4, -1.6, 0.32), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
+
+
+def test_label_gate_requires_both_sequential_signs(monkeypatch):
+    monkeypatch.setattr(g.sbg, "_sign_pixels", lambda frame: 40)
+    telemetry = [
+        {"frame": f, "layout": "sequential", kind: {"sign_in_view": True}}
+        for kind, first in (("crumple", 126), ("rigid", 366))
+        for f in range(first, first + 25)
+    ]
+    assert g.labels_visible(lambda f: f, telemetry)["status"] == "PASS"
+    assert g.labels_visible(lambda f: f, telemetry[:25])["status"] == "FAIL"
