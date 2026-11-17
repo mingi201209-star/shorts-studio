@@ -78,6 +78,10 @@ def main():
     frames = a.frames_dir or (a.out / "frames")
     telemetry, sha, evidence = compose(a.panels, frames)
     audio_report = json.loads((a.audio / "audio-validation.json").read_text())
+    frozen = json.loads((ROOT / "examples/experiments/crumple-zone-real-cues.json").read_text())
+    narration_sha = hashlib.sha256((a.audio / "narration.wav").read_bytes()).hexdigest()
+    if narration_sha != frozen["narration_sha256"] or audio_report["cues"] != frozen["cues"]:
+        raise SystemExit("preview audio or measured cue timing differs from the frozen narration")
     for name in ("narration.wav", "film.ass"):
         (a.out / name).write_bytes((a.audio / name).read_bytes())
     ass = a.out / "film.ass"
@@ -108,7 +112,7 @@ def main():
         "crush_map_keeps_the_cell": gates.crush_map_keeps_the_cell(),
         "telemetry_geometry": gates.telemetry_geometry(telemetry),
         "deformation_visible_by_2s": gates.deformation_visible_by(telemetry),
-        "xray_against_road": gates.xray_against_road(es.Car(es.load_fixture()), range(61, cm.TOTAL_FRAMES + 1)),
+        "xray_against_road": gates.xray_against_road(es.Car(es.load_fixture()), range(1, cm.TOTAL_FRAMES + 1)),
         "labels_visible": gates.labels_visible(load, telemetry),
         "text_safe_area": gates.text_safe_area(),
         "smoothness": gates.smoothness(gray_diffs(video)),

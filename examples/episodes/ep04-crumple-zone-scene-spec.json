@@ -5,9 +5,9 @@
  "narration": [
   "Cars are designed to crush.",
   "Inside, hidden structures fold and slow the car down over a longer distance and time.",
-  "For the same change in momentum, more stopping time can mean less average force.",
-  "The rigid front stops in a tiny distance, so its average force is far higher.",
-  "The passenger compartment is built to stay protective, while seat belts and airbags help protect the people inside.",
+  "Watch the front rails buckle and fold as the car slows all the way to a stop.",
+  "The rigid front stops in a tiny distance. The car bounces back almost immediately.",
+  "The passenger compartment keeps its shape. While the front folds inward, the cabin stays intact.",
   "The front is meant to deform. The cabin isn't."
  ],
  "scenes": [
@@ -321,15 +321,15 @@
   {
    "id": "s03",
    "beat": 3,
-   "narration": "For the same change in momentum, more stopping time can mean less average force.",
-   "cue": "For the same change",
+   "narration": "Watch the front rails buckle and fold as the car slows all the way to a stop.",
+   "cue": "Watch the front rails",
    "subjects": [
     "car_front",
     "crush_rails"
    ],
    "phenomenon": {
     "kind": "structure_folding",
-    "description": "X-ray replay of the same crash: the structures fold over the whole stopping time (the narrated momentum/force idea is explained by the voice; no graphics are added)",
+    "description": "The front rails keep folding against the barrier as the car slows in the X-ray replay.",
     "onset_metric": "crumple.crushed_depth_m",
     "onset_threshold": 0.01,
     "explanation_only": false
@@ -391,14 +391,14 @@
   {
    "id": "s04",
    "beat": 4,
-   "narration": "The rigid front stops in a tiny distance, so its average force is far higher.",
+   "narration": "The rigid front stops in a tiny distance.",
    "cue": "The rigid front stops",
    "subjects": [
     "rigid_car_front"
    ],
    "phenomenon": {
     "kind": "two_situation_comparison",
-    "description": "The rigid-front car stops within centimetres at the same playback speed as the CRUMPLE replay. The voice explains average force.",
+    "description": "The rigid-front car stops within centimetres at the same playback speed as the CRUMPLE replay, then rebounds from the barrier.",
     "onset_metric": "rigid.stroke_m",
     "onset_threshold": 0.01,
     "explanation_only": false
@@ -456,9 +456,77 @@
    "silent_readable": true
   },
   {
+   "id": "s04b",
+   "beat": 4,
+   "narration": "The car bounces back almost immediately.",
+   "cue": "The car bounces back",
+   "subjects": [
+    "rigid_car_front",
+    "barrier"
+   ],
+   "phenomenon": {
+    "kind": "two_situation_comparison",
+    "description": "After contact the rigid car moves away from the barrier while the barrier stays in view.",
+    "onset_metric": "rigid.rebound_m",
+    "onset_threshold": 0.005,
+    "explanation_only": false
+   },
+   "camera": {
+    "kind": "compare",
+    "movement": "continue the same full-screen RIGID shot"
+   },
+   "effects": [
+    "two_situation_comparison"
+   ],
+   "success": [
+    {
+     "id": "s04b-subjects",
+     "description": "the car and barrier remain on screen",
+     "kind": "subjects_in_view",
+     "criterion": "subject_present",
+     "subjects": [
+      "rigid_car_front",
+      "barrier"
+     ],
+     "value": 0.8
+    },
+    {
+     "id": "s04b-rebound",
+     "description": "the car moves at least 10 cm farther from the barrier during the spoken rebound",
+     "kind": "metric_increase",
+     "criterion": "action_performed",
+     "metric": "rigid.rebound_m",
+     "value": 0.1
+    },
+    {
+     "id": "s04b-during-line",
+     "description": "the rebound is underway when the words begin",
+     "kind": "metric_at_least",
+     "criterion": "timing",
+     "metric": "rigid.rebound_m",
+     "value": 0.05
+    },
+    {
+     "id": "s04b-not-obscured",
+     "description": "the action is clear of the captions",
+     "kind": "not_obscured",
+     "criterion": "not_obscured",
+     "metric": "caption.overlap",
+     "value": 0.2
+    },
+    {
+     "id": "s04b-sound-off",
+     "description": "the car visibly moves away from the wall in the same shot",
+     "kind": "manual",
+     "criterion": "sound_off_understandable"
+    }
+   ],
+   "silent_readable": true
+  },
+  {
    "id": "s05a",
    "beat": 5,
-   "narration": "The passenger compartment is built to stay protective,",
+   "narration": "The passenger compartment keeps its shape.",
    "cue": "The passenger",
    "subjects": [
     "safety_cell"
@@ -526,14 +594,14 @@
   {
    "id": "s05b",
    "beat": 5,
-   "narration": "while seat belts and airbags help protect the people inside.",
-   "cue": "while seat belts and",
+   "narration": "While the front folds inward, the cabin stays intact.",
+   "cue": "While the front",
    "subjects": [
     "safety_cell"
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "The safety cell stays intact while the front is crushed (cell displacement measured on the deformed mesh); belts and airbags are only named in the narration",
+    "description": "The front folds inward in the X-ray as the highlighted passenger cell keeps its shape.",
     "onset_metric": "crumple.crushed_depth_m",
     "onset_threshold": 0.01,
     "explanation_only": false
@@ -566,7 +634,7 @@
     },
     {
      "id": "s05b-onset",
-     "description": "a second X-ray replay of the crash starts when the belts and airbags are mentioned",
+     "description": "the next continuous X-ray replay shows the front folding when the line begins",
      "kind": "onset_near_cue",
      "criterion": "timing",
      "metric": "crumple.crushed_depth_m",
@@ -728,7 +796,7 @@
  "assumptions": [
   "Illustrative one-dimensional crash simulation: 50 km/h, 1400 kg, rigid barrier; crush stroke 0.62 m (crumple) versus 0.05 m (rigid counterfactual).",
   "Not calibrated to any real vehicle or crash test; the rigid counterfactual is not a measured crash. No real injury figures are claimed.",
-  "The occupant, belt and airbag are explanatory models, not a dummy test result.",
+  "The spoken comparison describes visible deformation, stopping distance and rebound in the simulated crashes.",
   "Scope fixed by the owner (2026-11-16): 3D distance/time bars, force arrows and an occupant model are optional and NOT part of EP.04. Scenes s02c/s03/s04/s05b were re-described with the implemented real deformation, sequential comparison and cell highlight; no check was weakened (same not_obscured, timing, sound-off criteria, cell <=1 mm, rigid stroke <=6 cm)."
  ]
 }

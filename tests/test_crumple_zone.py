@@ -24,7 +24,7 @@ def test_crush_map_never_touches_the_passenger_cell_and_progresses_rearward():
 
 def test_timeline_puts_the_first_impact_in_the_first_second_and_covers_the_whole_film():
     assert cm.first_contact_film_s("H") <= 1.0
-    assert cm.TOTAL_FRAMES == 780 and cm.segment_at(1)["id"] == "H" and cm.segment_at(61)["id"] == "X"
+    assert cm.TOTAL_FRAMES == 780 and cm.segment_at(1)["id"] == "H" and cm.segment_at(cm.XRAY_RAMP[0])["id"] == "X"
     assert [cm.frame_time(f) for f in (1, 2, 3)] == sorted(cm.frame_time(f) for f in (1, 2, 3))
 
 
@@ -71,7 +71,7 @@ def test_full_timeline_is_planned_on_the_real_cues_and_every_offline_check_passe
     assert max(e["metrics"]["nose.penetration_mm"] for e in ev.values()) <= 5.0
     assert max(e["metrics"]["caption.overlap"] for e in ev.values()) <= 0.2
     assert max(e["metrics"]["cell.max_displacement_mm"] for e in ev.values()) <= 1.0
-    assert g.xray_against_road(car, range(61, cm.TOTAL_FRAMES + 1))["status"] == "PASS"
+    assert g.xray_against_road(car, range(1, cm.TOTAL_FRAMES + 1))["status"] == "PASS"
 
 
 def test_every_segment_keeps_moving_and_the_workflow_covers_all_frames():

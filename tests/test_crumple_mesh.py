@@ -1,4 +1,5 @@
 """EP.04 mesh / wall / camera / timing checks on the REAL sedan vertices (fixture dumped by Blender once), in plain Python: seconds instead of a 17-minute preview."""
+import json
 import sys
 from pathlib import Path
 
@@ -13,9 +14,8 @@ from shorts_studio.scene_spec import EpisodeSpec, evaluate_episode, load_spec  #
 
 CAR = es.Car(es.load_fixture())
 EVIDENCE = es.timeline_evidence(CAR)
-# real caption cues of the EP.04 narration (preview 8 audio, TTS capture); the later cues are only needed to resolve windows of scenes after the first 4.5 s
-CUES = [{"start": 0.1, "end": 0.79, "text": "Cars are designed"}, {"start": 0.8, "end": 1.36, "text": "to crush."}, {"start": 1.94, "end": 2.97, "text": "Inside, hidden"},
-        {"start": 2.98, "end": 4.16, "text": "structures fold and"}]
+CUES = json.loads((ROOT / "examples/experiments/crumple-zone-real-cues.json").read_text())["cues"]
+XRAY = next(s for s in cm.SEGMENTS if s["id"] == "X")
 
 
 def test_nothing_goes_through_the_barrier_including_plate_bumper_and_wheels():
@@ -40,22 +40,22 @@ def test_the_action_is_never_under_the_captions_and_subjects_are_in_view():
     assert max(e["metrics"]["caption.overlap"] for e in EVIDENCE.values()) <= 0.2
     for f in range(1, 19):
         assert EVIDENCE[f]["in_view"]["car_front"] and EVIDENCE[f]["in_view"]["barrier"]
-    for f in range(66, 136):                       # the X-ray: rails, bumper beam and cell are on screen once the ghost has formed
+    for f in range(XRAY["first"], XRAY["last"] + 1):                       # the X-ray: rails, bumper beam and cell are on screen once the ghost has formed
         v = EVIDENCE[f]["in_view"]
         if cm.xray_factor(f) >= 0.5:
             assert v["crush_rails"] and v["bumper_beam"] and v["safety_cell"], f
 
 
 def test_the_ghost_body_is_seen_against_road_and_barrier_not_the_sky():
-    r = gates.xray_against_road(CAR, range(61, 126))
+    r = gates.xray_against_road(CAR, range(XRAY["first"], XRAY["last"] + 1))
     assert r["status"] == "PASS", r
 
 
 def test_crush_progresses_from_the_nose_rearwards_and_is_visible_by_two_seconds():
-    shorten = [EVIDENCE[f]["metrics"]["rails.shortening_m"] for f in range(61, 126)]
-    assert all(b >= a - 1e-9 for a, b in zip(shorten[:12], shorten[1:13])) or True
-    assert EVIDENCE[60]["metrics"]["crumple.stroke_m"] >= 0.2
-    assert EVIDENCE[125]["metrics"]["rails.shortening_m"] >= 0.4
+    shorten = [EVIDENCE[f]["metrics"]["rails.shortening_m"] for f in range(XRAY["first"], XRAY["last"] + 1)]
+    assert all(b >= a - 1e-9 for a, b in zip(shorten, shorten[1:]))
+    assert max(EVIDENCE[f]["metrics"].get("crumple.stroke_m", 0.0) for f in range(1, 61)) >= 0.2
+    assert shorten[-1] >= 0.4
 
 
 def test_scene_alignment_of_the_first_scenes_on_the_simulated_evidence_with_the_real_cues():
@@ -64,6 +64,6 @@ def test_scene_alignment_of_the_first_scenes_on_the_simulated_evidence_with_the_
     rep = evaluate_episode(sub, CUES, 26.0, EVIDENCE)
     for sid in ("s01", "s02a"):
         assert rep["scenes"][sid]["verdict"] == "AUTO_PASS_HUMAN_REVIEW_PENDING", rep["scenes"][sid]
-    # s02b's windows reach beyond the 4.5 s preview only when its later cue is unknown: its timing check must pass
+    # The initial rail folding must land on the measured narration cue.
     onset = next(c for c in rep["scenes"]["s02b"]["checks"] if c["check"] == "s02b-onset")
     assert onset["status"] == "PASS" and abs(onset["delta_s"]) <= 0.4, onset

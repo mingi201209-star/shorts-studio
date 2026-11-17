@@ -106,6 +106,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
                 in_view[name] = views[name]
         else:
             in_view["rigid_car_front"] = views["car_front"]
+            metrics["rigid.rebound_m"] = cm.rebound_distance(d, s)
         in_view["barrier"] = in_view.get("barrier", False) or views["barrier"]
     return {"metrics": metrics, "in_view": in_view, "panels": panels}
 

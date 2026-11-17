@@ -290,6 +290,7 @@ def main():
                     ev_view[name] = ev["in_view"][name]
             else:
                 ev_view["rigid_car_front"] = ev["in_view"]["car_front"]
+                em["rigid.rebound_m"] = cm.rebound_distance(d, s)
             ev_view["barrier"] = ev_view.get("barrier", False) or ev["in_view"]["barrier"]
             path = args.out / f"frame_{f:04d}_{panel}.png"
             scene.render.filepath = str(path)

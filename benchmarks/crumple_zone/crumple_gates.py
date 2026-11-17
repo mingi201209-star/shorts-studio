@@ -94,10 +94,9 @@ def telemetry_geometry(telemetry: list[dict], max_penetration_mm=5.0, max_wheel_
 
 
 def deformation_visible_by(telemetry: list[dict], frame: int = 60, min_stroke_m: float = 0.2) -> dict:
-    row = next(t for t in telemetry if t["frame"] == frame)
-    s = row["crumple"]["stroke_m"]
-    return {"status": "PASS" if s >= min_stroke_m else "FAIL", "problems": [] if s >= min_stroke_m else [f"stroke {s:.2f} m at frame {frame} (< {min_stroke_m})"],
-            "stroke_m_at_frame": s, "frame": frame}
+    s = max((t["crumple"]["stroke_m"] for t in telemetry if t["frame"] <= frame and "crumple" in t), default=0.0)
+    return {"status": "PASS" if s >= min_stroke_m else "FAIL", "problems": [] if s >= min_stroke_m else [f"peak on-screen stroke {s:.2f} m by frame {frame} (< {min_stroke_m})"],
+            "peak_stroke_m": s, "deadline_frame": frame}
 
 
 def xray_against_road(car, frames, max_sky_backed=0.15) -> dict:
