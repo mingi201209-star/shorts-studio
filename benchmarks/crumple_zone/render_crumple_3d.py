@@ -25,7 +25,8 @@ from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 
 material, cube = base.material, base.cube
-SIZES = {"full": (1080, 1920), "stack": (1080, 960), "sequential": (1080, 1920)}
+SIZES = {"full": (1080, 1920)}
+PAINT = {"crumple": (1.0, 1.0, 1.0), "rigid": (0.45, 0.8, 1.7)}      # body paint multiplier: the rigid-front car is blue, the crumple car keeps the original silver
 
 
 def arguments():
@@ -59,7 +60,7 @@ class Ghost:
     SOFT = 0.35
 
     def __init__(self, parts):
-        self.wipes, seen = [], {}
+        self.wipes, seen, self.paints = [], {}, []
         for o in parts:
             for i, m in enumerate(o.data.materials):
                 if m is None:
@@ -74,6 +75,11 @@ class Ghost:
         nt = c.node_tree
         bsdf = nt.nodes.get("Principled BSDF")
         alpha0 = bsdf.inputs["Alpha"].default_value
+        base = bsdf.inputs["Base Color"]
+        col = tuple(base.default_value)
+        lum = 0.2126 * col[0] + 0.7152 * col[1] + 0.0722 * col[2]
+        if not base.is_linked and alpha0 >= 0.99 and 0.12 < lum < 0.95:
+            self.paints.append((bsdf, col))      # body paint: the rigid-front car gets a different colour so the two crashes are told apart without any text
 
         def node(kind, **kw):
             n = nt.nodes.new(kind)
@@ -106,6 +112,10 @@ class Ghost:
         nt.links.new(op("ADD", edge, flare), bsdf.inputs["Emission Strength"])
         bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
         return c
+
+    def set_tint(self, mult):
+        for bsdf, col in self.paints:
+            bsdf.inputs["Base Color"].default_value = (min(1.0, col[0] * mult[0]), min(1.0, col[1] * mult[1]), min(1.0, col[2] * mult[2]), col[3])
 
     def set_factor(self, xf, y_nose, car_length):
         wipe = y_nose + 0.6 - (0.6 + car_length + 0.4) * xf        # the line runs from just ahead of the nose to behind the tail
@@ -186,6 +196,7 @@ def main():
     cube("Barrier", (0, 0.5, 1.0), (9.0, 1.0, 2.0), concrete)       # front face at y = 0
     cube("Barrier stripe", (0, -0.002, 0.5), (9.0, 0.004, 0.18), material("Stripe", (0.9, 0.62, 0.05), rough=0.5))
     nose, front_axle = geom["nose"], geom["front_axle"]
+    TAIL["m"] = geom["tail"]
     car_len = geom["nose"] + geom["tail"]
     print("CRUMPLE_GEOMETRY " + json.dumps(geom), flush=True)
 
@@ -217,15 +228,12 @@ def main():
     structure_def = [Deformable(ob, nose, local_is_car_frame=True) for ob, _ in structure]
     ghost = Ghost([o for o in parts])
 
-    sign_mat = material("Sign", (0.45, 1.0, 0.15), rough=0.5, emission=1.0)
-    labels = {}
-    for kind, text in ccams.SIGN["words"].items():
-        cu = bpy.data.curves.new("Sign " + kind, "FONT")
-        cu.body, cu.size, cu.extrude, cu.align_x, cu.align_y = text, ccams.SIGN["size"], 0.01, "CENTER", "CENTER"
-        ob = bpy.data.objects.new("Sign " + kind, cu)
-        bpy.context.collection.objects.link(ob)
-        ob.data.materials.append(sign_mat)
-        labels[kind] = ob
+    # no scene text of any kind (owner decision): the only words in the film are the narration captions burned in at assembly
+    body_mats = {}
+    for o in parts:
+        for m in o.data.materials:
+            if m is not None and m.name not in body_mats:
+                body_mats[m.name] = m
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -243,8 +251,8 @@ def main():
         info = {"frame": f, "segment": seg["id"], "camera": seg["camera"], "layout": seg["layout"], "sim_time": round(t, 5), "xray": round(xf, 3)}
         for panel in cm.visible_panels(f):
             rec = recs[panel]
-            i = min(int(round(t * cm.RENDER_HZ)), len(rec["t"]) - 1)
-            d, s = float(rec["d"][i]), float(rec["s"][i])
+            ps = cm.sample(rec, t)
+            d, s = ps["d"], ps["s"]
             root.location = (0.0, -cm.LEAD_SIM + d - nose, 0.0)
             deformed = [dm.apply(s, nose) for dm in deformables]
             for dm in structure_def:
@@ -262,34 +270,32 @@ def main():
             for ob in cell_objs:
                 ob.hide_render = not show
             ghost.set_factor(xf, root.location.y + nose, car_len)
-            for kind, lab in labels.items():
-                lab.hide_render = not (seg["layout"] in ("stack", "sequential") and kind == panel)
-            sign_in_view = False
+            ghost.set_tint(PAINT[panel])
             place_camera(cam, seg["camera"], f)
             bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
-            if seg["layout"] in ("stack", "sequential"):
-                lab = labels[panel]
-                lab.location = ccams.SIGN["pos"]
-                lab.rotation_euler = (cam.location - Vector(lab.location)).to_track_quat("Z", "Y").to_euler()
-                bpy.context.view_layer.update()
-                co = world_to_camera_view(scene, cam, Vector(lab.location))
-                sign_in_view = bool(co.z > 0 and 0.08 < co.x < 0.92 and 0.08 < co.y < 0.92)
             ev = measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y, s, xf, seg, panel, (cell_y0, cell_y1))
             evidence.setdefault(f, {"metrics": {}, "in_view": {}})
             em, ev_view = evidence[f]["metrics"], evidence[f]["in_view"]
             em[f"{panel}.stroke_m"] = s
+            em["nose.world_y_m"] = nose_world
+            em["final_pose.front_crush_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH) if seg["id"] == "C" else 0.0
             em["xray.factor"] = xf
             em["cell.highlight"] = 1.0 if xf >= 0.5 else 0.0
             em["nose.penetration_mm"] = max(em.get("nose.penetration_mm", 0.0), round(1000 * max(0.0, nose_world), 2))
             em["cell.max_displacement_mm"] = max(em.get("cell.max_displacement_mm", 0.0), ev["cell_mm"])
             em["caption.overlap"] = max(em.get("caption.overlap", 0.0), ev["caption_overlap"])
             if panel == "crumple":
+                em["body.max_rise_m"] = ev["rise_m"]
+                em["wheels.pushback_m"] = float(wheels["front_right"]["base"].y) - float(wheels["front_right"]["node"].location.y)
                 em["rails.shortening_m"] = ev["rail_shortening"]
                 em["crumple.crushed_depth_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH)
                 for name in ("car_front", "crush_rails", "bumper_beam", "safety_cell"):
                     ev_view[name] = ev["in_view"][name]
+                ev_view["whole_car"] = ev["whole_car"]
             else:
                 ev_view["rigid_car_front"] = ev["in_view"]["car_front"]
+                ev_view["rigid_whole_car"] = ev["whole_car"]
+                em["rigid.speed_away_mps"] = max(0.0, -ps["v"])
                 em["rigid.rebound_m"] = cm.rebound_distance(d, s)
             ev_view["barrier"] = ev_view.get("barrier", False) or ev["in_view"]["barrier"]
             path = args.out / f"frame_{f:04d}_{panel}.png"
@@ -297,10 +303,9 @@ def main():
             bpy.ops.render.render(write_still=True)
             checks.append({"frame": f, "panel": panel, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()})
             front_wheel = wheels["front_right"]["node"].location
-            info[panel] = {"cabin_advance_m": round(d, 4), "stroke_m": round(s, 4), "decel_g": round(float(rec["g"][i]), 2),
+            info[panel] = {"cabin_advance_m": round(d, 4), "stroke_m": round(s, 4), "decel_g": round(ps["g"], 2),
                            "nose_world_y_mm": round(1000 * nose_world, 2), "top_parts": top_parts, "root_y": round(root.location.y, 3), "nose_penetration_mm": round(1000 * max(0.0, nose_world), 2),
-                           "front_wheel_y": round(float(front_wheel.y), 3), "wheel_z_gap_mm": round(1000 * abs(front_wheel.z - wheels["front_right"]["base"].z), 3),
-                           "sign_in_view": sign_in_view}
+                           "front_wheel_y": round(float(front_wheel.y), 3), "wheel_z_gap_mm": round(1000 * abs(front_wheel.z - wheels["front_right"]["base"].z), 3)}
         info["render_seconds"] = round(time.time() - t0, 1)
         result.append(info)
         print("CRUMPLE_FRAME " + json.dumps(info), flush=True)
@@ -310,7 +315,8 @@ def main():
 
 
 CAPTION_ROWS = (1408, 1540)       # rows of the 1080x1920 frame where the captions sit
-PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}, "sequential": {"crumple": (0, 1920), "rigid": (0, 1920)}}
+PANEL_ROWS = {"full": {"crumple": (0, 1920), "rigid": (0, 1920)}}
+TAIL = {"m": 2.065}      # set from the measured geometry in main()
 
 
 def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y, s, xf, seg, panel, cell_span):
@@ -333,6 +339,7 @@ def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y
     rail_len0 = float(rail.p0[:, 1].max() - rail.p0[:, 1].min())
     shortening = rail_len0 - float(rail_full[:, 1].max() - rail_full[:, 1].min())
     cell_mm = 0.0
+    rise = 0.0
     pts = []
     for dm in deformables:
         if len(dm.idx) == 0:
@@ -340,6 +347,7 @@ def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y
         behind = dm.p0[dm.idx, 1] <= cabin_y
         if behind.any():
             cell_mm = max(cell_mm, 1000 * float(np.abs(dm.sub[behind] - dm.p0[dm.idx][behind]).max()))
+        rise = max(rise, float((dm.sub[:, 2] - dm.p0[dm.idx][:, 2]).max()))
         pts.append(dm.sub[:: max(1, len(dm.sub) // 300)])
     zone = np.vstack(pts) if pts else np.zeros((1, 3))
     proj = np.array([project(p)[:2] for p in zone])
@@ -349,7 +357,8 @@ def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y
     overlap = max(0.0, min(bottom, CAPTION_ROWS[1]) - max(top, CAPTION_ROWS[0])) / max(1.0, bottom - top)
     ghost_on = xf >= 0.5 and panel == "crumple"
     cell_c = (0.0, 0.5 * (cell_span[0] + cell_span[1]), 0.8)
-    return {"cell_mm": cell_mm, "rail_shortening": shortening, "caption_overlap": round(overlap, 3),
+    whole = all(inside((0.0, y, 0.5)) for y in (nose - s, -TAIL["m"]))
+    return {"cell_mm": cell_mm, "rise_m": rise, "whole_car": whole, "rail_shortening": shortening, "caption_overlap": round(overlap, 3),
             "in_view": {"car_front": inside((0.0, nose - s, 0.5)), "barrier": bool(project((0.0, -shift.y, 1.0))[2] > 0 and 0.0 < project((0.0, -shift.y, 1.0))[0] < 1.0),
                         "crush_rails": ghost_on and inside(rail_full.mean(axis=0)), "bumper_beam": ghost_on and inside(beam_full.mean(axis=0)),
                         "safety_cell": ghost_on and inside(cell_c)}}

@@ -6,14 +6,14 @@ from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 CURATED = {
     "Cars are designed to crush.": (
         "Cars are designed", "to crush."),
-    "Watch the hood buckle, and the front wheels get shoved back toward the cabin.": (
-        "Watch the hood buckle,", "and the front wheels get", "shoved back toward", "the cabin."),
-    "Hidden rails inside fold like an accordion, absorbing the crash energy and stretching the stop over a longer distance and time.": (
-        "Hidden rails inside", "fold like an accordion,", "absorbing the crash", "energy and stretching", "the stop over a longer", "distance and time."),
-    "Meanwhile, the passenger compartment keeps its shape. Pillars, doors and roof stay where they were.": (
-        "Meanwhile, the passenger", "compartment keeps", "its shape.", "Pillars, doors and roof", "stay where they were."),
-    "Now the same speed, the same wall, but a rigid front. It has almost nothing to crush, so it stops almost instantly, and the car bounces back.": (
-        "Now the same speed,", "the same wall, but", "a rigid front. It has", "almost nothing to crush,", "so it stops almost", "instantly, and the car", "bounces back."),
+    "Watch the hood buckle and the front wheels get shoved back toward the cabin.": (
+        "Watch the hood buckle", "and the front wheels get", "shoved back toward", "the cabin."),
+    "Hidden rails inside fold like an accordion absorbing the crash energy and stretching the stop over a longer distance and time.": (
+        "Hidden rails inside", "fold like an accordion", "absorbing the crash", "energy and stretching", "the stop over a longer", "distance and time."),
+    "The passenger compartment keeps its shape. The pillars, doors and roof stay where they were.": (
+        "The passenger", "compartment keeps", "its shape.", "The pillars, doors", "and roof stay where", "they were."),
+    "Now the same speed and the same wall but a rigid front. It has almost nothing to crush so it stops almost instantly and the car bounces back.": (
+        "Now the same speed", "and the same wall but", "a rigid front. It has", "almost nothing to crush", "so it stops almost", "instantly and the car", "bounces back."),
     "The front is meant to deform. The cabin isn't.": (
         "The front is meant", "to deform.", "The cabin isn't."),
 }

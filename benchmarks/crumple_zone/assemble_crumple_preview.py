@@ -23,7 +23,7 @@ from shorts_studio.scene_spec import validate as validate_spec
 
 ROOT = Path(__file__).resolve().parents[2]
 W, H = 1080, 1920
-PLACE = {"full": {"crumple": (0, 0, 1080, 1920)}, "stack": {"crumple": (0, 0, 1080, 960), "rigid": (0, 960, 1080, 960)}, "sequential": {"crumple": (0, 0, 1080, 1920), "rigid": (0, 0, 1080, 1920)}}
+PLACE = {"full": {"crumple": (0, 0, 1080, 1920), "rigid": (0, 0, 1080, 1920)}}
 
 
 def compose(panels: Path, out: Path):
@@ -113,8 +113,7 @@ def main():
         "telemetry_geometry": gates.telemetry_geometry(telemetry),
         "deformation_visible_by_2s": gates.deformation_visible_by(telemetry),
         "xray_against_road": gates.xray_against_road(es.Car(es.load_fixture()), range(1, cm.TOTAL_FRAMES + 1)),
-        "labels_visible": gates.labels_visible(load, telemetry),
-        "text_safe_area": gates.text_safe_area(),
+        "no_scene_text": gates.no_scene_text(),
         "smoothness": gates.smoothness(gray_diffs(video)),
         "sync_to_speech": gates.sync_to_speech(audio_report["cues"]),
         "black_opening": verify_no_black_opening(video, (0, 1440), a.out),

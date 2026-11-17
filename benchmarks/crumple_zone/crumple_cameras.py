@@ -1,4 +1,4 @@
-"""EP.04 cameras as plain data plus a pinhole projection that matching Blender's world_to_camera_view (horizontal sensor fit, 36 mm, lens shift in sensor-width units).
+"""EP.04 cameras as plain data plus a pinhole projection that matches Blender's world_to_camera_view (horizontal sensor fit, 36 mm, lens shift in sensor-width units).
 The renderer places its cameras from these numbers, and the Python tests project the real sedan vertices through the same numbers: a camera problem (action under the captions,
 subject out of frame) shows up in a test in milliseconds instead of in a 17-minute preview.
 
@@ -19,18 +19,19 @@ SAFE = {"left": 54, "right": 960, "top": 150, "bottom": 1540}
 NO_SCENE_TEXT = True      # the owner banned on-screen words other than the narration captions: the renderer creates no text objects (gate: no_scene_text)
 
 
-def _key(t, loc, target, lens=34.0, shift=0.0, rel=False):
-    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "shift_y": float(shift), "rel": bool(rel)}
+def _key(t, loc, target, lens=34.0, at=0.40, rel=False):
+    """at: fraction of the frame height, from the top, where the look-at point lands (lens shift is derived from it): the subject sits in the upper-middle, above the captions."""
+    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": bool(rel)}
 
 
-def _orbit(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, shift=0.0, target_z=0.55):
+def _orbit(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, at=0.40, target_z=0.55):
     """Keys on an arc around a pivot (angles in degrees, 0 = camera on the -X side looking +X, positive turns towards -Y)."""
     out = []
     for k in range(n + 1):
         u = k / n
         a = np.radians(a0 + (a1 - a0) * u)
         loc = (pivot[0] - radius * np.cos(a), pivot[1] - radius * np.sin(a), z0 + (z1 - z0) * u)
-        out.append(_key(t0 + (t1 - t0) * u, loc, (pivot[0], pivot[1], target_z), lens, shift))
+        out.append(_key(t0 + (t1 - t0) * u, loc, (pivot[0], pivot[1], target_z), lens, at))
     return out
 
 
@@ -45,22 +46,28 @@ def paths() -> dict:
     k = lambda s: _seg_tau(s, "K")
     r = lambda s: _seg_tau(s, "R")
     c = lambda s: _seg_tau(s, "C")
-    t_b2, t_b3, t_b4 = cue("Watch the hood"), cue("Hidden rails"), cue(cm.CABIN_BEAT)
+    t_b2, t_b3, t_b4, t_b5 = cue("Watch the hood"), cue("Hidden rails"), cue(cm.CABIN_BEAT), cue(cm.RIGID_BEAT)
+    near = dict(lens=34)      # poses are relative to the front of the car (rel=True) unless noted
     K = [
-        _key(0.0, (-3.9, -2.6, 1.0), (0.0, -0.2, 0.5), 32, rel=True),
-        _key(cm.HOOK_CONTACT_S, (-3.9, -2.6, 1.0), (0.0, -0.2, 0.5), 32, rel=True),
-        _key(k(t_b2) + 0.4, (-2.9, -2.0, 0.8), (0.0, 0.1, 0.55), 34, rel=True),
-        _key(k(t_b3) + 0.2, (-3.4, -2.6, 1.0), (0.0, -0.3, 0.5), 34, rel=True),
-        _key(k(t_b3) + 2.4, (-4.4, -3.2, 1.8), (0.0, -0.8, 0.45), 34, rel=True),
-        _key(k(t_b4), (-4.6, -3.4, 1.9), (0.0, -0.9, 0.5), 34, rel=True),
+        _key(0.0, (-3.4, -3.0, 1.2), (0.0, -0.4, 0.55), 32, at=0.45, rel=True),                      # run-up: tracking three-quarter view, the wall rushes towards the nose
+        _key(cm.HOOK_CONTACT_S, (-3.2, -2.8, 1.2), (0.0, -0.3, 0.55), 32, at=0.45, rel=True),
+        _key(k(t_b2) + 0.3, (-2.0, -1.8, 1.55), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),             # close high three-quarter view of the hood and the front wheel
+        _key(k(t_b3) - 0.4, (-2.0, -1.8, 1.55), (0.0, -0.4, 0.5), 34, at=0.45, rel=True),
+        _key(k(t_b3) + 1.6, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),               # the scan line passes; the camera rises to a high chase view over the folding rails
+        _key(k(t_b4) - 0.2, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),
+        _key(k(t_b4) + 1.4, (0.0, -3.8, 3.8), (0.0, -1.1, 0.4), 34, at=0.50, rel=True),               # pull back: the whole car with its cage
     ]
-    K += _orbit(k(t_b4), k(cue(cm.RIGID_BEAT)) - 0.01, (0.0, -1.6), 4.9, 1.9, 2.1, 0.0, 70.0, 32, n=6)[1:]
+    K += _orbit(k(t_b4) + 1.4, k(t_b5) - 0.01, (0.0, -1.6), 4.9, 3.8, 1.6, 0.0, 70.0, 32, n=8, at=0.45)[1:]
     R = [
-        _key(0.0, (-3.9, -2.6, 1.0), (0.0, -0.2, 0.5), 32, rel=True),
+        _key(0.0, (-3.4, -3.0, 1.2), (0.0, -0.4, 0.55), 32, at=0.45, rel=True),                      # the same run-up camera as the first crash
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.4, (-3.2, -2.8, 1.2), (0.0, -0.3, 0.55), 32, at=0.45, rel=True),
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 0.3, (-2.0, -1.8, 1.55), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),   # the same close view of the nose as the first crash
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 2.2, (-3.4, -3.4, 1.7), (0.0, -0.8, 0.5), 32, at=0.45, rel=True),     # the camera follows the car as it moves away from the wall
     ]
     C = [
-        _key(0.0, (-3.0, -4.2, 1.5), (0.0, -1.3, 0.55), 32),
-        _key(c(cm.TARGET_S), (-4.2, -3.4, 1.9), (0.0, -1.2, 0.55), 32),
+        _key(0.0, (-3.0, -3.6, 1.7), (0.0, -0.8, 0.5), 34, at=0.45),
+        _key(c(cue(cm.CLOSE_BEAT)) + 2.0, (-3.6, -3.2, 1.9), (0.0, -1.0, 0.55), 34, at=0.45),
+        _key(c(cm.TARGET_S), (-4.6, -3.0, 2.0), (0.0, -1.3, 0.6), 34, at=0.45),
     ]
     return {"K": K, "R": R, "C": C}
 
@@ -100,8 +107,9 @@ def camera(kind: str, frame: int = 1) -> dict:
         w = _smooth((tau - a["t"]) / (b["t"] - a["t"]))
     loc = absolute(a, "loc") * (1 - w) + absolute(b, "loc") * w
     target = absolute(a, "target") * (1 - w) + absolute(b, "target") * w
+    at = a["at"] * (1 - w) + b["at"] * w
     return {"loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": a["lens"] * (1 - w) + b["lens"] * w,
-            "shift_y": a["shift_y"] * (1 - w) + b["shift_y"] * w}
+            "shift_y": (0.5 - (1.0 - at)) * (PANEL_PX["full"][1] / PANEL_PX["full"][0])}
 
 
 def project(points: np.ndarray, cam: dict, layout: str = "full") -> np.ndarray:

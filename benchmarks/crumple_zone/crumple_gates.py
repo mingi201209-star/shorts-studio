@@ -86,14 +86,14 @@ def telemetry_geometry(telemetry: list[dict], max_penetration_mm=5.0, max_wheel_
         problems.append(f"the deformed nose is {worst_pen:.1f} mm inside the barrier")
     if worst_gap > max_wheel_gap_mm:
         problems.append(f"a wheel leaves its ground height by {worst_gap:.2f} mm")
-    contact = cm.first_contact_film_s("H")
+    contact = cm.first_contact_film_s("K")
     if contact > 1.0:
         problems.append(f"first contact at {contact:.2f}s")
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "max_nose_penetration_mm": worst_pen, "max_wheel_gap_mm": worst_gap,
             "first_contact_film_s": round(contact, 2)}
 
 
-def deformation_visible_by(telemetry: list[dict], frame: int = 60, min_stroke_m: float = 0.2) -> dict:
+def deformation_visible_by(telemetry: list[dict], frame: int = 150, min_stroke_m: float = 0.2) -> dict:
     s = max((t["crumple"]["stroke_m"] for t in telemetry if t["frame"] <= frame and "crumple" in t), default=0.0)
     return {"status": "PASS" if s >= min_stroke_m else "FAIL", "problems": [] if s >= min_stroke_m else [f"peak on-screen stroke {s:.2f} m by frame {frame} (< {min_stroke_m})"],
             "peak_stroke_m": s, "deadline_frame": frame}
@@ -103,36 +103,25 @@ def xray_against_road(car, frames, max_sky_backed=0.15) -> dict:
     """The ghost body must be seen against the road and the barrier, not against the sky: share of body vertices whose view ray leaves the scene (geometry, from the real sedan
     vertices and the camera data). The earlier pixel version counted the ghost's own light-blue colour as sky and could not tell the two apart."""
     from benchmarks.crumple_zone import evidence_sim as es
-    recs = {k: cm.simulate(k) for k in cm.PROFILES}
     rows = []
     for f in frames:
         seg = cm.segment_at(f)
         if "crumple" not in seg["panels"] or cm.xray_factor(f) < 0.5:
             continue
-        r = recs["crumple"]
-        i = min(int(round(cm.frame_time(f) * cm.RENDER_HZ)), len(r["t"]) - 1)
-        rows.append({"frame": f, "sky_backed": round(es.sky_backed_fraction(car, f, -cm.LEAD_SIM + float(r["d"][i]) - car.nose), 3)})
+        rows.append({"frame": f, "sky_backed": round(es.sky_backed_fraction(car, f, -cm.LEAD_SIM + cm.pose(f)["d"] - car.nose), 3)})
     worst = max((r["sky_backed"] for r in rows), default=0.0)
     problems = [f"{worst:.2f} of the ghost body is seen against the sky (limit {max_sky_backed})"] if worst > max_sky_backed else []
     return {"status": "FAIL" if problems else "PASS" if rows else "NOT_EVALUATED_YET", "problems": problems, "worst_sky_backed": worst, "frames": rows[:6]}
 
 
-def labels_visible(load, telemetry: list[dict], min_frames=25, min_px=40) -> dict:
-    """Check the ONE visible full-height comparison sign, not two stacked signs."""
-    comparison = [t for t in telemetry if t["layout"] == "sequential"]
-    problems, missing, counts = [], [], {}
-    for kind in cm.PROFILES:
-        visible = [t["frame"] for t in comparison if t.get(kind, {}).get("sign_in_view", False)]
-        counts[kind] = len(visible)
-        if len(visible) < min_frames:
-            problems.append(f"{kind} sign visible in only {len(visible)} frames (need {min_frames})")
-        sample = visible[::max(1, len(visible) // 12)]
-        absent = [f for f in sample if sbg._sign_pixels(load(f)) < min_px]
-        if len(absent) > 0.15 * len(sample):
-            problems.append(f"{kind} sign pixels missing in frames {absent[:6]}")
-        missing.extend(absent)
-    return {"status": "FAIL" if problems else "PASS", "problems": problems,
-            "frames_with_sign": sum(counts.values()), "frames_by_car": counts, "missing": missing}
+def no_scene_text() -> dict:
+    """Owner decision: no on-screen words except the narration captions. The renderer must not create any text object, label or sign; the only words in the picture are
+    the captions that the assembler burns in (checked by their own gates). Source-level check so that it fails before any render."""
+    from pathlib import Path
+    src = (Path(__file__).resolve().parent / "render_crumple_3d.py").read_text()
+    banned = ("curves.new", '"FONT"', "'FONT'", "body_text", "text_add", "type=\"FONT\"")
+    hits = [b for b in banned if b in src]
+    return {"status": "FAIL" if hits else "PASS", "problems": [f"renderer creates scene text ({h})" for h in hits]}
 
 
 def smoothness(frame_diffs: np.ndarray, min_median=0.3) -> dict:
@@ -160,28 +149,3 @@ def sync_to_speech(cues: list[dict]) -> dict:
         if abs(delta) > cm.SYNC_TOLERANCE_S:
             problems.append(f"{event!r} starts {delta:+.2f}s from the spoken cue {text!r}")
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "events": rows}
-
-
-def text_safe_area() -> dict:
-    """The only words in the picture besides the narration captions are the two comparison signs. They must stay inside the mobile safe area and out of the caption rows
-    (checked on the camera data: no render needed)."""
-    from benchmarks.crumple_zone import crumple_cameras as cc
-    problems = []
-    boxes = {}
-    for f in range(1, cm.TOTAL_FRAMES + 1):      # the camera orbits in the replays: the signs are checked in every comparison frame
-        if cm.segment_at(f)["layout"] not in ("stack", "sequential"):
-            continue
-        for kind, b in cc.sign_boxes(f).items():
-            if kind != cm.visible_panel(f):
-                continue
-            w = boxes.setdefault(kind, {"rows": [1e9, -1e9], "cols": [1e9, -1e9]})
-            w["rows"] = [min(w["rows"][0], b["rows"][0]), max(w["rows"][1], b["rows"][1])]
-            w["cols"] = [min(w["cols"][0], b["cols"][0]), max(w["cols"][1], b["cols"][1])]
-    for kind, b in boxes.items():
-        r0, r1 = b["rows"]
-        c0, c1 = b["cols"]
-        if c0 < cc.SAFE["left"] or c1 > cc.SAFE["right"] or r0 < cc.SAFE["top"] or r1 > cc.SAFE["bottom"]:
-            problems.append(f"{kind} sign leaves the safe area: rows {r0:.0f}-{r1:.0f}, cols {c0:.0f}-{c1:.0f}")
-        if min(r1, cc.CAPTION_ROWS[1]) - max(r0, cc.CAPTION_ROWS[0]) > 0:
-            problems.append(f"{kind} sign (rows {r0:.0f}-{r1:.0f}) overlaps the caption rows {cc.CAPTION_ROWS}")
-    return {"status": "FAIL" if problems else "PASS", "problems": problems, "boxes": boxes}

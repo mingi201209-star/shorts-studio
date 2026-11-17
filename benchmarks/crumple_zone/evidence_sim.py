@@ -96,6 +96,8 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
         panels[panel] = {"stroke_m": s, "nose_world_y_mm": 1000 * nose_world, "wheel_front_world_y_mm": 1000 * wheel_front, "caption_overlap": overlap, "cell_mm": cell_mm,
                          "rail_shortening": shortening, "in_view": views, "root_y": root_y}
         metrics[f"{panel}.stroke_m"] = s
+        metrics["nose.world_y_m"] = nose_world
+        metrics["final_pose.front_crush_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH) if seg["id"] == "C" else 0.0
         metrics["nose.penetration_mm"] = max(metrics.get("nose.penetration_mm", 0.0), 1000 * max(0.0, nose_world, wheel_front))
         metrics["cell.max_displacement_mm"] = max(metrics.get("cell.max_displacement_mm", 0.0), cell_mm)
         metrics["caption.overlap"] = max(metrics.get("caption.overlap", 0.0), overlap)

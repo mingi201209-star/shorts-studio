@@ -105,7 +105,7 @@ from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CUES_FILE = ROOT / "examples" / "experiments" / "crumple-zone-real-cues.json"
+CUES_FILE = Path(os.environ.get("EP04_CUES", ROOT / "examples" / "experiments" / "crumple-zone-real-cues.json"))
 SLOW = 0.09                 # kept for old callers; the v2 film uses per-segment time warps below
 FILM = os.environ.get("EP04_FILM", "preview")
 T_CONTACT = LEAD_SIM / (V0_KMH / 3.6)       # simulated time of first contact (s)
@@ -137,7 +137,7 @@ def stop_time_after_contact(profile: str) -> float:
 
 
 T_STOP = {k: stop_time_after_contact(k) for k in PROFILES}       # crumple ~0.087 s, rigid ~0.0055 s after contact
-APPROACH_BLEND_S = 0.10      # simulated seconds before contact over which the run-up slows down to the crash time scale
+APPROACH_BLEND_S = 0.02      # simulated seconds before contact over which the run-up slows down to the crash time scale
 
 
 def _smooth(x: float | np.ndarray):
@@ -150,7 +150,6 @@ def rate_fn(tp: np.ndarray, r0: float, approach_rate: float, ramp: tuple[float, 
     shown at one time scale (a little faster near the start, slowing towards the stop so the stop is not rushed). ramp = (tp_a, tp_b, rate_after): after the rigid car has
     stopped the film speeds up again so that the bounce is seen at a readable speed."""
     tp = np.asarray(tp, float)
-    approach = r0 + (approach_rate - r0) * (1.0 - _smooth(1.0 - np.clip(-tp / APPROACH_BLEND_S, 0.0, 1.0))) if False else None
     x = np.clip(-tp / APPROACH_BLEND_S, 0.0, 1.0)
     pre = r0 + (approach_rate - r0) * _smooth(x)
     u = np.clip(tp / T_STOP["crumple"], 0.0, 1.0)
@@ -164,13 +163,40 @@ def rate_fn(tp: np.ndarray, r0: float, approach_rate: float, ramp: tuple[float, 
 
 
 @lru_cache(maxsize=None)
-def warp_table(r0: float, approach_rate: float, ramp: tuple | None, contact_film_s: float):
-    """(film seconds since the segment start, simulated seconds since contact): integrates dtau = dtp / rate. Contact lands exactly at contact_film_s."""
-    tp = np.linspace(-0.9, 0.9, 180001)
+def _integrate(r0: float, approach_rate: float, ramp: tuple | None):
+    tp = np.linspace(-1.2, 0.9, 210001)
     rate = rate_fn(tp, r0, approach_rate, ramp)
     tau = np.concatenate([[0.0], np.cumsum(0.5 * (1 / rate[1:] + 1 / rate[:-1]) * np.diff(tp))])
-    tau_contact = float(np.interp(0.0, tp, tau))
-    return tau - tau_contact + contact_film_s, tp
+    return tp, tau - float(np.interp(0.0, tp, tau))      # tau = film seconds relative to the moment of contact
+
+
+def _approach_distance(r0: float, approach_rate: float, ramp, contact_film_s: float) -> float:
+    """Distance to the barrier (m) at the first film frame when the contact lands contact_film_s into the segment."""
+    tp, tau = _integrate(r0, approach_rate, ramp)
+    tp_start = float(np.interp(-contact_film_s, tau, tp))      # tau is increasing with tp
+    return -tp_start * (V0_KMH / 3.6)
+
+
+@lru_cache(maxsize=None)
+def solve_approach_rate(r0: float, approach_m: float, ramp, contact_film_s: float) -> float:
+    """Film speed of the run-up (relative to real time) such that the car starts approach_m metres from the barrier and touches it contact_film_s into the segment."""
+    lo, hi = r0 * 1.0001, 2.0
+    for _ in range(60):
+        mid = 0.5 * (lo + hi)
+        # a faster run-up covers more distance in the same film time
+        if _approach_distance(r0, mid, ramp, contact_film_s) < approach_m:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
+@lru_cache(maxsize=None)
+def warp_table(r0: float, approach_m: float, ramp: tuple | None, contact_film_s: float):
+    """(film seconds since the segment start, simulated seconds since contact): integrates dtau = dtp / rate. Contact lands exactly at contact_film_s."""
+    ar = solve_approach_rate(r0, approach_m, ramp, contact_film_s)
+    tp, tau = _integrate(r0, ar, ramp)
+    return tau + contact_film_s, tp
 
 
 def frame_time(frame: int) -> float:
@@ -179,7 +205,7 @@ def frame_time(frame: int) -> float:
     if "static_t" in seg:
         return seg["static_t"]
     tau = (frame - seg["first"]) / FPS
-    taus, tp = warp_table(seg["r0"], seg["approach_rate"], seg.get("ramp"), seg["contact_film_s"])
+    taus, tp = warp_table(seg["r0"], seg["approach_m"], seg.get("ramp"), seg["contact_film_s"])
     return T_CONTACT + float(np.interp(tau, taus, tp))
 
 
@@ -190,8 +216,9 @@ def pose(frame: int, panel: str | None = None) -> dict:
 
 
 def nose_y(frame: int, panel: str | None = None) -> float:
-    """World y of the (uncrushed) nose reference: the nose line is at -LEAD_SIM + d."""
-    return -LEAD_SIM + pose(frame, panel)["d"]
+    """World y of the front of the car (the crushed nose line, -LEAD_SIM + d - s): it is at 0 (the barrier face) from the first contact on."""
+    ps = pose(frame, panel)
+    return -LEAD_SIM + ps["d"] - ps["s"]
 
 
 def first_contact_film_s(seg_id: str = "K") -> float:
@@ -214,9 +241,9 @@ def frame_of(seconds: float) -> int:
 
 TARGET_S = float(_cues()["target_seconds"])
 TOTAL_FRAMES = int(round(TARGET_S * FPS))
-CABIN_BEAT = "Meanwhile, the passenger"      # first caption phrase of the cabin sentence
+CABIN_BEAT = "The passenger"      # first caption phrase of the cabin sentence
 RIGID_BEAT = "Now the same speed"
-RIGID_CONTACT_CUE = "It stops almost"
+RIGID_CONTACT_CUE = "almost nothing to crush"
 CLOSE_BEAT = "The front is meant"
 HOOK_CONTACT_S = 0.9                         # first contact: the crash begins well inside the first 2 seconds
 _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_start(RIGID_BEAT)), frame_of(cue_start(CLOSE_BEAT))
@@ -224,11 +251,11 @@ _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_sta
 R0 = float(T_STOP["crumple"] * 0.625 / ((_F_CABIN - 1) / FPS - HOOK_CONTACT_S - 0.35))
 _RIGID_CONTACT_FILM = max(0.8, cue_start(RIGID_CONTACT_CUE) - cue_start(RIGID_BEAT))
 SEGMENTS = [
-    {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_rate": 1.0,
+    {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
      "contact_film_s": HOOK_CONTACT_S, "xray_keys": ()},
-    {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_rate": 0.10,
+    {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_m": 8.0,
      "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] + 0.002, T_STOP["rigid"] + 0.03, 0.35), "xray_keys": ()},
-    {"id": "C", "first": _F_CLOSE, "last": TOTAL_FRAMES, "panels": ("crumple",), "layout": "full", "camera": "C", "r0": R0, "approach_rate": 1.0,
+    {"id": "C", "first": _F_CLOSE, "last": TOTAL_FRAMES, "panels": ("crumple",), "layout": "full", "camera": "C", "r0": R0, "approach_m": 0.0,
      "contact_film_s": 0.0, "static_t": 1.0, "xray_keys": ()},
 ]
 assert SEGMENTS[0]["last"] + 1 == SEGMENTS[1]["first"] and SEGMENTS[1]["last"] + 1 == SEGMENTS[2]["first"]
@@ -264,4 +291,13 @@ def xray_factor(frame: int) -> float:
     return float(np.interp(tau, xs, ys))
 
 
-XRAY_KEYS: dict[str, tuple] = {}
+def _tau(seconds: float, seg_id: str) -> float:
+    seg = next(s for s in SEGMENTS if s["id"] == seg_id)
+    return seconds - (seg["first"] - 1) / FPS
+
+
+#: ghost-body factor keys per segment (film seconds since the segment start, factor): the scan line starts when the hidden rails are named and runs while the crash goes on
+XRAY_KEYS: dict[str, tuple] = {
+    "K": ((0.0, 0.0), (_tau(cue_start("Hidden rails"), "K"), 0.0), (_tau(cue_start("Hidden rails"), "K") + 1.8, 1.0)),
+    "C": ((0.0, 0.0), (_tau(cue_start("The cabin isn't."), "C") - 0.1, 0.0), (_tau(cue_start("The cabin isn't."), "C") + 1.5, 1.0)),
+}

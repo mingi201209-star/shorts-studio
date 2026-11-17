@@ -65,10 +65,7 @@ def main():
         im = Image.new("RGB", (360, 640))
         for panel in cm.visible_panels(f):
             src = Image.open(paths[(f, panel)]).convert("RGB")
-            if seg["layout"] in ("full", "sequential"):
-                im.paste(src.resize((360, 640)), (0, 0))
-            else:
-                im.paste(src.resize((360, 320)), (0, 0 if panel == "crumple" else 320))
+            im.paste(src.resize((360, 640)), (0, 0))
         tiles.append(im.resize((180, 320)))
     cols = 8
     sheet = Image.new("RGB", (cols * 180, ((len(tiles) + cols - 1) // cols) * 320))
