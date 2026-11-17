@@ -14,6 +14,6 @@ class SemanticContractTests(unittest.TestCase):
         plan = Path(__file__).resolve().parents[1] / "examples/experiments/crumple-zone-speech-plan.json"
         beats = json.loads(plan.read_text())["variants"][0]["beats"]
         narration = " ".join(beat["narration_en"] for beat in beats).lower()
-        assert all(phrase in narration for phrase in ("bounces back", "keeps its shape"))
+        assert all(phrase in narration for phrase in ("bounces back", "keeps its whole shape"))
         assert all(phrase not in narration for phrase in ("seat belts", "airbags", "average force"))
         assert all(claim.phrase in narration for claim in CLAIMS)
