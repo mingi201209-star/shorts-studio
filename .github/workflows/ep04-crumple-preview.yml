@@ -11,6 +11,7 @@ permissions:
   actions: read
 env:
   EP04_FILM: preview
+  EP04_SHEET_TILE: "270"
   BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
 jobs:
   plan:

@@ -17,6 +17,10 @@ from benchmarks.crumple_zone import evidence_sim as es
 TOL = {"nose_mm": 3.0, "overlap": 0.05, "stroke_m": 1e-4}
 
 
+import os
+TILE_W = int(os.environ.get("EP04_SHEET_TILE", "180"))      # contact-sheet tile width in pixels (height = 16/9 of it)
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--panels", type=Path, required=True)
@@ -66,11 +70,12 @@ def main():
         for panel in cm.visible_panels(f):
             src = Image.open(paths[(f, panel)]).convert("RGB")
             im.paste(src.resize((360, 640)), (0, 0))
-        tiles.append(im.resize((180, 320)))
+        tiles.append(im.resize((TILE_W, TILE_W * 16 // 9)))
     cols = 8
-    sheet = Image.new("RGB", (cols * 180, ((len(tiles) + cols - 1) // cols) * 320))
+    th = TILE_W * 16 // 9
+    sheet = Image.new("RGB", (cols * TILE_W, ((len(tiles) + cols - 1) // cols) * th))
     for k, t in enumerate(tiles):
-        sheet.paste(t, ((k % cols) * 180, (k // cols) * 320))
+        sheet.paste(t, ((k % cols) * TILE_W, (k // cols) * th))
     sheet_path = a.out / "range-sheet.jpg"
     sheet.save(sheet_path, quality=80)
     report = {"status": "FAIL" if problems else "PASS", "problems": problems, "frames": sorted(evidence), "max_nose_diff_mm": max((r["nose_diff_mm"] for r in rows), default=0.0),

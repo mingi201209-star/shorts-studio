@@ -49,25 +49,25 @@ def paths() -> dict:
     t_b2, t_b3, t_b4, t_b5 = cue("to watch the hood"), cue("Hidden rails"), cue(cm.CABIN_BEAT), cue(cm.RIGID_BEAT)
     near = dict(lens=34)      # poses are relative to the front of the car (rel=True) unless noted
     K = [
-        _key(0.0, (-3.4, -3.0, 1.2), (0.0, -0.4, 0.55), 32, at=0.45, rel=True),                      # run-up: tracking three-quarter view, the wall rushes towards the nose
-        _key(cm.HOOK_CONTACT_S, (-3.2, -2.8, 1.2), (0.0, -0.3, 0.55), 32, at=0.45, rel=True),
-        _key(k(t_b2) + 0.3, (-2.0, -1.8, 1.55), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),             # close high three-quarter view of the hood and the front wheel
-        _key(k(t_b3) - 0.4, (-2.0, -1.8, 1.55), (0.0, -0.4, 0.5), 34, at=0.45, rel=True),
-        _key(k(t_b3) + 1.6, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),               # the scan line passes; the camera rises to a high chase view over the folding rails
-        _key(k(t_b4) - 1.6, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),
-        _key(k(t_b4) - 0.2, (0.0, -3.8, 3.8), (0.0, -1.1, 0.4), 34, at=0.50, rel=True),               # pull back: the whole car with its cage, in place when the cabin sentence starts
+        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.1, 0.5), 34, at=0.42, rel=True),                      # run-up: tracking three-quarter view, the wall rushes towards the nose
+        _key(cm.HOOK_CONTACT_S, (-2.9, -2.5, 0.95), (0.0, -0.1, 0.5), 34, at=0.42, rel=True),
+        _key(k(t_b2) + 0.3, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),             # close high three-quarter view of the hood and the front wheel
+        _key(k(t_b3) - 0.4, (-2.0, -1.7, 1.45), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),
+        _key(k(t_b3) + 0.6, (-3.2, -3.2, 2.6), (0.0, -0.7, 0.45), 34, at=0.48, rel=True),             # step out and up (never through the car) while the scan line passes
+        _key(k(t_b3) + 2.8, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),             # high chase view over the folding rails, the whole car in frame
+        _key(k(t_b4) - 0.2, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),
     ]
-    K += _orbit(k(t_b4) - 0.2, k(t_b5) - 0.01, (0.0, -1.6), 4.9, 3.8, 1.6, 0.0, 70.0, 32, n=8, at=0.45)[1:]
+    K += _orbit(k(t_b4) - 0.2, k(t_b5) - 0.01, (0.0, -1.6), 4.1, 3.6, 1.5, 51.0, -15.0, 34, n=8, at=0.45)[1:]      # slow orbit from behind-left round to the crushed front
     R = [
-        _key(0.0, (-3.4, -3.0, 1.2), (0.0, -0.4, 0.55), 32, at=0.45, rel=True),                      # the same run-up camera as the first crash
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.4, (-3.2, -2.8, 1.2), (0.0, -0.3, 0.55), 32, at=0.45, rel=True),
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 0.3, (-2.0, -1.8, 1.55), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),   # the same close view of the nose as the first crash
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 2.4, (-3.4, -3.6, 1.6), (0.0, 1.2, 0.6), 28, at=0.45, rel=True),     # the camera follows the car as it moves away, looking back at the wall
+        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.1, 0.5), 34, at=0.42, rel=True),                      # the same run-up camera as the first crash
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.4, (-2.9, -2.5, 0.95), (0.0, -0.1, 0.5), 34, at=0.42, rel=True),
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 0.3, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),   # the same close view of the nose as the first crash
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 2.4, (-3.0, -3.0, 1.4), (0.0, 1.0, 0.6), 30, at=0.45, rel=True),     # the camera follows the car as it moves away, looking back at the wall
     ]
     C = [
-        _key(0.0, (-3.0, -3.6, 1.7), (0.0, -0.8, 0.5), 34, at=0.45),
-        _key(c(cue(cm.CLOSE_BEAT)) + 2.0, (-3.6, -3.2, 1.9), (0.0, -1.0, 0.55), 34, at=0.45),
-        _key(c(cm.TARGET_S), (-4.6, -3.0, 2.0), (0.0, -1.3, 0.6), 34, at=0.45),
+        _key(0.0, (-2.6, -3.0, 1.5), (0.0, -0.9, 0.5), 34, at=0.45),
+        _key(c(cue(cm.CLOSE_BEAT)) + 2.0, (-3.0, -2.8, 1.6), (0.0, -1.0, 0.5), 34, at=0.45),
+        _key(c(cm.TARGET_S), (-3.4, -2.6, 1.7), (0.0, -1.1, 0.5), 34, at=0.45),
     ]
     return {"K": K, "R": R, "C": C}
 
