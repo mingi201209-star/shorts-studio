@@ -1,1 +1,1 @@
-{"target_seconds":32.0,"note":"EP.04 v3 attempt 12: fewer sentence breaks (they count as silence); beats 2,3 are one sentence each"}
+{"target_seconds":32.0,"note":"EP.04 v3 attempt 12 (rerun): apt-get stalled twice on the runner, workflow now bounds it with timeouts"}
