@@ -163,11 +163,19 @@ def text_safe_area() -> dict:
     (checked on the camera data: no render needed)."""
     from benchmarks.crumple_zone import crumple_cameras as cc
     problems = []
-    for kind, b in cc.sign_boxes().items():
+    boxes = {}
+    for f in range(1, cm.TOTAL_FRAMES + 1):      # the camera orbits in the replays: the signs are checked in every comparison frame
+        if cm.segment_at(f)["layout"] != "stack":
+            continue
+        for kind, b in cc.sign_boxes(f).items():
+            w = boxes.setdefault(kind, {"rows": [1e9, -1e9], "cols": [1e9, -1e9]})
+            w["rows"] = [min(w["rows"][0], b["rows"][0]), max(w["rows"][1], b["rows"][1])]
+            w["cols"] = [min(w["cols"][0], b["cols"][0]), max(w["cols"][1], b["cols"][1])]
+    for kind, b in boxes.items():
         r0, r1 = b["rows"]
         c0, c1 = b["cols"]
         if c0 < cc.SAFE["left"] or c1 > cc.SAFE["right"] or r0 < cc.SAFE["top"] or r1 > cc.SAFE["bottom"]:
             problems.append(f"{kind} sign leaves the safe area: rows {r0:.0f}-{r1:.0f}, cols {c0:.0f}-{c1:.0f}")
         if min(r1, cc.CAPTION_ROWS[1]) - max(r0, cc.CAPTION_ROWS[0]) > 0:
             problems.append(f"{kind} sign (rows {r0:.0f}-{r1:.0f}) overlaps the caption rows {cc.CAPTION_ROWS}")
-    return {"status": "FAIL" if problems else "PASS", "problems": problems, "boxes": cc.sign_boxes()}
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "boxes": boxes}

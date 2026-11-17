@@ -6,7 +6,7 @@ Every text element ever added to EP.04 (code search: `render_crumple_3d.py`, `ca
 | Element | Where | Class | Decision |
 |---|---|---|---|
 | Narration captions (burned-in, single line, curated phrases <= 24 chars) | `captions.py` -> `film.ass`, rows 1408-1540 | REQUIRED | keep; not changed |
-| 3D sign `CRUMPLE` / `RIGID` (one word per car) | comparison segments C, C2, C3 | REQUIRED, minimal (two identical sedans cannot be told apart otherwise) | keep, but shrunk (0.30 -> 0.18) and moved: it used to sit on the caption rows of the lower panel; now it is on the road under each car, rows 340-433 / 1303-1389, inside the mobile safe area (gate `text_safe_area`) |
+| 3D sign `CRUMPLE` / `RIGID` (one word per car) | comparison segments C, C2, C3 | REQUIRED, minimal (two identical sedans cannot be told apart otherwise) | keep, but shrunk (0.30 -> 0.18) and moved: it used to sit on the caption rows of the lower panel; now it is on the road under each car, rows about 314-393 / 1275-1351 over the whole orbit, inside the mobile safe area (gate `text_safe_area`) |
 | Title card / intro text / on-screen explanation sentences | - | never existed in EP.04 | none added |
 | Distance/time bars, force arrows, occupant, their value labels | - | OPTIONAL, out of scope (owner) | never implemented, no text |
 | Scene-spec `description` / `movement` strings | spec JSON | metadata, not drawn | n/a |

@@ -13,7 +13,7 @@ PANEL_PX = {"full": (1080, 1920), "stack": (1080, 960)}
 
 #: The only on-screen words besides the narration captions: one word per car in the comparison, as a 3D sign on the road under each car.
 #: Placed (by search) in the free band between the tyres and the caption rows of BOTH stacked panels, away from the Shorts interface zones.
-SIGN = {"pos": (-1.2, -2.0, 0.25), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
+SIGN = {"pos": (-1.4, -1.6, 0.32), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
 FRAME_W, FRAME_H = 1080, 1920
 CAPTION_ROWS = (1408, 1540)
 #: mobile safe area of a 1080x1920 Short: keep clear of the top ~8 %, the bottom ~20 % and the right ~11 % (like/comment buttons)
@@ -40,7 +40,7 @@ def sign_boxes(frame: int = 30) -> dict:
     return out
 
 
-def camera(kind: str, frame: int = 1) -> dict:
+def _base_camera(kind: str, frame: int = 1) -> dict:
     """{'loc', 'target', 'lens', 'shift_y'} for a camera kind at a film frame."""
     if kind == "hero":
         return {"loc": (-2.7, -2.3, 0.8), "target": (0.0, -0.25, 0.5), "lens": 34.0, "shift_y": 0.0}
@@ -53,6 +53,24 @@ def camera(kind: str, frame: int = 1) -> dict:
         loc = tuple(float(v) * (1 - 0.06 * k) for v in (-5.0, -5.2, 2.4))        # found by a search that keeps nose, rails and cell inside the frame for every X-ray frame
         return {"loc": loc, "target": (0.0, -1.3, 0.45), "lens": 34.0, "shift_y": 0.0}
     raise ValueError(kind)
+
+
+ORBIT_DEG = 16.0      # replay segments: the camera sweeps this many degrees around the subject over the segment (the first three segments keep their validated fixed cameras)
+
+
+def camera(kind: str, frame: int = 1) -> dict:
+    """Camera of a film frame: the base camera of its kind, plus a slow orbit in the replay segments (the replays are long slow motion; without camera motion the picture changes too little from frame to frame)."""
+    cam = _base_camera(kind, frame)
+    seg = cm.segment_at(frame)
+    if seg["id"] in ("H", "C", "X"):
+        return cam
+    k = (frame - seg["first"]) / max(1, seg["last"] - seg["first"])
+    a = np.radians(ORBIT_DEG * (k - 0.5))
+    tx, ty, _ = cam["target"]
+    x, y, z = cam["loc"]
+    dx, dy = x - tx, y - ty
+    loc = (tx + dx * np.cos(a) - dy * np.sin(a), ty + dx * np.sin(a) + dy * np.cos(a), z)
+    return {**cam, "loc": tuple(float(v) for v in loc)}
 
 
 def project(points: np.ndarray, cam: dict, layout: str) -> np.ndarray:

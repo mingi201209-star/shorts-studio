@@ -98,4 +98,4 @@ def test_only_the_two_comparison_signs_exist_besides_captions_and_they_are_in_th
         cc.SIGN = old
         assert g.text_safe_area()["status"] == "FAIL"
     finally:
-        cc.SIGN = {"pos": (-1.2, -2.0, 0.25), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
+        cc.SIGN = {"pos": (-1.4, -1.6, 0.32), "size": 0.18, "char_w": 0.75, "words": {"crumple": "CRUMPLE", "rigid": "RIGID"}}
