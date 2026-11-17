@@ -4,18 +4,18 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED = {
-    "A car hits a wall and a tenth of a second is slowed way down.": (
-        "A car hits a wall", "and a tenth of a", "second is slowed", "way down."),
-    "The hood buckles and the front folds as hidden rails fold like an accordion.": (
-        "The hood buckles", "and the front folds", "as hidden rails", "fold like an accordion."),
-    "Rails absorb the crash over a longer stop as the cabin keeps its shape.": (
-        "Rails absorb the crash", "over a longer stop", "as the cabin keeps", "its shape."),
-    "Pillars doors and roof stay put as a rigid front hits the same wall.": (
-        "Pillars doors and roof", "stay put", "as a rigid front", "hits the same wall."),
-    "It has almost nothing to crush so it stops almost instantly and bounces back.": (
-        "It has almost nothing", "to crush so it stops", "almost instantly", "and bounces back."),
-    "The front is meant to deform and absorb the crash but the cabin isn't.": (
-        "The front is meant", "to deform and absorb", "the crash", "but the cabin isn't."),
+    "A car hits a wall and we slow that tenth of a second way down to watch it.": (
+        "A car hits a wall", "and we slow that", "tenth of a second", "way down to watch it."),
+    "The hood buckles and the front folds back as the hidden rails inside fold like an accordion.": (
+        "The hood buckles", "and the front folds back", "as the hidden rails", "inside fold like", "an accordion."),
+    "Rails absorb the crash energy over a longer stop while the cabin quietly keeps its whole shape.": (
+        "Rails absorb the crash", "energy over a longer", "stop while the cabin", "quietly keeps its", "whole shape."),
+    "Pillars doors and roof stay exactly put and now a rigid front hits the very same wall.": (
+        "Pillars doors and roof", "stay exactly put", "and now a rigid front", "hits the very same wall."),
+    "It has almost nothing to crush so it stops almost instantly and bounces back off the wall.": (
+        "It has almost nothing", "to crush so it stops", "almost instantly", "and bounces back", "off the wall."),
+    "The front is meant to deform and absorb the whole crash energy but the cabin is not.": (
+        "The front is meant", "to deform and absorb", "the whole crash energy", "but the cabin is not."),
 }
 
 
