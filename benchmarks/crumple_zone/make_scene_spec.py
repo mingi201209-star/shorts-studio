@@ -16,13 +16,13 @@ S.append(scene("s01",1,"Cars are designed to crush.","Cars are designed",["car_f
   chk("s01-crushes","the nose has crushed at least 3 cm by the end of the sentence","metric_reaches","action_performed",metric="crumple.stroke_m",value=0.03),
   chk("s01-no-penetration","the deformed nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s01"),mute("s01","with the sound off a car hits a wall and its front crumples")]))
-S.append(scene("s02a",2,"The real crash lasts a tenth of a second so we slow it way down.","The real crash lasts",["car_front","barrier"],"structure_deformation",
+S.append(scene("s02a",2,"The real crash lasts a tenth of a second so we slow it way down","The real crash lasts",["car_front","barrier"],"structure_deformation",
  "The same crash is shown in extreme slow motion: the film runs at well under 5 % of real time while this is said","film.speed_vs_real",0.0,{"kind":"K","movement":"tracking three-quarter view, slow push-in"},["structure_deformation"],
  [subj("s02a",["car_front","barrier"]),
   chk("s02a-slow","the film runs at under 5 % of real time while the sentence is spoken","metric_at_most","action_performed",metric="film.speed_vs_real",value=0.05),
   chk("s02a-running","the crash is going on while it is said (the crush keeps growing)","metric_increase","timing",metric="crumple.stroke_m",value=0.02),
   noobs("s02a"),mute("s02a","with the sound off the crash is seen in extreme slow motion")]))
-S.append(scene("s02b",2,"Watch the hood buckle and the whole front fold back.","Watch the hood buckle",["car_front"],"structure_deformation",
+S.append(scene("s02b",2,"to watch the hood buckle and the whole front fold back.","to watch the hood buckle",["car_front"],"structure_deformation",
  "The hood folds upwards and the whole front is pushed back while the crash runs on","body.max_rise_m",0.01,{"kind":"K","movement":"close high three-quarter view of the nose"},["structure_deformation"],
  [subj("s02b",["car_front"]),
   chk("s02b-hood","the hood buckles upwards by at least 3 cm while it is narrated","metric_increase","action_performed",metric="body.max_rise_m",value=0.03),
@@ -56,13 +56,13 @@ S.append(scene("s04b",4,"Pillars, doors and roof stay put.","Pillars, doors and 
   chk("s04b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   chk("s04b-cage-on","the cage is on screen during the whole sentence","metric_at_least","timing",metric="cell.highlight",value=0.99),
   noobs("s04b"),mute("s04b","with the sound off the cabin keeps its outline while the front is wrecked")]))
-S.append(scene("s05a",5,"Now a rigid front at the same speed.","Now a rigid front at",["rigid_car_front"],"rigid_stop_rebound",
+S.append(scene("s05a",5,"Now a rigid front at the same speed","Now a rigid front at",["rigid_car_front"],"rigid_stop_rebound",
  "A different (blue) car with a rigid front drives into the same wall at the same speed: tracked approach","nose.world_y_m",-7.0,{"kind":"R","movement":"tracking shot of the approach from the same camera start as the first crash"},["rigid_stop_rebound","approach_run_up"],
  [subj("s05a",["rigid_car_front"],0.8),
   chk("s05a-approach","the car closes at least 3 m on the wall while it is narrated","metric_increase","action_performed",metric="nose.world_y_m",value=3.0),
   chk("s05a-onset","the approach starts when the sentence starts","onset_within_s","timing",metric="nose.world_y_m",onset_threshold=-9.0,value=60.0),
   noobs("s05a"),mute("s05a","with the sound off a second, different car drives at the same wall")]))
-S.append(scene("s05b",5,"It has almost nothing to crush so it stops almost","almost nothing to crush",["rigid_car_front","barrier"],"rigid_stop_rebound",
+S.append(scene("s05b",5,"has almost nothing to crush so it stops almost","almost nothing to crush",["rigid_car_front","barrier"],"rigid_stop_rebound",
  "The rigid front touches the wall and stops within centimetres (same time scale as the first crash)","rigid.stroke_m",0.01,{"kind":"R","movement":"close high three-quarter view of the nose (same pose as the first crash)"},["rigid_stop_rebound"],
  [subj("s05b",["rigid_car_front"],0.8),
   chk("s05b-onset","the rigid car touches the wall when 'nothing to crush' is spoken","onset_near_cue","timing",metric="rigid.stroke_m",onset_threshold=0.01,value=0.6),
