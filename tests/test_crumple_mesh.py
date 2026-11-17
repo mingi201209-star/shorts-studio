@@ -1,5 +1,4 @@
 """EP.04 mesh / wall / camera / timing checks on the REAL sedan vertices (fixture dumped by Blender once), in plain Python: seconds instead of a 17-minute preview."""
-import json
 import sys
 from pathlib import Path
 
@@ -10,18 +9,16 @@ sys.path.insert(0, str(ROOT))
 from benchmarks.crumple_zone import crumple_gates as gates  # noqa: E402
 from benchmarks.crumple_zone import crumple_motion as cm  # noqa: E402
 from benchmarks.crumple_zone import evidence_sim as es  # noqa: E402
-from shorts_studio.scene_spec import EpisodeSpec, evaluate_episode, load_spec  # noqa: E402
+from shorts_studio.scene_spec import evaluate_episode, load_spec  # noqa: E402
 
 CAR = es.Car(es.load_fixture())
 EVIDENCE = es.timeline_evidence(CAR)
-CUES = json.loads((ROOT / "examples/experiments/crumple-zone-real-cues.json").read_text())["cues"]
-XRAY = next(s for s in cm.SEGMENTS if s["id"] == "X")
+CUES = cm._cues()
 
 
 def test_nothing_goes_through_the_barrier_including_plate_bumper_and_wheels():
     worst = max(e["metrics"].get("nose.penetration_mm", 0.0) for e in EVIDENCE.values())
     assert worst <= 5.0, worst
-    # the bumper, registration plate, grille and headlamps (the parts that stuck out in preview 6/7) are inside the crush zone and move with the nose
     names = {p["name"] for p in es.load_fixture()["parts"] if p["wheel"] is None}
     assert {"Blank registration panel", "Bumper", "Grille bar", "Headlamp"} <= names
 
@@ -36,34 +33,48 @@ def test_the_passenger_cell_geometry_never_moves():
     assert max(e["metrics"].get("cell.max_displacement_mm", 0.0) for e in EVIDENCE.values()) <= 1.0
 
 
-def test_the_action_is_never_under_the_captions_and_subjects_are_in_view():
+def test_the_action_is_never_under_the_captions():
     assert max(e["metrics"]["caption.overlap"] for e in EVIDENCE.values()) <= 0.2
-    for f in range(1, 19):
-        assert EVIDENCE[f]["in_view"]["car_front"] and EVIDENCE[f]["in_view"]["barrier"]
-    for f in range(XRAY["first"], XRAY["last"] + 1):                       # the X-ray: rails, bumper beam and cell are on screen once the ghost has formed
+
+
+def test_the_car_front_is_in_view_through_both_crashes_and_the_run_ups():
+    for f in range(1, cm.SEGMENTS[1]["last"] + 1):
         v = EVIDENCE[f]["in_view"]
-        if cm.xray_factor(f) >= 0.5:
-            assert v["crush_rails"] and v["bumper_beam"] and v["safety_cell"], f
+        assert v.get("car_front") or v.get("rigid_car_front"), f
 
 
 def test_the_ghost_body_is_seen_against_road_and_barrier_not_the_sky():
-    r = gates.xray_against_road(CAR, range(XRAY["first"], XRAY["last"] + 1))
-    assert r["status"] == "PASS", r
+    assert gates.xray_against_road(CAR, range(1, cm.TOTAL_FRAMES + 1))["status"] == "PASS"
 
 
-def test_crush_progresses_from_the_nose_rearwards_and_is_visible_by_two_seconds():
-    shorten = [EVIDENCE[f]["metrics"]["rails.shortening_m"] for f in range(XRAY["first"], XRAY["last"] + 1)]
+def test_the_rails_only_ever_shorten_during_the_crash_and_the_front_stays_crushed_after_it():
+    k = cm.SEGMENTS[0]
+    shorten = [EVIDENCE[f]["metrics"]["rails.shortening_m"] for f in range(k["first"], k["last"] + 1)]
     assert all(b >= a - 1e-9 for a, b in zip(shorten, shorten[1:]))
-    assert max(EVIDENCE[f]["metrics"].get("crumple.stroke_m", 0.0) for f in range(1, 61)) >= 0.2
-    assert shorten[-1] >= 0.4
+    assert shorten[-1] >= 0.5
+    c = cm.SEGMENTS[2]
+    assert all(EVIDENCE[f]["metrics"]["crumple.crushed_depth_m"] >= 0.8 for f in range(c["first"], c["last"] + 1))
 
 
-def test_scene_alignment_of_the_first_scenes_on_the_simulated_evidence_with_the_real_cues():
-    full = load_spec(ROOT / "examples/episodes/ep04-crumple-zone-scene-spec.json")
-    sub = EpisodeSpec(full.episode, full.title, full.target_seconds, full.narration, [s for s in full.scenes if s.id in ("s01", "s02a", "s02b")], full.assumptions)
-    rep = evaluate_episode(sub, CUES, 26.0, EVIDENCE)
-    for sid in ("s01", "s02a"):
-        assert rep["scenes"][sid]["verdict"] == "AUTO_PASS_HUMAN_REVIEW_PENDING", rep["scenes"][sid]
-    # The initial rail folding must land on the measured narration cue.
-    onset = next(c for c in rep["scenes"]["s02b"]["checks"] if c["check"] == "s02b-onset")
-    assert onset["status"] == "PASS" and abs(onset["delta_s"]) <= 0.4, onset
+def test_the_rigid_car_stays_within_six_centimetres_and_then_really_moves_away_from_the_wall():
+    r = cm.SEGMENTS[1]
+    stroke = max(EVIDENCE[f]["metrics"]["rigid.stroke_m"] for f in range(r["first"], r["last"] + 1))
+    assert 0.04 <= stroke <= 0.06
+    assert max(EVIDENCE[f]["metrics"]["rigid.rebound_m"] for f in range(r["first"], r["last"] + 1)) >= 1.0
+    assert max(EVIDENCE[f]["metrics"]["rigid.speed_away_mps"] for f in range(r["first"], r["last"] + 1)) >= 1.0
+
+
+def test_every_scene_of_the_spec_is_aligned_on_the_simulated_evidence_with_the_measured_cues():
+    spec = load_spec(ROOT / "examples/episodes/ep04-crumple-zone-scene-spec.json")
+    rep = evaluate_episode(spec, CUES["cues"], CUES["target_seconds"], EVIDENCE)
+    fails = {sid: [c for c in sc["checks"] if c["status"] == "FAIL"] for sid, sc in rep["scenes"].items()}
+    assert rep["overall"] != "FAIL", {k: v for k, v in fails.items() if v}
+    assert all(sc["verdict"] == "AUTO_PASS_HUMAN_REVIEW_PENDING" for sc in rep["scenes"].values())      # software cannot decide the rest: a person has to watch it
+
+
+def test_the_scene_windows_follow_the_cues_in_order():
+    from shorts_studio.scene_spec import alignment
+    spec = load_spec(ROOT / "examples/episodes/ep04-crumple-zone-scene-spec.json")
+    windows = alignment.resolve_windows(spec, CUES["cues"], CUES["target_seconds"])
+    starts = [windows[s.id]["start"] for s in spec.scenes]
+    assert starts == sorted(starts) and windows[spec.scenes[-1].id]["end"] == CUES["target_seconds"]

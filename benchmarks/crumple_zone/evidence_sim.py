@@ -56,7 +56,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
     seg = cm.segment_at(frame)
     xf = cm.xray_factor(frame)
     cam = ccams.camera(seg["camera"], frame)
-    metrics, in_view, panels = {"xray.factor": xf, "cell.highlight": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the green safety-cell cage is drawn together with the ghost body
+    metrics, in_view, panels = {"film.speed_vs_real": cm.film_speed(frame), "xray.factor": xf, "cell.highlight": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the green safety-cell cage is drawn together with the ghost body
     for panel in cm.visible_panels(frame):
         ps = cm.pose(frame, panel)
         d, s = ps["d"], ps["s"]

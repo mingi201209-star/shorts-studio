@@ -30,7 +30,7 @@ def compose(panels: Path, out: Path):
     proofs = sorted(panels.rglob("crumple-proof.json"))
     if not proofs:
         raise SystemExit("no shards")
-    index, telemetry, sha, evidence = {}, [], None, {}
+    index, telemetry, sha, evidence, segments = {}, [], None, {}, []
     for pp in proofs:
         proof = json.loads(pp.read_text())
         if not proof.get("all_3d") or proof.get("overlays") != "none":
@@ -41,6 +41,9 @@ def compose(panels: Path, out: Path):
             raise SystemExit("mixed renderer versions across shards")
         telemetry += proof["telemetry"]
         evidence.update({int(k): v for k, v in proof["evidence"].items()})
+        if "segment" in proof:      # native render: the shard job encoded its frames into a near-lossless segment
+            segments.append((proof["segment"]["first_frame"], pp.parent / proof["segment"]["file"], proof["segment"]["frames"]))
+            continue
         for c in proof["checksums"]:
             path = pp.parent / f"frame_{c['frame']:04d}_{c['panel']}.png"
             if hashlib.sha256(path.read_bytes()).hexdigest() != c["sha256"]:
@@ -48,6 +51,16 @@ def compose(panels: Path, out: Path):
             index[(c["frame"], c["panel"])] = path
     telemetry.sort(key=lambda t: t["frame"])
     out.mkdir(parents=True, exist_ok=True)
+    if segments:
+        segments.sort()
+        if sum(n for _, _, n in segments) != cm.TOTAL_FRAMES or [s[0] for s in segments][0] != 1:
+            raise SystemExit(f"segments cover {sum(n for _, _, n in segments)} frames, expected {cm.TOTAL_FRAMES}")
+        listing = out / "segments.txt"
+        listing.write_text("".join(f"file '{path}'\n" for _, path, _ in segments))
+        joined = out.parent / (out.name + "-joined.mp4")
+        run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(listing), "-c", "copy", str(joined)])
+        run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-vsync", "0", "-start_number", "1", str(out / "frame_%04d.png")])
+        return telemetry, sha, evidence
     for f in range(1, cm.TOTAL_FRAMES + 1):
         seg = cm.segment_at(f)
         img = Image.new("RGB", (W, H), (0, 0, 0))

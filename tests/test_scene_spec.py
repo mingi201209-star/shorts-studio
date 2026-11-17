@@ -40,47 +40,51 @@ def test_a_scene_without_a_phenomenon_is_rejected():
 def test_unimplemented_capabilities_block_production():
     spec = load_spec(SPEC)
     blockers = production_blockers(spec, CAPABILITIES)
-    assert blockers == []  # owner scope (2026-11-16): bars/arrows/occupant are not part of EP.04, every scene uses an implemented capability
-    assert production_blockers(spec, {**CAPABILITIES, "two_situation_comparison": False})  # a missing capability still blocks
+    assert blockers == []  # owner scope: bars/arrows/occupant are not part of EP.04, every scene uses an implemented capability
+    assert production_blockers(spec, {**CAPABILITIES, "xray_reveal": False})  # a missing capability still blocks
+    assert production_blockers(spec, {**CAPABILITIES, "rigid_stop_rebound": False})
     ok, reasons = full_render_allowed(spec, {"scenes": {}}, CAPABILITIES, beats())
     assert not ok and any("no low-cost preview evidence" in r for r in reasons)
 
 
-def _evidence(frames, stroke_onset=8, xray_onset=61, replay_onset=80):
-    """Hero crash from frame `stroke_onset`, X-ray replay (a new pass, the metrics restart at frame 61) with its crash from frame `replay_onset`."""
-    ev = {}
-    for f in range(1, frames + 1):
-        if f < 61:
-            stroke = min(0.62, max(0.0, (f - stroke_onset) * 0.02))
-        else:
-            stroke = min(0.62, max(0.0, (f - replay_onset) * 0.02))
-        ev[f] = {"metrics": {"crumple.stroke_m": stroke, "xray.factor": min(1.0, max(0.0, (f - xray_onset) / 30)), "nose.penetration_mm": 0.0, "cell.max_displacement_mm": 0.0,
-                             "caption.overlap": 0.0, "rails.shortening_m": 0.8 * stroke}, "in_view": {n: True for n in ("car_front", "barrier", "crush_rails", "bumper_beam", "safety_cell")}}
-    return ev
+def _real_evidence():
+    from benchmarks.crumple_zone import evidence_sim as es
+    return es.timeline_evidence(es.Car(es.load_fixture()))
+
+
+def _cues():
+    from benchmarks.crumple_zone import crumple_motion as cm
+    c = cm._cues()
+    return c["cues"], c["target_seconds"]
 
 
 def test_alignment_passes_what_is_measured_and_never_passes_what_only_a_person_can_judge():
     spec = load_spec(SPEC)
-    cues = [{"start": 0.0, "end": 1.0, "text": "Cars are designed"}, {"start": 1.9, "end": 2.5, "text": "Inside, hidden"}, {"start": 2.6, "end": 3.3, "text": "structures fold and"},
-            {"start": 3.4, "end": 4.0, "text": "slow the car down"}] + [{"start": 6.0 + i, "end": 6.7 + i, "text": s.cue} for i, s in enumerate(spec.scenes[4:])]
-    rep = evaluate_episode(spec, cues, 30.0, _evidence(135))
+    cues, total = _cues()
+    rep = evaluate_episode(spec, cues, total, _real_evidence())
     s01 = rep["scenes"]["s01"]
     assert s01["verdict"] == "AUTO_PASS_HUMAN_REVIEW_PENDING" and s01["criteria"]["sound_off_understandable"] == "NOT_VERIFIED"
-    assert rep["scenes"]["s03"]["verdict"] == "PENDING_MORE_FRAMES"       # windows beyond the evidence are not evaluated
-    assert rep["scenes"]["s02c"]["verdict"] == "FAIL"                      # its cue is inside the evidence but nothing (no bars) ever happens
-    assert rep["overall"] == "FAIL"
+    assert rep["overall"] == "AUTO_PASS_HUMAN_REVIEW_PENDING"
+    short = {f: e for f, e in _real_evidence().items() if f <= 150}
+    rep = evaluate_episode(spec, cues, total, short)
+    assert rep["scenes"]["s05c"]["verdict"] == "PENDING_MORE_FRAMES"       # windows beyond the evidence are not evaluated
 
 
 def test_alignment_fails_when_the_object_exists_but_does_not_move_or_is_late():
+    import copy as cp
     spec = load_spec(SPEC)
-    cues = [{"start": 0.0, "end": 1.0, "text": "Cars are designed"}, {"start": 1.9, "end": 2.5, "text": "Inside, hidden"}, {"start": 2.6, "end": 3.3, "text": "structures fold and"},
-            {"start": 3.4, "end": 4.0, "text": "slow the car down"}] + [{"start": 6.0 + i, "end": 6.7 + i, "text": s.cue} for i, s in enumerate(spec.scenes[4:])]
-    still = _evidence(135, stroke_onset=500)         # the subjects are in view but nothing deforms
-    rep = evaluate_episode(spec, cues, 30.0, still)
-    assert rep["scenes"]["s01"]["verdict"] == "FAIL"
-    late = _evidence(135, xray_onset=100)            # the reveal starts 1.3 s after the spoken cue
-    rep = evaluate_episode(spec, cues, 30.0, late)
-    assert any(r["check"] == "s02a-onset" and r["status"] == "FAIL" for r in rep["scenes"]["s02a"]["checks"])
+    cues, total = _cues()
+    still = cp.deepcopy(_real_evidence())             # the subjects are in view but nothing deforms
+    for e in still.values():
+        for k in ("crumple.stroke_m", "crumple.crushed_depth_m", "body.max_rise_m", "rails.shortening_m"):
+            if k in e["metrics"]:
+                e["metrics"][k] = 0.0
+    rep = evaluate_episode(spec, cues, total, still)
+    assert rep["scenes"]["s01"]["verdict"] == "FAIL" and rep["scenes"]["s02"]["verdict"] == "FAIL"
+    ev = _real_evidence()
+    late = {f: cp.deepcopy(ev[max(1, f - 90)]) for f in ev}      # every picture event arrives 3 s after the words
+    rep = evaluate_episode(spec, cues, total, late)
+    assert any(r["check"] == "s03a-onset" and r["status"] == "FAIL" for r in rep["scenes"]["s03a"]["checks"])
 
 
 def test_registry_keeps_the_better_informed_verdict_and_gates_full_render(tmp_path):
@@ -91,7 +95,7 @@ def test_registry_keeps_the_better_informed_verdict_and_gates_full_render(tmp_pa
     reg = update_registry(reg_path, spec.episode, "p1", report)
     assert reg["scenes"]["s01"]["verdict"] == "AUTO_PASS_HUMAN_REVIEW_PENDING"
     ok, reasons = full_render_allowed(spec, reg, CAPABILITIES, beats())
-    assert not ok and any("s02c" in r for r in reasons)
+    assert not ok and any("s02" in r for r in reasons)
 
 
 def test_resolve_windows_uses_the_real_cue_starts():

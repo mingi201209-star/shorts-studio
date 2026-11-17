@@ -210,6 +210,16 @@ def frame_time(frame: int) -> float:
     return T_CONTACT + float(np.interp(tau, taus, tp))
 
 
+def film_speed(frame: int) -> float:
+    """How fast the film runs compared with real time at this frame (simulated seconds per film second); 1.0 = real time."""
+    seg = segment_at(frame)
+    if "static_t" in seg:
+        return 0.0
+    nxt = frame + 1 if frame < seg["last"] else frame
+    prv = frame if frame < seg["last"] else frame - 1
+    return (frame_time(nxt) - frame_time(prv)) * FPS
+
+
 def pose(frame: int, panel: str | None = None) -> dict:
     """Simulated pose of the car shown in this frame: d (cabin advance), s (crush stroke), v, g."""
     seg = segment_at(frame)
@@ -242,8 +252,8 @@ def frame_of(seconds: float) -> int:
 
 TARGET_S = float(_cues()["target_seconds"])
 TOTAL_FRAMES = int(round(TARGET_S * FPS))
-CABIN_BEAT = "The passenger"      # first caption phrase of the cabin sentence
-RIGID_BEAT = "Now the same speed"
+CABIN_BEAT = "The cabin keeps"      # first caption phrase of the cabin sentence
+RIGID_BEAT = "Now a rigid front at"
 RIGID_CONTACT_CUE = "almost nothing to crush"
 CLOSE_BEAT = "The front is meant"
 HOOK_CONTACT_S = 0.9                         # first contact: the crash begins well inside the first 2 seconds
@@ -255,7 +265,7 @@ SEGMENTS = [
     {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
      "contact_film_s": HOOK_CONTACT_S, "xray_keys": ()},
     {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_m": 8.0,
-     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] + 0.002, T_STOP["rigid"] + 0.03, 0.35), "xray_keys": ()},
+     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] + 0.002, T_STOP["rigid"] + 0.03, 0.6), "xray_keys": ()},
     {"id": "C", "first": _F_CLOSE, "last": TOTAL_FRAMES, "panels": ("crumple",), "layout": "full", "camera": "C", "r0": R0, "approach_m": 0.0,
      "contact_film_s": 0.0, "static_t": 1.0, "xray_keys": ()},
 ]

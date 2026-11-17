@@ -4,10 +4,10 @@
  "target_seconds": 32.0,
  "narration": [
   "Cars are designed to crush.",
-  "Watch the hood buckle and the whole front fold back.",
-  "Hidden rails inside fold like an accordion absorbing the crash energy and stretching the stop over a longer distance and time.",
-  "The passenger compartment keeps its shape. The pillars, doors and roof stay where they were.",
-  "Now the same speed and the same wall but a rigid front. It has almost nothing to crush so it stops almost instantly and the car bounces back.",
+  "The real crash lasts a tenth of a second so we slow it down. Watch the hood buckle and the whole front fold back.",
+  "Hidden rails inside fold like an accordion and stretch the stop over a longer distance and time.",
+  "The cabin keeps its shape. Pillars, doors and roof stay put.",
+  "Now a rigid front at the same speed. It has almost nothing to crush so it stops almost instantly and bounces back.",
   "The front is meant to deform. The cabin isn't."
  ],
  "scenes": [
@@ -90,7 +90,75 @@
    "silent_readable": true
   },
   {
-   "id": "s02",
+   "id": "s02a",
+   "beat": 2,
+   "narration": "The real crash lasts a tenth of a second so we slow it down.",
+   "cue": "The real crash lasts",
+   "subjects": [
+    "car_front",
+    "barrier"
+   ],
+   "phenomenon": {
+    "kind": "structure_deformation",
+    "description": "The same crash is shown in extreme slow motion: the film runs at well under 5 % of real time while this is said",
+    "onset_metric": "film.speed_vs_real",
+    "onset_threshold": 0.0,
+    "explanation_only": false
+   },
+   "camera": {
+    "kind": "K",
+    "movement": "tracking three-quarter view, slow push-in"
+   },
+   "effects": [
+    "structure_deformation"
+   ],
+   "success": [
+    {
+     "id": "s02a-subjects",
+     "description": "the named parts are on screen",
+     "kind": "subjects_in_view",
+     "criterion": "subject_present",
+     "subjects": [
+      "car_front",
+      "barrier"
+     ],
+     "value": 0.8
+    },
+    {
+     "id": "s02a-slow",
+     "description": "the film runs at under 5 % of real time while the sentence is spoken",
+     "kind": "metric_at_most",
+     "criterion": "action_performed",
+     "metric": "film.speed_vs_real",
+     "value": 0.05
+    },
+    {
+     "id": "s02a-running",
+     "description": "the crash is going on while it is said (the crush keeps growing)",
+     "kind": "metric_increase",
+     "criterion": "timing",
+     "metric": "crumple.stroke_m",
+     "value": 0.02
+    },
+    {
+     "id": "s02a-not-obscured",
+     "description": "the action is not hidden by the captions",
+     "kind": "not_obscured",
+     "criterion": "not_obscured",
+     "metric": "caption.overlap",
+     "value": 0.2
+    },
+    {
+     "id": "s02a-sound-off",
+     "description": "with the sound off the crash is seen in extreme slow motion",
+     "kind": "manual",
+     "criterion": "sound_off_understandable"
+    }
+   ],
+   "silent_readable": true
+  },
+  {
+   "id": "s02b",
    "beat": 2,
    "narration": "Watch the hood buckle and the whole front fold back.",
    "cue": "Watch the hood buckle",
@@ -99,7 +167,7 @@
    ],
    "phenomenon": {
     "kind": "structure_deformation",
-    "description": "The hood folds upwards and the whole front is pushed back while the crash runs on in slow motion",
+    "description": "The hood folds upwards and the whole front is pushed back while the crash runs on",
     "onset_metric": "body.max_rise_m",
     "onset_threshold": 0.01,
     "explanation_only": false
@@ -113,7 +181,7 @@
    ],
    "success": [
     {
-     "id": "s02-subjects",
+     "id": "s02b-subjects",
      "description": "the named parts are on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
@@ -123,23 +191,23 @@
      "value": 0.8
     },
     {
-     "id": "s02-hood",
-     "description": "the hood buckles upwards by at least 5 cm while it is narrated",
+     "id": "s02b-hood",
+     "description": "the hood buckles upwards by at least 3 cm while it is narrated",
      "kind": "metric_increase",
      "criterion": "action_performed",
      "metric": "body.max_rise_m",
-     "value": 0.05
+     "value": 0.03
     },
     {
-     "id": "s02-front-folds",
-     "description": "the crushed depth of the front grows by at least 15 cm while it is narrated",
+     "id": "s02b-front-folds",
+     "description": "the crushed depth of the front grows by at least 10 cm while it is narrated",
      "kind": "metric_increase",
      "criterion": "timing",
      "metric": "crumple.crushed_depth_m",
-     "value": 0.15
+     "value": 0.1
     },
     {
-     "id": "s02-not-obscured",
+     "id": "s02b-not-obscured",
      "description": "the action is not hidden by the captions",
      "kind": "not_obscured",
      "criterion": "not_obscured",
@@ -147,7 +215,7 @@
      "value": 0.2
     },
     {
-     "id": "s02-sound-off",
+     "id": "s02b-sound-off",
      "description": "with the sound off the hood is seen folding up and the front folding back",
      "kind": "manual",
      "criterion": "sound_off_understandable"
@@ -237,8 +305,8 @@
   {
    "id": "s03b",
    "beat": 3,
-   "narration": "absorbing the crash energy and stretching the stop over a longer distance and time.",
-   "cue": "absorbing the crash",
+   "narration": "and stretch the stop over a longer distance and time.",
+   "cue": "and stretch the stop",
    "subjects": [
     "crush_rails",
     "bumper_beam"
@@ -270,12 +338,12 @@
      "value": 0.7
     },
     {
-     "id": "s03b-fold",
-     "description": "the rails shorten by at least 15 cm while it is narrated",
-     "kind": "metric_increase",
+     "id": "s03b-folded",
+     "description": "the rails have folded by at least 50 cm by the end of the stop",
+     "kind": "metric_reaches",
      "criterion": "action_performed",
      "metric": "rails.shortening_m",
-     "value": 0.15
+     "value": 0.5
     },
     {
      "id": "s03b-timing",
@@ -283,7 +351,7 @@
      "kind": "metric_increase",
      "criterion": "timing",
      "metric": "rails.shortening_m",
-     "value": 0.05,
+     "value": 0.03,
      "window": "scene"
     },
     {
@@ -314,8 +382,8 @@
   {
    "id": "s04a",
    "beat": 4,
-   "narration": "The passenger compartment keeps its shape.",
-   "cue": "The passenger",
+   "narration": "The cabin keeps its shape.",
+   "cue": "The cabin keeps",
    "subjects": [
     "safety_cell",
     "whole_car"
@@ -390,8 +458,8 @@
   {
    "id": "s04b",
    "beat": 4,
-   "narration": "The pillars, doors and roof stay where they were.",
-   "cue": "The pillars, doors",
+   "narration": "Pillars, doors and roof stay put.",
+   "cue": "Pillars, doors and roof",
    "subjects": [
     "safety_cell",
     "whole_car"
@@ -466,8 +534,8 @@
   {
    "id": "s05a",
    "beat": 5,
-   "narration": "Now the same speed and the same wall but a rigid front.",
-   "cue": "Now the same speed",
+   "narration": "Now a rigid front at the same speed.",
+   "cue": "Now a rigid front at",
    "subjects": [
     "rigid_car_front"
    ],
@@ -610,8 +678,8 @@
   {
    "id": "s05c",
    "beat": 5,
-   "narration": "instantly and the car bounces back.",
-   "cue": "instantly and the car",
+   "narration": "instantly and bounces back.",
+   "cue": "instantly and bounces",
    "subjects": [
     "rigid_car_front"
    ],
