@@ -46,7 +46,7 @@ def paths() -> dict:
     k = lambda s: _seg_tau(s, "K")
     r = lambda s: _seg_tau(s, "R")
     c = lambda s: _seg_tau(s, "C")
-    t_b2, t_b3, t_b4, t_b5 = cue("to watch the hood"), cue("Hidden rails"), cue(cm.CABIN_BEAT), cue(cm.RIGID_BEAT)
+    t_b2, t_b3, t_b4, t_b5 = cue("The hood buckles"), cue("Hidden rails"), cue(cm.CABIN_BEAT), cue(cm.RIGID_BEAT)
     near = dict(lens=34)      # poses are relative to the front of the car (rel=True) unless noted
     K = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # 1 run-up: tracking three-quarter view, the wall rushes towards the nose

@@ -253,8 +253,8 @@ def frame_of(seconds: float) -> int:
 TARGET_S = float(_cues()["target_seconds"])
 TOTAL_FRAMES = int(round(TARGET_S * FPS))
 CABIN_BEAT = "The cabin keeps"      # first caption phrase of the cabin sentence
-RIGID_BEAT = "Now a rigid front at"
-RIGID_CONTACT_CUE = "almost nothing to crush"
+RIGID_BEAT = "Now a rigid front"
+RIGID_CONTACT_CUE = "hits the same wall."
 CLOSE_BEAT = "The front is meant"
 HOOK_CONTACT_S = 0.9                         # first contact: the crash begins well inside the first 2 seconds
 _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_start(RIGID_BEAT)), frame_of(cue_start(CLOSE_BEAT))
@@ -271,7 +271,7 @@ SEGMENTS = [
 ]
 assert SEGMENTS[0]["last"] + 1 == SEGMENTS[1]["first"] and SEGMENTS[1]["last"] + 1 == SEGMENTS[2]["first"]
 SYNC_TOLERANCE_S = 0.4
-SYNC_EVENTS = [("to crush.", "the car touches the barrier as 'crush' is spoken", frame_of(HOOK_CONTACT_S)),
+SYNC_EVENTS = [("a wall.", "the car touches the barrier as the bumper \"hits\" is spoken", frame_of(HOOK_CONTACT_S)),
                (RIGID_BEAT, "rigid-front car starts its approach", _F_RIGID), (RIGID_CONTACT_CUE, "rigid car touches the barrier", _F_RIGID + int(round(_RIGID_CONTACT_FILM * FPS))),
                (CLOSE_BEAT, "closing view of the deformed front and intact cabin", _F_CLOSE)]
 

@@ -20,16 +20,16 @@ class Claim:
 # Scene existence is grounded in crumple_motion.SEGMENTS. The evidence field
 # documents *what must be observed*, not an assertion that it was observed.
 CLAIMS = (
-    Claim("designed to crush", "The front visibly starts to crush at impact", ("K",),
+    Claim("a car hits a wall", "The front visibly starts to crush at impact", ("K",),
           "Continuous playback of the first seconds: a tracked run-up, contact inside the first 1.5 s, then a visibly advancing crush"),
-    Claim("hood buckle", "The hood folds upwards", ("K",), "Close view of the nose while the crush advances: the hood line rises"),
-    Claim("whole front fold back", "The whole front is pushed rearwards", ("K",), "The nose line moves back while the camera stays close to the front"),
+    Claim("hood buckles", "The hood folds upwards", ("K",), "Close view of the nose while the crush advances: the hood line rises"),
+    Claim("front folds back", "The whole front is pushed rearwards", ("K",), "The nose line moves back while the camera stays close to the front"),
     Claim("hidden rails inside fold", "The body turns see-through during the same crash and the rails fold", ("K",),
           "The scan line passes while the crush is still running (no rewind); the rails are seen shortening"),
-    Claim("stretch the stop", "The crush keeps going slowly until the car stops", ("K",), "The stroke grows to its maximum and the car comes to rest in the same shot"),
+    Claim("longer stop", "The crush keeps going slowly until the car stops", ("K",), "The stroke grows to its maximum and the car comes to rest in the same shot"),
     Claim("keeps its shape", "Protective cabin remains intact while the front is crushed", ("K",), "The whole car with the green cage after the crush"),
     Claim("pillars, doors and roof", "Pillars, doors and roof stay where they were", ("K",), "A slow orbit shows the cabin from other sides"),
-    Claim("rigid front", "A second car with a rigid front hits the same wall at the same speed", ("R",), "Sequential full-screen shot, same camera start, same time scale"),
+    Claim("rigid front hits the same wall", "A second car with a rigid front hits the same wall at the same speed", ("R",), "Sequential full-screen shot, same camera start, same time scale"),
     Claim("bounces back", "The rigid car moves away from the barrier after impact", ("R",), "Continuous playback shows the car stop at the barrier and reverse away"),
     Claim("front is meant to deform", "The crushed front is shown", ("C",), "The first car at rest with its crushed front (no replay)"),
     Claim("cabin isn't", "The cabin visibly keeps its shape", ("C",), "The see-through body shows the cage unchanged"),
