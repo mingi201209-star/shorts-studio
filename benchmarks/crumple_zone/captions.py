@@ -10,8 +10,8 @@ CURATED = {
         "The hood buckles", "and the front folds back", "as the hidden rails", "inside fold like", "an accordion."),
     "Rails absorb the crash energy over a longer stop while the cabin quietly keeps its whole shape.": (
         "Rails absorb the crash", "energy over a longer", "stop while the cabin", "quietly keeps its", "whole shape."),
-    "Pillars doors and roof stay exactly put and now a rigid front hits the very same wall.": (
-        "Pillars doors and roof", "stay exactly put", "and now a rigid front", "hits the very same wall."),
+    "Pillars doors and roof stay exactly put and now a rigid front rolls toward the same wall.": (
+        "Pillars doors and roof", "stay exactly put", "and now a rigid", "front rolls toward", "the same wall."),
     "It has almost nothing to crush so it stops almost instantly and bounces back off the wall.": (
         "It has almost nothing", "to crush so it stops", "almost instantly", "and bounces back", "off the wall."),
     "The front is meant to deform and absorb the whole crash energy but the cabin is not.": (

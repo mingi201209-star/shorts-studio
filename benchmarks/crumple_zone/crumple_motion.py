@@ -252,11 +252,11 @@ def frame_of(seconds: float) -> int:
 
 TARGET_S = float(_cues()["target_seconds"])
 TOTAL_FRAMES = int(round(TARGET_S * FPS))
-CABIN_BEAT = "The cabin keeps"      # first caption phrase of the cabin sentence
-RIGID_BEAT = "Now a rigid front"
+CABIN_BEAT = "quietly keeps its"      # first caption phrase of the cabin sentence
+RIGID_BEAT = "and now a rigid front"
 RIGID_CONTACT_CUE = "hits the same wall."
 CLOSE_BEAT = "The front is meant"
-HOOK_CONTACT_S = 0.9                         # first contact: the crash begins well inside the first 2 seconds
+HOOK_CONTACT_S = 0.45                         # first contact: the crash begins well inside the first 2 seconds
 _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_start(RIGID_BEAT)), frame_of(cue_start(CLOSE_BEAT))
 # one crash time scale for both cars: the crumple car's crush (and so its stop) ends when the cabin sentence begins
 R0 = float(T_STOP["crumple"] * (1.0 - RATE_SHAPE / 2.0) / ((_F_CABIN - 1) / FPS - HOOK_CONTACT_S - 0.35))
@@ -271,7 +271,7 @@ SEGMENTS = [
 ]
 assert SEGMENTS[0]["last"] + 1 == SEGMENTS[1]["first"] and SEGMENTS[1]["last"] + 1 == SEGMENTS[2]["first"]
 SYNC_TOLERANCE_S = 0.4
-SYNC_EVENTS = [("a wall.", "the car touches the barrier as the bumper \"hits\" is spoken", frame_of(HOOK_CONTACT_S)),
+SYNC_EVENTS = [("A car hits a wall", "the car touches the barrier as the bumper \"hits\" is spoken", frame_of(HOOK_CONTACT_S)),
                (RIGID_BEAT, "rigid-front car starts its approach", _F_RIGID), (RIGID_CONTACT_CUE, "rigid car touches the barrier", _F_RIGID + int(round(_RIGID_CONTACT_FILM * FPS))),
                (CLOSE_BEAT, "closing view of the deformed front and intact cabin", _F_CLOSE)]
 
@@ -309,8 +309,8 @@ def _tau(seconds: float, seg_id: str) -> float:
 
 #: ghost-body factor keys per segment (film seconds since the segment start, factor): the scan line starts when the hidden rails are named and runs while the crash goes on
 XRAY_KEYS: dict[str, tuple] = {
-    "K": ((0.0, 0.0), (_tau(cue_start("Hidden rails"), "K"), 0.0), (_tau(cue_start("Hidden rails"), "K") + 1.8, 1.0)),
-    "C": ((0.0, 0.0), (_tau(cue_start("The cabin isn't."), "C") - 1.0, 0.0), (_tau(cue_start("The cabin isn't."), "C") + 0.6, 1.0)),
+    "K": ((0.0, 0.0), (_tau(cue_start("as the hidden rails"), "K"), 0.0), (_tau(cue_start("as the hidden rails"), "K") + 1.8, 1.0)),
+    "C": ((0.0, 0.0), (_tau(cue_start("but the cabin is not."), "C") - 1.0, 0.0), (_tau(cue_start("but the cabin is not."), "C") + 0.6, 1.0)),
 }
 
 
@@ -319,4 +319,4 @@ def _ghost_start_frame() -> int:
     return next(f for f in range(k["first"], k["last"] + 1) if xray_factor(f) > 0.02)
 
 
-SYNC_EVENTS.append(("Hidden rails inside", "the scan line starts to turn the body see-through", _ghost_start_frame()))
+SYNC_EVENTS.append(("as the hidden rails", "the scan line starts to turn the body see-through", _ghost_start_frame()))

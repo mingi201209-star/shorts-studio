@@ -1,146 +1,141 @@
 {
- "source": "EP04 audio cues run 44110022867 (Edge TTS with measured word boundaries, level-matched, 32.0 s master); the picture is planned on exactly this speech and the final render reuses this capture (audio_run)",
+ "source": "audio-cues run 44201473576 (attempt 14, commit 674da33): real TTS timing measured on the passed audio",
  "target_seconds": 32.0,
  "cues": [
   {
    "start": 0.09525,
-   "end": 0.785708,
-   "text": "Cars are designed"
+   "end": 1.023791,
+   "text": "A car hits a wall"
   },
   {
-   "start": 0.797625,
-   "end": 1.357124,
-   "text": "to crush."
+   "start": 1.297625,
+   "end": 2.023791,
+   "text": "and we slow that"
   },
   {
-   "start": 2.184458333333333,
-   "end": 3.2558743333333333,
-   "text": "The real crash lasts"
+   "start": 2.035708,
+   "end": 2.797625,
+   "text": "tenth of a second"
   },
   {
-   "start": 3.2677913333333333,
-   "end": 4.172582333333333,
-   "text": "a tenth of a second"
+   "start": 2.809541,
+   "end": 3.690457,
+   "text": "way down to watch it."
   },
   {
-   "start": 4.410666333333333,
-   "end": 5.505916333333333,
-   "text": "so we slow it way down"
+   "start": 4.300458333333333,
+   "end": 5.098082333333333,
+   "text": "The hood buckles"
   },
   {
-   "start": 5.517791333333333,
-   "end": 6.636874333333333,
-   "text": "to watch the hood buckle"
+   "start": 5.252874333333334,
+   "end": 6.455249333333333,
+   "text": "and the front folds back"
   },
   {
-   "start": 6.886874333333333,
-   "end": 7.553499333333333,
-   "text": "and the whole front"
+   "start": 6.526666333333333,
+   "end": 7.383790333333334,
+   "text": "as the hidden rails"
   },
   {
-   "start": 7.565416333333333,
-   "end": 8.172541333333333,
-   "text": "fold back."
+   "start": 7.395708333333333,
+   "end": 8.538541333333335,
+   "text": "inside fold like"
   },
   {
-   "start": 8.845791666666665,
-   "end": 9.964832666666666,
-   "text": "Hidden rails inside"
+   "start": 8.550458333333333,
+   "end": 9.145707333333334,
+   "text": "an accordion."
   },
   {
-   "start": 9.976749666666665,
-   "end": 11.179124666666665,
-   "text": "fold like an accordion"
+   "start": 9.729916666666668,
+   "end": 11.003749666666668,
+   "text": "Rails absorb the crash"
   },
   {
-   "start": 11.250582666666665,
-   "end": 12.250582666666665,
-   "text": "absorbing the crash"
+   "start": 11.087041666666668,
+   "end": 12.253707666666667,
+   "text": "energy over a longer"
   },
   {
-   "start": 12.333916666666665,
-   "end": 13.452916666666665,
-   "text": "energy and stretch"
+   "start": 12.265624666666668,
+   "end": 13.610874666666668,
+   "text": "stop while the cabin"
   },
   {
-   "start": 13.464874666666665,
-   "end": 14.714832666666666,
-   "text": "the stop over a longer"
+   "start": 13.682291666666668,
+   "end": 14.658457666666667,
+   "text": "quietly keeps its"
   },
   {
-   "start": 14.726749666666665,
-   "end": 15.607707666666666,
-   "text": "distance and time."
+   "start": 14.670374666666667,
+   "end": 15.241790666666667,
+   "text": "whole shape."
   },
   {
-   "start": 16.275125,
-   "end": 16.965624,
-   "text": "The cabin keeps"
+   "start": 15.831125,
+   "end": 16.962082,
+   "text": "Pillars doors and roof"
   },
   {
-   "start": 16.977541,
-   "end": 17.453708,
-   "text": "its shape."
+   "start": 16.997791,
+   "end": 18.188291,
+   "text": "stay exactly put"
   },
   {
-   "start": 17.858458,
-   "end": 19.251333,
-   "text": "Pillars, doors and roof"
+   "start": 18.462083,
+   "end": 19.604957,
+   "text": "and now a rigid front"
   },
   {
-   "start": 19.26325,
-   "end": 19.834666,
-   "text": "stay put."
+   "start": 19.747791,
+   "end": 21.009708,
+   "text": "hits the very same wall."
   },
   {
-   "start": 20.50058333333333,
-   "end": 21.54820733333333,
-   "text": "Now a rigid front at"
+   "start": 21.596583333333335,
+   "end": 22.489415333333334,
+   "text": "It has almost nothing"
   },
   {
-   "start": 21.56008333333333,
-   "end": 22.47674933333333,
-   "text": "the same speed has"
+   "start": 22.501333333333335,
+   "end": 23.870374333333334,
+   "text": "to crush so it stops"
   },
   {
-   "start": 22.48866633333333,
-   "end": 23.83391533333333,
-   "text": "almost nothing to crush"
+   "start": 23.965624333333334,
+   "end": 24.941833333333335,
+   "text": "almost instantly"
   },
   {
-   "start": 24.02437433333333,
-   "end": 25.19104133333333,
-   "text": "so it stops almost"
+   "start": 24.953708333333335,
+   "end": 25.775124333333334,
+   "text": "and bounces back"
   },
   {
-   "start": 25.27437433333333,
-   "end": 26.51245733333333,
-   "text": "instantly and bounces"
+   "start": 25.787041333333335,
+   "end": 26.346583333333335,
+   "text": "off the wall."
   },
   {
-   "start": 26.52437433333333,
-   "end": 26.91724933333333,
-   "text": "back."
-  },
-  {
-   "start": 27.581791666666664,
-   "end": 28.355624666666664,
+   "start": 26.953791666666667,
+   "end": 27.691916666666668,
    "text": "The front is meant"
   },
   {
-   "start": 28.367541666666664,
-   "end": 29.677040666666663,
+   "start": 27.703791666666667,
+   "end": 29.049040666666667,
    "text": "to deform and absorb"
   },
   {
-   "start": 29.688957666666663,
-   "end": 30.319916666666664,
-   "text": "the crash."
+   "start": 29.060957666666667,
+   "end": 30.239541666666668,
+   "text": "the whole crash energy"
   },
   {
-   "start": 30.724666666666664,
-   "end": 31.438957666666663,
-   "text": "The cabin isn't."
+   "start": 30.394291666666668,
+   "end": 31.501416666666668,
+   "text": "but the cabin is not."
   }
  ]
 }
