@@ -6,8 +6,8 @@ from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 CURATED = {
     "Cars are designed to crush.": (
         "Cars are designed", "to crush."),
-    "Watch the hood buckle and the front wheels get shoved back toward the cabin.": (
-        "Watch the hood buckle", "and the front wheels get", "shoved back toward", "the cabin."),
+    "Watch the hood buckle and the whole front fold back.": (
+        "Watch the hood buckle", "and the whole front", "fold back."),
     "Hidden rails inside fold like an accordion absorbing the crash energy and stretching the stop over a longer distance and time.": (
         "Hidden rails inside", "fold like an accordion", "absorbing the crash", "energy and stretching", "the stop over a longer", "distance and time."),
     "The passenger compartment keeps its shape. The pillars, doors and roof stay where they were.": (

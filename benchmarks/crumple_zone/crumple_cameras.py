@@ -54,15 +54,15 @@ def paths() -> dict:
         _key(k(t_b2) + 0.3, (-2.0, -1.8, 1.55), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),             # close high three-quarter view of the hood and the front wheel
         _key(k(t_b3) - 0.4, (-2.0, -1.8, 1.55), (0.0, -0.4, 0.5), 34, at=0.45, rel=True),
         _key(k(t_b3) + 1.6, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),               # the scan line passes; the camera rises to a high chase view over the folding rails
-        _key(k(t_b4) - 0.2, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),
-        _key(k(t_b4) + 1.4, (0.0, -3.8, 3.8), (0.0, -1.1, 0.4), 34, at=0.50, rel=True),               # pull back: the whole car with its cage
+        _key(k(t_b4) - 1.6, (0.0, -3.0, 3.2), (0.0, -0.9, 0.4), 40, at=0.50, rel=True),
+        _key(k(t_b4) - 0.2, (0.0, -3.8, 3.8), (0.0, -1.1, 0.4), 34, at=0.50, rel=True),               # pull back: the whole car with its cage, in place when the cabin sentence starts
     ]
-    K += _orbit(k(t_b4) + 1.4, k(t_b5) - 0.01, (0.0, -1.6), 4.9, 3.8, 1.6, 0.0, 70.0, 32, n=8, at=0.45)[1:]
+    K += _orbit(k(t_b4) - 0.2, k(t_b5) - 0.01, (0.0, -1.6), 4.9, 3.8, 1.6, 0.0, 70.0, 32, n=8, at=0.45)[1:]
     R = [
         _key(0.0, (-3.4, -3.0, 1.2), (0.0, -0.4, 0.55), 32, at=0.45, rel=True),                      # the same run-up camera as the first crash
         _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.4, (-3.2, -2.8, 1.2), (0.0, -0.3, 0.55), 32, at=0.45, rel=True),
         _key(r(cue(cm.RIGID_CONTACT_CUE)) + 0.3, (-2.0, -1.8, 1.55), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),   # the same close view of the nose as the first crash
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 2.2, (-3.4, -3.4, 1.7), (0.0, -0.8, 0.5), 32, at=0.45, rel=True),     # the camera follows the car as it moves away from the wall
+        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 2.4, (-3.4, -3.6, 1.6), (0.0, 1.2, 0.6), 28, at=0.45, rel=True),     # the camera follows the car as it moves away, looking back at the wall
     ]
     C = [
         _key(0.0, (-3.0, -3.6, 1.7), (0.0, -0.8, 0.5), 34, at=0.45),

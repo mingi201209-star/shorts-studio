@@ -137,6 +137,7 @@ def stop_time_after_contact(profile: str) -> float:
 
 
 T_STOP = {k: stop_time_after_contact(k) for k in PROFILES}       # crumple ~0.087 s, rigid ~0.0055 s after contact
+RATE_SHAPE = 0.6             # 0.75 would make the crush advance at a constant film speed; a smaller value keeps it a little faster at the start and slowing towards the stop
 APPROACH_BLEND_S = 0.02      # simulated seconds before contact over which the run-up slows down to the crash time scale
 
 
@@ -153,7 +154,7 @@ def rate_fn(tp: np.ndarray, r0: float, approach_rate: float, ramp: tuple[float, 
     x = np.clip(-tp / APPROACH_BLEND_S, 0.0, 1.0)
     pre = r0 + (approach_rate - r0) * _smooth(x)
     u = np.clip(tp / T_STOP["crumple"], 0.0, 1.0)
-    post = r0 / (1.0 - 0.75 * u)
+    post = r0 / (1.0 - RATE_SHAPE * u)
     r = np.where(tp < 0, pre, post)
     if ramp is not None:
         a, b, after = ramp
@@ -248,7 +249,7 @@ CLOSE_BEAT = "The front is meant"
 HOOK_CONTACT_S = 0.9                         # first contact: the crash begins well inside the first 2 seconds
 _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_start(RIGID_BEAT)), frame_of(cue_start(CLOSE_BEAT))
 # one crash time scale for both cars: the crumple car's crush (and so its stop) ends when the cabin sentence begins
-R0 = float(T_STOP["crumple"] * 0.625 / ((_F_CABIN - 1) / FPS - HOOK_CONTACT_S - 0.35))
+R0 = float(T_STOP["crumple"] * (1.0 - RATE_SHAPE / 2.0) / ((_F_CABIN - 1) / FPS - HOOK_CONTACT_S - 0.35))
 _RIGID_CONTACT_FILM = max(0.8, cue_start(RIGID_CONTACT_CUE) - cue_start(RIGID_BEAT))
 SEGMENTS = [
     {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
@@ -260,7 +261,7 @@ SEGMENTS = [
 ]
 assert SEGMENTS[0]["last"] + 1 == SEGMENTS[1]["first"] and SEGMENTS[1]["last"] + 1 == SEGMENTS[2]["first"]
 SYNC_TOLERANCE_S = 0.4
-SYNC_EVENTS = [("Cars are designed", "first contact is inside the first 2 s", frame_of(HOOK_CONTACT_S)),
+SYNC_EVENTS = [("to crush.", "the car touches the barrier as 'crush' is spoken", frame_of(HOOK_CONTACT_S)),
                (RIGID_BEAT, "rigid-front car starts its approach", _F_RIGID), (RIGID_CONTACT_CUE, "rigid car touches the barrier", _F_RIGID + int(round(_RIGID_CONTACT_FILM * FPS))),
                (CLOSE_BEAT, "closing view of the deformed front and intact cabin", _F_CLOSE)]
 
@@ -299,5 +300,13 @@ def _tau(seconds: float, seg_id: str) -> float:
 #: ghost-body factor keys per segment (film seconds since the segment start, factor): the scan line starts when the hidden rails are named and runs while the crash goes on
 XRAY_KEYS: dict[str, tuple] = {
     "K": ((0.0, 0.0), (_tau(cue_start("Hidden rails"), "K"), 0.0), (_tau(cue_start("Hidden rails"), "K") + 1.8, 1.0)),
-    "C": ((0.0, 0.0), (_tau(cue_start("The cabin isn't."), "C") - 0.1, 0.0), (_tau(cue_start("The cabin isn't."), "C") + 1.5, 1.0)),
+    "C": ((0.0, 0.0), (_tau(cue_start("The cabin isn't."), "C") - 1.0, 0.0), (_tau(cue_start("The cabin isn't."), "C") + 0.6, 1.0)),
 }
+
+
+def _ghost_start_frame() -> int:
+    k = SEGMENTS[0]
+    return next(f for f in range(k["first"], k["last"] + 1) if xray_factor(f) > 0.02)
+
+
+SYNC_EVENTS.append(("Hidden rails inside", "the scan line starts to turn the body see-through", _ghost_start_frame()))

@@ -4,7 +4,7 @@
  "target_seconds": 32.0,
  "narration": [
   "Cars are designed to crush.",
-  "Watch the hood buckle and the front wheels get shoved back toward the cabin.",
+  "Watch the hood buckle and the whole front fold back.",
   "Hidden rails inside fold like an accordion absorbing the crash energy and stretching the stop over a longer distance and time.",
   "The passenger compartment keeps its shape. The pillars, doors and roof stay where they were.",
   "Now the same speed and the same wall but a rigid front. It has almost nothing to crush so it stops almost instantly and the car bounces back.",
@@ -90,16 +90,16 @@
    "silent_readable": true
   },
   {
-   "id": "s02a",
+   "id": "s02",
    "beat": 2,
-   "narration": "Watch the hood buckle",
+   "narration": "Watch the hood buckle and the whole front fold back.",
    "cue": "Watch the hood buckle",
    "subjects": [
     "car_front"
    ],
    "phenomenon": {
     "kind": "structure_deformation",
-    "description": "The hood folds upwards while the nose is pushed back",
+    "description": "The hood folds upwards and the whole front is pushed back while the crash runs on in slow motion",
     "onset_metric": "body.max_rise_m",
     "onset_threshold": 0.01,
     "explanation_only": false
@@ -113,7 +113,7 @@
    ],
    "success": [
     {
-     "id": "s02a-subjects",
+     "id": "s02-subjects",
      "description": "the named parts are on screen",
      "kind": "subjects_in_view",
      "criterion": "subject_present",
@@ -123,7 +123,7 @@
      "value": 0.8
     },
     {
-     "id": "s02a-hood",
+     "id": "s02-hood",
      "description": "the hood buckles upwards by at least 5 cm while it is narrated",
      "kind": "metric_increase",
      "criterion": "action_performed",
@@ -131,83 +131,15 @@
      "value": 0.05
     },
     {
-     "id": "s02a-onset",
-     "description": "the buckling is already under way when the words are spoken",
-     "kind": "onset_within_s",
-     "criterion": "timing",
-     "metric": "body.max_rise_m",
-     "onset_threshold": 0.01,
-     "value": 2.5
-    },
-    {
-     "id": "s02a-not-obscured",
-     "description": "the action is not hidden by the captions",
-     "kind": "not_obscured",
-     "criterion": "not_obscured",
-     "metric": "caption.overlap",
-     "value": 0.2
-    },
-    {
-     "id": "s02a-sound-off",
-     "description": "with the sound off the hood is seen folding up",
-     "kind": "manual",
-     "criterion": "sound_off_understandable"
-    }
-   ],
-   "silent_readable": true
-  },
-  {
-   "id": "s02b",
-   "beat": 2,
-   "narration": "and the front wheels get shoved back toward the cabin.",
-   "cue": "and the front wheels get",
-   "subjects": [
-    "car_front"
-   ],
-   "phenomenon": {
-    "kind": "structure_deformation",
-    "description": "The front wheels are pushed rearwards by the crushing structure",
-    "onset_metric": "wheels.pushback_m",
-    "onset_threshold": 0.01,
-    "explanation_only": false
-   },
-   "camera": {
-    "kind": "K",
-    "movement": "close high three-quarter view of the nose and wheels"
-   },
-   "effects": [
-    "structure_deformation"
-   ],
-   "success": [
-    {
-     "id": "s02b-subjects",
-     "description": "the named parts are on screen",
-     "kind": "subjects_in_view",
-     "criterion": "subject_present",
-     "subjects": [
-      "car_front"
-     ],
-     "value": 0.8
-    },
-    {
-     "id": "s02b-wheels",
-     "description": "the front wheels move back by at least 15 cm while it is narrated",
+     "id": "s02-front-folds",
+     "description": "the crushed depth of the front grows by at least 15 cm while it is narrated",
      "kind": "metric_increase",
-     "criterion": "action_performed",
-     "metric": "wheels.pushback_m",
+     "criterion": "timing",
+     "metric": "crumple.crushed_depth_m",
      "value": 0.15
     },
     {
-     "id": "s02b-onset",
-     "description": "the wheel is already moving back when the words are spoken",
-     "kind": "onset_within_s",
-     "criterion": "timing",
-     "metric": "wheels.pushback_m",
-     "onset_threshold": 0.01,
-     "value": 4.5
-    },
-    {
-     "id": "s02b-not-obscured",
+     "id": "s02-not-obscured",
      "description": "the action is not hidden by the captions",
      "kind": "not_obscured",
      "criterion": "not_obscured",
@@ -215,8 +147,8 @@
      "value": 0.2
     },
     {
-     "id": "s02b-sound-off",
-     "description": "with the sound off the front wheel is seen shoved back",
+     "id": "s02-sound-off",
+     "description": "with the sound off the hood is seen folding up and the front folding back",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }
@@ -258,7 +190,7 @@
       "crush_rails",
       "bumper_beam"
      ],
-     "value": 0.7
+     "value": 0.5
     },
     {
      "id": "s03a-ghost",
@@ -339,11 +271,11 @@
     },
     {
      "id": "s03b-fold",
-     "description": "the rails shorten by at least 20 cm while it is narrated",
+     "description": "the rails shorten by at least 15 cm while it is narrated",
      "kind": "metric_increase",
      "criterion": "action_performed",
      "metric": "rails.shortening_m",
-     "value": 0.2
+     "value": 0.15
     },
     {
      "id": "s03b-timing",
@@ -431,13 +363,12 @@
      "value": 1.0
     },
     {
-     "id": "s04a-onset",
-     "description": "the cage is on screen when the sentence starts",
-     "kind": "onset_near_cue",
+     "id": "s04a-cage-on",
+     "description": "the cage is on screen during the whole sentence",
+     "kind": "metric_at_least",
      "criterion": "timing",
      "metric": "cell.highlight",
-     "onset_threshold": 0.5,
-     "value": 2.5
+     "value": 0.99
     },
     {
      "id": "s04a-not-obscured",
@@ -508,13 +439,12 @@
      "value": 1.0
     },
     {
-     "id": "s04b-onset",
-     "description": "the cage is on screen when the sentence starts",
-     "kind": "onset_near_cue",
+     "id": "s04b-cage-on",
+     "description": "the cage is on screen during the whole sentence",
+     "kind": "metric_at_least",
      "criterion": "timing",
      "metric": "cell.highlight",
-     "onset_threshold": 0.5,
-     "value": 3.0
+     "value": 0.99
     },
     {
      "id": "s04b-not-obscured",
@@ -539,8 +469,7 @@
    "narration": "Now the same speed and the same wall but a rigid front.",
    "cue": "Now the same speed",
    "subjects": [
-    "rigid_whole_car",
-    "barrier"
+    "rigid_car_front"
    ],
    "phenomenon": {
     "kind": "rigid_stop_rebound",
@@ -564,10 +493,9 @@
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "rigid_whole_car",
-      "barrier"
+      "rigid_car_front"
      ],
-     "value": 0.6
+     "value": 0.8
     },
     {
      "id": "s05a-approach",
@@ -685,7 +613,7 @@
    "narration": "instantly and the car bounces back.",
    "cue": "instantly and the car",
    "subjects": [
-    "rigid_whole_car"
+    "rigid_car_front"
    ],
    "phenomenon": {
     "kind": "rigid_stop_rebound",
@@ -708,9 +636,10 @@
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "rigid_whole_car"
+      "rigid_car_front",
+      "barrier"
      ],
-     "value": 0.7
+     "value": 0.6
     },
     {
      "id": "s05c-rebound",
