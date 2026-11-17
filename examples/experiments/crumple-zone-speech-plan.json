@@ -19,7 +19,7 @@
      "end": 15
     },
     {
-     "narration_en": "The cabin keeps its shape. Pillars, doors and roof stay put.",
+     "narration_en": "The cabin keeps its shape. Pillars, doors and roof stay exactly put.",
      "start": 15,
      "end": 20
     },
@@ -29,7 +29,7 @@
      "end": 25
     },
     {
-     "narration_en": "The front is meant to deform. The cabin isn't.",
+     "narration_en": "The front is meant to deform and absorb the crash. The cabin isn't.",
      "start": 25,
      "end": 30
     }
