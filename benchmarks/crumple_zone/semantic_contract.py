@@ -24,7 +24,7 @@ CLAIMS = (
           "Continuous playback of the first seconds: a tracked run-up, contact inside the first 1.5 s, then a visibly advancing crush"),
     Claim("hood buckles", "The hood folds upwards", ("K",), "Close view of the nose while the crush advances: the hood line rises"),
     Claim("front folds back", "The whole front is pushed rearwards", ("K",), "The nose line moves back while the camera stays close to the front"),
-    Claim("hidden rails inside fold", "The body turns see-through during the same crash and the rails fold", ("K",),
+    Claim("hidden rails fold", "The body turns see-through during the same crash and the rails fold", ("K",),
           "The scan line passes while the crush is still running (no rewind); the rails are seen shortening"),
     Claim("longer stop", "The crush keeps going slowly until the car stops", ("K",), "The stroke grows to its maximum and the car comes to rest in the same shot"),
     Claim("keeps its shape", "Protective cabin remains intact while the front is crushed", ("K",), "The whole car with the green cage after the crush"),
