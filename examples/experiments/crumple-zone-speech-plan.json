@@ -4,32 +4,32 @@
    "id": "crumple-zone",
    "beats": [
     {
-     "narration_en": "Cars are designed to crush.",
+     "narration_en": "A car hits a wall. Real crashes take a tenth of a second, so we slow it down.",
      "start": 0,
      "end": 5
     },
     {
-     "narration_en": "The real crash lasts a tenth of a second so we slow it way down to watch the hood buckle and the whole front fold back.",
+     "narration_en": "The hood buckles and the front folds back. Hidden rails inside fold like an accordion.",
      "start": 5,
      "end": 10
     },
     {
-     "narration_en": "Hidden rails inside fold like an accordion absorbing the crash energy and stretch the stop over a longer distance and time.",
+     "narration_en": "They soak up the crash energy over a longer stop. The cabin keeps its shape.",
      "start": 10,
      "end": 15
     },
     {
-     "narration_en": "The cabin keeps its shape. Pillars, doors and roof stay put.",
+     "narration_en": "Pillars, doors and roof stay put. Now a rigid front hits the same wall.",
      "start": 15,
      "end": 20
     },
     {
-     "narration_en": "Now a rigid front at the same speed has almost nothing to crush so it stops almost instantly and bounces back.",
+     "narration_en": "It has almost nothing to crush, so it stops almost instantly and bounces back.",
      "start": 20,
      "end": 25
     },
     {
-     "narration_en": "The front is meant to deform and absorb the crash. The cabin isn't.",
+     "narration_en": "The front is meant to deform. The cabin isn't.",
      "start": 25,
      "end": 30
     }
