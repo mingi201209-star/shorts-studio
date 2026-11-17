@@ -4,17 +4,17 @@
    "id": "crumple-zone",
    "beats": [
     {
-     "narration_en": "A car hits a wall. Real crashes take a tenth of a second, so we slow it down.",
+     "narration_en": "A car hits a wall. In real life it takes a tenth of a second, so we slow it down.",
      "start": 0,
      "end": 5
     },
     {
-     "narration_en": "The hood buckles, the front folds back. Hidden rails fold like an accordion.",
+     "narration_en": "The hood buckles and the front folds back, then hidden rails fold like an accordion.",
      "start": 5,
      "end": 10
     },
     {
-     "narration_en": "They soak up the crash energy over a longer stop. The cabin keeps its shape.",
+     "narration_en": "The rails soak up the crash over a longer stop, and the cabin keeps its shape.",
      "start": 10,
      "end": 15
     },

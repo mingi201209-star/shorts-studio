@@ -4,12 +4,12 @@ from __future__ import annotations
 from benchmarks.road_safety.caption_phrases import SINGLE_LINE, phrase_groups
 
 CURATED = {
-    "A car hits a wall. Real crashes take a tenth of a second, so we slow it down.": (
-        "A car hits", "a wall.", "Real crashes take", "a tenth of a second,", "so we slow it down."),
-    "The hood buckles, the front folds back. Hidden rails fold like an accordion.": (
-        "The hood buckles,", "the front", "folds back.", "Hidden rails", "fold like an accordion."),
-    "They soak up the crash energy over a longer stop. The cabin keeps its shape.": (
-        "They soak up", "the crash energy", "over a longer stop.", "The cabin keeps", "its shape."),
+    'A car hits a wall. In real life it takes a tenth of a second, so we slow it down.': (
+        "A car hits", "a wall.", "In real life it takes", "a tenth of a second,", "so we slow it down."),
+    "The hood buckles and the front folds back, then hidden rails fold like an accordion.": (
+        "The hood buckles", "and the front", "folds back,", "then hidden rails", "fold like an accordion."),
+    "The rails soak up the crash over a longer stop, and the cabin keeps its shape.": (
+        "The rails soak up", "the crash over", "a longer stop,", "and the cabin keeps", "its shape."),
     "Pillars, doors and roof stay put. Now a rigid front hits the same wall.": (
         "Pillars, doors and roof", "stay put.", "Now a rigid front", "hits the same wall."),
     "It has almost nothing to crush, so it stops almost instantly and bounces back.": (
