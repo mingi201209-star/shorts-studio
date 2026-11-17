@@ -26,7 +26,7 @@ CLAIMS = (
     Claim("whole front fold back", "The whole front is pushed rearwards", ("K",), "The nose line moves back while the camera stays close to the front"),
     Claim("hidden rails inside fold", "The body turns see-through during the same crash and the rails fold", ("K",),
           "The scan line passes while the crush is still running (no rewind); the rails are seen shortening"),
-    Claim("stretching the stop", "The crush keeps going slowly until the car stops", ("K",), "The stroke grows to its maximum and the car comes to rest in the same shot"),
+    Claim("stretch the stop", "The crush keeps going slowly until the car stops", ("K",), "The stroke grows to its maximum and the car comes to rest in the same shot"),
     Claim("keeps its shape", "Protective cabin remains intact while the front is crushed", ("K",), "The whole car with the green cage after the crush"),
     Claim("pillars, doors and roof", "Pillars, doors and roof stay where they were", ("K",), "A slow orbit shows the cabin from other sides"),
     Claim("rigid front", "A second car with a rigid front hits the same wall at the same speed", ("R",), "Sequential full-screen shot, same camera start, same time scale"),

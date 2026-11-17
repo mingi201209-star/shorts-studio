@@ -80,7 +80,7 @@ def test_alignment_fails_when_the_object_exists_but_does_not_move_or_is_late():
             if k in e["metrics"]:
                 e["metrics"][k] = 0.0
     rep = evaluate_episode(spec, cues, total, still)
-    assert rep["scenes"]["s01"]["verdict"] == "FAIL" and rep["scenes"]["s02"]["verdict"] == "FAIL"
+    assert rep["scenes"]["s01"]["verdict"] == "FAIL" and rep["scenes"]["s02b"]["verdict"] == "FAIL"
     ev = _real_evidence()
     late = {f: cp.deepcopy(ev[max(1, f - 90)]) for f in ev}      # every picture event arrives 3 s after the words
     rep = evaluate_episode(spec, cues, total, late)
