@@ -16,7 +16,7 @@ S.append(scene("s01",1,"Cars are designed to crush.","Cars are designed",["car_f
   chk("s01-crushes","the nose has crushed at least 3 cm by the end of the sentence","metric_reaches","action_performed",metric="crumple.stroke_m",value=0.03),
   chk("s01-no-penetration","the deformed nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s01"),mute("s01","with the sound off a car hits a wall and its front crumples")]))
-S.append(scene("s02a",2,"The real crash lasts a tenth of a second so we slow it down.","The real crash lasts",["car_front","barrier"],"structure_deformation",
+S.append(scene("s02a",2,"The real crash lasts a tenth of a second so we slow it way down.","The real crash lasts",["car_front","barrier"],"structure_deformation",
  "The same crash is shown in extreme slow motion: the film runs at well under 5 % of real time while this is said","film.speed_vs_real",0.0,{"kind":"K","movement":"tracking three-quarter view, slow push-in"},["structure_deformation"],
  [subj("s02a",["car_front","barrier"]),
   chk("s02a-slow","the film runs at under 5 % of real time while the sentence is spoken","metric_at_most","action_performed",metric="film.speed_vs_real",value=0.05),
@@ -35,7 +35,7 @@ S.append(scene("s03a",3,"Hidden rails inside fold like an accordion","Hidden rai
   chk("s03a-onset","the reveal starts when the words 'hidden rails' are spoken","onset_near_cue","timing",metric="xray.factor",onset_threshold=0.02,value=0.5),
   chk("s03a-continuous","the crash is still in progress when the reveal starts (same crash, nothing replayed)","metric_increase","physically_consistent",metric="crumple.stroke_m",value=0.03),
   noobs("s03a"),mute("s03a","with the sound off the car turns see-through and the beams inside are seen folding")]))
-S.append(scene("s03b",3,"and stretch the stop over a longer distance and time.","and stretch the stop",["crush_rails","bumper_beam"],"structure_folding",
+S.append(scene("s03b",3,"absorbing the crash energy and stretch the stop over a longer distance and time.","absorbing the crash",["crush_rails","bumper_beam"],"structure_folding",
  "The rails keep shortening until the car has stopped: the stop is stretched over a long stroke","rails.shortening_m",0.01,{"kind":"K","movement":"high chase view of the folding rails"},["structure_folding"],
  [subj("s03b",["crush_rails","bumper_beam"],0.7),
   chk("s03b-folded","the rails have folded by at least 50 cm by the end of the stop","metric_reaches","action_performed",metric="rails.shortening_m",value=0.50),
@@ -69,7 +69,7 @@ S.append(scene("s05b",5,"It has almost nothing to crush so it stops almost","alm
   chk("s05b-short","the rigid car crushes by less than 6 cm","metric_at_most","action_performed",metric="rigid.stroke_m",value=0.06),
   chk("s05b-no-penetration","the nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s05b"),mute("s05b","with the sound off the blue car stops dead at the wall")]))
-S.append(scene("s05c",5,"instantly and bounces back.","instantly and bounces",["rigid_car_front"],"rigid_stop_rebound",
+S.append(scene("s05c",5,"instantly and bounces right back.","instantly and bounces",["rigid_car_front"],"rigid_stop_rebound",
  "After the stop the car moves back away from the wall (simulated rebound) and the camera follows it","rigid.rebound_m",0.05,{"kind":"R","movement":"the camera follows the car as it moves away from the wall"},["rigid_stop_rebound"],
  [subj("s05c",["rigid_car_front","barrier"],0.6),
   chk("s05c-rebound","the car moves back at least 1 m from the wall while it is narrated","metric_reaches","action_performed",metric="rigid.rebound_m",value=1.0),
@@ -89,7 +89,7 @@ S.append(scene("s06b",6,"The cabin isn't.","The cabin isn't.",["safety_cell"],"p
   chk("s06b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   chk("s06b-onset","the cage appears when 'the cabin' is spoken","onset_near_cue","timing",metric="cell.highlight",onset_threshold=0.5,value=1.0),
   noobs("s06b"),mute("s06b","with the sound off the cage shows the cabin untouched")]))
-spec={"episode":"ep04-crumple-zone","title":"This Car Is Designed to Crush.","target_seconds":32.0,"narration":beats,"scenes":S,
+spec={"episode":"ep04-crumple-zone","title":"This Car Is Designed to Crush.","target_seconds":31.5,"narration":beats,"scenes":S,
  "assumptions":["Scope (owner, 2026-11-16/17): no on-screen text except the narration captions; no bars, arrows or occupant; X-ray only where the rails are hidden (continuing the same crash, never a replay); the two crashes are shown once each, one after the other, full screen.",
   "The film is slow motion with a changing time scale (run-up at real speed, crash roughly 200x slower, bounce at a readable speed); both cars use the same crush time scale. Illustrative simulation, not a calibrated crash test; stated in the description file, not on screen.",
   "Gates and thresholds of the earlier spec (cell <= 1 mm, no penetration, rigid stroke <= 6 cm, captions not obscured) are kept; checks that depended on the old structure were replaced by the checks above."]}

@@ -1,13 +1,13 @@
 {
  "episode": "ep04-crumple-zone",
  "title": "This Car Is Designed to Crush.",
- "target_seconds": 32.0,
+ "target_seconds": 31.5,
  "narration": [
   "Cars are designed to crush.",
-  "The real crash lasts a tenth of a second so we slow it down. Watch the hood buckle and the whole front fold back.",
-  "Hidden rails inside fold like an accordion and stretch the stop over a longer distance and time.",
+  "The real crash lasts a tenth of a second so we slow it way down. Watch the hood buckle and the whole front fold back.",
+  "Hidden rails inside fold like an accordion absorbing the crash energy and stretch the stop over a longer distance and time.",
   "The cabin keeps its shape. Pillars, doors and roof stay put.",
-  "Now a rigid front at the same speed. It has almost nothing to crush so it stops almost instantly and bounces back.",
+  "Now a rigid front at the same speed. It has almost nothing to crush so it stops almost instantly and bounces right back.",
   "The front is meant to deform. The cabin isn't."
  ],
  "scenes": [
@@ -92,7 +92,7 @@
   {
    "id": "s02a",
    "beat": 2,
-   "narration": "The real crash lasts a tenth of a second so we slow it down.",
+   "narration": "The real crash lasts a tenth of a second so we slow it way down.",
    "cue": "The real crash lasts",
    "subjects": [
     "car_front",
@@ -305,8 +305,8 @@
   {
    "id": "s03b",
    "beat": 3,
-   "narration": "and stretch the stop over a longer distance and time.",
-   "cue": "and stretch the stop",
+   "narration": "absorbing the crash energy and stretch the stop over a longer distance and time.",
+   "cue": "absorbing the crash",
    "subjects": [
     "crush_rails",
     "bumper_beam"
@@ -678,7 +678,7 @@
   {
    "id": "s05c",
    "beat": 5,
-   "narration": "instantly and bounces back.",
+   "narration": "instantly and bounces right back.",
    "cue": "instantly and bounces",
    "subjects": [
     "rigid_car_front"
