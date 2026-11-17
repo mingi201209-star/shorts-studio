@@ -165,7 +165,7 @@ def rate_fn(tp: np.ndarray, r0: float, approach_rate: float, ramp: tuple[float, 
 
 @lru_cache(maxsize=None)
 def _integrate(r0: float, approach_rate: float, ramp: tuple | None):
-    tp = np.linspace(-1.2, 0.9, 210001)
+    tp = np.concatenate([np.linspace(-1.2, 0.9, 210001), np.linspace(0.9, 12.0, 11101)[1:]])      # fine near the crash, coarser for the long rebound
     rate = rate_fn(tp, r0, approach_rate, ramp)
     tau = np.concatenate([[0.0], np.cumsum(0.5 * (1 / rate[1:] + 1 / rate[:-1]) * np.diff(tp))])
     return tp, tau - float(np.interp(0.0, tp, tau))      # tau = film seconds relative to the moment of contact

@@ -1,127 +1,146 @@
 {
-  "source": "EP04 audio cues run 44078568443 (Edge TTS with measured word boundaries)",
-  "target_seconds": 26.0,
-  "narration_sha256": "64fd740c9c2ae8b8d2b15148eb491adcc6f4b34db8bcdce0ddb262827fad4553",
-  "cues": [
-    {
-      "start": 0.09525,
-      "end": 0.785708,
-      "text": "Cars are designed"
-    },
-    {
-      "start": 0.797625,
-      "end": 1.357124,
-      "text": "to crush."
-    },
-    {
-      "start": 2.052583333333333,
-      "end": 3.0763743333333333,
-      "text": "Inside, hidden"
-    },
-    {
-      "start": 3.0882913333333333,
-      "end": 4.266832333333333,
-      "text": "structures fold and"
-    },
-    {
-      "start": 4.278749333333334,
-      "end": 5.314457333333333,
-      "text": "slow the car down"
-    },
-    {
-      "start": 5.326374333333334,
-      "end": 6.493041333333333,
-      "text": "over a longer distance"
-    },
-    {
-      "start": 6.504958333333334,
-      "end": 6.909707333333333,
-      "text": "and time."
-    },
-    {
-      "start": 7.441916666666668,
-      "end": 8.394290666666668,
-      "text": "Watch the front rails"
-    },
-    {
-      "start": 8.406207666666667,
-      "end": 9.394290666666667,
-      "text": "buckle and fold"
-    },
-    {
-      "start": 9.406207666666667,
-      "end": 10.406207666666667,
-      "text": "as the car slows"
-    },
-    {
-      "start": 10.537124666666667,
-      "end": 11.608582666666667,
-      "text": "all the way to a stop."
-    },
-    {
-      "start": 12.147125,
-      "end": 13.147124000000002,
-      "text": "The rigid front stops"
-    },
-    {
-      "start": 13.159041,
-      "end": 14.182875000000001,
-      "text": "in a tiny distance."
-    },
-    {
-      "start": 14.587625000000001,
-      "end": 15.659041000000002,
-      "text": "The car bounces back"
-    },
-    {
-      "start": 15.754291,
-      "end": 16.670958,
-      "text": "almost immediately."
-    },
-    {
-      "start": 17.224458333333335,
-      "end": 17.736374333333334,
-      "text": "The passenger"
-    },
-    {
-      "start": 17.748291333333334,
-      "end": 18.641124333333334,
-      "text": "compartment keeps"
-    },
-    {
-      "start": 18.653041333333334,
-      "end": 19.141124333333334,
-      "text": "its shape."
-    },
-    {
-      "start": 19.533999333333334,
-      "end": 20.010207333333334,
-      "text": "While the front"
-    },
-    {
-      "start": 20.022083333333335,
-      "end": 20.855416333333334,
-      "text": "folds inward,"
-    },
-    {
-      "start": 21.105416333333334,
-      "end": 22.486415333333333,
-      "text": "the cabin stays intact."
-    },
-    {
-      "start": 23.04579166666667,
-      "end": 23.90295766666667,
-      "text": "The front is meant"
-    },
-    {
-      "start": 23.91487466666667,
-      "end": 24.45054066666667,
-      "text": "to deform."
-    },
-    {
-      "start": 24.85533266666667,
-      "end": 25.56962366666667,
-      "text": "The cabin isn't."
-    }
-  ]
+ "source": "EP04 audio cues run 44110022867 (Edge TTS with measured word boundaries, level-matched, 32.0 s master); the picture is planned on exactly this speech and the final render reuses this capture (audio_run)",
+ "target_seconds": 32.0,
+ "cues": [
+  {
+   "start": 0.09525,
+   "end": 0.785708,
+   "text": "Cars are designed"
+  },
+  {
+   "start": 0.797625,
+   "end": 1.357124,
+   "text": "to crush."
+  },
+  {
+   "start": 2.184458333333333,
+   "end": 3.2558743333333333,
+   "text": "The real crash lasts"
+  },
+  {
+   "start": 3.2677913333333333,
+   "end": 4.172582333333333,
+   "text": "a tenth of a second"
+  },
+  {
+   "start": 4.410666333333333,
+   "end": 5.505916333333333,
+   "text": "so we slow it way down"
+  },
+  {
+   "start": 5.517791333333333,
+   "end": 6.636874333333333,
+   "text": "to watch the hood buckle"
+  },
+  {
+   "start": 6.886874333333333,
+   "end": 7.553499333333333,
+   "text": "and the whole front"
+  },
+  {
+   "start": 7.565416333333333,
+   "end": 8.172541333333333,
+   "text": "fold back."
+  },
+  {
+   "start": 8.845791666666665,
+   "end": 9.964832666666666,
+   "text": "Hidden rails inside"
+  },
+  {
+   "start": 9.976749666666665,
+   "end": 11.179124666666665,
+   "text": "fold like an accordion"
+  },
+  {
+   "start": 11.250582666666665,
+   "end": 12.250582666666665,
+   "text": "absorbing the crash"
+  },
+  {
+   "start": 12.333916666666665,
+   "end": 13.452916666666665,
+   "text": "energy and stretch"
+  },
+  {
+   "start": 13.464874666666665,
+   "end": 14.714832666666666,
+   "text": "the stop over a longer"
+  },
+  {
+   "start": 14.726749666666665,
+   "end": 15.607707666666666,
+   "text": "distance and time."
+  },
+  {
+   "start": 16.275125,
+   "end": 16.965624,
+   "text": "The cabin keeps"
+  },
+  {
+   "start": 16.977541,
+   "end": 17.453708,
+   "text": "its shape."
+  },
+  {
+   "start": 17.858458,
+   "end": 19.251333,
+   "text": "Pillars, doors and roof"
+  },
+  {
+   "start": 19.26325,
+   "end": 19.834666,
+   "text": "stay put."
+  },
+  {
+   "start": 20.50058333333333,
+   "end": 21.54820733333333,
+   "text": "Now a rigid front at"
+  },
+  {
+   "start": 21.56008333333333,
+   "end": 22.47674933333333,
+   "text": "the same speed has"
+  },
+  {
+   "start": 22.48866633333333,
+   "end": 23.83391533333333,
+   "text": "almost nothing to crush"
+  },
+  {
+   "start": 24.02437433333333,
+   "end": 25.19104133333333,
+   "text": "so it stops almost"
+  },
+  {
+   "start": 25.27437433333333,
+   "end": 26.51245733333333,
+   "text": "instantly and bounces"
+  },
+  {
+   "start": 26.52437433333333,
+   "end": 26.91724933333333,
+   "text": "back."
+  },
+  {
+   "start": 27.581791666666664,
+   "end": 28.355624666666664,
+   "text": "The front is meant"
+  },
+  {
+   "start": 28.367541666666664,
+   "end": 29.677040666666663,
+   "text": "to deform and absorb"
+  },
+  {
+   "start": 29.688957666666663,
+   "end": 30.319916666666664,
+   "text": "the crash."
+  },
+  {
+   "start": 30.724666666666664,
+   "end": 31.438957666666663,
+   "text": "The cabin isn't."
+  }
+ ]
 }
