@@ -119,16 +119,19 @@ def xray_against_road(car, frames, max_sky_backed=0.15) -> dict:
 
 
 def labels_visible(load, telemetry: list[dict], min_frames=25, min_px=40) -> dict:
-    """CRUMPLE on top, RIGID below in the comparison: the 3D signs must be inside the camera view in most comparison frames and really be in the picture."""
-    both = [t["frame"] for t in telemetry if t["layout"] == "stack" and t["crumple"]["sign_in_view"] and t["rigid"]["sign_in_view"]]
+    """Check the ONE visible full-height comparison sign, not two stacked signs."""
+    comparison = [t for t in telemetry if t["layout"] == "sequential"]
+    visible = [t["frame"] for t in comparison
+               if t.get(cm.visible_panel(t["frame"]), {}).get("sign_in_view", False)]
     problems = []
-    if len(both) < min_frames:
-        problems.append(f"both signs are in view in only {len(both)} comparison frames (need {min_frames})")
-    sample = both[:: max(1, len(both) // 12)] if both else []
-    missing = [f for f in sample if sbg._sign_pixels(load(f)[0:960]) < min_px or sbg._sign_pixels(load(f)[960:1920]) < min_px]
+    if len(visible) < min_frames:
+        problems.append(f"sign visible in only {len(visible)} sequential comparison frames (need {min_frames})")
+    sample = visible[::max(1, len(visible) // 12)]
+    missing = [f for f in sample if sbg._sign_pixels(load(f)) < min_px]
     if sample and len(missing) > 0.15 * len(sample):
         problems.append(f"sign pixels missing in frames {missing[:6]}")
-    return {"status": "FAIL" if problems else "PASS", "problems": problems, "frames_with_both_signs": len(both), "missing": missing}
+    return {"status": "FAIL" if problems else "PASS", "problems": problems,
+            "frames_with_sign": len(visible), "missing": missing}
 
 
 def smoothness(frame_diffs: np.ndarray, min_median=0.3) -> dict:
@@ -165,9 +168,11 @@ def text_safe_area() -> dict:
     problems = []
     boxes = {}
     for f in range(1, cm.TOTAL_FRAMES + 1):      # the camera orbits in the replays: the signs are checked in every comparison frame
-        if cm.segment_at(f)["layout"] != "stack":
+        if cm.segment_at(f)["layout"] not in ("stack", "sequential"):
             continue
         for kind, b in cc.sign_boxes(f).items():
+            if kind != cm.visible_panel(f):
+                continue
             w = boxes.setdefault(kind, {"rows": [1e9, -1e9], "cols": [1e9, -1e9]})
             w["rows"] = [min(w["rows"][0], b["rows"][0]), max(w["rows"][1], b["rows"][1])]
             w["cols"] = [min(w["cols"][0], b["cols"][0]), max(w["cols"][1], b["cols"][1])]
