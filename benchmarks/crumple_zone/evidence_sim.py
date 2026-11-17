@@ -14,7 +14,7 @@ from benchmarks.crumple_zone import structure_geometry as sg
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "sedan_mesh.json.gz"
 CAPTION_ROWS = (1408, 1540)
-PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}}
+PANEL_ROWS = {"full": {"crumple": (0, 1920)}, "stack": {"crumple": (0, 960), "rigid": (960, 960)}, "sequential": {"crumple": (0, 1920), "rigid": (0, 1920)}}
 TYRE_RADIUS = 0.281
 
 
@@ -58,7 +58,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
     xf = cm.xray_factor(frame)
     cam = ccams.camera(seg["camera"], frame)
     metrics, in_view, panels = {"xray.factor": xf, "cell.highlight": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the green safety-cell cage is drawn together with the ghost body
-    for panel in seg["panels"]:
+    for panel in cm.visible_panels(frame):
         rec = recs[panel]
         i = min(int(round(t * cm.RENDER_HZ)), len(rec["t"]) - 1)
         d, s = float(rec["d"][i]), float(rec["s"][i])
