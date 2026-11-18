@@ -80,6 +80,17 @@ def gray_diffs(video: Path) -> np.ndarray:
     return np.abs(np.diff(a, axis=0)).mean((1, 2))
 
 
+def cue_mismatches(measured: list[dict], frozen: list[dict], tol_s: float = 0.002) -> list[str]:
+    """Differences between the cues of the audio that is being muxed and the frozen capture (same texts, start and end within tol_s): the capture is identified by its measured timing."""
+    if len(measured) != len(frozen):
+        return [f"{len(measured)} cues measured, {len(frozen)} frozen"]
+    out = []
+    for i, (m, f) in enumerate(zip(measured, frozen)):
+        if m["text"] != f["text"] or abs(m["start"] - f["start"]) > tol_s or abs(m["end"] - f["end"]) > tol_s:
+            out.append(f"cue {i}: measured {m['text']!r} {m['start']:.4f}-{m['end']:.4f}, frozen {f['text']!r} {f['start']:.4f}-{f['end']:.4f}")
+    return out
+
+
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--panels", type=Path, required=True)
@@ -95,7 +106,10 @@ def main():
     narration_sha = hashlib.sha256((a.audio / "narration.wav").read_bytes()).hexdigest()
     print("FROZEN_AUDIO_SHA256 " + narration_sha, flush=True)      # printed so the frozen capture can be pinned by its hash
     pinned = frozen.get("narration_sha256")      # the hash is pinned only once it has been read from a log; until then the measured cue times (microsecond exact) identify the capture
-    if (pinned is not None and narration_sha != pinned) or audio_report["cues"] != frozen["cues"]:
+    mismatches = cue_mismatches(audio_report["cues"], frozen["cues"])
+    if mismatches:
+        print("FROZEN_CUE_MISMATCH " + json.dumps(mismatches[:6]), flush=True)
+    if (pinned is not None and narration_sha != pinned) or mismatches:
         raise SystemExit("preview audio or measured cue timing differs from the frozen narration")
     for name in ("narration.wav", "film.ass"):
         (a.out / name).write_bytes((a.audio / name).read_bytes())

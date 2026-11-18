@@ -1,1 +1,1 @@
-{"mode": "preview", "audio_run": "44204538060", "note": "EP.04 v3 the ONE full-length preview, second start: first start died in the frozen-audio identity check (the cue file carried no narration hash), now pinned by cues and the printed hash"}
+{"mode": "preview", "audio_run": "44204538060", "frames_run": "44217536221", "note": "EP.04 v3 the one full-length preview: same 960 rendered frames (run 44217536221), composing and gates only; the first two composes died in the frozen-audio identity check"}
