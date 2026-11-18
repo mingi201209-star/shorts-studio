@@ -21,7 +21,7 @@ NO_SCENE_TEXT = True      # the owner banned on-screen words other than the narr
 
 def _key(t, loc, target, lens=34.0, at=0.40, rel=False, cut=False):
     """at: fraction of the frame height, from the top, where the look-at point lands (lens shift is derived from it): the subject sits in the upper-middle, above the captions."""
-    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": bool(rel), "cut": bool(cut)}
+    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": rel if rel == "car" else bool(rel), "cut": bool(cut)}
 
 
 def _orbit(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, at=0.40, target_z=0.55):
@@ -39,6 +39,21 @@ def _seg_tau(seconds: float, seg_id: str) -> float:
     """Spoken moment (film seconds from the start of the film) -> film seconds since the start of segment seg_id."""
     seg = next(s for s in cm.SEGMENTS if s["id"] == seg_id)
     return seconds - (seg["first"] - 1) / cm.FPS
+
+
+CAR_NOSE_M = 1.926      # nose of the real sedan in its own frame (fixture geom["nose"]; a test checks it)
+DRV_SIDE = ((-2.0, 0.8, 0.95), (0.0, 0.8, 0.95))      # driver's seat, side view (camera x, y, z; target), relative to the cabin (rel="car")
+
+
+def _orbit_car(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, at=0.42, target_z=0.95):
+    """Orbit round the driver's seat (rel="car" keys); angle 0 = camera on the -X side looking +X, positive turns towards -Y."""
+    out = []
+    for k in range(n + 1):
+        u = k / n
+        a = np.radians(a0 + (a1 - a0) * u)
+        loc = (pivot[0] - radius * np.cos(a), pivot[1] - radius * np.sin(a), z0 + (z1 - z0) * u)
+        out.append(_key(t0 + (t1 - t0) * u, loc, (pivot[0], pivot[1], target_z), lens, at, rel="car"))
+    return out
 
 
 def paths() -> dict:
@@ -63,21 +78,20 @@ def paths() -> dict:
         _key(k(t_b3) + 0.6, (-2.7, -2.3, 1.5), (0.0, -0.55, 0.5), 42, at=0.46, rel=True),             # step out (never through the car) to a close three-quarter view of the front while the scan line passes: the rails fill the frame
         _key(k(t_b3) + 2.8, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),             # higher, still close view: the folds of the rails seen from above and the side
         _key(k(t_en) - 0.01, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),
-        _key(k(t_en), (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True, cut=True),        # CUT ("energy over a longer stop"): zoomed see-through side profile, the amber rails fold like an accordion in the middle of the frame
-        _key(k(t_b4) - 0.71, (-3.1, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),
+        _key(k(t_en), DRV_SIDE[0], DRV_SIDE[1], 32, at=0.42, rel="car", cut=True),                     # CUT ("energy over a longer stop"): only the driver's seat, side view through the see-through cabin
+        _key(k(t_b4) - 0.71, (-1.85, 0.8, 0.95), DRV_SIDE[1], 32, at=0.42, rel="car"),                  # slow push-in
     ]
-    _o = _orbit(k(t_b4) - 0.7, k(t_b5) - 0.01, (0.0, -1.6), 4.1, 3.6, 1.5, 51.0, -15.0, 34, n=8, at=0.45)
-    _o[0]["cut"] = True      # CUT ("quietly keeps its"): orbit round the finished front starts
-    K += _o      # slow orbit from behind-left round to the crushed front
+    _o = _orbit_car(k(t_b4) - 0.7, k(t_b5) - 0.01, (-0.36, 0.55), 1.7, 0.95, 1.1, 0.0, -22.0, 36, n=8, at=0.42)
+    _o[0]["cut"] = True      # CUT ("quietly keeps its"): slow orbit round the driver's seat towards the front
+    K += _o
     r_con = r(cue(cm.RIGID_CONTACT_CUE))
     R = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
-        _key(r(cue("It has almost nothing")) - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r(cue("It has almost nothing")), (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True, cut=True),   # CUT ("it has almost nothing to crush"): the SAME zoomed side view as the first crash, the front turns see-through: its rails stay straight
-        _key(r_con - 0.01, (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),
-        _key(r_con + 0.01, (-3.3, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),            # no cut at contact: the same view goes on, the viewer watches the rigid front stop
-        _key(r_con + 1.4 - 0.01, (-3.0, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),      # a slow push-in of 0.4 m while the car stops and turns round: no instant of the clip is a still image
-        _key(r_con + 1.4, (-5.5, -2.4, 1.5), (0.0, -2.2, 0.6), 28, at=0.45, cut=True),               # CUT ("and bounces back"): fixed wide side view, the wall at the left and the car leaving it, the gap widening
+        _key(r_con - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
+        _key(r_con, DRV_SIDE[0], DRV_SIDE[1], 32, at=0.42, rel="car", cut=True),                      # CUT at the contact ("stops almost instantly"): the SAME driver's-seat view as the first crash, the driver lunges at the wheel
+        _key(r_con + 0.01, (-1.85, 0.8, 0.95), DRV_SIDE[1], 32, at=0.42, rel="car"),
+        _key(r_con + 1.4 - 0.01, (-1.85, 0.8, 0.95), DRV_SIDE[1], 32, at=0.42, rel="car"),              # slow push-in while the car stops and turns round
+        _key(r_con + 1.4, (-1.9, 1.05, 1.0), (0.0, 0.7, 0.95), 32, at=0.42, rel="car", cut=True),          # CUT ("and bounces back"): driver's seat from the front-left while the car leaves the wall
     ]
     C = [
         _key(0.0, (-2.6, -3.0, 1.5), (0.0, -0.9, 0.5), 34, at=0.45),
@@ -105,9 +119,12 @@ def camera(kind: str, frame: int = 1) -> dict:
     tau = (frame - seg["first"]) / cm.FPS
     ny = cm.nose_y(frame)
     off = np.array([0.0, ny, 0.0])
+    off_car = np.array([0.0, ny + cm.pose(frame)["s"] - CAR_NOSE_M, 0.0])      # rel="car": car-frame coordinates (nose at +CAR_NOSE_M, driver's hip at y 0.08): the camera follows the cabin while the nose crushes
 
     def absolute(key, name):
         v = np.array(key[name], float)
+        if key["rel"] == "car":
+            return v + off_car
         return v + off if key["rel"] else v
 
     if tau <= keys[0]["t"]:

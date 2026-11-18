@@ -33,3 +33,8 @@ class DriverTests(unittest.TestCase):
         first_front = next(f for f in range(k["first"], k["last"] + 1) if cm.xray_factor(f) > 0.02)
         first_cabin = next(f for f in range(k["first"], k["last"] + 1) if cm.cabin_xray_factor(f) > 0.02)
         self.assertLess(first_front, first_cabin)
+
+
+def test_driver_seat_camera_frame_constant_matches_the_real_sedan():
+    from benchmarks.crumple_zone import crumple_cameras as cc, evidence_sim as es
+    assert abs(cc.CAR_NOSE_M - es.Car(es.load_fixture()).nose) < 1e-3

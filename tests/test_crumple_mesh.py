@@ -40,7 +40,7 @@ def test_the_action_is_never_under_the_captions():
 def test_the_car_front_is_in_view_through_both_crashes_and_the_run_ups():
     for f in range(1, cm.SEGMENTS[1]["last"] + 1):
         v = EVIDENCE[f]["in_view"]
-        assert v.get("car_front") or v.get("rigid_car_front"), f
+        assert v.get("car_front") or v.get("rigid_car_front") or v.get("driver") or v.get("rigid_driver"), f      # the film shows the car front or (owner request) only the driver's seat
 
 
 def test_the_ghost_body_is_seen_against_road_and_barrier_not_the_sky():
