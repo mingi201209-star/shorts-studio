@@ -34,7 +34,7 @@ jobs:
           mode = req["mode"]
           assert mode in ("preview", "range")
           if mode == "preview":
-              size, shards = (30 if req.get("quality") == "final" else 65), [(1, round((lambda c: c["target_seconds"] + c.get("preroll_s", 0.0))(json.load(open("examples/experiments/crumple-zone-real-cues.json"))) * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
+              size, shards = (3 if req.get("quality") == "final" else 65), [(1, round((lambda c: c["target_seconds"] + c.get("preroll_s", 0.0))(json.load(open("examples/experiments/crumple-zone-real-cues.json"))) * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
           else:
               size, shards = 24, [tuple(r) for r in req["ranges"]]      # only the frames a change touched
           include = []
@@ -42,7 +42,7 @@ jobs:
               for s in range(lo, hi + 1, size):
                   include.append({"start": s, "end": min(s + size - 1, hi)})
           print("mode=" + mode)
-          final = req.get("quality") == "final"      # native 1080x1920, 24 samples; the default is the 1/3-resolution, 7-sample preview
+          final = req.get("quality") == "final"      # native 1080x1920, 24 samples, 3-frame shards (a see-through frame takes tens of minutes at native size; the job limit is 80 min); the default is the 1/3-resolution, 7-sample preview
           print("flag=" + ("" if final else "--preview"))
           print("frames_run=" + str(req.get("frames_run", "")))      # reuse the panel shards of an earlier run (same picture code): only the composing and the gates run again
           print("audio_run=" + str(req.get("audio_run", "")))      # a frozen audio capture (artifact of an earlier audio-cues run): the picture is planned on exactly that timing
