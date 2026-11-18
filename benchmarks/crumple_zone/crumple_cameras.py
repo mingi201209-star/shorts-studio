@@ -43,7 +43,7 @@ def _seg_tau(seconds: float, seg_id: str) -> float:
 
 #: interior shots (car frame, rel="car"): the car body is not rendered, only the cabin set (seats, dashboard, pillars, wheel) and the driver
 I_FACE = ((0.50, 0.62, 1.10), (-0.36, 0.18, 0.85))      # from the front passenger seat looking back at the driver's face and the steering wheel
-I_FWD = ((0.10, -0.70, 1.12), (-0.18, 0.90, 0.85))      # from between the front seats looking forward: wheel, dashboard and the wall beyond the windscreen
+I_FWD = ((0.18, -0.20, 1.12), (-0.50, 0.90, 0.88))      # from between the front seats looking forward: wheel, dashboard and the wall beyond the windscreen
 CAR_NOSE_M = 1.926      # nose of the real sedan in its own frame (fixture geom["nose"]; a test checks it)
 DRV_SIDE = ((-2.0, 0.8, 0.95), (0.0, 0.8, 0.95))      # driver's seat, side view (camera x, y, z; target), relative to the cabin (rel="car")
 
@@ -88,7 +88,7 @@ def paths() -> dict:
     ]
     K += [
         _key(k(cue("Pillars doors and roof")), I_FWD[0], I_FWD[1], 20, at=0.42, rel="car", cut=True, interior=True),      # CUT ("Pillars doors and roof"): from the passenger seat forward: wheel, dashboard, the wall beyond the windscreen
-        _key(k(t_b5) - 0.01, (0.12, -0.55, 1.12), (-0.20, 0.90, 0.85), 20, at=0.42, rel="car", interior=True),
+        _key(k(t_b5) - 0.01, (0.20, -0.12, 1.12), (-0.50, 0.90, 0.88), 20, at=0.42, rel="car", interior=True),
     ]
     r_con = r(cue(cm.RIGID_CONTACT_CUE))
     R = [
