@@ -133,7 +133,8 @@ def smoothness(frame_diffs: np.ndarray, min_median=0.3) -> dict:
         problems.append(f"{frozen} frozen frames")
     if med < min_median:
         problems.append(f"median frame change {med:.2f} < {min_median}")
-    return {"status": "FAIL" if problems else "PASS", "problems": problems, "frozen_frames": frozen, "median_diff": round(med, 3)}
+    where = [int(i) + 2 for i in np.flatnonzero(frame_diffs < 0.02)]      # diff i compares video frames i+1 and i+2 (1-based): the second one is the frame that did not change
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "frozen_frames": frozen, "frozen_frame_numbers": where, "median_diff": round(med, 3)}
 
 
 def sync_to_speech(cues: list[dict]) -> dict:
