@@ -1,1 +1,1 @@
-{"mode": "preview", "audio_run": "44204538060", "note": "EP.04 v3 full-length preview 3: the only gate left was smoothness (13 frozen frames at 13.2-13.5 s and 25.0-25.07 s): orbit starts before the crush ends, the rebound starts right after the stop, slow push-in during the rigid stop; threshold 0.02 unchanged"}
+{"mode":"range","quality":"final","ranges":[[330,330],[724,724]],"note":"EP.04 native 1080x1920 (24 samples) timing and pipeline check on 2 frames before the full native render"}
