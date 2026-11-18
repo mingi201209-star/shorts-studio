@@ -60,11 +60,17 @@ jobs:
         with:
           python-version: '3.12'
       - run: |
-          # the runner package mirror sometimes stalls for many minutes: skip apt when ffmpeg is already installed, otherwise bounded attempts
+          # the runner package mirror sometimes stalls for many minutes: skip apt when ffmpeg is already installed; one short bounded apt attempt, then a static ffmpeg from PyPI (imageio-ffmpeg)
           if ! command -v ffmpeg >/dev/null 2>&1; then
-            for i in 1 2 3; do timeout 120 sudo apt-get update -qq && timeout 300 sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 -o Acquire::http::Timeout=30 ffmpeg fonts-dejavu-core && break; echo "apt attempt $i failed"; done
+            (timeout 90 sudo apt-get update -qq && timeout 150 sudo apt-get install -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 ffmpeg fonts-dejavu-core) || echo "apt failed or too slow"
+          fi
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            python -m pip install imageio-ffmpeg==0.6.0
+            mkdir -p "$HOME/bin" && ln -sf "$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$HOME/bin/ffmpeg"
+            echo "$HOME/bin" >> "$GITHUB_PATH"; export PATH="$HOME/bin:$PATH"
           fi
           command -v ffmpeg
+          ffmpeg -hide_banner -filters | grep -E " ass " || { echo "this ffmpeg has no libass filter"; exit 1; }
       - run: python -m pip install edge-tts Pillow pydantic
       - name: Capture narration and build narration.wav + captions
         run: |
@@ -167,11 +173,17 @@ jobs:
           python-version: '3.12'
       - if: needs.plan.outputs.mode == 'preview'      # a range check needs no ffmpeg: the runner package mirror is slow, so it is not touched
         run: |
-          # the runner package mirror sometimes stalls for many minutes: skip apt when ffmpeg is already installed, otherwise bounded attempts
+          # the runner package mirror sometimes stalls for many minutes: skip apt when ffmpeg is already installed; one short bounded apt attempt, then a static ffmpeg from PyPI (imageio-ffmpeg)
           if ! command -v ffmpeg >/dev/null 2>&1; then
-            for i in 1 2 3; do timeout 120 sudo apt-get update -qq && timeout 300 sudo apt-get install -y --no-install-recommends -o Acquire::Retries=3 -o Acquire::http::Timeout=30 ffmpeg fonts-dejavu-core && break; echo "apt attempt $i failed"; done
+            (timeout 90 sudo apt-get update -qq && timeout 150 sudo apt-get install -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 ffmpeg fonts-dejavu-core) || echo "apt failed or too slow"
+          fi
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            python -m pip install imageio-ffmpeg==0.6.0
+            mkdir -p "$HOME/bin" && ln -sf "$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$HOME/bin/ffmpeg"
+            echo "$HOME/bin" >> "$GITHUB_PATH"; export PATH="$HOME/bin:$PATH"
           fi
           command -v ffmpeg
+          ffmpeg -hide_banner -filters | grep -E " ass " || { echo "this ffmpeg has no libass filter"; exit 1; }
       - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93 numpy
       - name: Retrieve panel shards and audio
         env:

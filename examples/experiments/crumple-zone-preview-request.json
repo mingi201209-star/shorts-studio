@@ -1,1 +1,1 @@
-{"mode": "preview", "audio_run": "44204538060", "note": "EP.04 the ONE full-length preview: 1.2 s pre-roll run-up (audio delayed), first car cuts to the driver's view during the crash, rail close-ups, interior light pointing down (cabin-coloured ceiling), frozen audio"}
+{"mode": "preview", "audio_run": "44204538060", "frames_run": "44412373743", "note": "EP.04 compose and gates only: reuse the frames rendered by run 44412373743 (all 15 shards succeeded; its final job stalled in apt), ffmpeg falls back to a static PyPI build"}
