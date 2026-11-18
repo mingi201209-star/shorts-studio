@@ -147,6 +147,7 @@ def build_interior(root):
     seat = material("Interior seat", (0.16, 0.26, 0.40), rough=0.7)
     trim = material("Interior trim", (0.34, 0.42, 0.52), rough=0.6)
     dark = material("Interior dark", (0.09, 0.10, 0.13), rough=0.8)
+    liner = material("Interior liner", (0.12, 0.14, 0.18), rough=0.9)      # the roof lining must not blow out white at the top of the forward view
     out = []
 
     def box(name, loc, size, mat):
@@ -172,8 +173,8 @@ def build_interior(root):
         box(f"Interior B pillar {sx}", (0.78 * sx, -0.42, 1.0), (0.08, 0.12, 0.62), trim)
         ob, _ = tube(f"Interior A pillar {sx}", (0.76 * sx, 0.98, 0.84), (0.76 * sx, 0.36, 1.24), 0.045, trim, root, n_seg=10, n_ring=2)
         out.append(ob)
-    box("Interior roof header", (0.0, 0.36, 1.25), (1.56, 0.08, 0.06), trim)
-    box("Interior roof liner", (0.0, -0.10, 1.27), (1.56, 0.9, 0.04), trim)
+    box("Interior roof header", (0.0, 0.36, 1.25), (1.56, 0.08, 0.06), liner)
+    box("Interior roof liner", (0.0, -0.10, 1.27), (1.56, 0.9, 0.04), liner)
     bpy.ops.object.light_add(type="AREA", location=(0.0, 0.25, 1.18))      # interior fill light: the cabin shots are lit from inside (the car body that would let the sun in is not rendered)
     lamp = bpy.context.object
     lamp.name = "Interior fill light"

@@ -1,1 +1,26 @@
-{"mode": "range", "ranges": [[110, 110], [118, 118], [124, 124], [135, 135], [150, 150], [162, 162], [168, 168], [172, 172]], "note": "EP.04 v18 range check: the first car crash cuts to the driver view DURING the crash (forward interior view, wall creeps closer), back to the exterior at The hood buckles"}
+{
+ "mode": "range",
+ "ranges": [
+  [
+   124,
+   124
+  ],
+  [
+   135,
+   135
+  ],
+  [
+   150,
+   150
+  ],
+  [
+   162,
+   162
+  ],
+  [
+   165,
+   165
+  ]
+ ],
+ "note": "EP.04 v19 range check: roof liner darkened (white band at the top of the forward interior view), check frames 124-165"
+}
