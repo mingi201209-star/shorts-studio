@@ -144,9 +144,9 @@ class Dummy:
 def build_interior(root):
     """The cabin set for the interior shots (car frame, parented to the car): driver and passenger seats, dashboard, steering column, door panels, pillars, roof liner, floor. In the interior shots the car body
     is not rendered at all (like the earlier driver insert of the Rumble episode); this set and the driver are what the camera sees. Returns the list of objects."""
-    seat = material("Interior seat", (0.10, 0.16, 0.24), rough=0.7)
-    trim = material("Interior trim", (0.22, 0.28, 0.35), rough=0.6)
-    dark = material("Interior dark", (0.05, 0.06, 0.08), rough=0.8)
+    seat = material("Interior seat", (0.16, 0.26, 0.40), rough=0.7)
+    trim = material("Interior trim", (0.36, 0.44, 0.54), rough=0.6)
+    dark = material("Interior dark", (0.09, 0.10, 0.13), rough=0.8)
     out = []
 
     def box(name, loc, size, mat):
