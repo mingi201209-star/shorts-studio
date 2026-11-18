@@ -390,8 +390,8 @@
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "With the front fully crushed the whole car is seen with its solid cabin unchanged next to the crushed see-through front",
-    "onset_metric": "cabin.solid_visible",
+    "description": "With the front fully crushed the whole see-through car is seen: the cabin keeps its outline and the belted driver sits unharmed (green)",
+    "onset_metric": "cabin.xray_factor",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
@@ -410,9 +410,18 @@
      "criterion": "subject_present",
      "subjects": [
       "safety_cell",
-      "whole_car"
+      "whole_car",
+      "driver"
      ],
      "value": 0.8
+    },
+    {
+     "id": "s04a-driver-unharmed",
+     "description": "the belted driver of the first car stays unharmed (chest load below the injury onset)",
+     "kind": "metric_at_most",
+     "criterion": "physically_consistent",
+     "metric": "crumple.dummy_injury",
+     "value": 0.1
     },
     {
      "id": "s04a-front-crushed",
@@ -432,10 +441,10 @@
     },
     {
      "id": "s04a-cabin-solid",
-     "description": "the front is see-through and the cabin solid on screen during the whole sentence",
+     "description": "the cabin is see-through on screen during the whole sentence (the driver can be seen)",
      "kind": "metric_at_least",
      "criterion": "timing",
-     "metric": "cabin.solid_visible",
+     "metric": "cabin.xray_factor",
      "value": 0.99
     },
     {
@@ -466,8 +475,8 @@
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "The orbit shows the cabin from other sides: pillars, doors and roof line are exactly where they were",
-    "onset_metric": "cabin.solid_visible",
+    "description": "The orbit shows the cabin from other sides: pillars, doors and roof line are exactly where they were and the driver is unharmed (green)",
+    "onset_metric": "cabin.xray_factor",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
@@ -486,9 +495,18 @@
      "criterion": "subject_present",
      "subjects": [
       "safety_cell",
-      "whole_car"
+      "whole_car",
+      "driver"
      ],
      "value": 0.8
+    },
+    {
+     "id": "s04b-driver-unharmed",
+     "description": "the driver of the first car is still unharmed",
+     "kind": "metric_at_most",
+     "criterion": "physically_consistent",
+     "metric": "crumple.dummy_injury",
+     "value": 0.1
     },
     {
      "id": "s04b-front-still-crushed",
@@ -508,10 +526,10 @@
     },
     {
      "id": "s04b-cabin-solid",
-     "description": "the front is see-through and the cabin solid on screen during the whole sentence",
+     "description": "the cabin is see-through on screen during the whole sentence (the driver can be seen)",
      "kind": "metric_at_least",
      "criterion": "timing",
-     "metric": "cabin.solid_visible",
+     "metric": "cabin.xray_factor",
      "value": 0.99
     },
     {
@@ -713,9 +731,18 @@
      "criterion": "subject_present",
      "subjects": [
       "rigid_car_front",
-      "barrier"
+      "barrier",
+      "rigid_driver"
      ],
-     "value": 0.6
+     "value": 0.2
+    },
+    {
+     "id": "s05c-driver-hurt",
+     "description": "the driver of the rigid car is thrown into the steering wheel: chest load reaches the severe level (turns red)",
+     "kind": "metric_reaches",
+     "criterion": "action_performed",
+     "metric": "rigid.dummy_injury",
+     "value": 0.9
     },
     {
      "id": "s05c-rebound",
@@ -836,8 +863,8 @@
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "The front turns see-through and the solid cabin stays unchanged behind the crushed rails",
-    "onset_metric": "cabin.solid_visible",
+    "description": "The whole first car turns see-through: the crushed front and the unchanged cabin with the unharmed (green) driver",
+    "onset_metric": "cabin.xray_factor",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
@@ -881,7 +908,7 @@
      "description": "the see-through front appears when 'but the cabin is not' is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
-     "metric": "cabin.solid_visible",
+     "metric": "cabin.xray_factor",
      "onset_threshold": 0.5,
      "value": 1.0
     },

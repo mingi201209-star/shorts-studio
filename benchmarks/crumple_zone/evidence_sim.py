@@ -10,6 +10,7 @@ import numpy as np
 
 from benchmarks.crumple_zone import crumple_cameras as ccams
 from benchmarks.crumple_zone import crumple_motion as cm
+from benchmarks.crumple_zone import dummy_motion as dm
 from benchmarks.crumple_zone import structure_geometry as sg
 
 FIXTURE = Path(__file__).resolve().parent / "fixtures" / "sedan_mesh.json.gz"
@@ -56,7 +57,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
     seg = cm.segment_at(frame)
     xf = cm.xray_factor(frame)
     cam = ccams.camera(seg["camera"], frame)
-    metrics, in_view, panels = {"film.speed_vs_real": cm.film_speed(frame), "xray.factor": xf, "cabin.solid_visible": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the front is see-through, the cabin stays solid and opaque (no box is drawn)
+    metrics, in_view, panels = {"film.speed_vs_real": cm.film_speed(frame), "xray.factor": xf, "cabin.xray_factor": cm.cabin_xray_factor(frame)}, {}, {}      # the front turns see-through first, the cabin follows (no box is drawn)
     for panel in cm.visible_panels(frame):
         ps = cm.pose(frame, panel)
         d, s = ps["d"], ps["s"]
@@ -95,6 +96,13 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
                  "safety_cell": ghost_on and inside(cell_c), "whole_car": all(inside((0.0, y, z)) for y in (car.nose - s, -car.geom["tail"]) for z in (0.5,))}
         panels[panel] = {"stroke_m": s, "nose_world_y_mm": 1000 * nose_world, "wheel_front_world_y_mm": 1000 * wheel_front, "caption_overlap": overlap, "cell_mm": cell_mm,
                          "rail_shortening": shortening, "in_view": views, "root_y": root_y}
+        dst = dm.at(panel, cm.frame_time(frame))
+        pitch = dm.pitch_rad(dst["travel_m"]) + dm.head_extra_rad(dst["chest_g"])
+        head = np.array([-0.36, 0.08 + 0.25 * dst["travel_m"] + 0.76 * np.sin(pitch), 0.50 + 0.76 * np.cos(pitch)])
+        views["driver"] = bool(metrics["cabin.xray_factor"] >= 0.5 and inside(tuple(head)))
+        metrics[f"{panel}.dummy_peak_chest_g"] = dst["peak_chest_g"]
+        metrics[f"{panel}.dummy_injury"] = dst["injury"]
+        metrics[f"{panel}.dummy_travel_m"] = dst["travel_m"]
         metrics[f"{panel}.stroke_m"] = s
         metrics["nose.world_y_m"] = nose_world
         metrics["final_pose.front_crush_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH) if seg["id"] == "C" else 0.0
@@ -106,12 +114,14 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
             metrics["crumple.crushed_depth_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH)
             metrics["body.max_rise_m"] = rise
             metrics["wheels.pushback_m"] = -wheel_back
+            in_view["driver"] = views["driver"]
             for name in ("car_front", "crush_rails", "bumper_beam", "safety_cell", "whole_car"):
                 in_view[name] = views[name]
         else:
             in_view["rigid_car_front"] = views["car_front"]
             in_view["rigid_whole_car"] = views["whole_car"]
             in_view["rigid_crush_rails"] = views["crush_rails"]
+            in_view["rigid_driver"] = views["driver"]
             metrics["rigid.rails_shortening_m"] = shortening
             metrics["rigid.rebound_m"] = cm.rebound_distance(d, s)
             metrics["rigid.speed_away_mps"] = max(0.0, -ps["v"])

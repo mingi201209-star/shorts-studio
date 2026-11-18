@@ -177,9 +177,13 @@ def rate_fn(tp: np.ndarray, r0: float, approach_rate: float, ramp: tuple[float, 
     post = r0 / (1.0 - RATE_SHAPE * u)
     r = np.where(tp < 0, pre, post)
     if ramp is not None:
-        a, b, after = ramp
+        a, b, after = ramp[:3]
         w = _smooth((tp - a) / (b - a))
         r = np.exp(np.log(r) * (1 - w) + np.log(after) * w)
+        if len(ramp) > 3:      # second step: the driver's lunge is over, the film speeds up again for the bounce
+            c, d, after2 = ramp[3:6]
+            w2 = _smooth((tp - c) / (d - c))
+            r = np.exp(np.log(r) * (1 - w2) + np.log(after2) * w2)
     return r
 
 
@@ -285,7 +289,7 @@ SEGMENTS = [
     {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
      "contact_film_s": HOOK_CONTACT_S, "xray_keys": ()},
     {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_m": 8.0,
-     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] - 0.0006, T_STOP["rigid"] + 0.003, 0.6), "xray_keys": ()},
+     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] - 0.0006, T_STOP["rigid"] + 0.003, 0.08, 0.040, 0.046, 0.6), "xray_keys": ()},
     {"id": "C", "first": _F_CLOSE, "last": TOTAL_FRAMES, "panels": ("crumple",), "layout": "full", "camera": "C", "r0": R0, "approach_m": 0.0,
      "contact_film_s": 0.0, "static_t": 1.0, "xray_keys": ()},
 ]
@@ -333,6 +337,23 @@ XRAY_KEYS: dict[str, tuple] = {
     "R": ((0.0, 0.0), (_tau(cue_start("It has almost nothing"), "R"), 0.0), (_tau(cue_start("It has almost nothing"), "R") + 1.2, 1.0)),
     "C": ((0.0, 0.0), (_tau(cue_start("but the cabin is not."), "C") - 1.0, 0.0), (_tau(cue_start("but the cabin is not."), "C") + 0.6, 1.0)),
 }
+
+
+#: cabin see-through factor 0..1 per segment: the front turns see-through first (XRAY_KEYS), the cabin follows so that the driver can be seen; at 0 the cabin stays solid
+CABIN_XRAY_KEYS: dict[str, tuple] = {
+    "K": ((0.0, 0.0), (_tau(cue_start("energy over a longer"), "K"), 0.0), (_tau(cue_start("energy over a longer"), "K") + 1.0, 1.0)),
+    "R": ((0.0, 0.0), (_tau(cue_start("It has almost nothing"), "R"), 0.0), (_tau(cue_start("It has almost nothing"), "R") + 1.2, 1.0)),
+    "C": ((0.0, 0.0), (_tau(cue_start("but the cabin is not."), "C"), 0.0), (_tau(cue_start("but the cabin is not."), "C") + 1.0, 1.0)),
+}
+
+
+def cabin_xray_factor(frame: int) -> float:
+    seg = segment_at(frame)
+    keys = CABIN_XRAY_KEYS.get(seg["id"], ())
+    if not keys:
+        return 0.0
+    xs, ys = zip(*keys)
+    return float(np.interp((frame - seg["first"]) / FPS, xs, ys))
 
 
 def _ghost_start_frame() -> int:

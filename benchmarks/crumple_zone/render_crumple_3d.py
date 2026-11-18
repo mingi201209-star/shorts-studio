@@ -20,6 +20,7 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.crumple_zone import crumple_cameras as ccams  # noqa: E402
 from benchmarks.crumple_zone import crumple_motion as cm  # noqa: E402
+from benchmarks.crumple_zone import dummy_motion  # noqa: E402
 from benchmarks.crumple_zone import structure_geometry as sg  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
@@ -53,6 +54,73 @@ def tube(name, p0, p1, radius, mat, parent, n_seg=48, n_ring=8):
     bpy.context.collection.objects.link(ob)
     ob.parent = parent
     return ob, verts
+
+
+class Dummy:
+    """The driver as a crash-test-dummy style figure (plain shapes, no face, no text): belted in the driver's seat, parented to the car so that it moves with the cabin. The torso hinges
+    forward at the hip and the head swings on the neck, driven by dummy_motion (forward travel and chest load of the simulated crash). Chest and head turn from green through yellow to red
+    with the peak chest load: the colour is the only 'damage' indicator."""
+    HIP = (-0.36, 0.08, 0.50)
+    WHEEL = (-0.36, 0.60, 0.88)
+    GREEN, YELLOW, RED = (0.15, 0.75, 0.22), (0.95, 0.80, 0.08), (0.95, 0.07, 0.04)
+
+    def __init__(self, root):
+        hx, hy, hz = self.HIP
+        self.skin = material("Driver chest and head", self.GREEN, rough=0.45, emission=0.35)
+        limb = material("Driver limbs", (0.30, 0.30, 0.32), rough=0.6)
+        self.pivot = bpy.data.objects.new("Driver torso pivot", None)
+        bpy.context.collection.objects.link(self.pivot)
+        self.pivot.parent, self.pivot.location = root, (hx, hy, hz)
+        self.neck = bpy.data.objects.new("Driver neck pivot", None)
+        bpy.context.collection.objects.link(self.neck)
+        self.neck.parent, self.neck.location = self.pivot, (0.0, 0.0, 0.62)
+
+        def shape(kind, name, loc, scale, mat, parent):
+            if kind == "sphere":
+                bpy.ops.mesh.primitive_uv_sphere_add(radius=1.0, segments=24, ring_count=16, location=(0, 0, 0))
+            else:
+                bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0))
+            ob = bpy.context.object
+            ob.name, ob.scale, ob.location = name, scale, loc
+            ob.data.materials.append(mat)
+            ob.parent = parent
+            for p in ob.data.polygons:
+                p.use_smooth = kind == "sphere"
+            return ob
+
+        shape("sphere", "Driver chest", (0.0, 0.0, 0.30), (0.19, 0.12, 0.30), self.skin, self.pivot)
+        shape("sphere", "Driver head", (0.0, 0.02, 0.14), (0.115, 0.125, 0.14), self.skin, self.neck)
+        shape("cube", "Driver neck", (0.0, 0.0, -0.03), (0.07, 0.07, 0.10), limb, self.neck)
+        shape("cube", "Driver pelvis", (hx, hy, hz - 0.02), (0.34, 0.27, 0.16), limb, root)
+        for sx in (-1, 1):
+            tube(f"Driver thigh {sx}", (hx + 0.09 * sx, hy, hz), (hx + 0.09 * sx, hy + 0.46, hz + 0.05), 0.075, limb, root, n_seg=16, n_ring=2)
+            tube(f"Driver shin {sx}", (hx + 0.09 * sx, hy + 0.46, hz + 0.05), (hx + 0.09 * sx, hy + 0.52, hz - 0.36), 0.06, limb, root, n_seg=16, n_ring=2)
+            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.52), (0.20 * sx, 0.15, 0.36), 0.05, limb, self.pivot, n_seg=16, n_ring=2)
+            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.36), (0.16 * sx, 0.40, 0.40), 0.045, limb, self.pivot, n_seg=16, n_ring=2)
+        wheel = material("Steering wheel", (0.05, 0.05, 0.055), rough=0.5)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.18, minor_radius=0.018, location=self.WHEEL, rotation=(math.radians(-58), 0, 0))
+        wob = bpy.context.object
+        wob.name = "Steering wheel"
+        wob.data.materials.append(wheel)
+        wob.parent = root
+        self.head = self.neck
+
+    def colour(self, injury):
+        a, b, t = (self.GREEN, self.YELLOW, injury * 2.0) if injury < 0.5 else (self.YELLOW, self.RED, injury * 2.0 - 1.0)
+        c = tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+        bsdf = self.skin.node_tree.nodes.get("Principled BSDF")
+        bsdf.inputs["Base Color"].default_value = (*c, 1.0)
+        bsdf.inputs["Emission Color"].default_value = (*c, 1.0)
+        return c
+
+    def pose(self, panel, sim_time):
+        st = dummy_motion.at(panel, sim_time)
+        hx, hy, hz = self.HIP
+        self.pivot.location = (hx, hy + 0.25 * st["travel_m"], hz)
+        self.pivot.rotation_euler = (-dummy_motion.pitch_rad(st["travel_m"]), 0.0, 0.0)
+        self.neck.rotation_euler = (-dummy_motion.head_extra_rad(st["chest_g"]), 0.0, 0.0)
+        st["colour"] = self.colour(st["injury"])
+        return st
 
 
 class Ghost:
@@ -228,6 +296,7 @@ def main():
     cell_y0, cell_y1 = y0, y1
     structure_def = [Deformable(ob, nose, local_is_car_frame=True, mapper=cm.rail_fold) for ob, _ in structure]      # the rails fold like an accordion
     ghost = Ghost([o for o in parts])
+    dummy = Dummy(root)
 
     # no scene text of any kind (owner decision): the only words in the film are the narration captions burned in at assembly
     body_mats = {}
@@ -270,7 +339,9 @@ def main():
                 ob.hide_render = not show
             for ob in cell_objs:
                 ob.hide_render = True      # no box of any kind: the cabin is simply left solid while the front is see-through
-            ghost.set_factor(xf, root.location.y + nose, car_len, root.location.y + cabin_y + 0.04)
+            cf = cm.cabin_xray_factor(f)      # the cabin turns see-through after the front: the driver can be seen
+            ghost.set_factor(xf, root.location.y + nose, car_len, root.location.y + cabin_y + 0.04 - cf * (car_len + 0.8))
+            dst = dummy.pose(panel, t)
             ghost.set_tint(PAINT[panel])
             place_camera(cam, seg["camera"], f)
             bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
@@ -282,7 +353,13 @@ def main():
             em["final_pose.front_crush_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH) if seg["id"] == "C" else 0.0
             em["xray.factor"] = xf
             em["film.speed_vs_real"] = cm.film_speed(f)
-            em["cabin.solid_visible"] = 1.0 if xf >= 0.5 else 0.0
+            em["cabin.xray_factor"] = cf
+            head_co = world_to_camera_view(scene, cam, dummy.head.matrix_world @ Vector((0.0, 0.02, 0.14)))      # where the driver's head lands in the picture
+            driver_seen = bool(cf >= 0.5 and head_co.z > 0 and 0.03 < head_co.x < 0.97 and 0.03 < head_co.y < 0.97)
+            em[f"{panel}.dummy_peak_chest_g"] = dst["peak_chest_g"]
+            em[f"{panel}.dummy_injury"] = dst["injury"]
+            em[f"{panel}.dummy_travel_m"] = dst["travel_m"]
+            ev_view["driver" if panel == "crumple" else "rigid_driver"] = driver_seen
             em["nose.penetration_mm"] = max(em.get("nose.penetration_mm", 0.0), round(1000 * max(0.0, nose_world), 2))
             em["cell.max_displacement_mm"] = max(em.get("cell.max_displacement_mm", 0.0), ev["cell_mm"])
             em["caption.overlap"] = max(em.get("caption.overlap", 0.0), ev["caption_overlap"])
