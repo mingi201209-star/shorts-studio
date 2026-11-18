@@ -20,7 +20,15 @@
   [
    165,
    165
+  ],
+  [
+   200,
+   200
+  ],
+  [
+   320,
+   320
   ]
  ],
- "note": "EP.04 v21 range check: ceiling has the cabin trim colour again, liner over the windscreen, camera out of the seat back"
+ "note": "EP.04 v22 range check: interior fill light points down (it was pointing at the ceiling: white blown-out ceiling, dark driver)"
 }

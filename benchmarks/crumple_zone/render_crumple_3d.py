@@ -178,8 +178,8 @@ def build_interior(root):
     bpy.ops.object.light_add(type="AREA", location=(0.0, 0.25, 1.18))      # interior fill light: the cabin shots are lit from inside (the car body that would let the sun in is not rendered)
     lamp = bpy.context.object
     lamp.name = "Interior fill light"
-    lamp.data.energy, lamp.data.shape, lamp.data.size, lamp.data.size_y = 70.0, "RECTANGLE", 1.3, 1.1
-    lamp.rotation_euler = (math.pi, 0.0, 0.0)
+    lamp.data.energy, lamp.data.shape, lamp.data.size, lamp.data.size_y = 45.0, "RECTANGLE", 1.3, 1.1
+    lamp.rotation_euler = (0.0, 0.0, 0.0)      # an area light shines along its local -Z: unrotated it lights the seats and the driver from above (rotated by pi it lit only the roof liner, which blew out white)
     lamp.parent = root
     out.append(lamp)
     for ob in out:
