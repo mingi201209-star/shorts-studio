@@ -96,6 +96,13 @@ def test_gates_reject_bad_input():
     assert g.smoothness(np.array([0.5, 0.4, 0.4]))["status"] == "PASS"
 
 
+def test_first_contact_limit_is_finite(monkeypatch):
+    tele = [{"frame": 1, "segment": "K", "layout": "full", "crumple": {"nose_penetration_mm": 0.0, "wheel_z_gap_mm": 0.0, "stroke_m": 0.0}}]
+    assert g.telemetry_geometry(tele)["status"] == "PASS"
+    monkeypatch.setattr(cm, "first_contact_film_s", lambda seg="K": 2.6)
+    assert g.telemetry_geometry(tele)["status"] == "FAIL"
+
+
 def test_captions_match_the_narration():
     for text in captions.CURATED:
         assert captions.single_line_groups(text)

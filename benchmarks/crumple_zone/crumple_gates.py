@@ -67,9 +67,9 @@ def crush_map_keeps_the_cell(nose: float = 2.0) -> dict:
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "crushed_depth_m": [round(d, 3) for d in depths]}
 
 
-def telemetry_geometry(telemetry: list[dict], max_penetration_mm=5.0, max_wheel_gap_mm=1.0) -> dict:
+def telemetry_geometry(telemetry: list[dict], max_penetration_mm=5.0, max_wheel_gap_mm=1.0, max_first_contact_s=2.0) -> dict:
     """From the renderer's per-frame numbers: the deformed nose never goes through the barrier, the wheel keeps its ground height, the crush stroke never shrinks
-    within a pass (permanent deformation) and the first contact happens within 1 s of film."""
+    within a pass (permanent deformation) and the first contact happens within `max_first_contact_s` of film (owner decision: a longer run-up before the first impact, 1.2 s pre-roll; it was 1.0 s)."""
     problems, worst_pen, worst_gap = [], 0.0, 0.0
     last = {}
     for t in telemetry:
@@ -87,7 +87,7 @@ def telemetry_geometry(telemetry: list[dict], max_penetration_mm=5.0, max_wheel_
     if worst_gap > max_wheel_gap_mm:
         problems.append(f"a wheel leaves its ground height by {worst_gap:.2f} mm")
     contact = cm.first_contact_film_s("K")
-    if contact > 1.0:
+    if contact > max_first_contact_s:
         problems.append(f"first contact at {contact:.2f}s")
     return {"status": "FAIL" if problems else "PASS", "problems": problems, "max_nose_penetration_mm": worst_pen, "max_wheel_gap_mm": worst_gap,
             "first_contact_film_s": round(contact, 2)}

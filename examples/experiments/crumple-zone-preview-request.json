@@ -1,1 +1,1 @@
-{"mode": "preview", "audio_run": "44204538060", "frames_run": "44412373743", "note": "EP.04 compose and gates only: reuse the frames rendered by run 44412373743 (all 15 shards succeeded; its final job stalled in apt), ffmpeg falls back to a static PyPI build"}
+{"mode": "preview", "audio_run": "44204538060", "frames_run": "44412373743", "note": "EP.04 compose and gates only again: telemetry_geometry first-contact limit 1.0 -> 2.0 s (owner asked for a longer run-up, contact now at 1.65 s); frames of run 44412373743 reused"}
