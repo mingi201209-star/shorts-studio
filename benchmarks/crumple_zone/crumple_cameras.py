@@ -44,6 +44,8 @@ def _seg_tau(seconds: float, seg_id: str) -> float:
 #: interior shots (car frame, rel="car"): the car body is not rendered, only the cabin set (seats, dashboard, pillars, wheel) and the driver
 I_FACE = ((0.50, 0.62, 1.10), (-0.36, 0.18, 0.85))      # from the front passenger seat looking back at the driver's face and the steering wheel
 I_FWD = ((0.18, -0.20, 1.12), (-0.50, 0.90, 0.88))      # from between the front seats looking forward: wheel, dashboard and the wall beyond the windscreen
+IN_BEFORE = 0.9      # s: the interior shot starts this long before the rigid contact
+RAIL_CLOSE = ((-1.05, -0.55, 1.40), (-0.38, -0.55, 0.48))      # close-up of the front rails (nose-relative)
 CAR_NOSE_M = 1.926      # nose of the real sedan in its own frame (fixture geom["nose"]; a test checks it)
 DRV_SIDE = ((-2.0, 0.8, 0.95), (0.0, 0.8, 0.95))      # driver's seat, side view (camera x, y, z; target), relative to the cabin (rel="car")
 
@@ -78,11 +80,10 @@ def paths() -> dict:
         _key(k(t_fold) - 0.01, (-1.7, -1.3, 1.3), (0.0, -0.1, 0.85), 34, at=0.45, rel=True),
         _key(k(t_fold), (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                # 5 CUT ("the front folds back"): from the wall looking back along the folding flank
         _key(k(t_b3) - 0.4, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45),
-        _key(k(t_b3) + 0.6, (-2.7, -2.3, 1.5), (0.0, -0.55, 0.5), 42, at=0.46, rel=True),             # step out (never through the car) to a close three-quarter view of the front while the scan line passes: the rails fill the frame
-        _key(k(t_b3) + 2.8, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),             # higher, still close view: the folds of the rails seen from above and the side
-        _key(k(t_en) - 0.01, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),
-        _key(k(t_en), (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True, cut=True),        # CUT ("energy over a longer stop"): zoomed see-through side profile, the amber rails fold like an accordion in the middle of the frame
-        _key(k(t_b4) - 0.71, (-3.1, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),
+        _key(k(t_b3), RAIL_CLOSE[0], RAIL_CLOSE[1], 30, at=0.45, rel=True, cut=True),                      # CUT ("as the hidden rails"): CLOSE-UP of the front rails from the side while the front turns see-through
+        _key(k(t_en) - 0.01, (-0.95, -0.62, 1.35), (-0.38, -0.55, 0.48), 32, at=0.45, rel=True),         # slow dolly along the rails while they fold
+        _key(k(t_en), (-1.0, -0.25, 1.45), (-0.30, -0.55, 0.48), 34, at=0.45, rel=True, cut=True),      # CUT ("energy over a longer stop"): second close-up, from higher and in front: the zigzag of the folds
+        _key(k(t_b4) - 0.71, (-1.05, -0.38, 1.40), (-0.30, -0.55, 0.48), 34, at=0.45, rel=True),
         _key(k(t_b4) - 0.7, I_FACE[0], I_FACE[1], 30, at=0.42, rel="car", cut=True, interior=True),    # CUT ("quietly keeps its"): the INTERIOR, rendered without the car body: the driver seen from the front passenger seat
         _key(k(cue("Pillars doors and roof")) - 0.01, (0.48, 0.52, 1.08), I_FACE[1], 30, at=0.42, rel="car", interior=True),     # slow move
     ]
@@ -93,9 +94,12 @@ def paths() -> dict:
     r_con = r(cue(cm.RIGID_CONTACT_CUE))
     R = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
-        _key(r_con - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r_con, I_FACE[0], I_FACE[1], 30, at=0.42, rel="car", cut=True, interior=True),            # CUT at the contact ("stops almost instantly"): the SAME interior view as in the first crash, the driver lunges at the wheel
-        _key(r_con + 1.4 - 0.01, (0.48, 0.52, 1.08), I_FACE[1], 30, at=0.42, rel="car", interior=True),  # slow move while the car stops and turns round
+        _key(r_con - IN_BEFORE - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
+        _key(r_con - IN_BEFORE, I_FWD[0], I_FWD[1], 20, at=0.42, rel="car", cut=True, interior=True),   # CUT before the impact: inside the cabin the viewer waits for the crash: the wall comes towards the windscreen, the driver sits at the wheel
+        _key(r_con - 0.01, (0.10, -0.20, 1.12), I_FWD[1], 20, at=0.42, rel="car", interior=True),
+        _key(r_con + 0.5, (0.12, -0.15, 1.12), I_FWD[1], 20, at=0.42, rel="car", interior=True),       # the impact happens in this shot: the driver lunges at the wheel
+        _key(r_con + 0.51, I_FACE[0], I_FACE[1], 30, at=0.42, rel="car", cut=True, interior=True),     # CUT: face view of the driver thrown at the wheel (the shirt turns red)
+        _key(r_con + 1.4 - 0.01, (0.48, 0.52, 1.08), I_FACE[1], 30, at=0.42, rel="car", interior=True),
         _key(r_con + 1.4, I_FWD[0], I_FWD[1], 20, at=0.42, rel="car", cut=True, interior=True),        # CUT ("and bounces back"): forward view through the windscreen: the wall falls away
     ]
     C = [
