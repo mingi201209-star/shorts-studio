@@ -390,8 +390,8 @@
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "With the front fully crushed the whole car is seen with its green safety cell unchanged",
-    "onset_metric": "cell.highlight",
+    "description": "With the front fully crushed the whole car is seen with its solid cabin unchanged next to the crushed see-through front",
+    "onset_metric": "cabin.solid_visible",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
@@ -431,11 +431,11 @@
      "value": 1.0
     },
     {
-     "id": "s04a-cage-on",
-     "description": "the cage is on screen during the whole sentence",
+     "id": "s04a-cabin-solid",
+     "description": "the front is see-through and the cabin solid on screen during the whole sentence",
      "kind": "metric_at_least",
      "criterion": "timing",
-     "metric": "cell.highlight",
+     "metric": "cabin.solid_visible",
      "value": 0.99
     },
     {
@@ -467,7 +467,7 @@
    "phenomenon": {
     "kind": "protected_cell_highlight",
     "description": "The orbit shows the cabin from other sides: pillars, doors and roof line are exactly where they were",
-    "onset_metric": "cell.highlight",
+    "onset_metric": "cabin.solid_visible",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
@@ -507,11 +507,11 @@
      "value": 1.0
     },
     {
-     "id": "s04b-cage-on",
-     "description": "the cage is on screen during the whole sentence",
+     "id": "s04b-cabin-solid",
+     "description": "the front is see-through and the cabin solid on screen during the whole sentence",
      "kind": "metric_at_least",
      "criterion": "timing",
-     "metric": "cell.highlight",
+     "metric": "cabin.solid_visible",
      "value": 0.99
     },
     {
@@ -649,6 +649,14 @@
      "criterion": "action_performed",
      "metric": "rigid.stroke_m",
      "value": 0.06
+    },
+    {
+     "id": "s05b-rails-straight",
+     "description": "the rails of the rigid car stay (nearly) straight: they shorten by less than 8 cm while the first car's rails folded by more than 50 cm",
+     "kind": "metric_at_most",
+     "criterion": "physically_consistent",
+     "metric": "rigid.rails_shortening_m",
+     "value": 0.08
     },
     {
      "id": "s05b-no-penetration",
@@ -828,8 +836,8 @@
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "The body turns see-through and the green cage shows the cabin unchanged",
-    "onset_metric": "cell.highlight",
+    "description": "The front turns see-through and the solid cabin stays unchanged behind the crushed rails",
+    "onset_metric": "cabin.solid_visible",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
@@ -854,7 +862,7 @@
     },
     {
      "id": "s06b-cage",
-     "description": "the see-through body shows the cage (scan line completes)",
+     "description": "the front turns see-through (scan line completes)",
      "kind": "metric_reaches",
      "criterion": "action_performed",
      "metric": "xray.factor",
@@ -870,10 +878,10 @@
     },
     {
      "id": "s06b-onset",
-     "description": "the cage appears when 'but the cabin is not' is spoken",
+     "description": "the see-through front appears when 'but the cabin is not' is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
-     "metric": "cell.highlight",
+     "metric": "cabin.solid_visible",
      "onset_threshold": 0.5,
      "value": 1.0
     },
@@ -887,7 +895,7 @@
     },
     {
      "id": "s06b-sound-off",
-     "description": "with the sound off the cage shows the cabin untouched",
+     "description": "with the sound off the solid cabin is seen untouched behind the crushed see-through front",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }

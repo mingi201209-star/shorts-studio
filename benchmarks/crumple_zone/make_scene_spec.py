@@ -43,18 +43,18 @@ S.append(scene("s03b",3,"Rails absorb the crash energy over a longer stop","Rail
   chk("s03b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   noobs("s03b"),mute("s03b","with the sound off the beams are seen folding up until the car stops")]))
 S.append(scene("s04a",3,"while the cabin quietly keeps its whole shape.","quietly keeps its",["safety_cell","whole_car"],"protected_cell_highlight",
- "With the front fully crushed the whole car is seen with its green safety cell unchanged","cell.highlight",0.5,{"kind":"K","movement":"the camera pulls back to the whole car and starts a slow orbit"},["protected_cell_highlight"],
+ "With the front fully crushed the whole car is seen with its solid cabin unchanged next to the crushed see-through front","cabin.solid_visible",0.5,{"kind":"K","movement":"the camera pulls back to the whole car and starts a slow orbit"},["protected_cell_highlight"],
  [subj("s04a",["safety_cell","whole_car"],0.8),
   chk("s04a-front-crushed","the front is crushed by at least 80 cm of structure while the cell is shown","metric_reaches","action_performed",metric="crumple.crushed_depth_m",value=0.8),
   chk("s04a-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
-  chk("s04a-cage-on","the cage is on screen during the whole sentence","metric_at_least","timing",metric="cell.highlight",value=0.99),
+  chk("s04a-cabin-solid","the front is see-through and the cabin solid on screen during the whole sentence","metric_at_least","timing",metric="cabin.solid_visible",value=0.99),
   noobs("s04a"),mute("s04a","with the sound off the crushed front and the intact cabin are seen together")]))
 S.append(scene("s04b",4,"Pillars doors and roof stay exactly put","Pillars doors and roof",["safety_cell","whole_car"],"protected_cell_highlight",
- "The orbit shows the cabin from other sides: pillars, doors and roof line are exactly where they were","cell.highlight",0.5,{"kind":"K","movement":"slow orbit around the deformed car"},["protected_cell_highlight"],
+ "The orbit shows the cabin from other sides: pillars, doors and roof line are exactly where they were","cabin.solid_visible",0.5,{"kind":"K","movement":"slow orbit around the deformed car"},["protected_cell_highlight"],
  [subj("s04b",["safety_cell","whole_car"],0.8),
   chk("s04b-front-still-crushed","the crushed front is still seen (the cabin is compared with it)","metric_reaches","action_performed",metric="crumple.crushed_depth_m",value=0.8),
   chk("s04b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
-  chk("s04b-cage-on","the cage is on screen during the whole sentence","metric_at_least","timing",metric="cell.highlight",value=0.99),
+  chk("s04b-cabin-solid","the front is see-through and the cabin solid on screen during the whole sentence","metric_at_least","timing",metric="cabin.solid_visible",value=0.99),
   noobs("s04b"),mute("s04b","with the sound off the cabin keeps its outline while the front is wrecked")]))
 S.append(scene("s05a",4,"and now a rigid front rolls toward the same wall.","and now a rigid",["rigid_car_front"],"rigid_stop_rebound",
  "A different (blue) car with a rigid front drives into the same wall at the same speed: tracked approach","nose.world_y_m",-7.0,{"kind":"R","movement":"tracking shot of the approach from the same camera start as the first crash"},["rigid_stop_rebound","approach_run_up"],
@@ -67,6 +67,7 @@ S.append(scene("s05b",5,"It has almost nothing to crush so it stops almost insta
  [subj("s05b",["rigid_car_front"],0.8),
   chk("s05b-onset","the rigid car touches the wall when 'almost instantly' is spoken","onset_near_cue","timing",metric="rigid.stroke_m",onset_threshold=0.01,value=0.6),
   chk("s05b-short","the rigid car crushes by less than 6 cm","metric_at_most","action_performed",metric="rigid.stroke_m",value=0.06),
+  chk("s05b-rails-straight","the rails of the rigid car stay (nearly) straight: they shorten by less than 8 cm while the first car's rails folded by more than 50 cm","metric_at_most","physically_consistent",metric="rigid.rails_shortening_m",value=0.08),
   chk("s05b-no-penetration","the nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s05b"),mute("s05b","with the sound off the blue car stops dead at the wall")]))
 S.append(scene("s05c",5,"and bounces back off the wall.","and bounces back",["rigid_car_front"],"rigid_stop_rebound",
@@ -83,12 +84,12 @@ S.append(scene("s06a",6,"The front is meant to deform and absorb the whole crash
   chk("s06a-onset","the closing view starts when the sentence starts","onset_near_cue","timing",metric="final_pose.front_crush_m",onset_threshold=0.5,value=0.5),
   noobs("s06a"),mute("s06a","with the sound off the wrecked front of the first car is shown")]))
 S.append(scene("s06b",6,"but the cabin is not.","but the cabin is not.",["safety_cell"],"protected_cell_highlight",
- "The body turns see-through and the green cage shows the cabin unchanged","cell.highlight",0.5,{"kind":"C","movement":"slow push towards the cabin as the scan line passes"},["protected_cell_highlight","xray_reveal"],
+ "The front turns see-through and the solid cabin stays unchanged behind the crushed rails","cabin.solid_visible",0.5,{"kind":"C","movement":"slow push towards the cabin as the scan line passes"},["protected_cell_highlight","xray_reveal"],
  [subj("s06b",["safety_cell"],0.6),
-  chk("s06b-cage","the see-through body shows the cage (scan line completes)","metric_reaches","action_performed",metric="xray.factor",value=0.99),
+  chk("s06b-cage","the front turns see-through (scan line completes)","metric_reaches","action_performed",metric="xray.factor",value=0.99),
   chk("s06b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
-  chk("s06b-onset","the cage appears when 'but the cabin is not' is spoken","onset_near_cue","timing",metric="cell.highlight",onset_threshold=0.5,value=1.0),
-  noobs("s06b"),mute("s06b","with the sound off the cage shows the cabin untouched")]))
+  chk("s06b-onset","the see-through front appears when 'but the cabin is not' is spoken","onset_near_cue","timing",metric="cabin.solid_visible",onset_threshold=0.5,value=1.0),
+  noobs("s06b"),mute("s06b","with the sound off the solid cabin is seen untouched behind the crushed see-through front")]))
 spec={"episode":"ep04-crumple-zone","title":"This Car Is Designed to Crush.","target_seconds":32.0,"narration":beats,"scenes":S,
  "assumptions":["Scope (owner, 2026-11-16/17): no on-screen text except the narration captions; no bars, arrows or occupant; X-ray only where the rails are hidden (continuing the same crash, never a replay); the two crashes are shown once each, one after the other, full screen.",
   "The film is slow motion with a changing time scale (run-up at real speed, crash roughly 200x slower, bounce at a readable speed); both cars use the same crush time scale. Illustrative simulation, not a calibrated crash test; stated in the description file, not on screen.",

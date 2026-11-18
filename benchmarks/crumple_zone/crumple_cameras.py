@@ -60,11 +60,11 @@ def paths() -> dict:
         _key(k(t_fold) - 0.01, (-1.7, -1.3, 1.3), (0.0, -0.1, 0.85), 34, at=0.45, rel=True),
         _key(k(t_fold), (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                # 5 CUT ("the front folds back"): from the wall looking back along the folding flank
         _key(k(t_b3) - 0.4, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45),
-        _key(k(t_b3) + 0.6, (-3.2, -3.2, 2.6), (0.0, -0.7, 0.45), 34, at=0.48, rel=True),             # step out and up (never through the car) while the scan line passes
-        _key(k(t_b3) + 2.8, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),             # high chase view over the folding rails, the whole car in frame
-        _key(k(t_en) - 0.01, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),
-        _key(k(t_en), (-3.6, -1.4, 1.0), (0.0, -1.4, 0.6), 30, at=0.46, cut=True),                   # CUT ("energy over a longer stop"): fixed see-through side profile, the amber rails shorten along the car
-        _key(k(t_b4) - 0.71, (-3.6, -1.4, 1.0), (0.0, -1.4, 0.6), 30, at=0.46),
+        _key(k(t_b3) + 0.6, (-2.7, -2.3, 1.5), (0.0, -0.55, 0.5), 42, at=0.46, rel=True),             # step out (never through the car) to a close three-quarter view of the front while the scan line passes: the rails fill the frame
+        _key(k(t_b3) + 2.8, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),             # higher, still close view: the folds of the rails seen from above and the side
+        _key(k(t_en) - 0.01, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),
+        _key(k(t_en), (-3.4, -0.68, 0.9), (0.0, -0.68, 0.5), 70, at=0.46, rel=True, cut=True),        # CUT ("energy over a longer stop"): zoomed see-through side profile, the amber rails fold like an accordion in the middle of the frame
+        _key(k(t_b4) - 0.71, (-3.1, -0.68, 0.9), (0.0, -0.68, 0.5), 70, at=0.46, rel=True),
     ]
     _o = _orbit(k(t_b4) - 0.7, k(t_b5) - 0.01, (0.0, -1.6), 4.1, 3.6, 1.5, 51.0, -15.0, 34, n=8, at=0.45)
     _o[0]["cut"] = True      # CUT ("quietly keeps its"): orbit round the finished front starts
@@ -73,10 +73,10 @@ def paths() -> dict:
     R = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
         _key(r(cue("It has almost nothing")) - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r(cue("It has almost nothing")), (-2.4, -2.1, 1.0), (0.0, -0.1, 0.55), 30, at=0.45, rel=True, cut=True),   # CUT ("it has almost nothing to crush"): low close view of the plain rigid front
-        _key(r_con - 0.01, (-2.4, -2.1, 1.0), (0.0, -0.1, 0.55), 30, at=0.45, rel=True),
-        _key(r_con, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),                    # CUT at contact ("it stops almost instantly"): the same fixed side profile as the first crash
-        _key(r_con + 1.4 - 0.01, (-2.9, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),      # a slow push-in of 0.3 m while the car stops and turns round: no instant of the clip is a still image
+        _key(r(cue("It has almost nothing")), (-3.4, -0.68, 0.9), (0.0, -0.68, 0.5), 70, at=0.46, rel=True, cut=True),   # CUT ("it has almost nothing to crush"): the SAME zoomed side view as the first crash, the front turns see-through: its rails stay straight
+        _key(r_con - 0.01, (-3.4, -0.68, 0.9), (0.0, -0.68, 0.5), 70, at=0.46, rel=True),
+        _key(r_con + 0.01, (-3.3, -0.68, 0.9), (0.0, -0.68, 0.5), 70, at=0.46, rel=True),            # no cut at contact: the same view goes on, the viewer watches the rigid front stop
+        _key(r_con + 1.4 - 0.01, (-3.0, -0.68, 0.9), (0.0, -0.68, 0.5), 70, at=0.46, rel=True),      # a slow push-in of 0.4 m while the car stops and turns round: no instant of the clip is a still image
         _key(r_con + 1.4, (-5.5, -2.4, 1.5), (0.0, -2.2, 0.6), 28, at=0.45, cut=True),               # CUT ("and bounces back"): fixed wide side view, the wall at the left and the car leaving it, the gap widening
     ]
     C = [

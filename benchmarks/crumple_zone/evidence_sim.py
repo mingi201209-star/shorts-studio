@@ -43,7 +43,7 @@ class Car:
 def deformed_geometry(car: Car, s: float) -> dict:
     """Everything the crash moves, in the car frame, for crush stroke s."""
     zone = [cm.crush_map(z, s, car.nose) for z in car.zone]
-    tubes = {n: (cm.crush_map(v, s, car.nose) if car.structure[n]["deforms"] else v) for n, v in car.tubes.items()}
+    tubes = {n: (cm.rail_fold(v, s, car.nose) if car.structure[n]["deforms"] else v) for n, v in car.tubes.items()}
     wheels = {}
     for key, base in car.wheels.items():
         y_new = cm.wheel_y(float(base[1]), s, car.nose, TYRE_RADIUS) if key.startswith("front") else float(base[1])
@@ -56,7 +56,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
     seg = cm.segment_at(frame)
     xf = cm.xray_factor(frame)
     cam = ccams.camera(seg["camera"], frame)
-    metrics, in_view, panels = {"film.speed_vs_real": cm.film_speed(frame), "xray.factor": xf, "cell.highlight": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the green safety-cell cage is drawn together with the ghost body
+    metrics, in_view, panels = {"film.speed_vs_real": cm.film_speed(frame), "xray.factor": xf, "cabin.solid_visible": 1.0 if xf >= 0.5 else 0.0}, {}, {}      # the front is see-through, the cabin stays solid and opaque (no box is drawn)
     for panel in cm.visible_panels(frame):
         ps = cm.pose(frame, panel)
         d, s = ps["d"], ps["s"]
@@ -84,7 +84,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
             q = ccams.project(np.array([p], float) + shift, cam, seg["layout"])[0]
             return bool(q[2] > 0 and margin < q[0] < 1 - margin and margin < q[1] < 1 - margin)
 
-        ghost_on = xf >= 0.5 and panel == "crumple"
+        ghost_on = xf >= 0.5
         rail = g["tubes"]["rail -0.38"]
         rail0 = car.tubes["rail -0.38"]
         shortening = float(rail0[:, 1].max() - rail0[:, 1].min()) - float(rail[:, 1].max() - rail[:, 1].min())
@@ -111,6 +111,8 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
         else:
             in_view["rigid_car_front"] = views["car_front"]
             in_view["rigid_whole_car"] = views["whole_car"]
+            in_view["rigid_crush_rails"] = views["crush_rails"]
+            metrics["rigid.rails_shortening_m"] = shortening
             metrics["rigid.rebound_m"] = cm.rebound_distance(d, s)
             metrics["rigid.speed_away_mps"] = max(0.0, -ps["v"])
         in_view["barrier"] = in_view.get("barrier", False) or views["barrier"]

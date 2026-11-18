@@ -1,1 +1,1 @@
-{"mode":"range","quality":"final","ranges":[[330,330],[724,724]],"note":"EP.04 native 1080x1920 (24 samples) timing and pipeline check on 2 frames before the full native render"}
+{"mode": "range", "ranges": [[215, 215], [260, 260], [330, 330], [380, 380], [450, 450], [700, 700], [725, 725], [745, 745], [775, 775], [940, 940]], "note": "EP.04 v4 range check: no cyan box (solid cabin, see-through front only), rails fold like an accordion and are thicker, zoomed see-through side view for BOTH crashes (first car folds the rails, rigid car keeps them straight)"}

@@ -117,8 +117,8 @@ class Ghost:
         for bsdf, col in self.paints:
             bsdf.inputs["Base Color"].default_value = (min(1.0, col[0] * mult[0]), min(1.0, col[1] * mult[1]), min(1.0, col[2] * mult[2]), col[3])
 
-    def set_factor(self, xf, y_nose, car_length):
-        wipe = y_nose + 0.6 - (0.6 + car_length + 0.4) * xf        # the line runs from just ahead of the nose to behind the tail
+    def set_factor(self, xf, y_nose, car_length, y_floor=-1e9):
+        wipe = max(y_floor, y_nose + 0.6 - (0.6 + car_length + 0.4) * xf)        # the line runs from just ahead of the nose back to the passenger cell (y_floor): the cabin is never made see-through
         for w in self.wipes:
             w.outputs[0].default_value = wipe
 
@@ -126,7 +126,8 @@ class Ghost:
 class Deformable:
     """A mesh whose vertices are driven by the crush map: rest positions in the car frame, the object's own matrix to go back to local coordinates."""
 
-    def __init__(self, ob, nose, local_is_car_frame=False):
+    def __init__(self, ob, nose, local_is_car_frame=False, mapper=None):
+        self.mapper = mapper or cm.crush_map
         mesh = ob.data
         if mesh.users > 1:
             ob.data = mesh = mesh.copy()
@@ -149,7 +150,7 @@ class Deformable:
         self.sub = self.p0[:0]
         if len(self.idx) == 0:
             return self.sub
-        sub = cm.crush_map(self.p0[self.idx], s, nose)
+        sub = self.mapper(self.p0[self.idx], s, nose)
         self.sub = sub
         out = self.local0.copy()
         out[self.idx] = (sub - self.t) @ self.minv.T
@@ -225,7 +226,7 @@ def main():
         (structure if it["deforms"] else cell_objs).append(ob if not it["deforms"] else (ob, v0))
     hx, y1, y0, z0, z1 = 0.74, cabin_y - 0.05, cabin_y - 1.95, 0.40, 1.22
     cell_y0, cell_y1 = y0, y1
-    structure_def = [Deformable(ob, nose, local_is_car_frame=True) for ob, _ in structure]
+    structure_def = [Deformable(ob, nose, local_is_car_frame=True, mapper=cm.rail_fold) for ob, _ in structure]      # the rails fold like an accordion
     ghost = Ghost([o for o in parts])
 
     # no scene text of any kind (owner decision): the only words in the film are the narration captions burned in at assembly
@@ -264,12 +265,12 @@ def main():
                 y_new = cm.wheel_y(float(wh["base"].y), s, nose, wheel_r) if key.startswith("front") else float(wh["base"].y)
                 wh["node"].location = (wh["base"].x, y_new, wh["base"].z)
                 wh["node"].rotation_euler = (-d / wheel_r, 0, 0)
-            show = xf > 0.02 and panel == "crumple"
+            show = xf > 0.02      # both crashes get the same see-through front: the rails of the first car fold, the rails of the rigid car stay straight
             for ob, _ in structure:
                 ob.hide_render = not show
             for ob in cell_objs:
-                ob.hide_render = not show
-            ghost.set_factor(xf, root.location.y + nose, car_len)
+                ob.hide_render = True      # no box of any kind: the cabin is simply left solid while the front is see-through
+            ghost.set_factor(xf, root.location.y + nose, car_len, root.location.y + cabin_y + 0.04)
             ghost.set_tint(PAINT[panel])
             place_camera(cam, seg["camera"], f)
             bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
@@ -281,7 +282,7 @@ def main():
             em["final_pose.front_crush_m"] = min(s / cm.COMPACTION, cm.CRUSH_LENGTH) if seg["id"] == "C" else 0.0
             em["xray.factor"] = xf
             em["film.speed_vs_real"] = cm.film_speed(f)
-            em["cell.highlight"] = 1.0 if xf >= 0.5 else 0.0
+            em["cabin.solid_visible"] = 1.0 if xf >= 0.5 else 0.0
             em["nose.penetration_mm"] = max(em.get("nose.penetration_mm", 0.0), round(1000 * max(0.0, nose_world), 2))
             em["cell.max_displacement_mm"] = max(em.get("cell.max_displacement_mm", 0.0), ev["cell_mm"])
             em["caption.overlap"] = max(em.get("caption.overlap", 0.0), ev["caption_overlap"])
@@ -296,6 +297,8 @@ def main():
             else:
                 ev_view["rigid_car_front"] = ev["in_view"]["car_front"]
                 ev_view["rigid_whole_car"] = ev["whole_car"]
+                ev_view["rigid_crush_rails"] = ev["in_view"]["crush_rails"]
+                em["rigid.rails_shortening_m"] = ev["rail_shortening"]
                 em["rigid.speed_away_mps"] = max(0.0, -ps["v"])
                 em["rigid.rebound_m"] = cm.rebound_distance(d, s)
             ev_view["barrier"] = ev_view.get("barrier", False) or ev["in_view"]["barrier"]
@@ -356,7 +359,7 @@ def measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y
     off, h = PANEL_ROWS[seg["layout"]][panel]
     top, bottom = off + (1 - y1_) * h, off + (1 - y0_) * h
     overlap = max(0.0, min(bottom, CAPTION_ROWS[1]) - max(top, CAPTION_ROWS[0])) / max(1.0, bottom - top)
-    ghost_on = xf >= 0.5 and panel == "crumple"
+    ghost_on = xf >= 0.5
     cell_c = (0.0, 0.5 * (cell_span[0] + cell_span[1]), 0.8)
     whole = all(inside((0.0, y, 0.5)) for y in (nose - s, -TAIL["m"]))
     return {"cell_mm": cell_mm, "rise_m": rise, "whole_car": whole, "rail_shortening": shortening, "caption_overlap": round(overlap, 3),

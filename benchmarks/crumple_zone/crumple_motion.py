@@ -93,6 +93,26 @@ def crush_map(p0: np.ndarray, s: float, nose: float, length: float = CRUSH_LENGT
     return p
 
 
+FOLDS = 4                    # accordion folds of the crush rails inside the crushed zone
+FOLD_AMPLITUDE = 0.11        # m: how far a fold swings up and down (the rail tube radius is 0.065 m)
+
+
+def rail_fold(p0: np.ndarray, s: float, nose: float, length: float = CRUSH_LENGTH, rho: float = COMPACTION) -> np.ndarray:
+    """The crush rails and the bumper beam: the same squeeze along the car as crush_map, plus an accordion: the rail buckles into alternating up and down folds that get deeper and
+    tighter as the compression grows (a plain squeeze would only make the tube shorter, which cannot be seen). Points ahead of the crushed zone and behind it do not fold."""
+    p = crush_map(p0, s, nose, length, rho)
+    d_c = min(s / rho, length)
+    if d_c <= 1e-9:
+        return p
+    depth = nose - p0[:, 1]
+    inside = (depth > -0.05) & (depth < d_c)
+    u = np.clip(depth / d_c, 0.0, 1.0)
+    amp = FOLD_AMPLITUDE * min(1.0, d_c / 0.30)
+    dz = amp * np.sin(2.0 * np.pi * FOLDS * u) * np.sin(np.pi * u) ** 0.6
+    p[:, 2] = np.where(inside, p[:, 2] + dz, p[:, 2])
+    return p
+
+
 def wheel_y(y_wheel: float, s: float, nose: float, radius: float = 0.281, clearance: float = 0.02) -> float:
     """Front wheel position after a crush of stroke s: the tyre is rigid, so once the crushed nose line (nose - s) reaches the front of the tyre the wheel is pushed back with it
     (it never ends up in front of the crushed nose, i.e. never through the barrier)."""
@@ -310,6 +330,7 @@ def _tau(seconds: float, seg_id: str) -> float:
 #: ghost-body factor keys per segment (film seconds since the segment start, factor): the scan line starts when the hidden rails are named and runs while the crash goes on
 XRAY_KEYS: dict[str, tuple] = {
     "K": ((0.0, 0.0), (_tau(cue_start("as the hidden rails"), "K"), 0.0), (_tau(cue_start("as the hidden rails"), "K") + 1.8, 1.0)),
+    "R": ((0.0, 0.0), (_tau(cue_start("It has almost nothing"), "R"), 0.0), (_tau(cue_start("It has almost nothing"), "R") + 1.2, 1.0)),
     "C": ((0.0, 0.0), (_tau(cue_start("but the cabin is not."), "C") - 1.0, 0.0), (_tau(cue_start("but the cabin is not."), "C") + 0.6, 1.0)),
 }
 
