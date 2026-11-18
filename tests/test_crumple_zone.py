@@ -127,4 +127,4 @@ def test_the_two_cars_are_told_apart_by_paint_not_by_words():
 
 def test_the_workflow_covers_every_frame_and_uses_the_frozen_audio_when_asked():
     wf = (ROOT / ".github/workflows/ep04-crumple-preview.yml").read_text()
-    assert '["target_seconds"] * 30' in wf and "audio_run" in wf
+    assert '["target_seconds"] + c.get("preroll_s", 0.0))' in wf and "* 30" in wf and "audio_run" in wf      # target seconds plus the pre-roll, times 30 fps
