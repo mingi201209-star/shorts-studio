@@ -265,7 +265,7 @@ SEGMENTS = [
     {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
      "contact_film_s": HOOK_CONTACT_S, "xray_keys": ()},
     {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_m": 8.0,
-     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] + 0.0005, T_STOP["rigid"] + 0.004, 0.6), "xray_keys": ()},
+     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] - 0.0006, T_STOP["rigid"] + 0.003, 0.6), "xray_keys": ()},
     {"id": "C", "first": _F_CLOSE, "last": TOTAL_FRAMES, "panels": ("crumple",), "layout": "full", "camera": "C", "r0": R0, "approach_m": 0.0,
      "contact_film_s": 0.0, "static_t": 1.0, "xray_keys": ()},
 ]
