@@ -37,6 +37,8 @@ def arguments():
     p.add_argument("--start", type=int, default=0)
     p.add_argument("--end", type=int, default=0)
     p.add_argument("--preview", action="store_true")
+    p.add_argument("--res-scale", type=float, default=0.0)      # e.g. 0.6667: 720x1280 instead of the native 1080x1920 (0 = native, or 1/3 with --preview)
+    p.add_argument("--samples", type=int, default=0)      # 0 = 24 (native) or 7 (preview)
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
 
@@ -308,7 +310,7 @@ def main():
     k = 3 if args.preview else 1
     scene.render.engine = "CYCLES"
     scene.cycles.device = "CPU"
-    scene.cycles.samples = 7 if args.preview else 24
+    scene.cycles.samples = args.samples or (7 if args.preview else 24)
     scene.cycles.use_denoising = True
     scene.render.resolution_percentage = 100
     scene.render.image_settings.file_format = "PNG"
@@ -382,7 +384,7 @@ def main():
         t0 = time.time()
         seg = cm.segment_at(f)
         w, h = SIZES[seg["layout"]]
-        scene.render.resolution_x, scene.render.resolution_y = w // k, h // k
+        scene.render.resolution_x, scene.render.resolution_y = (round(w * args.res_scale), round(h * args.res_scale)) if args.res_scale else (w // k, h // k)
         t = cm.frame_time(f)
         xf = cm.xray_factor(f)
         info = {"frame": f, "segment": seg["id"], "camera": seg["camera"], "layout": seg["layout"], "sim_time": round(t, 5), "xray": round(xf, 3)}

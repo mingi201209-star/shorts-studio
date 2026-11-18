@@ -1,1 +1,1 @@
-{"mode": "preview", "audio_run": "44204538060", "frames_run": "44412373743", "note": "EP.04 compose and gates only again: telemetry_geometry first-contact limit 1.0 -> 2.0 s (owner asked for a longer run-up, contact now at 1.65 s); frames of run 44412373743 reused"}
+{"mode": "range", "ranges": [[330, 330], [724, 724]], "res_scale": 0.6667, "samples": 12, "sheet_tile": 540, "note": "EP.04 720x1280 comparison A: 12 samples, frames 330 (see-through) and 724 (normal); time per frame is in the job step durations"}

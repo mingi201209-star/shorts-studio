@@ -24,6 +24,7 @@ jobs:
       audio_run: ${{ steps.p.outputs.audio_run }}
       frames_run: ${{ steps.p.outputs.frames_run }}
       flag: ${{ steps.p.outputs.flag }}
+      tile: ${{ steps.p.outputs.tile }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - id: p
@@ -43,7 +44,9 @@ jobs:
                   include.append({"start": s, "end": min(s + size - 1, hi)})
           print("mode=" + mode)
           final = req.get("quality") == "final"      # native 1080x1920, 24 samples, 3-frame shards (a see-through frame takes tens of minutes at native size; the job limit is 80 min); the default is the 1/3-resolution, 7-sample preview
-          print("flag=" + ("" if final else "--preview"))
+          extra = (" --res-scale " + str(float(req["res_scale"])) if req.get("res_scale") else "") + (" --samples " + str(int(req["samples"])) if req.get("samples") else "")      # optional smaller master, e.g. 720x1280 with fewer samples
+          print("flag=" + ("" if final else "--preview") + extra)
+          print("tile=" + str(int(req.get("sheet_tile", 270))))
           print("frames_run=" + str(req.get("frames_run", "")))      # reuse the panel shards of an earlier run (same picture code): only the composing and the gates run again
           print("audio_run=" + str(req.get("audio_run", "")))      # a frozen audio capture (artifact of an earlier audio-cues run): the picture is planned on exactly that timing
           print("shards=" + str(len(include)))
@@ -208,6 +211,8 @@ jobs:
         id: range
         if: needs.plan.outputs.mode == 'range'
         continue-on-error: true
+        env:
+          EP04_SHEET_TILE: ${{ needs.plan.outputs.tile }}
         run: |
           set -euo pipefail
           PYTHONPATH="$PWD" python benchmarks/crumple_zone/check_range.py --panels "$RUNNER_TEMP/native" --out "$RUNNER_TEMP/final"
