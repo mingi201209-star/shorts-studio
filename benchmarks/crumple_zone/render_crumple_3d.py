@@ -147,7 +147,7 @@ def build_interior(root):
     seat = material("Interior seat", (0.16, 0.26, 0.40), rough=0.7)
     trim = material("Interior trim", (0.34, 0.42, 0.52), rough=0.6)
     dark = material("Interior dark", (0.09, 0.10, 0.13), rough=0.8)
-    liner = material("Interior liner", (0.12, 0.14, 0.18), rough=0.9)      # the roof lining must not blow out white at the top of the forward view
+    liner = trim                                                         # the roof lining has the same colour as the rest of the cabin trim (a darker ceiling looked wrong)
     out = []
 
     def box(name, loc, size, mat):
