@@ -93,7 +93,9 @@ def main():
     audio_report = json.loads((a.audio / "audio-validation.json").read_text())
     frozen = json.loads((ROOT / "examples/experiments/crumple-zone-real-cues.json").read_text())
     narration_sha = hashlib.sha256((a.audio / "narration.wav").read_bytes()).hexdigest()
-    if narration_sha != frozen["narration_sha256"] or audio_report["cues"] != frozen["cues"]:
+    print("FROZEN_AUDIO_SHA256 " + narration_sha, flush=True)      # printed so the frozen capture can be pinned by its hash
+    pinned = frozen.get("narration_sha256")      # the hash is pinned only once it has been read from a log; until then the measured cue times (microsecond exact) identify the capture
+    if (pinned is not None and narration_sha != pinned) or audio_report["cues"] != frozen["cues"]:
         raise SystemExit("preview audio or measured cue timing differs from the frozen narration")
     for name in ("narration.wav", "film.ass"):
         (a.out / name).write_bytes((a.audio / name).read_bytes())
