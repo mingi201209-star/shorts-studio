@@ -174,7 +174,7 @@ def build_interior(root):
         ob, _ = tube(f"Interior A pillar {sx}", (0.76 * sx, 0.98, 0.84), (0.76 * sx, 0.36, 1.24), 0.045, trim, root, n_seg=10, n_ring=2)
         out.append(ob)
     box("Interior roof header", (0.0, 0.36, 1.25), (1.56, 0.08, 0.06), liner)
-    box("Interior roof liner", (0.0, -0.10, 1.27), (1.56, 0.9, 0.04), liner)
+    box("Interior roof liner", (0.0, 0.30, 1.27), (1.56, 1.8, 0.04), liner)      # reaches over the windscreen top so no open sky shows above the wall
     bpy.ops.object.light_add(type="AREA", location=(0.0, 0.25, 1.18))      # interior fill light: the cabin shots are lit from inside (the car body that would let the sun in is not rendered)
     lamp = bpy.context.object
     lamp.name = "Interior fill light"

@@ -79,7 +79,7 @@ def paths() -> dict:
         _key(k(t_slow), (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True, cut=True),      # 3 CUT ("and we slow that"): high three-quarter view of the hood and the front wheel
         _key(k(cue("way down to watch it")) - 0.01, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),
         _key(k(cue("way down to watch it")), I_FWD[0], I_FWD[1], 20, at=0.42, rel="car", cut=True, interior=True),   # CUT ("way down to watch it"): INSIDE the cabin during the crash: the wall creeps closer to the windscreen while the nose crushes, the belted driver sits at the wheel
-        _key(k(t_b2) - 0.01, (0.10, -0.30, 1.12), I_FWD[1], 20, at=0.42, rel="car", interior=True),
+        _key(k(t_b2) - 0.01, (0.08, -0.08, 1.12), I_FWD[1], 20, at=0.42, rel="car", interior=True),
         _key(k(t_b2), (-1.7, -1.3, 1.3), (0.0, -0.1, 0.85), 34, at=0.45, rel=True, cut=True),       # 4 CUT ("The hood buckles"): raised front-left view that sees the hood top and the nose
         _key(k(t_fold) - 0.01, (-1.7, -1.3, 1.3), (0.0, -0.1, 0.85), 34, at=0.45, rel=True),
         _key(k(t_fold), (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                # 5 CUT ("the front folds back"): from the wall looking back along the folding flank
