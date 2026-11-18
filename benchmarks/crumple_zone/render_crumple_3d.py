@@ -66,8 +66,15 @@ class Dummy:
 
     def __init__(self, root):
         hx, hy, hz = self.HIP
-        self.skin = material("Driver chest and head", self.GREEN, rough=0.45, emission=0.35)
-        limb = material("Driver limbs", (0.30, 0.30, 0.32), rough=0.6)
+        # Same driver as the Rumble episode (benchmarks/road_safety/render_driver_insert.py): blue shirt, brown skin, dark hair, eyes, brows, nose, ears,
+        # arms on the wheel; proportions of that figure scaled by SC and mirrored so that it faces the car's nose (+Y).
+        SC = 0.5
+        self.shirt_base = (0.035, 0.28, 0.47)
+        self.skin = material("Driver shirt", self.shirt_base, rough=0.65)
+        skin = material("Driver skin", (0.52, 0.28, 0.15), rough=0.65)
+        dark = material("Driver hair", (0.018, 0.025, 0.035), rough=0.65)
+        white = material("Driver eyes", (0.90, 0.94, 0.97), rough=0.5)
+        limb = skin
         self.pivot = bpy.data.objects.new("Driver torso pivot", None)
         bpy.context.collection.objects.link(self.pivot)
         self.pivot.parent, self.pivot.location = root, (hx, hy, hz)
@@ -88,15 +95,25 @@ class Dummy:
                 p.use_smooth = kind == "sphere"
             return ob
 
-        shape("sphere", "Driver chest", (0.0, 0.0, 0.27), (0.19, 0.12, 0.28), self.skin, self.pivot)
-        shape("sphere", "Driver head", (0.0, 0.02, 0.12), (0.105, 0.115, 0.125), self.skin, self.neck)
-        shape("cube", "Driver neck", (0.0, 0.0, -0.02), (0.06, 0.06, 0.09), limb, self.neck)
-        shape("cube", "Driver pelvis", (hx, hy, hz - 0.02), (0.34, 0.27, 0.16), limb, root)
+        shape("sphere", "Driver chest", (0.0, 0.0, 0.25), (0.185, 0.115, 0.245), self.skin, self.pivot)
+        shape("sphere", "Driver neck", (0.0, 0.0, -0.07), (0.06, 0.06, 0.085), skin, self.neck)
+        hc = 0.07
+        shape("sphere", "Driver head", (0.0, 0.0, hc), (0.128, 0.115, 0.16), skin, self.neck)
+        shape("sphere", "Driver hair", (0.0, -0.018, hc + 0.10), (0.13, 0.115, 0.075), dark, self.neck)
+        shape("sphere", "Driver nose", (0.0, 0.12, hc - 0.007), (0.022, 0.037, 0.027), skin, self.neck)
         for sx in (-1, 1):
-            tube(f"Driver thigh {sx}", (hx + 0.09 * sx, hy, hz), (hx + 0.09 * sx, hy + 0.46, hz + 0.05), 0.075, limb, root, n_seg=16, n_ring=2)
-            tube(f"Driver shin {sx}", (hx + 0.09 * sx, hy + 0.46, hz + 0.05), (hx + 0.09 * sx, hy + 0.52, hz - 0.36), 0.06, limb, root, n_seg=16, n_ring=2)
-            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.47), (0.20 * sx, 0.15, 0.32), 0.05, limb, self.pivot, n_seg=16, n_ring=2)
-            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.40, 0.44), 0.045, limb, self.pivot, n_seg=16, n_ring=2)
+            shape("sphere", "Driver eye", (sx * 0.048, 0.107, hc + 0.033), (0.032, 0.018, 0.022), white, self.neck)
+            shape("sphere", "Driver pupil", (sx * 0.048, 0.124, hc + 0.033), (0.0125, 0.007, 0.0135), dark, self.neck)
+            shape("sphere", "Driver brow", (sx * 0.048, 0.108, hc + 0.07), (0.037, 0.011, 0.008), dark, self.neck)
+            shape("sphere", "Driver ear", (sx * 0.127, -0.007, hc - 0.002), (0.022, 0.037, 0.042), skin, self.neck)
+        shape("sphere", "Driver mouth", (0.0, 0.109, hc - 0.065), (0.033, 0.009, 0.006), dark, self.neck)
+        shape("cube", "Driver pelvis", (hx, hy, hz - 0.02), (0.34, 0.27, 0.16), material("Driver trousers", (0.055, 0.085, 0.12), rough=0.7), root)
+        trousers = bpy.data.materials["Driver trousers"]
+        for sx in (-1, 1):
+            tube(f"Driver thigh {sx}", (hx + 0.09 * sx, hy, hz), (hx + 0.09 * sx, hy + 0.46, hz + 0.05), 0.075, trousers, root, n_seg=16, n_ring=2)
+            tube(f"Driver shin {sx}", (hx + 0.09 * sx, hy + 0.46, hz + 0.05), (hx + 0.09 * sx, hy + 0.52, hz - 0.36), 0.06, trousers, root, n_seg=16, n_ring=2)
+            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.47), (0.20 * sx, 0.15, 0.32), 0.05, self.skin, self.pivot, n_seg=16, n_ring=2)
+            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.40, 0.44), 0.045, skin, self.pivot, n_seg=16, n_ring=2)
         wheel = material("Steering wheel", (0.05, 0.05, 0.055), rough=0.5)
         bpy.ops.mesh.primitive_torus_add(major_radius=0.18, minor_radius=0.018, location=self.WHEEL, rotation=(math.radians(-58), 0, 0))
         wob = bpy.context.object
@@ -108,6 +125,7 @@ class Dummy:
     def colour(self, injury):
         a, b, t = (self.GREEN, self.YELLOW, injury * 2.0) if injury < 0.5 else (self.YELLOW, self.RED, injury * 2.0 - 1.0)
         c = tuple(a[i] + (b[i] - a[i]) * t for i in range(3))
+        c = tuple(self.shirt_base[i] + (c[i] - self.shirt_base[i]) * min(1.0, injury * 3.0) for i in range(3))   # the shirt is blue until the load is felt
         bsdf = self.skin.node_tree.nodes.get("Principled BSDF")
         bsdf.inputs["Base Color"].default_value = (*c, 1.0)
         bsdf.inputs["Emission Color"].default_value = (*c, 1.0)
