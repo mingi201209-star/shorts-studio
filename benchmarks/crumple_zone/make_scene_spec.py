@@ -16,12 +16,19 @@ S.append(scene("s01",1,"A car hits a wall","A car hits a wall",["car_front","bar
   chk("s01-crushes","the nose has crushed at least 3 cm by the end of the sentence","metric_reaches","action_performed",metric="crumple.stroke_m",value=0.03),
   chk("s01-no-penetration","the deformed nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s01"),mute("s01","with the sound off a car hits a wall and its front crumples")]))
-S.append(scene("s02a",1,"and we slow that tenth of a second way down to watch it.","and we slow that",["car_front","barrier"],"structure_deformation",
+S.append(scene("s02a",1,"and we slow that tenth of a second","and we slow that",["car_front","barrier"],"structure_deformation",
  "The same crash is shown in extreme slow motion: the film runs at well under 5 % of real time while this is said","film.speed_vs_real",0.0,{"kind":"K","movement":"tracking three-quarter view, slow push-in"},["structure_deformation"],
  [subj("s02a",["car_front","barrier"]),
   chk("s02a-slow","the film runs at under 5 % of real time while the sentence is spoken","metric_at_most","action_performed",metric="film.speed_vs_real",value=0.05),
   chk("s02a-running","the crash is going on while it is said (the crush keeps growing)","metric_increase","timing",metric="crumple.stroke_m",value=0.02),
   noobs("s02a"),mute("s02a","with the sound off the crash is seen in extreme slow motion")]))
+S.append(scene("s02c",1,"way down to watch it.","way down to watch it",["driver"],"restraint_occupant",
+ "Cabin interior without the car body, during the crash: the belted driver sits at the wheel while the wall creeps closer to the windscreen (the cabin keeps moving towards the wall while the nose crushes)","crumple.stroke_m",0.02,{"kind":"K","movement":"cut to the cabin interior in the middle of the crash: forward view through the windscreen towards the wall"},["restraint_occupant"],
+ [subj("s02c",["driver"]),
+  chk("s02c-running","the crash is going on while it is said (the crush keeps growing: the cabin keeps moving towards the wall)","metric_increase","action_performed",metric="crumple.stroke_m",value=0.02),
+  chk("s02c-timing","the crush keeps growing inside the spoken window (the crash is not over while the interior is shown)","metric_increase","timing",metric="crumple.stroke_m",value=0.02,window="scene"),
+  chk("s02c-driver-unharmed","the belted driver of the first car is still unharmed (chest load below the injury onset)","metric_at_most","physically_consistent",metric="crumple.dummy_injury",value=0.1),
+  noobs("s02c"),mute("s02c","with the sound off the driver is seen inside the cabin while the wall comes closer")]))
 S.append(scene("s02b",2,"The hood buckles and the front folds back","The hood buckles",["car_front"],"structure_deformation",
  "The hood folds upwards and the whole front is pushed back while the crash runs on","body.max_rise_m",0.01,{"kind":"K","movement":"close high three-quarter view of the nose"},["structure_deformation"],
  [subj("s02b",["car_front"]),

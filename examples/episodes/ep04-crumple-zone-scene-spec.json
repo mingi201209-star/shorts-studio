@@ -92,7 +92,7 @@
   {
    "id": "s02a",
    "beat": 1,
-   "narration": "and we slow that tenth of a second way down to watch it.",
+   "narration": "and we slow that tenth of a second",
    "cue": "and we slow that",
    "subjects": [
     "car_front",
@@ -151,6 +151,81 @@
     {
      "id": "s02a-sound-off",
      "description": "with the sound off the crash is seen in extreme slow motion",
+     "kind": "manual",
+     "criterion": "sound_off_understandable"
+    }
+   ],
+   "silent_readable": true
+  },
+  {
+   "id": "s02c",
+   "beat": 1,
+   "narration": "way down to watch it.",
+   "cue": "way down to watch it",
+   "subjects": [
+    "driver"
+   ],
+   "phenomenon": {
+    "kind": "restraint_occupant",
+    "description": "Cabin interior without the car body, during the crash: the belted driver sits at the wheel while the wall creeps closer to the windscreen (the cabin keeps moving towards the wall while the nose crushes)",
+    "onset_metric": "crumple.stroke_m",
+    "onset_threshold": 0.02,
+    "explanation_only": false
+   },
+   "camera": {
+    "kind": "K",
+    "movement": "cut to the cabin interior in the middle of the crash: forward view through the windscreen towards the wall"
+   },
+   "effects": [
+    "restraint_occupant"
+   ],
+   "success": [
+    {
+     "id": "s02c-subjects",
+     "description": "the named parts are on screen",
+     "kind": "subjects_in_view",
+     "criterion": "subject_present",
+     "subjects": [
+      "driver"
+     ],
+     "value": 0.8
+    },
+    {
+     "id": "s02c-running",
+     "description": "the crash is going on while it is said (the crush keeps growing: the cabin keeps moving towards the wall)",
+     "kind": "metric_increase",
+     "criterion": "action_performed",
+     "metric": "crumple.stroke_m",
+     "value": 0.02
+    },
+    {
+     "id": "s02c-timing",
+     "description": "the crush keeps growing inside the spoken window (the crash is not over while the interior is shown)",
+     "kind": "metric_increase",
+     "criterion": "timing",
+     "metric": "crumple.stroke_m",
+     "value": 0.02,
+     "window": "scene"
+    },
+    {
+     "id": "s02c-driver-unharmed",
+     "description": "the belted driver of the first car is still unharmed (chest load below the injury onset)",
+     "kind": "metric_at_most",
+     "criterion": "physically_consistent",
+     "metric": "crumple.dummy_injury",
+     "value": 0.1
+    },
+    {
+     "id": "s02c-not-obscured",
+     "description": "the action is not hidden by the captions",
+     "kind": "not_obscured",
+     "criterion": "not_obscured",
+     "metric": "caption.overlap",
+     "value": 0.2
+    },
+    {
+     "id": "s02c-sound-off",
+     "description": "with the sound off the driver is seen inside the cabin while the wall comes closer",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }
