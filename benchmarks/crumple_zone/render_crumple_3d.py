@@ -60,7 +60,7 @@ class Dummy:
     """The driver as a crash-test-dummy style figure (plain shapes, no face, no text): belted in the driver's seat, parented to the car so that it moves with the cabin. The torso hinges
     forward at the hip and the head swings on the neck, driven by dummy_motion (forward travel and chest load of the simulated crash). Chest and head turn from green through yellow to red
     with the peak chest load: the colour is the only 'damage' indicator."""
-    HIP = (-0.36, 0.08, 0.50)
+    HIP = (-0.36, 0.08, 0.40)
     WHEEL = (-0.36, 0.60, 0.88)
     GREEN, YELLOW, RED = (0.15, 0.75, 0.22), (0.95, 0.80, 0.08), (0.95, 0.07, 0.04)
 
@@ -73,7 +73,7 @@ class Dummy:
         self.pivot.parent, self.pivot.location = root, (hx, hy, hz)
         self.neck = bpy.data.objects.new("Driver neck pivot", None)
         bpy.context.collection.objects.link(self.neck)
-        self.neck.parent, self.neck.location = self.pivot, (0.0, 0.0, 0.62)
+        self.neck.parent, self.neck.location = self.pivot, (0.0, 0.0, 0.55)
 
         def shape(kind, name, loc, scale, mat, parent):
             if kind == "sphere":
@@ -88,15 +88,15 @@ class Dummy:
                 p.use_smooth = kind == "sphere"
             return ob
 
-        shape("sphere", "Driver chest", (0.0, 0.0, 0.30), (0.19, 0.12, 0.30), self.skin, self.pivot)
-        shape("sphere", "Driver head", (0.0, 0.02, 0.14), (0.115, 0.125, 0.14), self.skin, self.neck)
-        shape("cube", "Driver neck", (0.0, 0.0, -0.03), (0.07, 0.07, 0.10), limb, self.neck)
+        shape("sphere", "Driver chest", (0.0, 0.0, 0.27), (0.19, 0.12, 0.28), self.skin, self.pivot)
+        shape("sphere", "Driver head", (0.0, 0.02, 0.12), (0.105, 0.115, 0.125), self.skin, self.neck)
+        shape("cube", "Driver neck", (0.0, 0.0, -0.02), (0.06, 0.06, 0.09), limb, self.neck)
         shape("cube", "Driver pelvis", (hx, hy, hz - 0.02), (0.34, 0.27, 0.16), limb, root)
         for sx in (-1, 1):
             tube(f"Driver thigh {sx}", (hx + 0.09 * sx, hy, hz), (hx + 0.09 * sx, hy + 0.46, hz + 0.05), 0.075, limb, root, n_seg=16, n_ring=2)
             tube(f"Driver shin {sx}", (hx + 0.09 * sx, hy + 0.46, hz + 0.05), (hx + 0.09 * sx, hy + 0.52, hz - 0.36), 0.06, limb, root, n_seg=16, n_ring=2)
-            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.52), (0.20 * sx, 0.15, 0.36), 0.05, limb, self.pivot, n_seg=16, n_ring=2)
-            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.36), (0.16 * sx, 0.40, 0.40), 0.045, limb, self.pivot, n_seg=16, n_ring=2)
+            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.47), (0.20 * sx, 0.15, 0.32), 0.05, limb, self.pivot, n_seg=16, n_ring=2)
+            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.40, 0.44), 0.045, limb, self.pivot, n_seg=16, n_ring=2)
         wheel = material("Steering wheel", (0.05, 0.05, 0.055), rough=0.5)
         bpy.ops.mesh.primitive_torus_add(major_radius=0.18, minor_radius=0.018, location=self.WHEEL, rotation=(math.radians(-58), 0, 0))
         wob = bpy.context.object
@@ -354,7 +354,7 @@ def main():
             em["xray.factor"] = xf
             em["film.speed_vs_real"] = cm.film_speed(f)
             em["cabin.xray_factor"] = cf
-            head_co = world_to_camera_view(scene, cam, dummy.head.matrix_world @ Vector((0.0, 0.02, 0.14)))      # where the driver's head lands in the picture
+            head_co = world_to_camera_view(scene, cam, dummy.head.matrix_world @ Vector((0.0, 0.02, 0.12)))      # where the driver's head lands in the picture
             driver_seen = bool(cf >= 0.5 and head_co.z > 0 and 0.03 < head_co.x < 0.97 and 0.03 < head_co.y < 0.97)
             em[f"{panel}.dummy_peak_chest_g"] = dst["peak_chest_g"]
             em[f"{panel}.dummy_injury"] = dst["injury"]

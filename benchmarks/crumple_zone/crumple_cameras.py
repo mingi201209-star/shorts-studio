@@ -63,8 +63,8 @@ def paths() -> dict:
         _key(k(t_b3) + 0.6, (-2.7, -2.3, 1.5), (0.0, -0.55, 0.5), 42, at=0.46, rel=True),             # step out (never through the car) to a close three-quarter view of the front while the scan line passes: the rails fill the frame
         _key(k(t_b3) + 2.8, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),             # higher, still close view: the folds of the rails seen from above and the side
         _key(k(t_en) - 0.01, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),
-        _key(k(t_en), (-3.4, -0.95, 0.9), (0.0, -0.95, 0.5), 50, at=0.46, rel=True, cut=True),        # CUT ("energy over a longer stop"): zoomed see-through side profile, the amber rails fold like an accordion in the middle of the frame
-        _key(k(t_b4) - 0.71, (-3.1, -0.95, 0.9), (0.0, -0.95, 0.5), 50, at=0.46, rel=True),
+        _key(k(t_en), (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True, cut=True),        # CUT ("energy over a longer stop"): zoomed see-through side profile, the amber rails fold like an accordion in the middle of the frame
+        _key(k(t_b4) - 0.71, (-3.1, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),
     ]
     _o = _orbit(k(t_b4) - 0.7, k(t_b5) - 0.01, (0.0, -1.6), 4.1, 3.6, 1.5, 51.0, -15.0, 34, n=8, at=0.45)
     _o[0]["cut"] = True      # CUT ("quietly keeps its"): orbit round the finished front starts
@@ -73,10 +73,10 @@ def paths() -> dict:
     R = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
         _key(r(cue("It has almost nothing")) - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r(cue("It has almost nothing")), (-3.4, -0.95, 0.9), (0.0, -0.95, 0.5), 50, at=0.46, rel=True, cut=True),   # CUT ("it has almost nothing to crush"): the SAME zoomed side view as the first crash, the front turns see-through: its rails stay straight
-        _key(r_con - 0.01, (-3.4, -0.95, 0.9), (0.0, -0.95, 0.5), 50, at=0.46, rel=True),
-        _key(r_con + 0.01, (-3.3, -0.95, 0.9), (0.0, -0.95, 0.5), 50, at=0.46, rel=True),            # no cut at contact: the same view goes on, the viewer watches the rigid front stop
-        _key(r_con + 1.4 - 0.01, (-3.0, -0.95, 0.9), (0.0, -0.95, 0.5), 50, at=0.46, rel=True),      # a slow push-in of 0.4 m while the car stops and turns round: no instant of the clip is a still image
+        _key(r(cue("It has almost nothing")), (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True, cut=True),   # CUT ("it has almost nothing to crush"): the SAME zoomed side view as the first crash, the front turns see-through: its rails stay straight
+        _key(r_con - 0.01, (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),
+        _key(r_con + 0.01, (-3.3, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),            # no cut at contact: the same view goes on, the viewer watches the rigid front stop
+        _key(r_con + 1.4 - 0.01, (-3.0, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),      # a slow push-in of 0.4 m while the car stops and turns round: no instant of the clip is a still image
         _key(r_con + 1.4, (-5.5, -2.4, 1.5), (0.0, -2.2, 0.6), 28, at=0.45, cut=True),               # CUT ("and bounces back"): fixed wide side view, the wall at the left and the car leaving it, the gap widening
     ]
     C = [

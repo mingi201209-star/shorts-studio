@@ -98,7 +98,7 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
                          "rail_shortening": shortening, "in_view": views, "root_y": root_y}
         dst = dm.at(panel, cm.frame_time(frame))
         pitch = dm.pitch_rad(dst["travel_m"]) + dm.head_extra_rad(dst["chest_g"])
-        head = np.array([-0.36, 0.08 + 0.25 * dst["travel_m"] + 0.76 * np.sin(pitch), 0.50 + 0.76 * np.cos(pitch)])
+        head = np.array([-0.36, 0.08 + 0.25 * dst["travel_m"] + 0.67 * np.sin(pitch), 0.40 + 0.67 * np.cos(pitch)])
         views["driver"] = bool(metrics["cabin.xray_factor"] >= 0.5 and inside(tuple(head)))
         metrics[f"{panel}.dummy_peak_chest_g"] = dst["peak_chest_g"]
         metrics[f"{panel}.dummy_injury"] = dst["injury"]

@@ -35,8 +35,8 @@ def structure(nose: float) -> dict:
     cabin_y = nose - cm.CRUSH_LENGTH
     items = {}
     for sx in (-0.38, 0.38):
-        items[f"rail {sx}"] = {"p0": (sx, nose - 0.10, 0.47), "p1": (sx, cabin_y - 0.55, 0.47), "radius": 0.065, "n_seg": 64, "deforms": True}
-    items["bumper beam"] = {"p0": (-0.62, nose - 0.12, 0.50), "p1": (0.62, nose - 0.12, 0.50), "radius": 0.07, "n_seg": 24, "deforms": True}
+        items[f"rail {sx}"] = {"p0": (sx, nose - 0.10, 0.47), "p1": (sx, cabin_y - 0.55, 0.47), "radius": 0.045, "n_seg": 64, "deforms": True}
+    items["bumper beam"] = {"p0": (-0.62, nose - 0.12, 0.50), "p1": (0.62, nose - 0.12, 0.50), "radius": 0.05, "n_seg": 24, "deforms": True}
     hx, y1, y0, z0, z1 = 0.74, cabin_y - 0.05, cabin_y - 1.95, 0.40, 1.22
     k = 0
     for xs in (-hx, hx):

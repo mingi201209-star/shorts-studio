@@ -93,8 +93,8 @@ def crush_map(p0: np.ndarray, s: float, nose: float, length: float = CRUSH_LENGT
     return p
 
 
-FOLDS = 4                    # accordion folds of the crush rails inside the crushed zone
-FOLD_AMPLITUDE = 0.11        # m: how far a fold swings up and down (the rail tube radius is 0.065 m)
+FOLDS = 3                    # accordion folds of the crush rails inside the crushed zone
+FOLD_AMPLITUDE = 0.085       # m: how far a fold swings up and down (the rail tube radius is 0.045 m)
 
 
 def rail_fold(p0: np.ndarray, s: float, nose: float, length: float = CRUSH_LENGTH, rho: float = COMPACTION) -> np.ndarray:
