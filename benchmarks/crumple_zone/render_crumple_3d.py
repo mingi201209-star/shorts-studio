@@ -112,8 +112,8 @@ class Dummy:
         for sx in (-1, 1):
             tube(f"Driver thigh {sx}", (hx + 0.09 * sx, hy, hz), (hx + 0.09 * sx, hy + 0.46, hz + 0.05), 0.075, trousers, root, n_seg=16, n_ring=2)
             tube(f"Driver shin {sx}", (hx + 0.09 * sx, hy + 0.46, hz + 0.05), (hx + 0.09 * sx, hy + 0.52, hz - 0.36), 0.06, trousers, root, n_seg=16, n_ring=2)
-            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.47), (0.20 * sx, 0.15, 0.32), 0.078, self.skin, self.pivot, n_seg=16, n_ring=2)
-            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.40, 0.44), 0.066, skin, self.pivot, n_seg=16, n_ring=2)
+            tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.47), (0.20 * sx, 0.15, 0.32), 0.078, self.skin, self.pivot, n_seg=16, n_ring=8)
+            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.40, 0.44), 0.066, skin, self.pivot, n_seg=16, n_ring=8)
         wheel = material("Steering wheel", (0.05, 0.05, 0.055), rough=0.5)
         bpy.ops.mesh.primitive_torus_add(major_radius=0.18, minor_radius=0.018, location=self.WHEEL, rotation=(math.radians(-58), 0, 0))
         wob = bpy.context.object
@@ -144,8 +144,8 @@ class Dummy:
 def build_interior(root):
     """The cabin set for the interior shots (car frame, parented to the car): driver and passenger seats, dashboard, steering column, door panels, pillars, roof liner, floor. In the interior shots the car body
     is not rendered at all (like the earlier driver insert of the Rumble episode); this set and the driver are what the camera sees. Returns the list of objects."""
-    seat = material("Interior seat", (0.20, 0.32, 0.48), rough=0.7)
-    trim = material("Interior trim", (0.46, 0.54, 0.64), rough=0.6)
+    seat = material("Interior seat", (0.16, 0.26, 0.40), rough=0.7)
+    trim = material("Interior trim", (0.34, 0.42, 0.52), rough=0.6)
     dark = material("Interior dark", (0.09, 0.10, 0.13), rough=0.8)
     out = []
 
@@ -177,7 +177,7 @@ def build_interior(root):
     bpy.ops.object.light_add(type="AREA", location=(0.0, 0.25, 1.18))      # interior fill light: the cabin shots are lit from inside (the car body that would let the sun in is not rendered)
     lamp = bpy.context.object
     lamp.name = "Interior fill light"
-    lamp.data.energy, lamp.data.shape, lamp.data.size, lamp.data.size_y = 260.0, "RECTANGLE", 1.3, 1.1
+    lamp.data.energy, lamp.data.shape, lamp.data.size, lamp.data.size_y = 70.0, "RECTANGLE", 1.3, 1.1
     lamp.rotation_euler = (math.pi, 0.0, 0.0)
     lamp.parent = root
     out.append(lamp)

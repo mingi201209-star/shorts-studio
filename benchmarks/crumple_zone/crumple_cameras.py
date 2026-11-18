@@ -45,7 +45,7 @@ def _seg_tau(seconds: float, seg_id: str) -> float:
 I_FACE = ((0.50, 0.62, 1.10), (-0.36, 0.18, 0.85))      # from the front passenger seat looking back at the driver's face and the steering wheel
 I_FWD = ((0.18, -0.20, 1.12), (-0.50, 0.90, 0.88))      # from between the front seats looking forward: wheel, dashboard and the wall beyond the windscreen
 IN_BEFORE = 0.9      # s: the interior shot starts this long before the rigid contact
-RAIL_CLOSE = ((-1.05, -0.55, 1.40), (-0.38, -0.55, 0.48))      # close-up of the front rails (nose-relative)
+RAIL_CLOSE = ((1.00, -0.20, 1.45), (0.30, -0.55, 0.48))      # close-up of the front rails (nose-relative)
 CAR_NOSE_M = 1.926      # nose of the real sedan in its own frame (fixture geom["nose"]; a test checks it)
 DRV_SIDE = ((-2.0, 0.8, 0.95), (0.0, 0.8, 0.95))      # driver's seat, side view (camera x, y, z; target), relative to the cabin (rel="car")
 
@@ -81,7 +81,7 @@ def paths() -> dict:
         _key(k(t_fold), (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                # 5 CUT ("the front folds back"): from the wall looking back along the folding flank
         _key(k(t_b3) - 0.4, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45),
         _key(k(t_b3), RAIL_CLOSE[0], RAIL_CLOSE[1], 30, at=0.45, rel=True, cut=True),                      # CUT ("as the hidden rails"): CLOSE-UP of the front rails from the side while the front turns see-through
-        _key(k(t_en) - 0.01, (-0.95, -0.62, 1.35), (-0.38, -0.55, 0.48), 32, at=0.45, rel=True),         # slow dolly along the rails while they fold
+        _key(k(t_en) - 0.01, (0.95, -0.40, 1.40), (0.30, -0.55, 0.48), 34, at=0.45, rel=True),         # slow dolly along the rails while they fold
         _key(k(t_en), (-1.0, -0.25, 1.45), (-0.30, -0.55, 0.48), 34, at=0.45, rel=True, cut=True),      # CUT ("energy over a longer stop"): second close-up, from higher and in front: the zigzag of the folds
         _key(k(t_b4) - 0.71, (-1.05, -0.38, 1.40), (-0.30, -0.55, 0.48), 34, at=0.45, rel=True),
         _key(k(t_b4) - 0.7, I_FACE[0], I_FACE[1], 30, at=0.42, rel="car", cut=True, interior=True),    # CUT ("quietly keeps its"): the INTERIOR, rendered without the car body: the driver seen from the front passenger seat
