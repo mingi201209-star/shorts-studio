@@ -1,1 +1,1 @@
-{"mode": "range", "ranges": [[330, 330], [724, 724]], "res_scale": 0.6667, "samples": 12, "sheet_tile": 540, "note": "EP.04 720x1280 comparison A: 12 samples, frames 330 (see-through) and 724 (normal); time per frame is in the job step durations"}
+{"mode": "range", "ranges": [[724, 724]], "quality": "final", "sheet_tile": 540, "note": "EP.04 1080x1920 comparison B: native 24 samples, frame 724 (same frame as 720 comparison A)"}
