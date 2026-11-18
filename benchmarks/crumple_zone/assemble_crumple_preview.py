@@ -80,6 +80,26 @@ def gray_diffs(video: Path) -> np.ndarray:
     return np.abs(np.diff(a, axis=0)).mean((1, 2))
 
 
+def shift_ass(text: str, seconds: float) -> str:
+    """Move every caption event of an .ass file later by `seconds` (the film starts before the narration)."""
+    import re
+
+    def conv(m):
+        h, mi, se, cs = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
+        t = h * 3600 + mi * 60 + se + cs / 100.0 + seconds
+        return f"{int(t // 3600)}:{int(t % 3600 // 60):02d}:{int(t % 60):02d}.{int(round((t % 1) * 100)) % 100:02d}"
+    out = []
+    for line in text.splitlines():
+        if line.startswith("Dialogue:"):
+            head, _, rest = line.partition(",")
+            start, _, rest2 = rest.partition(",")
+            end, _, rest3 = rest2.partition(",")
+            pat = r"(\d+):(\d\d):(\d\d)\.(\d\d)"
+            line = f"{head},{re.sub(pat, conv, start)},{re.sub(pat, conv, end)},{rest3}"
+        out.append(line)
+    return "\n".join(out) + "\n"
+
+
 def cue_mismatches(measured: list[dict], frozen: list[dict], tol_s: float = 0.002) -> list[str]:
     """Differences between the cues of the audio that is being muxed and the frozen capture (same texts, start and end within tol_s): the capture is identified by its measured timing."""
     if len(measured) != len(frozen):
@@ -113,16 +133,19 @@ def main():
         raise SystemExit("preview audio or measured cue timing differs from the frozen narration")
     for name in ("narration.wav", "film.ass"):
         (a.out / name).write_bytes((a.audio / name).read_bytes())
+    pre = cm.PREROLL_S      # the film starts `pre` seconds before the narration: the audio is delayed, the captions and every measured cue move later by the same amount
+    audio_report = {**audio_report, "target_seconds": float(audio_report.get("target_seconds", cm.TOTAL_FRAMES / cm.FPS - pre)) + pre,
+                    "cues": [{**c, "start": c["start"] + pre, "end": c["end"] + pre} for c in audio_report["cues"]]}
     ass = a.out / "film.ass"
     text = ass.read_text(encoding="utf8")
     style = ",0,0,1,3,0,2,90,90,210,1"
     if text.count(style) != 1:
         raise SystemExit("caption style line not in the expected form")
-    ass.write_text(text.replace(style, ",0,0,1,6,2,2,90,90,420,1"), encoding="utf8")
+    ass.write_text(shift_ass(text.replace(style, ",0,0,1,6,2,2,90,90,420,1"), pre), encoding="utf8")
     seconds = cm.TOTAL_FRAMES / cm.FPS
     video = a.out / "crumple-preview-1080x1920.mp4"
     run(["ffmpeg", "-v", "error", "-y", "-framerate", str(cm.FPS), "-i", str(frames / "frame_%04d.png"), "-i", str(a.out / "narration.wav"),
-         "-vf", f"setpts=N/({cm.FPS}*TB),ass={a.out / 'film.ass'}", "-map", "0:v:0", "-map", "1:a:0", "-t", f"{seconds}", "-c:v", "libx264", "-preset", "fast", "-crf", "17",
+         "-vf", f"setpts=N/({cm.FPS}*TB),ass={a.out / 'film.ass'}", "-af", f"adelay={int(round(pre * 1000))}:all=1", "-map", "0:v:0", "-map", "1:a:0", "-t", f"{seconds}", "-c:v", "libx264", "-preset", "fast", "-crf", "17",
          "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", video])
     info = probe(video)
     vs = next(s for s in info["streams"] if s["codec_type"] == "video")

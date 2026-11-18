@@ -38,3 +38,15 @@ class DriverTests(unittest.TestCase):
 def test_driver_seat_camera_frame_constant_matches_the_real_sedan():
     from benchmarks.crumple_zone import crumple_cameras as cc, evidence_sim as es
     assert abs(cc.CAR_NOSE_M - es.Car(es.load_fixture()).nose) < 1e-3
+
+
+def test_preroll_moves_cues_captions_and_target_together():
+    from benchmarks.crumple_zone import crumple_motion as cm
+    from benchmarks.crumple_zone.assemble_crumple_preview import shift_ass
+    raw = cm._raw_cues()
+    shifted = cm._cues()
+    assert cm.PREROLL_S > 0 and abs(shifted["target_seconds"] - raw["target_seconds"] - cm.PREROLL_S) < 1e-9
+    assert all(abs(s["start"] - r["start"] - cm.PREROLL_S) < 1e-9 for s, r in zip(shifted["cues"], raw["cues"]))
+    out = shift_ass("Dialogue: 0,0:00:00.10,0:00:01.02,Default,,0,0,0,,A car, hits\n", 1.2)
+    assert "0:00:01.30,0:00:02.22" in out and "A car, hits" in out
+    assert abs(cm.first_contact_film_s("K") - (cm.PREROLL_S + 0.45)) < 1e-9

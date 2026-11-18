@@ -12,7 +12,7 @@ S.append(scene("s01",1,"A car hits a wall","A car hits a wall",["car_front","bar
  "A car drives into a rigid barrier at 50 km/h (tracked approach, then slow motion) and its front visibly starts to crush; the first contact is inside the first second",
  "crumple.stroke_m",0.01,{"kind":"K","movement":"tracking shot of the approach, then close on the crushing nose"},["structure_deformation","approach_run_up"],
  [subj("s01",["car_front","barrier"]),
-  chk("s01-first-contact","the first contact happens inside the first 1.5 s of the film","onset_within_s","timing",metric="crumple.stroke_m",onset_threshold=0.01,value=1.5),
+  chk("s01-first-contact","the first contact happens inside the first 2.5 s of the film (the owner asked for a longer run-up)","onset_within_s","timing",metric="crumple.stroke_m",onset_threshold=0.01,value=2.5),
   chk("s01-crushes","the nose has crushed at least 3 cm by the end of the sentence","metric_reaches","action_performed",metric="crumple.stroke_m",value=0.03),
   chk("s01-no-penetration","the deformed nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s01"),mute("s01","with the sound off a car hits a wall and its front crumples")]))

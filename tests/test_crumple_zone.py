@@ -30,8 +30,8 @@ def test_timeline_is_three_contiguous_full_screen_segments_with_the_first_impact
     assert [s["panels"][0] for s in cm.SEGMENTS] == ["crumple", "rigid", "crumple"]
     assert cm.SEGMENTS[0]["first"] == 1 and cm.SEGMENTS[-1]["last"] == cm.TOTAL_FRAMES
     assert all(a["last"] + 1 == b["first"] for a, b in zip(cm.SEGMENTS, cm.SEGMENTS[1:]))
-    assert cm.TOTAL_FRAMES == round(cm.TARGET_S * cm.FPS) and 31.0 <= cm.TARGET_S <= 33.0      # about 32 s
-    assert cm.first_contact_film_s("K") <= 1.0
+    assert cm.TOTAL_FRAMES == round(cm.TARGET_S * cm.FPS) and 31.0 <= cm.TARGET_S <= 34.0      # about 32 s of narration plus the pre-roll (run-up) that the owner asked for
+    assert cm.first_contact_film_s("K") <= 2.0      # owner decision: a longer run-up before the first impact (was 1.0 s)
 
 
 def test_one_crash_time_scale_for_both_cars_and_a_smooth_warp():

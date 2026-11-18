@@ -143,5 +143,7 @@
    "text": "but the cabin is not."
   }
  ],
- "narration_sha256": "c1a8cfbe73a79d573bad6c1f2148452e4c49d2b603ecd6c3fc4a302937bbabba"
+ "narration_sha256": "c1a8cfbe73a79d573bad6c1f2148452e4c49d2b603ecd6c3fc4a302937bbabba",
+ "preroll_s": 1.2,
+ "preroll_note": "the film starts preroll_s seconds before the narration: the run-up to the wall is lengthened; every cue time used by the film is the captured time plus preroll_s (the captured times above stay the frozen identity of the audio)"
 }

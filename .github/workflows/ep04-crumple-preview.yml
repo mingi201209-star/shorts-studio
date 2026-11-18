@@ -34,7 +34,7 @@ jobs:
           mode = req["mode"]
           assert mode in ("preview", "range")
           if mode == "preview":
-              size, shards = (30 if req.get("quality") == "final" else 65), [(1, round(json.load(open("examples/experiments/crumple-zone-real-cues.json"))["target_seconds"] * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
+              size, shards = (30 if req.get("quality") == "final" else 65), [(1, round((lambda c: c["target_seconds"] + c.get("preroll_s", 0.0))(json.load(open("examples/experiments/crumple-zone-real-cues.json"))) * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
           else:
               size, shards = 24, [tuple(r) for r in req["ranges"]]      # only the frames a change touched
           include = []

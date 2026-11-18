@@ -189,7 +189,7 @@ def rate_fn(tp: np.ndarray, r0: float, approach_rate: float, ramp: tuple[float, 
 
 @lru_cache(maxsize=None)
 def _integrate(r0: float, approach_rate: float, ramp: tuple | None):
-    tp = np.concatenate([np.linspace(-1.2, 0.9, 210001), np.linspace(0.9, 12.0, 11101)[1:]])      # fine near the crash, coarser for the long rebound
+    tp = np.concatenate([np.linspace(-3.0, 0.9, 390001), np.linspace(0.9, 12.0, 11101)[1:]])      # fine near the crash, coarser for the long rebound
     rate = rate_fn(tp, r0, approach_rate, ramp)
     tau = np.concatenate([[0.0], np.cumsum(0.5 * (1 / rate[1:] + 1 / rate[:-1]) * np.diff(tp))])
     return tp, tau - float(np.interp(0.0, tp, tau))      # tau = film seconds relative to the moment of contact
@@ -260,8 +260,18 @@ def first_contact_film_s(seg_id: str = "K") -> float:
     return next(s for s in SEGMENTS if s["id"] == seg_id)["contact_film_s"]
 
 
-def _cues() -> dict:
+def _raw_cues() -> dict:
     return json.loads(CUES_FILE.read_text())
+
+
+PREROLL_S = float(_raw_cues().get("preroll_s", 0.0))      # the film starts this long before the narration (longer run-up to the wall); the captured audio is delayed by it at assembly
+
+
+def _cues() -> dict:
+    """Cue times as they land on the film timeline: the captured times plus the pre-roll."""
+    raw = _raw_cues()
+    return {**raw, "target_seconds": float(raw["target_seconds"]) + PREROLL_S,
+            "cues": [{**c, "start": c["start"] + PREROLL_S, "end": c["end"] + PREROLL_S} for c in raw["cues"]]}
 
 
 def cue_start(prefix: str, nth: int = 0) -> float:
@@ -280,13 +290,13 @@ CABIN_BEAT = "quietly keeps its"      # first caption phrase of the cabin senten
 RIGID_BEAT = "and now a rigid"
 RIGID_CONTACT_CUE = "almost instantly"
 CLOSE_BEAT = "The front is meant"
-HOOK_CONTACT_S = 0.45                         # first contact: the crash begins well inside the first 2 seconds
+HOOK_CONTACT_S = PREROLL_S + 0.45             # first contact: 0.35 s after the first spoken word (the pre-roll is the run-up to the wall)
 _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_start(RIGID_BEAT)), frame_of(cue_start(CLOSE_BEAT))
 # one crash time scale for both cars: the crumple car's crush (and so its stop) ends when the cabin sentence begins
 R0 = float(T_STOP["crumple"] * (1.0 - RATE_SHAPE / 2.0) / ((_F_CABIN - 1) / FPS - HOOK_CONTACT_S - 0.35))
 _RIGID_CONTACT_FILM = max(0.8, cue_start(RIGID_CONTACT_CUE) - cue_start(RIGID_BEAT))
 SEGMENTS = [
-    {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
+    {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0 + 13.0 * PREROLL_S,
      "contact_film_s": HOOK_CONTACT_S, "xray_keys": ()},
     {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_m": 8.0,
      "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] - 0.0006, T_STOP["rigid"] + 0.003, 0.08, 0.040, 0.046, 0.6), "xray_keys": ()},

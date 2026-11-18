@@ -49,12 +49,12 @@
     },
     {
      "id": "s01-first-contact",
-     "description": "the first contact happens inside the first 1.5 s of the film",
+     "description": "the first contact happens inside the first 2.5 s of the film (the owner asked for a longer run-up)",
      "kind": "onset_within_s",
      "criterion": "timing",
      "metric": "crumple.stroke_m",
      "onset_threshold": 0.01,
-     "value": 1.5
+     "value": 2.5
     },
     {
      "id": "s01-crushes",

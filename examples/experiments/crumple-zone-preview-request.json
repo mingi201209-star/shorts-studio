@@ -1,1 +1,1 @@
-{"mode": "range", "ranges": [[215, 215], [240, 240], [260, 260], [280, 280], [300, 300], [320, 320], [335, 335], [350, 350]], "note": "EP.04 v16 range check: rail close-up at lower height so the buckled hood does not cover the rails"}
+{"mode": "range", "ranges": [[1, 1], [12, 12], [22, 22], [26, 26], [40, 40], [50, 50], [52, 52], [60, 60], [251, 251], [276, 276], [296, 296], [316, 316], [336, 336], [356, 356]], "note": "EP.04 v17 range check: 1.2 s pre-roll (longer run-up before the impact; audio delayed), rail close-up at lower height (timeline shifted by 36 frames)"}

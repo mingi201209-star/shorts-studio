@@ -70,7 +70,9 @@ def paths() -> dict:
     near = dict(lens=34)      # poses are relative to the front of the car (rel=True) unless noted
     t_slow, t_fold, t_en = cue("and we slow that"), cue("and the front folds back"), cue("energy over a longer")
     K = [
-        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # 1 run-up: tracking three-quarter view, the wall rushes towards the nose
+        _key(0.0, (-5.2, -4.6, 1.9), (0.0, -1.6, 0.5), 28, at=0.45, rel=True),                        # 1a run-up (the long approach): high tracking view, the wall is far ahead
+        _key(cm.HOOK_CONTACT_S - 0.9 - 0.01, (-4.2, -3.6, 1.4), (0.0, -1.2, 0.5), 28, at=0.45, rel=True),
+        _key(cm.HOOK_CONTACT_S - 0.9, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True, cut=True),   # 1b CUT: closer low tracking view, the wall rushes towards the nose
         _key(cm.HOOK_CONTACT_S - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
         _key(cm.HOOK_CONTACT_S, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),        # 2 CUT at contact ("A car hits a wall"): fixed low side profile
         _key(k(t_slow) - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
@@ -93,8 +95,8 @@ def paths() -> dict:
     ]
     r_con = r(cue(cm.RIGID_CONTACT_CUE))
     R = [
-        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
-        _key(r_con - IN_BEFORE - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
+        _key(0.0, (-5.2, -4.6, 1.9), (0.0, -1.6, 0.5), 28, at=0.45, rel=True),                        # the same run-up camera as the first crash: the blue car rolls towards the wall
+        _key(r_con - IN_BEFORE - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),      # it drifts closer while the car approaches
         _key(r_con - IN_BEFORE, I_FWD[0], I_FWD[1], 20, at=0.42, rel="car", cut=True, interior=True),   # CUT before the impact: inside the cabin the viewer waits for the crash: the wall comes towards the windscreen, the driver sits at the wheel
         _key(r_con - 0.01, (0.10, -0.20, 1.12), I_FWD[1], 20, at=0.42, rel="car", interior=True),
         _key(r_con + 0.5, (0.12, -0.15, 1.12), I_FWD[1], 20, at=0.42, rel="car", interior=True),       # the impact happens in this shot: the driver lunges at the wheel
