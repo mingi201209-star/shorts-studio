@@ -16,7 +16,7 @@ S.append(scene("s01",1,"A car hits a wall","A car hits a wall",["car_front","bar
   chk("s01-crushes","the nose has crushed at least 3 cm by the end of the sentence","metric_reaches","action_performed",metric="crumple.stroke_m",value=0.03),
   chk("s01-no-penetration","the deformed nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s01"),mute("s01","with the sound off a car hits a wall and its front crumples")]))
-S.append(scene("s02a",2,"and we slow that tenth of a second way down to watch it","and we slow that",["car_front","barrier"],"structure_deformation",
+S.append(scene("s02a",1,"and we slow that tenth of a second way down to watch it.","and we slow that",["car_front","barrier"],"structure_deformation",
  "The same crash is shown in extreme slow motion: the film runs at well under 5 % of real time while this is said","film.speed_vs_real",0.0,{"kind":"K","movement":"tracking three-quarter view, slow push-in"},["structure_deformation"],
  [subj("s02a",["car_front","barrier"]),
   chk("s02a-slow","the film runs at under 5 % of real time while the sentence is spoken","metric_at_most","action_performed",metric="film.speed_vs_real",value=0.05),
@@ -28,7 +28,7 @@ S.append(scene("s02b",2,"The hood buckles and the front folds back","The hood bu
   chk("s02b-hood","the hood buckles upwards by at least 3 cm while it is narrated","metric_increase","action_performed",metric="body.max_rise_m",value=0.03),
   chk("s02b-front-folds","the crushed depth of the front grows by at least 10 cm while it is narrated","metric_increase","timing",metric="crumple.crushed_depth_m",value=0.10),
   noobs("s02b"),mute("s02b","with the sound off the hood is seen folding up and the front folding back")]))
-S.append(scene("s03a",3,"as the hidden rails inside fold like an accordion","as the hidden rails",["crush_rails","bumper_beam","safety_cell"],"xray_reveal",
+S.append(scene("s03a",2,"as the hidden rails inside fold like an accordion.","as the hidden rails",["crush_rails","bumper_beam","safety_cell"],"xray_reveal",
  "The body turns into a ghost while the crash is still going on (no replay) and the hidden rails and bumper beam are seen folding","xray.factor",0.02,{"kind":"K","movement":"the camera rises to a high chase view as the scan line passes over the car"},["xray_reveal","structure_folding"],
  [subj("s03a",["crush_rails","bumper_beam"],0.5),
   chk("s03a-ghost","the body becomes see-through (scan line completes)","metric_reaches","action_performed",metric="xray.factor",value=0.99),
@@ -42,7 +42,7 @@ S.append(scene("s03b",3,"Rails absorb the crash energy over a longer stop","Rail
   chk("s03b-timing","the folding is going on inside the spoken window (the rails keep shortening while it is narrated)","metric_increase","timing",metric="rails.shortening_m",value=0.03,window="scene"),
   chk("s03b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   noobs("s03b"),mute("s03b","with the sound off the beams are seen folding up until the car stops")]))
-S.append(scene("s04a",4,"while the cabin quietly keeps its whole shape","quietly keeps its",["safety_cell","whole_car"],"protected_cell_highlight",
+S.append(scene("s04a",3,"while the cabin quietly keeps its whole shape.","quietly keeps its",["safety_cell","whole_car"],"protected_cell_highlight",
  "With the front fully crushed the whole car is seen with its green safety cell unchanged","cell.highlight",0.5,{"kind":"K","movement":"the camera pulls back to the whole car and starts a slow orbit"},["protected_cell_highlight"],
  [subj("s04a",["safety_cell","whole_car"],0.8),
   chk("s04a-front-crushed","the front is crushed by at least 80 cm of structure while the cell is shown","metric_reaches","action_performed",metric="crumple.crushed_depth_m",value=0.8),
@@ -56,20 +56,20 @@ S.append(scene("s04b",4,"Pillars doors and roof stay exactly put","Pillars doors
   chk("s04b-cell-intact","the safety cell does not move (<= 1 mm)","metric_at_most","physically_consistent",metric="cell.max_displacement_mm",value=1.0),
   chk("s04b-cage-on","the cage is on screen during the whole sentence","metric_at_least","timing",metric="cell.highlight",value=0.99),
   noobs("s04b"),mute("s04b","with the sound off the cabin keeps its outline while the front is wrecked")]))
-S.append(scene("s05a",5,"and now a rigid front rolls toward the same wall","and now a rigid",["rigid_car_front"],"rigid_stop_rebound",
+S.append(scene("s05a",4,"and now a rigid front rolls toward the same wall.","and now a rigid",["rigid_car_front"],"rigid_stop_rebound",
  "A different (blue) car with a rigid front drives into the same wall at the same speed: tracked approach","nose.world_y_m",-7.0,{"kind":"R","movement":"tracking shot of the approach from the same camera start as the first crash"},["rigid_stop_rebound","approach_run_up"],
  [subj("s05a",["rigid_car_front"],0.8),
   chk("s05a-approach","the car closes at least 3 m on the wall while it is narrated","metric_increase","action_performed",metric="nose.world_y_m",value=3.0),
   chk("s05a-onset","the approach starts when the sentence starts","onset_within_s","timing",metric="nose.world_y_m",onset_threshold=-9.0,value=60.0),
   noobs("s05a"),mute("s05a","with the sound off a second, different car drives at the same wall")]))
-S.append(scene("s05b",5,"it stops almost instantly","almost instantly",["rigid_car_front","barrier"],"rigid_stop_rebound",
+S.append(scene("s05b",5,"It has almost nothing to crush so it stops almost instantly","almost instantly",["rigid_car_front","barrier"],"rigid_stop_rebound",
  "The rigid front touches the wall and stops within centimetres (same time scale as the first crash)","rigid.stroke_m",0.01,{"kind":"R","movement":"close high three-quarter view of the nose (same pose as the first crash)"},["rigid_stop_rebound"],
  [subj("s05b",["rigid_car_front"],0.8),
   chk("s05b-onset","the rigid car touches the wall when 'almost instantly' is spoken","onset_near_cue","timing",metric="rigid.stroke_m",onset_threshold=0.01,value=0.6),
   chk("s05b-short","the rigid car crushes by less than 6 cm","metric_at_most","action_performed",metric="rigid.stroke_m",value=0.06),
   chk("s05b-no-penetration","the nose never goes through the barrier (<= 5 mm)","metric_at_most","physically_consistent",metric="nose.penetration_mm",value=5.0),
   noobs("s05b"),mute("s05b","with the sound off the blue car stops dead at the wall")]))
-S.append(scene("s05c",5,"and bounces back off the wall","and bounces back",["rigid_car_front"],"rigid_stop_rebound",
+S.append(scene("s05c",5,"and bounces back off the wall.","and bounces back",["rigid_car_front"],"rigid_stop_rebound",
  "After the stop the car moves back away from the wall (simulated rebound) and the camera follows it","rigid.rebound_m",0.05,{"kind":"R","movement":"the camera follows the car as it moves away from the wall"},["rigid_stop_rebound"],
  [subj("s05c",["rigid_car_front","barrier"],0.6),
   chk("s05c-rebound","the car moves back at least 1 m from the wall while it is narrated","metric_reaches","action_performed",metric="rigid.rebound_m",value=1.0),
@@ -82,7 +82,7 @@ S.append(scene("s06a",6,"The front is meant to deform and absorb the whole crash
   chk("s06a-crushed","the crushed front is on screen","metric_reaches","action_performed",metric="final_pose.front_crush_m",value=0.8),
   chk("s06a-onset","the closing view starts when the sentence starts","onset_near_cue","timing",metric="final_pose.front_crush_m",onset_threshold=0.5,value=0.5),
   noobs("s06a"),mute("s06a","with the sound off the wrecked front of the first car is shown")]))
-S.append(scene("s06b",6,"but the cabin is not","but the cabin is not.",["safety_cell"],"protected_cell_highlight",
+S.append(scene("s06b",6,"but the cabin is not.","but the cabin is not.",["safety_cell"],"protected_cell_highlight",
  "The body turns see-through and the green cage shows the cabin unchanged","cell.highlight",0.5,{"kind":"C","movement":"slow push towards the cabin as the scan line passes"},["protected_cell_highlight","xray_reveal"],
  [subj("s06b",["safety_cell"],0.6),
   chk("s06b-cage","the see-through body shows the cage (scan line completes)","metric_reaches","action_performed",metric="xray.factor",value=0.99),

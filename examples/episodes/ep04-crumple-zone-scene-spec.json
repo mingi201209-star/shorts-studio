@@ -3,19 +3,19 @@
  "title": "This Car Is Designed to Crush.",
  "target_seconds": 32.0,
  "narration": [
-  "Cars are designed to crush.",
-  "The real crash lasts a tenth of a second so we slow it way down to watch the hood buckle and the whole front fold back.",
-  "Hidden rails inside fold like an accordion absorbing the crash energy and stretch the stop over a longer distance and time.",
-  "The cabin keeps its shape. Pillars, doors and roof stay put.",
-  "Now a rigid front at the same speed has almost nothing to crush so it stops almost instantly and bounces back.",
-  "The front is meant to deform and absorb the crash. The cabin isn't."
+  "A car hits a wall and we slow that tenth of a second way down to watch it.",
+  "The hood buckles and the front folds back as the hidden rails inside fold like an accordion.",
+  "Rails absorb the crash energy over a longer stop while the cabin quietly keeps its whole shape.",
+  "Pillars doors and roof stay exactly put and now a rigid front rolls toward the same wall.",
+  "It has almost nothing to crush so it stops almost instantly and bounces back off the wall.",
+  "The front is meant to deform and absorb the whole crash energy but the cabin is not."
  ],
  "scenes": [
   {
    "id": "s01",
    "beat": 1,
-   "narration": "Cars are designed to crush.",
-   "cue": "Cars are designed",
+   "narration": "A car hits a wall",
+   "cue": "A car hits a wall",
    "subjects": [
     "car_front",
     "barrier"
@@ -91,9 +91,9 @@
   },
   {
    "id": "s02a",
-   "beat": 2,
-   "narration": "The real crash lasts a tenth of a second so we slow it way down",
-   "cue": "The real crash lasts",
+   "beat": 1,
+   "narration": "and we slow that tenth of a second way down to watch it.",
+   "cue": "and we slow that",
    "subjects": [
     "car_front",
     "barrier"
@@ -160,8 +160,8 @@
   {
    "id": "s02b",
    "beat": 2,
-   "narration": "to watch the hood buckle and the whole front fold back.",
-   "cue": "to watch the hood buckle",
+   "narration": "The hood buckles and the front folds back",
+   "cue": "The hood buckles",
    "subjects": [
     "car_front"
    ],
@@ -225,9 +225,9 @@
   },
   {
    "id": "s03a",
-   "beat": 3,
-   "narration": "Hidden rails inside fold like an accordion",
-   "cue": "Hidden rails inside",
+   "beat": 2,
+   "narration": "as the hidden rails inside fold like an accordion.",
+   "cue": "as the hidden rails",
    "subjects": [
     "crush_rails",
     "bumper_beam",
@@ -305,8 +305,8 @@
   {
    "id": "s03b",
    "beat": 3,
-   "narration": "absorbing the crash energy and stretch the stop over a longer distance and time.",
-   "cue": "absorbing the crash",
+   "narration": "Rails absorb the crash energy over a longer stop",
+   "cue": "Rails absorb the crash",
    "subjects": [
     "crush_rails",
     "bumper_beam"
@@ -381,9 +381,9 @@
   },
   {
    "id": "s04a",
-   "beat": 4,
-   "narration": "The cabin keeps its shape.",
-   "cue": "The cabin keeps",
+   "beat": 3,
+   "narration": "while the cabin quietly keeps its whole shape.",
+   "cue": "quietly keeps its",
    "subjects": [
     "safety_cell",
     "whole_car"
@@ -458,8 +458,8 @@
   {
    "id": "s04b",
    "beat": 4,
-   "narration": "Pillars, doors and roof stay put.",
-   "cue": "Pillars, doors and roof",
+   "narration": "Pillars doors and roof stay exactly put",
+   "cue": "Pillars doors and roof",
    "subjects": [
     "safety_cell",
     "whole_car"
@@ -533,9 +533,9 @@
   },
   {
    "id": "s05a",
-   "beat": 5,
-   "narration": "Now a rigid front at the same speed",
-   "cue": "Now a rigid front at",
+   "beat": 4,
+   "narration": "and now a rigid front rolls toward the same wall.",
+   "cue": "and now a rigid",
    "subjects": [
     "rigid_car_front"
    ],
@@ -602,8 +602,8 @@
   {
    "id": "s05b",
    "beat": 5,
-   "narration": "has almost nothing to crush so it stops almost",
-   "cue": "almost nothing to crush",
+   "narration": "It has almost nothing to crush so it stops almost instantly",
+   "cue": "almost instantly",
    "subjects": [
     "rigid_car_front",
     "barrier"
@@ -635,7 +635,7 @@
     },
     {
      "id": "s05b-onset",
-     "description": "the rigid car touches the wall when 'nothing to crush' is spoken",
+     "description": "the rigid car touches the wall when 'almost instantly' is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
      "metric": "rigid.stroke_m",
@@ -678,8 +678,8 @@
   {
    "id": "s05c",
    "beat": 5,
-   "narration": "instantly and bounces back.",
-   "cue": "instantly and bounces",
+   "narration": "and bounces back off the wall.",
+   "cue": "and bounces back",
    "subjects": [
     "rigid_car_front"
    ],
@@ -727,7 +727,7 @@
     },
     {
      "id": "s05c-onset",
-     "description": "the bounce is under way when 'bounces back' is spoken",
+     "description": "the bounce is under way when 'and bounces back' is spoken",
      "kind": "onset_within_s",
      "criterion": "timing",
      "metric": "rigid.rebound_m",
@@ -754,7 +754,7 @@
   {
    "id": "s06a",
    "beat": 6,
-   "narration": "The front is meant to deform and absorb the crash.",
+   "narration": "The front is meant to deform and absorb the whole crash energy",
    "cue": "The front is meant",
    "subjects": [
     "car_front"
@@ -821,8 +821,8 @@
   {
    "id": "s06b",
    "beat": 6,
-   "narration": "The cabin isn't.",
-   "cue": "The cabin isn't.",
+   "narration": "but the cabin is not.",
+   "cue": "but the cabin is not.",
    "subjects": [
     "safety_cell"
    ],
@@ -870,7 +870,7 @@
     },
     {
      "id": "s06b-onset",
-     "description": "the cage appears when 'the cabin' is spoken",
+     "description": "the cage appears when 'but the cabin is not' is spoken",
      "kind": "onset_near_cue",
      "criterion": "timing",
      "metric": "cell.highlight",

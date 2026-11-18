@@ -253,8 +253,8 @@ def frame_of(seconds: float) -> int:
 TARGET_S = float(_cues()["target_seconds"])
 TOTAL_FRAMES = int(round(TARGET_S * FPS))
 CABIN_BEAT = "quietly keeps its"      # first caption phrase of the cabin sentence
-RIGID_BEAT = "and now a rigid front"
-RIGID_CONTACT_CUE = "hits the same wall."
+RIGID_BEAT = "and now a rigid"
+RIGID_CONTACT_CUE = "almost instantly"
 CLOSE_BEAT = "The front is meant"
 HOOK_CONTACT_S = 0.45                         # first contact: the crash begins well inside the first 2 seconds
 _F_CABIN, _F_RIGID, _F_CLOSE = frame_of(cue_start(CABIN_BEAT)), frame_of(cue_start(RIGID_BEAT)), frame_of(cue_start(CLOSE_BEAT))
@@ -265,7 +265,7 @@ SEGMENTS = [
     {"id": "K", "first": 1, "last": _F_RIGID - 1, "panels": ("crumple",), "layout": "full", "camera": "K", "r0": R0, "approach_m": 6.0,
      "contact_film_s": HOOK_CONTACT_S, "xray_keys": ()},
     {"id": "R", "first": _F_RIGID, "last": _F_CLOSE - 1, "panels": ("rigid",), "layout": "full", "camera": "R", "r0": R0, "approach_m": 8.0,
-     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] + 0.002, T_STOP["rigid"] + 0.03, 0.6), "xray_keys": ()},
+     "contact_film_s": _RIGID_CONTACT_FILM, "ramp": (T_STOP["rigid"] + 0.0005, T_STOP["rigid"] + 0.004, 0.6), "xray_keys": ()},
     {"id": "C", "first": _F_CLOSE, "last": TOTAL_FRAMES, "panels": ("crumple",), "layout": "full", "camera": "C", "r0": R0, "approach_m": 0.0,
      "contact_film_s": 0.0, "static_t": 1.0, "xray_keys": ()},
 ]

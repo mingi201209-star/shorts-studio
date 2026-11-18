@@ -48,30 +48,32 @@ def paths() -> dict:
     c = lambda s: _seg_tau(s, "C")
     t_b2, t_b3, t_b4, t_b5 = cue("The hood buckles"), cue("as the hidden rails"), cue(cm.CABIN_BEAT), cue(cm.RIGID_BEAT)
     near = dict(lens=34)      # poses are relative to the front of the car (rel=True) unless noted
+    t_slow, t_fold = cue("and we slow that"), cue("and the front folds back")
     K = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # 1 run-up: tracking three-quarter view, the wall rushes towards the nose
         _key(cm.HOOK_CONTACT_S - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(cm.HOOK_CONTACT_S, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),        # 2 CUT at contact: fixed low side profile, the nose meets the wall
-        _key(2.6 - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
-        _key(2.6, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True, cut=True),            # 3 CUT: close high three-quarter view of the hood and the front wheel
-        _key(4.4 - 0.01, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),
-        _key(4.4, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                      # 4 CUT: from the wall looking back along the folding flank
-        _key(k(t_b2) - 0.01, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45),
-        _key(k(t_b2), (-1.5, -1.6, 0.5), (0.0, -0.2, 0.45), 34, at=0.45, rel=True, cut=True),       # 5 CUT: low front-left view of the buckling hood
-        _key(k(t_b2) + 1.7, (-1.5, -1.6, 0.5), (0.0, -0.2, 0.45), 34, at=0.45, rel=True),
-        _key(k(t_b2) + 1.71, (-2.0, -1.7, 1.45), (0.0, -0.3, 0.5), 34, at=0.45, rel=True, cut=True),  # 6 CUT: high three-quarter view again, steady until the rails
-        _key(k(t_b3) - 0.4, (-2.0, -1.7, 1.45), (0.0, -0.3, 0.5), 34, at=0.45, rel=True),
+        _key(cm.HOOK_CONTACT_S, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),        # 2 CUT at contact ("A car hits a wall"): fixed low side profile
+        _key(k(t_slow) - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
+        _key(k(t_slow), (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True, cut=True),      # 3 CUT ("and we slow that"): high three-quarter view of the hood and the front wheel
+        _key(k(t_b2) - 0.01, (-2.0, -1.7, 1.45), (0.0, -0.2, 0.5), 34, at=0.45, rel=True),
+        _key(k(t_b2), (-1.5, -1.6, 0.5), (0.0, -0.2, 0.45), 34, at=0.45, rel=True, cut=True),       # 4 CUT ("The hood buckles"): low front-left view of the buckling hood
+        _key(k(t_fold) - 0.01, (-1.5, -1.6, 0.5), (0.0, -0.2, 0.45), 34, at=0.45, rel=True),
+        _key(k(t_fold), (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45, cut=True),                # 5 CUT ("the front folds back"): from the wall looking back along the folding flank
+        _key(k(t_b3) - 0.4, (-2.4, -0.15, 0.7), (0.0, -1.3, 0.6), 30, at=0.45),
         _key(k(t_b3) + 0.6, (-3.2, -3.2, 2.6), (0.0, -0.7, 0.45), 34, at=0.48, rel=True),             # step out and up (never through the car) while the scan line passes
         _key(k(t_b3) + 2.8, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),             # high chase view over the folding rails, the whole car in frame
         _key(k(t_b4) - 0.2, (-2.2, -4.3, 3.6), (0.0, -1.0, 0.4), 36, at=0.50, rel=True),
     ]
     K += _orbit(k(t_b4) - 0.2, k(t_b5) - 0.01, (0.0, -1.6), 4.1, 3.6, 1.5, 51.0, -15.0, 34, n=8, at=0.45)[1:]      # slow orbit from behind-left round to the crushed front
+    r_con = r(cue(cm.RIGID_CONTACT_CUE))
     R = [
-        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r(cue(cm.RIGID_CONTACT_CUE)), (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),    # CUT at contact: the same fixed side profile, the car stops and bounces back
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 1.4 - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
-        _key(r(cue(cm.RIGID_CONTACT_CUE)) + 1.4, (-3.0, -3.0, 1.4), (0.0, 1.0, 0.6), 30, at=0.45, rel=True, cut=True),   # CUT: the camera follows the car as it moves away, looking back at the wall
+        _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
+        _key(r(cue("It has almost nothing")) - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
+        _key(r(cue("It has almost nothing")), (-1.7, -2.4, 0.55), (0.0, -0.2, 0.45), 32, at=0.45, rel=True, cut=True),   # CUT ("it has almost nothing to crush"): low close view of the plain rigid front
+        _key(r_con - 0.01, (-1.7, -2.4, 0.55), (0.0, -0.2, 0.45), 32, at=0.45, rel=True),
+        _key(r_con, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45, cut=True),                    # CUT at contact ("it stops almost instantly"): the same fixed side profile as the first crash
+        _key(r_con + 1.4 - 0.01, (-3.2, -0.9, 0.65), (0.0, -0.9, 0.5), 28, at=0.45),
+        _key(r_con + 1.4, (-3.0, -3.0, 1.4), (0.0, 1.0, 0.6), 30, at=0.45, rel=True, cut=True),      # CUT ("and bounces back"): the camera follows the car as it moves away, looking back at the wall
     ]
     C = [
         _key(0.0, (-2.6, -3.0, 1.5), (0.0, -0.9, 0.5), 34, at=0.45),

@@ -28,7 +28,7 @@ CLAIMS = (
           "The scan line passes while the crush is still running (no rewind); the rails are seen shortening"),
     Claim("longer stop", "The crush keeps going slowly until the car stops", ("K",), "The stroke grows to its maximum and the car comes to rest in the same shot"),
     Claim("keeps its whole shape", "Protective cabin remains intact while the front is crushed", ("K",), "The whole car with the green cage after the crush"),
-    Claim("pillars, doors and roof", "Pillars, doors and roof stay where they were", ("K",), "A slow orbit shows the cabin from other sides"),
+    Claim("pillars doors and roof", "Pillars, doors and roof stay where they were", ("K",), "A slow orbit shows the cabin from other sides"),
     Claim("rigid front rolls toward the same wall", "A second car with a rigid front hits the same wall at the same speed", ("R",), "Sequential full-screen shot, same camera start, same time scale"),
     Claim("bounces back", "The rigid car moves away from the barrier after impact", ("R",), "Continuous playback shows the car stop at the barrier and reverse away"),
     Claim("front is meant to deform", "The crushed front is shown", ("C",), "The first car at rest with its crushed front (no replay)"),
