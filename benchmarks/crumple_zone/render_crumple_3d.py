@@ -141,6 +141,44 @@ class Dummy:
         return st
 
 
+def build_interior(root):
+    """The cabin set for the interior shots (car frame, parented to the car): driver and passenger seats, dashboard, steering column, door panels, pillars, roof liner, floor. In the interior shots the car body
+    is not rendered at all (like the earlier driver insert of the Rumble episode); this set and the driver are what the camera sees. Returns the list of objects."""
+    seat = material("Interior seat", (0.10, 0.16, 0.24), rough=0.7)
+    trim = material("Interior trim", (0.22, 0.28, 0.35), rough=0.6)
+    dark = material("Interior dark", (0.05, 0.06, 0.08), rough=0.8)
+    out = []
+
+    def box(name, loc, size, mat):
+        bpy.ops.mesh.primitive_cube_add(size=1.0, location=loc)
+        ob = bpy.context.object
+        ob.name, ob.scale = name, size
+        ob.data.materials.append(mat)
+        ob.parent = root
+        out.append(ob)
+        return ob
+
+    for sx, who in ((-0.36, "driver"), (0.36, "passenger")):
+        box(f"Interior {who} seat cushion", (sx, 0.02, 0.30), (0.52, 0.58, 0.14), seat)
+        box(f"Interior {who} seat back", (sx, -0.34, 0.72), (0.52, 0.14, 0.78), seat)
+        box(f"Interior {who} headrest", (sx, -0.36, 1.20), (0.28, 0.10, 0.22), seat)
+    box("Interior dashboard", (0.0, 1.00, 0.66), (1.56, 0.42, 0.30), trim)
+    box("Interior dashboard top", (0.0, 0.86, 0.84), (1.56, 0.30, 0.08), dark)
+    box("Interior steering column", (-0.36, 0.78, 0.78), (0.07, 0.40, 0.07), dark)
+    box("Interior centre console", (0.0, 0.25, 0.40), (0.22, 1.1, 0.26), trim)
+    box("Interior floor", (0.0, 0.2, 0.17), (1.56, 2.2, 0.05), dark)
+    for sx in (-1, 1):
+        box(f"Interior door panel {sx}", (0.78 * sx, 0.20, 0.62), (0.07, 1.5, 0.62), trim)
+        box(f"Interior B pillar {sx}", (0.78 * sx, -0.42, 1.0), (0.08, 0.12, 0.62), trim)
+        ob, _ = tube(f"Interior A pillar {sx}", (0.76 * sx, 0.98, 0.84), (0.76 * sx, 0.36, 1.24), 0.045, trim, root, n_seg=10, n_ring=2)
+        out.append(ob)
+    box("Interior roof header", (0.0, 0.36, 1.25), (1.56, 0.08, 0.06), trim)
+    box("Interior roof liner", (0.0, -0.10, 1.27), (1.56, 0.9, 0.04), trim)
+    for ob in out:
+        ob.hide_render = True
+    return out
+
+
 class Ghost:
     """Body materials copied with a world-space scan line: everything the line has passed turns almost transparent with a bright blue rim; the line itself flares."""
     SOFT = 0.35
@@ -315,6 +353,9 @@ def main():
     structure_def = [Deformable(ob, nose, local_is_car_frame=True, mapper=cm.rail_fold) for ob, _ in structure]      # the rails fold like an accordion
     ghost = Ghost([o for o in parts])
     dummy = Dummy(root)
+    interior = build_interior(root)
+    wheel_objs = [o for w in wheels.values() for o in [w["node"], *w["node"].children_recursive]]
+    all_body = list(parts) + wheel_objs
 
     # no scene text of any kind (owner decision): the only words in the film are the narration captions burned in at assembly
     body_mats = {}
@@ -362,6 +403,14 @@ def main():
             dst = dummy.pose(panel, t)
             ghost.set_tint(PAINT[panel])
             place_camera(cam, seg["camera"], f)
+            cam.data.clip_start = 0.03
+            inside_cabin = bool(ccams.camera(seg["camera"], f)["interior"])      # interior shot: no car body, only the cabin set and the driver
+            for ob in all_body:
+                ob.hide_render = inside_cabin
+            for ob, _ in structure:
+                ob.hide_render = inside_cabin or not show
+            for ob in interior:
+                ob.hide_render = not inside_cabin
             bpy.context.view_layer.update()  # the evidence below projects through cam.matrix_world: without this it lags one frame (first frame of a shard saw the previous camera)
             ev = measure_evidence(scene, cam, root, deformables, structure_def, nose, cabin_y, s, xf, seg, panel, (cell_y0, cell_y1))
             evidence.setdefault(f, {"metrics": {}, "in_view": {}})
@@ -373,7 +422,12 @@ def main():
             em["film.speed_vs_real"] = cm.film_speed(f)
             em["cabin.xray_factor"] = cf
             head_co = world_to_camera_view(scene, cam, dummy.head.matrix_world @ Vector((0.0, 0.02, 0.12)))      # where the driver's head lands in the picture
-            driver_seen = bool(cf >= 0.5 and head_co.z > 0 and 0.03 < head_co.x < 0.97 and 0.03 < head_co.y < 0.97)
+            driver_seen = bool((cf >= 0.5 or inside_cabin) and head_co.z > 0 and 0.03 < head_co.x < 0.97 and 0.03 < head_co.y < 0.97)
+            if inside_cabin:      # the car body is not in the picture: nothing of it can be counted as seen; the caption rows are checked against the driver's head
+                ev["in_view"].update({"car_front": False, "crush_rails": False, "bumper_beam": False, "safety_cell": False})
+                ev["whole_car"] = False
+                head_row = (1.0 - head_co.y) * 1920.0
+                ev["caption_overlap"] = 1.0 if CAPTION_ROWS[0] <= head_row <= CAPTION_ROWS[1] else 0.0
             em[f"{panel}.dummy_peak_chest_g"] = dst["peak_chest_g"]
             em[f"{panel}.dummy_injury"] = dst["injury"]
             em[f"{panel}.dummy_travel_m"] = dst["travel_m"]

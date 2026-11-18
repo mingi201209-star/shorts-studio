@@ -385,19 +385,18 @@
    "narration": "while the cabin quietly keeps its whole shape.",
    "cue": "quietly keeps its",
    "subjects": [
-    "safety_cell",
     "driver"
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "With the front fully crushed the camera shows only the driver's seat through the see-through cabin: the cabin keeps its outline and the belted driver sits unharmed (blue shirt)",
+    "description": "Cabin interior shot (no car body): the belted driver sits unharmed (blue shirt) while the front has been crushed",
     "onset_metric": "cabin.xray_factor",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
    "camera": {
     "kind": "K",
-    "movement": "the camera shows only the driver's seat (side view) and starts a slow orbit round it"
+    "movement": "the camera cuts to the cabin interior (rendered without the car body): the driver seen from the front passenger seat"
    },
    "effects": [
     "protected_cell_highlight"
@@ -409,7 +408,6 @@
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "safety_cell",
       "driver"
      ],
      "value": 0.8
@@ -456,7 +454,7 @@
     },
     {
      "id": "s04a-sound-off",
-     "description": "with the sound off the folded rails and the unharmed driver are seen together",
+     "description": "with the sound off the intact cabin and the unharmed driver are seen",
      "kind": "manual",
      "criterion": "sound_off_understandable"
     }
@@ -469,19 +467,18 @@
    "narration": "Pillars doors and roof stay exactly put",
    "cue": "Pillars doors and roof",
    "subjects": [
-    "safety_cell",
     "driver"
    ],
    "phenomenon": {
     "kind": "protected_cell_highlight",
-    "description": "The orbit round the driver's seat shows the cabin from other sides: pillars, doors and roof line are exactly where they were and the driver is unharmed (blue shirt)",
+    "description": "Interior shot from the passenger seat looking forward: pillars, dashboard and roof line are exactly where they were and the driver is unharmed (blue shirt)",
     "onset_metric": "cabin.xray_factor",
     "onset_threshold": 0.5,
     "explanation_only": false
    },
    "camera": {
     "kind": "K",
-    "movement": "slow orbit around the driver's seat"
+    "movement": "the interior camera moves from the passenger seat towards the front: wheel, dashboard, windscreen"
    },
    "effects": [
     "protected_cell_highlight"
@@ -493,7 +490,6 @@
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "safety_cell",
       "driver"
      ],
      "value": 0.8
@@ -621,7 +617,6 @@
    "narration": "It has almost nothing to crush so it stops almost instantly",
    "cue": "almost instantly",
    "subjects": [
-    "rigid_crush_rails",
     "rigid_driver"
    ],
    "phenomenon": {
@@ -633,7 +628,7 @@
    },
    "camera": {
     "kind": "R",
-    "movement": "driver's-seat side view through the see-through cabin (same pose as the first crash)"
+    "movement": "interior shot without the car body (same view as in the first crash): the driver lunges at the wheel"
    },
    "effects": [
     "rigid_stop_rebound"
@@ -645,7 +640,6 @@
      "kind": "subjects_in_view",
      "criterion": "subject_present",
      "subjects": [
-      "rigid_crush_rails",
       "rigid_driver"
      ],
      "value": 0.8
@@ -717,7 +711,7 @@
    },
    "camera": {
     "kind": "R",
-    "movement": "the camera stays on the driver's seat as the car moves away from the wall"
+    "movement": "interior forward view through the windscreen: the wall falls away as the car moves back"
    },
    "effects": [
     "rigid_stop_rebound"

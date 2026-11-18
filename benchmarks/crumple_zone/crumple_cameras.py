@@ -19,9 +19,9 @@ SAFE = {"left": 54, "right": 960, "top": 150, "bottom": 1540}
 NO_SCENE_TEXT = True      # the owner banned on-screen words other than the narration captions: the renderer creates no text objects (gate: no_scene_text)
 
 
-def _key(t, loc, target, lens=34.0, at=0.40, rel=False, cut=False):
+def _key(t, loc, target, lens=34.0, at=0.40, rel=False, cut=False, interior=False):
     """at: fraction of the frame height, from the top, where the look-at point lands (lens shift is derived from it): the subject sits in the upper-middle, above the captions."""
-    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": rel if rel == "car" else bool(rel), "cut": bool(cut)}
+    return {"t": float(t), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": float(lens), "at": float(at), "rel": rel if rel == "car" else bool(rel), "cut": bool(cut), "interior": bool(interior)}
 
 
 def _orbit(t0, t1, pivot, radius, z0, z1, a0, a1, lens, n=6, at=0.40, target_z=0.55):
@@ -41,6 +41,9 @@ def _seg_tau(seconds: float, seg_id: str) -> float:
     return seconds - (seg["first"] - 1) / cm.FPS
 
 
+#: interior shots (car frame, rel="car"): the car body is not rendered, only the cabin set (seats, dashboard, pillars, wheel) and the driver
+I_FACE = ((0.55, 0.90, 1.0), (-0.36, 0.20, 0.85))      # from the front passenger seat looking back at the driver's face and the steering wheel
+I_FWD = ((0.52, -0.55, 1.0), (-0.40, 0.75, 0.85))      # from the passenger seat looking forward: wheel, dashboard and the wall beyond the windscreen
 CAR_NOSE_M = 1.926      # nose of the real sedan in its own frame (fixture geom["nose"]; a test checks it)
 DRV_SIDE = ((-2.0, 0.8, 0.95), (0.0, 0.8, 0.95))      # driver's seat, side view (camera x, y, z; target), relative to the cabin (rel="car")
 
@@ -78,20 +81,22 @@ def paths() -> dict:
         _key(k(t_b3) + 0.6, (-2.7, -2.3, 1.5), (0.0, -0.55, 0.5), 42, at=0.46, rel=True),             # step out (never through the car) to a close three-quarter view of the front while the scan line passes: the rails fill the frame
         _key(k(t_b3) + 2.8, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),             # higher, still close view: the folds of the rails seen from above and the side
         _key(k(t_en) - 0.01, (-2.4, -2.6, 2.3), (0.0, -0.6, 0.45), 44, at=0.46, rel=True),
-        _key(k(t_en), DRV_SIDE[0], DRV_SIDE[1], 32, at=0.42, rel="car", cut=True),                     # CUT ("energy over a longer stop"): only the driver's seat, side view through the see-through cabin
-        _key(k(t_b4) - 0.71, (-1.85, 0.8, 0.95), DRV_SIDE[1], 32, at=0.42, rel="car"),                  # slow push-in
+        _key(k(t_en), (-3.4, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True, cut=True),        # CUT ("energy over a longer stop"): zoomed see-through side profile, the amber rails fold like an accordion in the middle of the frame
+        _key(k(t_b4) - 0.71, (-3.1, -1.15, 2.0), (0.0, -1.15, 0.45), 46, at=0.46, rel=True),
+        _key(k(t_b4) - 0.7, I_FACE[0], I_FACE[1], 30, at=0.42, rel="car", cut=True, interior=True),    # CUT ("quietly keeps its"): the INTERIOR, rendered without the car body: the driver seen from the front passenger seat
+        _key(k(cue("Pillars doors and roof")) - 0.01, (0.50, 0.85, 1.0), I_FACE[1], 30, at=0.42, rel="car", interior=True),     # slow move
     ]
-    _o = _orbit_car(k(t_b4) - 0.7, k(t_b5) - 0.01, (-0.36, 0.55), 1.7, 0.95, 1.1, 0.0, -22.0, 36, n=8, at=0.42)
-    _o[0]["cut"] = True      # CUT ("quietly keeps its"): slow orbit round the driver's seat towards the front
-    K += _o
+    K += [
+        _key(k(cue("Pillars doors and roof")), I_FWD[0], I_FWD[1], 24, at=0.42, rel="car", cut=True, interior=True),      # CUT ("Pillars doors and roof"): from the passenger seat forward: wheel, dashboard, the wall beyond the windscreen
+        _key(k(t_b5) - 0.01, (0.50, -0.45, 1.0), (-0.40, 0.75, 0.85), 24, at=0.42, rel="car", interior=True),
+    ]
     r_con = r(cue(cm.RIGID_CONTACT_CUE))
     R = [
         _key(0.0, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),                      # the same run-up camera as the first crash: the blue car rolls towards the wall
         _key(r_con - 0.01, (-2.9, -2.5, 0.95), (0.0, -0.85, 0.5), 28, at=0.45, rel=True),
-        _key(r_con, DRV_SIDE[0], DRV_SIDE[1], 32, at=0.42, rel="car", cut=True),                      # CUT at the contact ("stops almost instantly"): the SAME driver's-seat view as the first crash, the driver lunges at the wheel
-        _key(r_con + 0.01, (-1.85, 0.8, 0.95), DRV_SIDE[1], 32, at=0.42, rel="car"),
-        _key(r_con + 1.4 - 0.01, (-1.85, 0.8, 0.95), DRV_SIDE[1], 32, at=0.42, rel="car"),              # slow push-in while the car stops and turns round
-        _key(r_con + 1.4, (-1.9, 1.05, 1.0), (0.0, 0.7, 0.95), 32, at=0.42, rel="car", cut=True),          # CUT ("and bounces back"): driver's seat from the front-left while the car leaves the wall
+        _key(r_con, I_FACE[0], I_FACE[1], 30, at=0.42, rel="car", cut=True, interior=True),            # CUT at the contact ("stops almost instantly"): the SAME interior view as in the first crash, the driver lunges at the wheel
+        _key(r_con + 1.4 - 0.01, (0.50, 0.85, 1.0), I_FACE[1], 30, at=0.42, rel="car", interior=True),  # slow move while the car stops and turns round
+        _key(r_con + 1.4, I_FWD[0], I_FWD[1], 24, at=0.42, rel="car", cut=True, interior=True),        # CUT ("and bounces back"): forward view through the windscreen: the wall falls away
     ]
     C = [
         _key(0.0, (-2.6, -3.0, 1.5), (0.0, -0.9, 0.5), 34, at=0.45),
@@ -140,7 +145,7 @@ def camera(kind: str, frame: int = 1) -> dict:
     loc = absolute(a, "loc") * (1 - w) + absolute(b, "loc") * w
     target = absolute(a, "target") * (1 - w) + absolute(b, "target") * w
     at = a["at"] * (1 - w) + b["at"] * w
-    return {"loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": a["lens"] * (1 - w) + b["lens"] * w,
+    return {"interior": bool(a.get("interior")), "loc": tuple(float(v) for v in loc), "target": tuple(float(v) for v in target), "lens": a["lens"] * (1 - w) + b["lens"] * w,
             "shift_y": (0.5 - (1.0 - at)) * (PANEL_PX["full"][1] / PANEL_PX["full"][0])}
 
 

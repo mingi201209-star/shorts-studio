@@ -99,7 +99,13 @@ def frame_evidence(car: Car, recs: dict, frame: int) -> dict:
         dst = dm.at(panel, cm.frame_time(frame))
         pitch = dm.pitch_rad(dst["travel_m"]) + dm.head_extra_rad(dst["chest_g"])
         head = np.array([-0.36, 0.08 + 0.25 * dst["travel_m"] + 0.67 * np.sin(pitch), 0.40 + 0.67 * np.cos(pitch)])
-        views["driver"] = bool(metrics["cabin.xray_factor"] >= 0.5 and inside(tuple(head)))
+        views["driver"] = bool((metrics["cabin.xray_factor"] >= 0.5 or cam["interior"]) and inside(tuple(head)))
+        if cam["interior"]:      # interior shot: the car body is not rendered; the caption rows are checked against the driver's head
+            for name in ("car_front", "crush_rails", "bumper_beam", "safety_cell", "whole_car"):
+                views[name] = False
+            hq = ccams.project(np.array([head], float) + shift, cam, seg["layout"])[0]
+            head_row = (1.0 - hq[1]) * 1920.0
+            overlap = 1.0 if CAPTION_ROWS[0] <= head_row <= CAPTION_ROWS[1] else 0.0
         metrics[f"{panel}.dummy_peak_chest_g"] = dst["peak_chest_g"]
         metrics[f"{panel}.dummy_injury"] = dst["injury"]
         metrics[f"{panel}.dummy_travel_m"] = dst["travel_m"]
