@@ -303,7 +303,7 @@ class Belt:
         mw = self.root.matrix_world
         bsdf = self.mat.node_tree.nodes.get("Principled BSDF")
         bsdf.inputs["Emission Color"].default_value = (1.0, 0.55, 0.08, 1.0)
-        bsdf.inputs["Emission Strength"].default_value = 3.0 * float(np.clip(chest_g / bm.LIMIT_G, 0.0, 1.0)) ** 2      # the strap glows with its tension
+        bsdf.inputs["Emission Strength"].default_value = 3.0 * float(np.clip(chest_g / bm.LIMIT_G, 0.0, 1.0)) ** 0.5      # the strap glows with its tension (already visible at the snap)
         car = lambda p: mw @ Vector(p)
         tor = lambda p: pivot.matrix_world @ Vector(p)
         reel_exit = (REEL_AT[0], REEL_AT[1], REEL_AT[2] + 0.06)
@@ -343,20 +343,20 @@ class Reel:
         sp = add(bpy.context.object, self.spool)
         sp.name = "Reel spool"
         sp.data.materials.append(steel)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.052, depth=0.06, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.052, depth=0.034, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
         self.roll = add(bpy.context.object, self.spool)
         self.roll.name = "Reel webbing roll"
         self.roll.data.materials.append(web)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.013, depth=0.16, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.017, depth=0.19, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
         bar = add(bpy.context.object, self.spool)
         bar.name = "Torsion bar"
         bar.data.materials.append(bar_mat)
         self.stripes = []
-        for i in range(9):
+        for i in range(12):
             bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0))
             st = add(bpy.context.object, self.spool)
             st.name = f"Torsion bar stripe {i}"
-            st.scale = (0.012, 0.016, 0.006)
+            st.scale = (0.016, 0.012, 0.008)
             st.data.materials.append(orange)
             self.stripes.append(st)
 
@@ -366,10 +366,11 @@ class Reel:
         r = 0.052 - 0.02 * u
         self.roll.scale = (r / 0.052, r / 0.052, 1.0)
         twist = 4.0 * u                                   # total twist of the bar (rad): the stripes fan out
+        ys = [-0.090 + 0.0105 * k for k in range(6)] + [0.0285 + 0.0105 * k for k in range(6)]      # six stripes on each visible end of the bar (the middle is behind the webbing roll)
         for i, st in enumerate(self.stripes):
-            y = -0.07 + 0.0175 * i
-            a = twist * i / 8.0
-            st.location = (0.0135 * math.cos(a), y, 0.0135 * math.sin(a))
+            y = ys[i]
+            a = twist * (y + 0.09) / 0.18                    # progressive twist along the bar
+            st.location = (0.0185 * math.cos(a), y, 0.0185 * math.sin(a))
             st.rotation_euler = (0.0, -a, 0.0)
 
     def set_visible(self, visible):

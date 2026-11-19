@@ -20,7 +20,7 @@ SHOTS = {
     "sb3-snaps-tight": {"line": 2, "text": "In a crash it first snaps tight, pulling you back into the seat.", "variant": "modern", "dt": 0.009, "interior": True, "xray": 0.0, "cabin_xray": 0.0,
                         "cam": {"rel": "car", "loc": I_CHEST[0], "target": I_CHEST[1], "lens": 26.0, "at": 0.42}},
     "sb4-reel": {"line": 4, "text": "Then a twisting metal bar in the reel starts to give, letting out a little belt.", "variant": "modern", "dt": 0.050, "interior": True, "xray": 0.0, "cabin_xray": 0.0,
-                 "hide_seat": True, "cam": {"rel": "car", "loc": REEL[0], "target": REEL[1], "lens": 55.0, "at": 0.45}},
+                 "hide_seat": True, "cam": {"rel": "car", "loc": REEL[0], "target": REEL[1], "lens": 75.0, "at": 0.45}},
     "sb5-gentle-stop": {"line": 6, "text": "Your chest gets a longer, gentler stop.", "variant": "modern", "dt": 0.060, "interior": True, "xray": 0.0, "cabin_xray": 0.0,
                         "cam": {"rel": "car", "loc": I_FACE[0], "target": I_FACE[1], "lens": 30.0, "at": 0.42}},
     "sb6-plain-belt": {"line": 7, "text": "A belt with no give stops it almost at once, with a harder push.", "variant": "plain", "dt": 0.060, "interior": True, "xray": 0.0, "cabin_xray": 0.0,
