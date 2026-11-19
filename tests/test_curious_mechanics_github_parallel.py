@@ -107,6 +107,20 @@ def test_real_contact_shard_is_inside_rolling_contact_timeline(variant):
     assert end <= 900
 
 
+def test_selective_recovery_workflow_only_retries_failed_shards():
+    workflow = (ROOT / ".github/workflows/curious-mechanics-selective-recovery.yml").read_text()
+    assert "workflow_dispatch:" in workflow
+    assert "source_run_id:" in workflow
+    assert "variant: C" in workflow and "shard: 2" in workflow
+    assert "curious-native-C-2-recovery" in workflow
+    assert "curious-contact-${{ matrix.variant }}-recovery" in workflow
+    assert 'gh run download "$SOURCE_RUN_ID"' in workflow
+    assert 'gh run download "$GITHUB_RUN_ID"' in workflow
+    assert "curious-native-A-1" in workflow and "curious-native-B-3" in workflow
+    assert "curious-native-C-3" in workflow
+    assert "retention-days: 90" in workflow
+
+
 def test_contact_cli_resolves_package_from_repository_root():
     env = os.environ.copy()
     env["PYTHONPATH"] = str(ROOT)
