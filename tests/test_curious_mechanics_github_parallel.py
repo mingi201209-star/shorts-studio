@@ -87,6 +87,8 @@ def test_production_workflow_is_manual_only_and_uses_free_standard_runners():
     assert "runs-on: ubuntu-24.04" in workflow
     assert "max-parallel: 18" in workflow
     assert "needs: preflight" in workflow
+    assert "matrix.shard <= 3" not in workflow
+    assert "fromJSON(inputs.mode == 'full'" in workflow
     assert "CM_AUDIO_EXPORT_ENABLED" in workflow
     assert "Full production requires CM_AUDIO_EXPORT_ENABLED=true" in workflow
     assert "retention-days: 1" in workflow  # transient native shards
