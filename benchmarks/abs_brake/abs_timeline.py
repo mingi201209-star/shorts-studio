@@ -1,7 +1,7 @@
 """EP.06 film timeline (pure data, no Blender). Picture segments follow the frozen narration (examples/episodes/ep06-audio/audio-validation.json):
 segment k starts when narration line k starts. Each segment maps film time to simulated time (real time or slow motion, stated per segment)
 and moves the camera from cam_a to cam_b. The film opens on the split screen (no pre-roll: the first word is at 0 s) and its last second is the
-run-in just before the brakes go on, so the Short loops back into frame 0."""
+run-in to the opening moment, so the Short loops back into frame 0."""
 from __future__ import annotations
 
 import json
@@ -10,6 +10,10 @@ from pathlib import Path
 FPS = 24
 END_PAD_S = 0.25
 LOOP_S = 1.0
+# EP.05 retention (owner's Studio, first hour): a split screen of two close-ups kept only 23.4 % of viewers, while the Road Signs Short
+# (two cars visibly crashing in the first second) kept 69.9 %. So the film opens already 0.6 s into the stop: the locked car hits the box
+# at about 0.95 s of film time, inside the first second.
+OPEN_SIM = 0.6
 AUDIO = Path(__file__).resolve().parents[2] / "examples/episodes/ep06-audio/audio-validation.json"
 
 SPLIT_CAM = {"rel": "chase", "loc": (3.4, -6.5, 4.2), "target": (-1.0, 7.0, -1.3), "lens": 28.0}
@@ -27,7 +31,7 @@ PEDAL_B = {"rel": "pedal", "loc": (0.75, 0.00, 0.30), "target": (0.0, 0.32, 0.19
 
 # label, variant, sim start, sim end, cam a, cam b, flags, narration lines
 ROWS = [
-    ("A-split-stop", "both", 0.00, None, SPLIT_CAM, SPLIT_CAM_B, {"split": True}, (1,)),
+    ("A-split-stop", "both", OPEN_SIM, None, SPLIT_CAM, SPLIT_CAM_B, {"split": True}, (1,)),
     ("B-wheel-locks", "locked", 0.00, 0.45, SIDE_WHEEL, SIDE_WHEEL_B, {}, (2,)),
     ("C-slides-straight", "locked", 0.55, 1.75, TOP, TOP_B, {}, (3,)),
     ("D-sensor", "abs", 0.40, 0.55, WHEEL_WIDE, RING, {"macro": True}, (4,)),
@@ -35,7 +39,7 @@ ROWS = [
     ("F-many-times", "abs", 0.75, 1.25, CALIPER, CALIPER_WIDE, {"macro": True}, (6,)),
     ("G-abs-steers", "abs", 0.70, 1.95, TOP, TOP_B, {}, (7,)),
     ("H-pedal-buzz", "abs", 0.40, 1.60, PEDAL, PEDAL_B, {"pedal": True}, (8,)),
-    ("I-loop-run-in", "both", -LOOP_S, 0.0, SPLIT_CAM, SPLIT_CAM, {"split": True}, (8,)),
+    ("I-loop-run-in", "both", OPEN_SIM - LOOP_S, OPEN_SIM, SPLIT_CAM, SPLIT_CAM, {"split": True}, (8,)),
 ]
 
 

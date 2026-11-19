@@ -53,3 +53,13 @@ make split-screen-from-frame-1 the default opening for every episode.
 - Built as an edit of the existing frames (run 44463242672, no re-render): frames 0-60 are the top/bottom split, then the calm cabin leads into the snap.
 - Final preview run 44473029950: all gates PASS, including the new `split_opening` gate (both halves within 2 ms of the same crash time) and the two fixed gates (`no_scene_text`, `captions_visible` at 24 fps). 586 frames, 24 fps, 24.4 s.
 - Still NOT verified: voice pronunciation, sound-off readability, a human first view. The owner uploads.
+
+## First data after upload (owner's Studio, 61 minutes after posting)
+| | viewed vs swiped | avg view duration (24.4 s film) |
+|---|---|---|
+| EP.05 seatbelt, split close-ups from frame 1 | **23.4% / 76.6%** | **0:32** (more than one full play: viewers who stay, rewatch) |
+
+Small first-hour sample; re-check at 24-48 h. Reading: the content holds people, the first frame does not. The hypothesis
+"split screen from frame 1" was incomplete: the Road Signs opening worked because a crash between two visible cars is readable
+in the first second, not because the screen is split. Two cabin close-ups without the car or the crash are not readable in the feed.
+Applied to EP.06: wide shot of both cars and the box, opening 0.6 s into the stop so the locked car hits the box at 0.95 s.
