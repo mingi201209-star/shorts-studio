@@ -17,6 +17,7 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.abs_brake import abs_motion as am  # noqa: E402
 from benchmarks.abs_brake import abs_shots as shots  # noqa: E402
+from benchmarks.abs_brake import abs_timeline as tl  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
 
@@ -31,6 +32,8 @@ def arguments():
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--res-scale", type=float, default=0.5)
     p.add_argument("--samples", type=int, default=16)
+    p.add_argument("--film", action="store_true", help="render film frames (abs_timeline) instead of storyboard shots")
+    p.add_argument("--frames", default="0-0")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
 
@@ -160,6 +163,61 @@ class BrakeCutaway:
             ob.hide_render = not on
 
 
+PEDAL_AT = Vector((0.0, -400.0, 0.0))     # the footwell set stands far behind the start, out of every road shot
+
+
+class Pedal:
+    """Insert for the last line: driver's shoe on the brake pedal in a dark footwell. The pedal is pushed down by the brake pressure and, while ABS
+    eases and reapplies the pressure, it kicks back against the foot (the 'buzz'). Same pressure signal as the caliper glow."""
+
+    def __init__(self):
+        self.objs = []
+        dark = material("Footwell", (0.035, 0.037, 0.045), rough=0.9)
+        carpet = material("Carpet", (0.06, 0.06, 0.07), rough=1.0)
+        metal = material("Pedal arm", (0.25, 0.25, 0.27), metal=1.0, rough=0.4)
+        rubber = material("Pedal pad", (0.02, 0.02, 0.02), rough=0.8)
+        shoe_m = material("Shoe", (0.30, 0.17, 0.08), rough=0.6)
+        sole_m = material("Sole", (0.85, 0.85, 0.82), rough=0.7)
+        P = PEDAL_AT
+        for name, c, d, m in (("Footwell floor", (0, 0.1, -0.02), (1.4, 1.4, 0.04), carpet), ("Firewall", (0, 0.55, 0.4), (1.4, 0.04, 1.0), dark),
+                              ("Footwell side", (-0.45, 0.1, 0.4), (0.04, 1.4, 1.0), dark), ("Footwell roof", (0, 0.1, 0.85), (1.4, 1.4, 0.04), dark)):
+            ob = cube(name, P + Vector(c), d, m)
+            self.objs.append(ob)
+        self.pivot = bpy.data.objects.new("Pedal pivot", None)
+        bpy.context.collection.objects.link(self.pivot)
+        self.pivot.location = P + Vector((0, 0.45, 0.62))
+        tilt = math.radians(30)                                  # pad face tilted back toward the driver
+        arm = cube("Pedal arm", (0, 0, 0), (0.03, 0.03, 0.46), metal)
+        arm.parent, arm.location = self.pivot, (0, -0.05, -0.23)
+        arm.rotation_euler = (math.radians(-12), 0, 0)          # leans toward the driver so its foot meets the pad
+        pad_c = Vector((0, -0.10, -0.47))
+        pad = cube("Pedal pad", (0, 0, 0), (0.13, 0.03, 0.09), rubber)
+        pad.parent, pad.location, pad.rotation_euler = self.pivot, pad_c, (tilt, 0, 0)
+        n = Vector((0, -math.cos(tilt), -math.sin(tilt)))        # the pad's -Y face after the X rotation: its normal points at the foot
+        along = Vector((0, math.sin(tilt), -math.cos(tilt)))     # the pad's -Z axis after the rotation: down the pad face
+        sole = cube("Sole", (0, 0, 0), (0.11, 0.028, 0.29), sole_m)
+        sole.parent, sole.location, sole.rotation_euler = self.pivot, pad_c + n * 0.029 + along * 0.06, (tilt, 0, 0)
+        shoe = cube("Shoe", (0, 0, 0), (0.105, 0.09, 0.27), shoe_m)
+        shoe.parent, shoe.location, shoe.rotation_euler = self.pivot, pad_c + n * 0.087 + along * 0.07, (tilt, 0, 0)
+        heel = pad_c + n * 0.09 + along * 0.17
+        shin = Vector((0, -math.sin(math.radians(55)), math.cos(math.radians(55))))      # from the heel back toward the seat and up
+        leg = cube("Trouser leg", (0, 0, 0), (0.10, 0.10, 0.55), material("Trousers", (0.05, 0.07, 0.11), rough=0.8))
+        leg.parent, leg.location, leg.rotation_euler = self.pivot, heel + n * 0.10 + shin * 0.30, (math.radians(55), 0, 0)
+        self.objs += [arm, pad, shoe, sole, leg]
+        bpy.ops.object.light_add(type="AREA", location=P + Vector((0.4, -0.5, 0.7)))
+        lamp = bpy.context.object
+        lamp.data.energy, lamp.data.size = 60.0, 0.6
+        lamp.rotation_euler = Vector((-0.4, 0.5, -0.6)).to_track_quat("-Z", "Y").to_euler()
+        self.objs.append(lamp)
+
+    def update(self, pressure):
+        self.pivot.rotation_euler = (math.radians(-(10.0 + 2.5 * pressure)), 0, 0)     # held down; a small kick back each time ABS eases the pressure
+
+    def set_visible(self, on):
+        for ob in self.objs:
+            ob.hide_render = not on
+
+
 def main():
     args = arguments()
     args.out.mkdir(parents=True, exist_ok=True)
@@ -184,50 +242,73 @@ def main():
     box = build_box()
     skid = Skid(wheels)
     cut = BrakeCutaway(root, wheels["front_left"])
+    world_objs = [o for o in bpy.data.objects if o.type in ("MESH", "LIGHT") and o.name != sun.name]
+    pedal = Pedal()
     fl_parts = [o for o in wheels["front_left"]["node"].children if o not in cut.parts_spin]
     car_meshes = [o for o in root.children_recursive if o.type == "MESH" and o not in cut.parts_spin + cut.parts_fixed]
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
     scene.collection.objects.link(cam)
     scene.camera = cam
-    names = list(shots.SHOTS) if args.shots == "all" else args.shots.split(",")
-    out = []
-    for name in names:
-        t0 = time.time()
-        sh = shots.SHOTS[name]
-        st = am.at(sh["variant"], sh["t"])
-        w, h = sh.get("frame", shots.FRAME)
-        scene.render.resolution_x, scene.render.resolution_y = round(w * args.res_scale), round(h * args.res_scale)
+
+    def render(sh, variant, path, size):
+        st = am.at(variant, sh["t"])
+        scene.render.resolution_x, scene.render.resolution_y = round(size[0] * args.res_scale), round(size[1] * args.res_scale)
         root.location = (st["x"], st["y"], 0.0)
         root.rotation_euler = (0, 0, st["heading"])
-        pitch = 0.012 * min(1.0, st["t"] / 0.15) if st["speed"] > 0.3 else 0.0      # nose dips under braking
+        pitch = 0.012 * min(1.0, max(0.0, st["t"]) / 0.15) if st["speed"] > 0.3 else 0.0      # nose dips under braking
         body.rotation_euler = (-pitch, 0, 0)
         for key, wh in wheels.items():
-            wh["node"].rotation_euler = (-st["wheel_angle"], 0, st["steer"] if key.startswith("front") else 0.0)
             wh["node"].rotation_mode = "ZXY"
+            wh["node"].rotation_euler = (-st["wheel_angle"], 0, st["steer"] if key.startswith("front") else 0.0)
         bx = st["box"]
         box.location = (bx["x"], bx["y"], bx["z"])
         box.rotation_euler = (bx["rx"], 0, 0)
-        skid.update(sh["variant"], sh["t"])
+        skid.update(variant, sh["t"])
         cut.update(st["pressure"], st["wheel_angle"], st["steer"])
-        macro = bool(sh.get("macro"))
-        cut.set_visible(macro)
-        for ob in fl_parts:
-            ob.hide_render = macro and ob.type == "MESH"
-        for ob in car_meshes:
-            if ob not in fl_parts:
-                ob.hide_render = macro and bool(sh.get("hide_body"))
+        pedal.update(st["pressure"])
+        macro, in_pedal = bool(sh.get("macro")), bool(sh.get("pedal"))
+        for ob in world_objs:
+            ob.hide_render = in_pedal
+        pedal.set_visible(in_pedal)
+        sun.hide_render = in_pedal
+        if not in_pedal:
+            cut.set_visible(macro)
+            skid.update(variant, sh["t"])
+            for ob in fl_parts:
+                ob.hide_render = macro and ob.type == "MESH"
         c = sh["cam"]
-        origin = Vector((st["x"], st["y"], 0.0)) if c["rel"] == "car" else Vector((0, st["y"], 0)) if c["rel"] == "chase" else Vector((0, 0, 0))
+        origin = {"car": Vector((st["x"], st["y"], 0.0)), "chase": Vector((0, st["y"], 0)), "pedal": PEDAL_AT}.get(c["rel"], Vector((0, 0, 0)))
         dd = cam.data
         dd.sensor_fit, dd.sensor_width, dd.lens, dd.clip_start = "HORIZONTAL", 36.0, c["lens"], 0.02
         base.set_camera(cam, origin + Vector(c["loc"]), origin + Vector(c["target"]))
         bpy.context.view_layer.update()
-        path = args.out / f"{name}.png"
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
-        info = {"shot": name, "variant": sh["variant"], "t": sh["t"], "x": round(st["x"], 3), "y": round(st["y"], 3), "heading_deg": round(math.degrees(st["heading"]), 2),
+        return {"variant": variant, "t": round(sh["t"], 5), "x": round(st["x"], 3), "y": round(st["y"], 3), "heading_deg": round(math.degrees(st["heading"]), 2),
                 "speed_kmh": round(st["speed"] * 3.6, 1), "wheel_rpm": round(st["wheel_omega"] * 60 / (2 * math.pi), 1), "steer_deg": round(math.degrees(st["steer"]), 2),
-                "pressure": round(st["pressure"], 3), "box_hit": bx["hit"], "render_seconds": round(time.time() - t0, 1), "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+                "pressure": round(st["pressure"], 3), "box_hit": bx["hit"], "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
+
+    out = []
+    if args.film:
+        segs = tl.segments()
+        a, b = (int(x) for x in args.frames.split("-"))
+        for f in range(a, b + 1):
+            t0 = time.time()
+            sh = tl.frame_state(f, segs)
+            if sh.get("split"):
+                parts = [render(sh, "abs", args.out / f"frame_{f:05d}_top.png", shots.HALF), render(sh, "locked", args.out / f"frame_{f:05d}_bot.png", shots.HALF)]
+            else:
+                parts = [render(sh, sh["variant"], args.out / f"frame_{f:05d}.png", shots.FRAME)]
+            info = {"frame": f, "segment": sh["segment"], "split": bool(sh.get("split")), "parts": parts, "render_seconds": round(time.time() - t0, 1)}
+            out.append(info)
+            print("ABS_FRAME " + json.dumps(info), flush=True)
+        (args.out / f"abs-frames-{a:05d}.json").write_text(json.dumps({"renderer_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "frames": out}, indent=1))
+        return
+    names = list(shots.SHOTS) if args.shots == "all" else args.shots.split(",")
+    for name in names:
+        t0 = time.time()
+        sh = shots.SHOTS[name]
+        info = {"shot": name, **render(sh, sh["variant"], args.out / f"{name}.png", sh.get("frame", shots.FRAME)), "render_seconds": round(time.time() - t0, 1)}
         out.append(info)
         print("ABS_SHOT " + json.dumps(info), flush=True)
     (args.out / "abs-shots.json").write_text(json.dumps({"renderer_source_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), "shots": out, "abs_gate": am.abs_physics()}, indent=1))

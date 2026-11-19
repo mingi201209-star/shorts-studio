@@ -121,6 +121,9 @@ def _run(variant: str) -> tuple:
 
 
 def at(variant: str, t: float) -> dict:
+    if t < 0:      # before the driver brakes: both cars cruise straight at V0 (used for the run-in that loops back to the first frame)
+        return {"t": t, "x": 0.0, "y": V0 * t, "heading": 0.0, "speed": V0, "wheel_omega": V0 / TYRE_R, "wheel_angle": V0 * t / TYRE_R, "steer": 0.0,
+                "pressure": 0.0, "slip": 0.0, "box": box_pose(variant, 0.0)}
     rows, box = _run(variant)
     i = min(len(rows) - 1, max(0, int(round(t / DT))))
     t_, x, y, psi, v, omega, wa, d, p, slip = rows[i]

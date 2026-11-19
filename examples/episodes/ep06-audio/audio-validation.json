@@ -1,0 +1,170 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 24.069,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.143333,
+      "text": "Same emergency stop."
+    },
+    {
+      "start": 1.536166,
+      "end": 2.976625,
+      "text": "Only one car\\Ncan still steer."
+    },
+    {
+      "start": 3.376630875,
+      "end": 4.317088875,
+      "text": "Without ABS,"
+    },
+    {
+      "start": 4.5314218749999995,
+      "end": 5.3766718749999995,
+      "text": "slam the brakes"
+    },
+    {
+      "start": 5.471880874999999,
+      "end": 6.329005874999999,
+      "text": "and the wheels lock."
+    },
+    {
+      "start": 6.72901175,
+      "end": 8.229011750000002,
+      "text": "A sliding\\Ntire can't steer,"
+    },
+    {
+      "start": 8.514719750000001,
+      "end": 9.53851075,
+      "text": "so the\\Ncar goes straight."
+    },
+    {
+      "start": 9.938516625,
+      "end": 11.688515624999999,
+      "text": "ABS watches\\Nhow fast every"
+    },
+    {
+      "start": 11.700391625,
+      "end": 12.474224625,
+      "text": "wheel is turning."
+    },
+    {
+      "start": 12.874230500000001,
+      "end": 14.3027715,
+      "text": "The moment one\\Nstarts to lock,"
+    },
+    {
+      "start": 14.6599385,
+      "end": 15.648063500000001,
+      "text": "it eases the brake,"
+    },
+    {
+      "start": 15.9099385,
+      "end": 16.9099375,
+      "text": "then squeezes again,"
+    },
+    {
+      "start": 17.309943375,
+      "end": 18.214692375,
+      "text": "many times a second."
+    },
+    {
+      "start": 18.61469825,
+      "end": 19.79332325,
+      "text": "So the\\Ntires keep rolling,"
+    },
+    {
+      "start": 20.07898925,
+      "end": 20.95994725,
+      "text": "and they can still turn."
+    },
+    {
+      "start": 21.359953125,
+      "end": 22.240911125,
+      "text": "That buzz in the pedal?"
+    },
+    {
+      "start": 22.645703125,
+      "end": 23.728994125,
+      "text": "That's ABS working."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.316630875,
+      "narration_en": "Same emergency stop. Only one car can still steer.",
+      "source_audio_sha256": "d2668fe5c593c3674be3a2e424d3adf27dce8a7658ee64a858d232527b413374"
+    },
+    {
+      "start": 3.316630875,
+      "end": 6.66901175,
+      "narration_en": "Without ABS, slam the brakes and the wheels lock.",
+      "source_audio_sha256": "8c11b38f3d2b317df55a363f2d6b5f831dd1252eaf2370f9f318a90dce88925a"
+    },
+    {
+      "start": 6.66901175,
+      "end": 9.878516625,
+      "narration_en": "A sliding tire can't steer, so the car goes straight.",
+      "source_audio_sha256": "bd5fa40037f721cfcd995138b826fb05b696c934e103a7c7bb0865ab82d3d169"
+    },
+    {
+      "start": 9.878516625,
+      "end": 12.8142305,
+      "narration_en": "ABS watches how fast every wheel is turning.",
+      "source_audio_sha256": "c6e0907d8f06bd4cf4459af68cf797d0bdada917cc436cf467256319935f1f59"
+    },
+    {
+      "start": 12.8142305,
+      "end": 17.249943375,
+      "narration_en": "The moment one starts to lock, it eases the brake, then squeezes again,",
+      "source_audio_sha256": "8662122526b3cdf52a08d8985d3fa20d8220de1dcb1022cf6f63cf464a298b59"
+    },
+    {
+      "start": 17.249943375,
+      "end": 18.55469825,
+      "narration_en": "many times a second.",
+      "source_audio_sha256": "aa39e8ec4c9b3a667801426590bb9438a7a83027ec7e0f3d043ec5a11cfb9d71"
+    },
+    {
+      "start": 18.55469825,
+      "end": 21.299953125000002,
+      "narration_en": "So the tires keep rolling, and they can still turn.",
+      "source_audio_sha256": "997782a8f82598beda0a36b224c006b5238f7cf40878d127b3e1e11fed9f0691"
+    },
+    {
+      "start": 21.299953125000002,
+      "end": 24.069,
+      "narration_en": "That buzz in the pedal? That's ABS working.",
+      "source_audio_sha256": "1f02da5740653c01993516b2047e4174fbfa0dde132847672c1a2d12ecdc90b5"
+    }
+  ],
+  "silence_gaps": [
+    0.484083,
+    0.420354,
+    0.430104,
+    0.417708,
+    0.455271,
+    0.330771,
+    0.307812,
+    0.394125,
+    0.418667,
+    0.406062,
+    0.424292,
+    0.30375
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.5,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.8,
+      -16.9,
+      -16.1,
+      -16.7
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "fbf527c7583195cee6d178a2e1580712a9e2760a61093bc20d5d1e1d98273e15"
+}

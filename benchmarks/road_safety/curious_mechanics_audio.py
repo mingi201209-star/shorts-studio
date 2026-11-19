@@ -27,7 +27,8 @@ def build(capture,out,target_seconds=30,grouper=caption_groups,trim=False,gap_s=
   run(['ffmpeg','-v','error','-y','-ss',f'{lead:.6f}','-i',raw,'-af',f'apad=whole_dur={end-cursor:.9f}','-t',f'{end-cursor:.9f}','-ar','48000','-ac','1',wav]);pieces.append(wav)
   locked.append(dict(start=cursor,end=end,narration_en=b['text'],source_audio_sha256=b['audio_sha256']));cursor=end
  concat=out/'voice-concat.txt';concat.write_text(''.join(f"file '{p.resolve()}'\n" for p in pieces))
- run(['ffmpeg','-v','error','-y','-f','concat','-safe','0','-i',concat,'-af','loudnorm=I=-16:TP=-1.5:LRA=9','-ar','48000','-ac','1','-t',f'{target_seconds}',out/'narration.wav'])
+ # loudnorm runs at 192 kHz internally and '-t' then cut ~30 ms early: resample back and pad to exactly target_seconds (the pieces already sum to it)
+ run(['ffmpeg','-v','error','-y','-f','concat','-safe','0','-i',concat,'-af',f'loudnorm=I=-16:TP=-1.5:LRA=9,aresample=48000,apad=whole_dur={target_seconds}','-ar','48000','-ac','1',out/'narration.wav'])
  run(['ffmpeg','-v','error','-y','-i',out/'narration.wav','-c:a','aac','-b:a','192k',out/'audio-preflight.m4a'])
  gaps=silence(out/'audio-preflight.m4a');levels=check_loudness(loudness(out/'audio-preflight.m4a',adaptive=trim),adaptive=trim)
  assert abs(float(probe(out/'narration.wav')['format']['duration'])-target_seconds)<.02

@@ -1,0 +1,49 @@
+{
+ "variants": [
+  {
+   "id": "abs-brake",
+   "beats": [
+    {
+     "narration_en": "Same emergency stop. Only one car can still steer.",
+     "start": 0,
+     "end": 3.8
+    },
+    {
+     "narration_en": "Without ABS, slam the brakes and the wheels lock.",
+     "start": 3.8,
+     "end": 7.6
+    },
+    {
+     "narration_en": "A sliding tire can't steer, so the car goes straight.",
+     "start": 7.6,
+     "end": 11.8
+    },
+    {
+     "narration_en": "ABS watches how fast every wheel is turning.",
+     "start": 11.8,
+     "end": 15.2
+    },
+    {
+     "narration_en": "The moment one starts to lock, it eases the brake, then squeezes again,",
+     "start": 15.2,
+     "end": 20.5
+    },
+    {
+     "narration_en": "many times a second.",
+     "start": 20.5,
+     "end": 22.4
+    },
+    {
+     "narration_en": "So the tires keep rolling, and they can still turn.",
+     "start": 22.4,
+     "end": 26.6
+    },
+    {
+     "narration_en": "That buzz in the pedal? That's ABS working.",
+     "start": 26.6,
+     "end": 30.0
+    }
+   ]
+  }
+ ]
+}
