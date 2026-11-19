@@ -20,3 +20,9 @@ saturates and the car spins (130 deg); ESC compares the yaw rate with the steeri
 - Loop gate: at 80 km/h under a following camera neighbouring frames already differ by about 6-7 (mean gray), so the seam is now compared
   with the steps right next to it instead of a fixed 6.0 (seam 6.95 vs neighbours 6.14 / 6.80).
 - NOT verified: voice pronunciation, sound-off readability, human first view. The owner uploads.
+
+## Labelled opening (2026-11-19, owner: "you choose")
+EP.06 kept 45.2 % of viewers after 2 h (EP.05 23.4 %, Road Signs 69.9 %). Road Signs named its test conditions on screen; the
+car-safety episodes since EP.04 had no on-screen text. The split opening and the loop now carry `ESC ON` (green) / `ESC OFF` (red) and
+`SAME SWERVE · WET ROAD · 80 km/h`, drawn as a 2D overlay in assembly only; captions sit on the divider there so the bottom car stays
+visible. Run 44542885064: every gate PASS. Next episode check: viewed rate vs EP.06 to see whether the labels help.
