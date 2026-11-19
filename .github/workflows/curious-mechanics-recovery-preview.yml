@@ -42,7 +42,12 @@ jobs:
             [[ "$status" == "completed" ]] || { echo "::error::Required source run $run is not completed"; exit 1; }
           done
           source_names=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false) | .name')
-          for name in curious-native-${{ matrix.variant }}-1 curious-native-${{ matrix.variant }}-2 curious-native-${{ matrix.variant }}-3; do
+          if [[ "${{ matrix.variant }}" == "C" ]]; then
+            expected_openings=(curious-native-C-1 curious-native-C-3)
+          else
+            expected_openings=(curious-native-${{ matrix.variant }}-1 curious-native-${{ matrix.variant }}-2 curious-native-${{ matrix.variant }}-3)
+          fi
+          for name in "${expected_openings[@]}"; do
             grep -Fqx "$name" <<< "$source_names" || { echo "::error::Missing or expired opening artifact: $name"; exit 1; }
           done
           recovery_names=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RECOVERY_RUN_ID/artifacts?per_page=100" --jq '.artifacts[] | select(.expired == false) | .name')
@@ -50,11 +55,14 @@ jobs:
           if [[ "${{ matrix.variant }}" == "C" ]]; then
             grep -Fqx "curious-native-C-2-recovery" <<< "$recovery_names" || { echo "::error::Missing or expired C native shard 2"; exit 1; }
           fi
-      - name: Verify preinstalled media tools and install Python preview dependencies
+      - name: Install preview dependencies with transient-download retries
         run: |
           set -euo pipefail
+          sudo apt-get update -qq -o Acquire::Retries=5
+          sudo apt-get install -y -o Acquire::Retries=5 ffmpeg fonts-dejavu-core
           command -v ffmpeg
           command -v ffprobe
+          test -r /usr/share/fonts/truetype/dejavu/DejaVuSans.ttf
           python -m pip install --disable-pip-version-check Pillow pydantic
       - name: Download preserved opening shards and contact recovery only
         env:
