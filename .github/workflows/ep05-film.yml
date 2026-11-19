@@ -3,7 +3,7 @@ name: EP05 belt film PREVIEW (whole film, 720x1280 master composed to 1080x1920)
 # Starts only when the request file changes. Never uploads anything.
 on:
   push:
-    branches: [fix/ep04-narration-visual-contract-20261117]
+    branches: [fix/ep04-narration-visual-contract-20261117, claude/focused-ptolemy-6o7vl9]
     paths:
       - examples/experiments/belt-film-request.json
 permissions:

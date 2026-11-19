@@ -25,7 +25,8 @@ W, H = 1080, 1920
 
 def no_scene_text_belt() -> dict:
     src = (Path(__file__).resolve().parent / "render_belt_3d.py").read_text()
-    banned = ("curves.new", '"FONT"', "'FONT'", "body_text", "text_add", "type=\"FONT\"")
+    # a CURVE object (the belt strap) is geometry, not text: only FONT curves and text operators count as scene text
+    banned = ('"FONT"', "'FONT'", "body_text", "text_add", "type=\"FONT\"")
     hits = [b for b in banned if b in src]
     return {"status": "FAIL" if hits else "PASS", "problems": [f"renderer creates scene text ({h})" for h in hits]}
 
@@ -52,6 +53,38 @@ def compose(panels: Path, out: Path, n_frames: int):
     if [int(s["shot"]) for s in shots] != list(range(n_frames)):
         raise SystemExit(f"rendered {len(shots)} frames, expected exactly frames 0..{n_frames - 1}")
     return shots, sha
+
+
+OPEN_FRAMES = 61          # the run-up (segment A) is replaced by the split-screen comparison; B (calm cabin) still leads into the snap
+SPLIT_TOP, SPLIT_H = 480, 960   # rows of the 1080x1920 cabin view kept in each half (driver head to lap)
+
+
+def split_opening(frames: Path, shots: list[dict]) -> dict:
+    """Retention data (owner's Studio, 2026-11-19): the side-by-side road-sign Short kept 69.9 % of viewers, the single-car crumple Short 48 %. So the film opens on the comparison
+    itself: top = modern belt (gentle stop, segment H), bottom = plain belt (segment I), both at the SAME simulated time after contact, already moving. Only frames that were
+    rendered from the model are reused; nothing is drawn or interpolated. Frames 0..OPEN_FRAMES-1 are overwritten."""
+    H_ = [s for s in shots if s["segment"] == "H-gentle-stop"]
+    I_ = [s for s in shots if s["segment"] == "I-plain-belt"]
+    if not H_ or not I_:
+        raise SystemExit("split opening needs the rendered H and I segments")
+    rows, problems = [], []
+    for k in range(OPEN_FRAMES):
+        top = H_[min(len(H_) - 1, round(k * (len(H_) - 1) / (OPEN_FRAMES - 1)))]
+        bot = min(I_, key=lambda s: abs(s["sim_time"] - top["sim_time"]))
+        if abs(bot["sim_time"] - top["sim_time"]) > 0.002:
+            problems.append(f"opening frame {k}: halves are {abs(bot['sim_time'] - top['sim_time']) * 1000:.1f} ms apart in the crash")
+        a = Image.open(frames / f"frame_{int(top['shot']) + 1:04d}.png").crop((0, SPLIT_TOP, W, SPLIT_TOP + SPLIT_H))
+        b = Image.open(frames / f"frame_{int(bot['shot']) + 1:04d}.png").crop((0, SPLIT_TOP, W, SPLIT_TOP + SPLIT_H))
+        im = Image.new("RGB", (W, H))
+        im.paste(a, (0, 0))
+        im.paste(b, (0, SPLIT_H))
+        im.paste((20, 20, 24), (0, SPLIT_H - 3, W, SPLIT_H + 3))
+        im.save(frames / f"frame_{k + 1:04d}.png")
+        rows.append((int(top["shot"]), int(bot["shot"])))
+    top_g = max(s["chest_g"] for s in H_)
+    bot_g = max(s["chest_g"] for s in I_)
+    return {"status": "FAIL" if problems else "PASS", "problems": problems[:5], "frames": OPEN_FRAMES, "source_frames_top_bottom": [rows[0], rows[-1]],
+            "same_crash_time_tolerance_ms": 2.0, "top_modern_peak_g": round(top_g, 1), "bottom_plain_peak_g": round(bot_g, 1)}
 
 
 def telemetry_matches_model(shots: list[dict], segs: list[dict]) -> dict:
@@ -102,6 +135,7 @@ def main():
     segs = tl.segments(film["line_starts"], film["total_s"])
     n = tl.frame_count(film["total_s"])
     shots, sha = compose(a.panels, frames, n)
+    opening = split_opening(frames, shots)
     audio_report = json.loads((a.audio / "audio-validation.json").read_text())
     frozen = json.loads((ROOT / "examples/experiments/belt-real-cues.json").read_text())
     narration_sha = hashlib.sha256((a.audio / "narration.wav").read_bytes()).hexdigest()
@@ -139,9 +173,10 @@ def main():
         "telemetry_matches_model": telemetry_matches_model(shots, segs),
         "visible_action": visible_action(shots, segs),
         "no_scene_text": no_scene_text_belt(),
+        "split_opening": opening,
         "smoothness": gates.smoothness(gray_diffs(video)),
         "black_opening": verify_no_black_opening(video, (0, 1440), a.out),
-        "captions_visible": verify_captions_over_picture(video, frames, [((c["start"] + c["end"]) / 2, (1400, 1919)) for c in in_clip], a.out),
+        "captions_visible": verify_captions_over_picture(video, frames, [((c["start"] + c["end"]) / 2, (1400, 1919)) for c in in_clip], a.out, fps=tl.FPS),
     }
     ok_status = ("PASS", "AUTO_PASS_HUMAN_REVIEW_PENDING")
     report["preview_status"] = "PASS" if not problems and all(v["status"] in ok_status for v in report.values() if isinstance(v, dict) and "status" in v) else "FAIL"
