@@ -120,13 +120,19 @@ def visible_action(frames: list[dict]) -> dict:
             "off_past_45deg_film_s": first_45, "braked_frames_in_I": len(braked)}
 
 
-def loop_closes(frames_dir: Path, n: int) -> dict:
-    """The last frame leads back into the first: the run-in ends one frame before the braking starts, same camera."""
+def loop_closes(frames_dir: Path, n: int, opening: int = 24) -> dict:
+    """The last frame leads back into the first as smoothly as any other cut-free step of the opening: the jump last -> first is compared with
+    the typical frame-to-frame change of the opening's first second (the cars move at 80 km/h with a following camera, so neighbouring frames
+    already differ). Seamless when the jump is at most 1.5 x the opening's median step."""
     import numpy as np
-    a = np.asarray(Image.open(frames_dir / f"frame_{n:04d}.png").convert("L"), dtype=np.float32)
-    b = np.asarray(Image.open(frames_dir / "frame_0001.png").convert("L"), dtype=np.float32)
-    d = float(np.abs(a - b).mean())
-    return {"status": "PASS" if d < 6.0 else "FAIL", "mean_abs_diff_last_vs_first": round(d, 2)}
+
+    def g(i):
+        return np.asarray(Image.open(frames_dir / f"frame_{i:04d}.png").convert("L"), dtype=np.float32)
+
+    steps = [float(np.abs(g(i + 1) - g(i)).mean()) for i in range(1, opening)]
+    typical = float(np.median(steps))
+    jump = float(np.abs(g(n) - g(1)).mean())
+    return {"status": "PASS" if jump <= 1.5 * typical else "FAIL", "mean_abs_diff_last_vs_first": round(jump, 2), "opening_median_step": round(typical, 2)}
 
 
 def main():
