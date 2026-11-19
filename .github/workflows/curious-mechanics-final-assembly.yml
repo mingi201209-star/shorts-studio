@@ -1,8 +1,6 @@
 name: Curious Mechanics final assembly and QA
 on:
-  push:
-    branches: [exp/curious-mechanics-production-20261029]
-    paths: [.github/workflows/curious-mechanics-final-assembly.yml]
+  workflow_dispatch:
 permissions:
   contents: read
   actions: read
@@ -25,6 +23,10 @@ jobs:
           EXPORT_KNOWN_HOSTS: ${{ secrets.CM_EXPORT_KNOWN_HOSTS_20261030 }}
         run: |
           set -euo pipefail
+          if [[ -z "$EXPORT_KEY" || -z "$EXPORT_HOST" || -z "$EXPORT_KNOWN_HOSTS" ]]; then
+            echo "::error::Private source-transfer credentials are missing; assembly is blocked."
+            exit 1
+          fi
           mkdir -p "$RUNNER_TEMP/bundle"
           printf '%s\n' "$EXPORT_KEY" > "$RUNNER_TEMP/export-key"
           chmod 600 "$RUNNER_TEMP/export-key"
@@ -74,7 +76,7 @@ jobs:
           name: curious-mechanics-three-review-films
           path: ${{ runner.temp }}/final-review/
           if-no-files-found: error
-          retention-days: 7
+          retention-days: 90
       - if: always()
         name: Remove temporary runner credential
         run: rm -f "$RUNNER_TEMP/export-key"
