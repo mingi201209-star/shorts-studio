@@ -2,7 +2,7 @@
   "status": "PASS",
   "voice": "en-US-AndrewNeural",
   "rate": "+5%",
-  "seconds": 24.069,
+  "seconds": 40.269,
   "cues": [
     {
       "start": 0.06,
@@ -11,160 +11,271 @@
     },
     {
       "start": 1.536166,
-      "end": 2.976625,
-      "text": "Only one car\\Ncan still steer."
+      "end": 2.595707,
+      "text": "Only one of\\Nthese cars can"
     },
     {
-      "start": 3.376630875,
-      "end": 4.317088875,
-      "text": "Without ABS,"
+      "start": 2.607625,
+      "end": 3.286208,
+      "text": "still steer."
     },
     {
-      "start": 4.5314218749999995,
-      "end": 5.3766718749999995,
-      "text": "slam the brakes"
+      "start": 3.5862055384615386,
+      "end": 5.3242885384615395,
+      "text": "Slam the\\Nbrakes without ABS"
     },
     {
-      "start": 5.471880874999999,
-      "end": 6.329005874999999,
+      "start": 5.443330538461538,
+      "end": 6.300454538461539,
       "text": "and the wheels lock."
     },
     {
-      "start": 6.72901175,
-      "end": 8.229011750000002,
-      "text": "A sliding\\Ntire can't steer,"
+      "start": 6.6004520769230774,
+      "end": 8.159993076923078,
+      "text": "A locked\\Ntire stops rolling"
     },
     {
-      "start": 8.514719750000001,
-      "end": 9.53851075,
-      "text": "so the\\Ncar goes straight."
+      "start": 8.302827076923078,
+      "end": 9.183785076923078,
+      "text": "and starts to slide"
     },
     {
-      "start": 9.938516625,
-      "end": 11.688515624999999,
-      "text": "ABS watches\\Nhow fast every"
+      "start": 9.483782615384618,
+      "end": 10.817115615384617,
+      "text": "and a sliding\\Ntire can't push"
     },
     {
-      "start": 11.700391625,
-      "end": 12.474224625,
-      "text": "wheel is turning."
+      "start": 10.828990615384617,
+      "end": 11.757573615384617,
+      "text": "the car sideways."
     },
     {
-      "start": 12.874230500000001,
-      "end": 14.3027715,
-      "text": "The moment one\\Nstarts to lock,"
+      "start": 12.057571153846157,
+      "end": 13.414737153846156,
+      "text": "So turn the\\Nwheel all you want"
     },
     {
-      "start": 14.6599385,
-      "end": 15.648063500000001,
-      "text": "it eases the brake,"
+      "start": 13.676654153846156,
+      "end": 14.533779153846156,
+      "text": "and the car still goes"
     },
     {
-      "start": 15.9099385,
-      "end": 16.9099375,
-      "text": "then squeezes again,"
+      "start": 14.545696153846157,
+      "end": 14.926654153846156,
+      "text": "straight."
     },
     {
-      "start": 17.309943375,
-      "end": 18.214692375,
+      "start": 15.226651692307696,
+      "end": 16.786151692307694,
+      "text": "ABS stops\\Nthe wheels from"
+    },
+    {
+      "start": 16.798067692307693,
+      "end": 17.167108692307693,
+      "text": "locking."
+    },
+    {
+      "start": 17.467106230769232,
+      "end": 18.80048023076923,
+      "text": "Behind each\\Nwheel a sensor"
+    },
+    {
+      "start": 18.812356230769232,
+      "end": 20.312397230769232,
+      "text": "counts the teeth\\Non a spinning"
+    },
+    {
+      "start": 20.324272230769232,
+      "end": 20.55048023076923,
+      "text": "ring"
+    },
+    {
+      "start": 20.85047776923077,
+      "end": 22.37431076923077,
+      "text": "so the computer\\Nknows how fast"
+    },
+    {
+      "start": 22.43381076923077,
+      "end": 23.56472676923077,
+      "text": "every wheel is turning."
+    },
+    {
+      "start": 23.86472430769231,
+      "end": 24.91230730769231,
+      "text": "When one\\Nwheel slows down"
+    },
+    {
+      "start": 24.92422430769231,
+      "end": 26.23376530769231,
+      "text": "faster than the\\Ncar it's about"
+    },
+    {
+      "start": 26.24568230769231,
+      "end": 26.73376530769231,
+      "text": "to lock"
+    },
+    {
+      "start": 27.03376284615385,
+      "end": 28.83138784615385,
+      "text": "so ABS eases\\Nthe brake on"
+    },
+    {
+      "start": 28.84326284615385,
+      "end": 29.855178846153848,
+      "text": "that wheel\\Nfor an instant"
+    },
+    {
+      "start": 30.128970846153848,
+      "end": 30.974261846153848,
+      "text": "and squeezes again"
+    },
+    {
+      "start": 31.274259384615387,
+      "end": 32.17900838461539,
       "text": "many times a second."
     },
     {
-      "start": 18.61469825,
-      "end": 19.79332325,
-      "text": "So the\\Ntires keep rolling,"
+      "start": 32.479005923076926,
+      "end": 33.75283892307692,
+      "text": "The tire keeps\\Nrolling at the"
     },
     {
-      "start": 20.07898925,
-      "end": 20.95994725,
-      "text": "and they can still turn."
+      "start": 33.764755923076926,
+      "end": 34.586171923076925,
+      "text": "edge of its grip"
     },
     {
-      "start": 21.359953125,
-      "end": 22.240911125,
-      "text": "That buzz in the pedal?"
+      "start": 34.78854692307692,
+      "end": 35.919463923076925,
+      "text": "so it can still steer."
     },
     {
-      "start": 22.645703125,
-      "end": 23.728994125,
-      "text": "That's ABS working."
+      "start": 36.219461461538465,
+      "end": 38.06471046153846,
+      "text": "That buzz in\\Nthe pedal is ABS"
+    },
+    {
+      "start": 38.076627461538465,
+      "end": 38.457585461538464,
+      "text": "working."
+    },
+    {
+      "start": 38.86233646153846,
+      "end": 40.02900246153846,
+      "text": "Keep pressing and steer."
     }
   ],
   "beats": [
     {
       "start": 0,
-      "end": 3.316630875,
-      "narration_en": "Same emergency stop. Only one car can still steer.",
-      "source_audio_sha256": "d2668fe5c593c3674be3a2e424d3adf27dce8a7658ee64a858d232527b413374"
+      "end": 3.5262055384615385,
+      "narration_en": "Same emergency stop. Only one of these cars can still steer.",
+      "source_audio_sha256": "455ba1d374132b839884aed4f88f0ef66a3d1fe51f8f004bae4d4ad8c1d7fd5c"
     },
     {
-      "start": 3.316630875,
-      "end": 6.66901175,
-      "narration_en": "Without ABS, slam the brakes and the wheels lock.",
-      "source_audio_sha256": "8c11b38f3d2b317df55a363f2d6b5f831dd1252eaf2370f9f318a90dce88925a"
+      "start": 3.5262055384615385,
+      "end": 6.540452076923078,
+      "narration_en": "Slam the brakes without ABS and the wheels lock.",
+      "source_audio_sha256": "32d0adeb6b62ad3edabc9bc8e685da24d75f48de751ac583769df58d2feb89dd"
     },
     {
-      "start": 6.66901175,
-      "end": 9.878516625,
-      "narration_en": "A sliding tire can't steer, so the car goes straight.",
-      "source_audio_sha256": "bd5fa40037f721cfcd995138b826fb05b696c934e103a7c7bb0865ab82d3d169"
+      "start": 6.540452076923078,
+      "end": 9.423782615384617,
+      "narration_en": "A locked tire stops rolling and starts to slide",
+      "source_audio_sha256": "8291de2b5ee39b5c0e558a0f0eff956e84dd4059ec39846c7a4fc5cfe8d97bcb"
     },
     {
-      "start": 9.878516625,
-      "end": 12.8142305,
-      "narration_en": "ABS watches how fast every wheel is turning.",
-      "source_audio_sha256": "c6e0907d8f06bd4cf4459af68cf797d0bdada917cc436cf467256319935f1f59"
+      "start": 9.423782615384617,
+      "end": 11.997571153846156,
+      "narration_en": "and a sliding tire can't push the car sideways.",
+      "source_audio_sha256": "dad7c083ba79022a0f27f04b5a5b1de89196744abb9ace27e2bb55758c6d6ab9"
     },
     {
-      "start": 12.8142305,
-      "end": 17.249943375,
-      "narration_en": "The moment one starts to lock, it eases the brake, then squeezes again,",
-      "source_audio_sha256": "8662122526b3cdf52a08d8985d3fa20d8220de1dcb1022cf6f63cf464a298b59"
+      "start": 11.997571153846156,
+      "end": 15.166651692307695,
+      "narration_en": "So turn the wheel all you want and the car still goes straight.",
+      "source_audio_sha256": "f1d82b5e9e1c4a72add3e9966f01383640996348569285e53c43d6f319769cdd"
     },
     {
-      "start": 17.249943375,
-      "end": 18.55469825,
+      "start": 15.166651692307695,
+      "end": 17.407106230769234,
+      "narration_en": "ABS stops the wheels from locking.",
+      "source_audio_sha256": "22228fe7874d1ac82591a3cb4e00601a0c6b8669db9e311183c7733523fba941"
+    },
+    {
+      "start": 17.407106230769234,
+      "end": 20.790477769230773,
+      "narration_en": "Behind each wheel a sensor counts the teeth on a spinning ring",
+      "source_audio_sha256": "9b043bb905d04f4c5e918dbf661b39a99eaaa301e0779dd6aa5eeece60252bda"
+    },
+    {
+      "start": 20.790477769230773,
+      "end": 23.80472430769231,
+      "narration_en": "so the computer knows how fast every wheel is turning.",
+      "source_audio_sha256": "5801e36b731ee88a74e2bd6bbc5961bd255b7df1c30a459bd3db8573f5a8ed6d"
+    },
+    {
+      "start": 23.80472430769231,
+      "end": 26.97376284615385,
+      "narration_en": "When one wheel slows down faster than the car it's about to lock",
+      "source_audio_sha256": "3ba90985ee819d528c548746dcdf4ac8b287398cc8a3113976ceed5531824c13"
+    },
+    {
+      "start": 26.97376284615385,
+      "end": 31.21425938461539,
+      "narration_en": "so ABS eases the brake on that wheel for an instant and squeezes again",
+      "source_audio_sha256": "342ab8f63e6590c2aad9ed1ef262d75538b5d586d6efe309923535b328dca382"
+    },
+    {
+      "start": 31.21425938461539,
+      "end": 32.419005923076924,
       "narration_en": "many times a second.",
-      "source_audio_sha256": "aa39e8ec4c9b3a667801426590bb9438a7a83027ec7e0f3d043ec5a11cfb9d71"
+      "source_audio_sha256": "4d4d4c06af351134e40e874236f8543e72a77046b6e00a489e711c38d8038d50"
     },
     {
-      "start": 18.55469825,
-      "end": 21.299953125000002,
-      "narration_en": "So the tires keep rolling, and they can still turn.",
-      "source_audio_sha256": "997782a8f82598beda0a36b224c006b5238f7cf40878d127b3e1e11fed9f0691"
+      "start": 32.419005923076924,
+      "end": 36.15946146153846,
+      "narration_en": "The tire keeps rolling at the edge of its grip so it can still steer.",
+      "source_audio_sha256": "48ed207530d76072e33d6efd6804af42e60cd4cacd7a35da6f6efad8c10bfd70"
     },
     {
-      "start": 21.299953125000002,
-      "end": 24.069,
-      "narration_en": "That buzz in the pedal? That's ABS working.",
-      "source_audio_sha256": "1f02da5740653c01993516b2047e4174fbfa0dde132847672c1a2d12ecdc90b5"
+      "start": 36.15946146153846,
+      "end": 40.269,
+      "narration_en": "That buzz in the pedal is ABS working. Keep pressing and steer.",
+      "source_audio_sha256": "a7ba11d813cd6f01b5e6b7f1e926cf9b5dec619762921a6f395ecd28920d6153"
     }
   ],
   "silence_gaps": [
-    0.484083,
-    0.420354,
-    0.430104,
-    0.417708,
-    0.455271,
-    0.330771,
-    0.307812,
-    0.394125,
-    0.418667,
-    0.406062,
-    0.424292,
-    0.30375
+    0.482,
+    0.338813,
+    0.327479,
+    0.321833,
+    0.328146,
+    0.320292,
+    0.307063,
+    0.302375,
+    0.309917,
+    0.333354,
+    0.304854,
+    0.326083,
+    0.319708,
+    0.412417
   ],
   "loudness": {
-    "integrated_lufs": -16.2,
+    "integrated_lufs": -16.3,
     "loudness_range_lu": 1.5,
-    "true_peak_dbfs": -1.5,
+    "true_peak_dbfs": -1.4,
     "shot_integrated_lufs": [
       -15.8,
-      -16.9,
-      -16.1,
-      -16.7
+      -16.8,
+      -16.8,
+      -15.7,
+      -15.7,
+      -16.4,
+      -16.5,
+      -16.8
     ]
   },
   "production_approved": false,
-  "narration_sha256": "fbf527c7583195cee6d178a2e1580712a9e2760a61093bc20d5d1e1d98273e15"
+  "narration_sha256": "3d1abe85b7a485776d9ba3f6be6f0ea93b32558030cff41fd1f18906e107fda2"
 }

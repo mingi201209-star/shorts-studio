@@ -4,44 +4,69 @@
    "id": "abs-brake",
    "beats": [
     {
-     "narration_en": "Same emergency stop. Only one car can still steer.",
+     "narration_en": "Same emergency stop. Only one of these cars can still steer.",
      "start": 0,
-     "end": 3.8
+     "end": 4.7
     },
     {
-     "narration_en": "Without ABS, slam the brakes and the wheels lock.",
-     "start": 3.8,
-     "end": 7.6
+     "narration_en": "Slam the brakes without ABS and the wheels lock.",
+     "start": 4.7,
+     "end": 8.6
     },
     {
-     "narration_en": "A sliding tire can't steer, so the car goes straight.",
-     "start": 7.6,
-     "end": 11.8
+     "narration_en": "A locked tire stops rolling and starts to slide",
+     "start": 8.6,
+     "end": 12.5
     },
     {
-     "narration_en": "ABS watches how fast every wheel is turning.",
-     "start": 11.8,
-     "end": 15.2
+     "narration_en": "and a sliding tire can't push the car sideways.",
+     "start": 12.5,
+     "end": 16.4
     },
     {
-     "narration_en": "The moment one starts to lock, it eases the brake, then squeezes again,",
-     "start": 15.2,
-     "end": 20.5
+     "narration_en": "So turn the wheel all you want and the car still goes straight.",
+     "start": 16.4,
+     "end": 21.8
+    },
+    {
+     "narration_en": "ABS stops the wheels from locking.",
+     "start": 21.8,
+     "end": 24.6
+    },
+    {
+     "narration_en": "Behind each wheel a sensor counts the teeth on a spinning ring",
+     "start": 24.6,
+     "end": 29.7
+    },
+    {
+     "narration_en": "so the computer knows how fast every wheel is turning.",
+     "start": 29.7,
+     "end": 34.0
+    },
+    {
+     "narration_en": "When one wheel slows down faster than the car it's about to lock",
+     "start": 34.0,
+     "end": 39.4
+    },
+    {
+     "narration_en": "so ABS eases the brake on that wheel for an instant and squeezes again",
+     "start": 39.4,
+     "end": 45.2
     },
     {
      "narration_en": "many times a second.",
-     "start": 20.5,
-     "end": 22.4
+     "start": 45.2,
+     "end": 47.2
     },
     {
-     "narration_en": "So the tires keep rolling, and they can still turn.",
-     "start": 22.4,
-     "end": 26.6
+     "narration_en": "The tire keeps rolling at the edge of its grip so it can still steer.",
+     "start": 47.2,
+     "end": 53.4
     },
     {
-     "narration_en": "That buzz in the pedal? That's ABS working.",
-     "start": 26.6,
-     "end": 30.0
+     "narration_en": "That buzz in the pedal is ABS working. Keep pressing and steer.",
+     "start": 53.4,
+     "end": 58.5
     }
    ]
   }

@@ -10,19 +10,34 @@ Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0
 [Events]
 Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 Dialogue: 0,0:00:00.06,0:00:01.14,Caption,,0,0,0,,Same emergency stop.
-Dialogue: 0,0:00:01.54,0:00:02.98,Caption,,0,0,0,,Only one car\Ncan still steer.
-Dialogue: 0,0:00:03.38,0:00:04.32,Caption,,0,0,0,,Without ABS,
-Dialogue: 0,0:00:04.53,0:00:05.38,Caption,,0,0,0,,slam the brakes
-Dialogue: 0,0:00:05.47,0:00:06.33,Caption,,0,0,0,,and the wheels lock.
-Dialogue: 0,0:00:06.73,0:00:08.23,Caption,,0,0,0,,A sliding\Ntire can't steer,
-Dialogue: 0,0:00:08.51,0:00:09.54,Caption,,0,0,0,,so the\Ncar goes straight.
-Dialogue: 0,0:00:09.94,0:00:11.69,Caption,,0,0,0,,ABS watches\Nhow fast every
-Dialogue: 0,0:00:11.70,0:00:12.47,Caption,,0,0,0,,wheel is turning.
-Dialogue: 0,0:00:12.87,0:00:14.30,Caption,,0,0,0,,The moment one\Nstarts to lock,
-Dialogue: 0,0:00:14.66,0:00:15.65,Caption,,0,0,0,,it eases the brake,
-Dialogue: 0,0:00:15.91,0:00:16.91,Caption,,0,0,0,,then squeezes again,
-Dialogue: 0,0:00:17.31,0:00:18.21,Caption,,0,0,0,,many times a second.
-Dialogue: 0,0:00:18.61,0:00:19.79,Caption,,0,0,0,,So the\Ntires keep rolling,
-Dialogue: 0,0:00:20.08,0:00:20.96,Caption,,0,0,0,,and they can still turn.
-Dialogue: 0,0:00:21.36,0:00:22.24,Caption,,0,0,0,,That buzz in the pedal?
-Dialogue: 0,0:00:22.65,0:00:23.73,Caption,,0,0,0,,That's ABS working.
+Dialogue: 0,0:00:01.54,0:00:02.60,Caption,,0,0,0,,Only one of\Nthese cars can
+Dialogue: 0,0:00:02.61,0:00:03.29,Caption,,0,0,0,,still steer.
+Dialogue: 0,0:00:03.59,0:00:05.32,Caption,,0,0,0,,Slam the\Nbrakes without ABS
+Dialogue: 0,0:00:05.44,0:00:06.30,Caption,,0,0,0,,and the wheels lock.
+Dialogue: 0,0:00:06.60,0:00:08.16,Caption,,0,0,0,,A locked\Ntire stops rolling
+Dialogue: 0,0:00:08.30,0:00:09.18,Caption,,0,0,0,,and starts to slide
+Dialogue: 0,0:00:09.48,0:00:10.82,Caption,,0,0,0,,and a sliding\Ntire can't push
+Dialogue: 0,0:00:10.83,0:00:11.76,Caption,,0,0,0,,the car sideways.
+Dialogue: 0,0:00:12.06,0:00:13.41,Caption,,0,0,0,,So turn the\Nwheel all you want
+Dialogue: 0,0:00:13.68,0:00:14.53,Caption,,0,0,0,,and the car still goes
+Dialogue: 0,0:00:14.55,0:00:14.93,Caption,,0,0,0,,straight.
+Dialogue: 0,0:00:15.23,0:00:16.79,Caption,,0,0,0,,ABS stops\Nthe wheels from
+Dialogue: 0,0:00:16.80,0:00:17.17,Caption,,0,0,0,,locking.
+Dialogue: 0,0:00:17.47,0:00:18.80,Caption,,0,0,0,,Behind each\Nwheel a sensor
+Dialogue: 0,0:00:18.81,0:00:20.31,Caption,,0,0,0,,counts the teeth\Non a spinning
+Dialogue: 0,0:00:20.32,0:00:20.55,Caption,,0,0,0,,ring
+Dialogue: 0,0:00:20.85,0:00:22.37,Caption,,0,0,0,,so the computer\Nknows how fast
+Dialogue: 0,0:00:22.43,0:00:23.56,Caption,,0,0,0,,every wheel is turning.
+Dialogue: 0,0:00:23.86,0:00:24.91,Caption,,0,0,0,,When one\Nwheel slows down
+Dialogue: 0,0:00:24.92,0:00:26.23,Caption,,0,0,0,,faster than the\Ncar it's about
+Dialogue: 0,0:00:26.25,0:00:26.73,Caption,,0,0,0,,to lock
+Dialogue: 0,0:00:27.03,0:00:28.83,Caption,,0,0,0,,so ABS eases\Nthe brake on
+Dialogue: 0,0:00:28.84,0:00:29.86,Caption,,0,0,0,,that wheel\Nfor an instant
+Dialogue: 0,0:00:30.13,0:00:30.97,Caption,,0,0,0,,and squeezes again
+Dialogue: 0,0:00:31.27,0:00:32.18,Caption,,0,0,0,,many times a second.
+Dialogue: 0,0:00:32.48,0:00:33.75,Caption,,0,0,0,,The tire keeps\Nrolling at the
+Dialogue: 0,0:00:33.76,0:00:34.59,Caption,,0,0,0,,edge of its grip
+Dialogue: 0,0:00:34.79,0:00:35.92,Caption,,0,0,0,,so it can still steer.
+Dialogue: 0,0:00:36.22,0:00:38.06,Caption,,0,0,0,,That buzz in\Nthe pedal is ABS
+Dialogue: 0,0:00:38.08,0:00:38.46,Caption,,0,0,0,,working.
+Dialogue: 0,0:00:38.86,0:00:40.03,Caption,,0,0,0,,Keep pressing and steer.

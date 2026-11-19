@@ -29,17 +29,25 @@ CALIPER_WIDE = {"rel": "car", "loc": (-1.55, 0.65, 0.62), "target": (-0.77, 1.02
 PEDAL = {"rel": "pedal", "loc": (0.90, -0.10, 0.36), "target": (0.0, 0.30, 0.20), "lens": 30.0}
 PEDAL_B = {"rel": "pedal", "loc": (0.75, 0.00, 0.30), "target": (0.0, 0.32, 0.19), "lens": 34.0}
 
-# label, variant, sim start, sim end, cam a, cam b, flags, narration lines
+TIRE_LOW = {"rel": "car", "loc": (-2.30, 2.60, 0.95), "target": (-0.75, -0.40, 0.0), "lens": 28.0}      # ahead of the front tyre, looking back along the skid
+TIRE_LOW_B = {"rel": "car", "loc": (-2.00, 2.20, 0.75), "target": (-0.75, -0.60, 0.0), "lens": 30.0}
+RING_CLOSE = {"rel": "car", "loc": (-1.08, 0.93, 0.13), "target": (-0.81, 1.087, 0.165), "lens": 45.0}     # the sensor tip and the teeth passing it
+
+# label, variant, sim start, sim end (None = real time), cam a, cam b, flags, narration lines. A segment starts when its first line starts.
 ROWS = [
     ("A-split-stop", "both", OPEN_SIM, None, SPLIT_CAM, SPLIT_CAM_B, {"split": True}, (1,)),
     ("B-wheel-locks", "locked", 0.00, 0.45, SIDE_WHEEL, SIDE_WHEEL_B, {}, (2,)),
-    ("C-slides-straight", "locked", 0.55, 1.75, TOP, TOP_B, {}, (3,)),
-    ("D-sensor", "abs", 0.40, 0.55, WHEEL_WIDE, RING, {"macro": True}, (4,)),
-    ("E-caliper-pulse", "abs", 0.55, 0.75, CALIPER, CALIPER, {"macro": True}, (5,)),
-    ("F-many-times", "abs", 0.75, 1.25, CALIPER, CALIPER_WIDE, {"macro": True}, (6,)),
-    ("G-abs-steers", "abs", 0.70, 1.95, TOP, TOP_B, {}, (7,)),
-    ("H-pedal-buzz", "abs", 0.40, 1.60, PEDAL, PEDAL_B, {"pedal": True}, (8,)),
-    ("I-loop-run-in", "both", OPEN_SIM - LOOP_S, OPEN_SIM, SPLIT_CAM, SPLIT_CAM, {"split": True}, (8,)),
+    ("B2-tire-slides", "locked", 0.45, 0.95, TIRE_LOW, TIRE_LOW_B, {}, (3, 4)),
+    ("C-slides-straight", "locked", 0.55, 1.75, TOP, TOP_B, {}, (5,)),
+    ("C2-abs-wheel-rolls", "abs", 0.00, 0.45, SIDE_WHEEL, SIDE_WHEEL_B, {}, (6,)),
+    ("D-sensor", "abs", 0.40, 0.47, WHEEL_WIDE, RING, {"macro": True}, (7,)),
+    ("D2-teeth-counted", "abs", 0.47, 0.52, RING, RING_CLOSE, {"macro": True}, (8,)),
+    ("E-about-to-lock", "abs", 0.55, 0.64, CALIPER_WIDE, CALIPER, {"macro": True}, (9,)),
+    ("E2-eases-squeezes", "abs", 0.64, 0.80, CALIPER, CALIPER, {"macro": True}, (10,)),
+    ("F-many-times", "abs", 0.80, 1.25, CALIPER, CALIPER_WIDE, {"macro": True}, (11,)),
+    ("G-abs-steers", "abs", 0.70, 1.95, TOP, TOP_B, {}, (12,)),
+    ("H-pedal-buzz", "abs", 0.40, 2.40, PEDAL, PEDAL_B, {"pedal": True}, (13,)),
+    ("I-loop-run-in", "both", OPEN_SIM - LOOP_S, OPEN_SIM, SPLIT_CAM, SPLIT_CAM, {"split": True}, (13,)),
 ]
 
 
@@ -60,7 +68,7 @@ def frame_count() -> int:
 def segments() -> list[dict]:
     s = line_starts()
     total = total_seconds()
-    t = [s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], total - LOOP_S, total]
+    t = [s[row[7][0] - 1] for row in ROWS[:-1]] + [total - LOOP_S, total]
     out = []
     for i, (label, variant, a, b, ca, cb, flags, lines) in enumerate(ROWS):
         t0, t1 = t[i], t[i + 1]

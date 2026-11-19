@@ -10,9 +10,11 @@ Alternatives:
 ## Description
 Same emergency stop, two cars. Only one of them can still steer.
 
-Slam the brakes without ABS and the wheels can lock. A sliding tire can't steer, so the car keeps going straight, wherever the wheels point. ABS watches how fast every wheel is turning. The moment one starts to lock, it eases the brake for an instant, then squeezes again, many times a second. The tires keep rolling, so they can still grip and turn. That buzz you feel in the pedal is ABS working.
+Slam the brakes without ABS and the wheels lock. A locked tire stops rolling and starts to slide, and a sliding tire can't push the car sideways, so you can turn the wheel all you want and the car still goes straight.
 
-This is a simplified physics model made for explanation, not a real crash test. Both cars use the same driver steering; the numbers are not from any real vehicle. ABS does not always stop you in a shorter distance (for example on gravel or deep snow); what it keeps is your steering. In an emergency stop in a car with ABS, press the brake hard and keep pressing.
+ABS stops the wheels from locking. Behind each wheel a sensor counts the teeth on a spinning ring, so the computer knows how fast every wheel is turning. When one wheel slows down faster than the car, it's about to lock, so ABS eases the brake on that wheel for an instant and squeezes again, many times a second. The tire keeps rolling at the edge of its grip, so it can still steer. That buzz in the pedal is ABS working: keep pressing, and steer.
+
+This is a simplified physics model made for explanation, not a real crash test. Both cars use the same driver steering; the numbers are not from any real vehicle. ABS does not always stop you in a shorter distance (for example on gravel or deep snow); what it keeps is your steering. The tone ring is drawn on the outside of the disc so you can see it; on many cars it sits further in.
 
 Curious Mechanics: the hidden engineering of everyday life, every week.
 
