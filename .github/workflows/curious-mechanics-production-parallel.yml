@@ -72,9 +72,29 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6 ffmpeg fonts-dejavu-core
           python -m pip install Pillow pydantic
-          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
-          echo "$BLENDER_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
-          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          archive="$RUNNER_TEMP/blender.tar.xz"
+          downloaded=0
+          urls=(
+            "https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+            "https://mirrors.aliyun.com/blender/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+            "https://mirror.nju.edu.cn/blender/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+            "https://mirror.freedif.org/blender/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+          )
+          for url in "${urls[@]}"; do
+            echo "Trying Blender 5.0.1 source: $url"
+            if curl -fLsS --retry 1 --max-time 240 "$url" -o "$archive"; then
+              if echo "$BLENDER_SHA256  $archive" | sha256sum -c -; then
+                downloaded=1
+                break
+              fi
+            fi
+            rm -f "$archive"
+          done
+          if [[ "$downloaded" != "1" ]]; then
+            echo "::error::All Blender 5.0.1 mirrors failed or had a hash mismatch."
+            exit 1
+          fi
+          tar -xJf "$archive" -C "$RUNNER_TEMP"
       - name: Fetch exact CC0 scene
         env:
           GH_TOKEN: ${{ github.token }}
@@ -131,9 +151,29 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6 ffmpeg fonts-dejavu-core
           python -m pip install Pillow pydantic
-          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
-          echo "$BLENDER_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
-          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+          archive="$RUNNER_TEMP/blender.tar.xz"
+          downloaded=0
+          urls=(
+            "https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+            "https://mirrors.aliyun.com/blender/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+            "https://mirror.nju.edu.cn/blender/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+            "https://mirror.freedif.org/blender/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz"
+          )
+          for url in "${urls[@]}"; do
+            echo "Trying Blender 5.0.1 source: $url"
+            if curl -fLsS --retry 1 --max-time 240 "$url" -o "$archive"; then
+              if echo "$BLENDER_SHA256  $archive" | sha256sum -c -; then
+                downloaded=1
+                break
+              fi
+            fi
+            rm -f "$archive"
+          done
+          if [[ "$downloaded" != "1" ]]; then
+            echo "::error::All Blender 5.0.1 mirrors failed or had a hash mismatch."
+            exit 1
+          fi
+          tar -xJf "$archive" -C "$RUNNER_TEMP"
       - name: Fetch exact CC0 scene
         env:
           GH_TOKEN: ${{ github.token }}
@@ -147,7 +187,7 @@ jobs:
         id: range
         run: |
           set -euo pipefail
-          read -r start end < <(python benchmarks/road_safety/curious_mechanics_github_parallel.py contact --variant "${{ matrix.variant }}")
+          read -r start end < <(PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_github_parallel.py contact --variant "${{ matrix.variant }}")
           echo "start=$start" >> "$GITHUB_OUTPUT"
           echo "end=$end" >> "$GITHUB_OUTPUT"
       - name: Render contact shard only

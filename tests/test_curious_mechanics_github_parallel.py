@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import importlib.util
+import os
+import subprocess
 import sys
 from pathlib import Path
 from types import ModuleType, SimpleNamespace
@@ -105,6 +107,16 @@ def test_real_contact_shard_is_inside_rolling_contact_timeline(variant):
     assert end <= 900
 
 
+def test_contact_cli_resolves_package_from_repository_root():
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT)
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "contact", "--variant", "A"],
+        cwd=ROOT, env=env, capture_output=True, text=True, check=True,
+    )
+    assert tuple(map(int, result.stdout.split())) == parallel.contact_range("A")
+
+
 def test_production_workflow_is_manual_only_and_uses_free_standard_runners():
     workflow = (ROOT / ".github/workflows/curious-mechanics-production-parallel.yml").read_text()
     assert "workflow_dispatch:" in workflow
@@ -121,4 +133,9 @@ def test_production_workflow_is_manual_only_and_uses_free_standard_runners():
     assert "options: [pilot, full]" in workflow
     assert "curious-native-" in workflow
     assert "curious-review-" in workflow
+    assert 'PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_github_parallel.py contact' in workflow
+    assert "https://mirrors.aliyun.com/blender/release/Blender5.0/" in workflow
+    assert "https://mirror.nju.edu.cn/blender/release/Blender5.0/" in workflow
+    assert "https://mirror.freedif.org/blender/release/Blender5.0/" in workflow
+    assert "sha256sum -c -" in workflow
     assert "push:" not in workflow and "pull_request:" not in workflow
