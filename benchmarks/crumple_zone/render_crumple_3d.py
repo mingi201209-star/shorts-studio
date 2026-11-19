@@ -190,7 +190,7 @@ def build_interior(root):
 
 
 class Ghost:
-    """Body materials copied with a world-space scan line: everything the line has passed turns almost transparent with a bright blue rim; the line itself flares."""
+    """Body materials copied with a world-space scan line: everything the line has passed turns almost transparent with a neutral light rim; the line itself flares."""
     SOFT = 0.35
 
     def __init__(self, parts):
@@ -241,10 +241,10 @@ class Ghost:
         nt.links.new(op("ADD", op("MULTIPLY", mask, -0.8 * alpha0), alpha0), bsdf.inputs["Alpha"])
         lw = node("ShaderNodeLayerWeight")
         lw.inputs["Blend"].default_value = 0.35
-        edge = op("MULTIPLY", op("MULTIPLY", lw.outputs["Facing"], mask), 8.0)
-        flare = op("MULTIPLY", op("MULTIPLY", mask, op("SUBTRACT", 1.0, mask)), 28.0)
+        edge = op("MULTIPLY", op("MULTIPLY", lw.outputs["Facing"], mask), 5.0)
+        flare = op("MULTIPLY", op("MULTIPLY", mask, op("SUBTRACT", 1.0, mask)), 18.0)
         nt.links.new(op("ADD", edge, flare), bsdf.inputs["Emission Strength"])
-        bsdf.inputs["Emission Color"].default_value = (0.25, 0.65, 1.0, 1.0)
+        bsdf.inputs["Emission Color"].default_value = (0.85, 0.85, 0.85, 1.0)      # neutral: the see-through no longer carries a blue tint (owner request)
         return c
 
     def set_tint(self, mult):

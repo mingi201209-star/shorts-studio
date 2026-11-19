@@ -1,1 +1,1 @@
-{"mode": "range", "ranges": [[40, 40], [870, 870]], "quality": "final", "sheet_tile": 540, "note": "EP.04 1080x1920 comparison B2: the same two ordinary frames 40 and 870 at native size, 24 samples"}
+{"mode": "range", "ranges": [[316, 316], [330, 330], [345, 345], [724, 724]], "res_scale": 0.6667, "samples": 12, "sheet_tile": 540, "note": "EP.04 see-through without the blue tint (neutral rim light, weaker glow): range check 316, 330, 345, 724 at 720x1280"}
