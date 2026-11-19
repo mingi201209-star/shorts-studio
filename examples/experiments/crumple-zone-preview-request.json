@@ -1,1 +1,1 @@
-{"mode": "range", "ranges": [[316, 316], [330, 330], [345, 345], [724, 724]], "res_scale": 0.6667, "samples": 12, "sheet_tile": 540, "note": "EP.04 see-through glow much weaker (the neutral glow washed out the close-up of the rails): range check 316, 330, 345, 724"}
+{"mode": "preview", "quality": "final", "res_scale": 0.6667, "samples": 12, "audio_run": "44204538060", "note": "EP.04 full render: 720x1280 at 12 samples, brought to 1080x1920 when composing; neutral see-through (no blue), frozen audio 44204538060"}
