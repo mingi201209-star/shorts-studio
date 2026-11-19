@@ -55,3 +55,9 @@ Not claimed: no stopping-distance claim (ABS is not always shorter, e.g. on grav
 - Model numbers on screen: ABS car turns up to 6.6 degrees and clears the box; pressure eased 6 times on screen in the caliper shots.
 - Known weak points: plain-block caliper and footwell; tone ring drawn outboard for visibility; both cars are the same grey.
 - NOT verified: voice pronunciation, sound-off readability, human first view. The owner uploads.
+
+## v4 (2026-11-19, owner: "explain in more detail, run longer", "carve the parts in more detail")
+- Narration 13 lines, 40.3 s (was 8 lines, 24.1 s): why a locked tyre cannot steer, how the sensor counts tone-ring teeth, when ABS eases the brake.
+- Detailed parts (abs_parts.py): vented cross-drilled disc, hat and lug nuts, 44-tooth tone ring, arched caliper with pistons, guide bolts,
+  bleed screw and hose, pads on backing plates, sensor with hex flange, bracket and cable; pedal with bracket, bent arm, ribbed pad, return spring, rounded shoe.
+- Run 44496666022: every gate PASS, 972 frames, 40.5 s.
