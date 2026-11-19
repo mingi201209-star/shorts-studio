@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import importlib.util
 import os
 import subprocess
@@ -110,9 +111,12 @@ def test_real_contact_shard_is_inside_rolling_contact_timeline(variant):
 def test_selective_recovery_workflow_only_retries_failed_shards():
     workflow = (ROOT / ".github/workflows/curious-mechanics-selective-recovery.yml").read_text()
     assert "workflow_dispatch:" in workflow
-    assert r"push:\n    branches:\n      - exp/curious-mechanics-production-20261029" in workflow
+    expected_trigger = "push:\n    branches:\n      - exp/curious-mechanics-production-20261029"
+    assert expected_trigger in workflow
     assert "[recover]" in workflow and "pull_request:" not in workflow
     assert "inputs.source_run_id || '44499589013'" in workflow
+    renderer_hash = hashlib.sha256((ROOT / "benchmarks/road_safety/render_curious_mechanics.py").read_bytes()).hexdigest()
+    assert f"RENDERER_SOURCE_SHA256: {renderer_hash}" in workflow
     assert "source_run_id:" in workflow
     assert "variant: C" in workflow and "shard: 2" in workflow
     assert "curious-native-C-2-recovery" in workflow
