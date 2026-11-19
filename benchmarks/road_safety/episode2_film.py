@@ -78,22 +78,27 @@ def parse_ebur128(stderr):
     return values
 
 
-def loudness(path):
+def loudness(path, adaptive=False):
     def measure(*window):
         return parse_ebur128(run(["ffmpeg", "-hide_banner", "-nostats", *window, "-i", path,
                                   "-af", "ebur128=peak=true", "-vn", "-f", "null", "-"]).stderr)
     report = measure()
+    if adaptive:      # EP.05: windows follow the real audio length (5 s each, the last one takes the remainder) instead of six fixed windows that assume 30 s; the 3 LU spread limit is unchanged
+        dur = float(probe(path)["format"]["duration"])
+        n = max(1, int(dur // 5))
+        report["shot_integrated_lufs"] = [measure("-ss", str(5 * i), "-t", str(5 if i < n - 1 else round(dur - 5 * i, 3)))["integrated_lufs"] for i in range(n)]
+        return report
     report["shot_integrated_lufs"] = [
         measure("-ss", str(5 * i), "-t", "5")["integrated_lufs"] for i in range(6)]
     return report
 
 
-def check_loudness(report):
+def check_loudness(report, adaptive=False):
     """One warm narrator at Shorts loudness: no clipping, no quiet or loud beat."""
     assert -17.5 <= report["integrated_lufs"] <= -14.5, ("NARRATION_LOUDNESS", report)
     assert report["true_peak_dbfs"] <= -1.0, ("NARRATION_TRUE_PEAK", report)
     shots = report["shot_integrated_lufs"]
-    assert len(shots) == 6 and max(shots) - min(shots) <= 3, ("UNEVEN_SHOT_LOUDNESS", report)
+    assert (len(shots) >= 3 if adaptive else len(shots) == 6) and max(shots) - min(shots) <= 3, ("UNEVEN_SHOT_LOUDNESS", report)
     return report
 
 

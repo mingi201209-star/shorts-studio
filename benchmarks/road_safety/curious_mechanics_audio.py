@@ -6,28 +6,30 @@ from PIL import ImageFont
 from benchmarks.road_safety.episode2_film import run,probe,silence,loudness,check_loudness,stamp
 from shorts_studio.factory.rumble_episode2 import caption_groups
 
-def build(capture,out,target_seconds=30,grouper=caption_groups):
+def build(capture,out,target_seconds=30,grouper=caption_groups,trim=False,gap_s=0.35):
  out.mkdir(parents=True,exist_ok=True); (out/'audio-validation.json').unlink(missing_ok=True); report=json.loads((capture/'capture.json').read_text());beats=report['beats']
- slack=(target_seconds-sum(b['duration'] for b in beats))/len(beats)
+ spans=[(max(0.0,b['words'][0]['start']-0.06),min(b['duration'],b['words'][-1]['end']+0.14)) if trim else (0.0,b['duration']) for b in beats]   # trim: cut the TTS's own leading/trailing silence (measured from the word boundaries), then put a fixed gap between the lines
+ if trim:target_seconds=round(sum(e-s for s,e in spans)+gap_s*len(beats),3)
+ slack=(target_seconds-sum(e-s for s,e in spans))/len(beats)
  if slack<0:raise ValueError(f'Narration exceeds the {target_seconds}s target; edit text, never time stretch')
  cues=[];pieces=[];cursor=0;locked=[];font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',62)
  for i,b in enumerate(beats,1):
   raw=capture/f'beat_{i:02}.mp3';assert hashlib.sha256(raw.read_bytes()).hexdigest()==b['audio_sha256']
   words=b['words'];tokens=b['text'].split();assert len(words)==len(tokens),'No invented/interpolated word timing'
-  window=b['duration']+slack;end=target_seconds if i==len(beats) else cursor+window
+  lead=spans[i-1][0];window=spans[i-1][1]-lead+slack;end=target_seconds if i==len(beats) else cursor+window
   for j,k in grouper(b['text']):
    group=words[j:k];text=' '.join(tokens[j:k]);assert len(text)<=31
    if len(text)>24:
     parts=text.split();text=' '.join(parts[:len(parts)//2])+r'\N'+' '.join(parts[len(parts)//2:])
    assert all(font.getlength(line)<=900 for line in text.split(r'\N'))
-   cues.append(dict(start=cursor+group[0]['start'],end=cursor+group[-1]['end'],text=text))
+   cues.append(dict(start=cursor+group[0]['start']-lead,end=cursor+group[-1]['end']-lead,text=text))
   wav=out/f'voice_{i:02}.wav'
-  run(['ffmpeg','-v','error','-y','-i',raw,'-af',f'apad=whole_dur={end-cursor:.9f}','-t',f'{end-cursor:.9f}','-ar','48000','-ac','1',wav]);pieces.append(wav)
+  run(['ffmpeg','-v','error','-y','-ss',f'{lead:.6f}','-i',raw,'-af',f'apad=whole_dur={end-cursor:.9f}','-t',f'{end-cursor:.9f}','-ar','48000','-ac','1',wav]);pieces.append(wav)
   locked.append(dict(start=cursor,end=end,narration_en=b['text'],source_audio_sha256=b['audio_sha256']));cursor=end
  concat=out/'voice-concat.txt';concat.write_text(''.join(f"file '{p.resolve()}'\n" for p in pieces))
  run(['ffmpeg','-v','error','-y','-f','concat','-safe','0','-i',concat,'-af','loudnorm=I=-16:TP=-1.5:LRA=9','-ar','48000','-ac','1','-t',f'{target_seconds}',out/'narration.wav'])
  run(['ffmpeg','-v','error','-y','-i',out/'narration.wav','-c:a','aac','-b:a','192k',out/'audio-preflight.m4a'])
- gaps=silence(out/'audio-preflight.m4a');levels=check_loudness(loudness(out/'audio-preflight.m4a'))
+ gaps=silence(out/'audio-preflight.m4a');levels=check_loudness(loudness(out/'audio-preflight.m4a',adaptive=trim),adaptive=trim)
  assert abs(float(probe(out/'narration.wav')['format']['duration'])-target_seconds)<.02
  header='''[Script Info]
 ScriptType: v4.00+
