@@ -160,3 +160,97 @@ def test_production_workflow_is_manual_only_and_uses_free_standard_runners():
     assert "https://mirror.freedif.org/blender/release/Blender5.0/" in workflow
     assert "sha256sum -c -" in workflow
     assert "push:" not in workflow and "pull_request:" not in workflow
+
+
+@pytest.mark.parametrize("variant", list("ABC"))
+def test_opening_preview_requires_verified_unique_contiguous_frames(monkeypatch, tmp_path, variant):
+    from PIL import Image
+    native_root = tmp_path / "native"
+    folders = {}
+    mocked = {}
+    hashes = []
+    camera = {"opening": [[1, 2, 3], [4, 5, 6], 15.5]}
+    source_hashes = {
+        "renderer_source_sha256": "a" * 64,
+        "timeline_source_sha256": "b" * 64,
+        "canonical_timeline_sha256": "c" * 64,
+        "manifest_sha256": "d" * 64,
+        "experiment_plan_sha256": "e" * 64,
+        "source_sha256": "f" * 64,
+    }
+    for start, end in (parallel.shard_range(1), parallel.shard_range(2), parallel.shard_range(3)):
+        folder = native_root / f"{variant}-{start}"
+        folder.mkdir(parents=True)
+        clip = folder / "native-lossless.mkv"
+        clip.write_bytes(f"clip-{variant}-{start}".encode())
+        frame_numbers = list(range(start, end + 1))
+        for frame in frame_numbers:
+            Image.new("RGB", (108, 192), (frame % 255, 20, 30)).save(
+                folder / f"frame_{frame:04d}.png"
+            )
+        proof = {
+            "episode_id": f"curious-mechanics-{variant}",
+            "first_frame": start,
+            "last_frame": end,
+            "frame_numbers": frame_numbers,
+            "camera_by_shot": camera,
+            **source_hashes,
+        }
+        rgb_hashes = [hashlib.md5(f"{variant}-{frame}".encode()).hexdigest()
+                     for frame in frame_numbers]
+        hashes.extend(rgb_hashes)
+        item = {
+            "folder": folder,
+            "proof": proof,
+            "clip": clip,
+            "clip_sha256": hashlib.sha256(clip.read_bytes()).hexdigest(),
+            "rgb_md5": rgb_hashes,
+        }
+        folders[(variant, start)] = folder
+        mocked[folder] = item
+    monkeypatch.setattr(
+        parallel, "find_shard",
+        lambda root, v, first, last: folders[(v, first)],
+    )
+    monkeypatch.setattr(parallel, "validate_shard", lambda folder, v: mocked[folder])
+    monkeypatch.setattr(
+        parallel, "encode_concat",
+        lambda clips, out, codec: out.write_bytes(f"encoded-{codec}".encode()),
+    )
+    monkeypatch.setattr(parallel, "decoded_md5", lambda clip: hashes)
+    monkeypatch.setattr(
+        parallel, "probe_video",
+        lambda path, frames: {
+            "width": 1080, "height": 1920, "avg_frame_rate": "30/1",
+            "nb_frames": frames,
+        },
+    )
+    result = parallel.make_opening_preview(
+        native_root, variant, tmp_path / "preview"
+    )
+    assert result["status"] == "PASS_NATIVE_OPENING_PREVIEW"
+    assert result["frames"] == [1, 90] and result["seconds"] == 3.0
+    assert result["has_audio"] is False and result["human_first_view"] == "UNVERIFIED"
+    assert result["upload_authorized"] is False
+    assert (tmp_path / "preview" / f"curious-mechanics-{variant}-opening-preview.mp4").is_file()
+    assert (tmp_path / "preview" / f"curious-mechanics-{variant}-opening-montage.jpg").is_file()
+
+
+def test_opening_proof_workflow_is_github_only_and_does_not_duplicate_contact_shards():
+    workflow = (ROOT / ".github/workflows/curious-mechanics-opening-proof.yml").read_text()
+    assert "push:" in workflow and "exp/curious-mechanics-production-20261029" in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "runs-on: ubuntu-24.04" in workflow
+    assert "max-parallel: 3" in workflow
+    assert workflow.count("variant: A") == 3
+    assert workflow.count("variant: B") == 3
+    assert workflow.count("variant: C") == 3
+    assert "start: 1, end: 30" in workflow
+    assert "start: 31, end: 60" in workflow
+    assert "start: 61, end: 90" in workflow
+    assert "curious-hook-native-" in workflow
+    assert "opening-preview" in workflow
+    assert "curious-mechanics-hook-preview-" in workflow
+    assert "contact:" not in workflow and "mode: full" not in workflow
+    assert "CM_AUDIO_EXPORT" not in workflow and "paid" not in workflow.lower()
+    assert "retention-days: 14" in workflow and "retention-days: 90" in workflow

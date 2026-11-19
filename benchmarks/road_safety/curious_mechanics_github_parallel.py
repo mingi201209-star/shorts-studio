@@ -195,6 +195,97 @@ def make_pilot(native_root: Path, contact_root: Path, variant: str, out: Path) -
     return info
 
 
+
+def make_opening_preview(native_root: Path, variant: str, out: Path) -> dict:
+    """Assemble only verified new frames 1-90; never renders or adds audio."""
+    if variant not in ("A", "B", "C"):
+        raise ValueError("variant must be A, B or C")
+    out.mkdir(parents=True, exist_ok=False)
+    opening = [
+        validate_shard(find_shard(native_root, variant, start, end), variant)
+        for start, end in (shard_range(1), shard_range(2), shard_range(3))
+    ]
+    frame_numbers = [n for item in opening for n in item["proof"]["frame_numbers"]]
+    pixel_hashes = [h for item in opening for h in item["rgb_md5"]]
+    if frame_numbers != list(range(1, 91)) or len(set(pixel_hashes)) != 90:
+        raise ValueError("opening preview requires 90 contiguous unique native frames")
+    camera_by_shot = {}
+    source_fields = (
+        "renderer_source_sha256", "timeline_source_sha256",
+        "canonical_timeline_sha256", "manifest_sha256",
+        "experiment_plan_sha256", "source_sha256",
+    )
+    source_values = {}
+    for item in opening:
+        proof = item["proof"]
+        for key in source_fields:
+            source_values.setdefault(key, set()).add(proof[key])
+        for shot, camera in proof["camera_by_shot"].items():
+            if shot in camera_by_shot and camera_by_shot[shot] != camera:
+                raise ValueError(f"camera changed between shards: {shot}")
+            camera_by_shot[shot] = camera
+    if any(len(values) != 1 for values in source_values.values()):
+        raise ValueError("opening shards were rendered from different inputs")
+    native = out / f"curious-mechanics-{variant}-opening-native.mkv"
+    preview = out / f"curious-mechanics-{variant}-opening-preview.mp4"
+    encode_concat([item["clip"] for item in opening], native, "lossless")
+    if decoded_md5(native) != pixel_hashes:
+        raise ValueError("opening lossless concatenation differs from native PNG frames")
+    encode_concat([native], preview, "h264")
+    probe = probe_video(preview, 90)
+    from PIL import Image, ImageDraw, ImageFont, ImageOps
+    samples = (1, 15, 30, 45, 46, 60, 90)
+    folders = {
+        frame: item["folder"]
+        for item in opening
+        for frame in item["proof"]["frame_numbers"]
+    }
+    montage = Image.new("RGB", (480, 960), (16, 16, 16))
+    draw = ImageDraw.Draw(montage)
+    try:
+        font = ImageFont.truetype(str(FONT), 12)
+    except OSError:
+        font = ImageFont.load_default()
+    for i, frame in enumerate(samples):
+        row, col = divmod(i, 3)
+        image = Image.open(folders[frame] / f"frame_{frame:04d}.png").convert("RGB")
+        image = ImageOps.contain(image, (156, 274))
+        x, y = col * 160 + (160 - image.width) // 2, row * 320 + 30
+        montage.paste(image, (x, y))
+        draw.text((col * 160 + 5, row * 320 + 5), f"{variant} FRAME {frame}",
+                  fill="white", font=font)
+    montage_path = out / f"curious-mechanics-{variant}-opening-montage.jpg"
+    montage.save(montage_path, quality=85, optimize=True)
+    info = {
+        "status": "PASS_NATIVE_OPENING_PREVIEW",
+        "variant": variant,
+        "frames": [1, 90],
+        "seconds": 3.0,
+        "fps": 30,
+        "resolution": [1080, 1920],
+        "native_lossless_sha256": digest(native),
+        "preview_mp4_sha256": digest(preview),
+        "montage_sha256": digest(montage_path),
+        "native_shards": [
+            {"first_frame": item["proof"]["first_frame"],
+             "last_frame": item["proof"]["last_frame"],
+             "lossless_clip_sha256": item["clip_sha256"]}
+            for item in opening
+        ],
+        "source_sha256": {key: next(iter(values)) for key, values in source_values.items()},
+        "camera_by_shot": camera_by_shot,
+        "preview_probe": probe,
+        "has_audio": False,
+        "full_film_qa_pass": False,
+        "human_first_view": "UNVERIFIED",
+        "upload_authorized": False,
+    }
+    (out / "opening-preview-validation.json").write_text(
+        json.dumps(info, indent=2) + "\n")
+    print("OPENING_PREVIEW_PASS", variant, info["preview_mp4_sha256"], flush=True)
+    return info
+
+
 def build_bundle(native_root: Path, audio_root: Path, variant: str) -> dict:
     if variant not in ("A", "B", "C"):
         raise ValueError("variant must be A, B or C")
@@ -292,6 +383,10 @@ def main() -> None:
     p.add_argument("--contact-root", type=Path, required=True)
     p.add_argument("--variant", choices=list("ABC"), required=True)
     p.add_argument("--out", type=Path, required=True)
+    o = sub.add_parser("opening-preview")
+    o.add_argument("--native-root", type=Path, required=True)
+    o.add_argument("--variant", choices=list("ABC"), required=True)
+    o.add_argument("--out", type=Path, required=True)
     b = sub.add_parser("bundle")
     b.add_argument("--native-root", type=Path, required=True)
     b.add_argument("--audio-root", type=Path, required=True)
@@ -303,6 +398,8 @@ def main() -> None:
         print(*contact_range(args.variant))
     elif args.command == "pilot":
         make_pilot(args.native_root, args.contact_root, args.variant, args.out)
+    elif args.command == "opening-preview":
+        make_opening_preview(args.native_root, args.variant, args.out)
     else:
         build_bundle(args.native_root, args.audio_root, args.variant)
 

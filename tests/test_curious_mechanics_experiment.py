@@ -10,11 +10,21 @@ def altered(tmp_path,change):
  plan=tmp_path/ref['plan_path'];plan.write_text(json.dumps(raw));ref['plan_sha256']=hashlib.sha256(plan.read_bytes()).hexdigest()
  out=tmp_path/'A.json';out.write_text(json.dumps(ref));return out
 
-@pytest.mark.parametrize('v',['A','B','C'])
-def test_complete_native_story_and_visible_opening(v):
+@pytest.mark.parametrize('v,first,second',[
+ ('A','shoulder_context','rolling_contact'),
+ ('B','rolling_contact','shoulder_context'),
+ ('C','road_section','shoulder_context'),
+])
+def test_complete_native_story_and_variant_specific_opening(v,first,second):
  e=m.load_episode(MAN.with_name(f'curious-mechanics-{v}.json'))
  assert [f for s in e['shots'] for f in range(s['start'],s['end']+1)]==list(range(1,901))
- assert m.detail_stage(e['shots'][0]['id'])=='shoulder_context'
+ assert m.detail_stage(e['shots'][0]['id'])==first
+ assert m.detail_stage(e['shots'][1]['id'])==second
+ plan_ref=json.loads(MAN.with_name(f'curious-mechanics-{v}.json').read_text())
+ plan=json.loads(MAN.with_name(plan_ref['plan_path']).read_text())
+ beat_end=round(next(x for x in plan['variants'] if x['id']==v)['beats'][0]['end']*30)
+ assert e['shots'][0]['end']==45 and e['shots'][1]['start']==46 and e['shots'][1]['end']==beat_end
+ assert m.camera_layout(e['shots'][0])['anchor_frame']==1
  assert len({m.shot_for_frame(e,f)['id'] for f in range(1,151)})>=3
  assert e['shots'][-1]['id'].endswith('driver_response')
  assert all(m.camera_layout(s)['scale']>=15.5 for s in e['shots'] if m.detail_stage(s['id']) in ('shoulder_context','human_response'))

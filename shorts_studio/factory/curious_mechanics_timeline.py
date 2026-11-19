@@ -22,9 +22,11 @@ ROAD_X_HALF_SPAN=32.0
 ROAD_Y_NEAR_EDGE=-40.0
 DIRT_Y_FAR_EDGE=40.0
 STYLES={
- 'A':[['shoulder_location'],['tire_contact','road_cut'],['road_cut','shoulder_location'],['tire_contact','rumble_mechanism'],['shoulder_location','rumble_mechanism'],['driver_response']],
- 'B':[['shoulder_location','tire_contact'],['road_cut','shoulder_location'],['tire_contact','rumble_mechanism'],['shoulder_location','tire_contact'],['shoulder_location','rumble_mechanism'],['driver_response']],
- 'C':[['shoulder_location','tire_contact'],['shoulder_location','road_cut'],['tire_contact','rumble_mechanism'],['rumble_mechanism','shoulder_location'],['shoulder_location','rumble_mechanism'],['driver_response']],
+ # The opening is deliberately variant-specific: context-to-contact (A),
+ # contact-to-context (B), and physical groove-to-context (C).
+ 'A':[['shoulder_location','tire_contact'],['tire_contact','road_cut'],['road_cut','shoulder_location'],['tire_contact','rumble_mechanism'],['shoulder_location','rumble_mechanism'],['driver_response']],
+ 'B':[['tire_contact','shoulder_location'],['road_cut','shoulder_location'],['tire_contact','rumble_mechanism'],['shoulder_location','tire_contact'],['shoulder_location','rumble_mechanism'],['driver_response']],
+ 'C':[['road_cut','shoulder_location'],['shoulder_location','road_cut'],['tire_contact','rumble_mechanism'],['rumble_mechanism','shoulder_location'],['shoulder_location','rumble_mechanism'],['driver_response']],
 }
 def load_episode(path):
     data=json.loads(Path(path).read_text()); ident=data['variant_id']
@@ -46,7 +48,8 @@ def load_episode(path):
     for index,(beat,styles) in enumerate(zip(beats,STYLES[ident])):
         first=round(beat['start']*30)+1;last=round(beat['end']*30)
         if len(styles)==1: cuts.append((last,styles[0]));continue
-        if ident=='A' and index==1: middle=first+29
+        if index==0: middle=first+44  # opening cut at 1.5s, not 2.5s
+        elif ident=='A' and index==1: middle=first+29
         else: middle=(first+last)//2
         cuts.extend([(middle,styles[0]),(last,styles[1])])
     if 'progressive_cut_frames' in data:
@@ -60,11 +63,15 @@ def load_episode(path):
     assert start==901 and all(s['end']>=s['start'] for s in shots)
     return dict(episode_id='curious-mechanics-'+ident,resolution=[1080,1920],cycles_samples=32,total_frames=900,fps=30,shots=shots)
 def camera_layout(shot):
-    layout=original.camera_layout(dict(shot,id=_STYLE[shot['id']]))
-    if _STYLE[shot['id']] in ('shoulder_location','driver_response'): layout['scale']=15.5
+    style=_STYLE[shot['id']]
+    layout=original.camera_layout(dict(shot,id=style))
+    if style in ('shoulder_location','driver_response'): layout['scale']=15.5
     # A single long shot needs a wider fixed frame to retain the actual moving
     # wheel throughout; never track the camera or reframe on shard boundaries.
-    if shot['id'] in _PROGRESSIVE and _STYLE[shot['id']]=='rumble_mechanism': layout['scale']=7.6
+    if shot['id'] in _PROGRESSIVE and style=='rumble_mechanism': layout['scale']=7.6
+    # Anchor the opening camera to frame 1 so the subject is in view from the
+    # first frame. This remains a fixed camera for the entire shot.
+    if shot['id'].split('_',2)[1]=='00': layout['anchor_frame']=1
     return layout
 def detail_stage(ident): return original.detail_stage(_STYLE[ident])
 def detail_visibility(ident): return original.detail_visibility(_STYLE[ident])
