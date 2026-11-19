@@ -68,7 +68,8 @@ def response(variant: str) -> dict:
             if x > 0:
                 f = K_BELT * x + (C_BELT * rv if rv > 0 else 0.0)
                 if modern and f > f_cap:
-                    pay += max(0.0, x - f_cap / K_BELT)        # the reel lets out webbing until the belt force equals the cap (never takes it back)
+                    x_allow = max(0.0, (f_cap - C_BELT * max(rv, 0.0)) / K_BELT)
+                    pay += max(0.0, x - x_allow)        # the reel lets out webbing until the belt force equals the cap (never takes it back)
                     f = f_cap
             if r > ROOM_M:
                 f += K_STOP * (r - ROOM_M) + (C_STOP * rv if rv > 0 else 0.0)
