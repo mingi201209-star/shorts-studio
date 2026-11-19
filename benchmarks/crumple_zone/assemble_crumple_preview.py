@@ -60,6 +60,10 @@ def compose(panels: Path, out: Path):
         joined = out.parent / (out.name + "-joined.mp4")
         run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", str(listing), "-c", "copy", str(joined)])
         run(["ffmpeg", "-v", "error", "-y", "-i", str(joined), "-vsync", "0", "-start_number", "1", str(out / "frame_%04d.png")])
+        for fp in sorted(out.glob("frame_*.png")):      # a smaller master (e.g. 720x1280) is brought to the 1080x1920 delivery size here
+            im = Image.open(fp).convert("RGB")
+            if im.size != (W, H):
+                im.resize((W, H), Image.LANCZOS).save(fp)
         return telemetry, sha, evidence
     for f in range(1, cm.TOTAL_FRAMES + 1):
         seg = cm.segment_at(f)

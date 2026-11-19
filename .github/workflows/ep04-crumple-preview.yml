@@ -25,6 +25,7 @@ jobs:
       frames_run: ${{ steps.p.outputs.frames_run }}
       flag: ${{ steps.p.outputs.flag }}
       tile: ${{ steps.p.outputs.tile }}
+      encode: ${{ steps.p.outputs.encode }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - id: p
@@ -35,7 +36,7 @@ jobs:
           mode = req["mode"]
           assert mode in ("preview", "range")
           if mode == "preview":
-              size, shards = (3 if req.get("quality") == "final" else 65), [(1, round((lambda c: c["target_seconds"] + c.get("preroll_s", 0.0))(json.load(open("examples/experiments/crumple-zone-real-cues.json"))) * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
+              size, shards = ((12 if req.get("res_scale") else 3) if req.get("quality") == "final" else 65), [(1, round((lambda c: c["target_seconds"] + c.get("preroll_s", 0.0))(json.load(open("examples/experiments/crumple-zone-real-cues.json"))) * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
           else:
               size, shards = 24, [tuple(r) for r in req["ranges"]]      # only the frames a change touched
           include = []
@@ -47,6 +48,7 @@ jobs:
           extra = (" --res-scale " + str(float(req["res_scale"])) if req.get("res_scale") else "") + (" --samples " + str(int(req["samples"])) if req.get("samples") else "")      # optional smaller master, e.g. 720x1280 with fewer samples
           print("flag=" + ("" if final else "--preview") + extra)
           print("tile=" + str(int(req.get("sheet_tile", 270))))
+          print("encode=" + ("1" if final else "0"))      # final frames travel as near-lossless H.264 segments, not as GB of PNGs
           print("frames_run=" + str(req.get("frames_run", "")))      # reuse the panel shards of an earlier run (same picture code): only the composing and the gates run again
           print("audio_run=" + str(req.get("audio_run", "")))      # a frozen audio capture (artifact of an earlier audio-cues run): the picture is planned on exactly that timing
           print("shards=" + str(len(include)))
@@ -151,8 +153,12 @@ jobs:
             -P benchmarks/crumple_zone/render_crumple_3d.py -- \
             --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
             --start ${{ matrix.start }} --end ${{ matrix.end }} $flag --out "$RUNNER_TEMP/native" > "$RUNNER_TEMP/native/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/native/render.log"; exit 1; }
-          if [ -z "${{ needs.plan.outputs.flag }}" ]; then
-            sudo apt-get install -y ffmpeg >/dev/null 2>&1 || true
+          if [ "${{ needs.plan.outputs.encode }}" = "1" ]; then
+            if ! command -v ffmpeg >/dev/null 2>&1; then      # the runner package mirror stalls at times: a static ffmpeg from PyPI instead of apt
+              python3 -m pip install -q imageio-ffmpeg==0.6.0
+              mkdir -p "$HOME/bin" && ln -sf "$(python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$HOME/bin/ffmpeg"
+              export PATH="$HOME/bin:$PATH"
+            fi
             python3 benchmarks/crumple_zone/encode_shard.py --dir "$RUNNER_TEMP/native"
           fi
           grep -c CRUMPLE_FRAME "$RUNNER_TEMP/native/render.log"
