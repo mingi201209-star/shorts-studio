@@ -63,13 +63,37 @@ def test_contact_range_uses_variant_timeline(monkeypatch, variant, shot_start, s
     assert parallel.contact_range(variant) == expected
 
 
+def test_contact_range_selects_first_late_contact_when_b_has_two(monkeypatch):
+    fake_timeline = SimpleNamespace(
+        load_episode=lambda manifest: {"shots": [
+            {"id": "B_early", "start": 232, "end": 316},
+            {"id": "B_later", "start": 504, "end": 606},
+        ]},
+        detail_stage=lambda shot_id: "rolling_contact",
+    )
+    fake_factory = ModuleType("shorts_studio.factory")
+    fake_factory.__path__ = []
+    fake_factory.curious_mechanics_timeline = fake_timeline
+    fake_parent = ModuleType("shorts_studio")
+    fake_parent.__path__ = []
+    fake_parent.factory = fake_factory
+    monkeypatch.setitem(sys.modules, "shorts_studio", fake_parent)
+    monkeypatch.setitem(sys.modules, "shorts_studio.factory", fake_factory)
+    monkeypatch.setitem(sys.modules, "shorts_studio.factory.curious_mechanics_timeline", fake_timeline)
+    assert parallel.contact_range("B") == (241, 270)
+
+
 def test_contact_range_rejects_wrong_variant():
     with pytest.raises(ValueError):
         parallel.contact_range("D")
 
 
 def test_full_matrix_covers_all_900_frames_without_overlap():
-    frames = [n for shard in range(1, 31) for n in range(*parallel.shard_range(shard))]
+    frames = [
+        n for shard in range(1, 31)
+        for start, end in [parallel.shard_range(shard)]
+        for n in range(start, end + 1)
+    ]
     assert frames == list(range(1, 901))
 
 

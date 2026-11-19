@@ -36,12 +36,15 @@ def contact_range(variant: str) -> tuple[int, int]:
     from shorts_studio.factory import curious_mechanics_timeline as timeline
     manifest = ROOT / f"examples/experiments/curious-mechanics-{variant}.json"
     episode = timeline.load_episode(manifest)
-    candidates = [
-        shot for shot in episode["shots"]
-        if timeline.detail_stage(shot["id"]) == "rolling_contact" and shot["start"] > 150
-    ]
-    if len(candidates) != 1:
-        raise ValueError(f"expected one late rolling-contact shot for {variant}, found {len(candidates)}")
+    candidates = sorted(
+        (shot for shot in episode["shots"]
+         if timeline.detail_stage(shot["id"]) == "rolling_contact" and shot["start"] > 150),
+        key=lambda shot: shot["start"],
+    )
+    if not candidates:
+        raise ValueError(f"no late rolling-contact shot for {variant}")
+    # B has two late contact beats; choose the first one deterministically so the
+    # pilot is anchored to the earliest post-context contact rather than failing.
     shot = candidates[0]
     start = aligned_contact_start(shot["start"])
     end = start + 29
