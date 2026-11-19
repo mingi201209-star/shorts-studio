@@ -1,6 +1,10 @@
 name: Curious Mechanics selective recovery
 
 on:
+  pull_request:
+    types: [labeled]
+    branches:
+      - exp/episode2-autonomous-pilot-20261026
   workflow_dispatch:
     inputs:
       source_run_id:
@@ -18,13 +22,14 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+  SOURCE_RUN_ID: ${{ inputs.source_run_id || '44499589013' }}
   BLENDER_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
   RENDERER_SOURCE_SHA256: e6f3da8e73bbcecc54454b4d3a7407d4e7949ac93689a49eb289f123772dd797
   SCENE_SHA256: a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877
 
 jobs:
   preflight:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'curious-mechanics-recover' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -44,6 +49,7 @@ jobs:
           echo "Source run $SOURCE_RUN_ID completed; eight opening shards available and unexpired."
 
   native:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'curious-mechanics-recover' }}
     needs: preflight
     runs-on: ubuntu-24.04
     timeout-minutes: 100
@@ -122,6 +128,7 @@ jobs:
           retention-days: 90
 
   contact:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.label.name == 'curious-mechanics-recover' }}
     needs: preflight
     runs-on: ubuntu-24.04
     timeout-minutes: 100
@@ -200,7 +207,7 @@ jobs:
 
   pilot-preview:
     needs: [preflight, native, contact]
-    if: ${{ always() && needs.preflight.result == 'success' && needs.native.result == 'success' && needs.contact.result == 'success' }}
+    if: ${{ always() && (github.event_name == 'workflow_dispatch' || github.event.label.name == 'curious-mechanics-recover') && needs.preflight.result == 'success' && needs.native.result == 'success' && needs.contact.result == 'success' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
