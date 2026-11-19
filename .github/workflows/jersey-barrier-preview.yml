@@ -1,0 +1,77 @@
+name: Jersey barrier preview (cheap sanity check, not production)
+# Replaces the retroreflective-road-paint episode on this branch with a new
+# subject (the Jersey barrier ribbon effect, under the approved
+# "guardrail-deflection" topic) after direct user feedback that the old
+# episode's shots repeated and its macro shots had no scale reference.
+# Uses the same pinned CC0 detailed sedan render_curious_mechanics.py and
+# render_rumble_episode2.py already use (real user request: use the real car
+# model, not a stylized placeholder). This renders a handful of LOW-sample
+# preview frames (one per shot) to confirm render_jersey_barrier.py actually
+# runs and frames the scene reasonably, before committing to the full
+# 960-frame production render.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/jersey-barrier-preview.yml
+      - benchmarks/road_safety/render_jersey_barrier.py
+      - examples/experiments/jersey-barrier-manifest.json
+permissions:
+  contents: read
+  actions: read
+env:
+  BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install hash-pinned Blender 5.0.1
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Download pinned CC0 car scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render first/mid/last single frame of each shot (low sample, small resolution)
+        # First-vs-last frame of each shot, not three contiguous frames: a
+        # contiguous triple (0.033s apart at 30fps) always looks "similar"
+        # even when a whole shot has no real motion over its full several-
+        # second span -- the exact way a motion bug slipped through the
+        # previous preview round here and was only caught after a full
+        # production render. Sampling each shot's start/middle/end directly
+        # tests the same whole-shot span the real visual_activity QA cares
+        # about, for the cost of a few extra single-frame renders.
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/preview"
+          for frame in \
+            1 83 165 \
+            166 248 330 \
+            331 398 465 \
+            466 540 615 \
+            616 705 795 \
+            796 878 960; do
+            xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
+              -P benchmarks/road_safety/render_jersey_barrier.py -- \
+              --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
+              --manifest examples/experiments/jersey-barrier-manifest.json \
+              --start "$frame" --end "$frame" --preview \
+              --out "$RUNNER_TEMP/preview" 2>&1 | tee -a "$RUNNER_TEMP/preview/render.log"
+          done
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: jersey-barrier-preview
+          path: ${{ runner.temp }}/preview/
+          if-no-files-found: error
+          retention-days: 7

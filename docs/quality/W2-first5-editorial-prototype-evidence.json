@@ -1,0 +1,77 @@
+{
+  "date_kst": "2026-10-24",
+  "status": "EDITORIAL_PROTOTYPE_ONLY_NOT_PRODUCTION",
+  "source_original_run": 40084843910,
+  "source_original_renderer_sha256": "1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d",
+  "source_original_video_sha256": "e01a7843645b135203043602acda58759bf3418308b216bb57751027033933f0",
+  "source_qa_failure": "ORIGINAL_VIDEO_QA: first_5s_visual_changes=0",
+  "method": {
+    "name": "rapid 5 second EDITORIAL-only proof from existing original 3D shots",
+    "picture_segments": [
+      {
+        "source_seconds": [
+          0,
+          1.8
+        ],
+        "output_seconds": [
+          0,
+          1.8
+        ],
+        "shot": "hook_warning"
+      },
+      {
+        "source_seconds": [
+          5.6,
+          7.6
+        ],
+        "output_seconds": [
+          1.8,
+          3.8
+        ],
+        "shot": "road_cut"
+      },
+      {
+        "source_seconds": [
+          10.6,
+          11.8
+        ],
+        "output_seconds": [
+          3.8,
+          5
+        ],
+        "shot": "tire_contact"
+      }
+    ],
+    "captions_and_audio": "original 0-5s 30fps bottom subtitle band and original 0-5s AAC narration preserved",
+    "source_visual_geometry": "existing CC0 geometry / same renderer; no new 3D generation or fake painted groove",
+    "production_native_frame_sequence": "NOT_PRESERVED_IN_THIS_PROTOTYPE",
+    "note": "This proof is not a valid replacement for native ordered 900 original frames or strict original film QA."
+  },
+  "existing_visual_activity_test": {
+    "sample_fps": 2,
+    "unchanged_mean_pixel_threshold": 12,
+    "first5_visual_changes_previous": 0,
+    "first5_visual_changes_prototype": 2,
+    "prototype_cut_timestamps_seconds": [
+      2,
+      4
+    ],
+    "prototype_diff_values_at_cuts": [
+      20.91,
+      32.249
+    ],
+    "original_diff_max_before_5_seconds": 7.147
+  },
+  "actual_video_duration_seconds": 5,
+  "actual_video_frames": 150,
+  "actual_video_resolution": [
+    1080,
+    1920
+  ],
+  "full_original_900_frames_rebuilt": false,
+  "final_qa_pass": false,
+  "human_review_status": "NOT_YET_APPROVED",
+  "editorial_decision": "HOLD",
+  "upload_authorized": false,
+  "next_step": "Implement true multi-beat first5 within original renderer/native motion proof and test real sparse Cycles32 frames before full 900-frame rerender"
+}

@@ -1,0 +1,299 @@
+"""Motion model for the runaway-truck-ramp (gravel arrester bed) episode.
+
+Pure Python, no Blender, unit-tested.
+
+TEST CONDITIONS (what every number in the film means)
+  A 20,000 kg truck with failed brakes enters a level gravel arrester bed at
+  25 m/s (90 km/h) and is not steered. "Stopping distance" is the distance
+  from the first tyre contact with the gravel until speed is below
+  STOPPED_SPEED. The paved comparison is the same truck coasting on pavement.
+
+What is modelled, and only this:
+  * Deceleration from rolling resistance: a = C * g, with C the rolling
+    resistance coefficient. Loose pea gravel is taken as C = 0.25 and paved
+    road as C = 0.01. BOTH ARE ASSUMPTIONS (the 0.25 is an illustrative value
+    from a published worked example, not a design standard; Arizona DOT's
+    review says field tests are still needed to predict minimum values).
+  * Tyre sink: the bed resists more the deeper the tyres sink, modelled as
+    resistance ramping from PAVED_C to GRAVEL_C over RAMP_IN metres.
+  * Gravel thrown aside is drawn as particles; it is not simulated as a
+    granular flow.
+  NOT done: no comparison with a full-scale arrester-bed test trace, no
+  braking, no grade. "physically_calibrated" is False everywhere.
+"""
+from __future__ import annotations
+
+G = 9.81
+MASS = 20000.0
+SPEED0 = 25.0
+GRAVEL_C = 0.25
+PAVED_C = 0.01
+RAMP_IN = 12.0          # metres over which the tyres sink to full depth
+STOPPED_SPEED = 0.5
+FPS = 30
+SUBSTEPS = 20
+
+
+def resistance(distance: float, c_full: float) -> float:
+    """Rolling-resistance coefficient after `distance` metres in the bed."""
+    f = min(max(distance / RAMP_IN, 0.0), 1.0)
+    return PAVED_C + (c_full - PAVED_C) * f
+
+
+def simulate(c_full: float = GRAVEL_C, seconds: float = 32.0, speed0: float = SPEED0) -> list[dict]:
+    """One state per video frame: distance (m) travelled in the bed, speed (m/s),
+    deceleration (m/s^2). Distance is clamped once the truck has stopped."""
+    dt = 1.0 / (FPS * SUBSTEPS)
+    x, v = 0.0, speed0
+    states = []
+    for _ in range(int(seconds * FPS)):
+        a = 0.0
+        for _ in range(SUBSTEPS):
+            if v <= STOPPED_SPEED:
+                v = 0.0
+                a = 0.0
+                break
+            a = resistance(x, c_full) * G
+            v = max(v - a * dt, 0.0)
+            x += v * dt
+        states.append({"x": x, "v": v, "a": a})
+    return states
+
+
+def stop_distance(c_full: float = GRAVEL_C, speed0: float = SPEED0) -> float:
+    states = simulate(c_full, seconds=600.0, speed0=speed0) if c_full < 0.05 else simulate(c_full, speed0=speed0)
+    return states[-1]["x"]
+
+
+def stop_time(states: list[dict]) -> float:
+    for i, s in enumerate(states):
+        if s["v"] == 0.0:
+            return i / FPS
+    return float("inf")
+
+
+def summary(states: list[dict]) -> dict:
+    t = stop_time(states)
+    peak_a = max(s["a"] for s in states)
+    return {
+        "stop_distance_m": round(states[-1]["x"], 1),
+        "stop_time_s": round(t, 2),
+        "peak_decel_g": round(peak_a / G, 3),
+        "physically_calibrated": False,
+    }
+
+
+def drag_ratio() -> float:
+    """Gravel's rolling-resistance coefficient over pavement's. Both are ASSUMED values (see the constants above)."""
+    return GRAVEL_C / PAVED_C
+
+
+def callout_texts(stop_m: float, paved_m: float) -> dict:
+    """The on-screen numbers, each tied to the quantity it is. Two ratios, two different things:
+    drag = ratio of the assumed coefficients (25x); distance = pavement coast distance over the simulated gravel stop
+    (about 24x, a little smaller because the bed's resistance builds up over RAMP_IN metres and the tyres sink in)."""
+    return {
+        "drag": f"{drag_ratio():.0f}\u00d7 MORE DRAG THAN PAVEMENT",
+        "gravel": f"GRAVEL BED:  {stop_m:.0f} m",
+        "paved": f"PAVEMENT:  {paved_m:,.0f} m",
+        "distance": f"PAVEMENT GOES {paved_m / stop_m:.0f}\u00d7 FARTHER",
+    }
+
+
+def audit_energy(states: list[dict]) -> dict:
+    """Work done by resistance must equal the kinetic energy lost."""
+    ke0 = 0.5 * MASS * SPEED0 ** 2
+    ke1 = 0.5 * MASS * states[-1]["v"] ** 2
+    work = 0.0
+    prev_x = 0.0
+    for s in states:
+        work += resistance(prev_x, GRAVEL_C) * G * MASS * (s["x"] - prev_x)
+        prev_x = s["x"]
+    return {"ke_lost_J": ke0 - ke1, "work_J": work, "ratio": work / (ke0 - ke1)}
+
+
+# --------------------------------------------------------------- gravel spray
+import random  # noqa: E402
+
+WHEEL_R = 0.5
+AXLES_Y = (-1.4, -6.2, -7.5, -12.0, -13.3)    # axle positions behind the nose (m), from the truck model in the renderer
+WHEEL_X = (-1.05, 1.05)
+SINK_MAX = 0.16                                # tyre sink at full depth (m); drawn, not measured
+GRAINS_PER_WHEEL_PER_S = 70.0
+
+
+def sink(distance: float) -> float:
+    """Tyre sink (m): zero on pavement, SINK_MAX once resistance is at full depth."""
+    return SINK_MAX * min(max(distance / RAMP_IN, 0.0), 1.0)
+
+
+def build_gravel(states: list[dict], seed: int = 7) -> list[dict]:
+    """Stones kicked up by the tyres. A stone is launched from the leading edge
+    of a tyre that is in the bed, at a fraction of the truck's speed forward
+    (the tyre pushes the stones it digs into), a few m/s sideways and up, then
+    flies ballistically and lies where it lands. Emission is proportional to
+    speed times sink, so it fades as the truck stops. Pure bookkeeping for the
+    picture; not a granular-flow simulation."""
+    rng = random.Random(seed)
+    grains = []
+    carry = {(a, s): 0.0 for a in range(len(AXLES_Y)) for s in range(2)}
+    for i, st in enumerate(states):
+        t = i / FPS
+        s = sink(st["x"])
+        if s <= 0.0 or st["v"] <= 0.0:
+            continue
+        for a, ay in enumerate(AXLES_Y):
+            for side, wx in enumerate(WHEEL_X):
+                carry[(a, side)] += GRAINS_PER_WHEEL_PER_S / FPS * (st["v"] / SPEED0) * (s / SINK_MAX)
+                while carry[(a, side)] >= 1.0:
+                    carry[(a, side)] -= 1.0
+                    sx = 1 if wx > 0 else -1
+                    grains.append({
+                        "t0": t + rng.random() / FPS,
+                        "p0": (wx + sx * rng.uniform(0.0, 0.25), st["x"] + ay + WHEEL_R * 0.6, 0.05),
+                        "v0": (sx * rng.uniform(0.8, 3.4), st["v"] * rng.uniform(0.25, 0.7) + rng.uniform(-0.5, 0.5),
+                               rng.uniform(1.5, 4.8) * (0.5 + st["v"] / SPEED0)),
+                        "r": rng.uniform(0.012, 0.03)})
+    return grains
+
+
+def grain_position(g: dict, t: float) -> tuple[float, float, float] | None:
+    """Position at film-sim time t, None before launch (or after a dust mote's
+    life is over). Lands and stays at rest."""
+    tau = t - g["t0"]
+    if tau < 0.0 or tau > g.get("life", 1e9):
+        return None
+    gg = G * g.get("gscale", 1.0)
+    floor = g.get("floor", 0.0)
+    x = g["p0"][0] + g["v0"][0] * tau
+    y = g["p0"][1] + g["v0"][1] * tau
+    z = g["p0"][2] + g["v0"][2] * tau - 0.5 * gg * tau * tau
+    if z <= floor + g["r"]:
+        a, b, c = -0.5 * gg, g["v0"][2], g["p0"][2] - g["r"] - floor
+        tl = (-b - (b * b - 4 * a * c) ** 0.5) / (2 * a)
+        x = g["p0"][0] + g["v0"][0] * tl
+        y = g["p0"][1] + g["v0"][1] * tl
+        z = floor + g["r"]
+    return (x, y, z)
+
+
+DUST_PER_WHEEL_PER_S = 260.0
+
+
+def build_dust(states: list[dict], seed: int = 21) -> list[dict]:
+    """Fine dust lifted by the tyres: many tiny motes that sink slowly (reduced
+    gravity stands in for air drag) and disappear after a couple of seconds.
+    Picture only."""
+    rng = random.Random(seed)
+    motes = []
+    carry = {(a, s): 0.0 for a in range(len(AXLES_Y)) for s in range(2)}
+    for i, st in enumerate(states):
+        t = i / FPS
+        s = sink(st["x"])
+        if s <= 0.0 or st["v"] <= 0.0:
+            continue
+        for a, ay in enumerate(AXLES_Y):
+            for side, wx in enumerate(WHEEL_X):
+                carry[(a, side)] += DUST_PER_WHEEL_PER_S / FPS * (st["v"] / SPEED0) ** 0.5 * (s / SINK_MAX)
+                while carry[(a, side)] >= 1.0:
+                    carry[(a, side)] -= 1.0
+                    sx = 1 if wx > 0 else -1
+                    motes.append({
+                        "t0": t + rng.random() / FPS, "life": rng.uniform(1.2, 3.0), "gscale": 0.10,
+                        "p0": (wx + sx * rng.uniform(-0.1, 0.35), st["x"] + ay + rng.uniform(-0.4, 0.4), 0.08),
+                        "v0": (sx * rng.uniform(0.1, 2.2), st["v"] * rng.uniform(0.05, 0.35),
+                               rng.uniform(0.5, 2.4)),
+                        "r": rng.uniform(0.012, 0.03)})
+    return motes
+
+
+def airborne(grains: list[dict], t: float) -> int:
+    n = 0
+    for g in grains:
+        tau = t - g["t0"]
+        if 0.0 <= tau and g["p0"][2] + g["v0"][2] * tau - 0.5 * G * tau * tau > g["r"] + 0.02:
+            n += 1
+    return n
+
+
+# ------------------------------------------------- cutaway: a wheel rolling over the bed
+CUT_SLAB_D = 0.6          # drawn bed depth (m)
+CUT_ROLL_X = (-0.9, 0.9)  # the wheel rolls across the slab between these x positions
+
+
+def cut_wheel_state(u: float) -> dict:
+    """Wheel on the cutaway slab at fraction u (0..1) of the shot: x position, sink, spin angle."""
+    x = CUT_ROLL_X[0] + (CUT_ROLL_X[1] - CUT_ROLL_X[0]) * u
+    sink_m = SINK_MAX * min(1.0, u / 0.15)
+    return {"x": x, "sink": sink_m, "z": CUT_SLAB_D + WHEEL_R - sink_m, "spin": (x - CUT_ROLL_X[0]) / WHEEL_R}
+
+
+def build_cut_grains(seconds: float, y_center: float, seed: int = 5, per_second: float = 70.0) -> list[dict]:
+    """Stones thrown ahead of the rolling wheel in the cutaway shot; they land on the slab top."""
+    rng = random.Random(seed)
+    out = []
+    n = int(seconds * per_second)
+    for i in range(n):
+        t0 = i / per_second + rng.random() / per_second
+        u = min(1.0, t0 / seconds)
+        w = cut_wheel_state(u)
+        if w["sink"] < 0.02:
+            continue
+        out.append({"t0": t0, "floor": CUT_SLAB_D, "r": rng.uniform(0.012, 0.03),
+                    "p0": (w["x"] + 0.28, y_center + rng.uniform(-0.15, 0.15), CUT_SLAB_D + 0.04),
+                    "v0": (rng.uniform(0.25, 1.1), rng.uniform(-0.9, 0.9), rng.uniform(0.7, 2.0))})
+    return out
+
+
+# ------------------------------------------- cutaway slice: a wheel plowing a pile of stones
+SLICE_HALF_W = 1.25        # slice half width (m)
+SLICE_THICK = 0.34        # slice thickness (m): the wheel is wider, so its face covers the stones
+PILE_FULL = 0.6           # pushed distance (m) at which the pile has reached its full height / depth
+
+
+def slice_stones(n: int = 12000, seed: int = 9) -> dict:
+    """Random stones filling the slice: x, z (m), y offset in the slice, radius and two random numbers."""
+    import numpy as np
+    rng = np.random.default_rng(seed)
+    r = rng.uniform(0.014, 0.030, n)
+    return {"x": rng.uniform(-SLICE_HALF_W, SLICE_HALF_W, n), "z": rng.uniform(r, CUT_SLAB_D - r),
+            "y": rng.uniform(0.02, SLICE_THICK - 0.02, n), "r": r,
+            "u": rng.random(n), "v": rng.random(n)}
+
+
+def plow(st: dict, wheel_x: float, wheel_sink: float):
+    """Stone positions (x, z) with the wheel at wheel_x, sunk by wheel_sink. A stone the wheel reaches is pushed
+    ahead of it along the wheel's front edge; the more it has been pushed, the higher and deeper the pile it joins.
+    Kinematic picture of a bow wave, not a granular-flow simulation."""
+    import numpy as np
+    x, z, u, v = st["x"], st["z"], st["u"], st["v"]
+    zc = CUT_SLAB_D + WHEEL_R - wheel_sink
+    start = CUT_ROLL_X[0]
+    eligible = (x >= start) & (z > zc - WHEEL_R)
+    # first estimate of how far each stone is pushed, to size its lift
+    dz0 = np.clip(z - zc, -WHEEL_R, WHEEL_R)
+    front0 = wheel_x + np.sqrt(np.maximum(WHEEL_R ** 2 - dz0 ** 2, 0.0))
+    pushed = np.where(eligible, np.maximum(front0 - x, 0.0), 0.0)
+    grow = np.minimum(1.0, pushed / PILE_FULL)
+    z1 = np.minimum(z + 0.40 * grow * u, zc + 0.95 * WHEEL_R)
+    dz1 = np.clip(z1 - zc, -WHEEL_R, WHEEL_R)
+    front1 = wheel_x + np.sqrt(np.maximum(WHEEL_R ** 2 - dz1 ** 2, 0.0)) + 0.14 * grow * v
+    moved = eligible & (pushed > 0.0)
+    return np.where(moved, np.maximum(x, front1), x), np.where(moved, z1, z), moved
+
+
+# ------------------------------------------- closing shot: the truck leaves the highway for the ramp
+EXIT_LANE_X = -11.0
+EXIT_BLEND_Y = (-135.0, -70.0)     # the connector runs between these y values (m)
+
+
+def exit_path_x(y: float) -> float:
+    """Lane centre x for a truck whose nose is at y: on the highway lane, then a smooth S onto the ramp axis."""
+    s = min(max((y - EXIT_BLEND_Y[0]) / (EXIT_BLEND_Y[1] - EXIT_BLEND_Y[0]), 0.0), 1.0)
+    return EXIT_LANE_X * (1.0 - s * s * (3.0 - 2.0 * s))
+
+
+def exit_path_yaw(y: float) -> float:
+    """Yaw (rad, about +z) that points the truck along the path at y."""
+    import math
+    return -math.atan2(exit_path_x(y + 0.5) - exit_path_x(y - 0.5), 1.0)

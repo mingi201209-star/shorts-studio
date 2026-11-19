@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "breakaway-sign-post",
+      "beats": [
+        {
+          "narration_en": "Why are some road signs designed to break the moment a car hits them?",
+          "start": 0,
+          "end": 5.5
+        },
+        {
+          "narration_en": "Two identical cars hit the same kind of post at the same speed but only one of them stops.",
+          "start": 5.5,
+          "end": 11.0
+        },
+        {
+          "narration_en": "The second post was built to let go because its base simply slips apart the very instant the bumper hits.",
+          "start": 11.0,
+          "end": 15.5
+        },
+        {
+          "narration_en": "Hit low, the freed post spins up and over the roof and lands on the road behind the car.",
+          "start": 15.5,
+          "end": 20.5
+        },
+        {
+          "narration_en": "Its two plates are held together by bolts in open notches that resist the wind but not a moving car.",
+          "start": 20.5,
+          "end": 26.5
+        },
+        {
+          "narration_en": "So the signs along fast roads and highways stand on bases like this, quietly waiting to let go.",
+          "start": 26.5,
+          "end": 32.0
+        }
+      ]
+    }
+  ]
+}

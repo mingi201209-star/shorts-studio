@@ -1,0 +1,128 @@
+{
+ "cues": [
+  {
+   "start": 0.06,
+   "end": 1.440958,
+   "text": "Your seatbelt is\\Nbuilt to give"
+  },
+  {
+   "start": 1.452833,
+   "end": 2.333832,
+   "text": "way on purpose."
+  },
+  {
+   "start": 2.8837911250000006,
+   "end": 4.157582125000001,
+   "text": "In a crash\\Nit first snaps"
+  },
+  {
+   "start": 4.169499125,
+   "end": 4.502832125000001,
+   "text": "tight,"
+  },
+  {
+   "start": 5.05279125,
+   "end": 6.2670822500000005,
+   "text": "pulling you back\\Ninto the seat."
+  },
+  {
+   "start": 6.8170413750000005,
+   "end": 8.102748375000001,
+   "text": "Then a twisting\\Nmetal bar in"
+  },
+  {
+   "start": 8.114666375,
+   "end": 9.471790375000001,
+   "text": "the reel starts to give,"
+  },
+  {
+   "start": 10.021749500000002,
+   "end": 10.938415500000001,
+   "text": "letting out\\Na little belt."
+  },
+  {
+   "start": 11.488374625000002,
+   "end": 12.619290625000003,
+   "text": "Your chest\\Ngets a longer,"
+  },
+  {
+   "start": 12.857415625000002,
+   "end": 13.559790625000003,
+   "text": "gentler stop."
+  },
+  {
+   "start": 14.109749750000002,
+   "end": 15.574040750000002,
+   "text": "A belt with\\Nno give stops it"
+  },
+  {
+   "start": 15.669249750000002,
+   "end": 16.63354075,
+   "text": "almost at once,"
+  },
+  {
+   "start": 16.83591575,
+   "end": 17.78829075,
+   "text": "with a harder push."
+  },
+  {
+   "start": 18.338249875,
+   "end": 20.016832875,
+   "text": "Same idea as\\Na crumple zone:"
+  },
+  {
+   "start": 20.421582875,
+   "end": 21.814457875,
+   "text": "a longer stop\\Nmeans a smaller"
+  },
+  {
+   "start": 21.826374875,
+   "end": 22.493040875,
+   "text": "peak force."
+  }
+ ],
+ "beats": [
+  {
+   "start": 0,
+   "end": 2.8237911250000005,
+   "text": "Your seatbelt is built to give way on purpose."
+  },
+  {
+   "start": 2.8237911250000005,
+   "end": 4.992791250000001,
+   "text": "In a crash it first snaps tight,"
+  },
+  {
+   "start": 4.992791250000001,
+   "end": 6.757041375000001,
+   "text": "pulling you back into the seat."
+  },
+  {
+   "start": 6.757041375000001,
+   "end": 9.961749500000002,
+   "text": "Then a twisting metal bar in the reel starts to give,"
+  },
+  {
+   "start": 9.961749500000002,
+   "end": 11.428374625000002,
+   "text": "letting out a little belt."
+  },
+  {
+   "start": 11.428374625000002,
+   "end": 14.049749750000002,
+   "text": "Your chest gets a longer, gentler stop."
+  },
+  {
+   "start": 14.049749750000002,
+   "end": 18.278249875,
+   "text": "A belt with no give stops it almost at once, with a harder push."
+  },
+  {
+   "start": 18.278249875,
+   "end": 22.983,
+   "text": "Same idea as a crumple zone: a longer stop means a smaller peak force."
+  }
+ ],
+ "audio_run": 44462010326,
+ "seconds": 22.983
+}

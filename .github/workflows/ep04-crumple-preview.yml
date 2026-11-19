@@ -1,0 +1,242 @@
+name: EP04 crumple zone PREVIEW (first 4.5 s, low resolution, contiguous)
+# EP.04: low-cost contiguous preview of the first 4.5 s (135 frames, 1/3 resolution, 7 samples): 100% 3D Blender frames, composed and muxed with the first 4.5 s of the narration,
+# every gate that can be decided from this clip, contact sheet. Never a deliverable, never uploads. Starts only when the request file changes.
+on:
+  push:
+    branches: [ep04-crumple-build-20261116, fix/ep04-narration-visual-contract-20261117]
+    paths:
+      - examples/experiments/crumple-zone-preview-request.json
+permissions:
+  contents: read
+  actions: read
+env:
+  EP04_FILM: preview
+  EP04_SHEET_TILE: "270"
+  BLENDER_TARBALL_SHA256: 8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      mode: ${{ steps.p.outputs.mode }}
+      matrix: ${{ steps.p.outputs.matrix }}
+      shards: ${{ steps.p.outputs.shards }}
+      audio_run: ${{ steps.p.outputs.audio_run }}
+      frames_run: ${{ steps.p.outputs.frames_run }}
+      flag: ${{ steps.p.outputs.flag }}
+      tile: ${{ steps.p.outputs.tile }}
+      encode: ${{ steps.p.outputs.encode }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: p
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          req = json.load(open("examples/experiments/crumple-zone-preview-request.json"))
+          mode = req["mode"]
+          assert mode in ("preview", "range")
+          if mode == "preview":
+              size, shards = ((12 if req.get("res_scale") else 3) if req.get("quality") == "final" else 65), [(1, round((lambda c: c["target_seconds"] + c.get("preroll_s", 0.0))(json.load(open("examples/experiments/crumple-zone-real-cues.json"))) * 30))]      # the whole film (target_seconds x 30 fps), 65-frame shards
+          else:
+              size, shards = 24, [tuple(r) for r in req["ranges"]]      # only the frames a change touched
+          include = []
+          for lo, hi in shards:
+              for s in range(lo, hi + 1, size):
+                  include.append({"start": s, "end": min(s + size - 1, hi)})
+          print("mode=" + mode)
+          final = req.get("quality") == "final"      # native 1080x1920, 24 samples, 3-frame shards (a see-through frame takes tens of minutes at native size; the job limit is 80 min); the default is the 1/3-resolution, 7-sample preview
+          extra = (" --res-scale " + str(float(req["res_scale"])) if req.get("res_scale") else "") + (" --samples " + str(int(req["samples"])) if req.get("samples") else "")      # optional smaller master, e.g. 720x1280 with fewer samples
+          print("flag=" + ("" if final else "--preview") + extra)
+          print("tile=" + str(int(req.get("sheet_tile", 270))))
+          print("encode=" + ("1" if final else "0"))      # final frames travel as near-lossless H.264 segments, not as GB of PNGs
+          print("frames_run=" + str(req.get("frames_run", "")))      # reuse the panel shards of an earlier run (same picture code): only the composing and the gates run again
+          print("audio_run=" + str(req.get("audio_run", "")))      # a frozen audio capture (artifact of an earlier audio-cues run): the picture is planned on exactly that timing
+          print("shards=" + str(len(include)))
+          print("matrix=" + json.dumps({"include": include}))
+          PY
+  audio:
+    needs: plan
+    if: needs.plan.outputs.mode == 'preview' && needs.plan.outputs.audio_run == ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: |
+          # the runner package mirror sometimes stalls for many minutes: skip apt when ffmpeg is already installed; one short bounded apt attempt, then a static ffmpeg from PyPI (imageio-ffmpeg)
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            (timeout 90 sudo apt-get update -qq && timeout 150 sudo apt-get install -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 ffmpeg fonts-dejavu-core) || echo "apt failed or too slow"
+          fi
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            python -m pip install imageio-ffmpeg==0.6.0
+            mkdir -p "$HOME/bin" && ln -sf "$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$HOME/bin/ffmpeg"
+            echo "$HOME/bin" >> "$GITHUB_PATH"; export PATH="$HOME/bin:$PATH"
+          fi
+          command -v ffmpeg
+          ffmpeg -hide_banner -filters | grep -E " ass " || { echo "this ffmpeg has no libass filter"; exit 1; }
+      - run: python -m pip install edge-tts Pillow pydantic
+      - name: Capture narration and build narration.wav + captions
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
+          # the free TTS service sometimes returns no audio; finished beats are reused on a retry; up to 6 attempts
+          export SPEECH_REQUEST_GAP=20
+          ok=0
+          for attempt in 1 2 3 4 5 6; do
+            rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
+            if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
+                 --plan examples/experiments/crumple-zone-speech-plan.json --target-seconds 26.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+            echo "speech capture attempt $attempt failed"
+            # keep the beats that were captured completely: the capture script reuses them from speech-v*/<variant>/ on the next attempt
+            mkdir -p "$RUNNER_TEMP/speech-v$attempt/crumple-zone"; cp "$RUNNER_TEMP"/speech/crumple-zone/beat_*.json "$RUNNER_TEMP"/speech/crumple-zone/beat_*.mp3 "$RUNNER_TEMP/speech-v$attempt/crumple-zone/" 2>/dev/null || true
+            sleep 20
+          done
+          test "$ok" = 1
+          PYTHONPATH="$PWD" python benchmarks/crumple_zone/level_beats.py --folder "$RUNNER_TEMP/speech/crumple-zone"
+          PYTHONPATH="$PWD" python -c "
+          from pathlib import Path
+          from benchmarks.road_safety.curious_mechanics_audio import build
+          from benchmarks.crumple_zone.captions import single_line_groups as phrase_groups
+          build(Path('$RUNNER_TEMP/speech/crumple-zone'), Path('$RUNNER_TEMP/audio'), target_seconds=26.0, grouper=phrase_groups)
+          "
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crumple-preview-audio
+          path: ${{ runner.temp }}/audio/
+          if-no-files-found: error
+          retention-days: 7
+  frames:
+    needs: plan
+    if: ${{ needs.plan.outputs.frames_run == '' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install hash-pinned Blender 5.0.1
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          # official site first, then public mirrors: some runners get a persistent 403 from download.blender.org.
+          # Whatever the source, the pinned SHA-256 below decides whether the file is accepted.
+          got=0
+          for base in https://download.blender.org/release https://ftp.nluug.nl/pub/graphics/blender/release \
+                      https://mirror.clarkson.edu/blender/release https://ftp.halifax.rwth-aachen.de/blender/release; do
+            rm -f "$RUNNER_TEMP/blender.tar.xz"
+            if curl -fLsS --retry 2 --retry-delay 10 --retry-all-errors --max-time 280 "$base/Blender5.0/blender-5.0.1-linux-x64.tar.xz" -o "$RUNNER_TEMP/blender.tar.xz" \
+               && echo "$BLENDER_TARBALL_SHA256  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -; then
+              echo "Blender downloaded from $base"; got=1; break
+            fi
+            echo "download from $base failed or did not match the pinned hash; trying the next source"
+          done
+          test "$got" = 1
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Download pinned CC0 car scene
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GITHUB_REPOSITORY" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render panels ${{ matrix.start }}-${{ matrix.end }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native"
+          flag="${{ needs.plan.outputs.flag }}"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 \
+            -P benchmarks/crumple_zone/render_crumple_3d.py -- \
+            --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" \
+            --start ${{ matrix.start }} --end ${{ matrix.end }} $flag --out "$RUNNER_TEMP/native" > "$RUNNER_TEMP/native/render.log" 2>&1 || { tail -40 "$RUNNER_TEMP/native/render.log"; exit 1; }
+          if [ "${{ needs.plan.outputs.encode }}" = "1" ]; then
+            if ! command -v ffmpeg >/dev/null 2>&1; then      # the runner package mirror stalls at times: a static ffmpeg from PyPI instead of apt
+              python3 -m pip install -q imageio-ffmpeg==0.6.0
+              mkdir -p "$HOME/bin" && ln -sf "$(python3 -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$HOME/bin/ffmpeg"
+              export PATH="$HOME/bin:$PATH"
+            fi
+            python3 benchmarks/crumple_zone/encode_shard.py --dir "$RUNNER_TEMP/native"
+          fi
+          grep -c CRUMPLE_FRAME "$RUNNER_TEMP/native/render.log"
+          grep -E "CRUMPLE_(PROBE|PART|GEOMETRY)" "$RUNNER_TEMP/native/render.log" | head -60
+          grep CRUMPLE_FRAME "$RUNNER_TEMP/native/render.log" | awk 'NR % 17 == 1' | cut -c1-700
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crumple-preview-panels-${{ matrix.start }}
+          path: ${{ runner.temp }}/native/
+          if-no-files-found: error
+          retention-days: 7
+  final:
+    needs: [plan, audio, frames]
+    if: ${{ !cancelled() && needs.plan.result == 'success' && (needs.frames.result == 'success' || needs.frames.result == 'skipped') && (needs.audio.result == 'success' || needs.audio.result == 'skipped') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - if: needs.plan.outputs.mode == 'preview'      # a range check needs no ffmpeg: the runner package mirror is slow, so it is not touched
+        run: |
+          # the runner package mirror sometimes stalls for many minutes: skip apt when ffmpeg is already installed; one short bounded apt attempt, then a static ffmpeg from PyPI (imageio-ffmpeg)
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            (timeout 90 sudo apt-get update -qq && timeout 150 sudo apt-get install -y --no-install-recommends -o Acquire::Retries=1 -o Acquire::http::Timeout=20 ffmpeg fonts-dejavu-core) || echo "apt failed or too slow"
+          fi
+          if ! command -v ffmpeg >/dev/null 2>&1; then
+            python -m pip install imageio-ffmpeg==0.6.0
+            mkdir -p "$HOME/bin" && ln -sf "$(python -c 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())')" "$HOME/bin/ffmpeg"
+            echo "$HOME/bin" >> "$GITHUB_PATH"; export PATH="$HOME/bin:$PATH"
+          fi
+          command -v ffmpeg
+          ffmpeg -hide_banner -filters | grep -E " ass " || { echo "this ffmpeg has no libass filter"; exit 1; }
+      - run: python -m pip install Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93 numpy
+      - name: Retrieve panel shards and audio
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native" "$RUNNER_TEMP/audio"
+          gh run download "${{ needs.plan.outputs.frames_run || github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'crumple-preview-panels-*' --dir "$RUNNER_TEMP/native"
+          test "$(ls "$RUNNER_TEMP/native" | wc -l)" = "${{ needs.plan.outputs.shards }}"
+          if [ "${{ needs.plan.outputs.mode }}" = "preview" ]; then
+            gh run download "${{ needs.plan.outputs.audio_run || github.run_id }}" --repo "$GITHUB_REPOSITORY" --name crumple-preview-audio --dir "$RUNNER_TEMP/audio"
+          fi
+      - name: Compose, mux the first 4.5 s and run every gate that this clip can decide
+        id: gates
+        if: needs.plan.outputs.mode == 'preview'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/crumple_zone/assemble_crumple_preview.py --panels "$RUNNER_TEMP/native" --audio "$RUNNER_TEMP/audio" \
+            --frames-dir "$RUNNER_TEMP/composed" --out "$RUNNER_TEMP/final"
+      - name: Partial render check (model vs Blender on the rendered frames) and contact sheet
+        id: range
+        if: needs.plan.outputs.mode == 'range'
+        continue-on-error: true
+        env:
+          EP04_SHEET_TILE: ${{ needs.plan.outputs.tile }}
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/crumple_zone/check_range.py --panels "$RUNNER_TEMP/native" --out "$RUNNER_TEMP/final"
+      - name: Contact sheet and hashes
+        if: needs.plan.outputs.mode == 'preview'
+        run: |
+          set -euo pipefail
+          f="$RUNNER_TEMP/final/crumple-preview-1080x1920.mp4"
+          ffmpeg -v error -i "$f" -vf "fps=4,scale=180:320,tile=6x3" -frames:v 1 -q:v 4 "$RUNNER_TEMP/sheet.jpg"
+          echo "SHEET_B64_START"; base64 -w0 "$RUNNER_TEMP/sheet.jpg"; echo ""; echo "SHEET_B64_END"
+          sha256sum "$RUNNER_TEMP"/final/*.mp4
+          ls -l "$RUNNER_TEMP"/final/*.mp4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: crumple-preview-final-${{ needs.plan.outputs.mode }}
+          path: ${{ runner.temp }}/final/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Fail the run if any gate failed
+        if: steps.gates.outcome == 'failure' || steps.range.outcome == 'failure'
+        run: exit 1

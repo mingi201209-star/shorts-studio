@@ -1,0 +1,55 @@
+name: Runaway truck ramp FINAL - review MP4 recovery (chunked through job logs)
+# Prints the 540x960 review copy of the final film (artifact runaway-ramp-final of the production run) in numbered chunks, one job per chunk, with a
+# sha256 per chunk and for the whole file. The full-resolution final stays in the Actions artifact. Review only; never uploaded.
+# Starts only when the request file below changes (not when this file changes).
+on:
+  push:
+    branches: [road-ramp-captions-camera-20261114]
+    paths:
+      - examples/experiments/runaway-ramp-final-mp4-request.json
+permissions:
+  contents: read
+  actions: read
+env:
+  PRODUCTION_RUN_ID: "43662175061"
+  CHUNK_BYTES: "200000"
+jobs:
+  info:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: runaway-ramp-final
+          path: ${{ runner.temp }}/final
+          run-id: ${{ env.PRODUCTION_RUN_ID }}
+          github-token: ${{ github.token }}
+      - run: |
+          cd "$RUNNER_TEMP/final"
+          ls -l
+          sha256sum *.mp4
+          echo "REVIEW_MP4_BYTES $(stat -c %s runaway-truck-ramp-540x960-review.mp4)"
+  chunk:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        index: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39]
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: runaway-ramp-final
+          path: ${{ runner.temp }}/final
+          run-id: ${{ env.PRODUCTION_RUN_ID }}
+          github-token: ${{ github.token }}
+      - name: Print chunk ${{ matrix.index }}
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP/final"
+          split -b "$CHUNK_BYTES" -d -a 2 runaway-truck-ramp-540x960-review.mp4 part_
+          f=$(printf 'part_%02d' ${{ matrix.index }})
+          if [ ! -f "$f" ]; then echo "CHUNK_NONE ${{ matrix.index }}"; exit 0; fi
+          echo "CHUNK_START ${{ matrix.index }} $(stat -c %s "$f") $(sha256sum "$f" | cut -d' ' -f1)"
+          base64 -w 76 "$f"
+          echo "CHUNK_END ${{ matrix.index }}"

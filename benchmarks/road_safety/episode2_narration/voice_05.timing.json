@@ -1,0 +1,82 @@
+{
+  "words": [
+    {
+      "text": "The",
+      "start": 0.107125,
+      "end": 0.15475
+    },
+    {
+      "text": "noise",
+      "start": 0.166666,
+      "end": 0.523791
+    },
+    {
+      "text": "and",
+      "start": 0.535708,
+      "end": 0.619041
+    },
+    {
+      "text": "shaking",
+      "start": 0.630958,
+      "end": 1.071416
+    },
+    {
+      "text": "can",
+      "start": 1.083333,
+      "end": 1.273791
+    },
+    {
+      "text": "quickly",
+      "start": 1.285708,
+      "end": 1.666666
+    },
+    {
+      "text": "alert",
+      "start": 1.678583,
+      "end": 1.952374
+    },
+    {
+      "text": "a",
+      "start": 1.964291,
+      "end": 2.011916
+    },
+    {
+      "text": "distracted",
+      "start": 2.023791,
+      "end": 2.714249
+    },
+    {
+      "text": "or",
+      "start": 2.726208,
+      "end": 2.821458
+    },
+    {
+      "text": "drowsy",
+      "start": 2.833333,
+      "end": 3.309541
+    },
+    {
+      "text": "driver",
+      "start": 3.321416,
+      "end": 3.726166
+    },
+    {
+      "text": "leaving",
+      "start": 3.880958,
+      "end": 4.166666
+    },
+    {
+      "text": "the",
+      "start": 4.178583,
+      "end": 4.261916
+    },
+    {
+      "text": "lane",
+      "start": 4.273791,
+      "end": 4.571416
+    }
+  ],
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "text": "The noise and shaking can quickly alert a distracted or drowsy driver leaving the lane."
+}

@@ -1,0 +1,80 @@
+name: Quality W1 independently verify finished Episode2 review artifact
+# Manual, never a renderer, publisher, approval, uploader, or PR merge.
+on:
+  workflow_dispatch:
+    inputs:
+      expected_head:
+        description: Exact 40-hex head of THIS quality audit workflow
+        required: true
+permissions:
+  contents: read
+  actions: read
+jobs:
+  genuine-week-one-film-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      ORIGINAL_EPISODE_RUN: '40084843910'
+      ORIGINAL_EPISODE_SHA: '02171e9972e709bfa05f16b1d188f4f9d38db292'
+      RENDERER_SOURCE_SHA256: '1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Deny untrusted job SHA or failed/missing production evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EXPECTED_HEAD: ${{ inputs.expected_head }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_SHA" = "$EXPECTED_HEAD"
+          echo "$RENDERER_SOURCE_SHA256  benchmarks/road_safety/render_rumble_episode2.py" | sha256sum -c -
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_EPISODE_RUN" --jq .head_sha)" = "$ORIGINAL_EPISODE_SHA"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_EPISODE_RUN" --jq .conclusion)" = success
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_EPISODE_RUN/jobs?per_page=100" --jq '[.jobs[]|select((.name|startswith("native (")) and .conclusion=="success")]|length')" = "30"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_EPISODE_RUN/jobs?per_page=100" --jq '[.jobs[]|select(.name=="assemble" and .conclusion=="success")]|length')" = "1"
+      - name: Fetch only the original independently completed full MP4 review
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 40084843910
+          name: rumble-episode2-fresh-english-review
+          path: build/original-review
+      - name: Install ffprobe for independent H264/AAC/900 frame verification
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg
+      - name: Build actual artifact evidence scorecard, NOT editorial approval
+        run: |
+          set -euo pipefail
+          mkdir -p build/quality-week1
+          python -S -m shorts_studio.quality_artifact_audit \
+            --video build/original-review/rumble-strips-english-30s-1080p.mp4 \
+            --film-validation build/original-review/film_validation.json \
+            --out build/quality-week1/independent-mp4-audit.json
+          python -S -m shorts_studio.quality_program \
+            --film-validation build/original-review/film_validation.json \
+            --out build/quality-week1/week01-actual-measured.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          proof=json.loads(Path("build/quality-week1/independent-mp4-audit.json").read_text())
+          score=json.loads(Path("build/quality-week1/week01-actual-measured.json").read_text())
+          assert proof["status"] == "EVIDENCE_VALIDATED"
+          assert proof["sha256_checked"] is True
+          assert score["technical_status"] == score["semantic_status"] == score["viewer_status"] == "PASS"
+          assert proof["upload_authorized"] is score["upload_authorized"] is False
+          assert score["human_review"]["status"] == "NOT_REVIEWED"
+          assert score["editorial_decision"] == "HOLD"
+          print("W1_FILM_BYTES_VERIFIED_EDITORIAL_HOLD", proof["video_sha256"])
+          PY
+      - name: Preserve real measured evidence even on QA rejection
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: quality-eight-week-W1-REAL-FILM-EVIDENCE-NOT-UPLOAD-READY
+          path: build/quality-week1/
+          retention-days: 14
+          if-no-files-found: warn

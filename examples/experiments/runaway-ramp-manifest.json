@@ -1,0 +1,169 @@
+{
+  "version": 1,
+  "episode_id": "runaway-truck-ramp",
+  "series_id": "hidden-engineering-american-roads",
+  "topic_id": "runaway-truck-escape-ramp",
+  "fps": 30,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "cycles_samples": 32,
+  "total_frames": 960,
+  "_frame_plan_note": "960 frames at 30 fps; boundaries sit at the expected beat edges (4.68, 9.51, 14.94, 20.14, 26.45 s); re-measured by the preflight.",
+  "shots": [
+    {
+      "id": "gravel_hook",
+      "start": 1,
+      "end": 140,
+      "visual_proof": "A ground-level camera at the bed entrance looks back at the truck charging in head-on at 90 km/h (red BRAKES FAILED warning over the speed read-out, focus following the truck); just before it reaches the gravel a hard cut to a low side view as the tyres hit the stones and gravel and dust explode; then a dolly ahead of the truck and a side-on view of the rear wheels.",
+      "narration_en": "This truck has lost its brakes, and it is about to plow into a bed of loose gravel.",
+      "must_show_while_spoken": [
+        {
+          "event": "gravel_spray",
+          "min_seconds": 0.8
+        },
+        {
+          "event": "tyres_digging",
+          "min_seconds": 0.8
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
+        }
+      ]
+    },
+    {
+      "id": "tyres_sink",
+      "start": 141,
+      "end": 285,
+      "visual_proof": "Macro at the drive wheels: the tyres sit below the surface of the gravel and push a wave of stones aside while the read-out falls.",
+      "narration_en": "Every wheel sinks into the stones, and digging through them quickly drains the truck's speed.",
+      "must_show_while_spoken": [
+        {
+          "event": "tyres_digging",
+          "min_seconds": 1.5
+        },
+        {
+          "event": "truck_decelerating",
+          "min_seconds": 1.2
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
+        }
+      ]
+    },
+    {
+      "id": "bed_cutaway",
+      "start": 286,
+      "end": 448,
+      "visual_proof": "Cutaway (device): a thin slice of the bed seen side-on with a wheel rolling through it. Big on-screen steps appear in turn: 1 THE WHEEL SINKS IN (the wheel settles into the stones), 2 STONES PILE UP AHEAD (the wheel shoves the stones it meets into a growing pile in front of it, leaving a rut behind), 3 THE PILE PUSHES BACK (a red arrow points back at the wheel).",
+      "narration_en": "Each wheel must shove a pile of loose stones ahead of it, and the pile pushes back.",
+      "must_show_while_spoken": [
+        {
+          "event": "bed_cutaway_visible",
+          "min_seconds": 1.8
+        },
+        {
+          "event": "wheel_rolling_visible",
+          "min_seconds": 2.0
+        },
+        {
+          "event": "pile_visible",
+          "min_seconds": 1.5
+        },
+        {
+          "event": "drag_arrow_visible",
+          "min_seconds": 1.0
+        },
+        {
+          "event": "step_callout_visible",
+          "min_seconds": 3.0
+        }
+      ]
+    },
+    {
+      "id": "drag_numbers",
+      "start": 449,
+      "end": 604,
+      "visual_proof": "Raised tracking view from behind: the truck keeps slowing while a read-out compares gravel drag (0.25 g) with pavement (0.01 g, assumed values).",
+      "narration_en": "Loose gravel drags at about a quarter of the truck's weight, twenty-five times more than pavement.",
+      "must_show_while_spoken": [
+        {
+          "event": "drag_label_visible",
+          "min_seconds": 2.0
+        },
+        {
+          "event": "truck_decelerating",
+          "min_seconds": 2.0
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
+        }
+      ]
+    },
+    {
+      "id": "stop_distance",
+      "start": 605,
+      "end": 793,
+      "visual_proof": "Straight-down view: a green bar to where the truck actually stops and an orange bar that runs off the end of the picture for the paved coast, a second (orange) truck coasting down the paved lane out of the picture, and three big read-outs: GRAVEL BED 133 m, PAVEMENT 3,184 m, 24x FARTHER (all from the simulation).",
+      "narration_en": "On pavement this truck would coast over three kilometers; the gravel stops it in about one hundred thirty meters.",
+      "must_show_while_spoken": [
+        {
+          "event": "truck_stopped",
+          "min_seconds": 0.8
+        },
+        {
+          "event": "stop_bars_visible",
+          "min_seconds": 2.0
+        },
+        {
+          "event": "speed_readout_visible",
+          "min_seconds": 3.0
+        },
+        {
+          "event": "paved_truck_moving_visible",
+          "min_seconds": 1.5
+        },
+        {
+          "event": "numbers_callout_visible",
+          "min_seconds": 3.0
+        }
+      ]
+    },
+    {
+      "id": "ramp_beside_road",
+      "start": 794,
+      "end": 960,
+      "visual_proof": "The truck (the same one) drives along the highway lane, swings off onto the ramp approach and heads for the gravel bed, under a big RUNAWAY TRUCK RAMP read-out; the last two seconds return to the opening ground-level camera with the truck charging in again, ending one frame before the film's first frame so the Short loops.",
+      "narration_en": "That is why steep mountain roads have ramps like this, waiting beside the highway for the next runaway truck.",
+      "must_show_while_spoken": [
+        {
+          "event": "ramp_beside_road_visible",
+          "min_seconds": 2.2
+        },
+        {
+          "event": "truck_arriving_again",
+          "min_seconds": 0.4
+        }
+      ]
+    }
+  ],
+  "first_three_seconds": {
+    "min_distinct_visible_event_onsets": 2,
+    "min_separation_seconds": 0.3,
+    "counted_events": [
+      "gravel_spray",
+      "tyres_digging",
+      "gravel_cloud",
+      "dust_cloud_thick"
+    ],
+    "note": "Counts physical events becoming true and visible, not cuts or camera moves."
+  },
+  "_edit_order_note": "Shot order follows retention evidence from an earlier episode (steepest viewer loss at 3.5-6 s when the picture went from an event to an explanation; second loss at an 'and that is why' ending): the action macro follows the hook, the static cutaway moves to third and the ending loops back to the first frame.",
+  "look": "cinematic",
+  "realism": "B",
+  "camera": "continuous"
+}

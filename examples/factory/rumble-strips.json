@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "topic_id": "rumble-strip-alerts",
+  "headline": "Why these grooves make your car suddenly shake",
+  "hook_visual": "A car tire crosses real recessed road grooves and visibly oscillates",
+  "evidence": [
+    {
+      "claim": "Rumble strips alert drivers using noise and vehicle vibration when tires cross grooves",
+      "source_url": "https://highways.dot.gov/safety/proven-safety-countermeasures/longitudinal-rumble-strips-and-stripes"
+    }
+  ],
+  "shots": [
+    {
+      "shot_id": "tire-contacts-grooves",
+      "frames": 90,
+      "rig_id": "road_surface",
+      "visual_proof": "Wheel rolls across multiple recessed grooves in the pavement",
+      "mechanism_change": "The tire and suspension body move vertically as each groove is crossed",
+      "narration_en": "Those grooves are designed to wake up a drifting driver.",
+      "params": {
+        "groove_depth_mm": 16,
+        "start_x": -2.6,
+        "end_x": 2.6
+      }
+    },
+    {
+      "shot_id": "vibration-mechanism",
+      "frames": 150,
+      "rig_id": "road_surface",
+      "visual_proof": "Contact zone highlights repeated pockets directly beneath rolling tire",
+      "mechanism_change": "Rolling tire traverses a sequence of shallow pavement grooves",
+      "narration_en": "Each groove creates noise and vibration that can alert the driver.",
+      "params": {
+        "groove_depth_mm": 16,
+        "start_x": -1.6,
+        "end_x": 1.5
+      }
+    }
+  ]
+}

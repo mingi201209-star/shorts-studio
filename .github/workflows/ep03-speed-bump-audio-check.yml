@@ -1,0 +1,67 @@
+name: EP03 speed bump audio check (narration timing and the silence gates only, a few minutes)
+on:
+  push:
+    branches: [ep03-speed-bump-build-20261115]
+    paths:
+      - examples/experiments/speed-bump-audio-check.json
+permissions:
+  contents: read
+jobs:
+  audio:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y ffmpeg fonts-dejavu-core
+      - run: python -m pip install edge-tts Pillow pydantic
+      - name: Capture narration and build narration.wav + captions
+        run: |
+          set -euo pipefail
+          PLAN=$(python3 -c "import json;print(json.load(open('examples/experiments/speed-bump-audio-check.json')).get('plan','examples/experiments/speed-bump-speech-plan.json'))")
+          echo "PLAN $PLAN"
+          mkdir -p "$RUNNER_TEMP/speech" "$RUNNER_TEMP/audio"
+          # the free TTS service sometimes returns no audio; start from a clean folder and try up to 4 times
+          export SPEECH_REQUEST_GAP=9
+          ok=0
+          for attempt in 1 2 3 4; do
+            rm -rf "$RUNNER_TEMP/speech"; mkdir -p "$RUNNER_TEMP/speech"
+            if PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_speech.py \
+                 --plan "$PLAN" --target-seconds 31.0 --out "$RUNNER_TEMP/speech"; then ok=1; break; fi
+            echo "speech capture attempt $attempt failed"; sleep 20
+          done
+          test "$ok" = 1
+          PYTHONPATH="$PWD" python -c "
+          from pathlib import Path
+          from benchmarks.road_safety.curious_mechanics_audio import build
+          from benchmarks.speed_bump.captions import single_line_groups as phrase_groups
+          build(Path('$RUNNER_TEMP/speech/speed-bump-shapes'), Path('$RUNNER_TEMP/audio'), target_seconds=31.0, grouper=phrase_groups)
+          "
+      - name: Predicted beat starts vs picture starts
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import json, glob
+          caps = glob.glob("/home/runner/work/_temp/speech/speed-bump-shapes/capture.json")
+          if not caps:
+              print("BEAT_CHECK no capture"); raise SystemExit
+          beats = json.load(open(caps[0]))["beats"]
+          d = [b["duration"] for b in beats]
+          slack = (31.0 - sum(d)) / 6
+          starts, t = [], 0.0
+          for x in d:
+              starts.append(round(t, 2)); t += x + slack
+          print("BEAT_CHECK durations", [round(x, 2) for x in d], "sum", round(sum(d), 2), "slack", round(slack, 3))
+          print("BEAT_CHECK starts", starts, "")
+          PY
+      - name: Spoken cues (phrase start/end, seconds) for the picture sync plan
+        run: |
+          python3 - <<'PY'
+          import json, os
+          d = json.load(open(os.environ["RUNNER_TEMP"] + "/audio/audio-validation.json"))
+          print("AUDIO_BEATS", json.dumps([[round(b["start"], 3), round(b["end"], 3)] for b in d["beats"]]))
+          print("AUDIO_CUES", json.dumps([[round(c["start"], 3), round(c["end"], 3), c["text"]] for c in d["cues"]]))
+          print("AUDIO_SILENCE", json.dumps(d.get("silence_gaps")))
+          PY

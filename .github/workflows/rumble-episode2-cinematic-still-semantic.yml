@@ -1,0 +1,87 @@
+name: Episode 2 honest native still CLIP semantic evidence
+# Supplemental evidence ONLY: original film semantic QA still runs at mid shot.
+on:
+  push:
+    branches: [feat/episode2-cinematic-contact-20261024]
+    paths: [.github/workflows/rumble-episode2-cinematic-still-semantic.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  semantic-evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 22
+    env:
+      ORIGINAL_RENDER_RUN: '40079616032'
+      ORIGINAL_RENDER_HEAD: 'e9861b1ae70f61cbc050c1e3d4fa675c89ee804f'
+      EXACT_RENDERER_SHA256: '1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Reject any source substitution
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          echo "$EXACT_RENDERER_SHA256  benchmarks/road_safety/render_rumble_episode2.py" | sha256sum -c -
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_RENDER_RUN" --jq .head_sha)" = "$ORIGINAL_RENDER_HEAD"
+          test "$(gh api "repos/$GH_REPO/actions/runs/$ORIGINAL_RENDER_RUN" --jq .conclusion)" = "success"
+      - name: Install original production CLIP provider unchanged
+        run: |
+          python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install -e '.[vision]'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 40079616032
+          pattern: rumble-episode2-cycles32-shot-*
+          path: build/native-proof-stills
+      - name: Classify every actual native proof frame with unchanged strict CLIP thresholds
+        run: |
+          mkdir -p build/native-proof-clips
+          PYTHONPATH=. python - <<'PY'
+          import json,hashlib
+          from pathlib import Path
+          from PIL import Image
+          from shorts_studio.factory.rumble_episode2 import (
+              SHOT_IDS,SEMANTIC_NEGATIVE_LABELS,semantic_labels,
+          )
+          from shorts_studio.visual_qa import ClipSemanticVisionProvider
+          provider=ClipSemanticVisionProvider()
+          results=[]
+          for shot,frame in zip(SHOT_IDS,(1,151,301,451,601,751)):
+              source=Path(f'build/native-proof-stills/rumble-episode2-cycles32-shot-{frame}/frame_{frame:04d}.png')
+              assert source.is_file(), source
+              with Image.open(source) as im:
+                  assert im.size==(1080,1920), (shot,im.size)
+                  crop=Path(f'build/native-proof-clips/{shot}.png')
+                  im.convert('RGB').crop((0,0,1080,1400)).save(crop)
+              result=provider.evaluate(
+                  str(crop),f'Native 3D rendering of {shot}',
+                  positive_labels=list(semantic_labels(shot)),
+                  negative_labels=list(SEMANTIC_NEGATIVE_LABELS),
+                  media_box_applied=True,
+              )
+              entry={'shot':shot,'frame':frame,'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),**result}
+              results.append(entry)
+              print('ACTUAL_NATIVE_STILL_SEMANTIC',json.dumps(entry),flush=True)
+          report={'status':'PASS' if all(e['status']=='PASS' for e in results) else 'QA_NOT_PASS',
+                  'note':'Supplemental one frame per shot; does NOT replace original 30s midpoint semantic gate.',
+                  'renderer_sha256':'1ed298a8b17b6927c2aec01238ae968da7a256ffc1db7cac8a6fe62c7cb023feca372ad5',
+                  'results':results}
+          # The report is honest even if one CLIP verdict is ambiguous.
+          report['renderer_sha256']='1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d'
+          Path('build/native-proof-clips/semantic-evidence.json').write_text(json.dumps(report,indent=2))
+          assert report['status']=='PASS', 'SEMANTIC_STILL_QA_NOT_PASS (film must remain blocked)'
+          PY
+      - name: Preserve evidence even on fail
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: episode2-CINEMATIC-STILL-SEMANTIC-EVIDENCE
+          path: build/native-proof-clips/
+          retention-days: 3
+          if-no-files-found: warn

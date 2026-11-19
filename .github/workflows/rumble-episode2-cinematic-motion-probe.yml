@@ -1,0 +1,56 @@
+name: Episode 2 first fifteen second native motion continuity proof
+# Six intermediate full-quality original frames; never a 900-frame rerender.
+on:
+  push:
+    branches: [feat/episode2-cinematic-contact-20261024]
+    paths: [.github/workflows/rumble-episode2-cinematic-motion-probe.yml]
+permissions:
+  contents: read
+jobs:
+  native-contact-moments:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 16
+    strategy:
+      fail-fast: true
+      matrix:
+        frame: [75, 150, 225, 300, 375, 450]
+    env:
+      RENDERER_SOURCE_SHA256: '1ed298a8b17b6927c2aec01238ae968da7b297173aa7fbd25db21ac7e0f9d42d'
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Install identical original Cycles32 Blender
+        run: |
+          set -euo pipefail
+          echo "$RENDERER_SOURCE_SHA256  benchmarks/road_safety/render_rumble_episode2.py" | sha256sum -c -
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
+          python -m pip install Pillow pydantic
+          curl -fLsS --retry 2 --max-time 200 https://download.blender.org/release/Blender5.0/blender-5.0.1-linux-x64.tar.xz -o "$RUNNER_TEMP/blender.tar.xz"
+          echo "8019580ee1b7262e505f4196a00237ccf743c88d205b38d34201510676e60b09  $RUNNER_TEMP/blender.tar.xz" | sha256sum -c -
+          tar -xJf "$RUNNER_TEMP/blender.tar.xz" -C "$RUNNER_TEMP"
+      - name: Fetch authenticated original CC0 geometry pinned by hash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/source"
+          gh release download rumble-episode2-scene-a82e0582-20261018 -R "$GH_REPO" -p 'guardrail-car-cc0-pinned-a82e0582.blend' -D "$RUNNER_TEMP/source"
+          echo "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877  $RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" | sha256sum -c -
+      - name: Render the actual 30fps original-frame position (NOT duplicate holds)
+        run: |
+          mkdir -p "$RUNNER_TEMP/rumble"
+          xvfb-run -a "$RUNNER_TEMP/blender-5.0.1-linux-x64/blender" -b -t 4 --python-exit-code 1 -P benchmarks/road_safety/render_rumble_episode2.py -- --source "$RUNNER_TEMP/source/guardrail-car-cc0-pinned-a82e0582.blend" --manifest examples/factory/rumble-episode2-30s.json --start ${{ matrix.frame }} --end ${{ matrix.frame }} --out "$RUNNER_TEMP/rumble"
+      - name: Verify original native geometry, frame provenance and picture quality
+        run: |
+          PYTHONPATH="$PWD" python -m shorts_studio.factory.rumble_native_shard_qa --out "$RUNNER_TEMP/rumble" --manifest examples/factory/rumble-episode2-30s.json --renderer benchmarks/road_safety/render_rumble_episode2.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: episode2-cinematic-motion-frame-${{ matrix.frame }}
+          path: |
+            ${{ runner.temp }}/rumble/episode-proof.json
+            ${{ runner.temp }}/rumble/frame_*.png
+          retention-days: 3
+          if-no-files-found: error

@@ -1,0 +1,39 @@
+{
+  "variants": [
+    {
+      "id": "speed-bump-shapes",
+      "beats": [
+        {
+          "narration_en": "Same car, same speed. A long hump on the left, a short bump on the right.",
+          "start": 0,
+          "end": 4.7
+        },
+        {
+          "narration_en": "Now look inside. Every wheel hangs on a spring and a damper that work together to soak up the bump.",
+          "start": 4.7,
+          "end": 9.9
+        },
+        {
+          "narration_en": "The short bump squeezes the spring in a flash while the long hump squeezes it slowly and gently.",
+          "start": 9.9,
+          "end": 15.1
+        },
+        {
+          "narration_en": "At thirty kilometers per hour the short bump hits about twice as hard as the long one.",
+          "start": 15.1,
+          "end": 20.5
+        },
+        {
+          "narration_en": "At ten the long hump turns gentle but the short bump still jolts the car noticeably.",
+          "start": 20.5,
+          "end": 26.0
+        },
+        {
+          "narration_en": "It is how quickly the road lifts the car. This is a computer simulation with assumed values.",
+          "start": 26.0,
+          "end": 32.0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"mode": "preflight", "note": "smoothness fix: pose sampled at 600 Hz instead of 30 Hz (slow-motion made the pose hold ~4 frames)"}

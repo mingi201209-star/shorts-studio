@@ -1,0 +1,76 @@
+{
+  "version": 1,
+  "series_id": "hidden-engineering-american-roads",
+  "episode_id": "rumble-strip-alerts",
+  "language": "en-US",
+  "audio_target_seconds": 30,
+  "fps": 30,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "cycles_samples": 32,
+  "total_frames": 900,
+  "source_scene_sha256": "a82e05825f907cc99678ab12855527552e34323b31ae801625af4a0f563ed877",
+  "physics_disclosure": "Stylized time-slowed 3D demonstration of tire-road contact; not a calibrated tire, vehicle dynamics or crash test",
+  "editorial_status": "HOLD_UNTIL_FINAL_QA",
+  "reference_urls": [
+    "https://highways.dot.gov/safety/proven-safety-countermeasures/longitudinal-rumble-strips-and-stripes-two-lane-roads"
+  ],
+  "shots": [
+    {
+      "id": "hook_warning",
+      "start": 1,
+      "end": 150,
+      "view": "hero",
+      "narration_en": "Those shallow grooves beside the lane warn you early when your car drifts toward the shoulder.",
+      "visual_proof": "Original front tyre immediately above recessed groove in a tight native 3D opening",
+      "mechanism_change": "Tyre repeatedly crosses true milling pockets while the nearby body undergoes bounded vibration"
+    },
+    {
+      "id": "road_cut",
+      "start": 151,
+      "end": 300,
+      "view": "contact",
+      "narration_en": "These are shallow cuts milled into the shoulder, rather than lines painted on top.",
+      "visual_proof": "Actual depressed milling pockets with near-side front tyre visibly above",
+      "mechanism_change": "High-angle comparison reveals smooth adjoining lane and actual recessed shoulder cuts"
+    },
+    {
+      "id": "tire_contact",
+      "start": 301,
+      "end": 450,
+      "view": "contact",
+      "narration_en": "As a tire rolls across each groove, its contact with the road keeps changing.",
+      "visual_proof": "Wheel rotates and road geometry passes below the tire",
+      "mechanism_change": "Low side-on angle reveals genuine wheel rotation and successive milling depressions"
+    },
+    {
+      "id": "rumble_mechanism",
+      "start": 451,
+      "end": 600,
+      "view": "contact",
+      "narration_en": "That repeated contact creates a rumbling sound and sends vibration through the car.",
+      "visual_proof": "Road pockets and moving tyre with small kinematic vertical response",
+      "mechanism_change": "Actual wheel-pocket passage produces groove-synchronous non-calibrated vehicle vibration"
+    },
+    {
+      "id": "shoulder_location",
+      "start": 601,
+      "end": 750,
+      "view": "roadside",
+      "narration_en": "The noise and shaking can quickly alert a distracted or drowsy driver leaving the lane.",
+      "visual_proof": "Car, edge stripe and grooved shoulder are present together",
+      "mechanism_change": "Car continues across the shoulder groove zone"
+    },
+    {
+      "id": "driver_response",
+      "start": 751,
+      "end": 900,
+      "view": "payoff",
+      "narration_en": "These grooves cannot steer your car for you. The driver still needs to react in time.",
+      "visual_proof": "Car visibly begins a driver-initiated lane correction and points toward the smooth lane",
+      "mechanism_change": "Smooth bounded lateral movement and matching heading begin only after driver warning"
+    }
+  ]
+}

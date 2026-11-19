@@ -1,0 +1,149 @@
+{
+ "source": "audio-cues run 44204538060 (attempt 15, commit 701f8e6): real TTS timing of the passed audio",
+ "target_seconds": 32.0,
+ "cues": [
+  {
+   "start": 0.09525,
+   "end": 1.023791,
+   "text": "A car hits a wall"
+  },
+  {
+   "start": 1.297625,
+   "end": 2.023791,
+   "text": "and we slow that"
+  },
+  {
+   "start": 2.035708,
+   "end": 2.797625,
+   "text": "tenth of a second"
+  },
+  {
+   "start": 2.809541,
+   "end": 3.690457,
+   "text": "way down to watch it."
+  },
+  {
+   "start": 4.328458333333334,
+   "end": 5.126082333333334,
+   "text": "The hood buckles"
+  },
+  {
+   "start": 5.280874333333334,
+   "end": 6.483249333333333,
+   "text": "and the front folds back"
+  },
+  {
+   "start": 6.5546663333333335,
+   "end": 7.411790333333334,
+   "text": "as the hidden rails"
+  },
+  {
+   "start": 7.423708333333334,
+   "end": 8.566541333333333,
+   "text": "inside fold like"
+  },
+  {
+   "start": 8.578458333333334,
+   "end": 9.173707333333333,
+   "text": "an accordion."
+  },
+  {
+   "start": 9.785916666666669,
+   "end": 11.059749666666669,
+   "text": "Rails absorb the crash"
+  },
+  {
+   "start": 11.143041666666669,
+   "end": 12.309707666666668,
+   "text": "energy over a longer"
+  },
+  {
+   "start": 12.321624666666668,
+   "end": 13.666874666666669,
+   "text": "stop while the cabin"
+  },
+  {
+   "start": 13.738291666666669,
+   "end": 14.714457666666668,
+   "text": "quietly keeps its"
+  },
+  {
+   "start": 14.726374666666668,
+   "end": 15.297790666666668,
+   "text": "whole shape."
+  },
+  {
+   "start": 15.915125000000003,
+   "end": 17.057999000000002,
+   "text": "Pillars doors and roof"
+  },
+  {
+   "start": 17.165125000000003,
+   "end": 18.343708000000003,
+   "text": "stay exactly put"
+  },
+  {
+   "start": 18.605625000000003,
+   "end": 19.379416000000003,
+   "text": "and now a rigid"
+  },
+  {
+   "start": 19.391333000000003,
+   "end": 20.272249000000002,
+   "text": "front rolls toward"
+  },
+  {
+   "start": 20.284208000000003,
+   "end": 20.915124000000002,
+   "text": "the same wall."
+  },
+  {
+   "start": 21.540583333333338,
+   "end": 22.433415333333336,
+   "text": "It has almost nothing"
+  },
+  {
+   "start": 22.445333333333338,
+   "end": 23.814374333333337,
+   "text": "to crush so it stops"
+  },
+  {
+   "start": 23.909624333333337,
+   "end": 24.885833333333338,
+   "text": "almost instantly"
+  },
+  {
+   "start": 24.897708333333338,
+   "end": 25.719124333333337,
+   "text": "and bounces back"
+  },
+  {
+   "start": 25.731041333333334,
+   "end": 26.290583333333338,
+   "text": "off the wall."
+  },
+  {
+   "start": 26.925791666666672,
+   "end": 27.663916666666672,
+   "text": "The front is meant"
+  },
+  {
+   "start": 27.675791666666672,
+   "end": 29.02104066666667,
+   "text": "to deform and absorb"
+  },
+  {
+   "start": 29.03295766666667,
+   "end": 30.211541666666673,
+   "text": "the whole crash energy"
+  },
+  {
+   "start": 30.366291666666672,
+   "end": 31.473416666666672,
+   "text": "but the cabin is not."
+  }
+ ],
+ "narration_sha256": "c1a8cfbe73a79d573bad6c1f2148452e4c49d2b603ecd6c3fc4a302937bbabba",
+ "preroll_s": 1.2,
+ "preroll_note": "the film starts preroll_s seconds before the narration: the run-up to the wall is lengthened; every cue time used by the film is the captured time plus preroll_s (the captured times above stay the frozen identity of the audio)"
+}

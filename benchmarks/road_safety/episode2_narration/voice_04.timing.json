@@ -1,0 +1,72 @@
+{
+  "words": [
+    {
+      "text": "That",
+      "start": 0.107125,
+      "end": 0.21425
+    },
+    {
+      "text": "repeated",
+      "start": 0.226208,
+      "end": 0.642874
+    },
+    {
+      "text": "contact",
+      "start": 0.65475,
+      "end": 1.178541
+    },
+    {
+      "text": "creates",
+      "start": 1.190458,
+      "end": 1.535708
+    },
+    {
+      "text": "a",
+      "start": 1.547625,
+      "end": 1.59525
+    },
+    {
+      "text": "rumbling",
+      "start": 1.607125,
+      "end": 2.095208
+    },
+    {
+      "text": "sound",
+      "start": 2.107125,
+      "end": 2.535708
+    },
+    {
+      "text": "and",
+      "start": 2.809541,
+      "end": 2.940499
+    },
+    {
+      "text": "sends",
+      "start": 2.952375,
+      "end": 3.238083
+    },
+    {
+      "text": "vibration",
+      "start": 3.25,
+      "end": 3.857125
+    },
+    {
+      "text": "through",
+      "start": 3.869041,
+      "end": 4.023791
+    },
+    {
+      "text": "the",
+      "start": 4.035708,
+      "end": 4.107124
+    },
+    {
+      "text": "car",
+      "start": 4.119041,
+      "end": 4.511916
+    }
+  ],
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "text": "That repeated contact creates a rumbling sound and sends vibration through the car."
+}

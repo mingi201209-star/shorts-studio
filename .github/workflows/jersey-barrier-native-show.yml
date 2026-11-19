@@ -1,0 +1,42 @@
+name: Show jersey-barrier native frames (base64-in-log, read-only)
+# Debug tool: downloads specific native shard artifacts from a finished
+# production run and prints named frames as base64 in the job log, since
+# this sandbox cannot download GitHub Actions artifacts directly. Used to
+# directly inspect real production frames when a QA gate (e.g.
+# visual_activity) reports a problem, instead of trusting the gate's number
+# alone. Run ID and frame list are updated by hand each time.
+on:
+  push:
+    branches: [road-paint-retroreflective-20261106]
+    paths:
+      - .github/workflows/jersey-barrier-native-show.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  show:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Download native shard artifacts and print named frames as base64
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/native"
+          gh run download 42396471568 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-native-1 --dir "$RUNNER_TEMP/native/s1"
+          gh run download 42396471568 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-native-181 --dir "$RUNNER_TEMP/native/s181"
+          gh run download 42396471568 --repo "$GITHUB_REPOSITORY" --name jersey-barrier-native-331 --dir "$RUNNER_TEMP/native/s331"
+          for f in \
+            "$RUNNER_TEMP/native/s1/frame_0001.png" \
+            "$RUNNER_TEMP/native/s1/frame_0030.png" \
+            "$RUNNER_TEMP/native/s181/frame_0181.png" \
+            "$RUNNER_TEMP/native/s181/frame_0210.png" \
+            "$RUNNER_TEMP/native/s331/frame_0331.png" \
+            "$RUNNER_TEMP/native/s331/frame_0360.png"; do
+            name=$(basename "$f")
+            echo "NFRAME_B64_START $name"
+            base64 -w0 "$f"
+            echo ""
+            echo "NFRAME_B64_END $name"
+          done
