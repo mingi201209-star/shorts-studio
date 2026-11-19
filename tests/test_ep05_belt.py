@@ -64,3 +64,23 @@ def test_gate_rejects_a_limiter_that_never_acts(monkeypatch):
     bm.response.cache_clear()
     g = bm.belt_limiter_physics()
     assert g["status"] == "FAIL"
+
+
+def test_film_timeline_follows_cues_and_checks_itself():
+    from benchmarks.belt_limiter import belt_timeline as tl
+    ls = [1.2, 4.4, 7.0, 9.2, 12.8, 15.2, 18.2, 22.8]
+    segs = tl.segments(ls, 27.9)
+    assert tl.belt_scene_alignment(segs, ls)["status"] == "PASS"
+    assert tl.monotone_in_segment(segs)["status"] == "PASS"
+    assert [s["t0"] for s in segs] == sorted(s["t0"] for s in segs)
+    assert tl.frame_shot(0, segs)["segment"] == "A-run-up"
+    assert tl.frame_shot(tl.frame_count(27.9) - 1, segs)["segment"] == "J-both-give"
+
+
+def test_film_alignment_fails_when_a_cue_moves_away_from_its_picture():
+    from benchmarks.belt_limiter import belt_timeline as tl
+    ls = [1.2, 4.4, 7.0, 9.2, 12.8, 15.2, 18.2, 22.8]
+    segs = tl.segments(ls, 27.9)
+    late = list(ls)
+    late[5] = 19.0              # line 6 spoken during the plain-belt replay
+    assert tl.belt_scene_alignment(segs, late)["status"] == "FAIL"
