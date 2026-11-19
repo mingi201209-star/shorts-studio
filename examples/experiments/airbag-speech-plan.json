@@ -1,0 +1,74 @@
+{
+ "variants": [
+  {
+   "id": "airbag",
+   "beats": [
+    {
+     "narration_en": "Same crash. Same seatbelt. Only one car has an airbag.",
+     "start": 0,
+     "end": 4.3
+    },
+    {
+     "narration_en": "The belt holds your chest but your head keeps going",
+     "start": 4.3,
+     "end": 8.6
+    },
+    {
+     "narration_en": "and without an airbag it hits the steering wheel.",
+     "start": 8.6,
+     "end": 12.5
+    },
+    {
+     "narration_en": "A crash sensor feels the car slow down in the first few milliseconds",
+     "start": 12.5,
+     "end": 17.9
+    },
+    {
+     "narration_en": "and decides in an instant that this is a real crash.",
+     "start": 17.9,
+     "end": 22.6
+    },
+    {
+     "narration_en": "It fires a tiny igniter inside the steering wheel",
+     "start": 22.6,
+     "end": 26.5
+    },
+    {
+     "narration_en": "which sets off a gas generator.",
+     "start": 26.5,
+     "end": 29.3
+    },
+    {
+     "narration_en": "The gas splits the cover along a hidden seam",
+     "start": 29.3,
+     "end": 33.2
+    },
+    {
+     "narration_en": "and fills the folded bag in about thirty milliseconds.",
+     "start": 33.2,
+     "end": 37.1
+    },
+    {
+     "narration_en": "Here is the clever part. The bag has holes in it.",
+     "start": 37.1,
+     "end": 41.8
+    },
+    {
+     "narration_en": "As your head sinks in the gas escapes through the vents",
+     "start": 41.8,
+     "end": 46.5
+    },
+    {
+     "narration_en": "so the bag slows you down gently instead of bouncing you back.",
+     "start": 46.5,
+     "end": 51.6
+    },
+    {
+     "narration_en": "That is why you should sit back from the wheel and always wear your belt.",
+     "start": 51.6,
+     "end": 57.8
+    }
+   ]
+  }
+ ]
+}

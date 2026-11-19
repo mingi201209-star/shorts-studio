@@ -566,4 +566,5 @@ def _ancestors(ob):
         p = p.parent
 
 
-main()
+if __name__ == "__main__":
+    main()

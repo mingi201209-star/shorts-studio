@@ -1,0 +1,265 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 38.709,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.726666,
+      "text": "Same crash."
+    },
+    {
+      "start": 1.1195,
+      "end": 1.857624,
+      "text": "Same seatbelt."
+    },
+    {
+      "start": 2.250458,
+      "end": 3.583791,
+      "text": "Only one car\\Nhas an airbag."
+    },
+    {
+      "start": 3.8837530769230773,
+      "end": 5.086127076923077,
+      "text": "The belt\\Nholds your chest"
+    },
+    {
+      "start": 5.205211076923077,
+      "end": 6.455211076923077,
+      "text": "but your\\Nhead keeps going"
+    },
+    {
+      "start": 6.755173153846155,
+      "end": 8.017047153846155,
+      "text": "and without an\\Nairbag it hits"
+    },
+    {
+      "start": 8.028964153846154,
+      "end": 8.778964153846156,
+      "text": "the steering wheel."
+    },
+    {
+      "start": 9.078926230769232,
+      "end": 10.567008230769233,
+      "text": "A crash sensor\\Nfeels the car"
+    },
+    {
+      "start": 10.578926230769232,
+      "end": 12.102759230769232,
+      "text": "slow down in\\Nthe first few"
+    },
+    {
+      "start": 12.114634230769232,
+      "end": 12.840842230769232,
+      "text": "milliseconds"
+    },
+    {
+      "start": 13.140804307692308,
+      "end": 14.271762307692308,
+      "text": "and decides\\Nin an instant"
+    },
+    {
+      "start": 14.283637307692308,
+      "end": 15.724095307692307,
+      "text": "that this is\\Na real crash."
+    },
+    {
+      "start": 16.024057384615386,
+      "end": 17.940723384615385,
+      "text": "It fires a\\Ntiny igniter inside"
+    },
+    {
+      "start": 17.952640384615385,
+      "end": 18.726473384615385,
+      "text": "the steering wheel"
+    },
+    {
+      "start": 19.026435461538462,
+      "end": 20.41930946153846,
+      "text": "which sets off\\Na gas generator."
+    },
+    {
+      "start": 20.719271538461538,
+      "end": 22.421645538461537,
+      "text": "The gas splits\\Nthe cover along"
+    },
+    {
+      "start": 22.433562538461537,
+      "end": 23.135896538461537,
+      "text": "a hidden seam"
+    },
+    {
+      "start": 23.435858615384614,
+      "end": 24.935857615384613,
+      "text": "and fills the\\Nfolded bag in"
+    },
+    {
+      "start": 24.947733615384614,
+      "end": 26.316816615384614,
+      "text": "about\\Nthirty milliseconds."
+    },
+    {
+      "start": 26.61677869230769,
+      "end": 27.49773669230769,
+      "text": "Here is the clever part."
+    },
+    {
+      "start": 27.90248769230769,
+      "end": 28.89061169230769,
+      "text": "The bag has holes in it."
+    },
+    {
+      "start": 29.190573769230767,
+      "end": 30.535781769230766,
+      "text": "As your head\\Nsinks in the gas"
+    },
+    {
+      "start": 30.547698769230767,
+      "end": 31.761989769230766,
+      "text": "escapes through\\Nthe vents"
+    },
+    {
+      "start": 32.061951846153846,
+      "end": 33.24049284615385,
+      "text": "so the bag\\Nslows you down"
+    },
+    {
+      "start": 33.252409846153846,
+      "end": 34.81195084615385,
+      "text": "gently instead\\Nof bouncing you"
+    },
+    {
+      "start": 34.82382684615384,
+      "end": 35.216701846153846,
+      "text": "back."
+    },
+    {
+      "start": 35.516663923076926,
+      "end": 36.63570492307693,
+      "text": "That is why\\Nyou should sit back"
+    },
+    {
+      "start": 36.647621923076926,
+      "end": 37.242829923076926,
+      "text": "from the wheel"
+    },
+    {
+      "start": 37.492829923076926,
+      "end": 38.469037923076925,
+      "text": "and always\\Nwear your belt."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.823753076923077,
+      "narration_en": "Same crash. Same seatbelt. Only one car has an airbag.",
+      "source_audio_sha256": "8fe8a7f7eb9add876355a37a70806e1fb7ab2292d37d6e79cb2281d67a3d6620"
+    },
+    {
+      "start": 3.823753076923077,
+      "end": 6.695173153846154,
+      "narration_en": "The belt holds your chest but your head keeps going",
+      "source_audio_sha256": "b6a990b4ba7f04f321737f2cf6587105a44b5878ddc48521f4db8d41c62bf3d2"
+    },
+    {
+      "start": 6.695173153846154,
+      "end": 9.018926230769232,
+      "narration_en": "and without an airbag it hits the steering wheel.",
+      "source_audio_sha256": "f95eecc434de4351de1bb9add9d044887dbdb8272718e328e80d9a16121fcc4a"
+    },
+    {
+      "start": 9.018926230769232,
+      "end": 13.080804307692308,
+      "narration_en": "A crash sensor feels the car slow down in the first few milliseconds",
+      "source_audio_sha256": "9555889314fff9eb7fbca4420e4a0e1ba67ae64aff3b8abb58516092ca9b0922"
+    },
+    {
+      "start": 13.080804307692308,
+      "end": 15.964057384615385,
+      "narration_en": "and decides in an instant that this is a real crash.",
+      "source_audio_sha256": "87a3b5a745a230679668d86e00262540a394465806183f6683c81629feac0fa1"
+    },
+    {
+      "start": 15.964057384615385,
+      "end": 18.966435461538463,
+      "narration_en": "It fires a tiny igniter inside the steering wheel",
+      "source_audio_sha256": "5a049eae2d8b66b4e831f2e251dde443f7a3a475e27fdd2a5fa575b81e291a9a"
+    },
+    {
+      "start": 18.966435461538463,
+      "end": 20.65927153846154,
+      "narration_en": "which sets off a gas generator.",
+      "source_audio_sha256": "04bcdf2b7f2632b25de3584800b9eba908a1cd5b87706ce8b031ec27f0b4e913"
+    },
+    {
+      "start": 20.65927153846154,
+      "end": 23.375858615384615,
+      "narration_en": "The gas splits the cover along a hidden seam",
+      "source_audio_sha256": "f6d9b7b7576cd19466efdeb6cb08a8dec16e8944bbb666a1f4dfc4c933d072f3"
+    },
+    {
+      "start": 23.375858615384615,
+      "end": 26.55677869230769,
+      "narration_en": "and fills the folded bag in about thirty milliseconds.",
+      "source_audio_sha256": "095f70e82ba49786ba474f0ca37f861b787d49e84d60ceb1f8a753c2b4538a33"
+    },
+    {
+      "start": 26.55677869230769,
+      "end": 29.130573769230768,
+      "narration_en": "Here is the clever part. The bag has holes in it.",
+      "source_audio_sha256": "dbfd6cf8524b39b9e8955096061e8a49aa04fba6e46c6ff1670b676f7a342754"
+    },
+    {
+      "start": 29.130573769230768,
+      "end": 32.001951846153844,
+      "narration_en": "As your head sinks in the gas escapes through the vents",
+      "source_audio_sha256": "ed7e23d906a9198afc64a63af0e1dea89852cc31932f1ecd7c70eb169425558d"
+    },
+    {
+      "start": 32.001951846153844,
+      "end": 35.456663923076924,
+      "narration_en": "so the bag slows you down gently instead of bouncing you back.",
+      "source_audio_sha256": "2dfdce7373c3645b84ab9d1f062d7071dd1ef1ab502b40814d898a48c2f80208"
+    },
+    {
+      "start": 35.456663923076924,
+      "end": 38.709,
+      "narration_en": "That is why you should sit back from the wheel and always wear your belt.",
+      "source_audio_sha256": "cee2f7da7a80525e4fb229f4988dc9cfefb191fc6ff8d33dba1ae3ca3032871d"
+    }
+  ],
+  "silence_gaps": [
+    0.409625,
+    0.419937,
+    0.309229,
+    0.317167,
+    0.315979,
+    0.336813,
+    0.320375,
+    0.314104,
+    0.325729,
+    0.322375,
+    0.421625,
+    0.328583,
+    0.337687,
+    0.314562
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.5,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.7,
+      -16.6,
+      -16.4,
+      -16.5,
+      -16.1,
+      -16.4,
+      -16.5
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "ed6b71182197c178a4243cd67c94278206d5994a183978fbc6c528b33115a1b5"
+}
