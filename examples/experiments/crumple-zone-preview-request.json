@@ -1,1 +1,1 @@
-{"mode": "range", "ranges": [[724, 724]], "quality": "final", "sheet_tile": 540, "note": "EP.04 1080x1920 comparison B: native 24 samples, frame 724 (same frame as 720 comparison A)"}
+{"mode": "range", "ranges": [[40, 40], [870, 870]], "res_scale": 0.6667, "samples": 12, "sheet_tile": 540, "note": "EP.04 720x1280 comparison A2: two ordinary (not see-through) frames 40 and 870, 12 samples"}
