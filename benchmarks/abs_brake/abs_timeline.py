@@ -13,6 +13,7 @@ LOOP_S = 1.0
 AUDIO = Path(__file__).resolve().parents[2] / "examples/episodes/ep06-audio/audio-validation.json"
 
 SPLIT_CAM = {"rel": "chase", "loc": (3.4, -6.5, 4.2), "target": (-1.0, 7.0, -1.3), "lens": 28.0}
+SPLIT_CAM_B = {"rel": "chase", "loc": (2.6, -5.0, 3.6), "target": (-1.0, 7.5, -1.0), "lens": 31.0}     # slow push-in: the picture keeps moving after both cars stop
 SIDE_WHEEL = {"rel": "car", "loc": (-3.0, 1.4, 0.40), "target": (-0.7, 1.0, 0.32), "lens": 32.0}
 SIDE_WHEEL_B = {"rel": "car", "loc": (-2.2, 1.2, 0.34), "target": (-0.7, 1.05, 0.30), "lens": 34.0}
 TOP = {"rel": "chase", "loc": (-1.0, -4.0, 8.5), "target": (-1.0, 5.0, 0.0), "lens": 30.0}
@@ -26,7 +27,7 @@ PEDAL_B = {"rel": "pedal", "loc": (0.75, 0.00, 0.30), "target": (0.0, 0.32, 0.19
 
 # label, variant, sim start, sim end, cam a, cam b, flags, narration lines
 ROWS = [
-    ("A-split-stop", "both", 0.00, None, SPLIT_CAM, SPLIT_CAM, {"split": True}, (1,)),
+    ("A-split-stop", "both", 0.00, None, SPLIT_CAM, SPLIT_CAM_B, {"split": True}, (1,)),
     ("B-wheel-locks", "locked", 0.00, 0.45, SIDE_WHEEL, SIDE_WHEEL_B, {}, (2,)),
     ("C-slides-straight", "locked", 0.55, 1.75, TOP, TOP_B, {}, (3,)),
     ("D-sensor", "abs", 0.40, 0.55, WHEEL_WIDE, RING, {"macro": True}, (4,)),
