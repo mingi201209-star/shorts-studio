@@ -1,0 +1,61 @@
+name: Curious Mechanics re-verify final A/B/C (detector fix, no re-render)
+# Re-runs exactly the "final" job from curious-mechanics-progressive-native.yml
+# that failed in run 41201322921 -- same native shards (two source runs, same
+# patterns), same audio/source artifacts, same assembly script -- with no
+# change except this branch's final_video_qa.py fix. No native frame is
+# re-rendered: nothing about the content, camera, manifest or renderer
+# changed since that failing run (verified: zero diff on those files between
+# that run's commit and this branch's base).
+on:
+  push:
+    branches: [fix/curious-mechanics-visual-activity-20261031]
+    paths:
+      - ".github/workflows/curious-mechanics-reverify-final.yml"
+      - "shorts_studio/final_video_qa.py"
+permissions:
+  contents: read
+  actions: read
+jobs:
+  final:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        variant: [A, B, C]
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Retrieve the exact same native shards and preserved measured audio as the failing run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh run download 41201322921 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-*' --dir "$RUNNER_TEMP/native"
+          gh run download 41197516170 --repo "$GITHUB_REPOSITORY" --pattern 'curious-progressive-B-*' --dir "$RUNNER_TEMP/native"
+          if [ '${{ matrix.variant }}' = A ]; then
+            gh run download 41190640057 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-A --dir "$RUNNER_TEMP/source"
+          else
+            gh run download 41191337000 --repo "$GITHUB_REPOSITORY" --name curious-mechanics-causal-revision-${{ matrix.variant }} --dir "$RUNNER_TEMP/source"
+          fi
+      - name: Install unchanged observed final QA dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.14.1+cpu torchvision==0.29.1+cpu
+          python -m pip install open-clip-torch==3.3.0 Pillow==13.0.0 pydantic==2.14.1 opencv-python-headless==5.0.0.93
+      - name: Verify every native PNG and lossless clip; assemble five single-use roles
+        run: |
+          set -euo pipefail
+          PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_progressive_delivery.py --native "$RUNNER_TEMP/native" --source "$RUNNER_TEMP/source/${{ matrix.variant }}" --variant '${{ matrix.variant }}' --out "$RUNNER_TEMP/final/${{ matrix.variant }}"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: curious-progressive-reverify-${{ matrix.variant }}
+          path: ${{ runner.temp }}/final/
+          if-no-files-found: error
+          retention-days: 7
