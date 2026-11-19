@@ -24,7 +24,9 @@ def test_complete_native_story_and_variant_specific_opening(v,first,second):
  plan=json.loads(MAN.with_name(plan_ref['plan_path']).read_text())
  beat_end=round(next(x for x in plan['variants'] if x['id']==v)['beats'][0]['end']*30)
  assert e['shots'][0]['end']==45 and e['shots'][1]['start']==46 and e['shots'][1]['end']==beat_end
- assert m.camera_layout(e['shots'][0])['anchor_frame']==1
+ expected_anchor=23 if v=='B' else 1
+ assert m.camera_layout(e['shots'][0])['anchor_frame']==expected_anchor
+ if v=='B': assert m.camera_layout(e['shots'][0])['scale']==1.95
  assert len({m.shot_for_frame(e,f)['id'] for f in range(1,151)})>=3
  assert e['shots'][-1]['id'].endswith('driver_response')
  assert all(m.camera_layout(s)['scale']>=15.5 for s in e['shots'] if m.detail_stage(s['id']) in ('shoulder_context','human_response'))

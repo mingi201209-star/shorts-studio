@@ -69,9 +69,11 @@ def camera_layout(shot):
     # A single long shot needs a wider fixed frame to retain the actual moving
     # wheel throughout; never track the camera or reframe on shard boundaries.
     if shot['id'] in _PROGRESSIVE and style=='rumble_mechanism': layout['scale']=7.6
-    # Anchor the opening camera to frame 1 so the subject is in view from the
-    # first frame. This remains a fixed camera for the entire shot.
-    if shot['id'].split('_',2)[1]=='00': layout['anchor_frame']=1
+    # Anchor context/cutaway openings to frame 1. B's tight tire-contact
+    # macro uses its authored midpoint instead: the wheel moves across this fixed
+    # camera during frames 1-45, and frame-1 anchoring clips it at frame 31.
+    if shot['id'].split('_',2)[1]=='00' and style!='tire_contact':
+        layout['anchor_frame']=1
     return layout
 def detail_stage(ident): return original.detail_stage(_STYLE[ident])
 def detail_visibility(ident): return original.detail_visibility(_STYLE[ident])
