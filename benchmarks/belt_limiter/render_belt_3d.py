@@ -46,7 +46,7 @@ class Dummy:
     forward at the hip and the head swings on the neck, driven by belt_motion (forward travel and chest load of the simulated crash). Chest and head turn from green through yellow to red
     with the peak chest load: the colour is the only 'damage' indicator."""
     HIP = (-0.36, 0.08, 0.40)
-    WHEEL = (-0.36, 0.60, 0.88)
+    WHEEL = (-0.36, 0.72, 0.88)
     GREEN, YELLOW, RED = (0.15, 0.75, 0.22), (0.95, 0.80, 0.08), (0.95, 0.07, 0.04)
 
     def __init__(self, root):
@@ -98,7 +98,7 @@ class Dummy:
             tube(f"Driver thigh {sx}", (hx + 0.09 * sx, hy, hz), (hx + 0.09 * sx, hy + 0.46, hz + 0.05), 0.075, trousers, root, n_seg=16, n_ring=2)
             tube(f"Driver shin {sx}", (hx + 0.09 * sx, hy + 0.46, hz + 0.05), (hx + 0.09 * sx, hy + 0.52, hz - 0.36), 0.06, trousers, root, n_seg=16, n_ring=2)
             tube(f"Driver upper arm {sx}", (0.19 * sx, 0.0, 0.47), (0.20 * sx, 0.15, 0.32), 0.078, self.skin, self.pivot, n_seg=16, n_ring=8)
-            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.40, 0.44), 0.066, skin, self.pivot, n_seg=16, n_ring=8)
+            tube(f"Driver forearm {sx}", (0.20 * sx, 0.15, 0.32), (0.16 * sx, 0.52, 0.44), 0.066, skin, self.pivot, n_seg=16, n_ring=8)
         wheel = material("Steering wheel", (0.05, 0.05, 0.055), rough=0.5)
         bpy.ops.mesh.primitive_torus_add(major_radius=0.18, minor_radius=0.018, location=self.WHEEL, rotation=(math.radians(-58), 0, 0))
         wob = bpy.context.object
@@ -150,7 +150,7 @@ def build_interior(root):
         box(f"Interior {who} headrest", (sx, -0.36, 1.20), (0.28, 0.10, 0.22), seat)
     box("Interior dashboard", (0.0, 1.00, 0.66), (1.56, 0.42, 0.30), trim)
     box("Interior dashboard top", (0.0, 0.86, 0.84), (1.56, 0.30, 0.08), dark)
-    box("Interior steering column", (-0.36, 0.78, 0.78), (0.07, 0.40, 0.07), dark)
+    box("Interior steering column", (-0.36, 0.88, 0.78), (0.07, 0.40, 0.07), dark)
     box("Interior centre console", (0.0, 0.25, 0.40), (0.22, 1.1, 0.26), trim)
     box("Interior floor", (0.0, 0.2, 0.17), (1.56, 2.2, 0.05), dark)
     for sx in (-1, 1):
@@ -299,8 +299,11 @@ class Belt:
         bpy.context.collection.objects.link(self.ob)
         self.ob.data.materials.append(self.mat)
 
-    def update(self, pivot, payout):
+    def update(self, pivot, payout, chest_g=0.0):
         mw = self.root.matrix_world
+        bsdf = self.mat.node_tree.nodes.get("Principled BSDF")
+        bsdf.inputs["Emission Color"].default_value = (1.0, 0.55, 0.08, 1.0)
+        bsdf.inputs["Emission Strength"].default_value = 3.0 * float(np.clip(chest_g / bm.LIMIT_G, 0.0, 1.0)) ** 2      # the strap glows with its tension
         car = lambda p: mw @ Vector(p)
         tor = lambda p: pivot.matrix_world @ Vector(p)
         reel_exit = (REEL_AT[0], REEL_AT[1], REEL_AT[2] + 0.06)
@@ -344,7 +347,7 @@ class Reel:
         self.roll = add(bpy.context.object, self.spool)
         self.roll.name = "Reel webbing roll"
         self.roll.data.materials.append(web)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.010, depth=0.16, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
+        bpy.ops.mesh.primitive_cylinder_add(radius=0.013, depth=0.16, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
         bar = add(bpy.context.object, self.spool)
         bar.name = "Torsion bar"
         bar.data.materials.append(bar_mat)
@@ -353,7 +356,7 @@ class Reel:
             bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0))
             st = add(bpy.context.object, self.spool)
             st.name = f"Torsion bar stripe {i}"
-            st.scale = (0.006, 0.012, 0.004)
+            st.scale = (0.012, 0.016, 0.006)
             st.data.materials.append(orange)
             self.stripes.append(st)
 
@@ -366,7 +369,7 @@ class Reel:
         for i, st in enumerate(self.stripes):
             y = -0.07 + 0.0175 * i
             a = twist * i / 8.0
-            st.location = (0.0105 * math.cos(a), y, 0.0105 * math.sin(a))
+            st.location = (0.0135 * math.cos(a), y, 0.0135 * math.sin(a))
             st.rotation_euler = (0.0, -a, 0.0)
 
     def set_visible(self, visible):
@@ -462,7 +465,8 @@ def main():
         ghost.set_factor(xf, root.location.y + nose, car_len, root.location.y + cabin_y + 0.04 - cf * (car_len + 0.8))
         ghost.set_tint((1.0, 1.0, 1.0))
         st = dummy.pose(sh["variant"], t)
-        belt.update(dummy.pivot, st["payout_m"])
+        bpy.context.view_layer.update()      # the strap reads the torso's world matrix: it must be current
+        belt.update(dummy.pivot, st["payout_m"], st["chest_g"])
         reel.update(st["payout_m"])
         c = sh["cam"]
         off = Vector(root.location) if c["rel"] == "car" else Vector((0.0, root.location.y + nose, 0.0))
