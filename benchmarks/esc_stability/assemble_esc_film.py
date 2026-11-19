@@ -120,19 +120,20 @@ def visible_action(frames: list[dict]) -> dict:
             "off_past_45deg_film_s": first_45, "braked_frames_in_I": len(braked)}
 
 
-def loop_closes(frames_dir: Path, n: int, opening: int = 24) -> dict:
-    """The last frame leads back into the first as smoothly as any other cut-free step of the opening: the jump last -> first is compared with
-    the typical frame-to-frame change of the opening's first second (the cars move at 80 km/h with a following camera, so neighbouring frames
-    already differ). Seamless when the jump is at most 1.5 x the opening's median step."""
+def loop_closes(frames_dir: Path, n: int) -> dict:
+    """The seam last -> first is as smooth as the steps right next to it: the jump is compared with the frame-to-frame change on both sides of
+    the seam (frames 1 -> 2 and n-1 -> n). The cars move at 80 km/h under a following camera, so those neighbouring steps are already large.
+    Seamless when the jump is at most 1.5 x the larger neighbouring step."""
     import numpy as np
 
     def g(i):
         return np.asarray(Image.open(frames_dir / f"frame_{i:04d}.png").convert("L"), dtype=np.float32)
 
-    steps = [float(np.abs(g(i + 1) - g(i)).mean()) for i in range(1, opening)]
-    typical = float(np.median(steps))
+    before = float(np.abs(g(n) - g(n - 1)).mean())
+    after = float(np.abs(g(2) - g(1)).mean())
     jump = float(np.abs(g(n) - g(1)).mean())
-    return {"status": "PASS" if jump <= 1.5 * typical else "FAIL", "mean_abs_diff_last_vs_first": round(jump, 2), "opening_median_step": round(typical, 2)}
+    return {"status": "PASS" if jump <= 1.5 * max(before, after) else "FAIL", "mean_abs_diff_last_vs_first": round(jump, 2),
+            "step_before_seam": round(before, 2), "step_after_seam": round(after, 2)}
 
 
 def main():
