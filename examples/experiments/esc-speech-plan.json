@@ -1,0 +1,74 @@
+{
+ "variants": [
+  {
+   "id": "esc",
+   "beats": [
+    {
+     "narration_en": "Same swerve on a wet road. One car spins out and one doesn't.",
+     "start": 0,
+     "end": 5.4
+    },
+    {
+     "narration_en": "Swerve hard and the rear tires can lose their grip first",
+     "start": 5.4,
+     "end": 10.1
+    },
+    {
+     "narration_en": "and once the back starts to slide the car turns faster than you steer.",
+     "start": 10.1,
+     "end": 15.9
+    },
+    {
+     "narration_en": "Steering back is often too late to catch it.",
+     "start": 15.9,
+     "end": 19.8
+    },
+    {
+     "narration_en": "Stability control is built to catch that moment.",
+     "start": 19.8,
+     "end": 23.3
+    },
+    {
+     "narration_en": "A sensor in the middle of the car measures how fast it is turning",
+     "start": 23.3,
+     "end": 29.1
+    },
+    {
+     "narration_en": "and a sensor on the steering column reads where you are steering.",
+     "start": 29.1,
+     "end": 34.2
+    },
+    {
+     "narration_en": "When the car turns faster than the steering asks for it is starting to spin",
+     "start": 34.2,
+     "end": 40.4
+    },
+    {
+     "narration_en": "so the system brakes just one wheel on the outside front.",
+     "start": 40.4,
+     "end": 45.1
+    },
+    {
+     "narration_en": "That one brake drags the nose back out of the spin",
+     "start": 45.1,
+     "end": 49.8
+    },
+    {
+     "narration_en": "using the same valve block and pump as your ABS.",
+     "start": 49.8,
+     "end": 54.1
+    },
+    {
+     "narration_en": "It all happens in a fraction of a second and the car stays pointed down the road.",
+     "start": 54.1,
+     "end": 61.1
+    },
+    {
+     "narration_en": "So keep steering where you want to go and let it work.",
+     "start": 61.1,
+     "end": 66.2
+    }
+   ]
+  }
+ ]
+}

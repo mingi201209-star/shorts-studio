@@ -1,0 +1,280 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 42.305,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.309999,
+      "text": "Same swerve on\\Na wet road."
+    },
+    {
+      "start": 1.714791,
+      "end": 2.631457,
+      "text": "One car spins out"
+    },
+    {
+      "start": 2.8219160000000003,
+      "end": 3.488582,
+      "text": "and one doesn't."
+    },
+    {
+      "start": 3.788601769230769,
+      "end": 5.538642769230769,
+      "text": "Swerve hard and\\Nthe rear tires"
+    },
+    {
+      "start": 5.550517769230769,
+      "end": 6.836226769230769,
+      "text": "can lose\\Ntheir grip first"
+    },
+    {
+      "start": 7.136246538461538,
+      "end": 8.302912538461538,
+      "text": "and once the\\Nback starts to"
+    },
+    {
+      "start": 8.314787538461538,
+      "end": 10.183828538461539,
+      "text": "slide the car\\Nturns faster than"
+    },
+    {
+      "start": 10.195746538461538,
+      "end": 10.71953753846154,
+      "text": "you steer."
+    },
+    {
+      "start": 11.019557307692308,
+      "end": 12.591015307692308,
+      "text": "Steering back is\\Noften too late"
+    },
+    {
+      "start": 12.602890307692308,
+      "end": 13.138598307692307,
+      "text": "to catch it."
+    },
+    {
+      "start": 13.438618076923078,
+      "end": 15.152868076923077,
+      "text": "Stability control\\Nis built to"
+    },
+    {
+      "start": 15.164784076923077,
+      "end": 16.057659076923077,
+      "text": "catch that moment."
+    },
+    {
+      "start": 16.357678846153846,
+      "end": 17.357635846153844,
+      "text": "A sensor in\\Nthe middle of the"
+    },
+    {
+      "start": 17.369553846153845,
+      "end": 19.179094846153845,
+      "text": "car measures how\\Nfast it is"
+    },
+    {
+      "start": 19.191011846153845,
+      "end": 19.548136846153845,
+      "text": "turning"
+    },
+    {
+      "start": 19.848156615384614,
+      "end": 20.967197615384613,
+      "text": "and a sensor\\Non the steering"
+    },
+    {
+      "start": 20.979114615384614,
+      "end": 21.871947615384613,
+      "text": "column reads\\Nwhere you are"
+    },
+    {
+      "start": 21.883864615384613,
+      "end": 22.300530615384613,
+      "text": "steering."
+    },
+    {
+      "start": 22.60055038461538,
+      "end": 23.92196638461538,
+      "text": "When the car\\Nturns faster than"
+    },
+    {
+      "start": 23.93388338461538,
+      "end": 25.21959138461538,
+      "text": "the steering asks\\Nfor it is"
+    },
+    {
+      "start": 25.23150838461538,
+      "end": 25.98150838461538,
+      "text": "starting to spin"
+    },
+    {
+      "start": 26.28152815384615,
+      "end": 27.88869415384615,
+      "text": "so the system\\Nbrakes just one"
+    },
+    {
+      "start": 27.90061115384615,
+      "end": 29.18627815384615,
+      "text": "wheel on\\Nthe outside front."
+    },
+    {
+      "start": 29.48629792307692,
+      "end": 31.236296923076917,
+      "text": "That one brake\\Ndrags the nose"
+    },
+    {
+      "start": 31.248213923076918,
+      "end": 32.22442292307692,
+      "text": "back out of the spin"
+    },
+    {
+      "start": 32.524442692307694,
+      "end": 33.82202469230769,
+      "text": "using the\\Nsame valve block"
+    },
+    {
+      "start": 33.941108692307694,
+      "end": 35.214942692307694,
+      "text": "and pump as your ABS."
+    },
+    {
+      "start": 35.51496246153847,
+      "end": 36.848294461538465,
+      "text": "It all happens\\Nin a fraction of"
+    },
+    {
+      "start": 36.860170461538466,
+      "end": 38.44350346153847,
+      "text": "a second and\\Nthe car stays"
+    },
+    {
+      "start": 38.455420461538466,
+      "end": 39.431628461538466,
+      "text": "pointed down the road."
+    },
+    {
+      "start": 39.73164823076924,
+      "end": 40.81498023076924,
+      "text": "So keep steering\\Nwhere you want"
+    },
+    {
+      "start": 40.82689823076924,
+      "end": 42.06498023076924,
+      "text": "to go and let it work."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.728601769230769,
+      "narration_en": "Same swerve on a wet road. One car spins out and one doesn't.",
+      "source_audio_sha256": "5bdb624c2e114f334fcb4e7ce5b981bd85135a2da0040933333598c366d46ed6"
+    },
+    {
+      "start": 3.728601769230769,
+      "end": 7.076246538461538,
+      "narration_en": "Swerve hard and the rear tires can lose their grip first",
+      "source_audio_sha256": "e6e36838ac18fe9a4d66e2aa16bed8678a2d11bad229c9b96dd1a86827936935"
+    },
+    {
+      "start": 7.076246538461538,
+      "end": 10.959557307692307,
+      "narration_en": "and once the back starts to slide the car turns faster than you steer.",
+      "source_audio_sha256": "a18d04d4165af6db4060fa4e9e2ec35b81d474fd036d87c93187f47b3b6acf83"
+    },
+    {
+      "start": 10.959557307692307,
+      "end": 13.378618076923077,
+      "narration_en": "Steering back is often too late to catch it.",
+      "source_audio_sha256": "49acdbccaa702e2a8c7329f08ba36556e3edcac65a6112cac82e0875df87841d"
+    },
+    {
+      "start": 13.378618076923077,
+      "end": 16.297678846153847,
+      "narration_en": "Stability control is built to catch that moment.",
+      "source_audio_sha256": "79a2d7fb8a14169fc2891004e29e64e7cf8323e60182c067abb15e14ffb90c62"
+    },
+    {
+      "start": 16.297678846153847,
+      "end": 19.788156615384615,
+      "narration_en": "A sensor in the middle of the car measures how fast it is turning",
+      "source_audio_sha256": "77b08c56af18e9a5b7e0a5b6350ebb75b3c5aef8f1ff8ae9f45e0503f6c90b28"
+    },
+    {
+      "start": 19.788156615384615,
+      "end": 22.540550384615383,
+      "narration_en": "and a sensor on the steering column reads where you are steering.",
+      "source_audio_sha256": "7edd37002d3b8d4d6acd165767c12d5b1e8f7dd3985167c8ef496699ffa9f9a9"
+    },
+    {
+      "start": 22.540550384615383,
+      "end": 26.22152815384615,
+      "narration_en": "When the car turns faster than the steering asks for it is starting to spin",
+      "source_audio_sha256": "2362a6cc2174a5cb8e93a49ef39b9e24d8b59cf3e53a31cc4868b32c1ce75e65"
+    },
+    {
+      "start": 26.22152815384615,
+      "end": 29.42629792307692,
+      "narration_en": "so the system brakes just one wheel on the outside front.",
+      "source_audio_sha256": "0393a5a112cd11042d4c06d375ab5689ae38b75c39d91f938a45b70e43a4d531"
+    },
+    {
+      "start": 29.42629792307692,
+      "end": 32.46444269230769,
+      "narration_en": "That one brake drags the nose back out of the spin",
+      "source_audio_sha256": "8b6b02f3ca122c5e94d802bb37aada924512f92a2b6580f8b11e2ad32c78fa8a"
+    },
+    {
+      "start": 32.46444269230769,
+      "end": 35.454962461538464,
+      "narration_en": "using the same valve block and pump as your ABS.",
+      "source_audio_sha256": "4d123fb49bf4cf72792987c702834a63e2ce12c6945995b1dd25483bd106dba1"
+    },
+    {
+      "start": 35.454962461538464,
+      "end": 39.671648230769236,
+      "narration_en": "It all happens in a fraction of a second and the car stays pointed down the road.",
+      "source_audio_sha256": "80fbc9714b381a0cbe5db5964b65b2c1460fbd2b1b59ab5b59ff54842063d10e"
+    },
+    {
+      "start": 39.671648230769236,
+      "end": 42.305,
+      "narration_en": "So keep steering where you want to go and let it work.",
+      "source_audio_sha256": "692a97cb318db778568a479f1a1118433e7672fe93fe9558b13755a2a4ece250"
+    }
+  ],
+  "silence_gaps": [
+    0.416354,
+    0.330646,
+    0.330083,
+    0.32225,
+    0.331083,
+    0.322708,
+    0.3055,
+    0.3265,
+    0.324833,
+    0.301958,
+    0.350667,
+    0.302708,
+    0.309792
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.4,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -15.9,
+      -16.3,
+      -16.2,
+      -16.8,
+      -15.8,
+      -16.5,
+      -16.3,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "705ea96d5104a792dce0e7019699c316c5bdab76e6dbaad84d5b9654f3ee1224"
+}

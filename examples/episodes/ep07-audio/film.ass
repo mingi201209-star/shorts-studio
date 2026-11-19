@@ -1,0 +1,43 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:01.31,Caption,,0,0,0,,Same swerve on\Na wet road.
+Dialogue: 0,0:00:01.71,0:00:02.63,Caption,,0,0,0,,One car spins out
+Dialogue: 0,0:00:02.82,0:00:03.49,Caption,,0,0,0,,and one doesn't.
+Dialogue: 0,0:00:03.79,0:00:05.54,Caption,,0,0,0,,Swerve hard and\Nthe rear tires
+Dialogue: 0,0:00:05.55,0:00:06.84,Caption,,0,0,0,,can lose\Ntheir grip first
+Dialogue: 0,0:00:07.14,0:00:08.30,Caption,,0,0,0,,and once the\Nback starts to
+Dialogue: 0,0:00:08.31,0:00:10.18,Caption,,0,0,0,,slide the car\Nturns faster than
+Dialogue: 0,0:00:10.20,0:00:10.72,Caption,,0,0,0,,you steer.
+Dialogue: 0,0:00:11.02,0:00:12.59,Caption,,0,0,0,,Steering back is\Noften too late
+Dialogue: 0,0:00:12.60,0:00:13.14,Caption,,0,0,0,,to catch it.
+Dialogue: 0,0:00:13.44,0:00:15.15,Caption,,0,0,0,,Stability control\Nis built to
+Dialogue: 0,0:00:15.16,0:00:16.06,Caption,,0,0,0,,catch that moment.
+Dialogue: 0,0:00:16.36,0:00:17.36,Caption,,0,0,0,,A sensor in\Nthe middle of the
+Dialogue: 0,0:00:17.37,0:00:19.18,Caption,,0,0,0,,car measures how\Nfast it is
+Dialogue: 0,0:00:19.19,0:00:19.55,Caption,,0,0,0,,turning
+Dialogue: 0,0:00:19.85,0:00:20.97,Caption,,0,0,0,,and a sensor\Non the steering
+Dialogue: 0,0:00:20.98,0:00:21.87,Caption,,0,0,0,,column reads\Nwhere you are
+Dialogue: 0,0:00:21.88,0:00:22.30,Caption,,0,0,0,,steering.
+Dialogue: 0,0:00:22.60,0:00:23.92,Caption,,0,0,0,,When the car\Nturns faster than
+Dialogue: 0,0:00:23.93,0:00:25.22,Caption,,0,0,0,,the steering asks\Nfor it is
+Dialogue: 0,0:00:25.23,0:00:25.98,Caption,,0,0,0,,starting to spin
+Dialogue: 0,0:00:26.28,0:00:27.89,Caption,,0,0,0,,so the system\Nbrakes just one
+Dialogue: 0,0:00:27.90,0:00:29.19,Caption,,0,0,0,,wheel on\Nthe outside front.
+Dialogue: 0,0:00:29.49,0:00:31.24,Caption,,0,0,0,,That one brake\Ndrags the nose
+Dialogue: 0,0:00:31.25,0:00:32.22,Caption,,0,0,0,,back out of the spin
+Dialogue: 0,0:00:32.52,0:00:33.82,Caption,,0,0,0,,using the\Nsame valve block
+Dialogue: 0,0:00:33.94,0:00:35.21,Caption,,0,0,0,,and pump as your ABS.
+Dialogue: 0,0:00:35.51,0:00:36.85,Caption,,0,0,0,,It all happens\Nin a fraction of
+Dialogue: 0,0:00:36.86,0:00:38.44,Caption,,0,0,0,,a second and\Nthe car stays
+Dialogue: 0,0:00:38.46,0:00:39.43,Caption,,0,0,0,,pointed down the road.
+Dialogue: 0,0:00:39.73,0:00:40.81,Caption,,0,0,0,,So keep steering\Nwhere you want
+Dialogue: 0,0:00:40.83,0:00:42.06,Caption,,0,0,0,,to go and let it work.
