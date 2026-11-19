@@ -74,6 +74,11 @@ def camera_layout(shot):
     # camera during frames 1-45, and frame-1 anchoring clips it at frame 31.
     if shot['id'].split('_',2)[1]=='00' and style!='tire_contact':
         layout['anchor_frame']=1
+    # B's first tire-contact macro spans frames 1-45. The midpoint anchor
+    # fixed shard-camera consistency, but 1.95 left the moving tyre clipped
+    # at both travel extremes. Widen only this opening shot; keep it fixed.
+    if shot['id'].split('_',2)[1]=='00' and style=='tire_contact':
+        layout['scale']=2.10
     return layout
 def detail_stage(ident): return original.detail_stage(_STYLE[ident])
 def detail_visibility(ident): return original.detail_visibility(_STYLE[ident])
