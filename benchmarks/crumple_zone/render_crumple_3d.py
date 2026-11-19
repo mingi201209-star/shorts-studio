@@ -241,8 +241,8 @@ class Ghost:
         nt.links.new(op("ADD", op("MULTIPLY", mask, -0.8 * alpha0), alpha0), bsdf.inputs["Alpha"])
         lw = node("ShaderNodeLayerWeight")
         lw.inputs["Blend"].default_value = 0.35
-        edge = op("MULTIPLY", op("MULTIPLY", lw.outputs["Facing"], mask), 5.0)
-        flare = op("MULTIPLY", op("MULTIPLY", mask, op("SUBTRACT", 1.0, mask)), 18.0)
+        edge = op("MULTIPLY", op("MULTIPLY", lw.outputs["Facing"], mask), 1.2)
+        flare = op("MULTIPLY", op("MULTIPLY", mask, op("SUBTRACT", 1.0, mask)), 5.0)
         nt.links.new(op("ADD", edge, flare), bsdf.inputs["Emission Strength"])
         bsdf.inputs["Emission Color"].default_value = (0.85, 0.85, 0.85, 1.0)      # neutral: the see-through no longer carries a blue tint (owner request)
         return c
