@@ -1,1 +1,1 @@
-{"target_seconds": 26.7, "note": "EP.05 capture, windows fitted to the real spoken lengths (first try had 2 s dead air)"}
+{"target_seconds": 26.7, "note": "EP.05 capture retry: audio builder generalized from 6 to len(beats) beats (the first runs failed the dead-air gate because beats 7-8 were placed after the target)"}

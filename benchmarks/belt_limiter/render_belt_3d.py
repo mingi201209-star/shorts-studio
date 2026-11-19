@@ -18,6 +18,7 @@ from mathutils import Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.belt_limiter import belt_motion as bm  # noqa: E402
 from benchmarks.belt_limiter import belt_shots as shots  # noqa: E402
+from benchmarks.belt_limiter import belt_timeline as tl  # noqa: E402
 from benchmarks.crumple_zone import crumple_motion as cm  # noqa: E402
 from benchmarks.crumple_zone import structure_geometry as sg  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
@@ -433,6 +434,8 @@ def arguments():
     p.add_argument("--shots", default="all")
     p.add_argument("--res-scale", type=float, default=0.6667)
     p.add_argument("--samples", type=int, default=12)
+    p.add_argument("--film", type=Path, default=None, help="film timeline json {line_starts, total_s}: render film frames instead of named shots")
+    p.add_argument("--frames", default="", help="with --film: first-last film frame (0-based, inclusive)")
     argv = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
     return p.parse_args(argv)
 
@@ -492,11 +495,18 @@ def main():
     scene.camera = cam
     rec = bm._crash()
     wheel_r = geom["tyre_radius"]
-    names = list(shots.SHOTS) if args.shots == "all" else args.shots.split(",")
+    film_segs = None
+    if args.film:
+        spec = json.loads(args.film.read_text())
+        film_segs = tl.segments(spec["line_starts"], spec["total_s"])
+        a, b = (int(x) for x in args.frames.split("-"))
+        names = list(range(a, b + 1))
+    else:
+        names = list(shots.SHOTS) if args.shots == "all" else args.shots.split(",")
     out = []
     for name in names:
         t0 = time.time()
-        sh = shots.SHOTS[name]
+        sh = tl.frame_shot(name, film_segs) if film_segs else shots.SHOTS[name]
         t = shots.sim_time(sh)
         scene.render.resolution_x, scene.render.resolution_y = round(shots.FRAME[0] * args.res_scale), round(shots.FRAME[1] * args.res_scale)
         ps = cm.sample(rec, t)
@@ -538,10 +548,10 @@ def main():
         reel.set_visible(inside, bool(sh.get("hide_housing")))
         belt.ob.hide_render = False
         bpy.context.view_layer.update()
-        path = args.out / f"{name}.png"
+        path = args.out / (f"frame_{name:05d}.png" if film_segs else f"{name}.png")
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
-        info = {"shot": name, "variant": sh["variant"], "sim_time": round(t, 5), "travel_m": round(st["travel_m"], 4), "chest_g": round(st["chest_g"], 2), "injury": round(st["injury"], 3),
+        info = {"shot": name, "segment": sh.get("segment", ""), "variant": sh["variant"], "sim_time": round(t, 5), "travel_m": round(st["travel_m"], 4), "chest_g": round(st["chest_g"], 2), "injury": round(st["injury"], 3),
                 "payout_m": round(st["payout_m"], 4), "pull_back_m": round(st["pull_back_m"], 4), "stroke_m": round(s, 4), "render_seconds": round(time.time() - t0, 1),
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
         out.append(info)
