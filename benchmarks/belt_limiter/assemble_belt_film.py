@@ -157,7 +157,7 @@ def main():
     seconds = n / tl.FPS
     video = a.out / "belt-film-1080x1920.mp4"
     run(["ffmpeg", "-v", "error", "-y", "-framerate", str(tl.FPS), "-i", str(frames / "frame_%04d.png"), "-i", str(a.out / "narration.wav"),
-         "-vf", f"setpts=N/({tl.FPS}*TB),ass={a.out / 'film.ass'}", "-af", f"adelay={int(round(pre * 1000))}:all=1", "-map", "0:v:0", "-map", "1:a:0", "-t", f"{seconds}", "-c:v", "libx264",
+         "-vf", f"setpts=N/({tl.FPS}*TB),ass={a.out / 'film.ass'}", "-af", f"adelay={int(round(pre * 1000))}:all=1", "-map", "0:v:0", "-map", "1:a:0", "-t", f"{seconds}", "-r", str(tl.FPS), "-c:v", "libx264",
          "-preset", "fast", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", video])
     info = probe(video)
     vs = next(s for s in info["streams"] if s["codec_type"] == "video")

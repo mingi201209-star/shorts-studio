@@ -1,1 +1,1 @@
-{"audio_run": "44462010326", "shard": 12, "res_scale": 0.6667, "samples": 12, "note": "EP.05: split-screen opening from retention data + gate fixes; reuses the frames of run 44463242672 (no re-render)", "frames_run": "44463242672"}
+{"audio_run": "44462010326", "shard": 12, "res_scale": 0.6667, "samples": 12, "note": "EP.05: split-screen opening from retention data + gate fixes; reuses the frames of run 44463242672 (no re-render); output frame rate pinned to 24 (the PyPI static ffmpeg fallback wrote 25 fps)", "frames_run": "44463242672"}
