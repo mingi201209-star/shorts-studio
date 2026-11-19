@@ -46,3 +46,12 @@ Not claimed: no stopping-distance claim (ABS is not always shorter, e.g. on grav
 1. Owner approves the narration (change words now, not after the voice is recorded).
 2. Storyboard stills for s01, s04, s05.
 3. Frozen audio, whole-film preview with every gate, publish kit.
+
+## Result (2026-11-19)
+- Whole-film preview run 44487886877: every gate PASS (abs_physics, scene_alignment, telemetry_matches_model, visible_action,
+  no_scene_text, loop_closes, smoothness, black_opening, captions_visible). 584 frames, 24 fps, 24.3 s, 1080x1920.
+- Opening: wide split screen already 0.6 s into the stop; the locked car hits the box at 0.96 s of film time (after EP.05's
+  23.4 % first-hour viewed rate showed that a split of two close-ups is not readable in the feed).
+- Model numbers on screen: ABS car turns up to 6.6 degrees and clears the box; pressure eased 6 times on screen in the caliper shots.
+- Known weak points: plain-block caliper and footwell; tone ring drawn outboard for visibility; both cars are the same grey.
+- NOT verified: voice pronunciation, sound-off readability, human first view. The owner uploads.
