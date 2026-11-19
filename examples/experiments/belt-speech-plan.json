@@ -1,0 +1,49 @@
+{
+ "variants": [
+  {
+   "id": "belt-limiter",
+   "beats": [
+    {
+     "narration_en": "Your seatbelt is built to give way on purpose.",
+     "start": 0,
+     "end": 3
+    },
+    {
+     "narration_en": "In a crash it first snaps tight,",
+     "start": 3,
+     "end": 6
+    },
+    {
+     "narration_en": "pulling you back into the seat.",
+     "start": 6,
+     "end": 9
+    },
+    {
+     "narration_en": "Then a twisting metal bar in the reel starts to give,",
+     "start": 9,
+     "end": 13
+    },
+    {
+     "narration_en": "letting out a little belt.",
+     "start": 13,
+     "end": 16
+    },
+    {
+     "narration_en": "Your chest gets a longer, gentler stop.",
+     "start": 16,
+     "end": 20
+    },
+    {
+     "narration_en": "A belt with no give stops it almost at once, with a harder push.",
+     "start": 20,
+     "end": 25
+    },
+    {
+     "narration_en": "Same idea as a crumple zone: a longer stop means a smaller peak force.",
+     "start": 25,
+     "end": 30
+    }
+   ]
+  }
+ ]
+}

@@ -388,7 +388,7 @@ class Reel:
         self.piston = box("Pretensioner piston", (self.tube_x, ay + 0.045, az + 0.12), (0.020, 0.022, 0.05), dark, root)
         self.rack = box("Pretensioner rack", (ax + 0.046, ay + 0.045, az + 0.06), (0.010, 0.012, 0.16), steel, root)
         self.rack_teeth = [box(f"Rack tooth {k}", (ax + 0.0405, ay + 0.045, az + 0.12 - 0.014 * k), (0.008, 0.012, 0.008), steel, root) for k in range(10)]
-        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.022, location=(self.tube_x, ay + 0.045, az + 0.17))
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.014, location=(self.tube_x, ay + 0.045, az + 0.17))
         self.flash = add(bpy.context.object, root)
         self.flash.name = "Pretensioner gas flash"
         self.flash.data.materials.append(flash_mat)
@@ -416,7 +416,7 @@ class Reel:
             st.rotation_euler = (0.0, -a, 0.0)
         flash = max(0.0, 1.0 - pretension) if 0.0 < pretension < 1.0 else 0.0
         self.flash_mat.node_tree.nodes.get("Principled BSDF").inputs["Emission Color"].default_value = (1.0, 0.75, 0.25, 1.0)
-        self.flash_mat.node_tree.nodes.get("Principled BSDF").inputs["Emission Strength"].default_value = 18.0 * flash
+        self.flash_mat.node_tree.nodes.get("Principled BSDF").inputs["Emission Strength"].default_value = 5.0 * flash
         self.flash.hide_render = flash <= 0.0
 
     def set_visible(self, visible, hide_housing=False):
