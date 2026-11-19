@@ -20,11 +20,12 @@ Simplified physics simulation made for explanation. It is not a real crash test 
 crumple zone, car safety, crash physics, how cars protect you, engineering explained, slow motion crash, Curious Mechanics
 
 ## Thumbnail
-Text-free frames cut from real renders of this film (the video rule is "no on-screen text except captions", so none was added):
-- `thumbnail-candidate-rails-closeup-f316.jpg`: amber rails folding in the see-through close-up (the most eye-catching)
-- `thumbnail-candidate-wide-seethrough-driver-f724.jpg`: wide see-through shot with the belted driver
+Text-free 1080x1920 frames cut from the finished film's own render pieces (before the captions are burned in; the video rule is "no on-screen text except captions", so none was added):
+- `thumbnail-1-rails-folding.jpg`: amber rails folding inside the see-through front (about 9.5 s; the most eye-catching, recommended)
+- `thumbnail-2-seethrough-driver-wide.jpg`: wide see-through shot with the belted driver (about 24 s)
+- `thumbnail-3-driver-cabin.jpg`: the driver in the cabin
 
-These two are 540x960 range-check frames enlarged to 1080x1920, so they are a little soft. For the final thumbnail, grab a frame from the finished MP4 (about 10 s for the rails close-up, about 24 s for the wide shot) at full size.
+The film was rendered at 720x1280 and enlarged to 1080x1920, so the frames are slightly soft at full size.
 
 ## Before you post
 - Check the voice (pronunciation) and the first impression yourself: both are still NOT_VERIFIED.
