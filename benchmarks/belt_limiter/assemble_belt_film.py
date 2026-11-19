@@ -23,6 +23,24 @@ ROOT = Path(__file__).resolve().parents[2]
 W, H = 1080, 1920
 
 
+def probe_video(video: Path) -> dict:
+    """ffprobe when present; the CI fallback (static ffmpeg from PyPI, used when apt stalls) ships no ffprobe, so then every frame is decoded with OpenCV and counted."""
+    import shutil
+    if shutil.which("ffprobe"):
+        return probe(video)
+    import cv2
+    cap = cv2.VideoCapture(str(video))
+    n, w, h = 0, 0, 0
+    while True:
+        ok, fr = cap.read()
+        if not ok:
+            break
+        n += 1
+        h, w = fr.shape[:2]
+    cap.release()
+    return {"streams": [{"codec_type": "video", "width": w, "height": h, "nb_read_frames": str(n), "counted_by": "opencv decode"}]}
+
+
 def no_scene_text_belt() -> dict:
     src = (Path(__file__).resolve().parent / "render_belt_3d.py").read_text()
     # a CURVE object (the belt strap) is geometry, not text: only FONT curves and text operators count as scene text
@@ -159,7 +177,7 @@ def main():
     run(["ffmpeg", "-v", "error", "-y", "-framerate", str(tl.FPS), "-i", str(frames / "frame_%04d.png"), "-i", str(a.out / "narration.wav"),
          "-vf", f"setpts=N/({tl.FPS}*TB),ass={a.out / 'film.ass'}", "-af", f"adelay={int(round(pre * 1000))}:all=1", "-map", "0:v:0", "-map", "1:a:0", "-t", f"{seconds}", "-r", str(tl.FPS), "-c:v", "libx264",
          "-preset", "fast", "-crf", "17", "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", video])
-    info = probe(video)
+    info = probe_video(video)
     vs = next(s for s in info["streams"] if s["codec_type"] == "video")
     problems = []
     if (vs["width"], vs["height"], int(vs["nb_read_frames"])) != (W, H, n):
