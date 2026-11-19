@@ -19,20 +19,23 @@ Not claimed: no real car's numbers, no injury statistics, no claim that every be
 4. Then a twisting metal bar in the reel starts to give,
 5. letting out a little belt.
 6. Your chest gets a longer, gentler stop.
-7. A belt with no give stops it almost at once, with a much harder push.
+7. A belt with no give stops it almost at once, with a harder push.
 8. Same idea as a crumple zone: a longer stop means a smaller peak force.
 
 ## Scene list (frozen before coding; new wishes go to EP.06)
+Owner direction (2026-11-19): the film goes INSIDE the parts to explain them. So s02 and s03 are macro shots from inside the pretensioner and the reel, with the camera flying into the part.
 | id | narration | what is on screen | action that must be visible |
 |---|---|---|---|
 | s01 | 1 | The sedan rolls in on a long run-up toward the wall; cut to the cabin view: belted driver, belt across the chest | car moving, belt visible, 2+ changes in the first 5 s |
-| s02 | 2-3 | Impact (reuse the EP.04 crumple car pulse). The belt snaps tight and pulls the driver back into the seat | pretensioner pull-back, driver moves back about 3 cm |
-| s03 | 4-5 | See-through cutaway at the seat-side reel: the torsion bar twists and webbing pays out | bar visibly twisting, webbing length growing |
-| s04 | 6 | Cabin view, slow motion: the driver moves forward gently, chest colour stays green to yellow | forward travel, colour = chest load (no text) |
-| s05 | 7 | Second run, same crash, belt with no give: the driver is stopped almost at once, chest turns red | shorter stop, harder push, red |
+| s02a | 2-3 | Impact (reuse the EP.04 crumple car pulse). Cabin view: the strap snaps tight (glows), the driver is held back | strap tension glow, driver held back |
+| s02b | 2-3 | INSIDE the pretensioner: gas flash, the piston drives a rack that turns a gear on the reel spool and winds the slack in | rack moves, gear and spool turn, flash |
+| s03a | 4 | The camera flies from the cabin into the see-through reel housing at the base of the B pillar | camera move into the housing |
+| s03b | 4-5 | INSIDE the reel: the locked ratchet wheel holds one end of the torsion bar, the spool turns the other end; the bar twists and webbing pays out | bar visibly twisting, webbing roll shrinking, spool turning |
+| s04 | 6 | Cabin view, slow motion: the driver moves forward gently, chest colour stays green (modern belt at its cap) | forward travel, colour = chest load (no text) |
+| s05 | 7 | Second run, same crash, belt with no give: the driver is stopped almost at once, chest turns yellow-orange | shorter stop, harder push, colour |
 | s06 | 8 | Back to the crumpled front and the belt together: both give | crumple front plus belt, callback to EP.04 |
 
-Colour code reused from EP.04: shirt blue, then yellow, then red with the chest load. The rigid-belt run uses the same look as the rigid car in EP.04.
+Colour code reused from EP.04: shirt blue, then green/yellow/red with the chest load. The strap glows with its tension.
 
 ## Definition of done
 - Every scene above is on screen at the time of its narration (checked on real frames, with timecodes in the report).

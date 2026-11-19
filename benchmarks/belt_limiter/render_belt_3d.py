@@ -313,69 +313,117 @@ class Belt:
 
 
 class Reel:
-    """Reel cutaway (car frame, parented to the car): a see-through housing, the spool with the webbing wound on it and the torsion bar through its centre. The bar carries a row of
-    orange stripes that twist progressively as webbing pays out (the load limiter at work). Axis of the spool: along the car's length (Y)."""
+    """Reel and pretensioner for the 'inside the part' shots (car frame, parented to the car, origin at REEL_AT, spool axis along the car's length Y).
+    Along the axis: housing wall | ratchet wheel (locked by the pawl) | exposed torsion bar with a twisting stripe helix | spool flange | webbing roll | flange | pinion gear.
+    The load limiter: the ratchet wheel holds one end of the bar, the spool turns the other end, so webbing pays out while the bar twists (twist = payout / spool radius).
+    The pretensioner: a gas flash drives a piston and a rack down, the rack turns the pinion and the spool winds the slack in."""
+    SPOOL_R = 0.04
+    PINION_R = 0.04
+    RACK_TRAVEL = 0.023           # m of rack travel = PINION_R x the winding angle (about 33 degrees) at full pretension
 
     def __init__(self, root):
         self.root = root
         housing = material("Reel housing", (0.72, 0.82, 0.92), rough=0.08)
-        housing.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.16
-        steel = material("Reel spool", (0.55, 0.56, 0.60), metal=0.8, rough=0.35)
+        housing.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.12
+        steel = material("Reel steel", (0.55, 0.56, 0.60), metal=0.8, rough=0.35)
+        dark = material("Reel dark steel", (0.20, 0.21, 0.24), metal=0.7, rough=0.4)
         web = material("Reel webbing", (0.10, 0.10, 0.115), rough=0.8)
         orange = material("Torsion bar stripe", (1.0, 0.45, 0.05), rough=0.4, emission=2.0)
-        bar_mat = material("Torsion bar", (0.62, 0.64, 0.68), metal=0.9, rough=0.3)
-        self.parts = []
+        flash_mat = material("Pretensioner flash", (1.0, 0.8, 0.3), rough=0.5, emission=0.0)
+        self.flash_mat = flash_mat
+        glass = material("Pretensioner tube", (0.75, 0.8, 0.9), rough=0.1)
+        glass.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.18
+        self.parts, self.fixed_housing = [], []
+        ax, ay, az = REEL_AT
 
-        def add(ob, parent=None):
+        def add(ob, parent=None, housing_part=False):
             ob.parent = parent or root
             self.parts.append(ob)
+            if housing_part:
+                self.fixed_housing.append(ob)
             return ob
 
-        ax, ay, az = REEL_AT
-        bpy.ops.mesh.primitive_cube_add(size=1.0, location=(ax, ay, az))
-        h = add(bpy.context.object)
-        h.name, h.scale = "Reel housing", (0.13, 0.13, 0.17)
-        h.data.materials.append(housing)
+        def cyl(name, radius, depth, loc, mat, parent):
+            bpy.ops.mesh.primitive_cylinder_add(radius=radius, depth=depth, location=loc, rotation=(math.pi / 2, 0, 0))
+            ob = add(bpy.context.object, parent)
+            ob.name = name
+            ob.data.materials.append(mat)
+            return ob
+
+        def box(name, loc, scale, mat, parent):
+            bpy.ops.mesh.primitive_cube_add(size=1.0, location=loc)
+            ob = add(bpy.context.object, parent)
+            ob.name, ob.scale = name, scale
+            ob.data.materials.append(mat)
+            return ob
+
+        h = box("Reel housing", (ax, ay, az), (0.17, 0.215, 0.19), housing, root)
+        self.fixed_housing.append(h)
+        # fixed frame (root parented): ratchet wheel with teeth, pawl
+        self.axis = bpy.data.objects.new("Reel axis", None)
+        bpy.context.collection.objects.link(self.axis)
+        add(self.axis).location = (ax, ay, az)
+        ratchet = cyl("Ratchet wheel", 0.045, 0.014, (0, -0.082, 0), dark, self.axis)
+        for k in range(14):
+            ang = 2 * math.pi * k / 14
+            box(f"Ratchet tooth {k}", (0.048 * math.cos(ang), -0.082, 0.048 * math.sin(ang)), (0.012, 0.014, 0.008), dark, self.axis).rotation_euler = (0.0, -ang, 0.0)
+        box("Locking pawl", (0.0, -0.082, 0.056), (0.012, 0.018, 0.020), steel, self.axis)
+        # turning part: spool with flanges, webbing roll, pinion
         self.spool = bpy.data.objects.new("Reel spool pivot", None)
         bpy.context.collection.objects.link(self.spool)
         add(self.spool).location = (ax, ay, az)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.03, depth=0.10, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
-        sp = add(bpy.context.object, self.spool)
-        sp.name = "Reel spool"
-        sp.data.materials.append(steel)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.052, depth=0.034, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
-        self.roll = add(bpy.context.object, self.spool)
-        self.roll.name = "Reel webbing roll"
-        self.roll.data.materials.append(web)
-        bpy.ops.mesh.primitive_cylinder_add(radius=0.017, depth=0.19, location=(0, 0, 0), rotation=(math.pi / 2, 0, 0))
-        bar = add(bpy.context.object, self.spool)
-        bar.name = "Torsion bar"
-        bar.data.materials.append(bar_mat)
-        self.stripes = []
-        for i in range(12):
-            bpy.ops.mesh.primitive_cube_add(size=1.0, location=(0, 0, 0))
-            st = add(bpy.context.object, self.spool)
-            st.name = f"Torsion bar stripe {i}"
-            st.scale = (0.016, 0.012, 0.008)
-            st.data.materials.append(orange)
-            self.stripes.append(st)
+        cyl("Spool core", 0.040, 0.05, (0, 0.008, 0), steel, self.spool)
+        cyl("Spool flange A", 0.058, 0.006, (0, -0.017, 0), steel, self.spool)
+        cyl("Spool flange B", 0.058, 0.006, (0, 0.033, 0), steel, self.spool)
+        self.roll = cyl("Reel webbing roll", 0.052, 0.040, (0, 0.008, 0), web, self.spool)
+        cyl("Torsion bar", 0.016, 0.078, (0, -0.052, 0), dark, self.spool)      # from the spool back to the locked ratchet wheel
+        cyl("Pinion gear", 0.040, 0.012, (0, 0.045, 0), steel, self.spool)
+        for k in range(12):
+            ang = 2 * math.pi * k / 12
+            box(f"Pinion tooth {k}", (0.043 * math.cos(ang), 0.045, 0.043 * math.sin(ang)), (0.010, 0.012, 0.008), steel, self.spool).rotation_euler = (0.0, -ang, 0.0)
+        self.stripes = [box(f"Torsion bar stripe {i}", (0, 0, 0), (0.014, 0.0075, 0.007), orange, self.spool) for i in range(10)]
+        # pretensioner: tube, piston, rack along the pinion's inboard side, gas flash
+        self.tube_x = ax + 0.058
+        box("Pretensioner tube", (self.tube_x, ay + 0.045, az + 0.085), (0.028, 0.030, 0.17), glass, root)
+        self.piston = box("Pretensioner piston", (self.tube_x, ay + 0.045, az + 0.12), (0.020, 0.022, 0.05), dark, root)
+        self.rack = box("Pretensioner rack", (ax + 0.046, ay + 0.045, az + 0.06), (0.010, 0.012, 0.16), steel, root)
+        self.rack_teeth = [box(f"Rack tooth {k}", (ax + 0.0405, ay + 0.045, az + 0.12 - 0.014 * k), (0.008, 0.012, 0.008), steel, root) for k in range(10)]
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.022, location=(self.tube_x, ay + 0.045, az + 0.17))
+        self.flash = add(bpy.context.object, root)
+        self.flash.name = "Pretensioner gas flash"
+        self.flash.data.materials.append(flash_mat)
+        self.rest_z = {"piston": az + 0.12, "rack": az + 0.06, "teeth": [az + 0.12 - 0.014 * k for k in range(10)]}
 
-    def update(self, payout):
+    def update(self, payout, pretension):
+        """payout: webbing paid out (m). pretension: 0..1 progress of the pretensioner."""
         u = min(1.0, payout / PAY_MAX)
-        self.spool.rotation_euler = (0.0, payout / 0.04, 0.0)
-        r = 0.052 - 0.02 * u
+        twist = payout / self.SPOOL_R                        # the bar twists as much as the spool turns against the locked ratchet wheel
+        wind = pretension * self.RACK_TRAVEL / self.PINION_R
+        self.spool.rotation_euler = (0.0, -wind + twist, 0.0)
+        r = 0.052 - 0.022 * u
         self.roll.scale = (r / 0.052, r / 0.052, 1.0)
-        twist = 4.0 * u                                   # total twist of the bar (rad): the stripes fan out
-        ys = [-0.090 + 0.0105 * k for k in range(6)] + [0.0285 + 0.0105 * k for k in range(6)]      # six stripes on each visible end of the bar (the middle is behind the webbing roll)
-        for i, st in enumerate(self.stripes):
-            y = ys[i]
-            a = twist * (y + 0.09) / 0.18                    # progressive twist along the bar
+        drop = pretension * self.RACK_TRAVEL
+        self.piston.location.z = self.rest_z["piston"] - drop
+        self.rack.location.z = self.rest_z["rack"] - drop
+        for tooth, z0 in zip(self.rack_teeth, self.rest_z["teeth"]):
+            tooth.location.z = z0 - drop
+        n = len(self.stripes)
+        for i, st in enumerate(self.stripes):                # stripes along the exposed bar: no twist at the ratchet end, the full twist at the spool end
+            frac = i / (n - 1)
+            y = -0.088 + 0.060 * frac
+            a = (twist - wind) * (1.0 - frac)                # the stripes are children of the spool: relative to it the ratchet end is turned back by the full spool angle
             st.location = (0.0185 * math.cos(a), y, 0.0185 * math.sin(a))
             st.rotation_euler = (0.0, -a, 0.0)
+        flash = max(0.0, 1.0 - pretension) if 0.0 < pretension < 1.0 else 0.0
+        self.flash_mat.node_tree.nodes.get("Principled BSDF").inputs["Emission Color"].default_value = (1.0, 0.75, 0.25, 1.0)
+        self.flash_mat.node_tree.nodes.get("Principled BSDF").inputs["Emission Strength"].default_value = 18.0 * flash
+        self.flash.hide_render = flash <= 0.0
 
-    def set_visible(self, visible):
+    def set_visible(self, visible, hide_housing=False):
         for ob in self.parts:
             ob.hide_render = not visible
+        for ob in self.fixed_housing:
+            ob.hide_render = (not visible) or hide_housing
 
 
 def arguments():
@@ -468,7 +516,9 @@ def main():
         st = dummy.pose(sh["variant"], t)
         bpy.context.view_layer.update()      # the strap reads the torso's world matrix: it must be current
         belt.update(dummy.pivot, st["payout_m"], st["chest_g"])
-        reel.update(st["payout_m"])
+        fire = bm.contact_time_s() + bm.PRETENSION_DELAY_S
+        pretension = float(np.clip((t - fire) / bm.PRETENSION_TIME_S, 0.0, 1.0)) if sh["variant"] == "modern" else 0.0
+        reel.update(st["payout_m"], pretension)
         c = sh["cam"]
         off = Vector(root.location) if c["rel"] == "car" else Vector((0.0, root.location.y + nose, 0.0))
         loc = Vector(c["loc"]) + off
@@ -485,7 +535,7 @@ def main():
             ob.hide_render = not inside
         for ob in seat_parts:
             ob.hide_render = (not inside) or bool(sh.get("hide_seat"))
-        reel.set_visible(inside)
+        reel.set_visible(inside, bool(sh.get("hide_housing")))
         belt.ob.hide_render = False
         bpy.context.view_layer.update()
         path = args.out / f"{name}.png"
