@@ -48,3 +48,8 @@ point of the episode. It can return as its own episode.
 ## After publishing
 Record viewed-vs-swiped and avg view duration at 48 h next to the table above. If viewed is >= 65%,
 make split-screen-from-frame-1 the default opening for every episode.
+
+## Result (2026-11-19)
+- Built as an edit of the existing frames (run 44463242672, no re-render): frames 0-60 are the top/bottom split, then the calm cabin leads into the snap.
+- Final preview run 44473029950: all gates PASS, including the new `split_opening` gate (both halves within 2 ms of the same crash time) and the two fixed gates (`no_scene_text`, `captions_visible` at 24 fps). 586 frames, 24 fps, 24.4 s.
+- Still NOT verified: voice pronunciation, sound-off readability, a human first view. The owner uploads.
