@@ -24,6 +24,7 @@ W, H = 1080, 1920
 
 
 def no_scene_text() -> dict:
+    """No text inside the 3D scene. The split-screen labels (label_split) are a 2D overlay in the opening and the loop only."""
     src = (Path(__file__).resolve().parent / "render_esc_3d.py").read_text()
     hits = [b for b in ('"FONT"', "'FONT'", "body_text", "text_add") if b in src]
     return {"status": "FAIL" if hits else "PASS", "problems": [f"renderer creates scene text ({h})" for h in hits]}
@@ -44,6 +45,26 @@ def probe_video(video: Path) -> dict:
         h, w = fr.shape[:2]
     cap.release()
     return {"streams": [{"codec_type": "video", "width": w, "height": h, "nb_read_frames": str(n), "counted_by": "opencv decode"}]}
+
+
+LABEL_TOP, LABEL_BOTTOM = ("ESC ON", (40, 170, 70)), ("ESC OFF", (200, 45, 40))
+CONDITIONS = "SAME SWERVE \u00b7 WET ROAD \u00b7 80 km/h"
+
+
+def label_split(im: Image.Image) -> None:
+    """Owner decision (2026-11-19, after EP.06's 45 % viewed rate): the split opening says which car is which, like the best Short so far
+    (Road Signs, 69.9 %, which showed its test conditions on screen). Drawn on the composed frame, above the caption band, nowhere else."""
+    from PIL import ImageDraw, ImageFont
+    d = ImageDraw.Draw(im)
+    bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+    big, small = ImageFont.truetype(bold, 64), ImageFont.truetype(bold, 36)
+    for (text, colour), y0 in ((LABEL_TOP, 120), (LABEL_BOTTOM, H // 2 + 40)):
+        w = d.textlength(text, font=big)
+        d.rounded_rectangle((40, y0, 40 + w + 56, y0 + 96), radius=24, fill=colour)
+        d.text((40 + 28, y0 + 14), text, font=big, fill=(255, 255, 255))
+    w = d.textlength(CONDITIONS, font=small)
+    d.rounded_rectangle(((W - w) / 2 - 24, 30, (W + w) / 2 + 24, 92), radius=18, fill=(15, 15, 18))
+    d.text(((W - w) / 2, 40), CONDITIONS, font=small, fill=(235, 235, 235))
 
 
 def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
@@ -69,6 +90,7 @@ def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
                 im.paste(ims[0].resize((W, H // 2), Image.LANCZOS), (0, 0))
                 im.paste(ims[1].resize((W, H // 2), Image.LANCZOS), (0, H // 2))
                 im.paste((20, 20, 24), (0, H // 2 - 3, W, H // 2 + 3))
+                label_split(im)
             else:
                 im = ims[0].resize((W, H), Image.LANCZOS) if ims[0].size != (W, H) else ims[0]
             im.save(out / f"frame_{f + 1:04d}.png")
@@ -157,7 +179,25 @@ def main():
     style = ",0,0,1,3,0,2,90,90,210,1"
     if text.count(style) != 1:
         raise SystemExit("caption style line not in the expected form")
-    ass.write_text(text.replace(style, ",0,0,1,6,2,2,90,90,420,1"), encoding="utf8")       # same caption look as EP.05: thicker outline, above the bottom UI
+    text = text.replace(style, ",0,0,1,6,2,2,90,90,420,1")       # same caption look as EP.05: thicker outline, above the bottom UI
+    split_spans = [(sg["t0"], sg["t1"]) for sg in segs if sg["flags"].get("split")]
+
+    def in_split(t):
+        return any(a0 <= t < a1 for a0, a1 in split_spans)
+
+    def ass_t(v):
+        h, m, sec = v.split(":")
+        return int(h) * 3600 + int(m) * 60 + float(sec)
+
+    lines_out = []
+    for line in text.splitlines():
+        if line.startswith("Dialogue:"):
+            parts = line.split(",", 9)
+            if in_split((ass_t(parts[1]) + ass_t(parts[2])) / 2):
+                parts[9] = r"{\an5\pos(540,960)}" + parts[9]       # on the divider: the bottom car stays visible in the split
+                line = ",".join(parts)
+        lines_out.append(line)
+    ass.write_text("\n".join(lines_out) + "\n", encoding="utf8")
     seconds = n / tl.FPS
     video = a.out / "esc-film-1080x1920.mp4"
     run(["ffmpeg", "-v", "error", "-y", "-framerate", str(tl.FPS), "-i", str(frames_dir / "frame_%04d.png"), "-i", str(a.out / "narration.wav"),
@@ -178,7 +218,7 @@ def main():
         "loop_closes": loop_closes(frames_dir, n),
         "smoothness": gates.smoothness(gray_diffs(video)),
         "black_opening": verify_no_black_opening(video, (0, 1440), a.out),
-        "captions_visible": verify_captions_over_picture(video, frames_dir, [((c["start"] + c["end"]) / 2, (1400, 1919)) for c in cues], a.out, fps=tl.FPS),
+        "captions_visible": verify_captions_over_picture(video, frames_dir, [((c["start"] + c["end"]) / 2, (880, 1040) if in_split((c["start"] + c["end"]) / 2) else (1400, 1919)) for c in cues], a.out, fps=tl.FPS),
     }
     report["preview_status"] = "PASS" if not problems and all(v["status"] in ("PASS", "AUTO_PASS_HUMAN_REVIEW_PENDING") for v in report.values() if isinstance(v, dict) and "status" in v) else "FAIL"
     report.update(problems=problems, renderer_source_sha256=sha, frames=n, seconds=round(seconds, 3), narration_sha256=narration_sha,
