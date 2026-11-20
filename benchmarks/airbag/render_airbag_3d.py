@@ -20,6 +20,7 @@ from mathutils import Matrix, Vector
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.airbag import airbag_motion as am  # noqa: E402
 from benchmarks.airbag import airbag_parts as parts  # noqa: E402
+from benchmarks.airbag import human  # noqa: E402
 from benchmarks.belt_limiter import belt_motion as bm  # noqa: E402
 from benchmarks.belt_limiter import render_belt_3d as rb  # noqa: E402
 from benchmarks.crumple_zone import crumple_motion as cm  # noqa: E402
@@ -76,7 +77,7 @@ def main():
     bpy.context.view_layer.update()
     deformables = [rb.Deformable(o, nose) for o in body_parts]
     ghost = rb.Ghost(list(body_parts))
-    dummy = rb.Dummy(root)
+    dummy = human.Human(root)
     interior = rb.build_interior(root)
     belt = rb.Belt(root)
     module = parts.AirbagModule(root, rb.Dummy.WHEEL)

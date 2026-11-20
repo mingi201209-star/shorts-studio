@@ -10,6 +10,8 @@ HUB_SIDE = {"loc": (0.25, 0.70, 1.00), "target": (-0.36, 0.72, 0.88), "lens": 50
 ACU = {"loc": (0.95, 0.10, 0.62), "target": (0.0, 0.30, 0.33), "lens": 110.0}
 
 SHOTS = {
+    "s00b-hands": {"variant": "on", "dt": -0.05, "interior": True, "cam": {"loc": (0.15, 0.30, 1.15), "target": (-0.36, 0.72, 0.86), "lens": 35.0}},
+    "s00-portrait": {"variant": "on", "dt": -0.05, "interior": True, "cam": {"loc": (0.30, 0.75, 1.15), "target": (-0.36, 0.20, 1.02), "lens": 40.0}},
     "s01-top-on": {"variant": "on", "dt": 0.035, "frame": HALF, "xray": True, "cam": SIDE_XRAY},
     "s01-bottom-off": {"variant": "off", "dt": 0.035, "frame": HALF, "xray": True, "cam": SIDE_XRAY},
     "s01b-top-on": {"variant": "on", "dt": 0.068, "frame": HALF, "xray": True, "cam": SIDE_XRAY},
