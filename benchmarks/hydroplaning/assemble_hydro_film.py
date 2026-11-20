@@ -160,8 +160,14 @@ def draw_overlays(im: Image.Image, segment: str) -> None:
         return
     d = ImageDraw.Draw(im)
     bold = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
-    font = ImageFont.truetype(bold, 64 if len(cards) == 1 else 48)
-    y = 1180 if segment != "K-fifty" else 880
+    size = 64 if len(cards) == 1 else 48
+    if segment == "K-fifty":
+        size = 50                                  # sits in the split: smaller, above the captions on the divider
+    font = ImageFont.truetype(bold, size)
+    while any(d.textlength(t, font=font) > W - 120 for t, _, _ in cards):
+        size -= 2
+        font = ImageFont.truetype(bold, size)
+    y = 1180 if segment != "K-fifty" else 740
     for text, colour, xc in cards:
         w = d.textlength(text, font=font)
         x = W * xc - w / 2
