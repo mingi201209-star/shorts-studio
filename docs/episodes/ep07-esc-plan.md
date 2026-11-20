@@ -26,3 +26,13 @@ EP.06 kept 45.2 % of viewers after 2 h (EP.05 23.4 %, Road Signs 69.9 %). Road S
 car-safety episodes since EP.04 had no on-screen text. The split opening and the loop now carry `ESC ON` (green) / `ESC OFF` (red) and
 `SAME SWERVE · WET ROAD · 80 km/h`, drawn as a 2D overlay in assembly only; captions sit on the divider there so the bottom car stays
 visible. Run 44542885064: every gate PASS. Next episode check: viewed rate vs EP.06 to see whether the labels help.
+
+## First data (owner's Studio, about 7 h after posting)
+| Short | viewed vs swiped | avg view duration | likes |
+|---|---|---|---|
+| EP.05 seatbelt (split close-ups, no labels) | 23.4% | 0:32 / 24 s | |
+| EP.06 ABS (wide split, no labels) | 45.2% | 0:24 / 40 s | |
+| **EP.07 ESC (wide split + ESC ON/OFF labels + conditions)** | **58.4%** | **0:28 / 42.5 s** | **28 (channel record)** |
+
+Reading: the labelled opening is the best car-safety opening so far; one video, so not proof. Labels stay the default (EP.08 has them).
+Still below Road Signs (69.9%), which also had live speed read-outs on screen.
