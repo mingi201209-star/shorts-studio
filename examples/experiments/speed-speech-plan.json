@@ -1,0 +1,74 @@
+{
+ "variants": [
+  {
+   "id": "speed",
+   "beats": [
+    {
+     "narration_en": "Same car, same wall. One at thirty miles an hour, one at forty.",
+     "start": 0,
+     "end": 6.46
+    },
+    {
+     "narration_en": "Only ten faster, but look how much deeper the front crushes.",
+     "start": 6.46,
+     "end": 12.08
+    },
+    {
+     "narration_en": "Crash energy grows with the square of your speed.",
+     "start": 12.08,
+     "end": 16.86
+    },
+    {
+     "narration_en": "So ten more miles an hour means seventy-eight percent more energy.",
+     "start": 16.86,
+     "end": 22.48
+    },
+    {
+     "narration_en": "And every bit of it has to go somewhere.",
+     "start": 22.48,
+     "end": 27.26
+    },
+    {
+     "narration_en": "These steel rails fold like an accordion and turn it into bent metal and heat.",
+     "start": 27.26,
+     "end": 34.56
+    },
+    {
+     "narration_en": "At thirty, they crush about twenty inches.",
+     "start": 34.56,
+     "end": 38.5
+    },
+    {
+     "narration_en": "At forty, nearly twenty-eight. Almost all the way to the cabin.",
+     "start": 38.5,
+     "end": 44.12
+    },
+    {
+     "narration_en": "Hitting a wall at thirty is like falling off a three-story building.",
+     "start": 44.12,
+     "end": 50.16
+    },
+    {
+     "narration_en": "At forty, it's a five-story fall.",
+     "start": 50.16,
+     "end": 53.68
+    },
+    {
+     "narration_en": "Even with braking: where the slower car stops, the faster one is still doing thirty-five.",
+     "start": 53.68,
+     "end": 60.98
+    },
+    {
+     "narration_en": "Same driver, same brakes. Ten miles an hour is the whole difference.",
+     "start": 60.98,
+     "end": 67.02
+    },
+    {
+     "narration_en": "So in town, those ten aren't a little faster. They're almost twice the crash.",
+     "start": 67.02,
+     "end": 73.9
+    }
+   ]
+  }
+ ]
+}

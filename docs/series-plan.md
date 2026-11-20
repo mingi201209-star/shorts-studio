@@ -28,7 +28,7 @@ shot) keeps and replays the viewers who stay.
 | # | Difference (split labels) | First-second event | Packed facts | Reuses |
 |---|---|---|---|---|
 | EP.10 | 3-SECOND GAP / 1-SECOND GAP | rear-end crash at 0.96 s | 1.5 s reaction, 40 m blind, braking x4 for x2 speed, sign count, phone | done |
-| EP.11 | 50 km/h / 60 km/h (30 / 37 mph) into the same wall | the faster car crushes much deeper | energy grows with speed squared (+44 %), equal to falling from a 4- vs 5-storey building, crumple length, why 10 km/h matters | EP.04 crumple car, EP.05 cabin |
+| EP.11 | 30 MPH / 40 MPH into the same wall (changed from 50 / 60 km/h: US audience, bigger difference) | the faster car crushes much deeper | energy grows with speed squared (+78 %), 3- vs 5-story fall, crush 53 vs 70 cm, braking: 35 mph where the slower car stops | EP.04 crumple car, stylised driver |
 | EP.12 | HEADREST UP / HEADREST LOW, rear-ended at a light | the head snaps back over the low headrest | whiplash timing (about 100 ms), top of headrest level with top of head, gap under 10 cm, active headrests | EP.05 crash pulse, stylised driver |
 | EP.13 | LOW BEAMS / HIGH BEAMS at night | a deer appears; one car stops short of it | headlight reach vs stopping distance ("overdriving your headlights"), eye adaptation, when to dip | EP.10 stopping model, night lighting |
 | EP.14 | 35 PSI / 20 PSI on the highway | the soft tyre blows out | sidewall flexing heats the tyre, about 1 psi lost per month, check cold, door-jamb sticker, what to do in a blow-out | EP.07 single-track model, tyre parts |

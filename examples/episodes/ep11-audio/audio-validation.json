@@ -1,0 +1,378 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 42.0,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.5599999999999999,
+      "text": "Same car,"
+    },
+    {
+      "start": 0.755667,
+      "end": 1.201292,
+      "text": "same wall."
+    },
+    {
+      "start": 1.570875,
+      "end": 2.081708,
+      "text": "One at thirty"
+    },
+    {
+      "start": 2.092625,
+      "end": 2.723042,
+      "text": "miles an hour,"
+    },
+    {
+      "start": 2.973042,
+      "end": 3.483916,
+      "text": "one at forty."
+    },
+    {
+      "start": 3.7339196923076923,
+      "end": 4.657836692307693,
+      "text": "Only ten faster,"
+    },
+    {
+      "start": 4.918711692307693,
+      "end": 5.331752692307693,
+      "text": "but look how"
+    },
+    {
+      "start": 5.342627692307692,
+      "end": 5.9078356923076925,
+      "text": "much deeper the"
+    },
+    {
+      "start": 5.918711692307693,
+      "end": 6.625211692307693,
+      "text": "front crushes."
+    },
+    {
+      "start": 6.875215384615386,
+      "end": 7.907798384615385,
+      "text": "Crash energy grows"
+    },
+    {
+      "start": 7.918673384615386,
+      "end": 8.603465384615385,
+      "text": "with the square"
+    },
+    {
+      "start": 8.614340384615385,
+      "end": 9.201298384615384,
+      "text": "of your speed."
+    },
+    {
+      "start": 9.451302076923076,
+      "end": 9.907801076923077,
+      "text": "So ten more"
+    },
+    {
+      "start": 9.918677076923077,
+      "end": 10.625177076923077,
+      "text": "miles an hour"
+    },
+    {
+      "start": 10.788260076923077,
+      "end": 12.005635076923078,
+      "text": "means\\Nseventy-eight percent"
+    },
+    {
+      "start": 12.016510076923076,
+      "end": 12.592635076923077,
+      "text": "more energy."
+    },
+    {
+      "start": 12.84263876923077,
+      "end": 13.25567976923077,
+      "text": "And every bit"
+    },
+    {
+      "start": 13.26655576923077,
+      "end": 13.60351276923077,
+      "text": "of it has"
+    },
+    {
+      "start": 13.61438876923077,
+      "end": 14.28830476923077,
+      "text": "to go somewhere."
+    },
+    {
+      "start": 14.538308461538463,
+      "end": 15.223100461538461,
+      "text": "These steel rails"
+    },
+    {
+      "start": 15.233933461538463,
+      "end": 15.723058461538464,
+      "text": "fold like an"
+    },
+    {
+      "start": 15.733933461538463,
+      "end": 16.853516461538465,
+      "text": "accordion and turn"
+    },
+    {
+      "start": 16.864391461538464,
+      "end": 17.538308461538463,
+      "text": "it into bent"
+    },
+    {
+      "start": 17.549183461538462,
+      "end": 18.505682461538463,
+      "text": "metal and heat."
+    },
+    {
+      "start": 18.755686153846153,
+      "end": 19.59264415384615,
+      "text": "At thirty, they"
+    },
+    {
+      "start": 19.603519153846154,
+      "end": 20.060060153846152,
+      "text": "crush about"
+    },
+    {
+      "start": 20.070894153846154,
+      "end": 20.733935153846154,
+      "text": "twenty inches."
+    },
+    {
+      "start": 20.983938846153844,
+      "end": 21.451354846153844,
+      "text": "At forty,"
+    },
+    {
+      "start": 21.679605846153844,
+      "end": 22.375229846153843,
+      "text": "nearly twenty-eight."
+    },
+    {
+      "start": 22.744813846153846,
+      "end": 23.342604846153844,
+      "text": "Almost all the"
+    },
+    {
+      "start": 23.353521846153846,
+      "end": 23.516521846153843,
+      "text": "way to"
+    },
+    {
+      "start": 23.527396846153845,
+      "end": 23.962188846153843,
+      "text": "the cabin."
+    },
+    {
+      "start": 24.21219253846154,
+      "end": 24.701317538461538,
+      "text": "Hitting a wall"
+    },
+    {
+      "start": 24.71219253846154,
+      "end": 25.51652553846154,
+      "text": "at thirty is"
+    },
+    {
+      "start": 25.52740053846154,
+      "end": 26.36435953846154,
+      "text": "like falling off"
+    },
+    {
+      "start": 26.40781753846154,
+      "end": 27.32085853846154,
+      "text": "a three-story building."
+    },
+    {
+      "start": 27.57086223076923,
+      "end": 28.35348723076923,
+      "text": "At forty, it's"
+    },
+    {
+      "start": 28.36432023076923,
+      "end": 29.32086223076923,
+      "text": "a five-story fall."
+    },
+    {
+      "start": 29.570865923076923,
+      "end": 30.299114923076925,
+      "text": "Even with braking:"
+    },
+    {
+      "start": 30.570865923076923,
+      "end": 30.994782923076922,
+      "text": "where the slower"
+    },
+    {
+      "start": 31.005657923076924,
+      "end": 31.951281923076923,
+      "text": "car stops, the"
+    },
+    {
+      "start": 31.962157923076923,
+      "end": 32.668698923076924,
+      "text": "faster one is"
+    },
+    {
+      "start": 32.67957392307692,
+      "end": 33.85348992307692,
+      "text": "still doing thirty-five."
+    },
+    {
+      "start": 34.10349361538462,
+      "end": 34.66874361538462,
+      "text": "Same driver,"
+    },
+    {
+      "start": 34.90782661538462,
+      "end": 35.53828461538462,
+      "text": "same brakes."
+    },
+    {
+      "start": 35.896951615384616,
+      "end": 36.37524361538462,
+      "text": "Ten miles an"
+    },
+    {
+      "start": 36.38611861538462,
+      "end": 36.951284615384616,
+      "text": "hour is the"
+    },
+    {
+      "start": 36.96220161538462,
+      "end": 37.63607661538462,
+      "text": "whole difference."
+    },
+    {
+      "start": 37.88608030769231,
+      "end": 38.51653830769231,
+      "text": "So in town,"
+    },
+    {
+      "start": 38.79912230769231,
+      "end": 39.54912130769231,
+      "text": "those ten aren't"
+    },
+    {
+      "start": 39.559997307692306,
+      "end": 40.24474730769231,
+      "text": "a little faster."
+    },
+    {
+      "start": 40.614330307692306,
+      "end": 41.277413307692306,
+      "text": "They're almost twice"
+    },
+    {
+      "start": 41.28824730769231,
+      "end": 41.80999630769231,
+      "text": "the crash."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.673919692307692,
+      "narration_en": "Same car, same wall. One at thirty miles an hour, one at forty.",
+      "source_audio_sha256": "141c6b67d005dc8d3769cbb1396299044c31853201e0e5e2b9f7368fc05e416e"
+    },
+    {
+      "start": 3.673919692307692,
+      "end": 6.815215384615385,
+      "narration_en": "Only ten faster, but look how much deeper the front crushes.",
+      "source_audio_sha256": "d76b1eee90c40fa9826cfe2ff8790ce5a27b563dcecef36be58e8ada490c1673"
+    },
+    {
+      "start": 6.815215384615385,
+      "end": 9.391302076923077,
+      "narration_en": "Crash energy grows with the square of your speed.",
+      "source_audio_sha256": "ae51e490688b8f525bbf06e2469895cc4db00a7932a7b75d258e8523e106dfa7"
+    },
+    {
+      "start": 9.391302076923077,
+      "end": 12.78263876923077,
+      "narration_en": "So ten more miles an hour means seventy-eight percent more energy.",
+      "source_audio_sha256": "ad77f19bb51688817e036e21620770aab9d1cf7d6d5b24e8f01f24ba0ef8b470"
+    },
+    {
+      "start": 12.78263876923077,
+      "end": 14.478308461538463,
+      "narration_en": "And every bit of it has to go somewhere.",
+      "source_audio_sha256": "3f4bb936a44be173c411409ed79b01a429e6be3a7d5f8cd5ef9a89381deecd50"
+    },
+    {
+      "start": 14.478308461538463,
+      "end": 18.695686153846154,
+      "narration_en": "These steel rails fold like an accordion and turn it into bent metal and heat.",
+      "source_audio_sha256": "f1987c51e60b4e2f87031ccc454156191573151f60edac3f1ac81d3cc34ba19f"
+    },
+    {
+      "start": 18.695686153846154,
+      "end": 20.923938846153845,
+      "narration_en": "At thirty, they crush about twenty inches.",
+      "source_audio_sha256": "90cd7e6cbcb1fdfaec293efcb3b0f371ed21859f7616f023f19b3805b4a327bc"
+    },
+    {
+      "start": 20.923938846153845,
+      "end": 24.152192538461538,
+      "narration_en": "At forty, nearly twenty-eight. Almost all the way to the cabin.",
+      "source_audio_sha256": "e516d14918a87e00b89bb0a7fd765b4f8b9869d4b6422e7d67d4da38c6f79115"
+    },
+    {
+      "start": 24.152192538461538,
+      "end": 27.51086223076923,
+      "narration_en": "Hitting a wall at thirty is like falling off a three-story building.",
+      "source_audio_sha256": "7f098d8595e0d14b189cfa8871e82c07df8de93d378ed7bb6148754ffbb9bd8f"
+    },
+    {
+      "start": 27.51086223076923,
+      "end": 29.510865923076924,
+      "narration_en": "At forty, it's a five-story fall.",
+      "source_audio_sha256": "b90a2ed8c906cb00ceccc59a04b61bad0160bed45a38f097157471f89cadea83"
+    },
+    {
+      "start": 29.510865923076924,
+      "end": 34.04349361538462,
+      "narration_en": "Even with braking: where the slower car stops, the faster one is still doing thirty-five.",
+      "source_audio_sha256": "d6fbbefe142c6ad3b3ede4aadfaa89ed879d844b8ff0f25f0a361fc9bd62087a"
+    },
+    {
+      "start": 34.04349361538462,
+      "end": 37.82608030769231,
+      "narration_en": "Same driver, same brakes. Ten miles an hour is the whole difference.",
+      "source_audio_sha256": "5755ea0ff8aaa7fa46343a7c222ba315d8d00fafa6b521cc06567f372bbf7fdb"
+    },
+    {
+      "start": 37.82608030769231,
+      "end": 42.0,
+      "narration_en": "So in town, those ten aren't a little faster. They're almost twice the crash.",
+      "source_audio_sha256": "aa57d327f0605da9010c99b5915009cc38e294f0c6b576b52e846f8fccc1b7cf"
+    }
+  ],
+  "silence_gaps": [
+    0.384,
+    0.307792,
+    0.303063,
+    0.385208,
+    0.389583,
+    0.391437
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.7,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.2,
+      -16.4,
+      -16.5,
+      -16.7,
+      -16.0,
+      -16.9,
+      -16.7,
+      -16.4
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "9a6c80599601db40548245dfca24b8be4d8cb511667dbb167aa860ac9e9fd442"
+}
