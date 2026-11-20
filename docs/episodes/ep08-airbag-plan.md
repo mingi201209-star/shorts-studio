@@ -10,3 +10,8 @@
   smoothness, black_opening, captions_visible). 935 frames, 39.0 s.
 - Weak spot: the crash-sensor shots (lines 4-5, about 7 s) are a small grey box seen through the glass floor; the least lively part.
 - NOT verified: voice pronunciation, sound-off readability, human first view. The owner uploads.
+
+## v3 (2026-11-20): stylised driver
+Owner: "make the person better" then "not realistic, easy to look at". benchmarks/airbag/human.py (Human, a drop-in for rb.Dummy with the
+same rig): big round head, glossy oval eyes with a highlight, small nose and mouth, hair cap, simple ears, capsule limbs, mitten hands with
+a thumb on the rim, matte colours. Run 44687752272: every gate PASS, 935 frames, 39.0 s. Default driver for later episodes.
