@@ -38,6 +38,7 @@ CAB = {"rel": "car", "loc": (0.30, 0.95, 1.10), "target": (-0.36, 0.20, 1.00), "
 CAB_B = {"rel": "car", "loc": (0.25, 0.85, 1.05), "target": (-0.36, 0.25, 0.95), "lens": 34.0}
 APPROACH = {"rel": "car", "loc": (4.2, -7.5, 2.4), "target": (-0.2, 5.0, 0.5), "lens": 26.0}
 APPROACH_B = {"rel": "car", "loc": (3.6, -6.4, 2.0), "target": (-0.2, 5.0, 0.5), "lens": 27.0}
+SPLIT_PRE = {"rel": "wall", "loc": (7.4, -13.6, 4.4), "target": (-0.4, -5.0, 0.5), "lens": 24.0}      # loop run-in: pushes in onto the opening shot
 WIDE = {"rel": "wall", "loc": (7.5, -12.0, 4.4), "target": (-0.4, -2.6, 0.4), "lens": 26.0}
 WIDE_B = {"rel": "wall", "loc": (6.4, -10.6, 3.6), "target": (-0.4, -2.4, 0.4), "lens": 26.0}
 
@@ -58,7 +59,7 @@ ROWS = [
     ("K-braking", "both", 0.6, 3.5, BRAKE, BRAKE_B, {"split": True, "brake": True}, (11,)),
     ("L-driver", "fast", -0.6, None, CAB, CAB_B, {"interior": True, "warp": (2.4, 0.05)}, (12,)),
     ("M-twice", "both", -0.9, None, WIDE, WIDE_B, {"split": True, "warp": (0.9, 0.022)}, (13,)),
-    ("N-loop-run-in", "both", OPEN_SIM - LOOP_S, OPEN_SIM, SPLIT, SPLIT, {"split": True}, (13,)),
+    ("N-loop-run-in", "both", OPEN_SIM - LOOP_S, OPEN_SIM, SPLIT_PRE, SPLIT, {"split": True}, (13,)),
 ]
 
 
