@@ -1,0 +1,48 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.52,Caption,,0,0,0,,Same puddle,
+Dialogue: 0,0:00:00.69,0:00:01.29,Caption,,0,0,0,,same speed.
+Dialogue: 0,0:00:01.65,0:00:02.96,Caption,,0,0,0,,Only one car\Ncan still steer.
+Dialogue: 0,0:00:03.21,0:00:03.73,Caption,,0,0,0,,The difference?
+Dialogue: 0,0:00:04.09,0:00:04.60,Caption,,0,0,0,,Tread depth.
+Dialogue: 0,0:00:04.85,0:00:05.82,Caption,,0,0,0,,Those grooves are drains
+Dialogue: 0,0:00:05.83,0:00:07.06,Caption,,0,0,0,,that squeeze\Nwater out from
+Dialogue: 0,0:00:07.07,0:00:07.64,Caption,,0,0,0,,under the tire.
+Dialogue: 0,0:00:07.89,0:00:08.89,Caption,,0,0,0,,New tires\Nhave about eight
+Dialogue: 0,0:00:08.90,0:00:09.63,Caption,,0,0,0,,millimeters of them.
+Dialogue: 0,0:00:09.88,0:00:10.76,Caption,,0,0,0,,Worn to the legal limit,
+Dialogue: 0,0:00:11.01,0:00:12.01,Caption,,0,0,0,,just one point six.
+Dialogue: 0,0:00:12.26,0:00:13.33,Caption,,0,0,0,,Then the\Nwater can't escape
+Dialogue: 0,0:00:13.34,0:00:14.04,Caption,,0,0,0,,fast enough.
+Dialogue: 0,0:00:14.29,0:00:15.53,Caption,,0,0,0,,It piles up into a wedge
+Dialogue: 0,0:00:15.54,0:00:16.61,Caption,,0,0,0,,and lifts the\Ntire off the
+Dialogue: 0,0:00:16.63,0:00:16.94,Caption,,0,0,0,,road.
+Dialogue: 0,0:00:17.19,0:00:18.03,Caption,,0,0,0,,Now you're water skiing.
+Dialogue: 0,0:00:18.40,0:00:19.58,Caption,,0,0,0,,Steering and\Nbrakes barely
+Dialogue: 0,0:00:19.59,0:00:19.93,Caption,,0,0,0,,work.
+Dialogue: 0,0:00:20.18,0:00:21.70,Caption,,0,0,0,,NASA even has\Na rule of thumb
+Dialogue: 0,0:00:21.71,0:00:22.49,Caption,,0,0,0,,for when it starts.
+Dialogue: 0,0:00:22.74,0:00:23.90,Caption,,0,0,0,,Nine times the\Nsquare root of
+Dialogue: 0,0:00:23.91,0:00:24.89,Caption,,0,0,0,,your tire\Npressure gives the
+Dialogue: 0,0:00:24.90,0:00:26.11,Caption,,0,0,0,,speed in miles per hour.
+Dialogue: 0,0:00:26.36,0:00:27.64,Caption,,0,0,0,,At thirty two\Npsi that's about
+Dialogue: 0,0:00:27.65,0:00:28.09,Caption,,0,0,0,,fifty,
+Dialogue: 0,0:00:28.32,0:00:29.74,Caption,,0,0,0,,and worn\Ntires float even
+Dialogue: 0,0:00:29.76,0:00:30.14,Caption,,0,0,0,,sooner.
+Dialogue: 0,0:00:30.39,0:00:31.16,Caption,,0,0,0,,Check yours\Nwith a penny.
+Dialogue: 0,0:00:31.52,0:00:32.41,Caption,,0,0,0,,If you can\Nsee the top of
+Dialogue: 0,0:00:32.42,0:00:33.01,Caption,,0,0,0,,Lincoln's head,
+Dialogue: 0,0:00:33.24,0:00:33.69,Caption,,0,0,0,,it's time.
+Dialogue: 0,0:00:33.94,0:00:34.74,Caption,,0,0,0,,If you start to float,
+Dialogue: 0,0:00:35.11,0:00:35.98,Caption,,0,0,0,,ease off the gas
+Dialogue: 0,0:00:36.09,0:00:37.09,Caption,,0,0,0,,and keep\Nthe wheel straight
+Dialogue: 0,0:00:37.14,0:00:38.23,Caption,,0,0,0,,until the\Ntires bite again.

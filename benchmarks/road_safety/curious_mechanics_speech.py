@@ -3,6 +3,7 @@ import argparse, asyncio, hashlib, json, os, re, subprocess, shutil
 from pathlib import Path
 import edge_tts
 
+RATE=os.environ.get('SPEECH_RATE','+5%')   # speaking rate; default unchanged for earlier episodes
 def sha(p): return hashlib.sha256(p.read_bytes()).hexdigest()
 async def capture(plan, out, target_seconds=30):
     out.mkdir(parents=True, exist_ok=True)
@@ -17,7 +18,7 @@ async def capture(plan, out, target_seconds=30):
             for candidate in cached:
                 rec=json.loads(candidate.read_text())
                 raw=candidate.with_suffix('.mp3')
-                if rec.get('text')==beat['narration_en'] and rec.get('voice')=='en-US-AndrewNeural' and rec.get('rate')=='+5%' and raw.exists() and sha(raw)==rec['audio_sha256']:
+                if rec.get('text')==beat['narration_en'] and rec.get('voice')=='en-US-AndrewNeural' and rec.get('rate')==RATE and raw.exists() and sha(raw)==rec['audio_sha256']:
                     matches.append((raw,rec))
             if matches:
                 raw,rec=matches[0]
@@ -28,7 +29,7 @@ async def capture(plan, out, target_seconds=30):
                 await asyncio.sleep(float(os.environ.get('SPEECH_REQUEST_GAP','0')))   # the free service stops answering after a few quick requests in a row
                 async def request():
                     words=[];data=bytearray()
-                    async for chunk in edge_tts.Communicate(beat['narration_en'], 'en-US-AndrewNeural', rate='+5%', boundary='WordBoundary').stream():
+                    async for chunk in edge_tts.Communicate(beat['narration_en'], 'en-US-AndrewNeural', rate=RATE, boundary='WordBoundary').stream():
                         if chunk['type']=='audio': data.extend(chunk['data'])
                         elif chunk['type']=='WordBoundary': words.append(dict(text=chunk['text'],start=chunk['offset']/1e7,end=(chunk['offset']+chunk['duration'])/1e7))
                     return data,words
@@ -44,7 +45,7 @@ async def capture(plan, out, target_seconds=30):
             assert words and normalize(' '.join(w['text'] for w in words))==normalize(beat['narration_en'])
             assert all(0<=w['start']<w['end']<=duration+.05 for w in words)
             available=beat['end']-beat['start']
-            record=dict(text=beat['narration_en'],voice='en-US-AndrewNeural',rate='+5%',words=words,duration=duration,audio_sha256=sha(audio),available_seconds=available,fits=duration<=available-.1)
+            record=dict(text=beat['narration_en'],voice='en-US-AndrewNeural',rate=RATE,words=words,duration=duration,audio_sha256=sha(audio),available_seconds=available,fits=duration<=available-.1)
             timing.write_text(json.dumps(record,indent=2)+'\n');beats.append(record)
             print(variant['id'],i,round(duration,3),'fit',record['fits'],flush=True)
         report=dict(variant=variant['id'],beats=beats,total_speech_seconds=sum(b['duration'] for b in beats),target_seconds=target_seconds,production_approved=False)

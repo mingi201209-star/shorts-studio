@@ -1,0 +1,297 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 38.424,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.516542,
+      "text": "Same puddle,"
+    },
+    {
+      "start": 0.690417,
+      "end": 1.2882909999999999,
+      "text": "same speed."
+    },
+    {
+      "start": 1.646958,
+      "end": 2.962208,
+      "text": "Only one car\\Ncan still steer."
+    },
+    {
+      "start": 3.212218,
+      "end": 3.733926,
+      "text": "The difference?"
+    },
+    {
+      "start": 4.092635,
+      "end": 4.603509,
+      "text": "Tread depth."
+    },
+    {
+      "start": 4.853519,
+      "end": 5.820893000000001,
+      "text": "Those grooves are drains"
+    },
+    {
+      "start": 5.831769,
+      "end": 7.060018,
+      "text": "that squeeze\\Nwater out from"
+    },
+    {
+      "start": 7.070894,
+      "end": 7.636144000000001,
+      "text": "under the tire."
+    },
+    {
+      "start": 7.886154,
+      "end": 8.886153,
+      "text": "New tires\\Nhave about eight"
+    },
+    {
+      "start": 8.897029,
+      "end": 9.625278,
+      "text": "millimeters of them."
+    },
+    {
+      "start": 9.875287999999998,
+      "end": 10.755745999999998,
+      "text": "Worn to the legal limit,"
+    },
+    {
+      "start": 11.005704999999999,
+      "end": 12.005703999999998,
+      "text": "just one point six."
+    },
+    {
+      "start": 12.255713999999998,
+      "end": 13.331796999999998,
+      "text": "Then the\\Nwater can't escape"
+    },
+    {
+      "start": 13.342672,
+      "end": 14.038339,
+      "text": "fast enough."
+    },
+    {
+      "start": 14.288348999999997,
+      "end": 15.527472999999997,
+      "text": "It piles up into a wedge"
+    },
+    {
+      "start": 15.538348999999997,
+      "end": 16.614432,
+      "text": "and lifts the\\Ntire off the"
+    },
+    {
+      "start": 16.625307,
+      "end": 16.940514999999998,
+      "text": "road."
+    },
+    {
+      "start": 17.190524999999997,
+      "end": 18.027482999999997,
+      "text": "Now you're water skiing."
+    },
+    {
+      "start": 18.397025,
+      "end": 19.581816999999997,
+      "text": "Steering and\\Nbrakes barely"
+    },
+    {
+      "start": 19.592692,
+      "end": 19.92965,
+      "text": "work."
+    },
+    {
+      "start": 20.17966,
+      "end": 21.70141,
+      "text": "NASA even has\\Na rule of thumb"
+    },
+    {
+      "start": 21.712284999999998,
+      "end": 22.494868,
+      "text": "for when it starts."
+    },
+    {
+      "start": 22.744877999999996,
+      "end": 23.897043999999998,
+      "text": "Nine times the\\Nsquare root of"
+    },
+    {
+      "start": 23.907919999999997,
+      "end": 24.886168999999995,
+      "text": "your tire\\Npressure gives the"
+    },
+    {
+      "start": 24.897045,
+      "end": 26.114461,
+      "text": "speed in miles per hour."
+    },
+    {
+      "start": 26.364470999999998,
+      "end": 27.636179,
+      "text": "At thirty two\\Npsi that's about"
+    },
+    {
+      "start": 27.647095999999998,
+      "end": 28.092762,
+      "text": "fifty,"
+    },
+    {
+      "start": 28.320971,
+      "end": 29.744929,
+      "text": "and worn\\Ntires float even"
+    },
+    {
+      "start": 29.755762999999998,
+      "end": 30.136179,
+      "text": "sooner."
+    },
+    {
+      "start": 30.386188999999998,
+      "end": 31.157939,
+      "text": "Check yours\\Nwith a penny."
+    },
+    {
+      "start": 31.516606,
+      "end": 32.407939,
+      "text": "If you can\\Nsee the top of"
+    },
+    {
+      "start": 32.418814,
+      "end": 33.00573,
+      "text": "Lincoln's head,"
+    },
+    {
+      "start": 33.244897,
+      "end": 33.690522,
+      "text": "it's time."
+    },
+    {
+      "start": 33.940532000000005,
+      "end": 34.744865000000004,
+      "text": "If you start to float,"
+    },
+    {
+      "start": 35.114449,
+      "end": 35.98399,
+      "text": "ease off the gas"
+    },
+    {
+      "start": 36.092699,
+      "end": 37.092698,
+      "text": "and keep\\Nthe wheel straight"
+    },
+    {
+      "start": 37.136199000000005,
+      "end": 38.23399,
+      "text": "until the\\Ntires bite again."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.152218,
+      "narration_en": "Same puddle, same speed. Only one car can still steer.",
+      "source_audio_sha256": "f7dba7b3e08f2f9f535e6a915e16114eadb57496df5c8d361783358f57e71174"
+    },
+    {
+      "start": 3.152218,
+      "end": 4.793519,
+      "narration_en": "The difference? Tread depth.",
+      "source_audio_sha256": "a1122c13946ce2bce811e71dd270686bdfc4cec57c9987aa1d037a9b7119b177"
+    },
+    {
+      "start": 4.793519,
+      "end": 7.826154,
+      "narration_en": "Those grooves are drains that squeeze water out from under the tire.",
+      "source_audio_sha256": "28c1dcc5ced21e1cdeb06fc742bc4d6a7c0f54707a20c2324562a0245320fca6"
+    },
+    {
+      "start": 7.826154,
+      "end": 9.815287999999999,
+      "narration_en": "New tires have about eight millimeters of them.",
+      "source_audio_sha256": "dcdedda1b8a56c0b5d8718878939e9fabe2b736aecbd162610543557b6c7953a"
+    },
+    {
+      "start": 9.815287999999999,
+      "end": 12.195713999999999,
+      "narration_en": "Worn to the legal limit, just one point six.",
+      "source_audio_sha256": "078c252722147badbc21868c8c737c163cb3b46ceaea3692b95f2e345b5465bd"
+    },
+    {
+      "start": 12.195713999999999,
+      "end": 14.228348999999998,
+      "narration_en": "Then the water can't escape fast enough.",
+      "source_audio_sha256": "93885200a393849e73f6a26c2220ea981c81cdd503fa05dbf56e2718374098e8"
+    },
+    {
+      "start": 14.228348999999998,
+      "end": 17.130525,
+      "narration_en": "It piles up into a wedge and lifts the tire off the road.",
+      "source_audio_sha256": "bda9e72d6820d9fa078f01a90fa194f46e88280d44dcb63c118a4fcddb6f3c72"
+    },
+    {
+      "start": 17.130525,
+      "end": 20.11966,
+      "narration_en": "Now you're water skiing. Steering and brakes barely work.",
+      "source_audio_sha256": "0717eb2245ab53e171f12ca272fecfa091fc9197e0ad94f174c34d240a3f474b"
+    },
+    {
+      "start": 20.11966,
+      "end": 22.684877999999998,
+      "narration_en": "NASA even has a rule of thumb for when it starts.",
+      "source_audio_sha256": "7975f1c75aa6a3024f77ed1c65024e3c5872fd3a317f561a4066e53eb37e2639"
+    },
+    {
+      "start": 22.684877999999998,
+      "end": 26.304471,
+      "narration_en": "Nine times the square root of your tire pressure gives the speed in miles per hour.",
+      "source_audio_sha256": "0ff55304c39290282184c32cc25b395d97e2ee289c66c456d46d79281ff100b2"
+    },
+    {
+      "start": 26.304471,
+      "end": 30.326189,
+      "narration_en": "At thirty two psi that's about fifty, and worn tires float even sooner.",
+      "source_audio_sha256": "1d8f1a1582b76329d99c3aacf90e874661929e437f8ee93508e56525e51a5475"
+    },
+    {
+      "start": 30.326189,
+      "end": 33.880532,
+      "narration_en": "Check yours with a penny. If you can see the top of Lincoln's head, it's time.",
+      "source_audio_sha256": "47f5f06b54c97cf37c4f157fda49013091b5d59bde396ee4cc672aa30c0fc057"
+    },
+    {
+      "start": 33.880532,
+      "end": 38.424,
+      "narration_en": "If you start to float, ease off the gas and keep the wheel straight until the tires bite again.",
+      "source_audio_sha256": "59ee7f8d14465460f5dae6d2ee5dc3761b7fa2638fb90585bb55ea249871fe96"
+    }
+  ],
+  "silence_gaps": [
+    0.372396,
+    0.380542,
+    0.309104,
+    0.369917,
+    0.368563,
+    0.364167
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.4,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.7,
+      -16.4,
+      -16.1,
+      -16.6,
+      -16.0,
+      -16.2,
+      -16.6
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "be79148602f051a9e196ab22d6da4f8ac2b916b66c10b1affada6a8078d09f93"
+}

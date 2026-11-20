@@ -1,0 +1,74 @@
+{
+ "variants": [
+  {
+   "id": "hydro",
+   "beats": [
+    {
+     "narration_en": "Same puddle, same speed. Only one car can still steer.",
+     "start": 0,
+     "end": 4.1
+    },
+    {
+     "narration_en": "The difference? Tread depth.",
+     "start": 4.1,
+     "end": 6.0
+    },
+    {
+     "narration_en": "Those grooves are drains that squeeze water out from under the tire.",
+     "start": 6.0,
+     "end": 10.8
+    },
+    {
+     "narration_en": "New tires have about eight millimeters of them.",
+     "start": 10.8,
+     "end": 14.2
+    },
+    {
+     "narration_en": "Worn to the legal limit, just one point six.",
+     "start": 14.2,
+     "end": 17.9
+    },
+    {
+     "narration_en": "Then the water can't escape fast enough.",
+     "start": 17.9,
+     "end": 20.9
+    },
+    {
+     "narration_en": "It piles up into a wedge and lifts the tire off the road.",
+     "start": 20.9,
+     "end": 26.1
+    },
+    {
+     "narration_en": "Now you're water skiing. Steering and brakes barely work.",
+     "start": 26.1,
+     "end": 29.8
+    },
+    {
+     "narration_en": "NASA even has a rule of thumb for when it starts.",
+     "start": 29.8,
+     "end": 34.3
+    },
+    {
+     "narration_en": "Nine times the square root of your tire pressure gives the speed in miles per hour.",
+     "start": 34.3,
+     "end": 40.6
+    },
+    {
+     "narration_en": "At thirty two psi that's about fifty, and worn tires float even sooner.",
+     "start": 40.6,
+     "end": 45.8
+    },
+    {
+     "narration_en": "Check yours with a penny. If you can see the top of Lincoln's head, it's time.",
+     "start": 45.8,
+     "end": 52.1
+    },
+    {
+     "narration_en": "If you start to float, ease off the gas and keep the wheel straight until the tires bite again.",
+     "start": 52.1,
+     "end": 59.4
+    }
+   ]
+  }
+ ]
+}
