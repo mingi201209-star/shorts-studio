@@ -242,9 +242,11 @@ def test_opening_proof_workflow_is_github_only_and_does_not_duplicate_contact_sh
     assert "workflow_dispatch:" in workflow
     assert "runs-on: ubuntu-24.04" in workflow
     assert "max-parallel: 3" in workflow
-    assert workflow.count("variant: A") == 3
+    # A/C have already passed opening proofs; this recovery workflow must
+    # render only B's three fixed-camera shards, never duplicate them.
+    assert workflow.count("variant: A") == 0
     assert workflow.count("variant: B") == 3
-    assert workflow.count("variant: C") == 3
+    assert workflow.count("variant: C") == 0
     assert "start: 1, end: 30" in workflow
     assert "start: 31, end: 60" in workflow
     assert "start: 61, end: 90" in workflow

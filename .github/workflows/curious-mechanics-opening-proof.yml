@@ -4,11 +4,15 @@ on:
   push:
     branches: [exp/curious-mechanics-production-20261029]
     paths:
-      - .github/workflows/curious-mechanics-opening-proof.yml
+      # Trigger only when actual render/proof inputs change. Test/workflow-only
+      # edits are safe to validate without repeating the completed native render.
+      - benchmarks/road_safety/render_curious_mechanics.py
       - shorts_studio/factory/curious_mechanics_timeline.py
       - benchmarks/road_safety/curious_mechanics_github_parallel.py
-      - tests/test_curious_mechanics_experiment.py
-      - tests/test_curious_mechanics_github_parallel.py
+      - benchmarks/road_safety/curious_mechanics_shard_artifact.py
+      - examples/experiments/curious-mechanics-A.json
+      - examples/experiments/curious-mechanics-B.json
+      - examples/experiments/curious-mechanics-C.json
   workflow_dispatch:
 
 permissions:
