@@ -1,0 +1,74 @@
+{
+ "variants": [
+  {
+   "id": "follow",
+   "beats": [
+    {
+     "narration_en": "Same speed, same sudden stop. Only the gap is different.",
+     "start": 0,
+     "end": 4.1
+    },
+    {
+     "narration_en": "When the car ahead brakes, you don't. Not yet.",
+     "start": 4.1,
+     "end": 7.8
+    },
+    {
+     "narration_en": "Your brain needs about one and a half seconds to see it and hit the pedal.",
+     "start": 7.8,
+     "end": 14.1
+    },
+    {
+     "narration_en": "At sixty miles an hour that's over forty yards before you even touch the brake.",
+     "start": 14.1,
+     "end": 20.0
+    },
+    {
+     "narration_en": "Then the brakes need room too, and that room grows with the square of your speed.",
+     "start": 20.0,
+     "end": 26.3
+    },
+    {
+     "narration_en": "Double your speed and you need four times the distance to stop.",
+     "start": 26.3,
+     "end": 31.1
+    },
+    {
+     "narration_en": "The car ahead stops in forty six meters. You need eighty six.",
+     "start": 31.1,
+     "end": 35.9
+    },
+    {
+     "narration_en": "So count three seconds after the car ahead passes a sign.",
+     "start": 35.9,
+     "end": 40.4
+    },
+    {
+     "narration_en": "If you reach the sign before you get to three, you're too close.",
+     "start": 40.4,
+     "end": 45.6
+    },
+    {
+     "narration_en": "In rain, double it.",
+     "start": 45.6,
+     "end": 47.5
+    },
+    {
+     "narration_en": "And a two second look at your phone at sixty is more than fifty yards driven blind.",
+     "start": 47.5,
+     "end": 54.1
+    },
+    {
+     "narration_en": "The gap is the only thing that buys you that time.",
+     "start": 54.1,
+     "end": 58.6
+    },
+    {
+     "narration_en": "Three seconds. Every time.",
+     "start": 58.6,
+     "end": 60.5
+    }
+   ]
+  }
+ ]
+}

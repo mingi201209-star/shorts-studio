@@ -1,0 +1,288 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 38.652,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.5708749999999999,
+      "text": "Same speed,"
+    },
+    {
+      "start": 0.875208,
+      "end": 1.646958,
+      "text": "same sudden stop."
+    },
+    {
+      "start": 2.005667,
+      "end": 3.146958,
+      "text": "Only the\\Ngap is different."
+    },
+    {
+      "start": 3.396945538461539,
+      "end": 4.41869453846154,
+      "text": "When the\\Ncar ahead brakes,"
+    },
+    {
+      "start": 4.570862538461539,
+      "end": 4.962153538461539,
+      "text": "you don't."
+    },
+    {
+      "start": 5.320862538461539,
+      "end": 5.72302853846154,
+      "text": "Not yet."
+    },
+    {
+      "start": 5.973016076923079,
+      "end": 6.983890076923079,
+      "text": "Your brain\\Nneeds about one"
+    },
+    {
+      "start": 6.994766076923079,
+      "end": 8.233890076923078,
+      "text": "and a half\\Nseconds to see it"
+    },
+    {
+      "start": 8.407808076923079,
+      "end": 8.994724076923077,
+      "text": "and hit the pedal."
+    },
+    {
+      "start": 9.244711615384617,
+      "end": 10.538169615384618,
+      "text": "At sixty miles\\Nan hour that's"
+    },
+    {
+      "start": 10.549044615384618,
+      "end": 11.907752615384616,
+      "text": "over forty\\Nyards before you"
+    },
+    {
+      "start": 11.972961615384618,
+      "end": 12.907752615384616,
+      "text": "even touch the brake."
+    },
+    {
+      "start": 13.157740153846156,
+      "end": 14.342532153846157,
+      "text": "Then the brakes\\Nneed room too,"
+    },
+    {
+      "start": 14.690365153846157,
+      "end": 15.766406153846157,
+      "text": "and that room\\Ngrows with the"
+    },
+    {
+      "start": 15.777323153846156,
+      "end": 16.690365153846155,
+      "text": "square of your speed."
+    },
+    {
+      "start": 16.940352692307698,
+      "end": 17.625143692307695,
+      "text": "Double your speed"
+    },
+    {
+      "start": 17.842519692307697,
+      "end": 18.864268692307697,
+      "text": "and you need\\Nfour times the"
+    },
+    {
+      "start": 18.875144692307696,
+      "end": 19.690310692307698,
+      "text": "distance to stop."
+    },
+    {
+      "start": 19.940298230769237,
+      "end": 21.179423230769235,
+      "text": "The car ahead\\Nstops in forty"
+    },
+    {
+      "start": 21.190298230769237,
+      "end": 21.820714230769234,
+      "text": "six meters."
+    },
+    {
+      "start": 22.179423230769235,
+      "end": 23.233797230769234,
+      "text": "You need eighty six."
+    },
+    {
+      "start": 23.483784769230777,
+      "end": 24.657700769230775,
+      "text": "So count\\Nthree seconds after"
+    },
+    {
+      "start": 24.668576769230775,
+      "end": 26.092492769230777,
+      "text": "the car ahead\\Npasses a sign."
+    },
+    {
+      "start": 26.342480307692313,
+      "end": 27.429396307692315,
+      "text": "If you reach\\Nthe sign before"
+    },
+    {
+      "start": 27.440313307692314,
+      "end": 28.059855307692313,
+      "text": "you get to three,"
+    },
+    {
+      "start": 28.396813307692312,
+      "end": 29.114229307692312,
+      "text": "you're too close."
+    },
+    {
+      "start": 29.36421684615385,
+      "end": 30.36421684615385,
+      "text": "In rain, double it."
+    },
+    {
+      "start": 30.61420438461539,
+      "end": 31.59245438461539,
+      "text": "And a two\\Nsecond look at your"
+    },
+    {
+      "start": 31.603329384615392,
+      "end": 32.99466238461539,
+      "text": "phone at sixty\\Nis more than"
+    },
+    {
+      "start": 33.00549638461539,
+      "end": 34.37507938461539,
+      "text": "fifty yards\\Ndriven blind."
+    },
+    {
+      "start": 34.625066923076936,
+      "end": 35.75552492307693,
+      "text": "The gap is\\Nthe only thing"
+    },
+    {
+      "start": 35.766358923076936,
+      "end": 36.26635792307693,
+      "text": "that buys you"
+    },
+    {
+      "start": 36.277233923076935,
+      "end": 36.744649923076935,
+      "text": "that time."
+    },
+    {
+      "start": 36.99463746153847,
+      "end": 37.62509646153847,
+      "text": "Three seconds."
+    },
+    {
+      "start": 37.98380446153847,
+      "end": 38.46201246153847,
+      "text": "Every time."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.336945538461539,
+      "narration_en": "Same speed, same sudden stop. Only the gap is different.",
+      "source_audio_sha256": "792410d7bd5fd076a75fdad6608ff761203c55ecdc64a8a54d096e188949cee2"
+    },
+    {
+      "start": 3.336945538461539,
+      "end": 5.913016076923078,
+      "narration_en": "When the car ahead brakes, you don't. Not yet.",
+      "source_audio_sha256": "798d1202c6d587d5b404c5185af6edb794d868eb435c099f5d63813e7a554827"
+    },
+    {
+      "start": 5.913016076923078,
+      "end": 9.184711615384618,
+      "narration_en": "Your brain needs about one and a half seconds to see it and hit the pedal.",
+      "source_audio_sha256": "259a9ccb69fb3d061a197f40f9f6bca0f3ddccbc7242d42f90e620a99374afe3"
+    },
+    {
+      "start": 9.184711615384618,
+      "end": 13.097740153846157,
+      "narration_en": "At sixty miles an hour that's over forty yards before you even touch the brake.",
+      "source_audio_sha256": "8968394b144f5161c7610362f752ffb5cd08eff9db7aad9632a8bbcb12bfaa63"
+    },
+    {
+      "start": 13.097740153846157,
+      "end": 16.880352692307696,
+      "narration_en": "Then the brakes need room too, and that room grows with the square of your speed.",
+      "source_audio_sha256": "c88ddee6d493746bf2d7243cbf5db3e3f8323359bf99063a6deccb80aa9391b5"
+    },
+    {
+      "start": 16.880352692307696,
+      "end": 19.880298230769235,
+      "narration_en": "Double your speed and you need four times the distance to stop.",
+      "source_audio_sha256": "7d52c6baedbf6780cabb70ebe44b3beb22d2b883c47949b9b7e39df14f911946"
+    },
+    {
+      "start": 19.880298230769235,
+      "end": 23.423784769230775,
+      "narration_en": "The car ahead stops in forty six meters. You need eighty six.",
+      "source_audio_sha256": "d206927bc74d2b27cd9029095033e2cd51c5556a25f0c418ec04d9a39eae4cbf"
+    },
+    {
+      "start": 23.423784769230775,
+      "end": 26.282480307692314,
+      "narration_en": "So count three seconds after the car ahead passes a sign.",
+      "source_audio_sha256": "194157c13ddc4b4e6e34555e98d6f9ad215d81b4566188af2a015492d831b3ed"
+    },
+    {
+      "start": 26.282480307692314,
+      "end": 29.304216846153853,
+      "narration_en": "If you reach the sign before you get to three, you're too close.",
+      "source_audio_sha256": "60e5d26dc8a638d4bcfa467fedf083668688664eaba2795205a89a03d4e5a776"
+    },
+    {
+      "start": 29.304216846153853,
+      "end": 30.554204384615392,
+      "narration_en": "In rain, double it.",
+      "source_audio_sha256": "e95a103fa3d136438e49591b846d0129a527cb7fc55f710bbc4ec8ae3ba3ed99"
+    },
+    {
+      "start": 30.554204384615392,
+      "end": 34.565066923076934,
+      "narration_en": "And a two second look at your phone at sixty is more than fifty yards driven blind.",
+      "source_audio_sha256": "f2cd23986524012c73bbea9af750ade68c06bf77238fa45a1017d145a7e41f49"
+    },
+    {
+      "start": 34.565066923076934,
+      "end": 36.93463746153847,
+      "narration_en": "The gap is the only thing that buys you that time.",
+      "source_audio_sha256": "7a8f83fefeee1c56ddc1a8658cf7db3a7b41532cb8e0c4ee27599430caabf26a"
+    },
+    {
+      "start": 36.93463746153847,
+      "end": 38.652,
+      "narration_en": "Three seconds. Every time.",
+      "source_audio_sha256": "cb9bbfba905c73329445a2a6f829276f8b8e3c2c7dde5a0bcb436976233fbb64"
+    }
+  ],
+  "silence_gaps": [
+    0.438417,
+    0.381167,
+    0.369625,
+    0.392292,
+    0.313958,
+    0.322771,
+    0.38775
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.6,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.4,
+      -16.6,
+      -16.2,
+      -16.5,
+      -16.0,
+      -16.7,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "c237ffc4fb6207ad198d893e06ae66796647d654854b872a068ae1d8ec9e7902"
+}

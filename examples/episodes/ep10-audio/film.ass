@@ -1,0 +1,46 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.57,Caption,,0,0,0,,Same speed,
+Dialogue: 0,0:00:00.88,0:00:01.65,Caption,,0,0,0,,same sudden stop.
+Dialogue: 0,0:00:02.01,0:00:03.15,Caption,,0,0,0,,Only the\Ngap is different.
+Dialogue: 0,0:00:03.40,0:00:04.42,Caption,,0,0,0,,When the\Ncar ahead brakes,
+Dialogue: 0,0:00:04.57,0:00:04.96,Caption,,0,0,0,,you don't.
+Dialogue: 0,0:00:05.32,0:00:05.72,Caption,,0,0,0,,Not yet.
+Dialogue: 0,0:00:05.97,0:00:06.98,Caption,,0,0,0,,Your brain\Nneeds about one
+Dialogue: 0,0:00:06.99,0:00:08.23,Caption,,0,0,0,,and a half\Nseconds to see it
+Dialogue: 0,0:00:08.41,0:00:08.99,Caption,,0,0,0,,and hit the pedal.
+Dialogue: 0,0:00:09.24,0:00:10.54,Caption,,0,0,0,,At sixty miles\Nan hour that's
+Dialogue: 0,0:00:10.55,0:00:11.91,Caption,,0,0,0,,over forty\Nyards before you
+Dialogue: 0,0:00:11.97,0:00:12.91,Caption,,0,0,0,,even touch the brake.
+Dialogue: 0,0:00:13.16,0:00:14.34,Caption,,0,0,0,,Then the brakes\Nneed room too,
+Dialogue: 0,0:00:14.69,0:00:15.77,Caption,,0,0,0,,and that room\Ngrows with the
+Dialogue: 0,0:00:15.78,0:00:16.69,Caption,,0,0,0,,square of your speed.
+Dialogue: 0,0:00:16.94,0:00:17.63,Caption,,0,0,0,,Double your speed
+Dialogue: 0,0:00:17.84,0:00:18.86,Caption,,0,0,0,,and you need\Nfour times the
+Dialogue: 0,0:00:18.88,0:00:19.69,Caption,,0,0,0,,distance to stop.
+Dialogue: 0,0:00:19.94,0:00:21.18,Caption,,0,0,0,,The car ahead\Nstops in forty
+Dialogue: 0,0:00:21.19,0:00:21.82,Caption,,0,0,0,,six meters.
+Dialogue: 0,0:00:22.18,0:00:23.23,Caption,,0,0,0,,You need eighty six.
+Dialogue: 0,0:00:23.48,0:00:24.66,Caption,,0,0,0,,So count\Nthree seconds after
+Dialogue: 0,0:00:24.67,0:00:26.09,Caption,,0,0,0,,the car ahead\Npasses a sign.
+Dialogue: 0,0:00:26.34,0:00:27.43,Caption,,0,0,0,,If you reach\Nthe sign before
+Dialogue: 0,0:00:27.44,0:00:28.06,Caption,,0,0,0,,you get to three,
+Dialogue: 0,0:00:28.40,0:00:29.11,Caption,,0,0,0,,you're too close.
+Dialogue: 0,0:00:29.36,0:00:30.36,Caption,,0,0,0,,In rain, double it.
+Dialogue: 0,0:00:30.61,0:00:31.59,Caption,,0,0,0,,And a two\Nsecond look at your
+Dialogue: 0,0:00:31.60,0:00:32.99,Caption,,0,0,0,,phone at sixty\Nis more than
+Dialogue: 0,0:00:33.01,0:00:34.38,Caption,,0,0,0,,fifty yards\Ndriven blind.
+Dialogue: 0,0:00:34.63,0:00:35.76,Caption,,0,0,0,,The gap is\Nthe only thing
+Dialogue: 0,0:00:35.77,0:00:36.27,Caption,,0,0,0,,that buys you
+Dialogue: 0,0:00:36.28,0:00:36.74,Caption,,0,0,0,,that time.
+Dialogue: 0,0:00:36.99,0:00:37.63,Caption,,0,0,0,,Three seconds.
+Dialogue: 0,0:00:37.98,0:00:38.46,Caption,,0,0,0,,Every time.
