@@ -72,7 +72,8 @@ def segments() -> list[dict]:
     for i, (label, variant, a, b, ca, cb, flags, lines) in enumerate(ROWS):
         t0, t1 = t[i], t[i + 1]
         sim1 = b if b is not None else a + (t1 - t0)
-        out.append({"label": label, "variant": variant, "t0": t0, "t1": t1, "sim0": a, "sim1": sim1, "cam_a": ca, "cam_b": cb, "flags": flags, "lines": lines})
+        out.append({"label": label, "variant": variant, "t0": t0, "t1": t1, "sim0": a, "sim1": sim1, "cam_a": ca, "cam_b": cb, "flags": flags, "lines": lines,
+                    "time_scale": round((sim1 - a) / (t1 - t0), 5)})
     return out
 
 

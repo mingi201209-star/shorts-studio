@@ -1,1 +1,1 @@
-{"shard": 12, "res_scale": 0.6667, "samples": 16, "note": "EP.09 hydroplaning whole-film preview v1 (fast, dense, live readouts and fact cards)"}
+{"shard": 12, "res_scale": 0.6667, "samples": 16, "frames_run": "44729843578", "note": "EP.09 re-assembly: timeline segments carry time_scale for the report (reuses frames of run 44729843578)"}
