@@ -23,8 +23,8 @@ LAB_NEW_LOW = {"rel": "lab", "loc": (-0.68, -0.55, 0.10), "target": (-0.42, 0.0,
 LAB_WORN_LOW = {"rel": "lab", "loc": (0.16, -0.55, 0.08), "target": (0.42, 0.0, 0.01), "lens": 40.0}
 LAB_WORN = {"rel": "lab", "loc": (0.42, -0.85, 0.42), "target": (0.42, 0.0, 0.03), "lens": 34.0}
 LAB_WORN_B = {"rel": "lab", "loc": (0.30, -0.65, 0.30), "target": (0.42, 0.05, 0.03), "lens": 38.0}
-LAB_NEW_LOW_B = {"rel": "lab", "loc": (-0.52, -0.42, 0.07), "target": (-0.40, 0.05, 0.04), "lens": 44.0}
-LAB_WORN_LOW_B = {"rel": "lab", "loc": (0.30, -0.42, 0.06), "target": (0.44, 0.05, 0.01), "lens": 44.0}
+LAB_NEW_LOW_B = {"rel": "lab", "loc": (-0.30, -0.40, 0.09), "target": (-0.40, 0.25, 0.03), "lens": 44.0}
+LAB_WORN_LOW_B = {"rel": "lab", "loc": (0.55, -0.40, 0.08), "target": (0.42, 0.25, 0.01), "lens": 44.0}
 WEDGE = {"rel": "lab", "loc": (29.6, -2.6, 0.60), "target": (29.6, 0.0, 0.45), "lens": 30.0}
 WEDGE_B = {"rel": "lab", "loc": (29.4, -2.0, 0.35), "target": (29.4, 0.0, 0.20), "lens": 36.0}
 COIN = {"rel": "lab", "loc": (-0.55, -0.55, 0.40), "target": (-0.42, 0.20, 0.10), "lens": 34.0}
@@ -41,7 +41,7 @@ ROWS = [
     ("A-split", "both", OPEN_SIM, None, SPLIT, SPLIT_B, {"split": True}, (1,)),
     ("B-tread-depth", "new", 0.0, 0.0, LAB_WIDE, LAB_WIDE_B, {"lab": "sections"}, (2,)),
     ("C-drains", "new", 0.0, 0.0, LAB_NEW, LAB_NEW_B, {"lab": "flow"}, (3,)),
-    ("D-eight-mm", "new", 0.0, 0.0, LAB_NEW_LOW, LAB_NEW_LOW_B, {"lab": "sections"}, (4,)),
+    ("D-eight-mm", "new", 0.0, 0.0, LAB_NEW_LOW, LAB_NEW_LOW_B, {"lab": "flow"}, (4,)),
     ("E-one-point-six", "worn", 0.0, 0.0, LAB_WORN_LOW, LAB_WORN_LOW_B, {"lab": "sections"}, (5,)),
     ("F-cant-escape", "worn", 0.0, 0.0, LAB_WORN, LAB_WORN_B, {"lab": "pool"}, (6,)),
     ("G-wedge", "worn", 0.0, 0.0, WEDGE, WEDGE_B, {"lab": "wedge", "float_ramp": True}, (7,)),
