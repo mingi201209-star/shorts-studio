@@ -1,0 +1,258 @@
+from __future__ import annotations
+
+import hashlib
+import importlib.util
+import os
+import subprocess
+import sys
+from pathlib import Path
+from types import ModuleType, SimpleNamespace
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "benchmarks/road_safety/curious_mechanics_github_parallel.py"
+spec = importlib.util.spec_from_file_location("curious_mechanics_github_parallel", SCRIPT)
+parallel = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(parallel)
+
+
+@pytest.mark.parametrize("shard,expected", [
+    (1, (1, 30)), (2, (31, 60)), (3, (61, 90)),
+    (10, (271, 300)), (30, (871, 900)),
+])
+def test_shard_range_is_contiguous_30_frames(shard, expected):
+    assert parallel.shard_range(shard) == expected
+
+
+@pytest.mark.parametrize("shard", [0, 31, -1, 1.5, True])
+def test_shard_range_rejects_invalid_values(shard):
+    with pytest.raises(ValueError):
+        parallel.shard_range(shard)
+
+
+@pytest.mark.parametrize("frame,expected", [
+    (1, 1), (30, 31), (31, 31), (241, 241), (270, 271), (271, 271), (900, 901),
+])
+def test_contact_start_aligns_to_existing_shard_boundaries(frame, expected):
+    assert parallel.aligned_contact_start(frame) == expected
+
+
+@pytest.mark.parametrize("frame", [0, 901, True])
+def test_contact_start_rejects_invalid_frame(frame):
+    with pytest.raises(ValueError):
+        parallel.aligned_contact_start(frame)
+
+
+@pytest.mark.parametrize("variant,shot_start,shot_end,expected", [
+    ("A", 421, 450, (421, 450)),
+    ("B", 241, 270, (241, 270)),
+    ("C", 241, 270, (241, 270)),
+])
+def test_contact_range_uses_variant_timeline(monkeypatch, variant, shot_start, shot_end, expected):
+    fake_timeline = SimpleNamespace(
+        load_episode=lambda manifest: {"shots": [{"id": f"{variant}_contact", "start": shot_start, "end": shot_end}]},
+        detail_stage=lambda shot_id: "rolling_contact",
+    )
+    fake_factory = ModuleType("shorts_studio.factory")
+    fake_factory.__path__ = []
+    fake_factory.curious_mechanics_timeline = fake_timeline
+    fake_parent = ModuleType("shorts_studio")
+    fake_parent.__path__ = []
+    fake_parent.factory = fake_factory
+    monkeypatch.setitem(sys.modules, "shorts_studio", fake_parent)
+    monkeypatch.setitem(sys.modules, "shorts_studio.factory", fake_factory)
+    monkeypatch.setitem(sys.modules, "shorts_studio.factory.curious_mechanics_timeline", fake_timeline)
+    assert parallel.contact_range(variant) == expected
+
+
+def test_contact_range_selects_first_late_contact_when_b_has_two(monkeypatch):
+    fake_timeline = SimpleNamespace(
+        load_episode=lambda manifest: {"shots": [
+            {"id": "B_early", "start": 232, "end": 316},
+            {"id": "B_later", "start": 504, "end": 606},
+        ]},
+        detail_stage=lambda shot_id: "rolling_contact",
+    )
+    fake_factory = ModuleType("shorts_studio.factory")
+    fake_factory.__path__ = []
+    fake_factory.curious_mechanics_timeline = fake_timeline
+    fake_parent = ModuleType("shorts_studio")
+    fake_parent.__path__ = []
+    fake_parent.factory = fake_factory
+    monkeypatch.setitem(sys.modules, "shorts_studio", fake_parent)
+    monkeypatch.setitem(sys.modules, "shorts_studio.factory", fake_factory)
+    monkeypatch.setitem(sys.modules, "shorts_studio.factory.curious_mechanics_timeline", fake_timeline)
+    assert parallel.contact_range("B") == (241, 270)
+
+
+def test_contact_range_rejects_wrong_variant():
+    with pytest.raises(ValueError):
+        parallel.contact_range("D")
+
+
+def test_full_matrix_covers_all_900_frames_without_overlap():
+    frames = [
+        n for shard in range(1, 31)
+        for start, end in [parallel.shard_range(shard)]
+        for n in range(start, end + 1)
+    ]
+    assert frames == list(range(1, 901))
+
+
+@pytest.mark.parametrize("variant", list("ABC"))
+def test_real_contact_shard_is_inside_rolling_contact_timeline(variant):
+    start, end = parallel.contact_range(variant)
+    assert end - start == 29
+    assert start in range(1, 901, 30)
+    assert end <= 900
+
+
+def test_selective_recovery_workflow_only_retries_failed_shards():
+    workflow = (ROOT / ".github/workflows/curious-mechanics-selective-recovery.yml").read_text()
+    assert "workflow_dispatch:" in workflow
+    expected_trigger = "push:\n    branches:\n      - exp/curious-mechanics-production-20261029"
+    assert expected_trigger in workflow
+    assert "[recover]" in workflow and "pull_request:" not in workflow
+    assert "inputs.source_run_id || '44499589013'" in workflow
+    renderer_hash = hashlib.sha256((ROOT / "benchmarks/road_safety/render_curious_mechanics.py").read_bytes()).hexdigest()
+    assert f"RENDERER_SOURCE_SHA256: {renderer_hash}" in workflow
+    assert "source_run_id:" in workflow
+    assert "variant: C" in workflow and "shard: 2" in workflow
+    assert "curious-native-C-2-recovery" in workflow
+    assert "curious-contact-${{ matrix.variant }}-recovery" in workflow
+    assert 'gh run download "$SOURCE_RUN_ID"' in workflow
+    assert 'gh run download "$GITHUB_RUN_ID"' in workflow
+    assert "curious-native-A-1" in workflow and "curious-native-B-3" in workflow
+    assert "curious-native-C-3" in workflow
+    assert "retention-days: 90" in workflow
+
+
+def test_contact_cli_resolves_package_from_repository_root():
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT)
+    result = subprocess.run(
+        [sys.executable, str(SCRIPT), "contact", "--variant", "A"],
+        cwd=ROOT, env=env, capture_output=True, text=True, check=True,
+    )
+    assert tuple(map(int, result.stdout.split())) == parallel.contact_range("A")
+
+
+def test_production_workflow_is_manual_only_and_uses_free_standard_runners():
+    workflow = (ROOT / ".github/workflows/curious-mechanics-production-parallel.yml").read_text()
+    assert "workflow_dispatch:" in workflow
+    assert "runs-on: ubuntu-24.04" in workflow
+    assert "max-parallel: 18" in workflow
+    assert "needs: preflight" in workflow
+    assert "matrix.shard <= 3" not in workflow
+    assert "fromJSON(inputs.mode == 'full'" in workflow
+    assert "CM_AUDIO_EXPORT_ENABLED" in workflow
+    assert "Full production requires CM_AUDIO_EXPORT_ENABLED=true" in workflow
+    assert "retention-days: 1" in workflow  # transient native shards
+    assert "retention-days: 90" in workflow  # review films and pilot previews
+    assert workflow.count("if-no-files-found: error") == 4
+    assert "options: [pilot, full]" in workflow
+    assert "curious-native-" in workflow
+    assert "curious-review-" in workflow
+    assert 'PYTHONPATH="$PWD" python benchmarks/road_safety/curious_mechanics_github_parallel.py contact' in workflow
+    assert "https://mirrors.aliyun.com/blender/release/Blender5.0/" in workflow
+    assert "https://mirror.nju.edu.cn/blender/release/Blender5.0/" in workflow
+    assert "https://mirror.freedif.org/blender/release/Blender5.0/" in workflow
+    assert "sha256sum -c -" in workflow
+    assert "push:" not in workflow and "pull_request:" not in workflow
+
+
+@pytest.mark.parametrize("variant", list("ABC"))
+def test_opening_preview_requires_verified_unique_contiguous_frames(monkeypatch, tmp_path, variant):
+    from PIL import Image
+    native_root = tmp_path / "native"
+    folders = {}
+    mocked = {}
+    hashes = []
+    camera = {"opening": [[1, 2, 3], [4, 5, 6], 15.5]}
+    source_hashes = {
+        "renderer_source_sha256": "a" * 64,
+        "timeline_source_sha256": "b" * 64,
+        "canonical_timeline_sha256": "c" * 64,
+        "manifest_sha256": "d" * 64,
+        "experiment_plan_sha256": "e" * 64,
+        "source_sha256": "f" * 64,
+    }
+    for start, end in (parallel.shard_range(1), parallel.shard_range(2), parallel.shard_range(3)):
+        folder = native_root / f"{variant}-{start}"
+        folder.mkdir(parents=True)
+        clip = folder / "native-lossless.mkv"
+        clip.write_bytes(f"clip-{variant}-{start}".encode())
+        frame_numbers = list(range(start, end + 1))
+        for frame in frame_numbers:
+            Image.new("RGB", (108, 192), (frame % 255, 20, 30)).save(
+                folder / f"frame_{frame:04d}.png"
+            )
+        proof = {
+            "episode_id": f"curious-mechanics-{variant}",
+            "first_frame": start,
+            "last_frame": end,
+            "frame_numbers": frame_numbers,
+            "camera_by_shot": camera,
+            **source_hashes,
+        }
+        rgb_hashes = [hashlib.md5(f"{variant}-{frame}".encode()).hexdigest()
+                     for frame in frame_numbers]
+        hashes.extend(rgb_hashes)
+        item = {
+            "folder": folder,
+            "proof": proof,
+            "clip": clip,
+            "clip_sha256": hashlib.sha256(clip.read_bytes()).hexdigest(),
+            "rgb_md5": rgb_hashes,
+        }
+        folders[(variant, start)] = folder
+        mocked[folder] = item
+    monkeypatch.setattr(
+        parallel, "find_shard",
+        lambda root, v, first, last: folders[(v, first)],
+    )
+    monkeypatch.setattr(parallel, "validate_shard", lambda folder, v: mocked[folder])
+    monkeypatch.setattr(
+        parallel, "encode_concat",
+        lambda clips, out, codec: out.write_bytes(f"encoded-{codec}".encode()),
+    )
+    monkeypatch.setattr(parallel, "decoded_md5", lambda clip: hashes)
+    monkeypatch.setattr(
+        parallel, "probe_video",
+        lambda path, frames: {
+            "width": 1080, "height": 1920, "avg_frame_rate": "30/1",
+            "nb_frames": frames,
+        },
+    )
+    result = parallel.make_opening_preview(
+        native_root, variant, tmp_path / "preview"
+    )
+    assert result["status"] == "PASS_NATIVE_OPENING_PREVIEW"
+    assert result["frames"] == [1, 90] and result["seconds"] == 3.0
+    assert result["has_audio"] is False and result["human_first_view"] == "UNVERIFIED"
+    assert result["upload_authorized"] is False
+    assert (tmp_path / "preview" / f"curious-mechanics-{variant}-opening-preview.mp4").is_file()
+    assert (tmp_path / "preview" / f"curious-mechanics-{variant}-opening-montage.jpg").is_file()
+
+
+def test_opening_proof_workflow_is_github_only_and_does_not_duplicate_contact_shards():
+    workflow = (ROOT / ".github/workflows/curious-mechanics-opening-proof.yml").read_text()
+    assert "push:" in workflow and "exp/curious-mechanics-production-20261029" in workflow
+    assert "workflow_dispatch:" in workflow
+    assert "runs-on: ubuntu-24.04" in workflow
+    assert "max-parallel: 3" in workflow
+    # A/C have already passed opening proofs; this recovery workflow must
+    # render only B's three fixed-camera shards, never duplicate them.
+    assert workflow.count("variant: A") == 0
+    assert workflow.count("variant: B") == 3
+    assert workflow.count("variant: C") == 0
+    assert "start: 1, end: 30" in workflow
+    assert "start: 31, end: 60" in workflow
+    assert "start: 61, end: 90" in workflow
+    assert "curious-hook-native-" in workflow
+    assert "opening-preview" in workflow
+    assert "curious-mechanics-hook-preview-" in workflow
+    assert "contact:" not in workflow and "mode: full" not in workflow
+    assert "CM_AUDIO_EXPORT" not in workflow and "paid" not in workflow.lower()
+    assert "retention-days: 14" in workflow and "retention-days: 90" in workflow

@@ -2,6 +2,7 @@ name: render-smoke
 # Revalidate current Comet scene-04 evidence fix.
 on:
   push:
+    branches: [main]
   pull_request:
     types: [opened, reopened, ready_for_review]
   workflow_dispatch:
@@ -13,7 +14,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: sudo apt-get update && sudo apt-get install -y ffmpeg fonts-noto-cjk librsvg2-bin
+      - name: Install system dependencies with transient-download retries
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq -o Acquire::Retries=5
+          sudo apt-get install -y -o Acquire::Retries=5 ffmpeg fonts-noto-cjk librsvg2-bin
       # CPU-only torch: keeps the runner from pulling multi-GB CUDA packages.
       - name: Install real local semantic vision QA dependencies (no API key, no payment)
         run: |
