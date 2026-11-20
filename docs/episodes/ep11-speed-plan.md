@@ -13,3 +13,8 @@ Changed from the series plan's 50 / 60 km/h: the channel's audience is US, so th
 
 ## Audience data
 (to be recorded after upload: viewed %, average duration, subscribers per 1,000 views at about 2 h and 24 h)
+
+## Preview
+CI run 44835332391 (commit 4db3f21): every gate PASS (physics, alignment, telemetry, visible action, no scene text, loop, smoothness,
+black opening, captions), 1014 frames, 42.25 s. v1 (run 44829009527) failed smoothness: 19 frozen frames in the loop run-in, fixed with a
+camera push-in onto the opening shot.
