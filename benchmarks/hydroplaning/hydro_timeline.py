@@ -81,7 +81,8 @@ def segments() -> list[dict]:
 
 
 def _smooth(u):
-    return u * u * (3 - 2 * u)
+    """Half ease, half linear: soft starts and ends that never stop the camera completely (a full smoothstep froze the lab close-ups)."""
+    return 0.5 * u + 0.5 * u * u * (3 - 2 * u)
 
 
 def frame_state(f: int, segs: list[dict]) -> dict:
