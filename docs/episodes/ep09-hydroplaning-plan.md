@@ -13,3 +13,14 @@
   camera that tracks along them and never fully stops (checked locally before the CI render).
 - Final run 44757477863 (frames from 44750915033): every gate PASS, 928 frames, 38.7 s.
 - NOT verified: voice pronunciation at the faster rate, sound-off readability, human first view. The owner uploads.
+
+## First data (owner's Studio, about 6 h after posting)
+| Short | opening event in the first second | viewed vs swiped | avg view duration |
+|---|---|---|---|
+| EP.06 ABS | locked car hits a box | 45.2% | 0:24 / 40 s (60 %) |
+| EP.07 ESC | car without ESC spins (labels) | 58.4% | 0:28 / 42 s (66 %) |
+| **EP.09 hydroplaning** | worn car slowly runs wide (labels, live bars) | **43.3%** | **0:49 / 39 s (127 %, rewatched)** |
+
+Reading: the dense, fast format holds and replays the viewers who stay (best duration by far); the opening event was too subtle (a slow
+drift between two similar-looking cars). Rule from here: keep the dense format, and make the first second a big, readable event (crash,
+spin). EP.10 opens on a rear-end crash at 0.96 s: the first episode with both.
