@@ -57,7 +57,7 @@ ROWS = [
     ("J-five-story", "fast", -T_FALL["fast"], None, DROP5, DROP5_B, {"drop": True, "warp": (1.5, 0.1)}, (10,)),
     ("K-braking", "both", 0.6, 3.5, BRAKE, BRAKE_B, {"split": True, "brake": True}, (11,)),
     ("L-driver", "fast", -0.6, None, CAB, CAB_B, {"interior": True, "warp": (2.4, 0.05)}, (12,)),
-    ("M-twice", "both", -0.9, None, WIDE, WIDE_B, {"split": True, "warp": (0.9, 0.035)}, (13,)),
+    ("M-twice", "both", -0.9, None, WIDE, WIDE_B, {"split": True, "warp": (0.9, 0.022)}, (13,)),
     ("N-loop-run-in", "both", OPEN_SIM - LOOP_S, OPEN_SIM, SPLIT, SPLIT, {"split": True}, (13,)),
 ]
 

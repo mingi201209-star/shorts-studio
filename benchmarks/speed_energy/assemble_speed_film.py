@@ -152,7 +152,7 @@ def draw_overlays(im: Image.Image, fr: dict) -> None:
     elif seg == "K-braking":
         slow, fast = fr["parts"][0], fr["parts"][1]
         if fast["travel_m"] >= sm.stop_distance("slow"):
-            _card(d, f"SAME SPOT: {slow['mph']:.0f} vs {sm.fast_speed_where_slow_stops_mph():.0f} mph", 52, RED, H // 2 + 330)
+            _card(d, f"WHERE 30 STOPS, 40 STILL DOES {sm.fast_speed_where_slow_stops_mph():.0f} mph", 46, RED, H // 2 + 330)
     elif seg == "L-driver":
         _card(d, f"SAME DRIVER \u00b7 +{pct}% ENERGY", 56, RED, 170)
     elif seg == "M-twice":
