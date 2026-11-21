@@ -17,3 +17,8 @@ examples/experiments/terminal-film-request.json), tests tests/test_ep13_guardrai
 
 ## Audience data
 (to be recorded after upload; compare with EP.12's 21.2 % and Road Signs' 69.9 %)
+
+## Preview
+CI run 44889681725 (commit 5336b78): every gate PASS (physics, alignment, telemetry, visible action, no text, loop, smoothness, black
+opening, captions, audio mix), 716 frames, 29.8 s; mix -15.3 LUFS, true peak -2.0 dBFS, every line at least 10.2 dB above the effects.
+The sound mix has not been listened to by a person.
