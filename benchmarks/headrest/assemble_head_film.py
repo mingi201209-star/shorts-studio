@@ -118,13 +118,13 @@ def draw_overlays(im: Image.Image, fr: dict) -> None:
         _card(d, "CAUGHT" if p["caught"] else "HEADREST UP", 72, GREEN, 170)
     elif seg == "J-three-times":
         lo, hi = hm.peak("low")[0], hm.peak("high")[0]
-        _card(d, f"{lo:.0f}\u00b0 vs {hi:.0f}\u00b0: \u00d7{lo / hi:.0f}", 64, INK, H // 2 + 280)
+        _card(d, f"{lo:.0f}\u00b0 vs {hi:.0f}\u00b0: \u00d7{lo / hi:.0f}", 64, INK, H - 250)
     elif seg == "K-height":
         _card(d, "TOP OF HEADREST = TOP OF HEAD", 54, GREEN, 170)
     elif seg == "L-close":
         _card(d, "A COUPLE OF INCHES BEHIND, AT MOST", 50, GREEN, 170)
     elif seg == "M-caught":
-        _card(d, "UP AND CLOSE", 72, GREEN, H // 2 + 280)
+        _card(d, "UP AND CLOSE", 72, GREEN, H - 250)
 
 
 def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
