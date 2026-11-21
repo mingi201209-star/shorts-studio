@@ -19,4 +19,7 @@ timeline cable_timeline.py (pace gate), renderer render_cable_3d.py, sound cable
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-Local low-res run: all 11 gates PASS (736 frames, 30.7 s; mix -15.2 LUFS, every line at least 10.2 dB above the effects). CI: pending.
+CI run 44916163743 (commit aadc883): all 11 gates PASS (physics, pace, alignment, telemetry, visible action, no text, loop,
+smoothness, black opening, captions, audio mix); 736 frames, 30.7 s; first cut 1.30 s, 19.6 cuts/min, 195 wpm; mix -15.2 LUFS, true
+peak -1.8 dBFS, every line at least 10.9 dB above the effects. Copy: ep05-review/EP15-cable-barrier.mp4. The sound mix has not been
+listened to by a person.
