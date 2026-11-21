@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "cable",
+   "beats": [
+    {
+     "narration_en": "Why do highways stop runaway cars with thin steel cables?",
+     "start": 0,
+     "end": 5.4
+    },
+    {
+     "narration_en": "Because a car that crosses the median is headed into oncoming traffic.",
+     "start": 5.4,
+     "end": 11.64
+    },
+    {
+     "narration_en": "So three steel ropes are strung tight between flimsy posts.",
+     "start": 11.64,
+     "end": 17.04
+    },
+    {
+     "narration_en": "When a car hits them, the posts just fold over.",
+     "start": 17.04,
+     "end": 22.44
+    },
+    {
+     "narration_en": "The cables stretch back like a slingshot, about eight feet.",
+     "start": 22.44,
+     "end": 27.84
+    },
+    {
+     "narration_en": "That long stretch slows the car gently instead of stopping it dead.",
+     "start": 27.84,
+     "end": 34.08
+    },
+    {
+     "narration_en": "Then the tension steers it back along the median, away from the other lanes.",
+     "start": 34.08,
+     "end": 41.16
+    },
+    {
+     "narration_en": "It's not a wall. It's a giant steel net.",
+     "start": 41.16,
+     "end": 46.14
+    },
+    {
+     "narration_en": "That's what those wires down the middle of the highway are for.",
+     "start": 46.14,
+     "end": 52.38
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,270 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 30.398,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.7881659999999999,
+      "text": "Why do highways"
+    },
+    {
+      "start": 0.800292,
+      "end": 1.819708,
+      "text": "stop runaway cars"
+    },
+    {
+      "start": 1.8318750000000001,
+      "end": 2.2323749999999998,
+      "text": "with thin"
+    },
+    {
+      "start": 2.2445,
+      "end": 3.045458,
+      "text": "steel cables?"
+    },
+    {
+      "start": 3.305412,
+      "end": 3.936495,
+      "text": "Because a car"
+    },
+    {
+      "start": 3.94862,
+      "end": 4.603994999999999,
+      "text": "that crosses the"
+    },
+    {
+      "start": 4.61612,
+      "end": 5.659827999999999,
+      "text": "median is headed"
+    },
+    {
+      "start": 5.671912,
+      "end": 6.98262,
+      "text": "into oncoming traffic."
+    },
+    {
+      "start": 7.242573999999999,
+      "end": 7.958616,
+      "text": "So three steel"
+    },
+    {
+      "start": 7.970740999999999,
+      "end": 8.795989999999998,
+      "text": "ropes are strung"
+    },
+    {
+      "start": 8.808115999999998,
+      "end": 9.584781999999999,
+      "text": "tight between"
+    },
+    {
+      "start": 9.596948999999999,
+      "end": 10.531448999999999,
+      "text": "flimsy posts."
+    },
+    {
+      "start": 10.791402999999999,
+      "end": 11.191903,
+      "text": "When a car"
+    },
+    {
+      "start": 11.204028,
+      "end": 11.992861,
+      "text": "hits them, the"
+    },
+    {
+      "start": 12.004985999999999,
+      "end": 12.684610999999999,
+      "text": "posts just"
+    },
+    {
+      "start": 12.696736,
+      "end": 13.303526999999999,
+      "text": "fold over."
+    },
+    {
+      "start": 13.563481000000001,
+      "end": 14.449439,
+      "text": "The cables stretch"
+    },
+    {
+      "start": 14.461564000000001,
+      "end": 14.9833969,
+      "text": "back like a"
+    },
+    {
+      "start": 14.995523,
+      "end": 16.075606,
+      "text": "slingshot, about"
+    },
+    {
+      "start": 16.087773000000002,
+      "end": 16.658189,
+      "text": "eight feet."
+    },
+    {
+      "start": 16.918143,
+      "end": 17.816226,
+      "text": "That long stretch"
+    },
+    {
+      "start": 17.828351,
+      "end": 18.580768000000003,
+      "text": "slows the car"
+    },
+    {
+      "start": 18.592935,
+      "end": 19.515268000000003,
+      "text": "gently instead of"
+    },
+    {
+      "start": 19.527393000000004,
+      "end": 20.340476000000002,
+      "text": "stopping it dead."
+    },
+    {
+      "start": 20.600430000000003,
+      "end": 21.255763,
+      "text": "Then the tension"
+    },
+    {
+      "start": 21.267930000000003,
+      "end": 22.165971000000003,
+      "text": "steers it back"
+    },
+    {
+      "start": 22.238763000000002,
+      "end": 23.124679,
+      "text": "along the median,"
+    },
+    {
+      "start": 23.488763000000002,
+      "end": 24.071305000000002,
+      "text": "away from the"
+    },
+    {
+      "start": 24.083430000000003,
+      "end": 24.835888,
+      "text": "other lanes."
+    },
+    {
+      "start": 25.095842000000005,
+      "end": 25.338550000000005,
+      "text": "It's not"
+    },
+    {
+      "start": 25.350717000000003,
+      "end": 25.702634000000003,
+      "text": "a wall."
+    },
+    {
+      "start": 26.103134000000004,
+      "end": 26.637133000000002,
+      "text": "It's a giant"
+    },
+    {
+      "start": 26.649259000000004,
+      "end": 27.243925000000004,
+      "text": "steel net."
+    },
+    {
+      "start": 27.503879,
+      "end": 28.037879000000004,
+      "text": "That's what those"
+    },
+    {
+      "start": 28.050004,
+      "end": 28.729628,
+      "text": "wires down the"
+    },
+    {
+      "start": 28.741754000000004,
+      "end": 29.190753,
+      "text": "middle of the"
+    },
+    {
+      "start": 29.202921000000003,
+      "end": 30.198046,
+      "text": "highway are for."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.245412,
+      "narration_en": "Why do highways stop runaway cars with thin steel cables?",
+      "source_audio_sha256": "f8c9955a429165f4324e2f09f6d428bc1d300f0d3ad25005f6b94e13e95e0a3f"
+    },
+    {
+      "start": 3.245412,
+      "end": 7.182574,
+      "narration_en": "Because a car that crosses the median is headed into oncoming traffic.",
+      "source_audio_sha256": "55428c6a4fcc42dddc38d99aec8b787733ffa2db525377b91321118e22b6ee75"
+    },
+    {
+      "start": 7.182574,
+      "end": 10.731403,
+      "narration_en": "So three steel ropes are strung tight between flimsy posts.",
+      "source_audio_sha256": "2a29498bc1cd0f9bcc036452bbe2a7e5f467b19a11700c8f54d16dc43efa8c35"
+    },
+    {
+      "start": 10.731403,
+      "end": 13.503481,
+      "narration_en": "When a car hits them, the posts just fold over.",
+      "source_audio_sha256": "93acc2f91d8fba76604772d6d6bb4938efbbcb0385f0208056db5bf2d8fb8e6d"
+    },
+    {
+      "start": 13.503481,
+      "end": 16.858143000000002,
+      "narration_en": "The cables stretch back like a slingshot, about eight feet.",
+      "source_audio_sha256": "933ee9ab53b2fa0f71819425100f79837b8fa81f6f8c45df4c128fc6245226bc"
+    },
+    {
+      "start": 16.858143000000002,
+      "end": 20.54043,
+      "narration_en": "That long stretch slows the car gently instead of stopping it dead.",
+      "source_audio_sha256": "6ca92874d20331de5bf5a11aa8a655ed6197334a90d003e0a87108fd2a347783"
+    },
+    {
+      "start": 20.54043,
+      "end": 25.035842000000002,
+      "narration_en": "Then the tension steers it back along the median, away from the other lanes.",
+      "source_audio_sha256": "615746ada0e6c408c53931cb4d069ee5094b58564e43e29a519d5b65925b9d3b"
+    },
+    {
+      "start": 25.035842000000002,
+      "end": 27.443879000000003,
+      "narration_en": "It's not a wall. It's a giant steel net.",
+      "source_audio_sha256": "182282e02776dac2f6709d871227300e87b29eccfca6ba848c9cfd2cf348e32d"
+    },
+    {
+      "start": 27.443879000000003,
+      "end": 30.398,
+      "narration_en": "That's what those wires down the middle of the highway are for.",
+      "source_audio_sha256": "d5e27cf8b966446e0f93dae7bcc0ea0ca6bdd220a0ef9ae058514a2f9b53fad2"
+    }
+  ],
+  "silence_gaps": [
+    0.312875,
+    0.338313,
+    0.304083,
+    0.421667
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 2.0,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -15.9,
+      -16.7,
+      -16.5,
+      -16.1,
+      -16.3,
+      -15.9
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "aeec65a430e969671b30d24306228999cbad66135b32a255d7926b8ea934e20c"
+}
