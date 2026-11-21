@@ -1,0 +1,260 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 29.6,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.500499,
+      "text": "Why does this"
+    },
+    {
+      "start": 0.512416,
+      "end": 1.845708,
+      "text": "guardrail end peel"
+    },
+    {
+      "start": 1.952875,
+      "end": 2.214791,
+      "text": "into a"
+    },
+    {
+      "start": 2.2266660000000003,
+      "end": 2.8695410000000003,
+      "text": "steel ribbon?"
+    },
+    {
+      "start": 3.3195466250000005,
+      "end": 3.8909626250000007,
+      "text": "Because a plain"
+    },
+    {
+      "start": 3.9028796250000006,
+      "end": 4.283837625,
+      "text": "rail end"
+    },
+    {
+      "start": 4.295712625,
+      "end": 4.879087625,
+      "text": "does this."
+    },
+    {
+      "start": 5.271921625000001,
+      "end": 6.069545625,
+      "text": "It spears right"
+    },
+    {
+      "start": 6.081421625000001,
+      "end": 6.736171625000001,
+      "text": "into the cabin."
+    },
+    {
+      "start": 7.18617725,
+      "end": 7.614718250000001,
+      "text": "So the end"
+    },
+    {
+      "start": 7.62663525,
+      "end": 8.17425925,
+      "text": "gets a steel"
+    },
+    {
+      "start": 8.186177250000002,
+      "end": 9.067093250000001,
+      "text": "head that slides"
+    },
+    {
+      "start": 9.079010250000001,
+      "end": 9.709968250000001,
+      "text": "down the rail."
+    },
+    {
+      "start": 10.159973875,
+      "end": 11.600472875,
+      "text": "Inside, it squeezes"
+    },
+    {
+      "start": 11.612348875,
+      "end": 12.386139875,
+      "text": "the rail flat"
+    },
+    {
+      "start": 12.564723875,
+      "end": 12.969472875,
+      "text": "and bends"
+    },
+    {
+      "start": 12.981389875,
+      "end": 13.409931875,
+      "text": "it away."
+    },
+    {
+      "start": 13.859937500000001,
+      "end": 14.7766035,
+      "text": "Crushing steel takes"
+    },
+    {
+      "start": 14.7884785,
+      "end": 15.7289785,
+      "text": "a huge force,"
+    },
+    {
+      "start": 15.990895500000002,
+      "end": 16.5742285,
+      "text": "and that force"
+    },
+    {
+      "start": 16.5861035,
+      "end": 17.336145499999997,
+      "text": "slows the car."
+    },
+    {
+      "start": 17.786151125,
+      "end": 18.512358125,
+      "text": "The posts snap"
+    },
+    {
+      "start": 18.524276125,
+      "end": 19.512359125,
+      "text": "off, so nothing"
+    },
+    {
+      "start": 19.524276125,
+      "end": 20.417109125,
+      "text": "snags the wheels."
+    },
+    {
+      "start": 20.86711475,
+      "end": 21.819488749999998,
+      "text": "Sixty to zero"
+    },
+    {
+      "start": 21.83140575,
+      "end": 22.49807275,
+      "text": "in about two"
+    },
+    {
+      "start": 22.50998975,
+      "end": 23.617113749999998,
+      "text": "car lengths, and"
+    },
+    {
+      "start": 23.62903075,
+      "end": 24.17665575,
+      "text": "the cabin"
+    },
+    {
+      "start": 24.29569775,
+      "end": 25.069488749999998,
+      "text": "is untouched."
+    },
+    {
+      "start": 25.519494374999997,
+      "end": 26.031410374999997,
+      "text": "So next time"
+    },
+    {
+      "start": 26.043327374999997,
+      "end": 26.495702374999997,
+      "text": "you pass a"
+    },
+    {
+      "start": 26.507619374999997,
+      "end": 27.579035374999997,
+      "text": "yellow guardrail head,"
+    },
+    {
+      "start": 27.971910374999997,
+      "end": 28.352827374999997,
+      "text": "you know what"
+    },
+    {
+      "start": 28.364744374999997,
+      "end": 28.519493374999996,
+      "text": "it is"
+    },
+    {
+      "start": 28.531410374999997,
+      "end": 29.209994374999997,
+      "text": "waiting for."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.2595466250000005,
+      "narration_en": "Why does this guardrail end peel into a steel ribbon?",
+      "source_audio_sha256": "55ff997765c80ade960a1ec02fe9b95e5fd210f3dd3e5eacc6008e80b51ac499"
+    },
+    {
+      "start": 3.2595466250000005,
+      "end": 7.1261772500000005,
+      "narration_en": "Because a plain rail end does this. It spears right into the cabin.",
+      "source_audio_sha256": "bf2e1bb577bf870a0b7e80760eb258f77e06b229fa2a09621664e750f69bd57f"
+    },
+    {
+      "start": 7.1261772500000005,
+      "end": 10.099973875,
+      "narration_en": "So the end gets a steel head that slides down the rail.",
+      "source_audio_sha256": "3614c84cc006acef2b4dfb56ef7cb3ff383ca348dc987390b71c8a4a09950adb"
+    },
+    {
+      "start": 10.099973875,
+      "end": 13.7999375,
+      "narration_en": "Inside, it squeezes the rail flat and bends it away.",
+      "source_audio_sha256": "78a84252e06a12435c877bc0d4db95030c1cd24587480f17c5d39d6d36d4f76b"
+    },
+    {
+      "start": 13.7999375,
+      "end": 17.726151125,
+      "narration_en": "Crushing steel takes a huge force, and that force slows the car.",
+      "source_audio_sha256": "18d773798e66e4105750603f77106050c79188f04e3127192c76587748976a8c"
+    },
+    {
+      "start": 17.726151125,
+      "end": 20.80711475,
+      "narration_en": "The posts snap off, so nothing snags the wheels.",
+      "source_audio_sha256": "83a4eb1036c5e31c841fcfea2e38d6343620b024696cc49e412676cb9397d8f5"
+    },
+    {
+      "start": 20.80711475,
+      "end": 25.459494375,
+      "narration_en": "Sixty to zero in about two car lengths, and the cabin is untouched.",
+      "source_audio_sha256": "06e512fc5a06ebed61e9eb590f4b881edc8de180568a87410882861513752738"
+    },
+    {
+      "start": 25.459494375,
+      "end": 29.6,
+      "narration_en": "So next time you pass a yellow guardrail head, you know what it is waiting for.",
+      "source_audio_sha256": "989b3690c1256b51f6acafe0a07c44b85b7537ddded48ffdbf9dbd40486899c8"
+    }
+  ],
+  "silence_gaps": [
+    0.452583,
+    0.420521,
+    0.47175,
+    0.470938,
+    0.366875,
+    0.435604,
+    0.477125,
+    0.46675,
+    0.475479,
+    0.371312,
+    0.379042
+  ],
+  "loudness": {
+    "integrated_lufs": -16.4,
+    "loudness_range_lu": 1.8,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.3,
+      -16.2,
+      -16.0,
+      -16.5,
+      -16.4
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "68d7df7cc654362f2a6f1e58c65ee62a710688ceed48eabf7fe818f517c16ca7"
+}
