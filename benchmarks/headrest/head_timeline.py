@@ -14,10 +14,10 @@ OPEN_SIM = -0.2
 OPEN_TC = 0.2
 AUDIO = Path(__file__).resolve().parents[2] / "examples/episodes/ep12-audio/audio-validation.json"
 
-# "start": world frame = the car where it stood at the light (so the car is seen lurching forward); "car": follows the car
-SIDE = {"rel": "start", "loc": (-1.70, 0.10, 1.05), "target": (-0.36, 0.02, 0.98), "lens": 38.0}
-SIDE_B = {"rel": "start", "loc": (-1.55, 0.16, 1.03), "target": (-0.36, 0.06, 0.98), "lens": 40.0}
-SIDE_PRE = {"rel": "start", "loc": (-2.10, -0.10, 1.15), "target": (-0.36, 0.00, 0.98), "lens": 34.0}
+# "lag": like "start" for the first 12 cm of the jolt, then carried with the car; "start": world frame = the car where it stood at the light (so the car is seen lurching forward); "car": follows the car
+SIDE = {"rel": "lag", "loc": (-1.70, 0.10, 1.05), "target": (-0.36, 0.02, 0.98), "lens": 38.0}
+SIDE_B = {"rel": "lag", "loc": (-1.55, 0.16, 1.03), "target": (-0.36, 0.06, 0.98), "lens": 40.0}
+SIDE_PRE = {"rel": "lag", "loc": (-2.10, -0.10, 1.15), "target": (-0.36, 0.00, 0.98), "lens": 34.0}
 CAR_SIDE = {"rel": "car", "loc": (-1.55, 0.05, 1.08), "target": (-0.36, -0.02, 1.00), "lens": 42.0}
 CAR_SIDE_B = {"rel": "car", "loc": (-1.40, 0.12, 1.04), "target": (-0.36, -0.02, 1.00), "lens": 46.0}
 NECK = {"rel": "car", "loc": (-1.20, 0.12, 1.02), "target": (-0.36, 0.0, 1.00), "lens": 50.0}

@@ -191,7 +191,12 @@ def main():
         neck_bsdf.inputs["Emission Color"].default_value = (*col, 1.0)
         neck_bsdf.inputs["Emission Strength"].default_value = 1.2 * r
         c = sh["cam"]
-        o = Vector(root.location) if c["rel"] == "car" else Vector((0.0, 0.0, 0.0))
+        if c["rel"] == "car":
+            o = Vector(root.location)
+        elif c["rel"] == "lag":                 # shows the first 12 cm of the jolt, then carries along so the driver stays in the shot
+            o = Vector((0.0, max(0.0, x - 0.12), 0.0))
+        else:
+            o = Vector((0.0, 0.0, 0.0))
         dd = cam.data
         dd.sensor_fit, dd.sensor_width, dd.lens, dd.clip_start = "HORIZONTAL", 36.0, c["lens"], 0.02
         base.set_camera(cam, o + Vector(c["loc"]), o + Vector(c["target"]))
