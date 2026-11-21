@@ -19,4 +19,4 @@ Model benchmarks/tire_blowout/blowout_motion.py (gate blowout_physics), timeline
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(pending)
+Local low-res run: all 11 gates PASS (773 frames, 32.2 s; mix -15.2 LUFS, every line at least 11.4 dB above the effects). CI: pending.

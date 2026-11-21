@@ -18,12 +18,12 @@ A1 = {"rel": "wheel", "loc": (-1.25, 0.60, 0.12), "target": (0.0, -0.35, 0.42), 
 A1_B = {"rel": "wheel", "loc": (-1.15, 0.35, 0.15), "target": (0.0, -0.50, 0.45), "lens": 24.0, "fstop": 4.0}
 A2 = {"rel": "car", "loc": (-6.0, 7.0, 2.6), "target": (0.0, -3.0, 0.3), "lens": 28.0, "fstop": 8.0}
 A2_B = {"rel": "car", "loc": (-5.5, 5.5, 2.2), "target": (0.0, -4.0, 0.3), "lens": 28.0, "fstop": 8.0}
-B = {"rel": "wheel", "loc": (-1.3, 0.45, 0.10), "target": (0.0, 0.0, 0.10), "lens": 35.0, "fstop": 4.0}
-B_B = {"rel": "wheel", "loc": (-1.25, -0.25, 0.10), "target": (0.0, 0.05, 0.10), "lens": 35.0, "fstop": 4.0}
+B = {"rel": "wheel", "loc": (-0.55, 1.45, -0.12), "target": (-0.05, 0.0, -0.10), "lens": 32.0, "fstop": 4.0}
+B_B = {"rel": "wheel", "loc": (-0.75, 1.25, -0.12), "target": (-0.05, 0.0, -0.10), "lens": 32.0, "fstop": 4.0}
 C1 = {"rel": "wheel", "loc": (-1.0, 0.0, 0.02), "target": (0.0, 0.0, -0.05), "lens": 40.0, "fstop": 4.0}
 C1_B = {"rel": "wheel", "loc": (-0.95, 0.25, 0.06), "target": (0.0, 0.0, -0.06), "lens": 40.0, "fstop": 4.0}
-C2 = {"rel": "wheel", "loc": (-0.95, 0.95, 0.30), "target": (0.0, 0.05, -0.02), "lens": 35.0, "fstop": 4.0}
-C2_B = {"rel": "wheel", "loc": (-0.80, 1.05, 0.22), "target": (0.0, 0.05, -0.04), "lens": 36.0, "fstop": 4.0}
+C2 = {"rel": "wheel", "loc": (-0.60, 0.78, 0.12), "target": (-0.03, 0.18, -0.06), "lens": 32.0, "fstop": 4.0}
+C2_B = {"rel": "wheel", "loc": (-0.50, 0.80, 0.08), "target": (-0.03, 0.18, -0.07), "lens": 34.0, "fstop": 4.0}
 D1 = {"rel": "car", "loc": (-3.6, 3.2, 0.6), "target": (0.0, 1.3, 0.3), "lens": 30.0, "fstop": 5.6}
 D1_B = {"rel": "car", "loc": (-3.3, 2.2, 0.55), "target": (0.0, 1.3, 0.3), "lens": 32.0, "fstop": 5.6}
 D2 = {"rel": "wheel", "loc": (-1.1, -0.6, 0.08), "target": (0.0, 0.1, -0.02), "lens": 38.0, "fstop": 4.0}
@@ -42,7 +42,7 @@ I1 = {"rel": "world", "loc": (-4.6, -6.0, 1.30), "target": (-3.4, -22.0, 0.0), "
 I1_B = {"rel": "world", "loc": (-4.7, -7.5, 1.15), "target": (-3.2, -24.0, 0.0), "lens": 30.0, "fstop": 5.6}
 I2 = {"rel": "wheel", "loc": (-1.9, 1.8, 0.30), "target": (0.0, -0.2, 0.40), "lens": 24.0, "fstop": 4.0}
 
-CUT = {"cut": (60.0, 120.0)}
+CUT = {"cut": (50.0, 130.0)}
 # label, variant, start (line, or (line, absolute second)), knots [(film s from shot start, simulated s)], cam a, cam b, flags, lines
 ROWS = [
     ("A1-burst", "road", 1, [(0.0, OPEN_SIM), (1.3, 0.22)], A1, A1_B, {}, (1,)),

@@ -354,8 +354,8 @@ def main():
         if "tire" in o.name:
             o.hide_render = True                                   # replaced by the procedural tyre
     rubber = glow_material("Tyre rubber", (0.035, 0.035, 0.04), rough=0.75)
-    belt = material("Steel belt", (0.55, 0.55, 0.57), metal=0.85, rough=0.35)
-    cap = glow_material("Tyre section", (0.09, 0.09, 0.10), rough=0.9)
+    belt = material("Steel belt", (0.80, 0.80, 0.82), metal=0.9, rough=0.3)
+    cap = glow_material("Tyre section", (0.30, 0.29, 0.28), rough=0.9)        # lighter than the tyre so the section reads
     glue = glow_material("Belt bond", (0.20, 0.12, 0.06), rough=0.8)
     tyre = Tyre(rubber, belt, cap, glue)
     rim = material("Rim barrel", (0.30, 0.30, 0.32), metal=0.8, rough=0.35)
