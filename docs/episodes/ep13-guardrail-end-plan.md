@@ -22,3 +22,7 @@ examples/experiments/terminal-film-request.json), tests tests/test_ep13_guardrai
 CI run 44889681725 (commit 5336b78): every gate PASS (physics, alignment, telemetry, visible action, no text, loop, smoothness, black
 opening, captions, audio mix), 716 frames, 29.8 s; mix -15.3 LUFS, true peak -2.0 dBFS, every line at least 10.2 dB above the effects.
 The sound mix has not been listened to by a person.
+
+## First viewer comment (owner screenshot, 2026-11-21)
+"Isn't that just a massive zipper" (1 like) - the first comment on any upload. Suggested reply: agree, say what the zipper does, ask
+what to explain next. Signal for the playbook: a visual that people can compare to something familiar gets comments.
