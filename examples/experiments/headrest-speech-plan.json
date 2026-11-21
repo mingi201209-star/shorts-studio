@@ -1,0 +1,74 @@
+{
+ "variants": [
+  {
+   "id": "headrest",
+   "beats": [
+    {
+     "narration_en": "Same car, same hit from behind. Only the headrest is different.",
+     "start": 0,
+     "end": 5.62
+    },
+    {
+     "narration_en": "The car behind shoves your car forward, and the seat shoves your back.",
+     "start": 5.62,
+     "end": 12.08
+    },
+    {
+     "narration_en": "But your head is heavy. For a moment, it stays behind.",
+     "start": 12.08,
+     "end": 17.7
+    },
+    {
+     "narration_en": "So your neck bends backward, faster than you could ever react.",
+     "start": 17.7,
+     "end": 23.32
+    },
+    {
+     "narration_en": "With the headrest low, nothing stops it. The head whips back over the top.",
+     "start": 23.32,
+     "end": 30.2
+    },
+    {
+     "narration_en": "Almost sixty degrees, in about a tenth of a second.",
+     "start": 30.2,
+     "end": 35.4
+    },
+    {
+     "narration_en": "That stretch strains the muscles and ligaments in your neck. That's whiplash.",
+     "start": 35.4,
+     "end": 41.44
+    },
+    {
+     "narration_en": "With the headrest up, the head moves less than two inches.",
+     "start": 41.44,
+     "end": 47.06
+    },
+    {
+     "narration_en": "Then the headrest catches it, and the neck stops under twenty degrees.",
+     "start": 47.06,
+     "end": 53.1
+    },
+    {
+     "narration_en": "Same crash. One neck bends three times further.",
+     "start": 53.1,
+     "end": 57.46
+    },
+    {
+     "narration_en": "So set it: the top of the headrest level with the top of your head.",
+     "start": 57.46,
+     "end": 64.76
+    },
+    {
+     "narration_en": "And keep it close, a couple of inches behind your head at most.",
+     "start": 64.76,
+     "end": 70.38
+    },
+    {
+     "narration_en": "Five seconds of adjusting, and your head gets caught instead of whipped.",
+     "start": 70.38,
+     "end": 76.42
+    }
+   ]
+  }
+ ]
+}

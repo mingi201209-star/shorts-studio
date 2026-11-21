@@ -1,0 +1,401 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 41.261,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.9730409999999999,
+      "text": "Same car, same"
+    },
+    {
+      "start": 0.9839169999999999,
+      "end": 1.625208,
+      "text": "hit from behind."
+    },
+    {
+      "start": 1.983917,
+      "end": 2.723042,
+      "text": "Only the headrest"
+    },
+    {
+      "start": 2.733917,
+      "end": 3.223041,
+      "text": "is different."
+    },
+    {
+      "start": 3.4730543846153847,
+      "end": 4.027387384615385,
+      "text": "The car behind"
+    },
+    {
+      "start": 4.0382623846153844,
+      "end": 4.570887384615385,
+      "text": "shoves your car"
+    },
+    {
+      "start": 4.581762384615385,
+      "end": 5.364345384615384,
+      "text": "forward, and the"
+    },
+    {
+      "start": 5.375221384615385,
+      "end": 5.875221384615385,
+      "text": "seat shoves"
+    },
+    {
+      "start": 5.886096384615384,
+      "end": 6.299137384615385,
+      "text": "your back."
+    },
+    {
+      "start": 6.54915076923077,
+      "end": 6.88610876923077,
+      "text": "But your head"
+    },
+    {
+      "start": 6.89698376923077,
+      "end": 7.26652576923077,
+      "text": "is heavy."
+    },
+    {
+      "start": 7.668692769230771,
+      "end": 8.125233769230771,
+      "text": "For a moment,"
+    },
+    {
+      "start": 8.35348376923077,
+      "end": 9.10348376923077,
+      "text": "it stays behind."
+    },
+    {
+      "start": 9.353497153846153,
+      "end": 9.853497153846153,
+      "text": "So your neck"
+    },
+    {
+      "start": 9.864372153846153,
+      "end": 11.212205153846153,
+      "text": "bends backward, faster"
+    },
+    {
+      "start": 11.223080153846153,
+      "end": 11.614371153846154,
+      "text": "than you could"
+    },
+    {
+      "start": 11.744789153846153,
+      "end": 12.375246153846152,
+      "text": "ever react."
+    },
+    {
+      "start": 12.625259538461538,
+      "end": 13.201342538461539,
+      "text": "With the headrest"
+    },
+    {
+      "start": 13.212217538461541,
+      "end": 13.897008538461538,
+      "text": "low, nothing"
+    },
+    {
+      "start": 13.90784253846154,
+      "end": 14.396967538461539,
+      "text": "stops it."
+    },
+    {
+      "start": 14.75567653846154,
+      "end": 15.201342538461539,
+      "text": "The head whips"
+    },
+    {
+      "start": 15.212217538461541,
+      "end": 15.58175853846154,
+      "text": "back over"
+    },
+    {
+      "start": 15.592634538461539,
+      "end": 15.973050538461539,
+      "text": "the top."
+    },
+    {
+      "start": 16.22306392307693,
+      "end": 17.396938923076927,
+      "text": "Almost sixty degrees,"
+    },
+    {
+      "start": 17.570896923076926,
+      "end": 17.896980923076928,
+      "text": "in about a"
+    },
+    {
+      "start": 17.907855923076927,
+      "end": 18.266521923076926,
+      "text": "tenth of"
+    },
+    {
+      "start": 18.277396923076928,
+      "end": 18.723062923076927,
+      "text": "a second."
+    },
+    {
+      "start": 18.973076307692313,
+      "end": 19.95132530769231,
+      "text": "That stretch strains"
+    },
+    {
+      "start": 19.96220130769231,
+      "end": 20.668742307692312,
+      "text": "the muscles and"
+    },
+    {
+      "start": 20.67957630769231,
+      "end": 21.14699230769231,
+      "text": "ligaments in"
+    },
+    {
+      "start": 21.15786830769231,
+      "end": 21.57090930769231,
+      "text": "your neck."
+    },
+    {
+      "start": 21.940451307692314,
+      "end": 22.549159307692314,
+      "text": "That's whiplash."
+    },
+    {
+      "start": 22.7991726923077,
+      "end": 23.3861306923077,
+      "text": "With the headrest"
+    },
+    {
+      "start": 23.397005692307697,
+      "end": 24.125255692307697,
+      "text": "up, the head"
+    },
+    {
+      "start": 24.1361306923077,
+      "end": 24.766547692307697,
+      "text": "moves less than"
+    },
+    {
+      "start": 24.7774226923077,
+      "end": 25.4404636923077,
+      "text": "two inches."
+    },
+    {
+      "start": 25.69047707692308,
+      "end": 26.288310076923082,
+      "text": "Then the headrest"
+    },
+    {
+      "start": 26.29918507692308,
+      "end": 27.125227076923082,
+      "text": "catches it, and"
+    },
+    {
+      "start": 27.13614407692308,
+      "end": 27.788310076923082,
+      "text": "the neck stops"
+    },
+    {
+      "start": 27.79918507692308,
+      "end": 28.755685076923083,
+      "text": "under twenty degrees."
+    },
+    {
+      "start": 29.005698461538465,
+      "end": 29.614406461538465,
+      "text": "Same crash."
+    },
+    {
+      "start": 29.973073461538466,
+      "end": 30.701364461538464,
+      "text": "One neck bends"
+    },
+    {
+      "start": 30.788323461538464,
+      "end": 31.636156461538466,
+      "text": "three times further."
+    },
+    {
+      "start": 31.88616984615385,
+      "end": 32.353585846153855,
+      "text": "So set it:"
+    },
+    {
+      "start": 32.62529484615385,
+      "end": 33.01658584615385,
+      "text": "the top of"
+    },
+    {
+      "start": 33.027461846153855,
+      "end": 33.831794846153855,
+      "text": "the headrest level"
+    },
+    {
+      "start": 33.84266984615385,
+      "end": 34.29921184615385,
+      "text": "with the top"
+    },
+    {
+      "start": 34.31008684615385,
+      "end": 34.755752846153854,
+      "text": "of your head."
+    },
+    {
+      "start": 35.00576623076924,
+      "end": 35.33184923076924,
+      "text": "And keep it"
+    },
+    {
+      "start": 35.342724230769235,
+      "end": 36.244891230769234,
+      "text": "close, a couple"
+    },
+    {
+      "start": 36.25576623076924,
+      "end": 36.97318223076924,
+      "text": "of inches behind"
+    },
+    {
+      "start": 36.984016230769235,
+      "end": 37.23401523076924,
+      "text": "your head"
+    },
+    {
+      "start": 37.244891230769234,
+      "end": 37.73401523076924,
+      "text": "at most."
+    },
+    {
+      "start": 37.984028615384624,
+      "end": 38.64707061538462,
+      "text": "Five seconds of"
+    },
+    {
+      "start": 38.65794561538462,
+      "end": 39.61448661538462,
+      "text": "adjusting, and your"
+    },
+    {
+      "start": 39.625320615384624,
+      "end": 40.29927861538462,
+      "text": "head gets caught"
+    },
+    {
+      "start": 40.310112615384625,
+      "end": 41.07098661538462,
+      "text": "instead of whipped."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.4130543846153847,
+      "narration_en": "Same car, same hit from behind. Only the headrest is different.",
+      "source_audio_sha256": "fd5a39361c5166f7323ffabd9dee355e526cd56f26fedfc15881dfaa28a8ec74"
+    },
+    {
+      "start": 3.4130543846153847,
+      "end": 6.48915076923077,
+      "narration_en": "The car behind shoves your car forward, and the seat shoves your back.",
+      "source_audio_sha256": "e4a53efe2adcc489d9c7c3209874220140120a76de6880a706c12e49c2bc9ce1"
+    },
+    {
+      "start": 6.48915076923077,
+      "end": 9.293497153846154,
+      "narration_en": "But your head is heavy. For a moment, it stays behind.",
+      "source_audio_sha256": "622613eeb04d9cfd449c60890985e440fc65e54b6449752a56b083285d3f43d1"
+    },
+    {
+      "start": 9.293497153846154,
+      "end": 12.56525953846154,
+      "narration_en": "So your neck bends backward, faster than you could ever react.",
+      "source_audio_sha256": "d4d66f8edbaaac8d8ffd88b1a4c1c10ef01681376895de08cdcb861db0f38065"
+    },
+    {
+      "start": 12.56525953846154,
+      "end": 16.163063923076926,
+      "narration_en": "With the headrest low, nothing stops it. The head whips back over the top.",
+      "source_audio_sha256": "133d1199374c7af8f1e4053e655b98a94e5a5307476a58d56df299d3d8886360"
+    },
+    {
+      "start": 16.163063923076926,
+      "end": 18.91307630769231,
+      "narration_en": "Almost sixty degrees, in about a tenth of a second.",
+      "source_audio_sha256": "396867fb58e752f9b8f2b78807d4e84027b4ffb9c691fbc6343dc18ae065d0cf"
+    },
+    {
+      "start": 18.91307630769231,
+      "end": 22.739172692307697,
+      "narration_en": "That stretch strains the muscles and ligaments in your neck. That's whiplash.",
+      "source_audio_sha256": "fc8d8206b5c0464613decabd11d4470a073f88d30a62c5b8319b94f967edc2a7"
+    },
+    {
+      "start": 22.739172692307697,
+      "end": 25.630477076923082,
+      "narration_en": "With the headrest up, the head moves less than two inches.",
+      "source_audio_sha256": "3d6a1ac87e5ee7d0caa09d1c69b719744b497e508a0919bae104beb512726f16"
+    },
+    {
+      "start": 25.630477076923082,
+      "end": 28.945698461538466,
+      "narration_en": "Then the headrest catches it, and the neck stops under twenty degrees.",
+      "source_audio_sha256": "0f18e725aefad3f6a05569332ef904654ecccb9bb4d6e831f4eaa6b40c24e6ac"
+    },
+    {
+      "start": 28.945698461538466,
+      "end": 31.826169846153853,
+      "narration_en": "Same crash. One neck bends three times further.",
+      "source_audio_sha256": "6441af76f45d1b7e603802b03682c0e0969bcc3e018f74c86dfc92d66fd5cf2b"
+    },
+    {
+      "start": 31.826169846153853,
+      "end": 34.94576623076924,
+      "narration_en": "So set it: the top of the headrest level with the top of your head.",
+      "source_audio_sha256": "33da9133d4b9206ed50775ac8ee359225c9a136bfa2e6e09d116be052ede7638"
+    },
+    {
+      "start": 34.94576623076924,
+      "end": 37.92402861538462,
+      "narration_en": "And keep it close, a couple of inches behind your head at most.",
+      "source_audio_sha256": "757aedd143ae20c06be014ae902d054f72fad430dd7df36ff2135a3c6a29ce15"
+    },
+    {
+      "start": 37.92402861538462,
+      "end": 41.261,
+      "narration_en": "Five seconds of adjusting, and your head gets caught instead of whipped.",
+      "source_audio_sha256": "5bce55607f7a37b916d85f2603cd776d3b357f346d52b71e586a6ea67250c5f7"
+    }
+  ],
+  "silence_gaps": [
+    0.382125,
+    0.312875,
+    0.388313,
+    0.3415,
+    0.386313,
+    0.395229,
+    0.316229,
+    0.379771,
+    0.302
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.4,
+    "true_peak_dbfs": -1.3,
+    "shot_integrated_lufs": [
+      -16.1,
+      -16.0,
+      -17.3,
+      -16.3,
+      -16.4,
+      -16.7,
+      -16.4,
+      -16.3
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "9396c475d54196a8ed6214dcb466ae1a25806844b1f35aef0690193b8ea9ee78"
+}
