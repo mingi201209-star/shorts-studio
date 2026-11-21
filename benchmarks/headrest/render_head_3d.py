@@ -127,7 +127,7 @@ def main():
     tail_mat = next((m for m in bpy.data.materials if m.name.startswith("tail")), None)
     lead_root, lead_body, lead_wheels, lead_tail = duplicate_car(root, wheels, (0.62, 0.05, 0.04))
     interior = rb.build_interior(root)
-    hide_always = [o for o in interior if o.name.startswith(("Interior driver", "Interior passenger", "Interior door panel -1", "Interior B pillar -1", "Interior A pillar -1"))]
+    hide_always = [o for o in interior if o.name.startswith(("Interior driver", "Interior passenger", "Interior door panel -1", "Interior B pillar -1", "Interior A pillar -1", "Interior roof header"))]
     interior = [o for o in interior if o not in hide_always]
     for o in hide_always:
         o.hide_render = True
@@ -143,6 +143,8 @@ def main():
     key.data.energy, key.data.size = 60.0, 0.8
     key.parent, key.location = root, (-1.3, 0.35, 1.35)
     key.rotation_euler = (0.0, math.radians(-65), 0.0)
+    for lamp in [key] + [o for o in interior if o.type == "LIGHT"]:
+        lamp.visible_camera = False             # the lamp panels themselves showed up as a black and white box at the roof edge
     wheel_nodes = {w["node"] for w in wheels.values()}
     body_objs = [o for o in root.children_recursive if o.type == "MESH" and not any(p in wheel_nodes for p in rb._ancestors(o))
                  and o not in interior and o not in hide_always and not o.name.startswith(("Driver", "Steering", "Seat", "Headrest"))]

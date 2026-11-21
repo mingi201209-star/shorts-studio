@@ -151,7 +151,7 @@ def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
                 im.paste(ims[1].resize((W, H // 2), Image.LANCZOS), (0, H // 2))
                 im.paste((20, 20, 24), (0, H // 2 - 3, W, H // 2 + 3))
                 label_split(im, fr)
-                if fr["segment"] != "A-split" or fr["frame"] / tl.FPS >= 1.5:
+                if fr["segment"] not in ("A-split", "N-loop-run-in") or (fr["segment"] == "A-split" and fr["frame"] / tl.FPS >= 1.5):      # the loop run-in looks like the first frame
                     draw_readouts(im, fr)
             else:
                 im = ims[0].resize((W, H), Image.LANCZOS) if ims[0].size != (W, H) else ims[0]
