@@ -71,3 +71,9 @@ A frame can satisfy "the event is already happening" and still read as nothing: 
 parked on a lawn. Rule added: judge frame 1 as a still image at phone size. It must show motion by itself (debris in the air, parts
 breaking or flying, a car at an angle mid-skid, a big deformation), from a side or high three-quarter view where the deformation is
 obvious. Head-on and straight-behind views flatten the action. No shot of the subject just driving longer than 1.5 s.
+
+## EP.13 took off (owner, 2026-11-21)
+The guardrail end terminal ("zipper-like": the head runs down the rail and peels the steel out sideways) is the first upload to break
+out. Next topics should copy its shape: everyday road hardware with a hidden mechanism that is itself satisfying to watch (peeling,
+unzipping, folding, being swallowed), shown working in frame 1. Candidate: the barrier transfer machine ("road zipper") that lifts a
+concrete median wall and moves it a lane over.

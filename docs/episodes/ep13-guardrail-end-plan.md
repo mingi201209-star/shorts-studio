@@ -16,7 +16,11 @@ render_terminal_3d.py, sound terminal_sfx.py, assembly assemble_terminal_film.py
 examples/experiments/terminal-film-request.json), tests tests/test_ep13_guardrail.py, narration examples/episodes/ep13-audio.
 
 ## Audience data
-(to be recorded after upload; compare with EP.12's 21.2 % and Road Signs' 69.9 %)
+- Owner, 2026-11-21: the channel's first comment on any upload.
+- Owner, later 2026-11-21: "the first zipper-like guardrail video took off" (떡상). Numbers to be recorded when the owner sends them.
+- Why it is the template: the opening frame is road hardware being destroyed in a way people have seen but never understood (the
+  yellow head running down the rail, the steel peeled out sideways like a zipper), mechanical and satisfying rather than a crash
+  injury; one mystery, answered by one visible mechanism; no text.
 
 ## Preview
 CI run 44889681725 (commit 5336b78): every gate PASS (physics, alignment, telemetry, visible action, no text, loop, smoothness, black
