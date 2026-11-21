@@ -12,6 +12,7 @@ Same situation, two cars, one difference, and the difference decides the outcome
 | EP.09 hydroplaning | slow drift, dense facts | 43.3% -> 44.3% | 0:49 -> 0:43 / 39 s (rewatched) |
 | EP.10 following distance | small far cars, rear-end at 0.96 s, 4 label boxes | 23.7% | 0:40 / 42 s |
 | EP.12 headrest | cabin, driver's head | 21.2% | 0:11 / 30 s |
+| EP.13 guardrail end | car on the terminal head, steel peeled out like a zipper | 69.2% (9,000 views, rising) | 90 % / 30 s |
 | EP.15 cable barrier | head-on car pressing thin ropes, looks parked | 13.7% (81 min) | 0:11 / 31 s |
 
 Two rules: (1) a big, readable event in the first second (crash, spin, blow-out); (2) dense, fast content (a fact or a number on every
@@ -72,7 +73,7 @@ parked on a lawn. Rule added: judge frame 1 as a still image at phone size. It m
 breaking or flying, a car at an angle mid-skid, a big deformation), from a side or high three-quarter view where the deformation is
 obvious. Head-on and straight-behind views flatten the action. No shot of the subject just driving longer than 1.5 s.
 
-## EP.13 took off (owner, 2026-11-21)
+## EP.13 took off (owner, 2026-11-21): 9,000 views, 500-1,300 an hour, 69.2 % viewed, 90 % average viewed, 160 likes
 The guardrail end terminal ("zipper-like": the head runs down the rail and peels the steel out sideways) is the first upload to break
 out. Next topics should copy its shape: everyday road hardware with a hidden mechanism that is itself satisfying to watch (peeling,
 unzipping, folding, being swallowed), shown working in frame 1. Candidate: the barrier transfer machine ("road zipper") that lifts a

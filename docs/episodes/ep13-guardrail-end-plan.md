@@ -17,7 +17,8 @@ examples/experiments/terminal-film-request.json), tests tests/test_ep13_guardrai
 
 ## Audience data
 - Owner, 2026-11-21: the channel's first comment on any upload.
-- Owner, later 2026-11-21: "the first zipper-like guardrail video took off" (떡상). Numbers to be recorded when the owner sends them.
+- Owner, later 2026-11-21: "the first zipper-like guardrail video took off" (떡상): 9,000 views and still climbing 500+ an hour
+  (peak 1,300 an hour), 160 likes, average percentage viewed 90 %, 69.2 % viewed (stayed to watch).
 - Why it is the template: the opening frame is road hardware being destroyed in a way people have seen but never understood (the
   yellow head running down the rail, the steel peeled out sideways like a zipper), mechanical and satisfying rather than a crash
   injury; one mystery, answered by one visible mechanism; no text.
