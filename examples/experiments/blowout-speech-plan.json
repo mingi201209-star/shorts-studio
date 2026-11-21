@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "blowout",
+   "beats": [
+    {
+     "narration_en": "Why do tires explode on the highway?",
+     "start": 0,
+     "end": 4.8
+    },
+    {
+     "narration_en": "Most blowouts start days earlier, with a tire that's just a little low.",
+     "start": 4.8,
+     "end": 13.2
+    },
+    {
+     "narration_en": "Every time it rolls, the soft sidewall bends flat at the bottom, then springs back.",
+     "start": 13.2,
+     "end": 22.8
+    },
+    {
+     "narration_en": "At sixty miles an hour, that happens fifteen times every second.",
+     "start": 22.8,
+     "end": 30.0
+    },
+    {
+     "narration_en": "All that bending turns into heat, deep inside the rubber.",
+     "start": 30.0,
+     "end": 36.6
+    },
+    {
+     "narration_en": "The heat slowly cooks the glue that holds the steel belts together.",
+     "start": 36.6,
+     "end": 44.4
+    },
+    {
+     "narration_en": "Until the tread peels away, and the tire bursts in a split second.",
+     "start": 44.4,
+     "end": 52.8
+    },
+    {
+     "narration_en": "And tires quietly lose about a pound of air every month.",
+     "start": 52.8,
+     "end": 60.0
+    },
+    {
+     "narration_en": "That's where those shreds of rubber on the highway come from.",
+     "start": 60.0,
+     "end": 67.2
+    }
+   ]
+  }
+ ]
+}
