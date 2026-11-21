@@ -17,3 +17,6 @@ drivers, one label per half, the hit at 0.2 s, readouts only after 1.5 s).
 CI run 44869137900 (commit 376ebd7, frames from run 44865805021): every gate PASS, 996 frames, 41.5 s. v1 (run 44861906725) passed the
 gates but the driver slid out of the fixed opening camera after the jolt; fixed with a camera that carries along after 12 cm. Split cards
 moved below the bottom driver.
+
+## Audience data (owner screenshot, 58 min after upload, title "Why Your Headrest Height Matters...")
+21.2 % viewed / 78.8 % swiped; average view duration 0:11 (early, small sample).

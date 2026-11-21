@@ -30,6 +30,13 @@ Viewers who stay watch almost the whole film (110 % and 96 %): the dense middle 
 with small cars on a wide road under four overlay boxes. Rule: the first frame is ONE big subject filling the picture, already moving
 (like EP.07's spin, Road Signs' posts), at most one short label per half; numbers and readouts come in after 1.5 s.
 
+## EP.12 data (2026-11-21, 58 min): 21.2 % viewed, avg 0:11
+The pattern across every upload: openings inside the cabin or on a person (EP.05 23.4 %, EP.12 21.2 %) and small far-away cars
+(EP.10 23.7 %) lose about four in five viewers; big exterior events on road hardware or a whole car (Road Signs 69.9 %, ESC spin 58.4 %,
+crumple crash 48.0 %) keep half or more. The "big subject" rule picked the wrong subject: a cartoon driver in a grey cabin is not a
+hook. New rule: frame 1 is a whole car (or road hardware) outdoors in the middle of a violent, readable event, filling the frame. No
+cabin or person openings. Topics return to the hidden engineering of roads and cars (the Road Signs kind), not safety advice.
+
 ## Owner feedback on EP.11 (2026-11-21): shelved, not uploaded
 "Overlaps an earlier video and explains all over the place." Right on both: the car-into-wall crush and the crush rails are EP.04, the
 "still doing 35 where the slower car stops" fact is EP.10, and the film jumped between five ideas (energy, rails, a building drop, braking,
