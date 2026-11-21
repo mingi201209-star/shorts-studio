@@ -26,4 +26,4 @@ true peak -1.9 dBFS, every line at least 12.2 dB above the effects. The sound mi
 ## v2 (owner review 2026-11-21: "parts overlap the car")
 Measured against this car's body: the cabin set's headrests reached 1.31 m through the 1.26 m roof, the dashboard top poked up
 through the hood at the windscreen base, and the cabin floor showed below the doors. Floor and dashboard top hidden, headrests
-lowered 0.12 m. Whole film re-rendered in CI.
+lowered 0.12 m. CI run 44922440556 (commit 02e9a07): all 11 gates PASS; copy ep05-review/EP14-tempered-glass-v2.mp4.
