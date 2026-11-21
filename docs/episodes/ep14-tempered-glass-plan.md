@@ -17,3 +17,8 @@ render_glass_3d.py (the CC0 cab gets a real window opening cut into it), sound g
 
 ## Audience data
 (to be recorded at 48 h and 7 days, per the research)
+
+## Preview
+CI run 44901815322 (commit 9f825cf): all 11 gates PASS (physics, pace, alignment, telemetry, visible action, no text, loop,
+smoothness, black opening, captions, audio mix); 858 frames, 35.8 s; first cut 1.30 s, 23.5 cuts/min, 171 wpm; mix -15.2 LUFS,
+true peak -1.9 dBFS, every line at least 12.2 dB above the effects. The sound mix has not been listened to by a person.
