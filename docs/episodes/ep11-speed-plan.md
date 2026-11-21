@@ -1,4 +1,7 @@
-# EP.11 plan: speed, 30 vs 40 mph into the same wall (One Difference series)
+# EP.11 plan: speed, 30 vs 40 mph into the same wall (One Difference series) - SHELVED, not uploaded
+
+Owner review 2026-11-21: overlaps EP.04 (car into a wall, crush rails) and EP.10 (stopping distance), and the explanation jumps between
+five ideas. Kept in the repo for reference only; see the new rules in docs/series-plan.md.
 
 Changed from the series plan's 50 / 60 km/h: the channel's audience is US, so the film uses mph, and 30 vs 40 mph gives a clearer picture
 (energy +78 % instead of +44 %, crush 53 vs 70 cm, 3- vs 5-story fall).

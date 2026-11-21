@@ -24,18 +24,28 @@ shot) keeps and replays the viewers who stay.
 - Pinned comment on each upload: "Which difference should we test next?" (engagement and ideas).
 - The stylised driver (EP.08) everywhere a person appears.
 
+## Owner feedback on EP.11 (2026-11-21): shelved, not uploaded
+"Overlaps an earlier video and explains all over the place." Right on both: the car-into-wall crush and the crush rails are EP.04, the
+"still doing 35 where the slower car stops" fact is EP.10, and the film jumped between five ideas (energy, rails, a building drop, braking,
+the driver). New rules:
+- Overlap check before planning: no episode reuses the main event or the main mechanism of an earlier upload (road signs, rumble strip,
+  speed bump, crumple zone, seatbelt limiter, ABS, ESC, airbag, hydroplaning, following distance, jersey barrier, sand barrels, road
+  paint, runaway ramp, train wheels).
+- One thread: every line is the next step of ONE cause-and-effect chain, in the order it happens. Each fact card names that step. No
+  side comparisons (no building drops, no detours to another scene).
+
 ## Episodes
 | # | Difference (split labels) | First-second event | Packed facts | Reuses |
 |---|---|---|---|---|
 | EP.10 | 3-SECOND GAP / 1-SECOND GAP | rear-end crash at 0.96 s | 1.5 s reaction, 40 m blind, braking x4 for x2 speed, sign count, phone | done |
-| EP.11 | 30 MPH / 40 MPH into the same wall (changed from 50 / 60 km/h: US audience, bigger difference) | the faster car crushes much deeper | energy grows with speed squared (+78 %), 3- vs 5-story fall, crush 53 vs 70 cm, braking: 35 mph where the slower car stops | EP.04 crumple car, stylised driver |
+| ~~EP.11~~ shelved | 30 MPH / 40 MPH into the same wall (changed from 50 / 60 km/h: US audience, bigger difference) | the faster car crushes much deeper | energy grows with speed squared (+78 %), 3- vs 5-story fall, crush 53 vs 70 cm, braking: 35 mph where the slower car stops | EP.04 crumple car, stylised driver |
 | EP.12 | HEADREST UP / HEADREST LOW, rear-ended at a light | the head snaps back over the low headrest | whiplash timing (about 100 ms), top of headrest level with top of head, gap under 10 cm, active headrests | EP.05 crash pulse, stylised driver |
 | EP.13 | LOW BEAMS / HIGH BEAMS at night | a deer appears; one car stops short of it | headlight reach vs stopping distance ("overdriving your headlights"), eye adaptation, when to dip | EP.10 stopping model, night lighting |
 | EP.14 | 35 PSI / 20 PSI on the highway | the soft tyre blows out | sidewall flexing heats the tyre, about 1 psi lost per month, check cold, door-jamb sticker, what to do in a blow-out | EP.07 single-track model, tyre parts |
-| EP.15 | ENGINE BRAKING / RIDING THE BRAKES down a long hill | glowing red discs, the car cannot stop | brake fade (pad and fluid heat), low gear, why runaway ramps exist | EP.06 brake parts, runaway ramp |
-| EP.16 | BELT ON THE HIP / BELT ON THE STOMACH | the body slides under the belt | submarining, lap belt over the pelvis, shoulder belt mid-collarbone, never behind the back | EP.05 belt model, stylised driver |
+| ~~EP.15~~ dropped (runaway ramp already made) | ENGINE BRAKING / RIDING THE BRAKES down a long hill | glowing red discs, the car cannot stop | brake fade (pad and fluid heat), low gear, why runaway ramps exist | EP.06 brake parts, runaway ramp |
+| ~~EP.16~~ dropped (seatbelt is EP.05) | BELT ON THE HIP / BELT ON THE STOMACH | the body slides under the belt | submarining, lap belt over the pelvis, shoulder belt mid-collarbone, never behind the back | EP.05 belt model, stylised driver |
 
-Order: EP.11 next (strongest first-second event, biggest reuse), then EP.12, EP.13 (new look: night), EP.14, EP.15, EP.16.
+Order: EP.12 headrest next, then EP.13 headlights (light and eyes only, no stopping-distance maths: that was EP.10), EP.14 tyre pressure (heat from sidewall flexing, not tread: that was EP.09). Two new topics to be chosen with the overlap check.
 
 ## After every upload
 Record viewed %, average duration and subscribers per 1,000 views at about 2 h and 24 h in the episode's plan file, and compare with
