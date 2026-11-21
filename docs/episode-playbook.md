@@ -57,7 +57,8 @@ Check every frame against this list (each item is a mistake that happened):
 - [ ] No straight-down camera: the roll is unstable; use a high oblique (EP.13 aerial).
 - [ ] No lamp panels in shot: every area light has `visible_camera = False` (EP.12 black box at the roof edge).
 - [ ] Glow is not washed out: under AgX keep emission low (3-6) with a deep colour (EP.14 furnace turned white).
-- [ ] CC0 sedan limits: the cab is solid behind its glass and the body is a solid block below the windows; the generic cabin set's door
+- [ ] CC0 sedan limits (roof 1.26 m, lower body 0.34-0.84 m): the generic cabin set's headrests, dashboard top and floor poke
+      through it (EP.14 v2); the cab is solid behind its glass and the body is a solid block below the windows; the generic cabin set's door
       panels and roof liner stick out of this car. Prefer outside shots; if the camera must see through a window, cut an opening
       (EP.14 `cut_window`) and check what is behind it (EP.14 "wall" was the road).
 - [ ] X-ray shots: nothing solid hides the subject; the key part glows orange (EP.13 spear).

@@ -502,6 +502,14 @@ def main():
     for o in [o for o in interior if o.name.startswith(("Interior door panel", "Interior B pillar", "Interior A pillar", "Interior roof"))]:
         o.hide_render = True                           # made for a wider cab: on this car they stick out through the doors and roof
         interior.remove(o)
+    # Owner review 2026-11-21 ("parts overlap the car"): on this car's body (roof 1.26 m, lower body 0.34-0.84 m, underbody 0.58 m
+    # wide) the floor shows below the doors and the dashboard top pokes up through the hood: hide them; drop the headrests below the roof.
+    for o in [o for o in interior if o.name in ("Interior floor", "Interior dashboard top")]:
+        o.hide_render = True
+        interior.remove(o)
+    for o in interior:
+        if "headrest" in o.name:
+            o.location.z -= 0.12
     for o in interior:
         if o.type == "LIGHT":
             o.visible_camera = False
