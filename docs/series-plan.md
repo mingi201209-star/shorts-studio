@@ -9,7 +9,8 @@ Same situation, two cars, one difference, and the difference decides the outcome
 | EP.05 seatbelt | two cabin close-ups | 23.4% | 0:32 / 24 s |
 | EP.06 ABS | locked car hits a box | 45.2% | 0:24 / 40 s |
 | EP.07 ESC | car spins, ON/OFF labels | 58.4% | 0:28 / 42 s |
-| EP.09 hydroplaning | slow drift, dense facts | 43.3% | 0:49 / 39 s (rewatched) |
+| EP.09 hydroplaning | slow drift, dense facts | 43.3% -> 44.3% | 0:49 -> 0:43 / 39 s (rewatched) |
+| EP.10 following distance | small far cars, rear-end at 0.96 s, 4 label boxes | 23.7% | 0:40 / 42 s |
 
 Two rules: (1) a big, readable event in the first second (crash, spin, blow-out); (2) dense, fast content (a fact or a number on every
 shot) keeps and replays the viewers who stay.
@@ -23,6 +24,11 @@ shot) keeps and replays the viewers who stay.
 - Title pattern: "Why ... ?" or "Same X, Only One ..." + emoji. Every Short goes into a playlist named "One Difference".
 - Pinned comment on each upload: "Which difference should we test next?" (engagement and ideas).
 - The stylised driver (EP.08) everywhere a person appears.
+
+## EP.09 / EP.10 data (2026-11-21)
+Viewers who stay watch almost the whole film (110 % and 96 %): the dense middle works. What fails is the first frame: EP.10 lost 76 %
+with small cars on a wide road under four overlay boxes. Rule: the first frame is ONE big subject filling the picture, already moving
+(like EP.07's spin, Road Signs' posts), at most one short label per half; numbers and readouts come in after 1.5 s.
 
 ## Owner feedback on EP.11 (2026-11-21): shelved, not uploaded
 "Overlaps an earlier video and explains all over the place." Right on both: the car-into-wall crush and the crush rails are EP.04, the

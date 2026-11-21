@@ -11,3 +11,8 @@
 - Frozen-frame risk in the top-down and sign shots was checked locally before the CI render (no frozen frames).
 - Run 44811594362: every gate PASS on the first CI run; 934 frames, 38.9 s.
 - NOT verified: voice pronunciation at the faster rate, sound-off readability, human first view. The owner uploads.
+
+## Audience data (owner screenshot 2026-11-21, about 5 h after upload in the chart)
+23.7 % viewed (kept watching) / 76.3 % swiped away; average view duration 0:40 on a 41.8 s Short (about 96 %).
+Reading: the people who stay watch nearly all of it, but three in four leave in the first second. The opening is two small cars far
+away on a wide road with four label boxes over it; the rear-end hit at 0.96 s is too small to read.

@@ -24,3 +24,6 @@
 Reading: the dense, fast format holds and replays the viewers who stay (best duration by far); the opening event was too subtle (a slow
 drift between two similar-looking cars). Rule from here: keep the dense format, and make the first second a big, readable event (crash,
 spin). EP.10 opens on a rear-end crash at 0.96 s: the first episode with both.
+
+## Audience data, later reading (owner screenshot 2026-11-21, about 11 h after upload in the chart)
+44.3 % viewed (kept watching) / 55.7 % swiped away; average view duration 0:43 on a 39 s Short (about 110 %: rewatched).
