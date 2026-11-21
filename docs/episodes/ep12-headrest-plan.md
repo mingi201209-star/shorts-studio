@@ -12,3 +12,8 @@ drivers, one label per half, the hit at 0.2 s, readouts only after 1.5 s).
 
 ## Audience data
 (to be recorded after upload)
+
+## Preview
+CI run 44869137900 (commit 376ebd7, frames from run 44865805021): every gate PASS, 996 frames, 41.5 s. v1 (run 44861906725) passed the
+gates but the driver slid out of the fixed opening camera after the jolt; fixed with a camera that carries along after 12 cm. Split cards
+moved below the bottom driver.
