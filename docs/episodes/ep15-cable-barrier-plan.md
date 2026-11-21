@@ -16,7 +16,12 @@ timeline cable_timeline.py (pace gate), renderer render_cable_3d.py, sound cable
 .github/workflows/ep15-film.yml (request examples/experiments/cable-film-request.json), tests tests/test_ep15_cable.py.
 
 ## Audience data
-(to be recorded at 48 h and 7 days)
+- 81 min after upload (owner's Studio, 2026-11-21): 173 views and stalled, 13.7 % viewed (86.3 % swiped away), average 0:11 of 30.7 s,
+  0 hypes. The lowest viewed rate of any upload.
+- Reading: the swipe happens on frame 1. It is a head-on view of a car that looks parked on grass behind three thin white lines:
+  no visible speed, no violence, mostly sky and lawn (also the thumbnail). The rule "frame 1 is a violent, readable event" was met
+  on paper (the ropes are pushed in) but not on screen. Second suspects for those who stayed: 4 s of the car just driving (3-7 s)
+  and 3.5 s of empty posts (7-11 s).
 
 ## Preview
 CI run 44916163743 (commit aadc883): all 11 gates PASS (physics, pace, alignment, telemetry, visible action, no text, loop,

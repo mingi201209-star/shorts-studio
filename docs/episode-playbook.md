@@ -13,7 +13,9 @@ structure.
       bump, crumple zone, seatbelt load limiter, ABS, ESC, airbag, hydroplaning, following distance, headrest, guardrail end terminal,
       tempered glass; also made: jersey barrier, sand barrels, road paint, runaway ramp, train wheels. (EP.11 crash speed was shelved
       because it repeated EP.04.)
-- [ ] The first frame can be an outdoor event on a whole car or road hardware, already happening, filling the frame. Never a cabin or a
+- [ ] The first frame can be an outdoor event on a whole car or road hardware, already happening, filling the frame, and it reads as
+      violent as a still at phone size: debris or parts in the air, a big deformation, side or high 3/4 view, never head-on (EP.15
+      13.7 %: the caught car looked parked). Never a cabin or a
       person (EP.05 23.4 %, EP.12 21.2 % viewed; outdoor events 48-70 %).
 
 ## 2. Script (one thread)

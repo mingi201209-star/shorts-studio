@@ -11,6 +11,8 @@ Same situation, two cars, one difference, and the difference decides the outcome
 | EP.07 ESC | car spins, ON/OFF labels | 58.4% | 0:28 / 42 s |
 | EP.09 hydroplaning | slow drift, dense facts | 43.3% -> 44.3% | 0:49 -> 0:43 / 39 s (rewatched) |
 | EP.10 following distance | small far cars, rear-end at 0.96 s, 4 label boxes | 23.7% | 0:40 / 42 s |
+| EP.12 headrest | cabin, driver's head | 21.2% | 0:11 / 30 s |
+| EP.15 cable barrier | head-on car pressing thin ropes, looks parked | 13.7% (81 min) | 0:11 / 31 s |
 
 Two rules: (1) a big, readable event in the first second (crash, spin, blow-out); (2) dense, fast content (a fact or a number on every
 shot) keeps and replays the viewers who stay.
@@ -63,3 +65,9 @@ Order: EP.12 headrest next, then EP.13 headlights (light and eyes only, no stopp
 ## After every upload
 Record viewed %, average duration and subscribers per 1,000 views at about 2 h and 24 h in the episode's plan file, and compare with
 the table above. If a first-second event type drops below 50 % viewed, change the opening, not the dense middle.
+
+## EP.15 data (2026-11-21, 81 min): 13.7 % viewed, 173 views, stalled
+A frame can satisfy "the event is already happening" and still read as nothing: the head-on car pressing three thin ropes looked
+parked on a lawn. Rule added: judge frame 1 as a still image at phone size. It must show motion by itself (debris in the air, parts
+breaking or flying, a car at an angle mid-skid, a big deformation), from a side or high three-quarter view where the deformation is
+obvious. Head-on and straight-behind views flatten the action. No shot of the subject just driving longer than 1.5 s.
