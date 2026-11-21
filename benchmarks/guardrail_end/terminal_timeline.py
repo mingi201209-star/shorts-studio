@@ -31,8 +31,8 @@ WIDE_B = {"rel": "head", "loc": (5.4, -2.4, 3.6), "target": (0.6, -1.2, 0.4), "l
 POST_CAM = {"rel": "T", "loc": (2.3, 2.85, 0.42), "target": (0.25, 4.6, 0.5), "lens": 28.0, "fstop": 4.0}
 POST_CAM_B = {"rel": "T", "loc": (2.1, 3.15, 0.38), "target": (0.25, 4.6, 0.5), "lens": 30.0, "fstop": 4.0}
 AERIAL = {"rel": "T", "loc": (4.0, 1.5, 3.5), "target": (0.3, 6.0, 0.3), "lens": 28.0, "fstop": 11.0}
-AERIAL_B = {"rel": "T", "loc": (0.8, 4.6, 14.0), "target": (0.4, 4.7, 0.0), "lens": 45.0, "fstop": 16.0}
-FRESH = {"rel": "head", "loc": (1.0, 1.1, 0.75), "target": (-0.6, -4.0, 0.6), "lens": 26.0, "fstop": 4.0}
+AERIAL_B = {"rel": "T", "loc": (6.5, 0.5, 11.0), "target": (0.3, 5.6, 0.0), "lens": 40.0, "fstop": 16.0}
+FRESH = {"rel": "head", "loc": (1.8, 1.8, 0.85), "target": (-0.5, -5.0, 0.6), "lens": 24.0, "fstop": 4.0}
 
 # label, variant, start (line number or (line, absolute second)), sim start, sim end (None = warp), cam a, cam b, flags, lines
 ROWS = [
