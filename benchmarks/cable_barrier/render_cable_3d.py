@@ -205,7 +205,7 @@ def main():
     sun.data.color = (1.0, 0.74, 0.48)
     sun.rotation_euler = Vector(cinematic.light_direction(sun_to)).to_track_quat("-Z", "Y").to_euler()
     build_highway()
-    oncoming_root, _, oncoming_wheels, _ = duplicate_car(root, wheels, (0.06, 0.18, 0.55))
+    oncoming_root, _, oncoming_wheels, _ = duplicate_car(root, wheels, (0.08, 0.30, 0.95))
     wheel_nodes = {w["node"] for w in wheels.values()}
     parts = [o for o in root.children_recursive if o.type == "MESH" and not any(p in wheel_nodes for p in rb._ancestors(o))]
     ghost = rb.Ghost(parts)

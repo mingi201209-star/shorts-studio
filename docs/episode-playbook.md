@@ -52,7 +52,8 @@ Check every frame against this list (each item is a mistake that happened):
 - [ ] Nothing in front of it: mirrors, posts, pillars, nozzle rows (EP.14 mirror over the burst; EP.13 post over the rail end; EP.14
       furnace pipes).
 - [ ] A moving subject stays in frame for the whole shot: follow it ("head"/"car"/"lag" cameras) (EP.12 driver slid out).
-- [ ] The camera is not inside anything that moves through its position (EP.13 coil vs camera).
+- [ ] The camera is not inside anything that moves through its position (EP.13 coil vs camera; EP.15 shot H went black as the car
+      drove into a world-fixed camera: tests/test_ep15_cable.py checks every frame).
 - [ ] No straight-down camera: the roll is unstable; use a high oblique (EP.13 aerial).
 - [ ] No lamp panels in shot: every area light has `visible_camera = False` (EP.12 black box at the roof edge).
 - [ ] Glow is not washed out: under AgX keep emission low (3-6) with a deep colour (EP.14 furnace turned white).

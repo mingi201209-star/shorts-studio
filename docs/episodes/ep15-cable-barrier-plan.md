@@ -19,4 +19,4 @@ timeline cable_timeline.py (pace gate), renderer render_cable_3d.py, sound cable
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(pending)
+Local low-res run: all 11 gates PASS (736 frames, 30.7 s; mix -15.2 LUFS, every line at least 10.2 dB above the effects). CI: pending.

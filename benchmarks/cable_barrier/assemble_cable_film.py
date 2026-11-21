@@ -119,7 +119,7 @@ def visible_action(frames: list[dict]) -> dict:
     d = by.get("D-posts-fold", [])
     if not d or d[-1]["posts_down"] <= d[0]["posts_down"]:
         problems.append("no post is seen folding in the post shot")
-    peak = max(p["rope_depth"] for p in frames)
+    peak = max(fr["parts"][0]["rope_depth"] for fr in frames)
     if peak < 0.95 * cm._peak()[1]:
         problems.append(f"the peak stretch is never shown ({peak:.2f} m)")
     g = by.get("G-steers-back", [])

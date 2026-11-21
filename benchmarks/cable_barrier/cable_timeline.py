@@ -17,8 +17,8 @@ A1 = {"rel": "world", "loc": (-2.3, 6.4, 0.85), "target": (-0.6, 2.6, 0.62), "le
 A1_B = {"rel": "world", "loc": (-2.2, 6.9, 0.80), "target": (-0.8, 3.2, 0.62), "lens": 40.0, "fstop": 4.0}
 A2 = {"rel": "world", "loc": (-7.5, 15.5, 5.2), "target": (-0.3, 4.5, 0.4), "lens": 26.0, "fstop": 8.0}
 A2_B = {"rel": "world", "loc": (-7.0, 14.0, 4.6), "target": (-0.4, 5.5, 0.4), "lens": 27.0, "fstop": 8.0}
-B = {"rel": "car", "loc": (4.0, -10.0, 4.2), "target": (-3.0, 10.0, 0.3), "lens": 24.0, "fstop": 11.0}
-B_B = {"rel": "car", "loc": (3.4, -8.5, 3.6), "target": (-3.5, 10.0, 0.3), "lens": 25.0, "fstop": 11.0}
+B = {"rel": "car", "loc": (4.0, -10.0, 4.2), "target": (-5.0, 14.0, 0.3), "lens": 24.0, "fstop": 11.0}
+B_B = {"rel": "car", "loc": (3.4, -8.5, 3.6), "target": (-10.0, 12.0, 0.3), "lens": 25.0, "fstop": 11.0}
 C = {"rel": "world", "loc": (1.3, 22.0, 0.75), "target": (0.0, 32.0, 0.6), "lens": 30.0, "fstop": 4.0}
 C_B = {"rel": "world", "loc": (1.1, 17.0, 0.70), "target": (0.0, 27.0, 0.6), "lens": 30.0, "fstop": 4.0}
 D = {"rel": "world", "loc": (-2.3, -2.2, 0.60), "target": (0.6, 2.6, 0.50), "lens": 24.0, "fstop": 4.0}
@@ -29,22 +29,22 @@ F = {"rel": "car", "loc": (-5.2, 2.5, 1.6), "target": (0.0, 1.5, 0.6), "lens": 2
 F_B = {"rel": "car", "loc": (-5.0, 3.5, 1.5), "target": (0.0, 2.0, 0.6), "lens": 29.0, "fstop": 5.6}
 G = {"rel": "car", "loc": (-10.0, -7.0, 8.5), "target": (0.0, 4.0, 0.0), "lens": 26.0, "fstop": 11.0}
 G_B = {"rel": "car", "loc": (-10.5, -4.0, 8.0), "target": (0.0, 5.0, 0.0), "lens": 26.0, "fstop": 11.0}
-H = {"rel": "world", "loc": (-2.4, 11.0, 0.75), "target": (-0.9, 7.6, 0.6), "lens": 30.0, "fstop": 4.0}
-H_B = {"rel": "world", "loc": (-2.2, 10.3, 0.70), "target": (-0.9, 7.6, 0.6), "lens": 32.0, "fstop": 4.0}
+H = {"rel": "world", "loc": (-3.0, 17.0, 1.1), "target": (-0.8, 9.0, 0.6), "lens": 32.0, "fstop": 4.0}
+H_B = {"rel": "world", "loc": (-2.6, 15.6, 0.9), "target": (-0.9, 10.0, 0.6), "lens": 34.0, "fstop": 4.0}
 I = {"rel": "world", "loc": (-6.0, 22.0, 2.4), "target": (2.0, -6.0, 0.5), "lens": 24.0, "fstop": 8.0}
 
 # label, variant, start (line, or (line, absolute second)), knots [(film s from shot start, simulated s)], cam a, cam b, flags, lines
 ROWS = [
     ("A1-caught", "crash", 1, [(0.0, OPEN_SIM), (1.3, 0.22)], A1, A1_B, {}, (1,)),
     ("A2-slingshot", "crash", (1, 1.30), [(0.0, 0.22), (1.95, 0.45)], A2, A2_B, {}, (1,)),
-    ("B-oncoming", "crash", 2, [(0.0, -2.4), (3.93, -0.30)], B, B_B, {}, (2,)),
+    ("B-oncoming", "crash", 2, [(0.0, -2.2), (3.93, -0.12)], B, B_B, {}, (2,)),
     ("C-ropes", "crash", 3, [(0.0, -8.0), (3.55, -7.5)], C, C_B, {}, (3,)),
     ("D-posts-fold", "crash", 4, [(0.0, -0.06), (2.77, 0.14)], D, D_B, {}, (4,)),
     ("E-eight-feet", "crash", 5, [(0.0, 0.0), (3.36, 0.44)], E, E_B, {}, (5,)),
     ("F-gently", "crash", 6, [(0.0, 0.15), (3.68, 1.2)], F, F_B, {}, (6,)),
     ("G-steers-back", "crash", 7, [(0.0, 0.9), (4.5, 5.0)], G, G_B, {}, (7,)),
-    ("H-steel-net", "crash", 8, [(0.0, 0.38), (2.4, 0.44)], H, H_B, {}, (8,)),
-    ("I-loop", "crash", 9, [(0.0, -3.0), (3.21, OPEN_SIM)], I, A1, {"loop": True}, (9,)),
+    ("H-steel-net", "crash", 8, [(0.0, 0.36), (2.4, 0.50)], H, H_B, {}, (8,)),
+    ("I-loop", "crash", 9, [(0.0, -2.4), (3.21, OPEN_SIM)], I, A1, {"loop": True}, (9,)),
 ]
 
 
