@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "glass",
+   "beats": [
+    {
+     "narration_en": "Why does a car window explode into tiny cubes?",
+     "start": 0,
+     "end": 4.98
+    },
+    {
+     "narration_en": "It's tempered glass: heated red hot, then blasted with cold air.",
+     "start": 4.98,
+     "end": 10.8
+    },
+    {
+     "narration_en": "The surface hardens first. Then the inside cools, shrinks, and squeezes the surface tight.",
+     "start": 10.8,
+     "end": 17.88
+    },
+    {
+     "narration_en": "That squeeze makes it about four times stronger than normal glass.",
+     "start": 17.88,
+     "end": 23.7
+    },
+    {
+     "narration_en": "But the energy stays locked inside. Break through the surface, and it all lets go at once.",
+     "start": 23.7,
+     "end": 32.04
+    },
+    {
+     "narration_en": "Cracks race across the pane at nearly a mile per second,",
+     "start": 32.04,
+     "end": 37.86
+    },
+    {
+     "narration_en": "leaving blunt little cubes instead of knife-like shards.",
+     "start": 37.86,
+     "end": 42.42
+    },
+    {
+     "narration_en": "Windshields are different: glued to plastic, they crack but hold together.",
+     "start": 42.42,
+     "end": 48.24
+    },
+    {
+     "narration_en": "That's why emergency hammers are made for side windows.",
+     "start": 48.24,
+     "end": 53.22
+    }
+   ]
+  }
+ ]
+}

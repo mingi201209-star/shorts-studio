@@ -1,0 +1,272 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 35.52,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.339124,
+      "text": "Why does a"
+    },
+    {
+      "start": 0.35129200000000005,
+      "end": 1.576999,
+      "text": "car window explode"
+    },
+    {
+      "start": 1.649833,
+      "end": 2.766333,
+      "text": "into tiny cubes?"
+    },
+    {
+      "start": 3.026365777777779,
+      "end": 4.021489777777779,
+      "text": "It's tempered glass:"
+    },
+    {
+      "start": 4.421990777777778,
+      "end": 5.210865777777779,
+      "text": "heated red hot,"
+    },
+    {
+      "start": 5.514240777777778,
+      "end": 6.315198777777779,
+      "text": "then blasted with"
+    },
+    {
+      "start": 6.327323777777779,
+      "end": 6.946281777777779,
+      "text": "cold air."
+    },
+    {
+      "start": 7.206314555555557,
+      "end": 7.618980555555558,
+      "text": "The surface"
+    },
+    {
+      "start": 7.631106555555557,
+      "end": 8.529147555555557,
+      "text": "hardens first."
+    },
+    {
+      "start": 8.929647555555558,
+      "end": 9.645647555555557,
+      "text": "Then the inside"
+    },
+    {
+      "start": 9.657772555555557,
+      "end": 11.296105555555556,
+      "text": "cools, shrinks, and"
+    },
+    {
+      "start": 11.308272555555558,
+      "end": 11.963605555555556,
+      "text": "squeezes the"
+    },
+    {
+      "start": 11.975731555555559,
+      "end": 12.764563555555558,
+      "text": "surface tight."
+    },
+    {
+      "start": 13.024596333333337,
+      "end": 13.801346333333337,
+      "text": "That squeeze makes"
+    },
+    {
+      "start": 13.813429333333335,
+      "end": 14.432388333333336,
+      "text": "it about four"
+    },
+    {
+      "start": 14.444513333333337,
+      "end": 15.439679333333336,
+      "text": "times stronger than"
+    },
+    {
+      "start": 15.451804333333335,
+      "end": 16.313471333333336,
+      "text": "normal glass."
+    },
+    {
+      "start": 16.573504111111113,
+      "end": 17.168212111111114,
+      "text": "But the energy"
+    },
+    {
+      "start": 17.180296111111115,
+      "end": 18.369629111111113,
+      "text": "stays locked inside."
+    },
+    {
+      "start": 18.782254111111115,
+      "end": 19.219170111111115,
+      "text": "Break through the"
+    },
+    {
+      "start": 19.231296111111114,
+      "end": 20.250712111111113,
+      "text": "surface, and it"
+    },
+    {
+      "start": 20.262837111111114,
+      "end": 20.821087111111115,
+      "text": "all lets go"
+    },
+    {
+      "start": 20.833212111111113,
+      "end": 21.415753111111115,
+      "text": "at once."
+    },
+    {
+      "start": 21.675785888888896,
+      "end": 22.683076888888895,
+      "text": "Cracks race across"
+    },
+    {
+      "start": 22.695202888888893,
+      "end": 23.423368888888895,
+      "text": "the pane at"
+    },
+    {
+      "start": 23.435493888888896,
+      "end": 24.187909888888896,
+      "text": "nearly a mile"
+    },
+    {
+      "start": 24.200077888888895,
+      "end": 24.758327888888896,
+      "text": "per second,"
+    },
+    {
+      "start": 25.018360666666673,
+      "end": 25.94069366666667,
+      "text": "leaving blunt little"
+    },
+    {
+      "start": 25.952818666666673,
+      "end": 26.850901666666672,
+      "text": "cubes instead of"
+    },
+    {
+      "start": 26.86302766666667,
+      "end": 27.89456866666667,
+      "text": "knife-like shards."
+    },
+    {
+      "start": 28.15460144444445,
+      "end": 29.33180944444445,
+      "text": "Windshields\\Nare different:"
+    },
+    {
+      "start": 29.70801844444445,
+      "end": 30.64247644444445,
+      "text": "glued to plastic,"
+    },
+    {
+      "start": 30.84880944444445,
+      "end": 31.64972644444445,
+      "text": "they crack but"
+    },
+    {
+      "start": 31.66189344444445,
+      "end": 32.426434444444446,
+      "text": "hold together."
+    },
+    {
+      "start": 32.686467222222234,
+      "end": 33.57238422222223,
+      "text": "That's why emergency"
+    },
+    {
+      "start": 33.584550222222234,
+      "end": 34.36125822222223,
+      "text": "hammers are made"
+    },
+    {
+      "start": 34.373384222222235,
+      "end": 35.31996722222223,
+      "text": "for side windows."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.9663657777777788,
+      "narration_en": "Why does a car window explode into tiny cubes?",
+      "source_audio_sha256": "ca30fcf09cf4853e0da9e87289ae459e8572387e542883ae7a89e1f681d69a17"
+    },
+    {
+      "start": 2.9663657777777788,
+      "end": 7.146314555555557,
+      "narration_en": "It's tempered glass: heated red hot, then blasted with cold air.",
+      "source_audio_sha256": "d81c73a1901ddf0a494d416757a634aeffcb9ef4e119b2575aca12d493362407"
+    },
+    {
+      "start": 7.146314555555557,
+      "end": 12.964596333333336,
+      "narration_en": "The surface hardens first. Then the inside cools, shrinks, and squeezes the surface tight.",
+      "source_audio_sha256": "3ee130b5a9bb1fb0ff441ec492f3c2ff8370e05343f750dae36d7da0f112a356"
+    },
+    {
+      "start": 12.964596333333336,
+      "end": 16.513504111111114,
+      "narration_en": "That squeeze makes it about four times stronger than normal glass.",
+      "source_audio_sha256": "5e87ec658a85ecb365aa97e45f9030b41b183ff2e87e35bd65ebefbe1d28ae79"
+    },
+    {
+      "start": 16.513504111111114,
+      "end": 21.615785888888894,
+      "narration_en": "But the energy stays locked inside. Break through the surface, and it all lets go at once.",
+      "source_audio_sha256": "e73443022f8223429372c6b41a362208c551a55ad898cc0be24e0fd5f3ee32fe"
+    },
+    {
+      "start": 21.615785888888894,
+      "end": 24.95836066666667,
+      "narration_en": "Cracks race across the pane at nearly a mile per second,",
+      "source_audio_sha256": "c79d78817241d6df08747533acd31ab1b2f7b635c1d273410c9cf341e63c2f1b"
+    },
+    {
+      "start": 24.95836066666667,
+      "end": 28.09460144444445,
+      "narration_en": "leaving blunt little cubes instead of knife-like shards.",
+      "source_audio_sha256": "c7ef9a9bb33f7ccd844d0e51e406530269ad30a349617971070415cabfa2d0a2"
+    },
+    {
+      "start": 28.09460144444445,
+      "end": 32.62646722222223,
+      "narration_en": "Windshields are different: glued to plastic, they crack but hold together.",
+      "source_audio_sha256": "64bd2bb9f3e471617e97e3f0365ecbbb38f2fe509315410de45a409aa60fbec8"
+    },
+    {
+      "start": 32.62646722222223,
+      "end": 35.52,
+      "narration_en": "That's why emergency hammers are made for side windows.",
+      "source_audio_sha256": "6765b97fc67cb44ddd9f7a669e4a8407352c905ed173f60f636a625da4b87615"
+    }
+  ],
+  "silence_gaps": [
+    0.382167,
+    0.354542,
+    0.423833,
+    0.423792,
+    0.429604
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.9,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.2,
+      -15.7,
+      -16.6,
+      -16.9,
+      -16.0,
+      -15.8,
+      -16.6
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "aa41d802ddd11b657299f98fbef8a6964c9bbf1cc87e42637264ed124fcd914f"
+}
