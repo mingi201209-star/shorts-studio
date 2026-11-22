@@ -43,4 +43,6 @@ above the effects). Fixed on the way: the hero camera (ten framings tried: a 9 m
 curl of skin so it reads at phone size), the box panels' normals (the plywood liner was outside: the box looked tan), the bridge,
 sixteen-inch, sensor and cab-under shots re-aimed, the locomotive given a cab and a long hood, the scene built with the data API
 (operators took about 6 min per render shard), effects lowered under lines 3, 6, 10 and 11.
-CI: pending.
+CI run 45021089590 (commit 4b6ada6, renderer 86c2d4e4): all 12 gates PASS incl. opening_hook (opening held 2.49 s; the whole truck
+in frame, at least 49 % of the width); 787 frames, 32.8 s; 20.1 cuts/min, 197 wpm; mix -15.2 LUFS, true peak -1.9 dBFS, every line
+at least 8.5 dB above the effects. Copy: ep05-review/EP20-can-opener-bridge.mp4. Not listened to yet.
