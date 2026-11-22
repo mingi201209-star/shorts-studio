@@ -38,4 +38,6 @@ Fixed by re-aiming the hero camera (checked in Blender: 99-100 % of the span in 
 the dust spheres were built 50 m under their origin (invisible), the slope's blocky grass squares (one blended ground material now),
 the brake glow (was washing out to white), several cameras re-aimed (closer to the pocket, the brake loop face-on). 18.7 cuts/min,
 188 wpm; mix -15.2 LUFS, every line at least 12.7 dB above the effects; loop seam 1.54 vs steps 1.62/1.03.
-CI: pending.
+CI (run 45079309564, 848 frames at 720x1280, 16 samples, composed to 1080x1920): all 12 gates PASS. Opening hook held 2.31 s, the
+middle span at least 99 % in frame and 54 % of the width in the first second; 18.7 cuts/min, 188 wpm; mix -15.2 LUFS, every line at
+least 12.7 dB above the effects; loop seam 1.73 vs steps 2.26/1.31. Film sha256 57ddd5140a6c8890816d377cc803e46993496e3f21ce1d30400f1595889270be.
