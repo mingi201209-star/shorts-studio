@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "wedge",
+   "beats": [
+    {
+     "narration_en": "Why did a steel wall just jump out of the road?",
+     "start": 0,
+     "end": 7.2
+    },
+    {
+     "narration_en": "It's a security barrier. In an emergency it rises in about a second.",
+     "start": 7.2,
+     "end": 16.2
+    },
+    {
+     "narration_en": "Under the road, a hinged steel plate waits inside a concrete pit.",
+     "start": 16.2,
+     "end": 24.0
+    },
+    {
+     "narration_en": "Hydraulic pistons swing its front edge up, nearly three feet high.",
+     "start": 24.0,
+     "end": 31.2
+    },
+    {
+     "narration_en": "A car that hits it doesn't just bounce off the steel.",
+     "start": 31.2,
+     "end": 38.4
+    },
+    {
+     "narration_en": "Thick struts push the crash down into tons of buried concrete.",
+     "start": 38.4,
+     "end": 46.2
+    },
+    {
+     "narration_en": "So the car stops dead, and its back end flips into the air.",
+     "start": 46.2,
+     "end": 54.6
+    },
+    {
+     "narration_en": "Tested ones can stop a fifteen thousand pound truck going fifty.",
+     "start": 54.6,
+     "end": 61.8
+    },
+    {
+     "narration_en": "That's what those striped steel plates at secure gates are for.",
+     "start": 61.8,
+     "end": 69.0
+    }
+   ]
+  }
+ ]
+}
