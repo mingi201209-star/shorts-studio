@@ -121,11 +121,13 @@ def captured() -> list[dict]:
     """The quills each left tyre takes: row, x on the strip, capture time, and the tyre's rolled distance then (sets the material
     angle the quill stays at)."""
     wx = X_LANE + WHEEL_OFFSET[0]
-    out = []
+    out, used = [], set()
     for axle in ("front", "rear"):
-        for row in (CAUGHT_ROWS if axle == "front" else (0, 2, 3)):
+        for row in (CAUGHT_ROWS if axle == "front" else (1, 2, 3)):
             xs = quill_xs(row)
-            x = float(xs[np.argmin(np.abs(xs - wx))])
+            order = [float(xs[i]) for i in np.argsort(np.abs(xs - wx)) if (row, round(float(xs[i]), 4)) not in used]
+            x = order[0]                                       # a quill the front tyre already took is gone: the next one under the tread
+            used.add((row, round(x, 4)))
             th = hit_time(row, axle)
             out.append({"axle": axle, "row": row, "x": x, "w": x - wx, "t": th, "dist": car_y(th)})
     return out
