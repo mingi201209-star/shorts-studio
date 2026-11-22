@@ -1,0 +1,302 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 32.538,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.48529100000000003,
+      "text": "Why does this"
+    },
+    {
+      "start": 0.498167,
+      "end": 1.426,
+      "text": "bridge peel trucks"
+    },
+    {
+      "start": 1.4388750000000001,
+      "end": 1.825458,
+      "text": "open like"
+    },
+    {
+      "start": 1.838375,
+      "end": 2.289417,
+      "text": "a can?"
+    },
+    {
+      "start": 2.5494288181818177,
+      "end": 3.039095818181818,
+      "text": "It's a rail"
+    },
+    {
+      "start": 3.0520118181818177,
+      "end": 4.2891368181818175,
+      "text": "bridge, only eleven"
+    },
+    {
+      "start": 4.302011818181818,
+      "end": 4.8819278181818175,
+      "text": "foot eight."
+    },
+    {
+      "start": 5.141939636363635,
+      "end": 5.657397636363636,
+      "text": "So a steel"
+    },
+    {
+      "start": 5.670314636363636,
+      "end": 6.340397636363636,
+      "text": "beam out front"
+    },
+    {
+      "start": 6.353272636363635,
+      "end": 7.152231636363635,
+      "text": "takes the hits,"
+    },
+    {
+      "start": 7.384231636363636,
+      "end": 8.144522636363636,
+      "text": "not the bridge."
+    },
+    {
+      "start": 8.404534454545454,
+      "end": 8.868450454545453,
+      "text": "And a truck"
+    },
+    {
+      "start": 8.881367454545455,
+      "end": 10.041158454545453,
+      "text": "roof is aluminum"
+    },
+    {
+      "start": 10.054034454545453,
+      "end": 10.569492454545454,
+      "text": "thinner than"
+    },
+    {
+      "start": 10.582367454545453,
+      "end": 10.994742454545454,
+      "text": "a dime."
+    },
+    {
+      "start": 11.254754272727272,
+      "end": 11.473837272727271,
+      "text": "So the"
+    },
+    {
+      "start": 11.486712272727273,
+      "end": 12.247045272727272,
+      "text": "steel wins."
+    },
+    {
+      "start": 12.685171272727272,
+      "end": 13.458379272727273,
+      "text": "The rivets pop"
+    },
+    {
+      "start": 13.613004272727272,
+      "end": 14.076921272727272,
+      "text": "and the roof"
+    },
+    {
+      "start": 14.089796272727272,
+      "end": 14.863004272727272,
+      "text": "peels back."
+    },
+    {
+      "start": 15.12301609090909,
+      "end": 15.65134909090909,
+      "text": "The cab is"
+    },
+    {
+      "start": 15.66422409090909,
+      "end": 16.630724090909087,
+      "text": "lower, so the"
+    },
+    {
+      "start": 16.64359909090909,
+      "end": 17.31372309090909,
+      "text": "truck keeps"
+    },
+    {
+      "start": 17.326599090909088,
+      "end": 17.99668209090909,
+      "text": "rolling under."
+    },
+    {
+      "start": 18.25669390909091,
+      "end": 18.81081890909091,
+      "text": "This one is"
+    },
+    {
+      "start": 18.82369390909091,
+      "end": 20.48606790909091,
+      "text": "thirteen feet, sixteen"
+    },
+    {
+      "start": 20.49898590909091,
+      "end": 21.349484909090908,
+      "text": "inches too tall."
+    },
+    {
+      "start": 21.609496727272727,
+      "end": 22.266746727272725,
+      "text": "Now a sensor"
+    },
+    {
+      "start": 22.279621727272726,
+      "end": 23.426537727272727,
+      "text": "spots tall trucks"
+    },
+    {
+      "start": 23.581163727272727,
+      "end": 24.135287727272726,
+      "text": "and turns the"
+    },
+    {
+      "start": 24.148163727272728,
+      "end": 24.753829727272727,
+      "text": "light red."
+    },
+    {
+      "start": 25.013841545454547,
+      "end": 26.006132545454545,
+      "text": "In twenty nineteen,"
+    },
+    {
+      "start": 26.328299545454545,
+      "end": 27.062799545454546,
+      "text": "they even raised"
+    },
+    {
+      "start": 27.075716545454544,
+      "end": 27.616924545454545,
+      "text": "the bridge"
+    },
+    {
+      "start": 27.784466545454546,
+      "end": 28.519007545454546,
+      "text": "eight inches."
+    },
+    {
+      "start": 28.779019363636365,
+      "end": 29.462019363636365,
+      "text": "Trucks still hit"
+    },
+    {
+      "start": 29.474894363636363,
+      "end": 30.080560363636362,
+      "text": "it, just"
+    },
+    {
+      "start": 30.093477363636364,
+      "end": 30.660477363636364,
+      "text": "less often."
+    },
+    {
+      "start": 30.92048918181818,
+      "end": 31.30707218181818,
+      "text": "That's why they"
+    },
+    {
+      "start": 31.31994718181818,
+      "end": 31.71944718181818,
+      "text": "call it the"
+    },
+    {
+      "start": 31.73232218181818,
+      "end": 32.33798818181818,
+      "text": "can opener."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.489428818181818,
+      "narration_en": "Why does this bridge peel trucks open like a can?",
+      "source_audio_sha256": "f0dc422ef094080065e9b2ce1dca30246ec97fa3dc759c25f80d72250f7443ce"
+    },
+    {
+      "start": 2.489428818181818,
+      "end": 5.081939636363636,
+      "narration_en": "It's a rail bridge, only eleven foot eight.",
+      "source_audio_sha256": "3aadad378c8ae0191f5d1c302a81822952b71ed0b660410df8aa2a853078c69d"
+    },
+    {
+      "start": 5.081939636363636,
+      "end": 8.344534454545453,
+      "narration_en": "So a steel beam out front takes the hits, not the bridge.",
+      "source_audio_sha256": "4983a7ab6332de583628e25ad8efe004c6c29321249bce1dd8774f600c785d91"
+    },
+    {
+      "start": 8.344534454545453,
+      "end": 11.194754272727272,
+      "narration_en": "And a truck roof is aluminum thinner than a dime.",
+      "source_audio_sha256": "de863b2017478aa305676dacc2bff9744f69347d715eb6223d8366e13a69e190"
+    },
+    {
+      "start": 11.194754272727272,
+      "end": 15.06301609090909,
+      "narration_en": "So the steel wins. The rivets pop and the roof peels back.",
+      "source_audio_sha256": "4a4d3f50fca91aa0271e6a10faf1a876a93df4ec275c463f1cc70433a5c4e776"
+    },
+    {
+      "start": 15.06301609090909,
+      "end": 18.196693909090907,
+      "narration_en": "The cab is lower, so the truck keeps rolling under.",
+      "source_audio_sha256": "1aaf86276345812fcc21e728fd62846d68c05506ace3faaf3c0a8477cb77d1ba"
+    },
+    {
+      "start": 18.196693909090907,
+      "end": 21.549496727272725,
+      "narration_en": "This one is thirteen feet, sixteen inches too tall.",
+      "source_audio_sha256": "548e0bc509a44d75b55f04e3beeacf07f6e3f7f5bf4528a2edad1f42a92f201d"
+    },
+    {
+      "start": 21.549496727272725,
+      "end": 24.953841545454544,
+      "narration_en": "Now a sensor spots tall trucks and turns the light red.",
+      "source_audio_sha256": "ec638046bc61b935767b1cd5cc30d33348af7736e09da2d58e9a531183efb8f2"
+    },
+    {
+      "start": 24.953841545454544,
+      "end": 28.719019363636363,
+      "narration_en": "In twenty nineteen, they even raised the bridge eight inches.",
+      "source_audio_sha256": "0f2268ba3f6973b98701cb5f0d863902e8cdbe75a38af038b05e85fd12c39a87"
+    },
+    {
+      "start": 28.719019363636363,
+      "end": 30.86048918181818,
+      "narration_en": "Trucks still hit it, just less often.",
+      "source_audio_sha256": "ec9ab8adec1a28056dd8746dd0185f4bc69268ef1cf9b5c941cd5607df4ac4c5"
+    },
+    {
+      "start": 30.86048918181818,
+      "end": 32.538,
+      "narration_en": "That's why they call it the can opener.",
+      "source_audio_sha256": "6b1800319b236c209738f56bc3e316774affc6238c10ae88e9ad9fc562d8ed10"
+    }
+  ],
+  "silence_gaps": [
+    0.468562,
+    0.311875,
+    0.333167,
+    0.366125
+  ],
+  "loudness": {
+    "integrated_lufs": -16.4,
+    "loudness_range_lu": 1.4,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.3,
+      -16.3,
+      -16.6,
+      -15.8,
+      -16.6,
+      -16.5
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "aa6b599fd5b38a15e50c3674681793f11d0acdd01e4a0b97f59b493c024bed2f"
+}

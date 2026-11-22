@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "opener",
+   "beats": [
+    {
+     "narration_en": "Why does this bridge peel trucks open like a can?",
+     "start": 0.0,
+     "end": 6.6
+    },
+    {
+     "narration_en": "It's a rail bridge, only eleven foot eight.",
+     "start": 6.6,
+     "end": 12.0
+    },
+    {
+     "narration_en": "So a steel beam out front takes the hits, not the bridge.",
+     "start": 12.0,
+     "end": 19.8
+    },
+    {
+     "narration_en": "And a truck roof is aluminum thinner than a dime.",
+     "start": 19.8,
+     "end": 26.4
+    },
+    {
+     "narration_en": "So the steel wins. The rivets pop and the roof peels back.",
+     "start": 26.4,
+     "end": 34.2
+    },
+    {
+     "narration_en": "The cab is lower, so the truck keeps rolling under.",
+     "start": 34.2,
+     "end": 40.8
+    },
+    {
+     "narration_en": "This one is thirteen feet, sixteen inches too tall.",
+     "start": 40.8,
+     "end": 46.8
+    },
+    {
+     "narration_en": "Now a sensor spots tall trucks and turns the light red.",
+     "start": 46.8,
+     "end": 54.0
+    },
+    {
+     "narration_en": "In twenty nineteen, they even raised the bridge eight inches.",
+     "start": 54.0,
+     "end": 60.6
+    },
+    {
+     "narration_en": "Trucks still hit it, just less often.",
+     "start": 60.6,
+     "end": 65.4
+    },
+    {
+     "narration_en": "That's why they call it the can opener.",
+     "start": 65.4,
+     "end": 70.8
+    }
+   ]
+  }
+ ]
+}
