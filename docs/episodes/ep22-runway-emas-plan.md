@@ -36,4 +36,6 @@ Local low-res run (832 frames, 34.7 s): 11 of 12 gates PASS; visible_action FAIL
 the runway ended 0.03 s after the nose gear reached the bed). Fixed by ending that shot 0.2 s earlier (the nose 6 m short of the bed,
 past the end of the runway). Opening hook: held 2.52 s, the jet at least 90 % in frame and 89 % of the width in the first second;
 19.0 cuts/min, 193 wpm; mix -15.3 LUFS, every line at least 8.9 dB above the effects; loop seam 1.43 vs steps 2.15/1.69.
-CI: pending.
+CI (run 45080998669, 832 frames at 720x1280, 16 samples, composed to 1080x1920): all 12 gates PASS. Opening hook held 2.52 s, the
+jet at least 90 % in frame and 89 % of the width in the first second; mix -15.3 LUFS, every line at least 9.0 dB above the effects;
+loop seam 2.47 vs steps 3.22/2.52. Film sha256 fa8093c7b6bbd00f64664c7f72e28084b965390afc05d2b4c927b3476bdc1081.
