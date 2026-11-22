@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "rocknet",
+   "beats": [
+    {
+     "narration_en": "How does a net stop a twenty-ton boulder?",
+     "start": 0.0,
+     "end": 5.4
+    },
+    {
+     "narration_en": "Mountain roads hang steel nets on the slopes above them.",
+     "start": 5.4,
+     "end": 12.0
+    },
+    {
+     "narration_en": "The net is woven from steel rings, like chain mail.",
+     "start": 12.0,
+     "end": 18.6
+    },
+    {
+     "narration_en": "When a rock hits, the net doesn't try to stop it dead.",
+     "start": 18.6,
+     "end": 26.4
+    },
+    {
+     "narration_en": "It stretches like a trampoline, more than twenty feet.",
+     "start": 26.4,
+     "end": 32.4
+    },
+    {
+     "narration_en": "And the ropes that hold it pull through brake rings.",
+     "start": 32.4,
+     "end": 39.0
+    },
+    {
+     "narration_en": "These steel loops shrink and bend, turning the speed into heat.",
+     "start": 39.0,
+     "end": 46.2
+    },
+    {
+     "narration_en": "A slow stop keeps the forces low, so nothing snaps.",
+     "start": 46.2,
+     "end": 52.8
+    },
+    {
+     "narration_en": "The biggest nets stop twenty tons at sixty miles an hour.",
+     "start": 52.8,
+     "end": 60.0
+    },
+    {
+     "narration_en": "Afterward, crews clear the rock and replace the brakes.",
+     "start": 60.0,
+     "end": 66.0
+    },
+    {
+     "narration_en": "That's what those steel nets on mountain cliffs are for.",
+     "start": 66.0,
+     "end": 72.6
+    }
+   ]
+  }
+ ]
+}

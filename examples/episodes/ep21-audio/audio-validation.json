@@ -1,0 +1,302 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 35.089,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.3306239,
+      "text": "How does a"
+    },
+    {
+      "start": 0.3435,
+      "end": 1.0393739,
+      "text": "net stop a"
+    },
+    {
+      "start": 1.052292,
+      "end": 2.108958,
+      "text": "twenty-ton boulder?"
+    },
+    {
+      "start": 2.3689319999999996,
+      "end": 3.2838899999999995,
+      "text": "Mountain roads hang"
+    },
+    {
+      "start": 3.2967649999999997,
+      "end": 4.121515,
+      "text": "steel nets on"
+    },
+    {
+      "start": 4.13439,
+      "end": 4.598306999999999,
+      "text": "the slopes"
+    },
+    {
+      "start": 4.611224,
+      "end": 5.152431,
+      "text": "above them."
+    },
+    {
+      "start": 5.412405,
+      "end": 5.837655,
+      "text": "The net is"
+    },
+    {
+      "start": 5.85053,
+      "end": 6.765488,
+      "text": "woven from steel"
+    },
+    {
+      "start": 6.778363,
+      "end": 7.628863,
+      "text": "rings, like"
+    },
+    {
+      "start": 7.64178,
+      "end": 8.298988000000001,
+      "text": "chain mail."
+    },
+    {
+      "start": 8.558962000000001,
+      "end": 9.035754,
+      "text": "When a rock"
+    },
+    {
+      "start": 9.048670000000001,
+      "end": 10.053837000000001,
+      "text": "hits, the net"
+    },
+    {
+      "start": 10.066712,
+      "end": 10.646628000000002,
+      "text": "doesn't try to"
+    },
+    {
+      "start": 10.659504000000002,
+      "end": 11.432670000000002,
+      "text": "stop it dead."
+    },
+    {
+      "start": 11.692644000000001,
+      "end": 12.465852000000002,
+      "text": "It stretches like"
+    },
+    {
+      "start": 12.478727000000001,
+      "end": 13.728768000000002,
+      "text": "a trampoline, more"
+    },
+    {
+      "start": 13.741602000000002,
+      "end": 14.566352000000002,
+      "text": "than twenty feet."
+    },
+    {
+      "start": 14.826326000000002,
+      "end": 15.316034000000002,
+      "text": "And the ropes"
+    },
+    {
+      "start": 15.328909000000001,
+      "end": 15.883034000000002,
+      "text": "that hold it"
+    },
+    {
+      "start": 15.895909000000001,
+      "end": 16.411409000000003,
+      "text": "pull through"
+    },
+    {
+      "start": 16.424284000000004,
+      "end": 17.223242000000003,
+      "text": "brake rings."
+    },
+    {
+      "start": 17.483216,
+      "end": 18.385257,
+      "text": "These steel loops"
+    },
+    {
+      "start": 18.398132,
+      "end": 19.635257,
+      "text": "shrink and bend,"
+    },
+    {
+      "start": 19.996091,
+      "end": 20.820798999999997,
+      "text": "turning the speed"
+    },
+    {
+      "start": 20.833716,
+      "end": 21.426506999999997,
+      "text": "into heat."
+    },
+    {
+      "start": 21.686481,
+      "end": 22.408147,
+      "text": "A slow stop"
+    },
+    {
+      "start": 22.421022999999998,
+      "end": 23.284439,
+      "text": "keeps the forces"
+    },
+    {
+      "start": 23.297314,
+      "end": 24.057648,
+      "text": "low, so"
+    },
+    {
+      "start": 24.070522999999998,
+      "end": 24.98548,
+      "text": "nothing snaps."
+    },
+    {
+      "start": 25.245454,
+      "end": 26.134619999999998,
+      "text": "The biggest nets"
+    },
+    {
+      "start": 26.147495,
+      "end": 27.152662,
+      "text": "stop twenty tons"
+    },
+    {
+      "start": 27.165537,
+      "end": 28.041828,
+      "text": "at sixty miles"
+    },
+    {
+      "start": 28.054703999999997,
+      "end": 28.49287,
+      "text": "an hour."
+    },
+    {
+      "start": 28.752844000000003,
+      "end": 30.299261,
+      "text": "Afterward, crews clear"
+    },
+    {
+      "start": 30.312136000000002,
+      "end": 31.059552,
+      "text": "the rock and"
+    },
+    {
+      "start": 31.072427,
+      "end": 32.116219,
+      "text": "replace the brakes."
+    },
+    {
+      "start": 32.376193,
+      "end": 32.904526000000004,
+      "text": "That's what those"
+    },
+    {
+      "start": 32.917401,
+      "end": 33.664859,
+      "text": "steel nets on"
+    },
+    {
+      "start": 33.677734,
+      "end": 34.334942,
+      "text": "mountain cliffs"
+    },
+    {
+      "start": 34.347818000000004,
+      "end": 34.889026,
+      "text": "are for."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.308932,
+      "narration_en": "How does a net stop a twenty-ton boulder?",
+      "source_audio_sha256": "b31c38fde7ac1217d2c7b6867fd6cff4ef4201efb5c8949939027bbf350c814d"
+    },
+    {
+      "start": 2.308932,
+      "end": 5.352405,
+      "narration_en": "Mountain roads hang steel nets on the slopes above them.",
+      "source_audio_sha256": "7d29cc2fe611b181abe47eb874ccf69d66396a856eb9e0500f4fedfa39a339c3"
+    },
+    {
+      "start": 5.352405,
+      "end": 8.498962,
+      "narration_en": "The net is woven from steel rings, like chain mail.",
+      "source_audio_sha256": "5f607788c4cffdae7aeb81d934f359fcaf6786b31b8c6fa23181bae806d4fcf9"
+    },
+    {
+      "start": 8.498962,
+      "end": 11.632644,
+      "narration_en": "When a rock hits, the net doesn't try to stop it dead.",
+      "source_audio_sha256": "d1729b759aaee2dbfdb6f288d51d58406519e422942a6a205f823adb1510474e"
+    },
+    {
+      "start": 11.632644,
+      "end": 14.766326000000001,
+      "narration_en": "It stretches like a trampoline, more than twenty feet.",
+      "source_audio_sha256": "995822d5998de44394546bcd521eba369fd27e57c8fc2d3daa9e4ae6e0b5cdb3"
+    },
+    {
+      "start": 14.766326000000001,
+      "end": 17.423216,
+      "narration_en": "And the ropes that hold it pull through brake rings.",
+      "source_audio_sha256": "12ed6906e4028d365d2333ada2b005929bec89f5fdb61dea8f194514423c4b1e"
+    },
+    {
+      "start": 17.423216,
+      "end": 21.626481,
+      "narration_en": "These steel loops shrink and bend, turning the speed into heat.",
+      "source_audio_sha256": "54816fdc26b8305aba58f177cb2304f2130473fdc8602c4e0c7a5a4a7b7a5ca8"
+    },
+    {
+      "start": 21.626481,
+      "end": 25.185454,
+      "narration_en": "A slow stop keeps the forces low, so nothing snaps.",
+      "source_audio_sha256": "40608a5acd396c962f1a0d08e00a5d8e19e85b64a5556f6b9a7a8cbae41694c0"
+    },
+    {
+      "start": 25.185454,
+      "end": 28.692844,
+      "narration_en": "The biggest nets stop twenty tons at sixty miles an hour.",
+      "source_audio_sha256": "52d4c823d6675f7a6070eed46d8f81cfd5f9837523fabfcd6bd66d98357ee253"
+    },
+    {
+      "start": 28.692844,
+      "end": 32.316193,
+      "narration_en": "Afterward, crews clear the rock and replace the brakes.",
+      "source_audio_sha256": "6dd737b0debfe6da53b84588bbda9def1ca3526bc1b3d2ac9e4d7e6b08c575e0"
+    },
+    {
+      "start": 32.316193,
+      "end": 35.089,
+      "narration_en": "That's what those steel nets on mountain cliffs are for.",
+      "source_audio_sha256": "99563732ca72630ad565fa81f6b9a32a2663e836013dd0759b39d9ebfdb9049a"
+    }
+  ],
+  "silence_gaps": [
+    0.353354,
+    0.377104,
+    0.39725
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.3,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.2,
+      -16.3,
+      -16.7,
+      -16.7,
+      -16.3,
+      -16.3,
+      -16.4
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "38c7567b655eaa593fbec19b12849fe73a710d56fc6564cb23ad5e69d4daf7d1"
+}
