@@ -22,4 +22,6 @@ tests tests/test_ep18_wedge.py.
 
 ## Preview
 Local low-res run: all 11 gates PASS (767 frames, 32.0 s; mix -15.2 LUFS, every line at least 9.2 dB above the effects). Then B moved
-low behind the plate (the car charging in, the plate shooting up). CI: pending.
+low behind the plate (the car charging in, the plate shooting up).
+CI run 44980254232 (commit 818d023): all 11 gates PASS; 767 frames, 32.0 s; first cut 1.30 s, 20.6 cuts/min, 197 wpm; mix -15.2 LUFS,
+true peak -1.9 dBFS, every line at least 9.7 dB above the effects. Copy: ep05-review/EP18-wedge-barrier.mp4. Not listened to yet.
