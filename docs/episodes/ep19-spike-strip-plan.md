@@ -21,3 +21,7 @@ Local low-res run: all 11 gates PASS (710 frames, 29.6 s; mix -15.2 LUFS, every 
 the way: the rear tyre took the same quill as the front (telemetry gate); D and G cameras re-aimed.
 CI run 44990573970 (commit d6b9b1e): all 11 gates PASS; 710 frames, 29.6 s; first cut 1.30 s, 22.3 cuts/min, 196 wpm; mix -15.2 LUFS,
 true peak -1.9 dBFS, every line at least 12.8 dB above the effects. Copy: ep05-review/EP19-spike-strip.mp4. Not listened to yet.
+
+## v2 (2026-11-22): opening re-cut for the viewed rate
+The opening is one held shot through the first line with the whole car/machine in the event (hero 3/4 or mid-wide) instead of a
+1.3 s close-up cut to a weaker shot; checked by the new opening_hook gate (benchmarks/hook_gate.py). CI: pending.

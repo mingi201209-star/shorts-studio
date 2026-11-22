@@ -19,6 +19,7 @@ import numpy as np
 from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks import hook_gate  # noqa: E402
 from benchmarks.following.render_follow_3d import duplicate_car  # noqa: E402
 from benchmarks.guardrail_end.render_terminal_3d import mesh_object  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
@@ -360,11 +361,13 @@ def main():
         dd.dof.aperture_fstop = c.get("fstop", 8.0)
         base.set_camera(cam, loc, tgt)
         bpy.context.view_layer.update()
+        cx, hw = zm.SHIFT / 2, zm.MACHINE_HALF_W
+        box = hook_gate.project_box(scene, cam, machine.root.matrix_world, (cx - hw - 1.5, -9.2, 0.0), (cx + hw + 1.5, 9.2, 3.2))
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         ym = zm.machine_y(t)
         near = int(np.argmin(np.abs(b["y"] - ym)))
-        return {"variant": variant, "t": round(t, 6), "machine_y": round(ym, 4) if variant != "morning" else None,
+        return {"variant": variant, "t": round(t, 6), "machine_y": round(ym, 4) if variant != "morning" else None, "subject_box": box,
                 "block_x_at_machine": round(float(b["x"][near]), 4), "max_lift": round(float(b["z"].max()), 4),
                 "blocks_moved": int((np.abs(b["x"] - zm.SHIFT) < 1e-6).sum()), "max_pin_gap": round(float(zm.pin_gaps(t, variant).max()), 4),
                 "cars": [[round(x, 3), round(y, 3)] for x, y, _ in cars], "night": night,

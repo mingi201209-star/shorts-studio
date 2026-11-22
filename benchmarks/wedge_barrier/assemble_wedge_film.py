@@ -14,6 +14,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from benchmarks import hook_gate
 from benchmarks.crumple_zone import crumple_gates as gates
 from benchmarks.crumple_zone.assemble_crumple_preview import gray_diffs
 from benchmarks.wedge_barrier import wedge_motion as wm
@@ -112,8 +113,8 @@ def visible_action(frames: list[dict]) -> dict:
     p0 = frames[0]["parts"][0]
     if not (p0["variant"] == "car" and p0["crush"] > 0.3 and p0["airborne"] >= 10 and p0["plate_front_z"] > 0.85):
         problems.append(f"the first frame is not the car crushing into the raised face ({p0})")
-    a2 = by.get("A2-wall-jumps-up", [])
-    if not a2 or a2[-1]["plate_deg"] - a2[0]["plate_deg"] < 15:
+    b = by.get("B-rises-in-a-second", [])
+    if not b or b[-1]["plate_deg"] - b[0]["plate_deg"] < 15:
         problems.append("the plate is not seen jumping up")
     if not any(p["cut"] for p in by.get("D-pistons", [])) or by["D-pistons"][-1]["plate_deg"] - by["D-pistons"][0]["plate_deg"] < 20:
         problems.append("the cylinders are not seen lifting the plate in the cut-away")
@@ -190,6 +191,7 @@ def main():
     report = {
         "wedge_physics": wm.wedge_physics(),
         "pace": tl.pace(segs),
+        "opening_hook": hook_gate.opening_hook(frames, segs, tl.line_starts()[1], tl.FPS),
         "scene_alignment": tl.scene_alignment(segs),
         "telemetry_matches_model": telemetry_matches_model(frames, segs),
         "visible_action": visible_action(frames),

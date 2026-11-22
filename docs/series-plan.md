@@ -78,3 +78,13 @@ The guardrail end terminal ("zipper-like": the head runs down the rail and peels
 out. Next topics should copy its shape: everyday road hardware with a hidden mechanism that is itself satisfying to watch (peeling,
 unzipping, folding, being swallowed), shown working in frame 1. Candidate: the barrier transfer machine ("road zipper") that lifts a
 concrete median wall and moves it a lane over.
+
+## Why "viewed" is low, and the fix (2026-11-22)
+Measured on our own uploads (motion, brightness, contrast, colour, detail and loudness of the first 1.5 s): none of it explains the
+viewed rate (EP.13, 69.2 %, has less motion than EP.15, 13.7 %). What the two best openings (EP.13, Road Signs) share is ONE shot held
+through the whole first line (EP.13: 3.26 s) that shows the whole car and the road hardware in the middle of the strange event. From
+EP.14 on every film cut at 1.3 s (the competitor research's "first cut by 1.5 s"), from a close-up or an abstract view (one wheel
+filling the frame, a top-down frame of yellow bars) to a weaker shot (a distant car, an empty road). New rule, enforced by
+benchmarks/hook_gate.py in every assembly: hold the opening money shot until line 2 (2-3.6 s), whole subject readable (at least 85 %
+of it in frame, or at least 60 % when it fills the picture; at least 30 % of the width) for the first second. EP.16-EP.19 re-cut
+(v2) to this rule.

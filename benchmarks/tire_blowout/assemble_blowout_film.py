@@ -13,6 +13,7 @@ from pathlib import Path
 
 from PIL import Image
 
+from benchmarks import hook_gate
 from benchmarks.crumple_zone import crumple_gates as gates
 from benchmarks.crumple_zone.assemble_crumple_preview import gray_diffs
 from benchmarks.tire_blowout import blowout_motion as bm
@@ -189,6 +190,7 @@ def main():
     report = {
         "blowout_physics": bm.blowout_physics(),
         "pace": tl.pace(segs),
+        "opening_hook": hook_gate.opening_hook(frames, segs, tl.line_starts()[1], tl.FPS),
         "scene_alignment": tl.scene_alignment(segs),
         "telemetry_matches_model": telemetry_matches_model(frames, segs),
         "visible_action": visible_action(frames),

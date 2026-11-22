@@ -8,14 +8,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from benchmarks.hook_gate import opening_rule
+
 FPS = 24
 END_PAD_S = 0.25
 AUDIO = Path(__file__).resolve().parents[2] / "examples/episodes/ep17-audio/audio-validation.json"
 
-A1 = {"rel": "machine", "loc": (-2.0, -9.0, 16.5), "target": (1.8, 1.5, 0.0), "lens": 40.0, "fstop": 11.0}
-A1_B = {"rel": "machine", "loc": (-1.6, -8.2, 16.0), "target": (1.8, 1.2, 0.0), "lens": 40.0, "fstop": 11.0}
-A2 = {"rel": "machine", "loc": (1.7, 12.0, 0.7), "target": (0.2, 6.5, 0.5), "lens": 30.0, "fstop": 4.0}
-A2_B = {"rel": "machine", "loc": (1.6, 11.3, 0.65), "target": (0.3, 6.0, 0.5), "lens": 30.0, "fstop": 4.0}
+A1 = {"rel": "machine", "loc": (-6.5, 7.0, 9.0), "target": (1.8, -0.5, 0.3), "lens": 32.0, "fstop": 11.0}      # machine, S-curved wall and traffic in one view
+A1_B = {"rel": "machine", "loc": (-5.8, 6.0, 8.4), "target": (1.8, -0.6, 0.3), "lens": 32.0, "fstop": 11.0}
 B1 = {"rel": "machine", "loc": (-12.0, -28.0, 15.0), "target": (1.8, 6.0, 0.0), "lens": 26.0, "fstop": 11.0}
 B1_B = {"rel": "machine", "loc": (-11.0, -25.0, 14.0), "target": (1.8, 6.0, 0.0), "lens": 26.0, "fstop": 11.0}
 B2 = {"rel": "machine", "loc": (-7.4, -6.0, 1.1), "target": (-0.5, 10.0, 0.7), "lens": 28.0, "fstop": 5.6}
@@ -28,8 +28,8 @@ D = {"rel": "machine", "loc": (1.5, 10.5, 0.85), "target": (0.4, 6.0, 0.6), "len
 D_B = {"rel": "machine", "loc": (1.4, 10.0, 0.9), "target": (0.5, 5.6, 0.62), "lens": 34.0, "fstop": 4.0}
 E = {"rel": "machine", "loc": (3.2, 4.0, 0.9), "target": (1.0, 2.6, 0.75), "lens": 30.0, "fstop": 4.0}
 E_B = {"rel": "machine", "loc": (3.2, 3.0, 0.9), "target": (1.2, 1.8, 0.78), "lens": 30.0, "fstop": 4.0}
-F1 = {"rel": "machine", "loc": (-6.0, 6.0, 9.0), "target": (1.8, -0.5, 0.3), "lens": 35.0, "fstop": 11.0}
-F1_B = {"rel": "machine", "loc": (-5.5, 5.0, 8.5), "target": (1.8, -0.8, 0.3), "lens": 35.0, "fstop": 11.0}
+F1 = {"rel": "machine", "loc": (-2.0, -9.0, 16.5), "target": (1.8, 1.5, 0.0), "lens": 40.0, "fstop": 11.0}      # from above: the S track
+F1_B = {"rel": "machine", "loc": (-1.6, -8.2, 16.0), "target": (1.8, 1.2, 0.0), "lens": 40.0, "fstop": 11.0}
 F2 = {"rel": "machine", "loc": (-0.5, -26.0, 7.0), "target": (1.8, 4.0, 0.0), "lens": 50.0, "fstop": 8.0}
 F2_B = {"rel": "machine", "loc": (-0.3, -23.0, 6.4), "target": (1.8, 4.0, 0.0), "lens": 50.0, "fstop": 8.0}
 G = {"rel": "machine", "loc": (-0.8, -12.5, 0.45), "target": (3.4, -10.0, 0.35), "lens": 30.0, "fstop": 4.0}
@@ -42,8 +42,7 @@ I = {"rel": "machine", "loc": (-6.0, -18.0, 9.0), "target": (1.8, 3.0, 0.0), "le
 
 # label, variant, start (line, or (line, absolute second)), knots [(film s from shot start, simulated s)], cam a, cam b, flags, lines
 ROWS = [
-    ("A1-swallowing", "day", 1, [(0.0, 0.0), (1.3, 1.3)], A1, A1_B, {}, (1,)),
-    ("A2-entry", "day", (1, 1.30), [(0.0, 1.3), (1.12, 2.42)], A2, A2_B, {}, (1,)),
+    ("A1-swallowing", "day", 1, [(0.0, 0.0), (2.42, 2.42)], A1, A1_B, {}, (1,)),      # held through line 1 (hook rule)
     ("B1-one-lane-over", "day", 2, [(0.0, 3.0), (2.53, 5.53)], B1, B1_B, {}, (2,)),
     ("B2-traffic-flows", "day", (2, 4.95), [(0.0, 5.53), (1.66, 7.19)], B2, B2_B, {}, (2,)),
     ("C1-chain", "day", 3, [(0.0, 8.0), (2.09, 10.09)], C1, C1_B, {}, (3,)),
@@ -140,15 +139,15 @@ def scene_alignment(segs: list[dict]) -> dict:
 
 
 def pace(segs: list[dict]) -> dict:
-    """The research rules as a gate: first cut by 1.5 s, at least 18 cuts a minute, 160-200 words a minute, at most 40 s."""
+    """Pace rules as a gate: the opening shot held through the first line (benchmarks/hook_gate.py; replaces the competitor research's
+    "first cut by 1.5 s", which cut away from the money shot), at least 18 cuts a minute, 160-200 words a minute, at most 40 s."""
     a = _audio()
     words = sum(len(b["narration_en"].split()) for b in a["beats"])
     secs = total_seconds()
     wpm = 60 * words / a["seconds"]
     cuts = 60 * len(segs) / secs
     problems = []
-    if segs[1]["t0"] > 1.5:
-        problems.append(f"first cut at {segs[1]['t0']:.2f} s (rule: by 1.5 s)")
+    problems += opening_rule(segs, line_starts()[1])          # hold the opening money shot through the first line (2026-11-22 data)
     if cuts < 18:
         problems.append(f"{cuts:.0f} cuts a minute (rule: at least 18)")
     if not 160 <= wpm <= 200:

@@ -19,6 +19,7 @@ import numpy as np
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks import hook_gate  # noqa: E402
 from benchmarks.belt_limiter import render_belt_3d as rb  # noqa: E402
 from benchmarks.guardrail_end.render_terminal_3d import mesh_object  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
@@ -134,13 +135,13 @@ class Jets:
                 ob.hide_render = True
                 continue
             u = (film_t * 3.0 + k / N_JET + 0.37 * s) % 1.0
-            length = 0.12 + 0.40 * strength
+            length = 0.15 + 0.60 * strength
             ob.hide_render = False
             ob.location = tip + direction * (u * length)
-            r = 0.008 + 0.035 * u
+            r = 0.010 + 0.050 * u
             ob.scale = (r, r, r * 2.2)
             ob.rotation_euler = direction.to_track_quat("Z", "Y").to_euler()
-            ob.color = (1, 1, 1, 0.75 * strength * (1 - u) ** 0.7)
+            ob.color = (1, 1, 1, 0.85 * strength * (1 - u) ** 0.6)
 
 
 def main():
@@ -290,9 +291,10 @@ def main():
         dd.dof.aperture_fstop = c.get("fstop", 8.0)
         base.set_camera(cam, loc, tgt)
         bpy.context.view_layer.update()
+        box = hook_gate.project_box(scene, cam, root.matrix_world, (-0.85, -2.07, 0.0), (0.85, 1.93, 1.45))
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
-        return {"variant": sh["variant"], "t": round(t, 6), "pose_t": round(pt, 6), "car_y": round(pose["y"], 4),
+        return {"variant": sh["variant"], "t": round(t, 6), "pose_t": round(pt, 6), "car_y": round(pose["y"], 4), "subject_box": box,
                 "gauge_front_psi": round(st["gauge_front_psi"], 3), "gauge_rear_psi": round(st["gauge_rear_psi"], 3),
                 "squash": round(st["squash"], 5), "quills_on_tyres": on_tyre, "quills_on_strip": on_strip,
                 "vent_front_mps": round(v_front, 2), "cut": sh.get("cut"), "wheel_x": round(wc.x, 4), "wheel_y": round(wc.y, 4),

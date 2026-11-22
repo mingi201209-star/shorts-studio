@@ -21,6 +21,7 @@ from mathutils import Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks.belt_limiter import render_belt_3d as rb  # noqa: E402
+from benchmarks import hook_gate  # noqa: E402
 from benchmarks.guardrail_end.render_terminal_3d import mesh_object  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
@@ -434,9 +435,10 @@ def main():
         dd.dof.aperture_fstop = c.get("fstop", 8.0)
         base.set_camera(cam, loc, tgt)
         bpy.context.view_layer.update()
+        box = hook_gate.project_box(scene, cam, root.matrix_world, (-0.85, -2.07, 0.0), (0.85, 1.93, 1.45))
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
-        return {"variant": sh["variant"], "t": round(t, 6), "pose_t": round(pt, 6), "y_shift": ys, "x": round(st["x"], 4), "y": round(st["y"], 4),
+        return {"variant": sh["variant"], "t": round(t, 6), "pose_t": round(pt, 6), "y_shift": ys, "subject_box": box, "x": round(st["x"], 4), "y": round(st["y"], 4),
                 "psi": round(st["psi"], 5), "pressure": round(st["pressure"], 3), "squash": round(st["squash"], 5), "peel_span": round(st["peel_span"], 4),
                 "temp": round(st["temp"], 2), "heat_glow": round(heat, 3), "burst": bool(st["burst"]), "airborne": air, "pieces_out": out,
                 "cut": sh.get("cut"), "wheel_x": round(wc.x, 4), "wheel_y_world": round(wc.y + ys, 4),

@@ -8,16 +8,16 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+from benchmarks.hook_gate import opening_rule
+
 FPS = 24
 END_PAD_S = 0.25
-OPEN_SIM = 0.12
+OPEN_SIM = 0.04
 AUDIO = Path(__file__).resolve().parents[2] / "examples/episodes/ep16-audio/audio-validation.json"
 DASH = 12.0
 
-A1 = {"rel": "wheel", "loc": (-1.25, 0.60, 0.12), "target": (0.0, -0.35, 0.42), "lens": 24.0, "fstop": 4.0}
-A1_B = {"rel": "wheel", "loc": (-1.15, 0.35, 0.15), "target": (0.0, -0.50, 0.45), "lens": 24.0, "fstop": 4.0}
-A2 = {"rel": "car", "loc": (-6.0, 7.0, 2.6), "target": (0.0, -3.0, 0.3), "lens": 28.0, "fstop": 8.0}
-A2_B = {"rel": "car", "loc": (-5.5, 5.5, 2.2), "target": (0.0, -4.0, 0.3), "lens": 28.0, "fstop": 8.0}
+A1 = {"rel": "car", "loc": (-2.8, 3.3, 0.45), "target": (-0.5, 0.5, 0.6), "lens": 26.0, "fstop": 5.6}      # hero 3/4 from low: the burst wheel big, debris against the sky
+A1_B = {"rel": "car", "loc": (-2.6, 2.9, 0.42), "target": (-0.5, 0.3, 0.62), "lens": 26.0, "fstop": 5.6}
 B = {"rel": "wheel", "loc": (-0.55, 1.45, -0.12), "target": (-0.05, 0.0, -0.10), "lens": 32.0, "fstop": 4.0}
 B_B = {"rel": "wheel", "loc": (-0.75, 1.25, -0.12), "target": (-0.05, 0.0, -0.10), "lens": 32.0, "fstop": 4.0}
 C1 = {"rel": "wheel", "loc": (-1.0, 0.0, 0.02), "target": (0.0, 0.0, -0.05), "lens": 40.0, "fstop": 4.0}
@@ -40,13 +40,12 @@ H = {"rel": "car", "loc": (-3.2, 3.6, 0.6), "target": (0.0, 1.3, 0.2), "lens": 3
 H_B = {"rel": "car", "loc": (-2.5, 2.7, 0.45), "target": (0.0, 1.3, 0.18), "lens": 34.0, "fstop": 5.6}
 I1 = {"rel": "world", "loc": (-4.6, -6.0, 1.30), "target": (-3.4, -22.0, 0.0), "lens": 30.0, "fstop": 5.6}
 I1_B = {"rel": "world", "loc": (-4.7, -7.5, 1.15), "target": (-3.2, -24.0, 0.0), "lens": 30.0, "fstop": 5.6}
-I2 = {"rel": "wheel", "loc": (-1.9, 1.8, 0.30), "target": (0.0, -0.2, 0.40), "lens": 24.0, "fstop": 4.0}
+I2 = {"rel": "car", "loc": (-4.5, 6.0, 1.1), "target": (-0.5, 0.7, 0.45), "lens": 28.0, "fstop": 5.6}
 
 CUT = {"cut": (50.0, 130.0)}
 # label, variant, start (line, or (line, absolute second)), knots [(film s from shot start, simulated s)], cam a, cam b, flags, lines
 ROWS = [
-    ("A1-burst", "road", 1, [(0.0, OPEN_SIM), (1.3, 0.22)], A1, A1_B, {}, (1,)),
-    ("A2-debris", "road", (1, 1.30), [(0.0, 0.22), (2.1, 1.6)], A2, A2_B, {}, (1, 2)),
+    ("A1-burst", "road", 1, [(0.0, OPEN_SIM), (1.6, 0.24), (3.40, 1.0)], A1, A1_B, {}, (1, 2)),      # held through line 1 (hook rule)
     ("B-a-little-low", "road", (2, 3.40), [(0.0, -40.0), (2.22, -38.0)], B, B_B, {}, (2,)),
     ("C1-sidewall-bends", "road", 3, [(0.0, -30.0), (2.38, -29.97)], C1, C1_B, {}, (3,)),
     ("C2-springs-back", "road", (3, 8.00), [(0.0, -20.0), (2.53, -19.965)], C2, C2_B, dict(CUT), (3,)),
@@ -149,15 +148,15 @@ def scene_alignment(segs: list[dict]) -> dict:
 
 
 def pace(segs: list[dict]) -> dict:
-    """The research rules as a gate: first cut by 1.5 s, at least 18 cuts a minute, 160-200 words a minute, at most 40 s."""
+    """Pace rules as a gate: the opening shot held through the first line (benchmarks/hook_gate.py; replaces the competitor research's
+    "first cut by 1.5 s", which cut away from the money shot), at least 18 cuts a minute, 160-200 words a minute, at most 40 s."""
     a = _audio()
     words = sum(len(b["narration_en"].split()) for b in a["beats"])
     secs = total_seconds()
     wpm = 60 * words / a["seconds"]
     cuts = 60 * len(segs) / secs
     problems = []
-    if segs[1]["t0"] > 1.5:
-        problems.append(f"first cut at {segs[1]['t0']:.2f} s (rule: by 1.5 s)")
+    problems += opening_rule(segs, line_starts()[1])          # hold the opening money shot through the first line (2026-11-22 data)
     if cuts < 18:
         problems.append(f"{cuts:.0f} cuts a minute (rule: at least 18)")
     if not 160 <= wpm <= 200:

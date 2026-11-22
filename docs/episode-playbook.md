@@ -40,7 +40,11 @@ PYTHONPATH=$PWD python3 -c "from pathlib import Path; from benchmarks.road_safet
 - [ ] Model module with a `<x>_physics()` gate that checks every number the narration says, plus tests.
 - [ ] Timeline: one row per shot, start at the line's cue (or a word's cue for a mid-line cut), knots map film time to simulated time
       per shot (slow motion where the event is fast).
-- [ ] `pace()` gate passes: first cut by 1.5 s, at least 18 cuts a minute, 160-200 wpm, at most 40 s.
+- [ ] `pace()` gate passes: the opening shot is HELD through the first line (2-3.6 s; benchmarks/hook_gate.py), at least 18 cuts a
+      minute, 160-200 wpm, at most 40 s. (The old "first cut by 1.5 s" cut away from the money shot: EP.14-EP.19, 2026-11-22.)
+- [ ] Opening framing: the whole car (or machine) in the middle of the event, hero 3/4 or mid-wide, readable at phone size; never an
+      extreme close-up or an abstract top-down view as frame 1. The renderer reports "subject_box"; the assembly's opening_hook gate
+      checks the first second.
 - [ ] The last shot runs into the first frame's moment from the first frame's camera (loop), with no read-outs at the seam.
 
 ## 5. Storyboard review (where the quality comes from)

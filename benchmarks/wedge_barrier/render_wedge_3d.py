@@ -20,6 +20,7 @@ import numpy as np
 from mathutils import Matrix, Vector
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from benchmarks import hook_gate  # noqa: E402
 from benchmarks.belt_limiter import render_belt_3d as rb  # noqa: E402
 from benchmarks.crumple_zone import crumple_motion as cm  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
@@ -415,6 +416,10 @@ def main():
         dd.dof.aperture_fstop = c.get("fstop", 8.0)
         base.set_camera(cam, loc, tgt)
         bpy.context.view_layer.update()
+        if variant == "car":
+            info["subject_box"] = hook_gate.project_box(scene, cam, root.matrix_world, (-0.85, -wm.TAIL, 0.0), (0.85, wm.NOSE, 1.45))
+        else:
+            info["subject_box"] = hook_gate.project_box(scene, cam, truck.matrix_world, (-1.25, -wm.TRUCK_TAIL, 0.0), (1.25, wm.TRUCK_NOSE, 3.6))
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         info["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
