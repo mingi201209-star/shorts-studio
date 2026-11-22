@@ -21,4 +21,5 @@ tests tests/test_ep18_wedge.py.
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(pending)
+Local low-res run: all 11 gates PASS (767 frames, 32.0 s; mix -15.2 LUFS, every line at least 9.2 dB above the effects). Then B moved
+low behind the plate (the car charging in, the plate shooting up). CI: pending.
