@@ -17,4 +17,5 @@ timeline spike_timeline.py, renderer render_spike_3d.py, sound spike_sfx.py, ass
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(pending)
+Local low-res run: all 11 gates PASS (710 frames, 29.6 s; mix -15.2 LUFS, every line at least 12.6 dB above the effects). Fixed on
+the way: the rear tyre took the same quill as the front (telemetry gate); D and G cameras re-aimed. CI: pending.
