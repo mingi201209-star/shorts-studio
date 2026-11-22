@@ -20,4 +20,6 @@ examples/experiments/zipper-film-request.json), tests tests/test_ep17_zipper.py.
 
 ## Preview
 Local low-res run: all 11 gates PASS (790 frames, 32.9 s; mix -15.2 LUFS, every line at least 9.0 dB above the effects).
-Then: machine wheels moved clear of the wall (new gate), traffic off the lanes next to the machine, entry shots from the right. CI: pending.
+Then: machine wheels moved clear of the wall (new gate), traffic off the lanes next to the machine, entry shots from the right.
+CI run 44967211384 (commit db1bcc2): all 11 gates PASS; 790 frames, 32.9 s; first cut 1.30 s, 25.5 cuts/min, 187 wpm; mix -15.2 LUFS,
+true peak -1.9 dBFS, every line at least 8.9 dB above the effects. Copy: ep05-review/EP17-moveable-barrier.mp4. Not listened to yet.
