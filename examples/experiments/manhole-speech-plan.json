@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "manhole",
+   "beats": [
+    {
+     "narration_en": "Why do manhole covers sometimes blast into the air?",
+     "start": 0.0,
+     "end": 6.0
+    },
+    {
+     "narration_en": "Under many streets, power cables run through underground vaults.",
+     "start": 6.0,
+     "end": 12.0
+    },
+    {
+     "narration_en": "In winter, salty meltwater drips down onto old cables.",
+     "start": 12.0,
+     "end": 18.0
+    },
+    {
+     "narration_en": "The salt eats at the insulation until electricity arcs.",
+     "start": 18.0,
+     "end": 24.0
+    },
+    {
+     "narration_en": "The burning insulation gives off flammable gas that fills the vault.",
+     "start": 24.0,
+     "end": 31.2
+    },
+    {
+     "narration_en": "One spark, and the gas explodes.",
+     "start": 31.2,
+     "end": 35.4
+    },
+    {
+     "narration_en": "That can launch a cast iron cover weighing up to three hundred pounds.",
+     "start": 35.4,
+     "end": 43.8
+    },
+    {
+     "narration_en": "So New York's utility is swapping in covers with vents.",
+     "start": 43.8,
+     "end": 50.4
+    },
+    {
+     "narration_en": "Gas escapes through the holes instead of building up.",
+     "start": 50.4,
+     "end": 56.4
+    },
+    {
+     "narration_en": "Others are latched: they pop up a few inches, vent, and drop back.",
+     "start": 56.4,
+     "end": 64.8
+    },
+    {
+     "narration_en": "That's why some city manhole covers are full of holes.",
+     "start": 64.8,
+     "end": 71.4
+    }
+   ]
+  }
+ ]
+}

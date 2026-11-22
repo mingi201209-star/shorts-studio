@@ -1,0 +1,290 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 35.903,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.779375,
+      "text": "Why do manhole"
+    },
+    {
+      "start": 0.7911250000000001,
+      "end": 2.20625,
+      "text": "covers sometimes blast"
+    },
+    {
+      "start": 2.218041,
+      "end": 2.807666,
+      "text": "into the air?"
+    },
+    {
+      "start": 3.067700545454545,
+      "end": 4.022908545454545,
+      "text": "Under many streets,"
+    },
+    {
+      "start": 4.2469505454545455,
+      "end": 5.272908545454545,
+      "text": "power cables run"
+    },
+    {
+      "start": 5.284700545454545,
+      "end": 6.452158545454545,
+      "text": "through\\Nunderground vaults."
+    },
+    {
+      "start": 6.71219309090909,
+      "end": 7.879651090909091,
+      "text": "In winter, salty"
+    },
+    {
+      "start": 7.891443090909091,
+      "end": 9.12965109090909,
+      "text": "meltwater drips down"
+    },
+    {
+      "start": 9.247568090909091,
+      "end": 10.27352609090909,
+      "text": "onto old cables."
+    },
+    {
+      "start": 10.533560636363637,
+      "end": 11.252893636363636,
+      "text": "The salt eats"
+    },
+    {
+      "start": 11.264685636363637,
+      "end": 12.172726636363636,
+      "text": "at the insulation"
+    },
+    {
+      "start": 12.255268636363637,
+      "end": 13.540643636363637,
+      "text": "until electricity arcs."
+    },
+    {
+      "start": 13.800678181818183,
+      "end": 14.850219181818183,
+      "text": "The burning insulation"
+    },
+    {
+      "start": 14.920969181818183,
+      "end": 15.970510181818181,
+      "text": "gives off flammable"
+    },
+    {
+      "start": 15.982303181818182,
+      "end": 17.008260181818184,
+      "text": "gas that fills"
+    },
+    {
+      "start": 17.020011181818184,
+      "end": 17.46813618181818,
+      "text": "the vault."
+    },
+    {
+      "start": 17.728170727272726,
+      "end": 18.600794627272727,
+      "text": "One spark, and"
+    },
+    {
+      "start": 18.612628727272728,
+      "end": 19.638544727272727,
+      "text": "the gas explodes."
+    },
+    {
+      "start": 19.89857927272727,
+      "end": 20.393870272727273,
+      "text": "That can launch"
+    },
+    {
+      "start": 20.405662272727273,
+      "end": 21.148578272727274,
+      "text": "a cast iron"
+    },
+    {
+      "start": 21.160370272727274,
+      "end": 21.926870272727275,
+      "text": "cover weighing up"
+    },
+    {
+      "start": 21.997662272727272,
+      "end": 22.398578272727274,
+      "text": "to three"
+    },
+    {
+      "start": 22.410370272727274,
+      "end": 23.200495272727274,
+      "text": "hundred pounds."
+    },
+    {
+      "start": 23.460529818181815,
+      "end": 24.026570818181817,
+      "text": "So New York's"
+    },
+    {
+      "start": 24.038362818181817,
+      "end": 25.241195818181815,
+      "text": "utility is swapping"
+    },
+    {
+      "start": 25.252987818181815,
+      "end": 25.642111818181817,
+      "text": "in covers"
+    },
+    {
+      "start": 25.653945818181818,
+      "end": 26.302529818181817,
+      "text": "with vents."
+    },
+    {
+      "start": 26.56256436363636,
+      "end": 27.36443936363636,
+      "text": "Gas escapes through"
+    },
+    {
+      "start": 27.37623136363636,
+      "end": 28.20173136363636,
+      "text": "the holes instead"
+    },
+    {
+      "start": 28.21352236363636,
+      "end": 28.88568936363636,
+      "text": "of building up."
+    },
+    {
+      "start": 29.145723909090904,
+      "end": 29.912264909090904,
+      "text": "Others are latched:"
+    },
+    {
+      "start": 30.183473909090907,
+      "end": 30.678722909090904,
+      "text": "they pop up"
+    },
+    {
+      "start": 30.690556909090905,
+      "end": 31.480640909090905,
+      "text": "a few inches,"
+    },
+    {
+      "start": 31.716473909090904,
+      "end": 32.35326480909091,
+      "text": "vent, and"
+    },
+    {
+      "start": 32.36505690909091,
+      "end": 33.07263990909091,
+      "text": "drop back."
+    },
+    {
+      "start": 33.33267445454545,
+      "end": 33.78079845454545,
+      "text": "That's why some"
+    },
+    {
+      "start": 33.79259045454545,
+      "end": 34.84213145454545,
+      "text": "city manhole covers"
+    },
+    {
+      "start": 34.85392445454545,
+      "end": 35.16050645454545,
+      "text": "are full"
+    },
+    {
+      "start": 35.172299454545445,
+      "end": 35.70296545454545,
+      "text": "of holes."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.0077005454545453,
+      "narration_en": "Why do manhole covers sometimes blast into the air?",
+      "source_audio_sha256": "8f8631784388fa80ab463fd6cede2f1e8cf67e22864bfdec018f20cef182053e"
+    },
+    {
+      "start": 3.0077005454545453,
+      "end": 6.6521930909090905,
+      "narration_en": "Under many streets, power cables run through underground vaults.",
+      "source_audio_sha256": "86eb174bfd390ef2e78e05e3b9d2d33f25c37f664575942285cb83282789e407"
+    },
+    {
+      "start": 6.6521930909090905,
+      "end": 10.473560636363636,
+      "narration_en": "In winter, salty meltwater drips down onto old cables.",
+      "source_audio_sha256": "a9f13296f1c4f252af458a38152d5735fe963140a8016ce9d7193fce3f25029f"
+    },
+    {
+      "start": 10.473560636363636,
+      "end": 13.740678181818183,
+      "narration_en": "The salt eats at the insulation until electricity arcs.",
+      "source_audio_sha256": "cc534e3463a1dfd81787ff8a1c691f7bcbd0a1d39a7a2d646ac298a24e94e2e1"
+    },
+    {
+      "start": 13.740678181818183,
+      "end": 17.668170727272727,
+      "narration_en": "The burning insulation gives off flammable gas that fills the vault.",
+      "source_audio_sha256": "392c4dbd400de4b9df4520c3ab35fde6c614ba34055fee7bad0a21922aac56b9"
+    },
+    {
+      "start": 17.668170727272727,
+      "end": 19.838579272727273,
+      "narration_en": "One spark, and the gas explodes.",
+      "source_audio_sha256": "6a65f2748754a90900d7ecea007c55f270ad4a76f4ef54241da5ae9e2bd29153"
+    },
+    {
+      "start": 19.838579272727273,
+      "end": 23.400529818181816,
+      "narration_en": "That can launch a cast iron cover weighing up to three hundred pounds.",
+      "source_audio_sha256": "da3a197fe26cadfe0d8763a36432e714fefba368063207ca8124a5fd8a58943d"
+    },
+    {
+      "start": 23.400529818181816,
+      "end": 26.50256436363636,
+      "narration_en": "So New York's utility is swapping in covers with vents.",
+      "source_audio_sha256": "a75d9581e92619a1bdec519b5f59ec54ce76f513804b4f6cb7b70800c7b5f988"
+    },
+    {
+      "start": 26.50256436363636,
+      "end": 29.085723909090905,
+      "narration_en": "Gas escapes through the holes instead of building up.",
+      "source_audio_sha256": "7a920fbd778556c9baf0c8f07f2478a4494da2c0a030d57b94aab39f3cfd6673"
+    },
+    {
+      "start": 29.085723909090905,
+      "end": 33.27267445454545,
+      "narration_en": "Others are latched: they pop up a few inches, vent, and drop back.",
+      "source_audio_sha256": "9a119280feb639b82c0e94551027ea308e39bf643753d5fccae1e478ecb88081"
+    },
+    {
+      "start": 33.27267445454545,
+      "end": 35.903,
+      "narration_en": "That's why some city manhole covers are full of holes.",
+      "source_audio_sha256": "2e7feb8c88693971fdcdc779052af9b3c2fd6338c345588044161d03eeb878ba"
+    }
+  ],
+  "silence_gaps": [
+    0.309042
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.6,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.9,
+      -16.1,
+      -15.9,
+      -17.4,
+      -15.8,
+      -16.7,
+      -16.1
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "1b8a8231c4ecee4c3353aaf873ba32c3c6d05432e4053c45c6806885f73d1dc2"
+}
