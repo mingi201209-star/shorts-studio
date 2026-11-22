@@ -31,7 +31,8 @@ BLOCK_Y = np.arange(-160, 200) * BLOCK_L     # centre of each block along y (ind
 LANES_S = (-1.83, -5.49, -9.15)       # southbound lane centres (traffic toward -y)
 LANES_N = (1.83, 5.49, 9.15)          # northbound (toward +y)
 MACHINE_HALF_W = SHIFT / 2 + 0.37     # side beams of the open frame, about x = SHIFT / 2 (just clear of the wall on both lines)
-MACHINE_WHEEL_X = (SHIFT / 2 - 2.3, SHIFT / 2 + 2.3)
+MACHINE_WHEEL_X = (SHIFT / 2 - 2.5, SHIFT / 2 + 2.5)
+WHEEL_HALF_W = 0.21
 CAR_HALF_W = 0.85
 
 
@@ -90,7 +91,7 @@ def pin_gaps(t: float, variant: str = "day") -> np.ndarray:
 
 TRAFFIC = [  # (lane x, direction, y0, speed m/s, colour)
     (-5.49, -1, 30.0, 23.0, (0.08, 0.30, 0.95)), (-9.15, -1, -25.0, 25.0, (0.85, 0.85, 0.82)), (-5.49, -1, -70.0, 23.0, (0.10, 0.10, 0.11)),
-    (5.49, 1, -10.0, 22.0, (0.95, 0.75, 0.10)), (9.15, 1, 45.0, 26.0, (0.20, 0.45, 0.25)), (9.15, 1, -60.0, 26.0, (0.55, 0.56, 0.60)),
+    (9.15, 1, -10.0, 22.0, (0.95, 0.75, 0.10)), (9.15, 1, 45.0, 26.0, (0.20, 0.45, 0.25)), (9.15, 1, -60.0, 26.0, (0.55, 0.56, 0.60)),
 ]
 MORNING_EXTRA = [(1.83, -1, 10.0, 21.0, (0.70, 0.12, 0.12)), (-1.83, -1, -40.0, 22.0, (0.85, 0.85, 0.82)), (1.83, -1, -80.0, 21.0, (0.10, 0.30, 0.70))]
 WRAP = 220.0
@@ -129,6 +130,9 @@ def zipper_physics() -> dict:
         problems.append("the chain is not lifted inside the machine")
     lanes_ok = all(abs(x) - CAR_HALF_W > 0.3 + 0.305 and not (MACHINE_WHEEL_X[0] - 0.5 < x + CAR_HALF_W and x - CAR_HALF_W < MACHINE_WHEEL_X[1] + 0.5)
                    for x, *_ in TRAFFIC)
+    wall_half = 0.305
+    if not (MACHINE_WHEEL_X[0] + WHEEL_HALF_W < -wall_half - 0.1 and MACHINE_WHEEL_X[1] - WHEEL_HALF_W > SHIFT + wall_half + 0.1):
+        problems.append("the machine's wheels run into the wall on its old or new line")
     if not lanes_ok:
         problems.append("a traffic lane runs into the wall or the machine")
     if any(x + CAR_HALF_W > SHIFT - 0.305 - 0.2 for x, *_ in MORNING_EXTRA):

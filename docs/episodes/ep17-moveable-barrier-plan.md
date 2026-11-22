@@ -19,4 +19,5 @@ examples/experiments/zipper-film-request.json), tests tests/test_ep17_zipper.py.
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(pending)
+Local low-res run: all 11 gates PASS (790 frames, 32.9 s; mix -15.2 LUFS, every line at least 9.0 dB above the effects).
+Then: machine wheels moved clear of the wall (new gate), traffic off the lanes next to the machine, entry shots from the right. CI: pending.
