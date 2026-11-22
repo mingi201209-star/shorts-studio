@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "emas",
+   "beats": [
+    {
+     "narration_en": "Why is the end of this runway built to crumble?",
+     "start": 0.0,
+     "end": 6.6
+    },
+    {
+     "narration_en": "Sometimes a jet can't stop and runs off the end.",
+     "start": 6.6,
+     "end": 13.2
+    },
+    {
+     "narration_en": "So many airports add a bed of crushable concrete blocks.",
+     "start": 13.2,
+     "end": 19.8
+    },
+    {
+     "narration_en": "It looks like pavement, but it's light and full of bubbles.",
+     "start": 19.8,
+     "end": 27.0
+    },
+    {
+     "narration_en": "Under the weight of a plane, the blocks crush.",
+     "start": 27.0,
+     "end": 33.0
+    },
+    {
+     "narration_en": "The tires sink in, like driving into deep sand.",
+     "start": 33.0,
+     "end": 39.0
+    },
+    {
+     "narration_en": "Every block they crush takes away some of the speed.",
+     "start": 39.0,
+     "end": 45.6
+    },
+    {
+     "narration_en": "It's built to stop a jet rolling in at eighty miles an hour.",
+     "start": 45.6,
+     "end": 54.0
+    },
+    {
+     "narration_en": "It has already stopped more than two dozen planes, with hundreds aboard.",
+     "start": 54.0,
+     "end": 61.8
+    },
+    {
+     "narration_en": "Afterward, crews just replace the crushed blocks.",
+     "start": 61.8,
+     "end": 66.6
+    },
+    {
+     "narration_en": "That's the gray pad at the end of some runways.",
+     "start": 66.6,
+     "end": 73.2
+    }
+   ]
+  }
+ ]
+}
