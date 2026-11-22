@@ -88,3 +88,5 @@ filling the frame, a top-down frame of yellow bars) to a weaker shot (a distant 
 benchmarks/hook_gate.py in every assembly: hold the opening money shot until line 2 (2-3.6 s), whole subject readable (at least 85 %
 of it in frame, or at least 60 % when it fills the picture; at least 30 % of the width) for the first second. EP.16-EP.19 re-cut
 (v2) to this rule.
+All four v2 films pass every gate in CI (commit ca1e350; openings held 3.40 / 2.42 / 2.17 / 2.68 s). Verification is the owner's
+Studio numbers: viewed % of the v2 uploads against EP.14-EP.15 (and v1 where it was uploaded).
