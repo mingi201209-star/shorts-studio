@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "zipper",
+   "beats": [
+    {
+     "narration_en": "Why is this machine swallowing a concrete wall?",
+     "start": 0,
+     "end": 5.4
+    },
+    {
+     "narration_en": "It's moving the whole wall over by one lane, while traffic keeps flowing.",
+     "start": 5.4,
+     "end": 13.8
+    },
+    {
+     "narration_en": "The wall is a chain of concrete blocks, pinned together like a bike chain.",
+     "start": 13.8,
+     "end": 22.8
+    },
+    {
+     "narration_en": "Each block weighs about fifteen hundred pounds.",
+     "start": 22.8,
+     "end": 27.6
+    },
+    {
+     "narration_en": "Wheels under the machine grab the T-shaped top of every block.",
+     "start": 27.6,
+     "end": 34.8
+    },
+    {
+     "narration_en": "Then an S-shaped track lifts the chain and slides it sideways, twelve feet.",
+     "start": 34.8,
+     "end": 43.2
+    },
+    {
+     "narration_en": "The blocks drop back down in a new line, still locked together.",
+     "start": 43.2,
+     "end": 51.0
+    },
+    {
+     "narration_en": "In the morning, the busy side gets an extra lane. At night, it zips back.",
+     "start": 51.0,
+     "end": 60.6
+    },
+    {
+     "narration_en": "That's why some highway walls change sides every day.",
+     "start": 60.6,
+     "end": 66.6
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,275 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 32.656,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.521167,
+      "text": "Why is this"
+    },
+    {
+      "start": 0.533292,
+      "end": 1.4799159,
+      "text": "machine swallowing a"
+    },
+    {
+      "start": 1.492042,
+      "end": 2.220208,
+      "text": "concrete wall?"
+    },
+    {
+      "start": 2.480245333333333,
+      "end": 2.977828333333333,
+      "text": "It's moving the"
+    },
+    {
+      "start": 2.989953333333333,
+      "end": 3.912286333333333,
+      "text": "whole wall over"
+    },
+    {
+      "start": 3.9244123333333327,
+      "end": 4.676828333333333,
+      "text": "by one lane,"
+    },
+    {
+      "start": 5.040912333333333,
+      "end": 5.647703333333333,
+      "text": "while traffic"
+    },
+    {
+      "start": 5.7084123333333325,
+      "end": 6.412287333333333,
+      "text": "keeps flowing."
+    },
+    {
+      "start": 6.672324666666665,
+      "end": 7.097115666666665,
+      "text": "The wall is"
+    },
+    {
+      "start": 7.109241666666665,
+      "end": 7.546115666666665,
+      "text": "a chain of"
+    },
+    {
+      "start": 7.558241666666665,
+      "end": 9.063115666666665,
+      "text": "concrete blocks, pinned"
+    },
+    {
+      "start": 9.075241666666665,
+      "end": 9.779115666666666,
+      "text": "together like a"
+    },
+    {
+      "start": 9.791282666666664,
+      "end": 10.410198666666664,
+      "text": "bike chain."
+    },
+    {
+      "start": 10.670235999999997,
+      "end": 11.459109999999997,
+      "text": "Each block weighs"
+    },
+    {
+      "start": 11.471235999999998,
+      "end": 12.114443999999997,
+      "text": "about fifteen"
+    },
+    {
+      "start": 12.126568999999996,
+      "end": 12.951818999999997,
+      "text": "hundred pounds."
+    },
+    {
+      "start": 13.211856333333328,
+      "end": 13.806522333333328,
+      "text": "Wheels under the"
+    },
+    {
+      "start": 13.818648333333329,
+      "end": 14.668189333333329,
+      "text": "machine grab the"
+    },
+    {
+      "start": 14.680314333333328,
+      "end": 15.942439333333327,
+      "text": "T-shaped top of"
+    },
+    {
+      "start": 16.07593933333333,
+      "end": 16.70698133333333,
+      "text": "every block."
+    },
+    {
+      "start": 16.967018666666664,
+      "end": 17.743726666666664,
+      "text": "Then an S-shaped"
+    },
+    {
+      "start": 17.755851666666665,
+      "end": 18.520434666666663,
+      "text": "track lifts the"
+    },
+    {
+      "start": 18.53256066666666,
+      "end": 19.612643666666663,
+      "text": "chain and slides"
+    },
+    {
+      "start": 19.624810666666665,
+      "end": 20.486434666666664,
+      "text": "it sideways,"
+    },
+    {
+      "start": 20.668476666666663,
+      "end": 21.323851666666663,
+      "text": "twelve feet."
+    },
+    {
+      "start": 21.583888999999996,
+      "end": 22.251346999999996,
+      "text": "The blocks drop"
+    },
+    {
+      "start": 22.263471999999997,
+      "end": 22.955262999999995,
+      "text": "back down in"
+    },
+    {
+      "start": 22.967388999999994,
+      "end": 23.622721999999996,
+      "text": "a new line,"
+    },
+    {
+      "start": 23.901846999999997,
+      "end": 24.921262999999996,
+      "text": "still locked together."
+    },
+    {
+      "start": 25.181300333333333,
+      "end": 25.73955033333333,
+      "text": "In the morning,"
+    },
+    {
+      "start": 25.994425333333332,
+      "end": 26.83175833333333,
+      "text": "the busy side"
+    },
+    {
+      "start": 26.856050333333332,
+      "end": 27.18375833333333,
+      "text": "gets an"
+    },
+    {
+      "start": 27.19588333333333,
+      "end": 27.81479933333333,
+      "text": "extra lane."
+    },
+    {
+      "start": 28.21530033333333,
+      "end": 28.967716333333332,
+      "text": "At night, it"
+    },
+    {
+      "start": 28.97984233333333,
+      "end": 29.635217333333333,
+      "text": "zips back."
+    },
+    {
+      "start": 29.895254666666663,
+      "end": 30.344296666666665,
+      "text": "That's why some"
+    },
+    {
+      "start": 30.356421666666662,
+      "end": 31.472920666666663,
+      "text": "highway walls change"
+    },
+    {
+      "start": 31.485087666666665,
+      "end": 32.455962666666665,
+      "text": "sides every day."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.420245333333333,
+      "narration_en": "Why is this machine swallowing a concrete wall?",
+      "source_audio_sha256": "f9bbc920b1ab8b903b871aea29a01fa080435015ee7e53d6b31009a35055e74e"
+    },
+    {
+      "start": 2.420245333333333,
+      "end": 6.612324666666665,
+      "narration_en": "It's moving the whole wall over by one lane, while traffic keeps flowing.",
+      "source_audio_sha256": "9207089cfec1b1aa7b33d409e8bf66190e78913e7eef2febed21e5efb5ba10cf"
+    },
+    {
+      "start": 6.612324666666665,
+      "end": 10.610235999999997,
+      "narration_en": "The wall is a chain of concrete blocks, pinned together like a bike chain.",
+      "source_audio_sha256": "33072a6aa0b3a4f37189a128190bfe69ea779960ca8578b7e70b1d2d9da8e25a"
+    },
+    {
+      "start": 10.610235999999997,
+      "end": 13.15185633333333,
+      "narration_en": "Each block weighs about fifteen hundred pounds.",
+      "source_audio_sha256": "6a2ada8c3ef4a5bb8da5053f3775d438153923a0428e665dd8df0573eafb57c3"
+    },
+    {
+      "start": 13.15185633333333,
+      "end": 16.907018666666662,
+      "narration_en": "Wheels under the machine grab the T-shaped top of every block.",
+      "source_audio_sha256": "b79996c3701a9f9e3e33476d43ebf52b9f0e37ec5e517bfed8fc96a590d54118"
+    },
+    {
+      "start": 16.907018666666662,
+      "end": 21.523888999999997,
+      "narration_en": "Then an S-shaped track lifts the chain and slides it sideways, twelve feet.",
+      "source_audio_sha256": "cb8b465d8e45a5be343611914696ca85d73767f2b7fa5d91e88309420aa44d1f"
+    },
+    {
+      "start": 21.523888999999997,
+      "end": 25.12130033333333,
+      "narration_en": "The blocks drop back down in a new line, still locked together.",
+      "source_audio_sha256": "da12489d65c05d70ee20c76d78bec68521c6288f23a2a5ba9743b9a3af30f79e"
+    },
+    {
+      "start": 25.12130033333333,
+      "end": 29.835254666666664,
+      "narration_en": "In the morning, the busy side gets an extra lane. At night, it zips back.",
+      "source_audio_sha256": "0677c409d6b3411e66bc7d229a4319664528c6a428a2f2a4537e787acaaf6993"
+    },
+    {
+      "start": 29.835254666666664,
+      "end": 32.656,
+      "narration_en": "That's why some highway walls change sides every day.",
+      "source_audio_sha256": "5371d5b554567c66c2cdd6d00eaf6597c4216a95688606b75d2a9b181606ed0e"
+    }
+  ],
+  "silence_gaps": [
+    0.338687,
+    0.310396,
+    0.302083,
+    0.401062
+  ],
+  "loudness": {
+    "integrated_lufs": -16.4,
+    "loudness_range_lu": 2.1,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.3,
+      -16.4,
+      -15.7,
+      -16.6,
+      -17.0,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "9bd82ca0cdf517e2ccbfd1e7d902c3d391b0c062203584071a2483a9d2fea4f2"
+}
