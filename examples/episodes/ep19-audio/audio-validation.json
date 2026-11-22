@@ -1,0 +1,251 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 29.35,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.6527909999999999,
+      "text": "Why don't police"
+    },
+    {
+      "start": 0.665666,
+      "end": 1.567707,
+      "text": "spike strips make"
+    },
+    {
+      "start": 1.5805829999999998,
+      "end": 2.482666,
+      "text": "tires explode?"
+    },
+    {
+      "start": 2.7426294444444443,
+      "end": 3.5287124444444444,
+      "text": "Because a blowout"
+    },
+    {
+      "start": 3.5415874444444446,
+      "end": 4.250337444444445,
+      "text": "at sixty could"
+    },
+    {
+      "start": 4.263254444444445,
+      "end": 4.959128444444445,
+      "text": "flip the car"
+    },
+    {
+      "start": 4.972004444444445,
+      "end": 5.526170444444444,
+      "text": "right over."
+    },
+    {
+      "start": 5.786133888888888,
+      "end": 6.842841888888889,
+      "text": "So every spike"
+    },
+    {
+      "start": 6.933050888888888,
+      "end": 7.564466888888888,
+      "text": "is a hollow"
+    },
+    {
+      "start": 7.577383888888888,
+      "end": 8.59542588888889,
+      "text": "steel tube with"
+    },
+    {
+      "start": 8.60830088888889,
+      "end": 9.368633888888889,
+      "text": "a sharp tip."
+    },
+    {
+      "start": 9.628597333333333,
+      "end": 10.260055333333334,
+      "text": "As the tire"
+    },
+    {
+      "start": 10.272930333333333,
+      "end": 11.535847333333333,
+      "text": "rolls across, the"
+    },
+    {
+      "start": 11.548722333333334,
+      "end": 12.502305333333334,
+      "text": "tubes punch into"
+    },
+    {
+      "start": 12.515222333333334,
+      "end": 13.030680333333333,
+      "text": "the tread."
+    },
+    {
+      "start": 13.290643777777778,
+      "end": 13.844767777777777,
+      "text": "Then they snap"
+    },
+    {
+      "start": 13.857643777777778,
+      "end": 14.540601777777779,
+      "text": "off the strip"
+    },
+    {
+      "start": 14.669476777777778,
+      "end": 15.339600777777777,
+      "text": "and stay stuck"
+    },
+    {
+      "start": 15.352476777777778,
+      "end": 15.919476777777778,
+      "text": "in the rubber."
+    },
+    {
+      "start": 16.179440222222222,
+      "end": 16.95264822222222,
+      "text": "Air leaks out"
+    },
+    {
+      "start": 16.96552322222222,
+      "end": 17.98356522222222,
+      "text": "through each tube,"
+    },
+    {
+      "start": 18.305732222222222,
+      "end": 19.19489822222222,
+      "text": "like breathing through"
+    },
+    {
+      "start": 19.20781522222222,
+      "end": 19.723273222222222,
+      "text": "a straw."
+    },
+    {
+      "start": 19.983236666666667,
+      "end": 20.640444666666667,
+      "text": "The tire goes"
+    },
+    {
+      "start": 20.653319666666665,
+      "end": 21.426527666666665,
+      "text": "flat in about"
+    },
+    {
+      "start": 21.439402666666666,
+      "end": 22.148193666666664,
+      "text": "half a minute,"
+    },
+    {
+      "start": 22.444569666666666,
+      "end": 23.372402666666666,
+      "text": "instead of bursting."
+    },
+    {
+      "start": 23.63236611111111,
+      "end": 24.09628211111111,
+      "text": "So the car"
+    },
+    {
+      "start": 24.10919911111111,
+      "end": 24.81794911111111,
+      "text": "slows down on"
+    },
+    {
+      "start": 24.83082411111111,
+      "end": 25.91328211111111,
+      "text": "its own, still"
+    },
+    {
+      "start": 25.92619911111111,
+      "end": 26.77669911111111,
+      "text": "steering straight."
+    },
+    {
+      "start": 27.03666255555555,
+      "end": 27.42324445555555,
+      "text": "That's how a"
+    },
+    {
+      "start": 27.43612055555555,
+      "end": 28.505703555555552,
+      "text": "chase ends without"
+    },
+    {
+      "start": 28.51862055555555,
+      "end": 29.150036555555552,
+      "text": "a crash."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.6826294444444447,
+      "narration_en": "Why don't police spike strips make tires explode?",
+      "source_audio_sha256": "093054aace953cbcce10bd01e589274c2162b208a62691f0977e32be5cac2296"
+    },
+    {
+      "start": 2.6826294444444447,
+      "end": 5.726133888888889,
+      "narration_en": "Because a blowout at sixty could flip the car right over.",
+      "source_audio_sha256": "a298dfc5522d3e41f6c7460a17a8cf2e21d37b917750e1ca983e0ea5847c345e"
+    },
+    {
+      "start": 5.726133888888889,
+      "end": 9.568597333333333,
+      "narration_en": "So every spike is a hollow steel tube with a sharp tip.",
+      "source_audio_sha256": "ff2c53c9cb9a87477a048b49d6e8d1b8c2d82956274505e8c384ff74e4a18cd5"
+    },
+    {
+      "start": 9.568597333333333,
+      "end": 13.230643777777777,
+      "narration_en": "As the tire rolls across, the tubes punch into the tread.",
+      "source_audio_sha256": "abcd71da7ea4142a377f7389a230f1720e2e481371b4291bdbe3891653ea0a51"
+    },
+    {
+      "start": 13.230643777777777,
+      "end": 16.11944022222222,
+      "narration_en": "Then they snap off the strip and stay stuck in the rubber.",
+      "source_audio_sha256": "2d1a9cdcdd7549dc89891dd856a09069034632cdaba0b551088326d65d9dd047"
+    },
+    {
+      "start": 16.11944022222222,
+      "end": 19.923236666666664,
+      "narration_en": "Air leaks out through each tube, like breathing through a straw.",
+      "source_audio_sha256": "2d191382b1b03126c47776615b77f4aae2b08a41ffb984fa39ce0b849394c545"
+    },
+    {
+      "start": 19.923236666666664,
+      "end": 23.57236611111111,
+      "narration_en": "The tire goes flat in about half a minute, instead of bursting.",
+      "source_audio_sha256": "441837960e54ebda817d8b887469ba4aabf9c5bcbf3cc1fe7532ea8054945212"
+    },
+    {
+      "start": 23.57236611111111,
+      "end": 26.976662555555553,
+      "narration_en": "So the car slows down on its own, still steering straight.",
+      "source_audio_sha256": "f3a2fb25397157bbb9f80b2b37f7cb85a7b9bcf43ce5b20f5bb43fbfd9ebc6bb"
+    },
+    {
+      "start": 26.976662555555553,
+      "end": 29.35,
+      "narration_en": "That's how a chase ends without a crash.",
+      "source_audio_sha256": "9a3554e4ac5447489a322c6922149eb2c9883e6b5e05986fcce733056f6922f5"
+    }
+  ],
+  "silence_gaps": [
+    0.325042
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.3,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.1,
+      -16.5,
+      -15.9,
+      -16.5,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "1f52766a33bb2b2f0b33b694840767d8486e6f19c26636d54892fee91e5f530c"
+}

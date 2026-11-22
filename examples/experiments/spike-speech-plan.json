@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "spike",
+   "beats": [
+    {
+     "narration_en": "Why don't police spike strips make tires explode?",
+     "start": 0,
+     "end": 5.4
+    },
+    {
+     "narration_en": "Because a blowout at sixty could flip the car right over.",
+     "start": 5.4,
+     "end": 12.6
+    },
+    {
+     "narration_en": "So every spike is a hollow steel tube with a sharp tip.",
+     "start": 12.6,
+     "end": 20.4
+    },
+    {
+     "narration_en": "As the tire rolls across, the tubes punch into the tread.",
+     "start": 20.4,
+     "end": 27.6
+    },
+    {
+     "narration_en": "Then they snap off the strip and stay stuck in the rubber.",
+     "start": 27.6,
+     "end": 35.4
+    },
+    {
+     "narration_en": "Air leaks out through each tube, like breathing through a straw.",
+     "start": 35.4,
+     "end": 42.6
+    },
+    {
+     "narration_en": "The tire goes flat in about half a minute, instead of bursting.",
+     "start": 42.6,
+     "end": 50.4
+    },
+    {
+     "narration_en": "So the car slows down on its own, still steering straight.",
+     "start": 50.4,
+     "end": 57.6
+    },
+    {
+     "narration_en": "That's how a chase ends without a crash.",
+     "start": 57.6,
+     "end": 63.0
+    }
+   ]
+  }
+ ]
+}
