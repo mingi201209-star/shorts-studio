@@ -24,4 +24,6 @@ true peak -1.9 dBFS, every line at least 12.8 dB above the effects. Copy: ep05-r
 
 ## v2 (2026-11-22): opening re-cut for the viewed rate
 The opening is one held shot through the first line with the whole car/machine in the event (hero 3/4 or mid-wide) instead of a
-1.3 s close-up cut to a weaker shot; checked by the new opening_hook gate (benchmarks/hook_gate.py). CI: pending.
+1.3 s close-up cut to a weaker shot; checked by the new opening_hook gate (benchmarks/hook_gate.py).
+CI run 44998408295 (commit ca1e350): all 12 gates PASS incl. opening_hook (opening held 2.68 s; car 77-100 % in frame, 73 % of the
+width). Copy: ep05-review/EP19-spike-strip-v2.mp4.
