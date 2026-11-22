@@ -37,5 +37,10 @@ Narration capture: edge-tts at -3 % (the +5 % take ran at 212 wpm); line 9 writt
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-Local low-res run: pending.
+Local low-res runs (787 frames, 32.8 s): all 12 gates PASS (opening held 2.49 s, the whole truck in frame, 49 % of the width at the
+smallest; 20.1 cuts/min, 197 wpm; loop seam 1.53 vs steps 2.43/1.05; mix -15.2 LUFS, true peak -1.9 dBFS, every line at least 8.5 dB
+above the effects). Fixed on the way: the hero camera (ten framings tried: a 9 m truck in a 9:16 frame; the peel made a tall rolling
+curl of skin so it reads at phone size), the box panels' normals (the plywood liner was outside: the box looked tan), the bridge,
+sixteen-inch, sensor and cab-under shots re-aimed, the locomotive given a cab and a long hood, the scene built with the data API
+(operators took about 6 min per render shard), effects lowered under lines 3, 6, 10 and 11.
 CI: pending.
