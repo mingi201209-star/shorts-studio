@@ -18,4 +18,6 @@ timeline spike_timeline.py, renderer render_spike_3d.py, sound spike_sfx.py, ass
 
 ## Preview
 Local low-res run: all 11 gates PASS (710 frames, 29.6 s; mix -15.2 LUFS, every line at least 12.6 dB above the effects). Fixed on
-the way: the rear tyre took the same quill as the front (telemetry gate); D and G cameras re-aimed. CI: pending.
+the way: the rear tyre took the same quill as the front (telemetry gate); D and G cameras re-aimed.
+CI run 44990573970 (commit d6b9b1e): all 11 gates PASS; 710 frames, 29.6 s; first cut 1.30 s, 22.3 cuts/min, 196 wpm; mix -15.2 LUFS,
+true peak -1.9 dBFS, every line at least 12.8 dB above the effects. Copy: ep05-review/EP19-spike-strip.mp4. Not listened to yet.
