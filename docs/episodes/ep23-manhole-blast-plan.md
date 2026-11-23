@@ -36,5 +36,10 @@ the camera never under the street, in a building, the parked car or the fire, an
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-Local low-res run: pending.
+Local low-res run (868 frames, 36.2 s): all 12 gates PASS. Opening hook held 3.01 s, the cover and the fire 100 % in frame and
+55 % of the width in the first second; 19.9 cuts/min, 180 wpm; mix -15.2 LUFS, every line at least 11.0 dB above the effects; loop
+seam 0.47 vs steps 3.12/3.46. On the way: the first fire and smoke were true volumes (100 s a frame at a quarter size, and too
+faint) and are now soft surface puffs (3-5 s); the flying cover was lost against dark brick, so the hero and launch shots look along
+the street with the sky behind it; the spark, the blast and the latch are timed to the words "spark", "explodes", "pop up" and
+"drop back".
 CI: pending.
