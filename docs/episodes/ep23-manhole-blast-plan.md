@@ -42,4 +42,6 @@ seam 0.47 vs steps 3.12/3.46. On the way: the first fire and smoke were true vol
 faint) and are now soft surface puffs (3-5 s); the flying cover was lost against dark brick, so the hero and launch shots look along
 the street with the sky behind it; the spark, the blast and the latch are timed to the words "spark", "explodes", "pop up" and
 "drop back".
-CI: pending.
+CI (run 45086567065, 868 frames at 720x1280, 16 samples, composed to 1080x1920): all 12 gates PASS. Opening hook held 3.01 s, the
+cover and the fire 100 % in frame and 55 % of the width in the first second; mix -15.2 LUFS, every line at least 11.0 dB above the
+effects; loop seam 0.17 vs steps 2.63/1.60. Film sha256 632fed4c5e1f00620d4f5ef38cf83c01917f4faff2fd02a33a438e21b05bb26e.
