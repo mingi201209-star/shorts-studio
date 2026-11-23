@@ -1,0 +1,51 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.79,Caption,,0,0,0,,Drive over this
+Dialogue: 0,0:00:00.80,0:00:01.45,Caption,,0,0,0,,road and it
+Dialogue: 0,0:00:01.47,0:00:02.27,Caption,,0,0,0,,plays a song.
+Dialogue: 0,0:00:02.53,0:00:03.07,Caption,,0,0,0,,It's cut with
+Dialogue: 0,0:00:03.08,0:00:03.61,Caption,,0,0,0,,grooves like a
+Dialogue: 0,0:00:03.63,0:00:04.79,Caption,,0,0,0,,giant vinyl record.
+Dialogue: 0,0:00:05.05,0:00:05.62,Caption,,0,0,0,,Each time a
+Dialogue: 0,0:00:05.63,0:00:06.26,Caption,,0,0,0,,tire hits a
+Dialogue: 0,0:00:06.27,0:00:07.25,Caption,,0,0,0,,groove, it makes
+Dialogue: 0,0:00:07.26,0:00:07.75,Caption,,0,0,0,,a thump.
+Dialogue: 0,0:00:08.01,0:00:08.93,Caption,,0,0,0,,Hundreds of thumps
+Dialogue: 0,0:00:08.94,0:00:09.73,Caption,,0,0,0,,a second blur
+Dialogue: 0,0:00:09.75,0:00:10.58,Caption,,0,0,0,,into one note.
+Dialogue: 0,0:00:10.84,0:00:11.71,Caption,,0,0,0,,Close grooves make
+Dialogue: 0,0:00:11.73,0:00:12.42,Caption,,0,0,0,,a high note
+Dialogue: 0,0:00:12.45,0:00:13.29,Caption,,0,0,0,,and wider gaps
+Dialogue: 0,0:00:13.30,0:00:13.95,Caption,,0,0,0,,a lower one.
+Dialogue: 0,0:00:14.21,0:00:15.16,Caption,,0,0,0,,Space them just
+Dialogue: 0,0:00:15.18,0:00:15.80,Caption,,0,0,0,,right and the
+Dialogue: 0,0:00:15.81,0:00:16.49,Caption,,0,0,0,,road plays
+Dialogue: 0,0:00:16.50,0:00:17.00,Caption,,0,0,0,,a melody.
+Dialogue: 0,0:00:17.26,0:00:18.20,Caption,,0,0,0,,Drive slower and
+Dialogue: 0,0:00:18.21,0:00:19.03,Caption,,0,0,0,,the song slows
+Dialogue: 0,0:00:19.04,0:00:19.85,Caption,,0,0,0,,down and drops
+Dialogue: 0,0:00:19.86,0:00:20.45,Caption,,0,0,0,,in pitch.
+Dialogue: 0,0:00:20.71,0:00:22.22,Caption,,0,0,0,,In California, one
+Dialogue: 0,0:00:22.23,0:00:22.99,Caption,,0,0,0,,plays the William
+Dialogue: 0,0:00:23.00,0:00:23.76,Caption,,0,0,0,,Tell Overture.
+Dialogue: 0,0:00:24.02,0:00:24.58,Caption,,0,0,0,,But the crew
+Dialogue: 0,0:00:24.59,0:00:25.32,Caption,,0,0,0,,measured the gap
+Dialogue: 0,0:00:25.33,0:00:26.61,Caption,,0,0,0,,between grooves, not
+Dialogue: 0,0:00:26.62,0:00:27.31,Caption,,0,0,0,,groove to groove.
+Dialogue: 0,0:00:27.57,0:00:28.32,Caption,,0,0,0,,So every note
+Dialogue: 0,0:00:28.34,0:00:29.16,Caption,,0,0,0,,came out flat,
+Dialogue: 0,0:00:29.54,0:00:30.13,Caption,,0,0,0,,the high notes
+Dialogue: 0,0:00:30.15,0:00:30.84,Caption,,0,0,0,,most of all.
+Dialogue: 0,0:00:31.10,0:00:32.28,Caption,,0,0,0,,That's why California's
+Dialogue: 0,0:00:32.30,0:00:33.49,Caption,,0,0,0,,famous musical road
+Dialogue: 0,0:00:33.52,0:00:33.82,Caption,,0,0,0,,is out
+Dialogue: 0,0:00:33.83,0:00:34.34,Caption,,0,0,0,,of tune.

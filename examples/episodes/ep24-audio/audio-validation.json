@@ -1,0 +1,305 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 34.54,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.7892079999999999,
+      "text": "Drive over this"
+    },
+    {
+      "start": 0.8022079999999999,
+      "end": 1.453249,
+      "text": "road and it"
+    },
+    {
+      "start": 1.46625,
+      "end": 2.273541,
+      "text": "plays a song."
+    },
+    {
+      "start": 2.533552909090909,
+      "end": 3.067426909090909,
+      "text": "It's cut with"
+    },
+    {
+      "start": 3.080427909090909,
+      "end": 3.614301909090909,
+      "text": "grooves like a"
+    },
+    {
+      "start": 3.627302909090909,
+      "end": 4.786177909090909,
+      "text": "giant vinyl record."
+    },
+    {
+      "start": 5.046189818181818,
+      "end": 5.619147818181818,
+      "text": "Each time a"
+    },
+    {
+      "start": 5.632147818181819,
+      "end": 6.257147818181819,
+      "text": "tire hits a"
+    },
+    {
+      "start": 6.270147818181819,
+      "end": 7.246730818181819,
+      "text": "groove, it makes"
+    },
+    {
+      "start": 7.2597308181818185,
+      "end": 7.754563818181819,
+      "text": "a thump."
+    },
+    {
+      "start": 8.014575727272728,
+      "end": 8.926033727272728,
+      "text": "Hundreds of thumps"
+    },
+    {
+      "start": 8.939075727272728,
+      "end": 9.733324727272729,
+      "text": "a second blur"
+    },
+    {
+      "start": 9.74636672727273,
+      "end": 10.579699727272729,
+      "text": "into one note."
+    },
+    {
+      "start": 10.839711636363637,
+      "end": 11.712127636363636,
+      "text": "Close grooves make"
+    },
+    {
+      "start": 11.725127636363638,
+      "end": 12.415252636363636,
+      "text": "a high note"
+    },
+    {
+      "start": 12.454294636363636,
+      "end": 13.287669636363637,
+      "text": "and wider gaps"
+    },
+    {
+      "start": 13.300669636363637,
+      "end": 13.951711636363637,
+      "text": "a lower one."
+    },
+    {
+      "start": 14.211723545454547,
+      "end": 15.162264545454548,
+      "text": "Space them just"
+    },
+    {
+      "start": 15.175264545454548,
+      "end": 15.800305545454547,
+      "text": "right and the"
+    },
+    {
+      "start": 15.813306545454546,
+      "end": 16.490389545454548,
+      "text": "road plays"
+    },
+    {
+      "start": 16.503389545454546,
+      "end": 16.998181545454546,
+      "text": "a melody."
+    },
+    {
+      "start": 17.258193454545456,
+      "end": 18.195692454545455,
+      "text": "Drive slower and"
+    },
+    {
+      "start": 18.208734454545453,
+      "end": 19.029026454545455,
+      "text": "the song slows"
+    },
+    {
+      "start": 19.042068454545454,
+      "end": 19.849359454545453,
+      "text": "down and drops"
+    },
+    {
+      "start": 19.862359454545455,
+      "end": 20.448318454545454,
+      "text": "in pitch."
+    },
+    {
+      "start": 20.708330363636364,
+      "end": 22.218787363636363,
+      "text": "In California, one"
+    },
+    {
+      "start": 22.231788363636362,
+      "end": 22.98699636363636,
+      "text": "plays the William"
+    },
+    {
+      "start": 22.999996363636363,
+      "end": 23.755204363636363,
+      "text": "Tell Overture."
+    },
+    {
+      "start": 24.015216272727272,
+      "end": 24.57513227272727,
+      "text": "But the crew"
+    },
+    {
+      "start": 24.58813227272727,
+      "end": 25.31734027272727,
+      "text": "measured the gap"
+    },
+    {
+      "start": 25.33034127272727,
+      "end": 26.60638227272727,
+      "text": "between grooves, not"
+    },
+    {
+      "start": 26.61938227272727,
+      "end": 27.30950727272727,
+      "text": "groove to groove."
+    },
+    {
+      "start": 27.56951918181818,
+      "end": 28.32476918181818,
+      "text": "So every note"
+    },
+    {
+      "start": 28.337769181818178,
+      "end": 29.15806018181818,
+      "text": "came out flat,"
+    },
+    {
+      "start": 29.535685181818177,
+      "end": 30.134643181818177,
+      "text": "the high notes"
+    },
+    {
+      "start": 30.14764418181818,
+      "end": 30.837769181818178,
+      "text": "most of all."
+    },
+    {
+      "start": 31.097781090909088,
+      "end": 32.28269709090909,
+      "text": "That's why California's"
+    },
+    {
+      "start": 32.29569709090909,
+      "end": 33.493656090909084,
+      "text": "famous musical road"
+    },
+    {
+      "start": 33.51965609090909,
+      "end": 33.81915609090909,
+      "text": "is out"
+    },
+    {
+      "start": 33.83215609090909,
+      "end": 34.33998809090909,
+      "text": "of tune."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.473552909090909,
+      "narration_en": "Drive over this road and it plays a song.",
+      "source_audio_sha256": "e79580b795e8a645d2b85335e3974db68117c101ade7d9e2f8d52e26a01bee59"
+    },
+    {
+      "start": 2.473552909090909,
+      "end": 4.986189818181819,
+      "narration_en": "It's cut with grooves like a giant vinyl record.",
+      "source_audio_sha256": "3486b86b582f1993767dbbc1f886593f7efda4356e3c62ffc617a0e75aaa674e"
+    },
+    {
+      "start": 4.986189818181819,
+      "end": 7.9545757272727275,
+      "narration_en": "Each time a tire hits a groove, it makes a thump.",
+      "source_audio_sha256": "e1c9714911e1b256f07ad32a7208b6d30ed6e7d43ef0da382d156669b635a51a"
+    },
+    {
+      "start": 7.9545757272727275,
+      "end": 10.779711636363636,
+      "narration_en": "Hundreds of thumps a second blur into one note.",
+      "source_audio_sha256": "ae922a8690ff6759169ec8e8cf5c6b581736702cf83fe59ea2d6c3f0c182e946"
+    },
+    {
+      "start": 10.779711636363636,
+      "end": 14.151723545454546,
+      "narration_en": "Close grooves make a high note and wider gaps a lower one.",
+      "source_audio_sha256": "fa0336ce26467dfb43fa3994cfd8df83cf669c7a08e9c270ea2ded7906478e8f"
+    },
+    {
+      "start": 14.151723545454546,
+      "end": 17.198193454545454,
+      "narration_en": "Space them just right and the road plays a melody.",
+      "source_audio_sha256": "cb701106e184aaa8da4e0cefc5522d3e4ac55bb81148fa5c35c188891a6342b5"
+    },
+    {
+      "start": 17.198193454545454,
+      "end": 20.64833036363636,
+      "narration_en": "Drive slower and the song slows down and drops in pitch.",
+      "source_audio_sha256": "ff2213e5c92fade1167845bfb10dde464342b8588047464585f8a768eed11035"
+    },
+    {
+      "start": 20.64833036363636,
+      "end": 23.95521627272727,
+      "narration_en": "In California, one plays the William Tell Overture.",
+      "source_audio_sha256": "86502c3ed526d49aafd15a8518ce1a5c150323a6fb6c726e555843b7a27a61c5"
+    },
+    {
+      "start": 23.95521627272727,
+      "end": 27.509519181818177,
+      "narration_en": "But the crew measured the gap between grooves, not groove to groove.",
+      "source_audio_sha256": "f1ce6d3c691592fb0ee24b2ae94fa009f9f13413f8563da74fff4c465aa645d6"
+    },
+    {
+      "start": 27.509519181818177,
+      "end": 31.037781090909085,
+      "narration_en": "So every note came out flat, the high notes most of all.",
+      "source_audio_sha256": "56f7484965510153074f5c7fc51acf19a42388ff97e95aff2d961a8478a8f9dc"
+    },
+    {
+      "start": 31.037781090909085,
+      "end": 34.54,
+      "narration_en": "That's why California's famous musical road is out of tune.",
+      "source_audio_sha256": "238b258e3035c90472b0c047000302214043e6cf741a3c61801bfc32d74fd873"
+    }
+  ],
+  "silence_gaps": [
+    0.346583,
+    0.381437,
+    0.384917,
+    0.384354,
+    0.354563,
+    0.369229,
+    0.385687,
+    0.369417,
+    0.394167,
+    0.376937,
+    0.418979,
+    0.388104
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.7,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.0,
+      -15.8,
+      -16.3,
+      -15.9,
+      -16.4,
+      -16.4
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "86a9ce76962f29792d13f3e683b08b3c2e7aa2b361f732ec4529a798c786b7ac"
+}

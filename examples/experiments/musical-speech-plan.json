@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "musical",
+   "beats": [
+    {
+     "narration_en": "Drive over this road and it plays a song.",
+     "start": 0.0,
+     "end": 6.0
+    },
+    {
+     "narration_en": "It's cut with grooves like a giant vinyl record.",
+     "start": 6.0,
+     "end": 12.0
+    },
+    {
+     "narration_en": "Each time a tire hits a groove, it makes a thump.",
+     "start": 12.0,
+     "end": 19.2
+    },
+    {
+     "narration_en": "Hundreds of thumps a second blur into one note.",
+     "start": 19.2,
+     "end": 25.2
+    },
+    {
+     "narration_en": "Close grooves make a high note and wider gaps a lower one.",
+     "start": 25.2,
+     "end": 33.0
+    },
+    {
+     "narration_en": "Space them just right and the road plays a melody.",
+     "start": 33.0,
+     "end": 39.6
+    },
+    {
+     "narration_en": "Drive slower and the song slows down and drops in pitch.",
+     "start": 39.6,
+     "end": 46.8
+    },
+    {
+     "narration_en": "In California, one plays the William Tell Overture.",
+     "start": 46.8,
+     "end": 52.2
+    },
+    {
+     "narration_en": "But the crew measured the gap between grooves, not groove to groove.",
+     "start": 52.2,
+     "end": 60.0
+    },
+    {
+     "narration_en": "So every note came out flat, the high notes most of all.",
+     "start": 60.0,
+     "end": 67.8
+    },
+    {
+     "narration_en": "That's why California's famous musical road is out of tune.",
+     "start": 67.8,
+     "end": 74.4
+    }
+   ]
+  }
+ ]
+}
