@@ -47,4 +47,7 @@ frame and 63 % of the width in the first second; 19.0 cuts/min, 196 wpm; mix -15
 effects; loop seam 1.64 vs steps 6.08/5.65. On the way: the car came out grey and then see-through (now the house red, solid), the
 sun was behind the car (moved behind the cameras), the measuring bars were out of frame, and the tune was too loud for the
 narration (5.5 dB) until it was lowered and ducked.
-CI: pending.
+CI (run 45190454154, 835 frames at 720x1280, 16 samples, composed to 1080x1920): all 13 gates PASS. Opening hook held 2.47 s, the
+car 100 % in frame and 63 % of the width in the first second; mix -15.2 LUFS, every line at least 10.1 dB above the effects; the
+tune 43 notes within 6.3 cents of the model; loop seam 1.51 vs steps 6.24/6.13. Film sha256
+5c4087c003482590c885a072003848c35455ef7e1f1171ee7897f6c4ed4d3268.
