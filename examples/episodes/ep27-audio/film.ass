@@ -1,0 +1,50 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.63,Caption,,0,0,0,,Why is this
+Dialogue: 0,0:00:00.64,0:00:01.51,Caption,,0,0,0,,road sinking into
+Dialogue: 0,0:00:01.53,0:00:02.04,Caption,,0,0,0,,the sea?
+Dialogue: 0,0:00:02.30,0:00:02.94,Caption,,0,0,0,,It's a bridge
+Dialogue: 0,0:00:02.96,0:00:03.84,Caption,,0,0,0,,across the Corinth
+Dialogue: 0,0:00:03.85,0:00:04.90,Caption,,0,0,0,,Canal in Greece.
+Dialogue: 0,0:00:05.16,0:00:05.78,Caption,,0,0,0,,When a ship
+Dialogue: 0,0:00:05.80,0:00:06.56,Caption,,0,0,0,,is coming gates
+Dialogue: 0,0:00:06.57,0:00:07.52,Caption,,0,0,0,,stop the traffic.
+Dialogue: 0,0:00:07.78,0:00:08.45,Caption,,0,0,0,,Then the whole
+Dialogue: 0,0:00:08.46,0:00:09.37,Caption,,0,0,0,,road sinks about
+Dialogue: 0,0:00:09.39,0:00:10.94,Caption,,0,0,0,,twenty-six\Nfeet underwater.
+Dialogue: 0,0:00:11.20,0:00:12.00,Caption,,0,0,0,,It goes down
+Dialogue: 0,0:00:12.01,0:00:13.04,Caption,,0,0,0,,at about thirteen
+Dialogue: 0,0:00:13.06,0:00:13.71,Caption,,0,0,0,,feet a minute.
+Dialogue: 0,0:00:13.97,0:00:15.07,Caption,,0,0,0,,And settles almost
+Dialogue: 0,0:00:15.08,0:00:15.65,Caption,,0,0,0,,on the bottom
+Dialogue: 0,0:00:15.67,0:00:16.29,Caption,,0,0,0,,of the canal.
+Dialogue: 0,0:00:16.55,0:00:17.48,Caption,,0,0,0,,Ships sail right
+Dialogue: 0,0:00:17.49,0:00:18.07,Caption,,0,0,0,,over the top
+Dialogue: 0,0:00:18.09,0:00:18.24,Caption,,0,0,0,,of the
+Dialogue: 0,0:00:18.25,0:00:18.93,Caption,,0,0,0,,drowned road.
+Dialogue: 0,0:00:19.19,0:00:20.03,Caption,,0,0,0,,With nothing above
+Dialogue: 0,0:00:20.05,0:00:20.75,Caption,,0,0,0,,the water no
+Dialogue: 0,0:00:20.77,0:00:21.54,Caption,,0,0,0,,mast is ever
+Dialogue: 0,0:00:21.55,0:00:22.15,Caption,,0,0,0,,too tall.
+Dialogue: 0,0:00:22.41,0:00:23.19,Caption,,0,0,0,,A lift bridge
+Dialogue: 0,0:00:23.20,0:00:24.10,Caption,,0,0,0,,would need towers
+Dialogue: 0,0:00:24.11,0:00:24.67,Caption,,0,0,0,,taller than
+Dialogue: 0,0:00:24.68,0:00:25.36,Caption,,0,0,0,,the masts.
+Dialogue: 0,0:00:25.62,0:00:26.42,Caption,,0,0,0,,Once the ship
+Dialogue: 0,0:00:26.44,0:00:27.10,Caption,,0,0,0,,has passed the
+Dialogue: 0,0:00:27.11,0:00:28.31,Caption,,0,0,0,,road rises again
+Dialogue: 0,0:00:28.32,0:00:29.04,Caption,,0,0,0,,dripping wet.
+Dialogue: 0,0:00:29.30,0:00:30.21,Caption,,0,0,0,,That's why drivers
+Dialogue: 0,0:00:30.23,0:00:31.22,Caption,,0,0,0,,here sometimes wait
+Dialogue: 0,0:00:31.23,0:00:31.89,Caption,,0,0,0,,for their road
+Dialogue: 0,0:00:31.90,0:00:32.20,Caption,,0,0,0,,to come
+Dialogue: 0,0:00:32.21,0:00:32.70,Caption,,0,0,0,,back up.

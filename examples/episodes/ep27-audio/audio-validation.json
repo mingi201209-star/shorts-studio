@@ -1,0 +1,298 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 32.901,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.630666,
+      "text": "Why is this"
+    },
+    {
+      "start": 0.64425,
+      "end": 1.5137909999999999,
+      "text": "road sinking into"
+    },
+    {
+      "start": 1.527375,
+      "end": 2.043708,
+      "text": "the sea?"
+    },
+    {
+      "start": 2.303731363636364,
+      "end": 2.942313363636364,
+      "text": "It's a bridge"
+    },
+    {
+      "start": 2.955897363636364,
+      "end": 3.839063363636364,
+      "text": "across the Corinth"
+    },
+    {
+      "start": 3.852647363636364,
+      "end": 4.898856363636364,
+      "text": "Canal in Greece."
+    },
+    {
+      "start": 5.158879727272727,
+      "end": 5.783878727272728,
+      "text": "When a ship"
+    },
+    {
+      "start": 5.797462727272728,
+      "end": 6.558337727272727,
+      "text": "is coming gates"
+    },
+    {
+      "start": 6.571920727272728,
+      "end": 7.5230037272727275,
+      "text": "stop the traffic."
+    },
+    {
+      "start": 7.7830270909090915,
+      "end": 8.448776090909092,
+      "text": "Then the whole"
+    },
+    {
+      "start": 8.462360090909092,
+      "end": 9.372693090909092,
+      "text": "road sinks about"
+    },
+    {
+      "start": 9.386277090909093,
+      "end": 10.935193090909092,
+      "text": "twenty-six\\Nfeet underwater."
+    },
+    {
+      "start": 11.195216454545456,
+      "end": 11.996841454545455,
+      "text": "It goes down"
+    },
+    {
+      "start": 12.010424454545456,
+      "end": 13.043049454545455,
+      "text": "at about thirteen"
+    },
+    {
+      "start": 13.056632454545456,
+      "end": 13.708798454545455,
+      "text": "feet a minute."
+    },
+    {
+      "start": 13.96882181818182,
+      "end": 15.069362818181819,
+      "text": "And settles almost"
+    },
+    {
+      "start": 15.082946818181819,
+      "end": 15.65357081818182,
+      "text": "on the bottom"
+    },
+    {
+      "start": 15.66719681818182,
+      "end": 16.29219681818182,
+      "text": "of the canal."
+    },
+    {
+      "start": 16.552220181818186,
+      "end": 17.476136181818184,
+      "text": "Ships sail right"
+    },
+    {
+      "start": 17.489720181818186,
+      "end": 18.073970181818183,
+      "text": "over the top"
+    },
+    {
+      "start": 18.087553181818183,
+      "end": 18.236969181818186,
+      "text": "of the"
+    },
+    {
+      "start": 18.250595181818184,
+      "end": 18.929928181818184,
+      "text": "drowned road."
+    },
+    {
+      "start": 19.189951545454548,
+      "end": 20.032367545454548,
+      "text": "With nothing above"
+    },
+    {
+      "start": 20.045909545454546,
+      "end": 20.752450545454547,
+      "text": "the water no"
+    },
+    {
+      "start": 20.766034545454545,
+      "end": 21.540492545454548,
+      "text": "mast is ever"
+    },
+    {
+      "start": 21.554076545454546,
+      "end": 22.151908545454546,
+      "text": "too tall."
+    },
+    {
+      "start": 22.41193190909091,
+      "end": 23.18638890909091,
+      "text": "A lift bridge"
+    },
+    {
+      "start": 23.19997290909091,
+      "end": 24.096722909090907,
+      "text": "would need towers"
+    },
+    {
+      "start": 24.11030690909091,
+      "end": 24.667389909090907,
+      "text": "taller than"
+    },
+    {
+      "start": 24.680972909090908,
+      "end": 25.360305909090908,
+      "text": "the masts."
+    },
+    {
+      "start": 25.620329272727275,
+      "end": 26.421953272727272,
+      "text": "Once the ship"
+    },
+    {
+      "start": 26.435537272727274,
+      "end": 27.101329272727273,
+      "text": "has passed the"
+    },
+    {
+      "start": 27.114912272727274,
+      "end": 28.310537272727274,
+      "text": "road rises again"
+    },
+    {
+      "start": 28.324120272727274,
+      "end": 29.044245272727274,
+      "text": "dripping wet."
+    },
+    {
+      "start": 29.304268636363638,
+      "end": 30.214600636363635,
+      "text": "That's why drivers"
+    },
+    {
+      "start": 30.228184636363636,
+      "end": 31.220017636363636,
+      "text": "here sometimes wait"
+    },
+    {
+      "start": 31.233601636363638,
+      "end": 31.885767636363635,
+      "text": "for their road"
+    },
+    {
+      "start": 31.899393636363637,
+      "end": 32.19826763636364,
+      "text": "to come"
+    },
+    {
+      "start": 32.211893636363634,
+      "end": 32.700976636363634,
+      "text": "back up."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.243731363636364,
+      "narration_en": "Why is this road sinking into the sea?",
+      "source_audio_sha256": "34122298d306f10f44abd740c06664889fd243108527d90a8935bd58b9f7c23e"
+    },
+    {
+      "start": 2.243731363636364,
+      "end": 5.0988797272727275,
+      "narration_en": "It's a bridge across the Corinth Canal in Greece.",
+      "source_audio_sha256": "ca1a8443ebdf7ba88d4de7d3c3366d5a1971102a8fc54663470d377ac19f7d3b"
+    },
+    {
+      "start": 5.0988797272727275,
+      "end": 7.723027090909092,
+      "narration_en": "When a ship is coming gates stop the traffic.",
+      "source_audio_sha256": "c51d048a25ab44894c9ec17234eae46c3d753867df7f67de984fedca55a0dd3c"
+    },
+    {
+      "start": 7.723027090909092,
+      "end": 11.135216454545455,
+      "narration_en": "Then the whole road sinks about twenty-six feet underwater.",
+      "source_audio_sha256": "88cdab1432015eac7e35dbfe74980f47a43608fc4d0247e8ad07e274cdd7b3be"
+    },
+    {
+      "start": 11.135216454545455,
+      "end": 13.908821818181819,
+      "narration_en": "It goes down at about thirteen feet a minute.",
+      "source_audio_sha256": "fdbf2da1a4ad35f5f792b320012f26637a1e1155838729ebe289e91222bd1ecd"
+    },
+    {
+      "start": 13.908821818181819,
+      "end": 16.492220181818183,
+      "narration_en": "And settles almost on the bottom of the canal.",
+      "source_audio_sha256": "8e029a2010d3e487901b8fec62f3ef5266164061b5657918ed90087807b4c6b3"
+    },
+    {
+      "start": 16.492220181818183,
+      "end": 19.129951545454546,
+      "narration_en": "Ships sail right over the top of the drowned road.",
+      "source_audio_sha256": "1a727fc37711d50c7fd2c7c52dd7df35b9bfd298b7545b02dd9ce592d6ee7066"
+    },
+    {
+      "start": 19.129951545454546,
+      "end": 22.351931909090908,
+      "narration_en": "With nothing above the water no mast is ever too tall.",
+      "source_audio_sha256": "bb2a40e522d8c218b6ffe32918851cf38fc24f0230d95240f7dfbf481c386fdb"
+    },
+    {
+      "start": 22.351931909090908,
+      "end": 25.560329272727273,
+      "narration_en": "A lift bridge would need towers taller than the masts.",
+      "source_audio_sha256": "8627521ad4a1407f95169ef82bc1788f1359294757626ce0de9c923ac088d8ef"
+    },
+    {
+      "start": 25.560329272727273,
+      "end": 29.244268636363635,
+      "narration_en": "Once the ship has passed the road rises again dripping wet.",
+      "source_audio_sha256": "99e071866997bc798c1aec06eef417e3dc3a5efa28c791e55b5664795d8fa275"
+    },
+    {
+      "start": 29.244268636363635,
+      "end": 32.901,
+      "narration_en": "That's why drivers here sometimes wait for their road to come back up.",
+      "source_audio_sha256": "e53b3df6029d9659de82d6987f2800a10d7fdf7b5c516a548d4351016eb6a326"
+    }
+  ],
+  "silence_gaps": [
+    0.372125,
+    0.399917,
+    0.395771,
+    0.381833,
+    0.394271,
+    0.38925,
+    0.394083,
+    0.385396,
+    0.376958,
+    0.402
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.4,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.9,
+      -15.9,
+      -16.5,
+      -16.4,
+      -16.2,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "90aa15404fe8b08a546c462f4fef82e12e720f15b4ae8cef361dcaf1be495eaf"
+}
