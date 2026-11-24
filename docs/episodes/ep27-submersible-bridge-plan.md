@@ -40,4 +40,9 @@ ship, under-water cameras under the water and the others above it).
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(local low-res run and CI to be recorded)
+Local low-res run (796 frames, 33.2 s): all 12 gates PASS. Opening hook held 2.24 s, the deck 100 % in frame and at least 42.3 % of
+the width in the first second; 21.7 cuts/min, 197 wpm; mix -15.2 LUFS, every line at least 12.2 dB above the effects. On the way:
+the first hook camera behind the cars could not see the water at all (the quays hide it; now from the approach, higher, the road
+running on into the sea), the aerial along the sea showed the canal as a thin strip (now from above the cut looking down it), the
+under-water shots were murky (clearer water, closer cameras), the lift-bridge ghost was too faint. The loop shot's start was then
+moved away from a house roof.

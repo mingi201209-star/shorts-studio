@@ -44,7 +44,7 @@ J1 = cam((-18.0, -6.0, 2.4), (0.0, 25.0, 6.0), 26.0, 11.0)             # the shi
 J1_B = cam((-18.0, -5.0, 2.4), (0.0, 35.0, 6.0), 26.0, 11.0)
 J2 = cam((-12.0, -9.0, 1.6), (-4.0, 0.0, 0.2), 30.0, 8.0)              # the road rises again, dripping wet
 J2_B = cam((-12.3, -9.2, 1.9), (-4.0, 0.0, 0.6), 30.0, 8.0)
-K = cam((-48.0, 14.0, 9.0), (-14.0, -2.0, 0.0), 26.0, 11.0)            # loop: the cars wait, the road starts down: into frame 1
+K = cam((-46.0, 6.0, 9.0), (-14.0, -2.0, 0.0), 26.0, 11.0)            # loop: the cars wait, the road starts down: into frame 1
 
 # label, start line, knots [(share of the shot, story s)], cam a, cam b, flags, lines
 ROWS = [
