@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "bascule",
+   "beats": [
+    {
+     "narration_en": "Why does this road stand straight up?",
+     "start": 0.0,
+     "end": 4.8
+    },
+    {
+     "narration_en": "It's a drawbridge and Chicago has dozens of them.",
+     "start": 4.8,
+     "end": 10.8
+    },
+    {
+     "narration_en": "Each half of the road weighs thousands of tons.",
+     "start": 10.8,
+     "end": 16.8
+    },
+    {
+     "narration_en": "Yet two motors no stronger than a car's engine lift it in about a minute.",
+     "start": 16.8,
+     "end": 26.4
+    },
+    {
+     "narration_en": "The secret is hidden in a pit under the street.",
+     "start": 26.4,
+     "end": 33.0
+    },
+    {
+     "narration_en": "A counterweight heavier than the road itself hangs behind the pivot.",
+     "start": 33.0,
+     "end": 40.2
+    },
+    {
+     "narration_en": "Like a seesaw it balances the road almost perfectly.",
+     "start": 40.2,
+     "end": 46.2
+    },
+    {
+     "narration_en": "So the motors only have to give it a nudge.",
+     "start": 46.2,
+     "end": 52.8
+    },
+    {
+     "narration_en": "As the road tips up the counterweight swings down into the pit.",
+     "start": 52.8,
+     "end": 60.6
+    },
+    {
+     "narration_en": "That's why it's called a bascule, French for seesaw.",
+     "start": 60.6,
+     "end": 66.6
+    },
+    {
+     "narration_en": "And when the next ship comes, up it goes again.",
+     "start": 66.6,
+     "end": 73.2
+    }
+   ]
+  }
+ ]
+}

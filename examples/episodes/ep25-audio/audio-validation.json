@@ -1,0 +1,304 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 34.193,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.698874,
+      "text": "Why does this"
+    },
+    {
+      "start": 0.712791,
+      "end": 1.309999,
+      "text": "road stand"
+    },
+    {
+      "start": 1.323875,
+      "end": 1.935,
+      "text": "straight up?"
+    },
+    {
+      "start": 2.1949664545454546,
+      "end": 3.111632454545455,
+      "text": "It's a drawbridge"
+    },
+    {
+      "start": 3.1394244545454546,
+      "end": 4.056049454545454,
+      "text": "and Chicago has"
+    },
+    {
+      "start": 4.069966454545455,
+      "end": 4.792173454545455,
+      "text": "dozens of them."
+    },
+    {
+      "start": 5.052139909090909,
+      "end": 5.621597909090909,
+      "text": "Each half of"
+    },
+    {
+      "start": 5.635472909090909,
+      "end": 6.371596909090909,
+      "text": "the road weighs"
+    },
+    {
+      "start": 6.385472909090909,
+      "end": 7.524388909090908,
+      "text": "thousands of tons."
+    },
+    {
+      "start": 7.7843553636363625,
+      "end": 8.756562363636364,
+      "text": "Yet two motors"
+    },
+    {
+      "start": 8.770480363636363,
+      "end": 9.798230363636364,
+      "text": "no stronger than"
+    },
+    {
+      "start": 9.812146363636364,
+      "end": 10.645437363636365,
+      "text": "a car's engine"
+    },
+    {
+      "start": 10.659355363636363,
+      "end": 11.145438363636364,
+      "text": "lift it in"
+    },
+    {
+      "start": 11.159355363636363,
+      "end": 11.826021363636364,
+      "text": "about a minute."
+    },
+    {
+      "start": 12.085987818181817,
+      "end": 12.863778818181817,
+      "text": "The secret is"
+    },
+    {
+      "start": 12.877653818181818,
+      "end": 13.460986818181818,
+      "text": "hidden in a"
+    },
+    {
+      "start": 13.474862818181817,
+      "end": 13.974903818181817,
+      "text": "pit under"
+    },
+    {
+      "start": 13.988778818181817,
+      "end": 14.516570818181817,
+      "text": "the street."
+    },
+    {
+      "start": 14.776537272727271,
+      "end": 15.984870272727271,
+      "text": "A counterweight heavier"
+    },
+    {
+      "start": 15.998745272727273,
+      "end": 16.56820327272727,
+      "text": "than the road"
+    },
+    {
+      "start": 16.582078272727273,
+      "end": 17.929287272727272,
+      "text": "itself hangs behind"
+    },
+    {
+      "start": 17.94320327272727,
+      "end": 18.40153727272727,
+      "text": "the pivot."
+    },
+    {
+      "start": 18.661503727272727,
+      "end": 19.522627727272727,
+      "text": "Like a seesaw"
+    },
+    {
+      "start": 19.536503727272727,
+      "end": 20.300377727272725,
+      "text": "it balances the"
+    },
+    {
+      "start": 20.314294727272724,
+      "end": 21.800378727272726,
+      "text": "road almost perfectly."
+    },
+    {
+      "start": 22.06034518181818,
+      "end": 22.94922018181818,
+      "text": "So the motors"
+    },
+    {
+      "start": 22.96313618181818,
+      "end": 23.57421918181818,
+      "text": "only have to"
+    },
+    {
+      "start": 23.58813618181818,
+      "end": 23.82421918181818,
+      "text": "give it"
+    },
+    {
+      "start": 23.83813618181818,
+      "end": 24.37980318181818,
+      "text": "a nudge."
+    },
+    {
+      "start": 24.639769636363635,
+      "end": 25.431435636363634,
+      "text": "As the road"
+    },
+    {
+      "start": 25.445310636363633,
+      "end": 25.973102636363635,
+      "text": "tips up the"
+    },
+    {
+      "start": 25.986977636363633,
+      "end": 27.403644636363634,
+      "text": "counterweight\\Nswings down"
+    },
+    {
+      "start": 27.417560636363632,
+      "end": 28.070310636363633,
+      "text": "into the pit."
+    },
+    {
+      "start": 28.33027709090909,
+      "end": 28.91361009090909,
+      "text": "That's why it's"
+    },
+    {
+      "start": 28.927485090909087,
+      "end": 29.955276090909088,
+      "text": "called a bascule,"
+    },
+    {
+      "start": 30.08027709090909,
+      "end": 31.16361009090909,
+      "text": "French for seesaw."
+    },
+    {
+      "start": 31.423576545454544,
+      "end": 31.82636754545454,
+      "text": "And when the"
+    },
+    {
+      "start": 31.840242545454544,
+      "end": 32.840242545454544,
+      "text": "next ship comes,"
+    },
+    {
+      "start": 33.13190954545454,
+      "end": 33.340242545454544,
+      "text": "up it"
+    },
+    {
+      "start": 33.35411754545454,
+      "end": 33.993033545454544,
+      "text": "goes again."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.1349664545454545,
+      "narration_en": "Why does this road stand straight up?",
+      "source_audio_sha256": "3fe8607ed19e177d16e5ead7932d3b657bd8beebbd5c2bd5c0b7c8eacd3bf5b9"
+    },
+    {
+      "start": 2.1349664545454545,
+      "end": 4.992139909090909,
+      "narration_en": "It's a drawbridge and Chicago has dozens of them.",
+      "source_audio_sha256": "3fca54e928db7459bb48ec5dcfdd24e9cf9dea5975e56bb5d27016ac3b4c2b6c"
+    },
+    {
+      "start": 4.992139909090909,
+      "end": 7.724355363636363,
+      "narration_en": "Each half of the road weighs thousands of tons.",
+      "source_audio_sha256": "143c6bc30a785f66eebf4fbd0fce02552849f97754c9b051179e4d096423e798"
+    },
+    {
+      "start": 7.724355363636363,
+      "end": 12.025987818181816,
+      "narration_en": "Yet two motors no stronger than a car's engine lift it in about a minute.",
+      "source_audio_sha256": "5092c35f63ecfda094c83f0046c1f905b693605e54488965fd030a511b2dc572"
+    },
+    {
+      "start": 12.025987818181816,
+      "end": 14.71653727272727,
+      "narration_en": "The secret is hidden in a pit under the street.",
+      "source_audio_sha256": "c6021eba5df74ced8bcc95df119509ed9f10c8ecaa6735a9ec6f0fb65ced0c6b"
+    },
+    {
+      "start": 14.71653727272727,
+      "end": 18.601503727272725,
+      "narration_en": "A counterweight heavier than the road itself hangs behind the pivot.",
+      "source_audio_sha256": "5d1acb5fb83a95aee81fb2b9017ac2536585efd621ad36326650b596a66ef318"
+    },
+    {
+      "start": 18.601503727272725,
+      "end": 22.00034518181818,
+      "narration_en": "Like a seesaw it balances the road almost perfectly.",
+      "source_audio_sha256": "7f5f05b24ec1ff9c61baabe7d72745e88ea6591c7d4196538ab9e320de5d3534"
+    },
+    {
+      "start": 22.00034518181818,
+      "end": 24.579769636363633,
+      "narration_en": "So the motors only have to give it a nudge.",
+      "source_audio_sha256": "57e89daedce7061b17388f052cae22490b3101283adb0f47266d070f8a62466d"
+    },
+    {
+      "start": 24.579769636363633,
+      "end": 28.270277090909087,
+      "narration_en": "As the road tips up the counterweight swings down into the pit.",
+      "source_audio_sha256": "a8a7af10a8a1abdb9765756c49bf6159d999afee3907cf47c19614dfe8377ab7"
+    },
+    {
+      "start": 28.270277090909087,
+      "end": 31.363576545454542,
+      "narration_en": "That's why it's called a bascule, French for seesaw.",
+      "source_audio_sha256": "3f3d13ae10949284d29963fd6f3cfa0bbf52afa00c29956dc2853cc4efc4cf03"
+    },
+    {
+      "start": 31.363576545454542,
+      "end": 34.193,
+      "narration_en": "And when the next ship comes, up it goes again.",
+      "source_audio_sha256": "6aaad21f4167abb28b273c50088416b4adf53fe4f8b71a40168fbd25815f3b79"
+    }
+  ],
+  "silence_gaps": [
+    0.379479,
+    0.378208,
+    0.380083,
+    0.38675,
+    0.387271,
+    0.397625,
+    0.364875,
+    0.379125,
+    0.391917,
+    0.336708,
+    0.3005
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.7,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.3,
+      -15.3,
+      -17.2,
+      -15.8,
+      -16.6,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "c53147e9189fb078ef601491512a81ea3f4c63a0d323f0643fe326964b33db2a"
+}
