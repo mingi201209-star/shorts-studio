@@ -1,0 +1,324 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 36.836,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.6052069999999999,
+      "text": "Why is this"
+    },
+    {
+      "start": 0.6184999999999999,
+      "end": 1.642458,
+      "text": "guardrail covered in"
+    },
+    {
+      "start": 1.65575,
+      "end": 2.879166,
+      "text": "spinning yellow rollers?"
+    },
+    {
+      "start": 3.1391555454545452,
+      "end": 3.870571545454545,
+      "text": "It's a rolling"
+    },
+    {
+      "start": 3.8838215454545453,
+      "end": 4.681696545454545,
+      "text": "barrier made in"
+    },
+    {
+      "start": 4.694988545454545,
+      "end": 5.625863545454545,
+      "text": "South Korea for"
+    },
+    {
+      "start": 5.639155545454545,
+      "end": 6.689696545454545,
+      "text": "dangerous curves."
+    },
+    {
+      "start": 6.94968609090909,
+      "end": 7.53476909090909,
+      "text": "Hit a plain"
+    },
+    {
+      "start": 7.54810209090909,
+      "end": 8.306061090909092,
+      "text": "steel rail and"
+    },
+    {
+      "start": 8.31935209090909,
+      "end": 9.010852090909092,
+      "text": "it scrapes and"
+    },
+    {
+      "start": 9.024144090909092,
+      "end": 9.595977090909091,
+      "text": "drags at"
+    },
+    {
+      "start": 9.609269090909091,
+      "end": 10.101268090909091,
+      "text": "the car."
+    },
+    {
+      "start": 10.361257636363636,
+      "end": 11.238881636363637,
+      "text": "These rollers are"
+    },
+    {
+      "start": 11.252215636363637,
+      "end": 12.129881636363637,
+      "text": "barrels of tough"
+    },
+    {
+      "start": 12.143173636363636,
+      "end": 12.555382636363635,
+      "text": "foam on"
+    },
+    {
+      "start": 12.568715636363637,
+      "end": 13.459673636363636,
+      "text": "steel posts."
+    },
+    {
+      "start": 13.71966318181818,
+      "end": 14.278162181818182,
+      "text": "When a car"
+    },
+    {
+      "start": 14.291454181818182,
+      "end": 15.089329181818181,
+      "text": "slides into them"
+    },
+    {
+      "start": 15.102621181818181,
+      "end": 15.98028718181818,
+      "text": "they spin instead"
+    },
+    {
+      "start": 15.99357918181818,
+      "end": 16.59203718181818,
+      "text": "of scraping."
+    },
+    {
+      "start": 16.852026727272726,
+      "end": 17.889275727272725,
+      "text": "The foam squashes"
+    },
+    {
+      "start": 17.902567727272725,
+      "end": 18.434442727272724,
+      "text": "to soak up"
+    },
+    {
+      "start": 18.447776727272725,
+      "end": 18.833400727272725,
+      "text": "the hit."
+    },
+    {
+      "start": 19.09339027272727,
+      "end": 19.771556272727267,
+      "text": "And the spinning"
+    },
+    {
+      "start": 19.784890272727267,
+      "end": 20.516265272727267,
+      "text": "turns part of"
+    },
+    {
+      "start": 20.52955627272727,
+      "end": 21.04818127272727,
+      "text": "the crash"
+    },
+    {
+      "start": 21.06147327272727,
+      "end": 21.87263927272727,
+      "text": "into rotation."
+    },
+    {
+      "start": 22.132628818181814,
+      "end": 22.770919818181813,
+      "text": "So the car"
+    },
+    {
+      "start": 22.784211818181813,
+      "end": 23.95446081818181,
+      "text": "keeps rolling forward"
+    },
+    {
+      "start": 23.967753818181812,
+      "end": 24.699127818181815,
+      "text": "and is steered"
+    },
+    {
+      "start": 24.712419818181814,
+      "end": 25.191169818181812,
+      "text": "back toward"
+    },
+    {
+      "start": 25.20441981818181,
+      "end": 25.709752818181812,
+      "text": "its lane."
+    },
+    {
+      "start": 25.96974236363636,
+      "end": 27.02028336363636,
+      "text": "One version passed"
+    },
+    {
+      "start": 27.03357536363636,
+      "end": 28.08411736363636,
+      "text": "a sixty-two mile"
+    },
+    {
+      "start": 28.097408363636358,
+      "end": 28.842075363636358,
+      "text": "an hour crash"
+    },
+    {
+      "start": 28.855367363636358,
+      "end": 29.334116363636358,
+      "text": "test for"
+    },
+    {
+      "start": 29.347408363636358,
+      "end": 30.264949363636358,
+      "text": "American roads."
+    },
+    {
+      "start": 30.524938909090906,
+      "end": 31.548854909090906,
+      "text": "Korea already has"
+    },
+    {
+      "start": 31.562188909090906,
+      "end": 32.37335490909091,
+      "text": "more than sixty"
+    },
+    {
+      "start": 32.386646909090906,
+      "end": 33.064854909090904,
+      "text": "miles of them."
+    },
+    {
+      "start": 33.32484445454545,
+      "end": 33.92326045454545,
+      "text": "That's why some"
+    },
+    {
+      "start": 33.93655245454545,
+      "end": 34.76101045454545,
+      "text": "sharp curves are"
+    },
+    {
+      "start": 34.77430245454545,
+      "end": 35.70513545454545,
+      "text": "lined with spinning"
+    },
+    {
+      "start": 35.71846945454545,
+      "end": 36.63601045454545,
+      "text": "yellow rollers."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.079155545454545,
+      "narration_en": "Why is this guardrail covered in spinning yellow rollers?",
+      "source_audio_sha256": "22cf95eee4184141d583ac288f0de7a773a3259aba2ef81c14f1c0026dca2eb8"
+    },
+    {
+      "start": 3.079155545454545,
+      "end": 6.88968609090909,
+      "narration_en": "It's a rolling barrier made in South Korea for dangerous curves.",
+      "source_audio_sha256": "d58f41118c1b08f934659f7fdf58828a661436fab41a68163be6a3c528db4f99"
+    },
+    {
+      "start": 6.88968609090909,
+      "end": 10.301257636363635,
+      "narration_en": "Hit a plain steel rail and it scrapes and drags at the car.",
+      "source_audio_sha256": "ed0b3204c238134861a1778ef22ca46f6f69166156b595cec2659e07ade1b16e"
+    },
+    {
+      "start": 10.301257636363635,
+      "end": 13.65966318181818,
+      "narration_en": "These rollers are barrels of tough foam on steel posts.",
+      "source_audio_sha256": "50a4a6b4ffe95b7edfc9b9279f8b6f0a3c067135cc1c617759e2f972961371ef"
+    },
+    {
+      "start": 13.65966318181818,
+      "end": 16.792026727272724,
+      "narration_en": "When a car slides into them they spin instead of scraping.",
+      "source_audio_sha256": "e4a4aee15729f7cb62f29e37685f93c0a4edb58b538c855649ac2606dace1190"
+    },
+    {
+      "start": 16.792026727272724,
+      "end": 19.033390272727267,
+      "narration_en": "The foam squashes to soak up the hit.",
+      "source_audio_sha256": "31a7033dcca7c643c644bb671e2cd7e4e81e1c41134b84c8aac355ee3d0f268b"
+    },
+    {
+      "start": 19.033390272727267,
+      "end": 22.072628818181812,
+      "narration_en": "And the spinning turns part of the crash into rotation.",
+      "source_audio_sha256": "af109030562bf01c81d4a948190cffd285696921cffff95db886beb886eb1a47"
+    },
+    {
+      "start": 22.072628818181812,
+      "end": 25.909742363636358,
+      "narration_en": "So the car keeps rolling forward and is steered back toward its lane.",
+      "source_audio_sha256": "4657107556aa857d6945fba026e699cf0af021159ee470df007278611cf5ca2c"
+    },
+    {
+      "start": 25.909742363636358,
+      "end": 30.464938909090904,
+      "narration_en": "One version passed a sixty-two mile an hour crash test for American roads.",
+      "source_audio_sha256": "075cc9bf0976d8b8f060cf1fac4777ad6e6cab3f6aeffc8a6ecc04bbd584d018"
+    },
+    {
+      "start": 30.464938909090904,
+      "end": 33.26484445454545,
+      "narration_en": "Korea already has more than sixty miles of them.",
+      "source_audio_sha256": "fb0b605f9414879b9251ea742433ac4b7fe81ff47c553e480bd570fb94d91eab"
+    },
+    {
+      "start": 33.26484445454545,
+      "end": 36.836,
+      "narration_en": "That's why some sharp curves are lined with spinning yellow rollers.",
+      "source_audio_sha256": "ddb1df77dc3b4e14237daf869c932cd365141d0528ecb322e8a0b330e7daaeba"
+    }
+  ],
+  "silence_gaps": [
+    0.382979,
+    0.383437,
+    0.396479,
+    0.378625,
+    0.373,
+    0.400812,
+    0.376458,
+    0.359437,
+    0.376875,
+    0.376042
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.5,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.6,
+      -16.6,
+      -16.1,
+      -15.8,
+      -16.3,
+      -16.2,
+      -16.0
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "007e835b6c68d724587eaed7ea05051ab8a6039786014fc8a6f21ef9fdfd763e"
+}

@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "roller",
+   "beats": [
+    {
+     "narration_en": "Why is this guardrail covered in spinning yellow rollers?",
+     "start": 0.0,
+     "end": 6.0
+    },
+    {
+     "narration_en": "It's a rolling barrier made in South Korea for dangerous curves.",
+     "start": 6.0,
+     "end": 13.2
+    },
+    {
+     "narration_en": "Hit a plain steel rail and it scrapes and drags at the car.",
+     "start": 13.2,
+     "end": 21.6
+    },
+    {
+     "narration_en": "These rollers are barrels of tough foam on steel posts.",
+     "start": 21.6,
+     "end": 28.2
+    },
+    {
+     "narration_en": "When a car slides into them they spin instead of scraping.",
+     "start": 28.2,
+     "end": 35.4
+    },
+    {
+     "narration_en": "The foam squashes to soak up the hit.",
+     "start": 35.4,
+     "end": 40.8
+    },
+    {
+     "narration_en": "And the spinning turns part of the crash into rotation.",
+     "start": 40.8,
+     "end": 47.4
+    },
+    {
+     "narration_en": "So the car keeps rolling forward and is steered back toward its lane.",
+     "start": 47.4,
+     "end": 55.8
+    },
+    {
+     "narration_en": "One version passed a sixty-two mile an hour crash test for American roads.",
+     "start": 55.8,
+     "end": 64.2
+    },
+    {
+     "narration_en": "Korea already has more than sixty miles of them.",
+     "start": 64.2,
+     "end": 70.2
+    },
+    {
+     "narration_en": "That's why some sharp curves are lined with spinning yellow rollers.",
+     "start": 70.2,
+     "end": 77.4
+    }
+   ]
+  }
+ ]
+}
