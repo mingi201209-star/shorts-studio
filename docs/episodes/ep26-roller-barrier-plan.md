@@ -41,4 +41,10 @@ barrier, the trees or the ground).
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(local low-res run and CI to be recorded)
+Local low-res run (890 frames, 37.1 s): all 13 gates PASS. Opening hook held 3.08 s, the car 100 % in frame and at least 35.5 % of
+the width in the first second; 19.4 cuts/min, 192 wpm; mix -15.1 LUFS, every line at least 9.5 dB above the effects; loop seam 0.26
+vs steps 3.82/2.55. On the way: the far land first rendered as a pale rock wall (rock now only on the road cut, the valley's far side
+a forested mountain), the aerial was hidden behind trees on the steep slope (now a flight along a bend at road level), the loop shot
+ran at 0.37x into an opening at 0.045x so the rollers would have changed from smeared to sharp at the seam (now a speed ramp), and
+tree crowns could reach over the road edge (now kept back; a test keeps every camera out of the car, the barrier, the trees and the
+ground).
