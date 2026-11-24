@@ -48,3 +48,6 @@ a forested mountain), the aerial was hidden behind trees on the steep slope (now
 ran at 0.37x into an opening at 0.045x so the rollers would have changed from smeared to sharp at the seam (now a speed ramp), and
 tree crowns could reach over the road edge (now kept back; a test keeps every camera out of the car, the barrier, the trees and the
 ground).
+CI (run 45395523288, 890 frames at 720x1280, 16 samples, composed to 1080x1920): all 13 gates PASS. Opening hook held 3.08 s, the
+car 100 % in frame and at least 35.5 % of the width in the first second; mix -15.1 LUFS, every line at least 9.5 dB above the
+effects; loop seam 0.15 vs steps 3.86/2.65. Film sha256 37794c5dcf6f74cde7236c0daab37264237e9da48a6d01163490516cefc36d69.
