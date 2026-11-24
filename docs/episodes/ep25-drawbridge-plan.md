@@ -45,4 +45,6 @@ Local low-res run (827 frames, 34.5 s): all 12 gates PASS. Opening hook held 2.1
 seam 0.21 vs steps 0.52/0.85. On the way: two cameras were inside towers, the cut-open shots were blocked by land that was not cut,
 the pit was dark (work lights and a fill light), the gear close-up was under the machinery floor and later inside the
 counterweight's swing (moved; a test now keeps every camera out of that swing).
-CI: pending.
+CI (run 45353488777, 827 frames at 720x1280, 16 samples, composed to 1080x1920): all 12 gates PASS. Opening hook held 2.13 s, the
+raised leaf 100 % in frame and 63 % of the width in the first second; mix -15.2 LUFS, every line at least 11.3 dB above the effects;
+loop seam 0.18 vs steps 0.47/0.87. Film sha256 281d65a210a7f1199b54f0ab148244a97547e3af2c77bc19f3c3be30ecc1360c.
