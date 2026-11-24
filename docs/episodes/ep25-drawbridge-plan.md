@@ -40,5 +40,9 @@ under the water or in the cut street).
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-Local low-res run: pending.
+Local low-res run (827 frames, 34.5 s): all 12 gates PASS. Opening hook held 2.13 s, the raised leaf 100 % in frame and
+63 % of the width in the first second; 19.2 cuts/min, 195 wpm; mix -15.2 LUFS, every line at least 11.3 dB above the effects; loop
+seam 0.21 vs steps 0.52/0.85. On the way: two cameras were inside towers, the cut-open shots were blocked by land that was not cut,
+the pit was dark (work lights and a fill light), the gear close-up was under the machinery floor and later inside the
+counterweight's swing (moved; a test now keeps every camera out of that swing).
 CI: pending.
