@@ -59,7 +59,8 @@ ROWS = [
     ("H2-back-to-its-lane", "roller", 8.5, [(0.0, 0.55), (1.0, 2.6)], H2, H2_B, {}, (8,)),
     ("I-62-mph-test", "roller", 9, [(0.0, -0.35), (1.0, 0.55)], I, I_B, {}, (9,)),
     ("J-sixty-miles", "still", 10, [(0.0, -9.0), (1.0, -8.0)], J, J_B, {}, (10,)),
-    ("K-loop", "roller", 11, [(0.0, -1.3), (1.0, OPEN_SIM - 0.0002)], K, A1, {"loop": True}, (11,)),   # last frame = the opening
+    ("K-loop", "roller", 11, [(0.0, -1.3), (0.70, -0.10), (0.85, 0.05), (1.0, OPEN_SIM - 0.0002)], K, A1, {"loop": True}, (11,)),   # ramps into the
+    # opening's slow motion; last frame = the opening
 ]
 
 
@@ -134,7 +135,8 @@ def frame_state(f: int, segs: list[dict]) -> dict:
          "target": tuple(x + (y - x) * uc for x, y in zip(a["target"], b["target"])), "lens": a["lens"] + (b["lens"] - a["lens"]) * uc,
          "fstop": a.get("fstop", 8.0) + (b.get("fstop", 8.0) - a.get("fstop", 8.0)) * uc}
     sim = sim_time(seg, t)
-    st = {"frame": f, "film_t": t, "segment": seg["label"], "variant": seg["variant"], "t": sim, "cam": c, "u": u}
+    rate = (sim_time(seg, min(t + 0.5 / FPS, seg["t1"] - 1e-6)) - sim_time(seg, max(t - 0.5 / FPS, seg["t0"]))) * FPS
+    st = {"frame": f, "film_t": t, "segment": seg["label"], "variant": seg["variant"], "t": sim, "cam": c, "u": u, "time_scale": rate}
     st.update(seg["flags"])
     return st
 

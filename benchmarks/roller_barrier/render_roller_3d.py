@@ -919,9 +919,7 @@ def main():
     src_sha = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
     for f in frames:
         t0 = time.time()
-        sh = tl.frame_state(f, segs)
-        seg = next(s for s in segs if s["label"] == sh["segment"])
-        sh["time_scale"] = seg["time_scale"]
+        sh = tl.frame_state(f, segs)                                     # time_scale: the local rate of the story clock (speed ramps)
         part = render(sh, args.out / f"frame_{f:05d}.png")
         info = {"frame": f, "segment": sh["segment"], "split": False, "parts": [part], "render_seconds": round(time.time() - t0, 1)}
         out.append(info)
