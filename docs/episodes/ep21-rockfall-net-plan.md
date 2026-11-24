@@ -30,7 +30,13 @@ boulder, chips and dust, slope, scree, pines, valley, mountains), sound rocknet_
 camera never under the slope, in the net, the boulder or a post).
 
 ## Audience data
-(to be recorded at 48 h and 7 days)
+- Owner, 2026-11-24: "a success": 21,000 views and still climbing; 73 % and 93 % (owner's words: 시청률 73 %, 조회율 93 %; read
+  as 73 % viewed rather than swiped away and 93 % average percentage viewed, the same pair EP.13 reported as 69.2 % / 90 %).
+- The best upload so far, above EP.13 (9,000 views, 69.2 % / 90 %), and the first made under the held-opening rule
+  (benchmarks/hook_gate.py) to report back. Why it worked: frame 1 is the whole strange event already happening (a 20-ton boulder
+  deep in a bagging steel net, held 2.31 s with the net span 99 % in frame); one counter-intuitive idea (it doesn't stop the rock
+  dead: it stretches more than twenty feet, and brakes turn the speed into heat) shown by a satisfying motion; the size of the
+  numbers (20 tons, 60 mph); 188 wpm, 35 s, a loop.
 
 ## Preview
 Local low-res run (848 frames, 35.3 s): 11 of 12 gates PASS; opening_hook FAILED (the middle span 77 % in frame in the first second).

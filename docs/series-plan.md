@@ -14,6 +14,7 @@ Same situation, two cars, one difference, and the difference decides the outcome
 | EP.12 headrest | cabin, driver's head | 21.2% | 0:11 / 30 s |
 | EP.13 guardrail end | car on the terminal head, steel peeled out like a zipper | 69.2% (9,000 views, rising) | 90 % / 30 s |
 | EP.15 cable barrier | head-on car pressing thin ropes, looks parked | 13.7% (81 min) | 0:11 / 31 s |
+| EP.21 rockfall net | 20-ton boulder deep in a bagging steel net, held 2.31 s | 73 % (21,000 views, rising) | 93 % / 35 s |
 
 Two rules: (1) a big, readable event in the first second (crash, spin, blow-out); (2) dense, fast content (a fact or a number on every
 shot) keeps and replays the viewers who stay.
@@ -78,6 +79,12 @@ The guardrail end terminal ("zipper-like": the head runs down the rail and peels
 out. Next topics should copy its shape: everyday road hardware with a hidden mechanism that is itself satisfying to watch (peeling,
 unzipping, folding, being swallowed), shown working in frame 1. Candidate: the barrier transfer machine ("road zipper") that lifts a
 concrete median wall and moves it a lane over.
+
+## EP.21 took off (owner, 2026-11-24): 21,000 views and climbing, 73 % viewed, 93 % average viewed
+The rockfall ring net beats EP.13 on every number and is the first upload made under the held-opening rule to report back. The
+shape that works, now twice: a big piece of road hardware catching something huge by giving way (peeling, stretching, crushing),
+shown mid-catch in frame 1 with the whole subject in the picture, one counter-intuitive idea, big plain numbers. Next topics
+should keep that shape (candidates: sand-barrel crash cushions, breakaway sign and light poles, truck-mounted attenuators).
 
 ## Why "viewed" is low, and the fix (2026-11-22)
 Measured on our own uploads (motion, brightness, contrast, colour, detail and loudness of the first 1.5 s): none of it explains the
