@@ -43,3 +43,6 @@ the width in the first second; 18.9 cuts/min, 196 wpm; mix -15.1 LUFS, every lin
 the first hook camera stood inside the glass hall (moved the hall), the tunnel and the transfer station were dark because the
 lawn slab cut through them (ceilings now under it, a shaft opened under the silo), the floor rings blocked the open column (now a
 slot through every floor), and the turn shot started with its camera underground (it now starts once the carriage is up).
+CI (run 45561757009, 915 frames at 720x1280, 16 samples, composed to 1080x1920): all 12 gates PASS. Opening hook held 3.15 s, the
+silo 100 % in frame and at least 58 % of the width in the first second; mix -15.1 LUFS, every line at least 15.8 dB above the
+effects; loop seam 0.01 vs steps 0.70/0.83. Film sha256 3b3d87d0f14215deebc7fc89c77628488cdd024cf1901da2d8d000b9e7301316.
