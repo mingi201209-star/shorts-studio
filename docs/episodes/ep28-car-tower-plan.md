@@ -38,4 +38,8 @@ the red car or the carriage's sweep).
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(local low-res run and CI to be recorded)
+Local low-res run (915 frames, 38.1 s): all 12 gates PASS. Opening hook held 3.15 s, the silo 100 % in frame and at least 58 % of
+the width in the first second; 18.9 cuts/min, 196 wpm; mix -15.1 LUFS, every line at least 15.8 dB above the effects. On the way:
+the first hook camera stood inside the glass hall (moved the hall), the tunnel and the transfer station were dark because the
+lawn slab cut through them (ceilings now under it, a shaft opened under the silo), the floor rings blocked the open column (now a
+slot through every floor), and the turn shot started with its camera underground (it now starts once the carriage is up).
