@@ -43,7 +43,8 @@ and the tip ends short of the far goal line. The other ten lines were checked ag
 
 v2 local low-res run (whole film re-rendered with the football field): every gate PASS (948 frames, 39.5 s, 18.2 cuts/min, the
 subject 48% of the width in the first second, mix -15.2 LUFS, speech 15.7 dB over the effects; visible_action checks the field
-shot). CI v2: (to be recorded)
+shot). CI v2 run 45703168053: every gate PASS, preview_status PASS (948 frames, 39.5 s, mix -15.2 LUFS, speech 15.7 dB over the
+effects), renderer source sha256 63cd6a6f..., film sha256 77af6845...; copied to ep05-review/EP29-blade-lifter-v2.mp4 (git-ignored).
 
 ## Audience data
 (to be recorded at 48 h and 7 days)
