@@ -33,6 +33,11 @@ the construction site with two tower cranes and site cabins; the T-shaped box-gi
 final position and clock), sound swivel_sfx.py, assembly assemble_swivel_film.py, CI .github/workflows/ep30-film.yml (request
 examples/experiments/swivel-film-request.json), tests tests/test_ep30_swivel.py (incl. no camera in the deck, the pier or a train).
 
+## Show what each line says (owner rule 2026-11-25)
+Every line was checked against its shot. Changed: line 7 ("it swung fifty-two degrees in sixty-eight minutes") now draws the angle
+the bridge sweeps from above, two translucent gold sectors growing from where each half of the deck started to where it is, 52.4
+degrees at the end (gated: the drawn angle equals the model's turn on every frame). The earlier CI run of v1 was cancelled.
+
 ## Audience data
 (to be recorded at 48 h and 7 days)
 

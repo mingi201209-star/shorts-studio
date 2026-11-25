@@ -35,6 +35,13 @@ model; the cut-open ground in a trench), sound snowmelt_sfx.py, assembly assembl
 (request examples/experiments/snowmelt-film-request.json), tests tests/test_ep31_snowmelt.py (incl. no camera in the road, the
 houses, the snowbanks or the car).
 
+## Show what each line says (owner rule 2026-11-25)
+Every line was checked against its shot. Changed: line 2 ("in snowy parts of Japan sprinklers are built right into the street")
+now starts high over the snowy town and comes down into the street to the row of jets; line 6 ("started in the city of Nagaoka in
+the nineteen sixties") is drawn as old sepia film with a vignette (gated: warm and nearly colourless, the neighbours in colour);
+line 7 ("the snow falls near freezing") shows snow falling past a thermometer whose red column stops at the blue freezing mark
+(no numbers). The v1 CI film (all gates passed) is superseded.
+
 ## Audience data
 (to be recorded at 48 h and 7 days)
 
