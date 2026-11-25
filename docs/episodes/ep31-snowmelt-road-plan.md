@@ -39,4 +39,5 @@ houses, the snowbanks or the car).
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(local low-res run and CI to be recorded)
+Local low-res run (whole film, 162x288 at 3 samples, 4 shards): every gate PASS on the first run (906 frames, 37.75 s, pace 20.7 cuts/min at 192 wpm, opening shot 2.73 s with the subject 100% in frame and 52% of the width, mix -15.0 LUFS, speech 15.1 dB over the effects, loop seam 0.47 against steps of 3.43). Found and fixed in the test stills before it: the car's headlights (a 75 degree cone at 500 W) threw conic-section blotches on the house fronts (now a flat low beam), the house meshes were smooth-shaded so the window grid bent into curves (now flat), the jets read as white wire loops (now uneven, breaking streams of clear droplets), the flakes were diamonds (now rounder and smaller), the section shots showed the empty sky under the cut (the ground now goes down 260 m and the cut is a trench).
+CI: (to be recorded)
