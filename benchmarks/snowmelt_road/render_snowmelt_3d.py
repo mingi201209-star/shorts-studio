@@ -759,6 +759,37 @@ class HeatPipes:
         set_values(self.mat, flow=t)
 
 
+class Thermometer:
+    """A big outdoor thermometer on the pole at y = 20 (comparison prop for "the snow falls near freezing"): no numbers, a blue line at
+    the freezing mark and the red column ending just above it."""
+    Y = 20.0
+    Z_FREEZE = 2.45
+
+    def __init__(self, sink_root):
+        x0, y0 = POLE_X - 0.22, self.Y
+        board = base.material("Thermometer board", (0.92, 0.92, 0.90), rough=0.5)
+        glass = base.material("Thermometer glass", (0.80, 0.84, 0.88), rough=0.1)
+        red = base.material("Thermometer red", (0.85, 0.05, 0.03), rough=0.3, emission=0.8)
+        blue = base.material("Freezing mark", (0.10, 0.35, 0.95), rough=0.4, emission=1.2)
+        ink = base.material("Thermometer ticks", (0.05, 0.05, 0.05), rough=0.6)
+        top = self.Z_FREEZE + 0.02
+        self.objs = [K.cube("Thermometer board", (x0, y0, 2.55), (0.04, 0.34, 1.3), board),
+                     K.cube("Thermometer bracket", ((x0 + POLE_X) / 2, y0, 2.55), (POLE_X - x0, 0.06, 0.06), ink),
+                     K.cube("Thermometer tube", (x0 - 0.03, y0, 2.58), (0.03, 0.05, 1.0), glass),
+                     K.sphere("Thermometer bulb", 0.055, (x0 - 0.045, y0, 2.02), red),
+                     K.cube("Thermometer column", (x0 - 0.048, y0, (2.05 + top) / 2), (0.024, 0.034, top - 2.05), red),
+                     K.cube("Freezing mark", (x0 - 0.026, y0, self.Z_FREEZE), (0.012, 0.30, 0.05), blue)]
+        ticks = [((x0 - 0.022, y0 + 0.065, z), (0.006, 0.08 if k % 2 == 0 else 0.045, 0.007)) for k, z in enumerate(np.arange(2.1, 3.06, 0.05))]
+        self.objs.append(K.boxes("Thermometer ticks", ticks, ink))
+        for ob in self.objs:
+            ob.parent = sink_root
+        self.set(False)
+
+    def set(self, on):
+        for ob in self.objs:
+            ob.hide_render = not on
+
+
 class Car:
     def __init__(self, root, wheels, geom):
         self.root, self.wheels, self.r = root, wheels, geom["tyre_radius"]
@@ -842,6 +873,7 @@ def main():
     snow = Snowfall()
     pipes = HeatPipes(sink_root)
     car = Car(car_root, wheels, geom)
+    thermo = Thermometer(sink_root)
     fd = bpy.data.lights.new("Section fill", "AREA")
     fd.energy, fd.size, fd.color = 6000.0, 10.0, (1.0, 0.95, 0.9)
     fill = bpy.data.objects.new("Section fill", fd)
@@ -867,6 +899,7 @@ def main():
         set_values(ground.strata, drained=sink)
         n_drops = spr.set(t, not pipes_on, section, sink, bool(sh.get("sinking")))
         pipes.set(pipes_on, t)
+        thermo.set(bool(sh.get("thermo")))
         car_y = car.set(t, not section)
         c = sh["cam"]
         loc, tgt = Vector(c["loc"]), Vector(c["target"])
@@ -903,6 +936,7 @@ def main():
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         return {"t": round(t, 6), "section": section, "pipes": pipes_on, "sink": round(sink, 6), "car_y": car_y, "droplets": n_drops,
+                "thermometer": bool(sh.get("thermo")), "freezing_mark_z": Thermometer.Z_FREEZE,
                 "flakes": n_flakes, "ripples": n_rip, "nozzles_in_view": seen, "nearest_nozzle_m": round(nearest, 3) if seen else None,
                 "subject_box": box, "cam_world": [round(v, 3) for v in loc], "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
 

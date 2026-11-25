@@ -3,7 +3,8 @@ through the jets, held through the first line (hook rule). Each row's knots are 
 knot lands exactly on the film's last frame. Story time t (s) is real time on a snowy evening (snowmelt_world: the jets, the snow,
 the car passing the camera of the opening at about t = 104.6). Flags: 'section' cuts the ground open along the centre line, 'sink'
 lets the ground drop round the well (share of the shot), 'pipes' shows the newer design (no jets, warm pipes under see-through
-asphalt)."""
+asphalt), 'vintage' turns the shot into old sepia film in assembly ("in the nineteen sixties"), 'thermo' hangs a thermometer reading
+just above freezing on a pole ("the snow falls near freezing")."""
 from __future__ import annotations
 
 import json
@@ -25,8 +26,8 @@ def cam(loc, target, lens, fstop=8.0):
 
 A1 = cam((-1.1, -2.0, 1.3), (0.6, 20.0, 0.35), 24.0, 5.6)                      # the street spraying water, a car coming through
 A1_B = cam((-1.05, -1.5, 1.28), (0.6, 20.5, 0.35), 24.0, 5.6)
-B = cam((-38.0, -30.0, 42.0), (0.0, 60.0, 0.0), 26.0, 11.0)                    # from above: the town under snow, the wet street
-B_B = cam((-36.0, -24.0, 40.0), (0.0, 62.0, 0.0), 26.0, 11.0)
+B = cam((-6.0, -40.0, 45.0), (0.0, 60.0, 0.0), 26.0, 11.0)                      # from above the snowy town down into the street: the jets in it
+B_B = cam((-2.5, 2.0, 4.5), (0.4, 28.0, 0.2), 26.0, 11.0)
 C = cam((0.75, -0.95, 0.24), (0.0, 0.05, 0.03), 35.0, 2.8)                       # a nozzle in the centre line
 C_B = cam((0.68, -0.85, 0.22), (0.0, 0.05, 0.03), 35.0, 2.8)
 D = cam((14.0, YW - 7.0, 4.0), (0.0, YW, -5.0), 24.0, 8.0)                      # cut open: down the well to the warm water
@@ -35,8 +36,8 @@ E = cam((-0.9, -0.5, 0.35), (-0.8, 0.35, 0.0), 45.0, 3.5)                      #
 E_B = cam((-0.88, -0.42, 0.33), (-0.8, 0.4, 0.0), 45.0, 3.5)
 F = cam((2.5, -95.0, 9.0), (0.0, 40.0, 2.0), 32.0, 11.0)                        # the whole street, mountains behind
 F_B = cam((2.5, -88.0, 8.6), (0.0, 40.0, 2.0), 32.0, 11.0)
-G1 = cam((0.9, 6.0, 1.0), (2.7, 18.0, 6.9), 35.0, 4.0)                          # wet snow falling through a street lamp
-G1_B = cam((0.9, 6.4, 1.0), (2.7, 18.0, 6.6), 35.0, 4.0)
+G1 = cam((2.3, 19.3, 2.55), (3.73, 20.0, 2.55), 35.0, 4.0)                      # snow falling past a thermometer at the freezing mark
+G1_B = cam((2.45, 19.4, 2.55), (3.73, 20.0, 2.55), 35.0, 4.0)
 G2 = cam((3.2, -1.2, 0.5), (1.2, 1.2, 0.05), 32.0, 4.0)                        # the water stays liquid, running to the gutter
 G2_B = cam((3.15, -1.0, 0.48), (1.2, 1.3, 0.05), 32.0, 4.0)
 H1 = cam((0.0, -20.0, 7.5), (0.0, 40.0, 0.0), 30.0, 11.0)                       # rows and rows of jets: a lot of water
@@ -56,8 +57,8 @@ ROWS = [
     ("C-nozzles-centre", 3, [(0.0, 50.0), (1.0, 53.2)], C, C_B, {}, (3,)),
     ("D-from-deep-underground", 4, [(0.0, 20.0), (1.0, 23.85)], D, D_B, {"section": True}, (4,)),
     ("E-melts-as-it-lands", 5, [(0.0, 60.0), (1.0, 63.73)], E, E_B, {}, (5,)),
-    ("F-nagaoka-street", 6, [(0.0, 80.0), (1.0, 84.27)], F, F_B, {}, (6,)),
-    ("G1-near-freezing", 7, [(0.0, 30.0), (1.0, 32.73)], G1, G1_B, {}, (7,)),
+    ("F-nagaoka-street", 6, [(0.0, 80.0), (1.0, 84.27)], F, F_B, {"vintage": True}, (6,)),
+    ("G1-near-freezing", 7, [(0.0, 30.0), (1.0, 32.73)], G1, G1_B, {"thermo": True}, (7,)),
     ("G2-stays-liquid", 7.55, [(0.0, 40.0), (1.0, 42.13)], G2, G2_B, {}, (7,)),
     ("H1-lots-of-water", 8, [(0.0, 10.0), (1.0, 12.18)], H1, H1_B, {}, (8,)),
     ("H2-ground-sinks", 8.57, [(0.0, 0.0), (1.0, 1.64)], H2, H2_B, {"section": True, "sink": True}, (8,)),

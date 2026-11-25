@@ -55,9 +55,25 @@ def probe_video(video: Path) -> dict:
     return {"streams": [{"codec_type": "video", "width": w, "height": h, "nb_read_frames": str(n), "counted_by": "opencv decode"}]}
 
 
+def old_film(im: Image.Image) -> Image.Image:
+    """Old sepia film for the "nineteen sixties" shot: grey tones tinted warm, a dark vignette, a fixed grain (the same on every frame,
+    so it adds no flicker)."""
+    a = np.asarray(im, dtype=np.float32) / 255.0
+    g = 0.299 * a[..., 0] + 0.587 * a[..., 1] + 0.114 * a[..., 2]
+    g = 0.08 + 0.88 * g
+    yy, xx = np.mgrid[0:a.shape[0], 0:a.shape[1]]
+    r = np.hypot((xx - a.shape[1] / 2) / (a.shape[1] / 2), (yy - a.shape[0] / 2) / (a.shape[0] / 2))
+    vig = 1.0 - 0.38 * np.clip(r - 0.45, 0.0, 1.0) ** 1.4
+    grain = np.random.default_rng(1961).normal(0.0, 0.018, g.shape)
+    g = np.clip(g * vig + grain, 0.0, 1.0)
+    out = np.stack([g * 1.06 + 0.03, g * 0.86 + 0.015, g * 0.62], -1)
+    return Image.fromarray((np.clip(out, 0.0, 1.0) * 255).astype(np.uint8))
+
+
 def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
     out.mkdir(parents=True, exist_ok=True)
     frames, sha = {}, None
+    segs = tl.segments()
     for js in sorted(panels.rglob("snowmelt-frames-*.json")):
         rec = json.loads(js.read_text())
         if sha is None:
@@ -72,6 +88,8 @@ def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
             im = Image.open(path).convert("RGB")
             if im.size != (W, H):
                 im = im.resize((W, H), Image.LANCZOS)
+            if tl.frame_state(f, segs).get("vintage"):
+                im = old_film(im)
             im.save(out / f"frame_{f + 1:04d}.png")
             frames[f] = fr
     if sorted(frames) != list(range(n)):
@@ -105,10 +123,11 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
 
 
 def visible_action(frames: list[dict]) -> dict:
-    """Frame 1: the street spraying water in falling snow, a car coming through the jets; then the town from the air with its wet
-    street, a nozzle up close, down the well to the warm water deep underground, flakes vanishing as they land in the water, the
-    whole street, snow near freezing, the water landing and running off as water, a long row of jets, the ground sinking round the
-    well, the newer road's warm pipes (no jets), the car driving off through the spray; the loop runs into the opening's moment."""
+    """Frame 1: the street spraying water in falling snow, a car coming through the jets; then from above the snowy town down into
+    the street to its nozzles, a nozzle up close, down the well to the warm water deep underground, flakes vanishing as they land in
+    the water, the whole street as old film (the 1960s), snow falling past a thermometer at the freezing mark, the water landing and
+    running off as water, a long row of jets, the ground sinking round the well, the newer road's warm pipes (no jets), the car
+    driving off through the spray; the loop runs into the opening's moment (owner rule 2026-11-25: show exactly what each line says)."""
     by = {}
     for fr in frames:
         by.setdefault(fr["segment"], []).append(fr["parts"][0])
@@ -117,8 +136,8 @@ def visible_action(frames: list[dict]) -> dict:
     if not (p0["droplets"] > 0 and p0["car_y"] is not None and 5.0 < p0["car_y"] < 40.0 and p0["nozzles_in_view"] >= 20 and not p0["section"]):
         problems.append("the first frame is not the street spraying water with a car coming through")
     b = by.get("B-built-into-street", [])
-    if not b or min(p["cam_world"][2] for p in b) < 25.0 or min(p["nozzles_in_view"] for p in b) < 30:
-        problems.append("the town and its street are not shown from the air")
+    if not b or b[0]["cam_world"][2] < 30.0 or b[-1]["cam_world"][2] > 6.0 or (b[-1]["nearest_nozzle_m"] or 99.0) > 8.0:
+        problems.append("the snowy town is not followed down into the street to its nozzles")
     c = by.get("C-nozzles-centre", [])
     if not c or max(p["nearest_nozzle_m"] or 99.0 for p in c) > 1.6:
         problems.append("no nozzle is shown up close")
@@ -132,8 +151,8 @@ def visible_action(frames: list[dict]) -> dict:
     if not f or min(p["nozzles_in_view"] for p in f) < 50:
         problems.append("the whole street is not shown")
     g1 = by.get("G1-near-freezing", [])
-    if not g1 or min(p["flakes"] for p in g1) < 1000:
-        problems.append("the snow is not seen falling")
+    if not g1 or min(p["flakes"] for p in g1) < 1000 or not all(p.get("thermometer") for p in g1):
+        problems.append("the snow is not seen falling past a thermometer at the freezing mark")
     g2 = by.get("G2-stays-liquid", [])
     if not g2 or min(p["ripples"] for p in g2) < 50 or min(p["droplets"] for p in g2) == 0:
         problems.append("the water is not seen landing and running as water")
@@ -154,6 +173,24 @@ def visible_action(frames: list[dict]) -> dict:
         problems.append("the loop does not run into the opening's moment")
     return {"status": "FAIL" if problems else "PASS", "problems": problems,
             "first_frame": {k_: p0[k_] for k_ in ("t", "car_y", "droplets", "nozzles_in_view", "subject_box")}}
+
+
+def vintage_look(frames_dir: Path, segs: list[dict]) -> dict:
+    """The "nineteen sixties" shot reads as old film (warm and nearly colourless); the shots on either side keep their colour."""
+    problems, rows = [], []
+    for s in segs:
+        f = int((s["t0"] + s["t1"]) / 2 * tl.FPS)
+        a = np.asarray(Image.open(frames_dir / f"frame_{f + 1:04d}.png").convert("RGB"), dtype=np.float32)
+        mx, mn = a.max(axis=2), a.min(axis=2)
+        sat = float(np.mean((mx - mn) / np.maximum(mx, 1.0)))
+        warm = float(np.mean(a[..., 0]) - np.mean(a[..., 2]))
+        old = bool(s["flags"].get("vintage"))
+        rows.append({"segment": s["label"], "saturation": round(sat, 3), "warm": round(warm, 1), "vintage": old})
+        if old and not (sat < 0.45 and warm > 15.0):
+            problems.append(f"{s['label']} does not read as old sepia film")
+    if not any(r["vintage"] for r in rows):
+        problems.append("no shot is marked as the past")
+    return {"status": "FAIL" if problems else "PASS", "problems": problems, "shots": rows}
 
 
 def loop_closes(frames_dir: Path, n: int) -> dict:
@@ -221,6 +258,7 @@ def main():
         "telemetry_matches_model": telemetry_matches_model(frames, segs),
         "visible_action": visible_action(frames),
         "no_scene_text": no_scene_text(),
+        "vintage_look": vintage_look(frames_dir, segs),
         "loop_closes": loop_closes(frames_dir, n),
         "smoothness": gates.smoothness(gray_diffs(video)),
         "black_opening": verify_no_black_opening(video, (0, 1440), a.out),
