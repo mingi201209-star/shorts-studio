@@ -1,0 +1,329 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 37.874,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.8099999999999999,
+      "text": "Why are hundreds"
+    },
+    {
+      "start": 0.8238749999999999,
+      "end": 1.532208,
+      "text": "of new cars"
+    },
+    {
+      "start": 1.546125,
+      "end": 2.129457,
+      "text": "stacked in this"
+    },
+    {
+      "start": 2.143333,
+      "end": 2.948916,
+      "text": "glass tower?"
+    },
+    {
+      "start": 3.2089279090909093,
+      "end": 3.820051909090909,
+      "text": "It's a car"
+    },
+    {
+      "start": 3.8339279090909093,
+      "end": 4.667260909090909,
+      "text": "tower next to"
+    },
+    {
+      "start": 4.6811359090909095,
+      "end": 5.500593909090909,
+      "text": "a factory in"
+    },
+    {
+      "start": 5.514468909090909,
+      "end": 6.583927909090909,
+      "text": "Wolfsburg Germany."
+    },
+    {
+      "start": 6.843939818181818,
+      "end": 7.788355818181818,
+      "text": "New cars roll"
+    },
+    {
+      "start": 7.802272818181819,
+      "end": 8.149522818181818,
+      "text": "in from the"
+    },
+    {
+      "start": 8.163397818181819,
+      "end": 8.89948081818182,
+      "text": "factory through"
+    },
+    {
+      "start": 8.913397818181819,
+      "end": 9.44118881818182,
+      "text": "a tunnel."
+    },
+    {
+      "start": 9.701200727272727,
+      "end": 10.631741727272727,
+      "text": "A robot arm"
+    },
+    {
+      "start": 10.645658727272728,
+      "end": 11.284533727272727,
+      "text": "on a central"
+    },
+    {
+      "start": 11.298408727272728,
+      "end": 12.062324727272728,
+      "text": "mast picks each"
+    },
+    {
+      "start": 12.076200727272727,
+      "end": 12.520616727272728,
+      "text": "one up."
+    },
+    {
+      "start": 12.780628636363636,
+      "end": 13.461169636363636,
+      "text": "It turns to"
+    },
+    {
+      "start": 13.475086636363637,
+      "end": 14.183378636363637,
+      "text": "face an empty"
+    },
+    {
+      "start": 14.197294636363637,
+      "end": 15.363960636363636,
+      "text": "bay and climbs"
+    },
+    {
+      "start": 15.377836636363636,
+      "end": 16.405627636363636,
+      "text": "almost seven feet"
+    },
+    {
+      "start": 16.419503636363636,
+      "end": 16.975086636363635,
+      "text": "a second."
+    },
+    {
+      "start": 17.235098545454548,
+      "end": 17.971181545454545,
+      "text": "Then it slides"
+    },
+    {
+      "start": 17.985098545454548,
+      "end": 18.540681545454547,
+      "text": "the car in"
+    },
+    {
+      "start": 18.554556545454545,
+      "end": 19.040681545454547,
+      "text": "like a book"
+    },
+    {
+      "start": 19.054556545454545,
+      "end": 19.943431545454548,
+      "text": "onto a shelf."
+    },
+    {
+      "start": 20.203443454545457,
+      "end": 21.036776454545457,
+      "text": "With no ramps"
+    },
+    {
+      "start": 21.050651454545456,
+      "end": 21.620109454545457,
+      "text": "or lanes the"
+    },
+    {
+      "start": 21.633984454545455,
+      "end": 22.356234454545458,
+      "text": "cars pack"
+    },
+    {
+      "start": 22.370109454545457,
+      "end": 22.911775454545456,
+      "text": "in tight."
+    },
+    {
+      "start": 23.171787363636366,
+      "end": 24.213453363636365,
+      "text": "Each tower holds"
+    },
+    {
+      "start": 24.227328363636364,
+      "end": 25.282911363636366,
+      "text": "four hundred cars"
+    },
+    {
+      "start": 25.296787363636366,
+      "end": 26.407870363636363,
+      "text": "on twenty floors."
+    },
+    {
+      "start": 26.667882272727276,
+      "end": 27.348465272727275,
+      "text": "When a buyer"
+    },
+    {
+      "start": 27.362340272727273,
+      "end": 28.431757272727275,
+      "text": "arrives the robot"
+    },
+    {
+      "start": 28.445673272727273,
+      "end": 29.279006272727273,
+      "text": "brings their car"
+    },
+    {
+      "start": 29.292882272727276,
+      "end": 29.904006272727273,
+      "text": "down in under"
+    },
+    {
+      "start": 29.917882272727276,
+      "end": 30.681757272727275,
+      "text": "two minutes."
+    },
+    {
+      "start": 30.941769181818184,
+      "end": 32.09451818181818,
+      "text": "It's the fastest"
+    },
+    {
+      "start": 32.122310181818186,
+      "end": 33.48343518181818,
+      "text": "automated parking system"
+    },
+    {
+      "start": 33.497310181818186,
+      "end": 34.122310181818186,
+      "text": "in the world."
+    },
+    {
+      "start": 34.38232209090909,
+      "end": 34.95173809090909,
+      "text": "That's why new"
+    },
+    {
+      "start": 34.96565509090909,
+      "end": 35.86844709090909,
+      "text": "cars here wait"
+    },
+    {
+      "start": 35.88232209090909,
+      "end": 36.42398809090909,
+      "text": "in a glass"
+    },
+    {
+      "start": 36.43786309090909,
+      "end": 36.95173809090909,
+      "text": "tower for"
+    },
+    {
+      "start": 36.96565509090909,
+      "end": 37.67398809090909,
+      "text": "their owners."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.1489279090909092,
+      "narration_en": "Why are hundreds of new cars stacked in this glass tower?",
+      "source_audio_sha256": "cd10a99e996992780424cfe291086aedd8bb998228ce500f738f4e91a242d1d0"
+    },
+    {
+      "start": 3.1489279090909092,
+      "end": 6.7839398181818185,
+      "narration_en": "It's a car tower next to a factory in Wolfsburg Germany.",
+      "source_audio_sha256": "22cd7dd66f69f6051c8a99fe74deb5b4b3e06c0e8db5242d294b554d30c555fd"
+    },
+    {
+      "start": 6.7839398181818185,
+      "end": 9.641200727272727,
+      "narration_en": "New cars roll in from the factory through a tunnel.",
+      "source_audio_sha256": "6d706d49609163e0188bf7ebdbad45fbdbed022eb1861dc44c39adaad6d7b30c"
+    },
+    {
+      "start": 9.641200727272727,
+      "end": 12.720628636363635,
+      "narration_en": "A robot arm on a central mast picks each one up.",
+      "source_audio_sha256": "eacf87bd5068da1121d5f68f7e45997df74e5ba28bebad3a0123dddd7ee5b0a9"
+    },
+    {
+      "start": 12.720628636363635,
+      "end": 17.175098545454546,
+      "narration_en": "It turns to face an empty bay and climbs almost seven feet a second.",
+      "source_audio_sha256": "7658c878f7da72e7ed072f0564093e639af2dad032e05edfbc8e91f518abca7e"
+    },
+    {
+      "start": 17.175098545454546,
+      "end": 20.143443454545455,
+      "narration_en": "Then it slides the car in like a book onto a shelf.",
+      "source_audio_sha256": "7b877549625efe7b98936a25e552547408d2cd27986055b0d3bb14a962502934"
+    },
+    {
+      "start": 20.143443454545455,
+      "end": 23.111787363636363,
+      "narration_en": "With no ramps or lanes the cars pack in tight.",
+      "source_audio_sha256": "2316f2a01632f0fabf35b7366a4e627f20bf560ccd45e166ed62663c813c0b6d"
+    },
+    {
+      "start": 23.111787363636363,
+      "end": 26.607882272727274,
+      "narration_en": "Each tower holds four hundred cars on twenty floors.",
+      "source_audio_sha256": "902b9257dec67cde1e707464f8efd0a7df60b9c432331739d54e88eab02ad45f"
+    },
+    {
+      "start": 26.607882272727274,
+      "end": 30.881769181818182,
+      "narration_en": "When a buyer arrives the robot brings their car down in under two minutes.",
+      "source_audio_sha256": "4c10bcbb16a2501ae2cd30259f6bf2b6cfe8d3613ae26194f9313cd8b9274b85"
+    },
+    {
+      "start": 30.881769181818182,
+      "end": 34.32232209090909,
+      "narration_en": "It's the fastest automated parking system in the world.",
+      "source_audio_sha256": "c5658099dd375f1b49bf4c6f8bc47794a0c6bb083b98fe7070f5b140b8bc2e3c"
+    },
+    {
+      "start": 34.32232209090909,
+      "end": 37.874,
+      "narration_en": "That's why new cars here wait in a glass tower for their owners.",
+      "source_audio_sha256": "4a24bc95517e5bb22a5efc967ef5e7dd6d075cbca2896ddff6fcdd5f233f63d6"
+    }
+  ],
+  "silence_gaps": [
+    0.396937,
+    0.378229,
+    0.3885,
+    0.378958,
+    0.393313,
+    0.386604,
+    0.39925,
+    0.376021,
+    0.38975,
+    0.383708
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.6,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -15.6,
+      -16.8,
+      -16.7,
+      -16.0,
+      -15.5,
+      -17.1,
+      -16.0
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "2f95863739c34ea2e9293c2ba3df2a5d7fd82dfaa33fdfd3b561eecd912171f5"
+}

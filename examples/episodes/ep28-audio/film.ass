@@ -1,0 +1,56 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.81,Caption,,0,0,0,,Why are hundreds
+Dialogue: 0,0:00:00.82,0:00:01.53,Caption,,0,0,0,,of new cars
+Dialogue: 0,0:00:01.55,0:00:02.13,Caption,,0,0,0,,stacked in this
+Dialogue: 0,0:00:02.14,0:00:02.95,Caption,,0,0,0,,glass tower?
+Dialogue: 0,0:00:03.21,0:00:03.82,Caption,,0,0,0,,It's a car
+Dialogue: 0,0:00:03.83,0:00:04.67,Caption,,0,0,0,,tower next to
+Dialogue: 0,0:00:04.68,0:00:05.50,Caption,,0,0,0,,a factory in
+Dialogue: 0,0:00:05.51,0:00:06.58,Caption,,0,0,0,,Wolfsburg Germany.
+Dialogue: 0,0:00:06.84,0:00:07.79,Caption,,0,0,0,,New cars roll
+Dialogue: 0,0:00:07.80,0:00:08.15,Caption,,0,0,0,,in from the
+Dialogue: 0,0:00:08.16,0:00:08.90,Caption,,0,0,0,,factory through
+Dialogue: 0,0:00:08.91,0:00:09.44,Caption,,0,0,0,,a tunnel.
+Dialogue: 0,0:00:09.70,0:00:10.63,Caption,,0,0,0,,A robot arm
+Dialogue: 0,0:00:10.65,0:00:11.28,Caption,,0,0,0,,on a central
+Dialogue: 0,0:00:11.30,0:00:12.06,Caption,,0,0,0,,mast picks each
+Dialogue: 0,0:00:12.08,0:00:12.52,Caption,,0,0,0,,one up.
+Dialogue: 0,0:00:12.78,0:00:13.46,Caption,,0,0,0,,It turns to
+Dialogue: 0,0:00:13.48,0:00:14.18,Caption,,0,0,0,,face an empty
+Dialogue: 0,0:00:14.20,0:00:15.36,Caption,,0,0,0,,bay and climbs
+Dialogue: 0,0:00:15.38,0:00:16.41,Caption,,0,0,0,,almost seven feet
+Dialogue: 0,0:00:16.42,0:00:16.98,Caption,,0,0,0,,a second.
+Dialogue: 0,0:00:17.24,0:00:17.97,Caption,,0,0,0,,Then it slides
+Dialogue: 0,0:00:17.99,0:00:18.54,Caption,,0,0,0,,the car in
+Dialogue: 0,0:00:18.55,0:00:19.04,Caption,,0,0,0,,like a book
+Dialogue: 0,0:00:19.05,0:00:19.94,Caption,,0,0,0,,onto a shelf.
+Dialogue: 0,0:00:20.20,0:00:21.04,Caption,,0,0,0,,With no ramps
+Dialogue: 0,0:00:21.05,0:00:21.62,Caption,,0,0,0,,or lanes the
+Dialogue: 0,0:00:21.63,0:00:22.36,Caption,,0,0,0,,cars pack
+Dialogue: 0,0:00:22.37,0:00:22.91,Caption,,0,0,0,,in tight.
+Dialogue: 0,0:00:23.17,0:00:24.21,Caption,,0,0,0,,Each tower holds
+Dialogue: 0,0:00:24.23,0:00:25.28,Caption,,0,0,0,,four hundred cars
+Dialogue: 0,0:00:25.30,0:00:26.41,Caption,,0,0,0,,on twenty floors.
+Dialogue: 0,0:00:26.67,0:00:27.35,Caption,,0,0,0,,When a buyer
+Dialogue: 0,0:00:27.36,0:00:28.43,Caption,,0,0,0,,arrives the robot
+Dialogue: 0,0:00:28.45,0:00:29.28,Caption,,0,0,0,,brings their car
+Dialogue: 0,0:00:29.29,0:00:29.90,Caption,,0,0,0,,down in under
+Dialogue: 0,0:00:29.92,0:00:30.68,Caption,,0,0,0,,two minutes.
+Dialogue: 0,0:00:30.94,0:00:32.09,Caption,,0,0,0,,It's the fastest
+Dialogue: 0,0:00:32.12,0:00:33.48,Caption,,0,0,0,,automated parking system
+Dialogue: 0,0:00:33.50,0:00:34.12,Caption,,0,0,0,,in the world.
+Dialogue: 0,0:00:34.38,0:00:34.95,Caption,,0,0,0,,That's why new
+Dialogue: 0,0:00:34.97,0:00:35.87,Caption,,0,0,0,,cars here wait
+Dialogue: 0,0:00:35.88,0:00:36.42,Caption,,0,0,0,,in a glass
+Dialogue: 0,0:00:36.44,0:00:36.95,Caption,,0,0,0,,tower for
+Dialogue: 0,0:00:36.97,0:00:37.67,Caption,,0,0,0,,their owners.

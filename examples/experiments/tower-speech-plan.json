@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "tower",
+   "beats": [
+    {
+     "narration_en": "Why are hundreds of new cars stacked in this glass tower?",
+     "start": 0.0,
+     "end": 5.4
+    },
+    {
+     "narration_en": "It's a car tower next to a factory in Wolfsburg Germany.",
+     "start": 5.4,
+     "end": 10.8
+    },
+    {
+     "narration_en": "New cars roll in from the factory through a tunnel.",
+     "start": 10.8,
+     "end": 15.7
+    },
+    {
+     "narration_en": "A robot arm on a central mast picks each one up.",
+     "start": 15.7,
+     "end": 21.1
+    },
+    {
+     "narration_en": "It turns to face an empty bay and climbs almost seven feet a second.",
+     "start": 21.1,
+     "end": 28.0
+    },
+    {
+     "narration_en": "Then it slides the car in like a book onto a shelf.",
+     "start": 28.0,
+     "end": 33.9
+    },
+    {
+     "narration_en": "With no ramps or lanes the cars pack in tight.",
+     "start": 33.9,
+     "end": 38.8
+    },
+    {
+     "narration_en": "Each tower holds four hundred cars on twenty floors.",
+     "start": 38.8,
+     "end": 43.2
+    },
+    {
+     "narration_en": "When a buyer arrives the robot brings their car down in under two minutes.",
+     "start": 43.2,
+     "end": 50.1
+    },
+    {
+     "narration_en": "It's the fastest automated parking system in the world.",
+     "start": 50.1,
+     "end": 54.5
+    },
+    {
+     "narration_en": "That's why new cars here wait in a glass tower for their owners.",
+     "start": 54.5,
+     "end": 60.9
+    }
+   ]
+  }
+ ]
+}
