@@ -39,6 +39,7 @@ material = base.material
 FRAME = (1080, 1920)
 PX, PY = sm.PIER
 TRAIN_CARS, CAR_L = 8, 25.0
+SECTION_CUT = -sm.heading(2050.0)        # the fixed lower parts are cut along the plane the turning parts' cut has in mid-shot
 
 
 def arguments():
@@ -151,7 +152,8 @@ class Bridge:
         R_low, R_up, R_h = 8.0, 7.0, sm.HINGE_D / 2
         for half, (a0, a1) in (("north", (0.0, math.pi)), ("south", (math.pi, 2 * math.pi))):
             def disc(name, r0, r1, z0, z1, mat, parent, seg=40):
-                angles = np.linspace(a0, a1, seg + 1)
+                off = SECTION_CUT if parent is None else 0.0                # fixed parts cut along the turning parts' cut (mid-shot)
+                angles = np.linspace(a0 + off, a1 + off, seg + 1)
                 vs = []
                 for z in (z0, z1):
                     for r in (r0, r1):
@@ -177,18 +179,55 @@ class Bridge:
                 if half == "south":
                     self.south.append(ob)
                 return ob
+            def curved(name, rmax, zb, zt, mat, parent, nr=18, seg=40):
+                """A half of a round slab whose bottom and top follow zb(r), zt(r): the spherical hinge's bowl, liner and ball."""
+                off = SECTION_CUT if parent is None else 0.0
+                angles = np.linspace(a0 + off, a1 + off, seg + 1)
+                rs = np.linspace(0.0, rmax, nr + 1)
+                n = len(angles)
+                vs = []
+                for surf in (zb, zt):
+                    for r in rs:
+                        vs += [(r * math.cos(a_), r * math.sin(a_), surf(r)) for a_ in angles]
+                m_ = (nr + 1) * n
+
+                def ix(si, ri, k):
+                    return si * m_ + ri * n + k
+                fs = []
+                for ri in range(nr):
+                    for k in range(n - 1):
+                        fs.append((ix(1, ri, k), ix(1, ri + 1, k), ix(1, ri + 1, k + 1), ix(1, ri, k + 1)))
+                        fs.append((ix(0, ri, k), ix(0, ri, k + 1), ix(0, ri + 1, k + 1), ix(0, ri + 1, k)))
+                for k in range(n - 1):
+                    fs.append((ix(0, nr, k), ix(0, nr, k + 1), ix(1, nr, k + 1), ix(1, nr, k)))
+                for k in (0, n - 1):                                       # the cut faces show the curved profile
+                    fs.append(tuple([ix(0, ri, k) for ri in range(nr + 1)] + [ix(1, ri, k) for ri in range(nr, -1, -1)]))
+                ob = np_mesh(f"{name} ({half})", vs, fs, [mat])
+                if parent is not None:
+                    ob.parent = parent
+                else:
+                    ob.location = (PX, PY, 0.0)
+                if half == "south":
+                    self.south.append(ob)
+                return ob
+
+            def sag(r, RS=10.8, Z0=0.12):
+                return Z0 + RS - math.sqrt(RS * RS - r * r)
             disc("Lower turntable", 0.0, R_low, -1.5, 0.0, conc, None)
             disc("Ring track", 6.0, 6.7, 0.0, 0.12, steel, None)
-            disc("Lower hinge (concave)", 0.0, R_h, 0.0, 0.35, steel, None)
-            disc("Slide liner", 0.0, R_h - 0.05, 0.35, 0.42, liner, None)
-            disc("Grease film", 0.0, R_h - 0.1, 0.42, 0.45, grease, None)
-            disc("Upper hinge (convex)", 0.0, R_h - 0.05, 0.45, 0.8, steel, self.root)
+            curved("Lower hinge (concave bowl)", R_h, lambda r: 0.0, sag, steel, None)
+            curved("Slide liner", R_h - 0.05, sag, lambda r: sag(r) + 0.05, liner, None)
+            curved("Grease film", R_h - 0.1, lambda r: sag(r) + 0.05, lambda r: sag(r) + 0.07, grease, None)
+            curved("Upper hinge (convex ball)", R_h - 0.05, lambda r: sag(r) + 0.07, lambda r: 0.8, steel, self.root)
             up = disc("Upper turntable", 0.0, R_up, 0.8, 1.8, conc, self.root)
             self.upper.append(up)
             disc("Cable bundle", R_up, R_up + 0.12, 1.1, 1.5, cable, self.root)
-        feet = [((6.35 * math.cos(a), 6.35 * math.sin(a), 0.5), (0.9, 0.9, 0.8)) for a in np.linspace(0, 2 * math.pi, 9)[:-1]]
-        fob = K.boxes("Support feet", feet, steel)
-        fob.parent = self.root
+        for half, keep in (("north", lambda a: math.sin(a) >= 0), ("south", lambda a: math.sin(a) < 0)):
+            feet = [((6.35 * math.cos(a), 6.35 * math.sin(a), 0.5), (0.9, 0.9, 0.8)) for a in np.linspace(0, 2 * math.pi, 9)[:-1] + 0.2 if keep(a)]
+            fob = K.boxes(f"Support feet ({half})", feet, steel)
+            fob.parent = self.root
+            if half == "south":
+                self.south.append(fob)
         jacks = []
         for sy in (-1, 1):
             jacks.append(((PX + sy * 10.5, PY + sy * 6.5, 1.0), (2.4, 2.4, 2.0)))
