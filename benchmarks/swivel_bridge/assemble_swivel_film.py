@@ -96,7 +96,8 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
         trains = [None if tl.train_x(k, t) is None else round(tl.train_x(k, t), 2) for k in range(2)]
         if p["window"] != win or p["trains_x"] != trains:
             problems.append(f"frame {fr['frame']}: the railway differs from the model")
-        if p["ghost"] != bool(sh.get("ghost")) or p["section"] != bool(sh.get("section")) or p["clock"] != bool(sh.get("clock")):
+        if p["ghost"] != bool(sh.get("ghost")) or p["section"] != bool(sh.get("section")) or p["clock"] != bool(sh.get("clock")) \
+                or p.get("angle", False) != bool(sh.get("angle")):
             problems.append(f"frame {fr['frame']}: the comparison layers differ from the timeline")
         if len(problems) > 5:
             break
@@ -130,6 +131,8 @@ def visible_action(frames: list[dict]) -> dict:
     g = by.get("G-52-degrees-68-minutes", [])
     if not g or g[0]["turned_deg"] > 0.01 or g[-1]["turned_deg"] < 52.3:
         problems.append("the whole turn is not shown")
+    if not g or not all(p.get("angle") and abs(p["angle_drawn_deg"] - p["turned_deg"]) < 1e-3 for p in g):
+        problems.append("the angle swept is not drawn with the turn")
     h = by.get("H-minute-hand", [])
     if not h or not all(p["clock"] for p in h):
         problems.append("the clock's minute hand is not shown")

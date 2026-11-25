@@ -424,6 +424,45 @@ def build_city():
     merged("Street trees", crowns, leaf, smooth=True)
 
 
+class TurnWedge:
+    """The angle the bridge has swept (translucent gold, just above the deck): two sectors on the pier, from where each half of the
+    deck started to where it is now, with a bright rim; drawn for the "fifty-two degrees" line."""
+    N_ARC = 64
+
+    def __init__(self):
+        n = self.N_ARC
+        g = ghost_material("Turn angle", (1.0, 0.78, 0.25), 3.0, 0.42)
+        rim = material("Turn angle rim", (1.0, 0.85, 0.4), rough=0.4, emission=8.0)
+        faces = []
+        for half in range(2):
+            o = half * (n + 1)
+            faces += [(o, o + 1 + i, o + 2 + i) for i in range(n - 1)]
+        self.fill = K.Sheet("Turn angle", np.zeros((2 * (n + 1), 3)), faces, [g], smooth=False)
+        rf = []
+        for half in range(2):
+            o = half * 2 * n
+            rf += [(o + i, o + i + 1, o + n + i + 1, o + n + i) for i in range(n - 1)]
+        self.rim = K.Sheet("Turn angle rim", np.zeros((4 * n, 3)), rf, [rim], smooth=False)
+        self.objs = [self.fill.ob, self.rim.ob]
+
+    def set(self, on, t):
+        for ob in self.objs:
+            ob.hide_render = not on
+        n, z = self.N_ARC, sm.DECK_TOP + 1.6
+        R = sm.HALF
+        hs = np.linspace(sm.HEAD0, sm.heading(t), n)
+        fill, rim = [], []
+        for half in range(2):
+            a = hs + half * math.pi
+            fill.append(np.array([[PX, PY, z]]))
+            fill.append(np.stack([PX + R * np.sin(a), PY + R * np.cos(a), np.full(n, z)], 1))
+            for rr_ in (R - 2.5, R + 0.5):
+                rim.append(np.stack([PX + rr_ * np.sin(a), PY + rr_ * np.cos(a), np.full(n, z + 0.05)], 1))
+        self.fill.set(np.vstack(fill))
+        self.rim.set(np.vstack(rim))
+        return math.degrees(sm.turned(t))
+
+
 class Clock:
     """A clock's minute hand (translucent) turning about the pier at clock speed, over a ring of minute ticks."""
 
@@ -504,6 +543,7 @@ def main():
     rail = Railway()
     bridge = Bridge()
     clock = Clock()
+    wedge = TurnWedge()
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -513,10 +553,11 @@ def main():
     def render(sh, path):
         scene.render.resolution_x, scene.render.resolution_y = round(FRAME[0] * args.res_scale), round(FRAME[1] * args.res_scale)
         t = sh["t"]
-        flags = {k: sh.get(k) for k in ("ghost", "section", "clock")}
+        flags = {k: sh.get(k) for k in ("ghost", "section", "clock", "angle")}
         h = bridge.set(t, flags)
         win, trains = rail.set(t)
         hand = clock.set(bool(flags["clock"]), t)
+        swept = wedge.set(bool(flags["angle"]), t)
         cm = sh["cam"]
         loc, tgt = Vector(cm["loc"]), Vector(cm["target"])
         dd = cam.data
@@ -533,7 +574,8 @@ def main():
         bpy.ops.render.render(write_still=True)
         return {"t": round(t, 6), "heading": round(h, 6), "turned_deg": round(math.degrees(sm.turned(t)), 4), "window": win, "trains_x": trains,
                 "over_tracks": sm.over_tracks(t), "ghost": bool(flags["ghost"]), "section": bool(flags["section"]), "clock": bool(flags["clock"]),
-                "minute_hand_deg": round(math.degrees(hand), 3), "subject_box": box, "cam_world": [round(x, 3) for x in loc],
+                "minute_hand_deg": round(math.degrees(hand), 3), "angle": bool(flags["angle"]), "angle_drawn_deg": round(swept, 4) if flags["angle"] else None,
+                "subject_box": box, "cam_world": [round(x, 3) for x in loc],
                 "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
 
     a0, b0 = (int(x) for x in args.frames.split("-"))
