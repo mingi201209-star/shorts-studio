@@ -1,0 +1,59 @@
+{
+ "variants": [
+  {
+   "id": "snowmelt",
+   "beats": [
+    {
+     "narration_en": "Why is this road spraying water in a snowstorm?",
+     "start": 0.0,
+     "end": 4.4
+    },
+    {
+     "narration_en": "In snowy parts of Japan sprinklers are built right into the street.",
+     "start": 4.4,
+     "end": 10.3
+    },
+    {
+     "narration_en": "Nozzles down the middle of the road spray out water.",
+     "start": 10.3,
+     "end": 15.2
+    },
+    {
+     "narration_en": "It's pumped from deep underground where it stays around fifty degrees.",
+     "start": 15.2,
+     "end": 20.6
+    },
+    {
+     "narration_en": "That's warmer than snow so the snow melts as soon as it lands.",
+     "start": 20.6,
+     "end": 27.0
+    },
+    {
+     "narration_en": "The idea started in the city of Nagaoka in the nineteen sixties.",
+     "start": 27.0,
+     "end": 32.9
+    },
+    {
+     "narration_en": "It works there because the snow falls near freezing so the water doesn't turn to ice.",
+     "start": 32.9,
+     "end": 40.8
+    },
+    {
+     "narration_en": "The catch is it uses lots of water and can make the ground sink.",
+     "start": 40.8,
+     "end": 47.7
+    },
+    {
+     "narration_en": "So newer roads keep the warm water in pipes under the pavement.",
+     "start": 47.7,
+     "end": 53.6
+    },
+    {
+     "narration_en": "That's why some streets in Japan wash their own snow away.",
+     "start": 53.6,
+     "end": 59.0
+    }
+   ]
+  }
+ ]
+}
