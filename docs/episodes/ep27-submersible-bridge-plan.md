@@ -46,3 +46,6 @@ the first hook camera behind the cars could not see the water at all (the quays 
 running on into the sea), the aerial along the sea showed the canal as a thin strip (now from above the cut looking down it), the
 under-water shots were murky (clearer water, closer cameras), the lift-bridge ghost was too faint. The loop shot's start was then
 moved away from a house roof.
+CI (run 45509043787, 796 frames at 720x1280, 16 samples, composed to 1080x1920): all 12 gates PASS. Opening hook held 2.24 s, the
+deck 100 % in frame and at least 42.3 % of the width in the first second; mix -15.2 LUFS, every line at least 12.2 dB above the
+effects; loop seam 0.01 vs steps 0.47/0.27. Film sha256 4a5aad8fc20e52bb6d0fb8edf63dca397f7775c16e1e321720f8dbf8640fae5f.
