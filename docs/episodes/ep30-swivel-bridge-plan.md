@@ -37,4 +37,5 @@ examples/experiments/swivel-film-request.json), tests tests/test_ep30_swivel.py 
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(local low-res run and CI to be recorded)
+Local low-res run (whole film, 162x288 at 3 samples, 4 shards): every gate PASS (944 frames, 39.333 s, pace 19.8 cuts/min at 178 wpm, opening shot 2.83 s with the deck 100% in frame and 64% of the width, mix -15.1 LUFS, speech 10.2 dB over the effects). Before it, the first stills were reworked: the opening (a thin deck at the horizon over a bare plain) now looks down on the deck from 120 m, the plain has low buildings, fields, car parks, a construction site, two tower cranes and site cabins; B now has a train rushing past the camera; the length shot (blocked by an apartment block) now looks along the deck from one end; the ball-joint shot was cut open on two different planes (the fixed lower parts across the turning upper parts) and hidden behind a support foot: one cut plane now, square to the camera, the hinge drawn as a concave bowl and a convex ball with the liner between, the near foot hidden; the whole film was re-rendered for this run.
+CI: (to be recorded)
