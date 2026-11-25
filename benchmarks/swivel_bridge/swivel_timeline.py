@@ -39,10 +39,10 @@ def cam(loc, target, lens, fstop=8.0):
     return {"loc": tuple(loc), "target": tuple(target), "lens": lens, "fstop": fstop}
 
 
-A1 = cam((-170.0, -150.0, 80.0), (-15.0, -5.0, 6.0), 28.0, 11.0)               # mid-turn: swinging out over the railway
-A1_B = cam((-164.0, -146.0, 78.0), (-15.0, -4.0, 6.0), 28.0, 11.0)
-B = cam((-150.0, -13.5, 3.2), (40.0, -18.0, 9.0), 26.0, 8.0)                   # built beside the tracks: a train passes alongside
-B_B = cam((-146.0, -13.5, 3.2), (40.0, -18.0, 9.0), 26.0, 8.0)
+A1 = cam((-80.0, 116.6, 120.0), (0.0, -22.0, 8.0), 20.0, 11.0)                 # from high up: mid-turn, swinging out over the railway
+A1_B = cam((-77.5, 112.3, 117.0), (0.0, -22.0, 8.0), 20.0, 11.0)
+B = cam((-175.0, 8.0, 5.0), (-70.0, -20.0, 12.0), 24.0, 8.0)                    # built beside the tracks: a train rushes past
+B_B = cam((-171.0, 8.0, 5.0), (-70.0, -20.0, 12.0), 24.0, 8.0)
 C1 = cam((60.0, 30.0, 22.0), (-40.0, -12.0, 4.0), 26.0, 11.0)                # trains can't stop for long: one runs past
 C1_B = cam((54.0, 30.0, 21.0), (-40.0, -12.0, 4.0), 26.0, 11.0)
 C = cam((150.0, -260.0, 150.0), (-10.0, -10.0, 0.0), 26.0, 11.0)               # where it will sit (translucent)
@@ -51,24 +51,24 @@ D = cam((PX + 3.0, PY - 15.5, 2.6), (PX, PY, 0.5), 30.0, 5.6)                 # 
 D_B = cam((PX + 2.6, PY - 14.5, 2.4), (PX, PY, 0.5), 30.0, 5.6)
 E1 = cam((PX + 12.0, PY - 16.0, 1.6), (PX - 6.0, PY + 8.0, 14.0), 22.0, 8.0)  # 46,000 tons on one pier
 E1_B = cam((PX + 11.0, PY - 15.0, 1.6), (PX - 6.0, PY + 8.0, 15.0), 22.0, 8.0)
-E = cam((-40.0, -360.0, 26.0), (-25.0, -20.0, 10.0), 26.0, 11.0)               # almost 900 ft long
-E_B = cam((-34.0, -350.0, 26.0), (-25.0, -20.0, 10.0), 26.0, 11.0)
+E = cam((112.1, -124.5, 28.5), (-97.3, 67.0, 14.0), 26.0, 11.0)                 # almost 900 ft long: along the deck from one end
+E_B = cam((109.0, -120.5, 28.0), (-97.3, 67.0, 14.0), 26.0, 11.0)
 F = cam((PX - 15.0, PY - 13.0, 4.5), (PX, PY, 1.0), 28.0, 5.6)                # the turntable slowly turning
 F_B = cam((PX - 14.0, PY - 12.0, 4.2), (PX, PY, 1.0), 28.0, 5.6)
-G = cam((PX, PY + 25.0, 340.0), (PX, PY + 26.0, 0.0), 26.0, 11.0)              # from above: 52.4 degrees in 68 minutes
-G_B = cam((PX, PY + 25.0, 330.0), (PX, PY + 26.0, 0.0), 26.0, 11.0)
-H = cam((PX - 95.0, PY - 125.0, 120.0), (PX, PY, 0.0), 26.0, 11.0)            # a clock's minute hand races round it
-H_B = cam((PX - 90.0, PY - 120.0, 116.0), (PX, PY, 0.0), 26.0, 11.0)
-I = cam((-470.0, -12.0, 4.0), (-120.0, 0.0, 9.0), 34.0, 11.0)                 # the railway's window: a train waits at red
-I_B = cam((-468.0, -12.0, 4.2), (-120.0, 0.0, 9.0), 34.0, 11.0)
-J = cam((40.0, 14.5, 3.0), (-45.0, 2.0, 7.0), 26.0, 8.0)                       # trains roll underneath again
-J_B = cam((38.0, 14.5, 3.0), (-45.0, 2.0, 7.0), 26.0, 8.0)
-K = cam((-230.0, -200.0, 110.0), (-15.0, -5.0, 6.0), 28.0, 11.0)               # loop: into frame 1
+G = cam((PX, PY + 20.0, 230.0), (PX, PY + 21.0, 0.0), 26.0, 11.0)              # from above: 52.4 degrees in 68 minutes
+G_B = cam((PX, PY + 20.0, 222.0), (PX, PY + 21.0, 0.0), 26.0, 11.0)
+H = cam((PX - 70.0, PY - 150.0, 160.0), (PX, PY + 5.0, 0.0), 26.0, 11.0)       # a clock's minute hand races round it
+H_B = cam((PX - 66.0, PY - 145.0, 156.0), (PX, PY + 5.0, 0.0), 26.0, 11.0)
+I = cam((-450.0, -16.0, 6.0), (-150.0, 5.0, 12.0), 50.0, 11.0)                 # the railway's window: a train waits at red
+I_B = cam((-448.0, -16.0, 6.2), (-150.0, 5.0, 12.0), 50.0, 11.0)
+J = cam((20.0, 13.0, 3.0), (-30.0, 0.0, 9.0), 26.0, 8.0)                        # trains roll underneath again
+J_B = cam((18.0, 13.0, 3.0), (-30.0, 0.0, 9.0), 26.0, 8.0)
+K = cam((-100.0, 160.0, 160.0), (0.0, -22.0, 8.0), 20.0, 11.0)                 # loop: into frame 1
 
 # label, start line, knots [(share of the shot, story s)], cam a, cam b, flags, lines
 ROWS = [
     ("A1-bridge-spinning", 1, [(0.0, OPEN_SIM), (1.0, 2400.0)], A1, A1_B, {}, (1,)),                      # held through line 1
-    ("B-built-beside-tracks", 2, [(0.0, -2600.0), (1.0, -2596.0)], B, B_B, {}, (2,)),
+    ("B-built-beside-tracks", 2, [(0.0, -2466.0), (1.0, -2462.0)], B, B_B, {}, (2,)),
     ("C1-trains-cant-stop", 3, [(0.0, -2462.0), (1.0, -2459.0)], C1, C1_B, {}, (3,)),
     ("C2-turned-into-place", 3.5, [(0.0, -1200.0), (1.0, -950.0)], C, C_B, {"ghost": True}, (3,)),
     ("D-one-ball-joint", 4, [(0.0, 1800.0), (1.0, 2300.0)], D, D_B, {"section": True}, (4,)),
@@ -78,7 +78,7 @@ ROWS = [
     ("G-52-degrees-68-minutes", 7, [(0.0, 0.0), (1.0, sm.T_TURN)], G, G_B, {}, (7,)),
     ("H-minute-hand", 8, [(0.0, 1800.0), (1.0, 2700.0)], H, H_B, {"clock": True}, (8,)),
     ("I-two-hour-window", 9, [(0.0, 3000.0), (1.0, 3600.0)], I, I_B, {}, (9,)),
-    ("J-trains-roll-again", 10, [(0.0, 5795.0), (1.0, 5802.0)], J, J_B, {}, (10,)),
+    ("J-trains-roll-again", 10, [(0.0, 5798.0), (1.0, 5805.0)], J, J_B, {}, (10,)),
     ("K-loop", 11, [(0.0, 300.0), (1.0, OPEN_SIM - 0.0002)], K, A1, {"loop": True}, (11,)),             # last frame = the opening
 ]
 
@@ -159,12 +159,18 @@ def frame_state(f: int, segs: list[dict]) -> dict:
 
 
 def subject_box(t: float) -> tuple[tuple, tuple]:
-    """The subject: the deck at story time t, as a world box."""
+    """The subject: the deck at story time t, as a world box (axis-aligned round the turned deck)."""
     e0, e1 = sm.deck_ends(t)
     h = sm.heading(t)
     n = np.array([math.cos(h), -math.sin(h)]) * sm.DECK_W / 2
     pts = np.array([e0 + n, e0 - n, e1 + n, e1 - n])
     return (float(pts[:, 0].min()), float(pts[:, 1].min()), sm.DECK_TOP - sm.DEPTH_PIER), (float(pts[:, 0].max()), float(pts[:, 1].max()), sm.DECK_TOP + 1.1)
+
+
+def deck_local_box() -> tuple[tuple, tuple]:
+    """The deck as a box in the turning bridge's own frame (origin on the pier, length along local y): the hook gate projects this
+    box turned with the bridge, so the subject is the deck itself rather than the square round it."""
+    return (-sm.DECK_W / 2, -sm.HALF, sm.DECK_TOP - sm.DEPTH_PIER), (sm.DECK_W / 2, sm.HALF, sm.DECK_TOP + 1.1)
 
 
 def scene_alignment(segs: list[dict]) -> dict:

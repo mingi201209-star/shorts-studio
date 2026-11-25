@@ -40,7 +40,6 @@ def test_cameras_clear_of_the_bridge_the_trains_and_the_ground():
         sh = tl.frame_state(f, segs)
         x, y, z = sh["cam"]["loc"]
         assert z > 1.2, f"frame {f} camera at the ground"
-        lo, hi = tl.subject_box(sh["t"])
         h = m.heading(sh["t"])
         u = np.array([math.sin(h), math.cos(h)])
         rel = np.array([x, y]) - np.array(m.PIER)

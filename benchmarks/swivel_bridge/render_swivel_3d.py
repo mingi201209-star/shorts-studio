@@ -245,8 +245,8 @@ class Railway:
         self.signals = []
         for x in (-380.0, 380.0):
             K.cube(f"Signal post {x}", (x, -8.0, 2.5), (0.2, 0.2, 5.0), posts)
-            r = K.cube(f"Signal red {x}", (x, -8.0, 5.2), (0.35, 0.35, 0.35), self.red)
-            g = K.cube(f"Signal green {x}", (x, -8.0, 4.7), (0.35, 0.35, 0.35), self.green)
+            r = K.cube(f"Signal red {x}", (x, -8.0, 5.4), (0.6, 0.6, 0.6), self.red)
+            g = K.cube(f"Signal green {x}", (x, -8.0, 4.6), (0.6, 0.6, 0.6), self.green)
             self.signals.append((r, g))
         body = material("Train body", (0.92, 0.92, 0.90), rough=0.35)
         band = material("Train band", (0.08, 0.35, 0.22), rough=0.4)
@@ -272,9 +272,9 @@ class Railway:
             sr = self.red.node_tree.nodes.get("Principled BSDF")
             sg = self.green.node_tree.nodes.get("Principled BSDF")
             sr.inputs["Emission Color"].default_value = (1.0, 0.05, 0.02, 1)
-            sr.inputs["Emission Strength"].default_value = 25.0 if win else 0.0
+            sr.inputs["Emission Strength"].default_value = 60.0 if win else 0.0
             sg.inputs["Emission Color"].default_value = (0.05, 1.0, 0.3, 1)
-            sg.inputs["Emission Strength"].default_value = 0.0 if win else 20.0
+            sg.inputs["Emission Strength"].default_value = 0.0 if win else 45.0
         out = []
         for k, root in enumerate(self.trains):
             x = tl.train_x(k, t)
@@ -287,28 +287,94 @@ class Railway:
         return win, out
 
 
+def tower_crane(name, base_xy, jib_heading, height=48.0, jib=50.0):
+    """A tower crane: lattice mast (striped), jib and counter-jib with its weight, cab, hook line."""
+    yel, N, bsdf = principled(f"{name} yellow", (0.85, 0.62, 0.05), rough=0.5)
+    pos = N.new("ShaderNodeTexCoord").outputs["Object"]
+    _, _, z = N.xyz(pos)
+    lattice = N.math("LESS_THAN", N.math("PINGPONG", N.math("ADD", z, N.math("MULTIPLY", N.xyz(pos)[0], 1.0)), 1.0), 0.18)
+    N.put(bsdf.inputs["Base Color"], N.mix(lattice, (0.85, 0.62, 0.05), (0.12, 0.10, 0.06)))
+    conc = material(f"{name} weight", (0.5, 0.5, 0.48), rough=0.8)
+    root = bpy.data.objects.new(name, None)
+    bpy.context.collection.objects.link(root)
+    root.location = (base_xy[0], base_xy[1], 0.0)
+    root.rotation_euler = (0.0, 0.0, -jib_heading)
+    parts = [K.cube(f"{name} mast", (0.0, 0.0, height / 2), (2.0, 2.0, height), yel),
+             K.cube(f"{name} jib", (0.0, jib / 2, height + 1.0), (1.4, jib, 1.8), yel),
+             K.cube(f"{name} counter-jib", (0.0, -7.5, height + 0.8), (1.6, 15.0, 1.2), yel),
+             K.cube(f"{name} counterweight", (0.0, -13.0, height - 0.6), (2.4, 3.0, 2.6), conc),
+             K.cube(f"{name} cab", (1.6, 1.0, height - 1.2), (1.4, 2.0, 2.0), material(f"{name} cab", (0.85, 0.85, 0.82), rough=0.4)),
+             K.cube(f"{name} peak", (0.0, 0.0, height + 6.0), (1.0, 1.0, 10.0), yel),
+             K.cube(f"{name} line", (0.0, jib * 0.6, height / 2 + 6.0), (0.05, 0.05, height - 12.0), material(f"{name} line", (0.05, 0.05, 0.05))),
+             K.cube(f"{name} hook block", (0.0, jib * 0.6, 12.0), (0.8, 0.8, 1.2), conc)]
+    for ob in parts:
+        ob.parent = root
+    return root
+
+
 def build_city():
-    ground = textured("Plain ground", (0.20, 0.22, 0.12), (0.30, 0.30, 0.18), 0.05, rough=0.95, bump=0.2)
+    ground = textured("Plain ground", (0.17, 0.20, 0.10), (0.27, 0.27, 0.15), 0.012, rough=0.95, bump=0.15)
     K.cube("Ground", (0.0, 0.0, -0.55), (6000.0, 6000.0, 0.5), ground)
+    dirt = textured("Construction site", (0.30, 0.24, 0.17), (0.42, 0.35, 0.26), 0.08, rough=0.95, bump=0.3)
+    K.cube("Construction site", (0.0, -32.0, -0.285), (330.0, 38.0, 0.04), dirt)
+    tower_crane("Tower crane west", (-70.0, -42.0), math.radians(200.0))
+    tower_crane("Tower crane east", (90.0, 26.0), math.radians(20.0), height=44.0)
+    cabin = material("Site cabins", (0.88, 0.88, 0.85), rough=0.6)
+    blue = material("Cabin roofs", (0.10, 0.25, 0.55), rough=0.5)
+    cabins, roofs = [], []
+    for k in range(4):
+        for lvl in range(2):
+            c = (-118.0 + 6.4 * k, -44.0, 1.3 + 2.7 * lvl - 0.3)
+            cabins.append((c, (6.0, 2.5, 2.6)))
+            roofs.append(((c[0], c[1], c[2] + 1.35), (6.1, 2.6, 0.1)))
+    K.boxes("Site cabins", cabins, cabin)
+    K.boxes("Cabin roofs", roofs, blue)
     road = textured("Street asphalt", (0.08, 0.08, 0.085), (0.12, 0.12, 0.125), 3.0, rough=0.85, bump=0.1)
     K.boxes("Streets", [((0.0, -60.0, -0.29), (3000.0, 16.0, 0.02)), ((0.0, 70.0, -0.29), (3000.0, 16.0, 0.02)),
                         ((-200.0, 0.0, -0.29), (16.0, 3000.0, 0.02))], road)
     wall = textured("Apartment walls", (0.70, 0.68, 0.63), (0.82, 0.80, 0.76), 2.0, rough=0.8, bump=0.1)
     win = material("Apartment windows", (0.10, 0.12, 0.15), metal=0.3, rough=0.15)
     rng = random.Random(30)
-    blocks, wins = [], []
-    for k in range(80):
+    blocks, wins, low = [], [], []
+    keep_clear = [((112.0, -124.5), 45.0), ((-175.0, 8.0), 30.0), ((-450.0, -16.0), 30.0)]     # round cameras that stand in the city
+
+    def clear(x, y, r):
+        return all(math.dist((x, y), c) > rr + r for c, rr in keep_clear)
+    for k in range(200):
         x = rng.uniform(-900, 900)
-        y = rng.choice((-1, 1)) * rng.uniform(95, 600)
-        if abs(x - PX) < 160 and abs(y) < 200:
+        y = rng.choice((-1, 1)) * rng.uniform(95, 650)
+        if (abs(x - PX) < 150 and abs(y) < 160) or not clear(x, y, 20.0):
             continue
         w, d, h = rng.uniform(16, 26), rng.uniform(12, 18), rng.uniform(25, 75)
         blocks.append(((x, y, h / 2 - 0.3), (w, d, h)))
         for z in np.arange(3.0, h - 2, 3.0):
             wins.append(((x, y - d / 2 - 0.02, z), (w - 2.0, 0.05, 1.3)))
             wins.append(((x, y + d / 2 + 0.02, z), (w - 2.0, 0.05, 1.3)))
+    for k in range(420):                                                       # low buildings: sheds, shops, houses
+        x = rng.uniform(-700, 700)
+        y = rng.choice((-1, 1)) * rng.uniform(22, 500)
+        if (abs(x - PX) < 175 and abs(y) < 140) or abs(abs(y) - 65) < 14 or abs(x + 200) < 12 or not clear(x, y, 15.0):
+            continue
+        w, d, h = rng.uniform(10, 34), rng.uniform(8, 22), rng.uniform(4, 12)
+        low.append(((x, y, h / 2 - 0.3), (w, d, h)))
     K.boxes("Apartment blocks", blocks, wall)
     K.boxes("Apartment windows", wins, win)
+    roofs = [textured(f"Low roofs {k}", c1, c2, 0.5, rough=0.8, bump=0.1) for k, (c1, c2) in
+             enumerate((((0.55, 0.30, 0.22), (0.62, 0.36, 0.26)), ((0.30, 0.38, 0.48), (0.36, 0.44, 0.54)), ((0.62, 0.60, 0.56), (0.70, 0.68, 0.64))))]
+    for k in range(3):
+        K.boxes(f"Low buildings {k}", low[k::3], roofs[k])
+    lots = []
+    for k in range(70):                                                        # fields, yards and car parks break up the plain
+        x = rng.uniform(-900, 900)
+        y = rng.choice((-1, 1)) * rng.uniform(20, 700)
+        if abs(x - PX) < 170 and abs(y) < 70:
+            continue
+        lots.append(((x, y, -0.295), (rng.uniform(40, 140), rng.uniform(30, 110), 0.01)))
+    lot_mats = [textured("Fields", (0.36, 0.30, 0.18), (0.44, 0.38, 0.24), 0.05, rough=0.95, bump=0.2),
+                textured("Car parks", (0.22, 0.22, 0.23), (0.30, 0.30, 0.31), 0.5, rough=0.9, bump=0.05),
+                textured("Young crops", (0.22, 0.30, 0.10), (0.30, 0.38, 0.14), 0.08, rough=0.95, bump=0.2)]
+    for k in range(3):
+        K.boxes(f"Lots {k}", lots[k::3], lot_mats[k])
     leaf = textured("Street trees", (0.07, 0.14, 0.04), (0.14, 0.22, 0.07), 1.0, rough=0.9, bump=0.5)
     crowns = []
     for x in np.arange(-900, 900, 14.0):
@@ -323,20 +389,21 @@ class Clock:
     """A clock's minute hand (translucent) turning about the pier at clock speed, over a ring of minute ticks."""
 
     def __init__(self):
-        g = ghost_material("Ghost clock", (1.0, 0.85, 0.4), 3.0, 0.35)
+        g = ghost_material("Ghost clock", (1.0, 0.85, 0.4), 5.0, 0.45)
         R = 70.0
+        zc = sm.DECK_TOP + 2.5
         ticks = []
         for k in range(60):
             a = 2 * math.pi * k / 60
-            L = 6.0 if k % 5 == 0 else 2.5
-            ticks.append(((PX + (R - L / 2) * math.sin(a), PY + (R - L / 2) * math.cos(a), 0.6), (0.6, L, 0.1)))
+            L = 9.0 if k % 5 == 0 else 4.0
+            ticks.append(((PX + (R - L / 2) * math.sin(a), PY + (R - L / 2) * math.cos(a), zc), (1.4 if k % 5 == 0 else 0.8, L, 0.15)))
         self.ticks = K.boxes("Clock ticks", ticks, g)
         for ob in self.ticks.data.vertices:
             pass
         self.hand_root = bpy.data.objects.new("Minute hand", None)
         bpy.context.collection.objects.link(self.hand_root)
-        self.hand_root.location = (PX, PY, 0.7)
-        self.hand = K.cube("Minute hand bar", (0.0, R * 0.45, 0.0), (1.4, R * 0.9, 0.12), g)
+        self.hand_root.location = (PX, PY, zc + 0.1)
+        self.hand = K.cube("Minute hand bar", (0.0, R * 0.45, 0.0), (3.0, R * 0.9, 0.15), g)
         self.hand.parent = self.hand_root
         self.objs = [self.ticks, self.hand]
         self._rotate_ticks()
@@ -421,8 +488,8 @@ def main():
         dd.dof.aperture_fstop = cm.get("fstop", 8.0)
         base.set_camera(cam, loc, tgt)
         bpy.context.view_layer.update()
-        lo, hi = tl.subject_box(t)
-        box = hook_gate.project_box(scene, cam, Matrix.Identity(4), lo, hi)
+        lo, hi = tl.deck_local_box()
+        box = hook_gate.project_box(scene, cam, bridge.root.matrix_world.copy(), lo, hi)
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         return {"t": round(t, 6), "heading": round(h, 6), "turned_deg": round(math.degrees(sm.turned(t)), 4), "window": win, "trains_x": trains,
