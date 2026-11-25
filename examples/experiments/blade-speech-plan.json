@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "blade",
+   "beats": [
+    {
+     "narration_en": "Why is this truck holding a giant blade up at the sky?",
+     "start": 0.0,
+     "end": 5.9
+    },
+    {
+     "narration_en": "It's carrying a wind turbine blade up a mountain road.",
+     "start": 5.9,
+     "end": 10.8
+    },
+    {
+     "narration_en": "Lying flat a blade this long can't get around these bends.",
+     "start": 10.8,
+     "end": 16.2
+    },
+    {
+     "narration_en": "So the trailer tilts it up as steep as sixty degrees.",
+     "start": 16.2,
+     "end": 21.6
+    },
+    {
+     "narration_en": "At that angle it sticks out only half as far.",
+     "start": 21.6,
+     "end": 26.5
+    },
+    {
+     "narration_en": "And it can swing the blade sideways to clear cliffs and trees.",
+     "start": 26.5,
+     "end": 32.4
+    },
+    {
+     "narration_en": "Some of these blades are almost as long as a football field.",
+     "start": 32.4,
+     "end": 38.3
+    },
+    {
+     "narration_en": "The truck crawls along at about twelve miles an hour.",
+     "start": 38.3,
+     "end": 43.2
+    },
+    {
+     "narration_en": "And if the wind blows over twenty miles an hour the trip stops.",
+     "start": 43.2,
+     "end": 49.6
+    },
+    {
+     "narration_en": "Tilting the blade means the mountain roads don't have to be rebuilt.",
+     "start": 49.6,
+     "end": 55.5
+    },
+    {
+     "narration_en": "That's why you might meet a wind turbine blade pointing at the sky.",
+     "start": 55.5,
+     "end": 61.9
+    }
+   ]
+  }
+ ]
+}

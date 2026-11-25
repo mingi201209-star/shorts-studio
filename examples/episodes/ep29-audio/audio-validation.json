@@ -1,0 +1,334 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 39.242,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.677624,
+      "text": "Why is this"
+    },
+    {
+      "start": 0.692333,
+      "end": 1.574708,
+      "text": "truck holding a"
+    },
+    {
+      "start": 1.589416,
+      "end": 2.530582,
+      "text": "giant blade up"
+    },
+    {
+      "start": 2.5452909999999997,
+      "end": 3.236458,
+      "text": "at the sky?"
+    },
+    {
+      "start": 3.4964321818181814,
+      "end": 4.364098181818181,
+      "text": "It's carrying a"
+    },
+    {
+      "start": 4.378765181818181,
+      "end": 5.628806181818182,
+      "text": "wind turbine blade"
+    },
+    {
+      "start": 5.643473181818181,
+      "end": 5.790557181818181,
+      "text": "up a"
+    },
+    {
+      "start": 5.805265181818181,
+      "end": 6.658181181818182,
+      "text": "mountain road."
+    },
+    {
+      "start": 6.918155363636362,
+      "end": 7.668154363636362,
+      "text": "Lying flat a"
+    },
+    {
+      "start": 7.682863363636363,
+      "end": 8.609321363636363,
+      "text": "blade this long"
+    },
+    {
+      "start": 8.624030363636363,
+      "end": 9.550529363636365,
+      "text": "can't get around"
+    },
+    {
+      "start": 9.565196363636364,
+      "end": 10.285821363636364,
+      "text": "these bends."
+    },
+    {
+      "start": 10.545795545454544,
+      "end": 11.295794545454545,
+      "text": "So the trailer"
+    },
+    {
+      "start": 11.310503545454544,
+      "end": 11.972253545454544,
+      "text": "tilts it up"
+    },
+    {
+      "start": 11.986961545454545,
+      "end": 12.589919545454544,
+      "text": "as steep as"
+    },
+    {
+      "start": 12.604628545454544,
+      "end": 13.736961545454545,
+      "text": "sixty degrees."
+    },
+    {
+      "start": 13.996935727272726,
+      "end": 14.791059727272726,
+      "text": "At that angle"
+    },
+    {
+      "start": 14.805768727272726,
+      "end": 15.526351727272726,
+      "text": "it sticks out"
+    },
+    {
+      "start": 15.541060727272727,
+      "end": 16.114601727272728,
+      "text": "only half"
+    },
+    {
+      "start": 16.129268727272727,
+      "end": 16.746934727272727,
+      "text": "as far."
+    },
+    {
+      "start": 17.00690890909091,
+      "end": 17.43336690909091,
+      "text": "And it can"
+    },
+    {
+      "start": 17.44807490909091,
+      "end": 18.18340790909091,
+      "text": "swing the blade"
+    },
+    {
+      "start": 18.19807490909091,
+      "end": 19.345157909090908,
+      "text": "sideways to clear"
+    },
+    {
+      "start": 19.359866909090908,
+      "end": 20.50690790909091,
+      "text": "cliffs and trees."
+    },
+    {
+      "start": 20.766882090909093,
+      "end": 21.41392309090909,
+      "text": "Some of these"
+    },
+    {
+      "start": 21.42863209090909,
+      "end": 22.39921509090909,
+      "text": "blades are almost"
+    },
+    {
+      "start": 22.41392309090909,
+      "end": 23.04629809090909,
+      "text": "as long as"
+    },
+    {
+      "start": 23.06100709090909,
+      "end": 24.06100709090909,
+      "text": "a football field."
+    },
+    {
+      "start": 24.320981272727273,
+      "end": 25.320980272727272,
+      "text": "The truck crawls"
+    },
+    {
+      "start": 25.335689272727272,
+      "end": 26.10039727272727,
+      "text": "along at about"
+    },
+    {
+      "start": 26.11510627272727,
+      "end": 26.89448027272727,
+      "text": "twelve miles"
+    },
+    {
+      "start": 26.909231272727272,
+      "end": 27.423897272727274,
+      "text": "an hour."
+    },
+    {
+      "start": 27.683871454545454,
+      "end": 28.125078454545452,
+      "text": "And if the"
+    },
+    {
+      "start": 28.139746454545453,
+      "end": 29.022121454545452,
+      "text": "wind blows over"
+    },
+    {
+      "start": 29.03682945454545,
+      "end": 29.91916245454545,
+      "text": "twenty miles an"
+    },
+    {
+      "start": 29.933871454545454,
+      "end": 30.316245454545452,
+      "text": "hour the"
+    },
+    {
+      "start": 30.33091245454545,
+      "end": 31.227995454545454,
+      "text": "trip stops."
+    },
+    {
+      "start": 31.487969636363637,
+      "end": 32.44384363636364,
+      "text": "Tilting the blade"
+    },
+    {
+      "start": 32.53209463636364,
+      "end": 33.38501063636364,
+      "text": "means the mountain"
+    },
+    {
+      "start": 33.399719636363635,
+      "end": 34.311510636363636,
+      "text": "roads don't have"
+    },
+    {
+      "start": 34.32621963636364,
+      "end": 35.13501063636364,
+      "text": "to be rebuilt."
+    },
+    {
+      "start": 35.39498481818182,
+      "end": 35.96848381818182,
+      "text": "That's why you"
+    },
+    {
+      "start": 35.98323481818182,
+      "end": 36.51265081818182,
+      "text": "might meet a"
+    },
+    {
+      "start": 36.527317818181814,
+      "end": 37.880275818181815,
+      "text": "wind turbine blade"
+    },
+    {
+      "start": 37.89498481818182,
+      "end": 38.46852581818182,
+      "text": "pointing at"
+    },
+    {
+      "start": 38.48323481818182,
+      "end": 39.04202581818182,
+      "text": "the sky."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.4364321818181813,
+      "narration_en": "Why is this truck holding a giant blade up at the sky?",
+      "source_audio_sha256": "2ae7b04e9500821362983020514dca798546fce6af824974e06e91668e2425de"
+    },
+    {
+      "start": 3.4364321818181813,
+      "end": 6.858155363636363,
+      "narration_en": "It's carrying a wind turbine blade up a mountain road.",
+      "source_audio_sha256": "4139dcec277147e564132097ce7f73138eff3c089ac3676aedc937bb04cf9207"
+    },
+    {
+      "start": 6.858155363636363,
+      "end": 10.485795545454543,
+      "narration_en": "Lying flat a blade this long can't get around these bends.",
+      "source_audio_sha256": "3540cd7d438d1486d0b49a091cdb983a8d47c06e45e336113b7fdd3e7965df6f"
+    },
+    {
+      "start": 10.485795545454543,
+      "end": 13.936935727272726,
+      "narration_en": "So the trailer tilts it up as steep as sixty degrees.",
+      "source_audio_sha256": "f7acefdc28c92b18d569b48ddaefbdcaa867c62ab561502ac4c8dc04beac9f30"
+    },
+    {
+      "start": 13.936935727272726,
+      "end": 16.946908909090908,
+      "narration_en": "At that angle it sticks out only half as far.",
+      "source_audio_sha256": "c9ee55311afc7b2785e90df954ac968e42ebbb169810125cd4c7dbee5ddb16a8"
+    },
+    {
+      "start": 16.946908909090908,
+      "end": 20.70688209090909,
+      "narration_en": "And it can swing the blade sideways to clear cliffs and trees.",
+      "source_audio_sha256": "4ff4beeb60a4a88adfb6a2554e7e95017e257d1ede0d3d33ddbc69241937bb37"
+    },
+    {
+      "start": 20.70688209090909,
+      "end": 24.26098127272727,
+      "narration_en": "Some of these blades are almost as long as a football field.",
+      "source_audio_sha256": "ecef16c740e2920b169e990adcc5a060373599109762faae83a22f854dab635e"
+    },
+    {
+      "start": 24.26098127272727,
+      "end": 27.62387145454545,
+      "narration_en": "The truck crawls along at about twelve miles an hour.",
+      "source_audio_sha256": "d3e7285b1d6b7169ed786d179de984aa8c0090903c7e24d0e72f39d2fee184b4"
+    },
+    {
+      "start": 27.62387145454545,
+      "end": 31.427969636363635,
+      "narration_en": "And if the wind blows over twenty miles an hour the trip stops.",
+      "source_audio_sha256": "fc0e9988c378198b1b04d1d0b1f411b58366fb8d083f627d50db4431ae9d3fcf"
+    },
+    {
+      "start": 31.427969636363635,
+      "end": 35.334984818181816,
+      "narration_en": "Tilting the blade means the mountain roads don't have to be rebuilt.",
+      "source_audio_sha256": "e8c4e2f7545da1bfcda4e964bd2ac19ffc1f5b361274bf3565369fecbd907ef7"
+    },
+    {
+      "start": 35.334984818181816,
+      "end": 39.242,
+      "narration_en": "That's why you might meet a wind turbine blade pointing at the sky.",
+      "source_audio_sha256": "dd4597ba17805aac18e1899e4225320bc750a2431be5142fe644f69582aa33f3"
+    }
+  ],
+  "silence_gaps": [
+    0.369417,
+    0.400458,
+    0.396271,
+    0.381917,
+    0.407542,
+    0.392792,
+    0.383417,
+    0.399062,
+    0.394021,
+    0.401583
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.6,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.7,
+      -16.8,
+      -16.2,
+      -16.0,
+      -16.4,
+      -15.6,
+      -16.3
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "0bb6e88378e5d02c38d6c8d18ad22226dd661df4b7f5f980079813eec0524ee2"
+}
