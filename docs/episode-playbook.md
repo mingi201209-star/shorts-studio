@@ -24,6 +24,12 @@ structure.
 - [ ] About 100 words, 8-9 lines; target 30-36 s at 160-200 words a minute (speaking rate +3 %).
 - [ ] Every number comes from the model or from common reference values; write the claims check in the publish kit.
 - [ ] Avoid a comma right after a line's first word ("And close, a..." merged into one word and failed the timing check, EP.12).
+- [ ] Show exactly what each line says (owner rule 2026-11-25, after EP.29: "almost as long as a football field" was shown as the
+      rig in the valley, with no football field). For every line, write the shot that makes the sentence literally visible, part by
+      part: a comparison names its object, so the object is on screen next to the subject (a football field under the blade); a number
+      of degrees is drawn as the angle being swept; "built into the street" shows the nozzles in the street, not a town from 40 m up;
+      "in the 1960s" looks like the past. A line with two halves gets a cut at the word where the picture must change. Captions are the
+      only text, so numbers come from the shot itself (the angle, the length against the field) and the caption.
 
 ## 3. Narration (first: its timing sets every cut)
 ```
@@ -54,6 +60,8 @@ Set up Blender if the container is fresh: `scripts/episode/setup_blender.sh`. Re
 python3 scripts/episode/contact_sheet.py frames <dir> 0,30,90,... <dir>/sheet.png
 ```
 Check every frame against this list (each item is a mistake that happened):
+- [ ] Read each line next to its shot: could a viewer with the sound off point at what the sentence is about? If not, change the shot
+      (owner rule 2026-11-25; see section 2).
 - [ ] The key subject is big: at least a third of the frame width in close shots (EP.14 burst and ball were too small at first).
 - [ ] Nothing in front of it: mirrors, posts, pillars, nozzle rows (EP.14 mirror over the burst; EP.13 post over the rail end; EP.14
       furnace pipes).

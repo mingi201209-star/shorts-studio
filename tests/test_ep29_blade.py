@@ -41,6 +41,9 @@ def test_cameras_clear_of_the_land_the_trees_and_the_rig():
     for f in range(0, tl.frame_count(), 3):
         sh = tl.frame_state(f, segs)
         x, y, z = tl.cam_world(sh)
+        if sh.get("field"):                                                    # the comparison set: flat park, checked below
+            assert z > 10.0
+            continue
         d, _ = rw.signed_offset(np.array([[x, y]]))
         d = float(d[0])
         ground = float(rw.ground_z(np.array([d]), np.array([x]), np.array([y]))[0])
@@ -51,3 +54,14 @@ def test_cameras_clear_of_the_land_the_trees_and_the_rig():
         assert np.min(np.linalg.norm(pts - np.array([x, y, z]), axis=1)) > 3.0, f"frame {f} camera in the blade"
         p, _ = m.at(tl.rig_s(sh))
         assert math.dist((x, y), (p[0], p[1])) > 4.0 or z > 8.0, f"frame {f} camera in the rig"
+
+
+def test_football_field_comparison():
+    assert abs(m.FIELD_PLAY - 300 * m.FT) < 1e-6 and 0 < m.FIELD_PLAY - m.L_BLADE < 10.0      # the tip ends about 7 yards short
+    segs = tl.segments()
+    g = [s for s in segs if s["label"].startswith("G-")][0]
+    assert g["flags"].get("field") and sum(1 for s in segs if s["flags"].get("field")) == 1
+    fx, fy = tl.FIELD
+    for f in range(int(g["t0"] * tl.FPS) + 1, int(g["t1"] * tl.FPS)):
+        x, y, z = tl.frame_state(f, segs)["cam"]["loc"]
+        assert abs(x - fx) < 30 and y < fy - m.FIELD_LONG / 2 - 10 and z > 30, f"frame {f}: camera not behind the end zone"

@@ -99,7 +99,8 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
             problems.append(f"frame {fr['frame']}: the rig's place differs from the model")
         if abs(p["alpha"] - a) > tol or abs(p["psi"] - ps) > tol:
             problems.append(f"frame {fr['frame']}: the blade's tilt or swing differs from the model")
-        if p["ghost"] != bool(sh.get("ghost")) or p["wind"] != bool(sh.get("wind")) or p["flat_only"] != bool(sh.get("flat_only")):
+        if p["ghost"] != bool(sh.get("ghost")) or p["wind"] != bool(sh.get("wind")) or p["flat_only"] != bool(sh.get("flat_only")) \
+                or p.get("field", False) != bool(sh.get("field")):
             problems.append(f"frame {fr['frame']}: the comparison or the wind differ from the timeline")
         if len(problems) > 5:
             break
@@ -109,7 +110,9 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
 def visible_action(frames: list[dict]) -> dict:
     """Frame 1: the blade raised high and swung in the sharp bend; then the mountain road from the air, the flat blade hanging off a
     bend, the blade tilting up, side by side with the flat one, swinging, passing over the rock cut and the trees, the whole rig, the
-    rig crawling on, stopped in a gale, the bend with the road as it is; the loop runs into the opening's moment."""
+    rig crawling on, stopped in a gale, the bend with the road as it is; the loop runs into the opening's moment. The "football field"
+    line shows the blade lying on a football field, root on one goal line, tip just short of the other (owner rule 2026-11-25: show
+    exactly what each line says)."""
     by = {}
     for fr in frames:
         by.setdefault(fr["segment"], []).append(fr["parts"][0])
@@ -135,6 +138,9 @@ def visible_action(frames: list[dict]) -> dict:
     f2 = by.get("F2-clears-cliffs-trees", [])
     if not f2 or min(bm.clearance(p["s"], "lifted")[1] for p in f2) < 1.0:
         problems.append("the blade does not pass clear over the rock and the trees")
+    g = by.get("G-football-field-long", [])
+    if not g or not all(p.get("field") for p in g) or not all(0.0 < p["blade_vs_field"]["tip_short_m"] < 0.15 * bm.FIELD_PLAY for p in g):
+        problems.append("the blade is not shown lying on a football field, just short of its length")
     h = by.get("H-twelve-mph", [])
     if not h or h[-1]["s"] - h[0]["s"] < 10:
         problems.append("the rig is not seen crawling along")

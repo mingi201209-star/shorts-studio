@@ -209,6 +209,101 @@ class Rig:
         return {"s": round(s, 4), "x": round(float(p[0]), 4), "y": round(float(p[1]), 4), "heading": round(h, 5), "alpha": round(a, 5), "psi": round(ps, 5)}
 
 
+class FootballField:
+    """The comparison set for "almost as long as a football field": an American football field (no numbers or any other text) on a
+    park far off the map, stands along both sidelines, light towers, yellow goal posts; the same 85 m blade lies on transport saddles
+    with its root on one goal line, its tip 7 yards short of the other."""
+
+    def __init__(self):
+        FX, FY = tl.FIELD
+        W, L, P = bm.FIELD_WIDE, bm.FIELD_LONG, bm.FIELD_PLAY
+        self.objs = []
+        own = self.objs.append
+        m = bpy.data.materials.new("Football turf")
+        m.use_nodes = True
+        N = Nodes(m.node_tree)
+        bsdf = m.node_tree.nodes.get("Principled BSDF")
+        pos = N.new("ShaderNodeNewGeometry").outputs["Position"]
+        x, y, _ = N.xyz(pos)
+        ly = N.math("SUBTRACT", y, FY)
+        ay = N.math("ABSOLUTE", ly)
+        stripe = N.math("LESS_THAN", N.math("FRACT", N.math("DIVIDE", N.math("ADD", ly, 50 * bm.YD), 5 * bm.YD)), 0.5)
+        grass = N.mix(stripe, (0.10, 0.30, 0.07), (0.14, 0.38, 0.09))
+        endzone = N.math("MULTIPLY", N.math("GREATER_THAN", ay, P / 2), N.math("LESS_THAN", ay, L / 2))
+        inside = N.math("LESS_THAN", N.math("ABSOLUTE", N.math("SUBTRACT", x, FX)), W / 2)
+        col = N.mix(N.math("MULTIPLY", endzone, inside), grass, (0.06, 0.12, 0.38))
+        N.put(bsdf.inputs["Base Color"], col)
+        bsdf.inputs["Roughness"].default_value = 0.85
+        own(K.cube("Football turf", (FX, FY, -0.03), (W + 14.0, L + 14.0, 0.06), m))
+        park = material("Park grass", (0.16, 0.30, 0.09), rough=0.95)
+        own(K.cube("Park around the field", (FX, FY, -0.12), (4000.0, 4000.0, 0.1), park))
+        white = material("Field paint", (0.92, 0.92, 0.90), rough=0.6)
+        lines = []
+        for k in range(21):                                                    # yard lines every 5 yards, goal line to goal line
+            yy = FY - P / 2 + k * 5 * bm.YD
+            lines.append(((FX, yy, 0.006), (W, 0.40 if k in (0, 20) else 0.28, 0.012)))
+        for sx in (-1, 1):
+            lines.append(((FX + sx * (W / 2 + 0.3), FY, 0.006), (0.6, L + 1.2, 0.012)))           # sidelines
+            lines.append(((FX, FY + sx * (L / 2 + 0.3), 0.006), (W + 1.2, 0.6, 0.012)))           # end lines
+        for k in range(1, 100):                                                # hash marks every yard
+            if k % 5 == 0:
+                continue
+            yy = FY - P / 2 + k * bm.YD
+            for xx in (-3.08, 3.08, -(W / 2 - 0.6), W / 2 - 0.6):
+                lines.append(((FX + xx, yy, 0.006), (0.6, 0.12, 0.012)))
+        own(K.boxes("Field lines", lines, white))
+        yellow = material("Goal posts", (1.0, 0.78, 0.05), metal=0.3, rough=0.4)
+        posts = []
+        for sy in (-1, 1):
+            ye = FY + sy * L / 2
+            posts.append(((FX, ye + sy * 1.2, 1.6), (0.3, 0.3, 3.2)))
+            posts.append(((FX, ye + sy * 0.6, 3.05), (0.25, 1.4, 0.25)))
+            posts.append(((FX, ye, 3.05), (5.64, 0.22, 0.22)))
+            for sx in (-1, 1):
+                posts.append(((FX + sx * 2.82, ye, 3.05 + 4.6), (0.18, 0.18, 9.2)))
+        own(K.boxes("Goal posts", posts, yellow))
+        conc = material("Stands concrete", (0.55, 0.55, 0.56), rough=0.8)
+        seats = material("Stand seats", (0.12, 0.22, 0.48), rough=0.6)
+        steps, chairs = [], []
+        for sx in (-1, 1):
+            for r in range(8):
+                xx = FX + sx * (W / 2 + 9.0 + r * 1.1)
+                steps.append(((xx, FY, 0.3 + r * 0.55), (1.1, 100.0, 0.6 + r * 1.1)))
+                chairs.append(((xx - sx * 0.25, FY, 0.68 + r * 0.55 * 2), (0.4, 98.0, 0.25)))
+        own(K.boxes("Stands", steps, conc))
+        own(K.boxes("Stand seats", chairs, seats))
+        mast = material("Light towers", (0.6, 0.6, 0.62), metal=0.6, rough=0.4)
+        lamps = material("Floodlights", (1.0, 0.97, 0.9), rough=0.4, emission=3.0)
+        towers, heads = [], []
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                cx, cy = FX + sx * (W / 2 + 22.0), FY + sy * (L / 2 - 4.0)
+                towers.append(((cx, cy, 16.0), (0.8, 0.8, 32.0)))
+                heads.append(((cx, cy, 32.5), (4.0, 0.6, 2.0)))
+        own(K.boxes("Light towers", towers, mast))
+        own(K.boxes("Floodlights", heads, lamps))
+        co, faces, mi = blade_geom()
+        self.blade = rr.np_mesh("Blade on the field", co, faces, [material("Blade white (field)", (0.90, 0.91, 0.90), rough=0.35),
+                                                                  material("Blade red tip (field)", (0.75, 0.06, 0.04), rough=0.4),
+                                                                  material("Blade flange (field)", (0.45, 0.46, 0.48), metal=0.8, rough=0.35)], mi, smooth=True)
+        self.root_y = FY - P / 2
+        self.blade.location = (FX - 9.0, self.root_y, 1.95)
+        own(self.blade)
+        steel = material("Saddle steel", (0.30, 0.31, 0.33), metal=0.7, rough=0.4)
+        saddles = []
+        for u, top in ((0.02, 0.35), (0.45, 1.35), (0.75, 1.65)):
+            saddles.append(((FX - 9.0, self.root_y + u * bm.L_BLADE, top / 2), (4.6, 1.2, top)))
+        own(K.boxes("Transport saddles", saddles, steel))
+        self.show(False)
+
+    def show(self, on):
+        for ob in self.objs:
+            ob.hide_render = not on
+
+    def tip_short_of_goal_m(self):
+        return round(bm.FIELD_PLAY - bm.L_BLADE, 3)
+
+
 class Wind:
     """Leaves streaking past and a windsock standing out, for the wind shot only."""
 
@@ -295,6 +390,7 @@ def main():
     rr.build_ridges()
     rig = Rig(car_root)
     wind = Wind()
+    field = FootballField()
     cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
     scene.collection.objects.link(cam)
     scene.camera = cam
@@ -304,8 +400,9 @@ def main():
     def render(sh, path):
         scene.render.resolution_x, scene.render.resolution_y = round(FRAME[0] * args.res_scale), round(FRAME[1] * args.res_scale)
         t = sh["t"]
-        flags = {k: sh.get(k) for k in ("ghost", "wind", "flat_only")}
+        flags = {k: sh.get(k) for k in ("ghost", "wind", "flat_only", "field")}
         st = rig.set(t, sh["film_t"], flags)
+        field.show(bool(flags["field"]))
         cm = sh["cam"]
         o = Vector((st["x"], st["y"], 0.0)) if cm["rel"] == "rig" else Vector((0.0, 0.0, 0.0))
         loc, tgt = o + Vector(cm["loc"]), o + Vector(cm["target"])
@@ -325,6 +422,7 @@ def main():
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         return {"t": round(t, 6), **st, "ghost": bool(flags["ghost"]), "wind": bool(flags["wind"]), "flat_only": bool(flags["flat_only"]), "leaves": leaves,
+                "field": bool(flags["field"]), "blade_vs_field": {"blade_m": bm.L_BLADE, "goal_to_goal_m": round(bm.FIELD_PLAY, 3), "tip_short_m": field.tip_short_of_goal_m()},
                 "subject_box": box, "cam_world": [round(x, 3) for x in loc], "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
 
     a0, b0 = (int(x) for x in args.frames.split("-"))

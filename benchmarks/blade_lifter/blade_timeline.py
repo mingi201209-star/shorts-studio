@@ -46,8 +46,10 @@ F1 = cam(rp(150.0, -30.0, 50.0), rp(196.0, 0.0, 25.0), 26.0, 11.0)             #
 F1_B = cam(rp(157.0, -30.0, 50.0), rp(203.0, 0.0, 25.0), 26.0, 11.0)
 F2 = cam(rp(222.0, 45.0, 26.0), rp(222.0, -14.0, 18.0), 24.0, 11.0)            # over the rock cut and the trees
 F2_B = cam(rp(226.0, 44.0, 26.0), rp(226.0, -14.0, 18.0), 24.0, 11.0)
-G = cam(rp(282.0, 72.0, 16.0), rp(282.0, 0.0, 20.0), 26.0, 11.0)               # the whole rig: a blade almost as long as a football field
-G_B = cam(rp(286.0, 71.0, 16.0), rp(286.0, 0.0, 20.0), 26.0, 11.0)
+FIELD = (12000.0, 0.0)                     # an American football field far off the map (comparison set), its length along +y
+FX, FY = FIELD
+G = cam((FX + 6.0, FY - 80.0, 62.0), (FX - 3.0, FY + 4.0, 0.0), 26.0, 11.0)     # the blade lying on a football field, end zone to end zone
+G_B = cam((FX + 5.0, FY - 72.0, 56.0), (FX - 3.0, FY + 6.0, 0.0), 26.0, 11.0)
 H = cam((7.0, 30.0, 1.6), (-2.0, -6.0, 3.0), 26.0, 8.0, rel="rig")             # crawling along behind its escort
 H_B = cam((7.0, 29.0, 1.7), (-2.0, -6.0, 3.0), 26.0, 8.0, rel="rig")
 I = cam(rp(WIND_S + 28.0, -3.6, 2.0), rp(WIND_S + 5.0, 2.0, 18.0), 24.0, 11.0)  # a gale: the trip stops
@@ -65,7 +67,7 @@ ROWS = [
     ("E-half-as-far", 5, [(0.0, -9.0), (1.0, -6.0)], E, E_B, {"ghost": True}, (5,)),
     ("F1-swings-sideways", 6, [(0.0, 12.6), (1.0, 15.9)], F1, F1_B, {}, (6,)),
     ("F2-clears-cliffs-trees", 6.5, [(0.0, 20.0), (1.0, 24.0)], F2, F2_B, {}, (6,)),
-    ("G-football-field-long", 7, [(0.0, 26.0), (1.0, 30.0)], G, G_B, {}, (7,)),
+    ("G-football-field-long", 7, [(0.0, 26.0), (1.0, 30.0)], G, G_B, {"field": True}, (7,)),
     ("H-twelve-mph", 8, [(0.0, 26.0), (1.0, 30.0)], H, H_B, {}, (8,)),
     ("I-wind-stops-it", 9, [(0.0, 40.0), (1.0, 44.0)], I, I_B, {"wind": True}, (9,)),
     ("J-roads-not-rebuilt", 10, [(0.0, -1.0), (1.0, 5.0)], J, J_B, {}, (10,)),

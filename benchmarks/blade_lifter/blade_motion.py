@@ -36,6 +36,10 @@ RIG_MASS = 95000.0                      # tractor, lifter trailer and blade
 HALF_TRACK = 1.4
 TREE_TOP = 16.0                         # trees' height above the ground beside the road (for the clearance check)
 FOOTBALL_FT = 300.0                     # goal line to goal line
+YD = 0.9144
+FIELD_PLAY = 100 * YD                   # goal line to goal line (m)
+FIELD_LONG = 120 * YD                   # end line to end line, with both end zones
+FIELD_WIDE = 160 * 0.3048               # sideline to sideline (160 ft)
 
 
 @lru_cache(maxsize=None)
