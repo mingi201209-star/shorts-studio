@@ -42,6 +42,11 @@ the nineteen sixties") is drawn as old sepia film with a vignette (gated: warm a
 line 7 ("the snow falls near freezing") shows snow falling past a thermometer whose red column stops at the blue freezing mark
 (no numbers). The v1 CI film (all gates passed) is superseded.
 
+v2 local low-res run (whole film re-rendered): every gate PASS (906 frames, 37.75 s). The new vintage_look gate first failed on a
+wrong measure (plain saturation: a sepia night street is still 0.48 saturated in its dark parts); it now checks that every
+coloured pixel has one warm hue (the hues' weighted mean resultant length: 1.000 for the sepia shot, at most 0.985 for the colour
+shots, whose lamps make some of them warm). CI v2: (to be recorded)
+
 ## Audience data
 (to be recorded at 48 h and 7 days)
 

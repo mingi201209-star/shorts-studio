@@ -176,17 +176,19 @@ def visible_action(frames: list[dict]) -> dict:
 
 
 def vintage_look(frames_dir: Path, segs: list[dict]) -> dict:
-    """The "nineteen sixties" shot reads as old film (warm and nearly colourless); the shots on either side keep their colour."""
+    """The "nineteen sixties" shot reads as old sepia film: every coloured pixel has the same warm hue (the hues' mean resultant length,
+    weighted by saturation x value, at least 0.995 and the mean hue orange, 15-50 degrees); the colour shots are measured for the
+    record (a night street's lamps make some of them warm, but never one single hue)."""
     problems, rows = [], []
     for s in segs:
         f = int((s["t0"] + s["t1"]) / 2 * tl.FPS)
-        a = np.asarray(Image.open(frames_dir / f"frame_{f + 1:04d}.png").convert("RGB"), dtype=np.float32)
-        mx, mn = a.max(axis=2), a.min(axis=2)
-        sat = float(np.mean((mx - mn) / np.maximum(mx, 1.0)))
-        warm = float(np.mean(a[..., 0]) - np.mean(a[..., 2]))
+        a = np.asarray(Image.open(frames_dir / f"frame_{f + 1:04d}.png").convert("HSV"), dtype=np.float32) / 255.0
+        wgt = a[..., 1] * a[..., 2]
+        z = np.sum(wgt * np.exp(2j * np.pi * a[..., 0])) / max(float(np.sum(wgt)), 1e-9)
+        r, hue = float(abs(z)), float(np.angle(z) / (2 * np.pi) % 1.0 * 360.0)
         old = bool(s["flags"].get("vintage"))
-        rows.append({"segment": s["label"], "saturation": round(sat, 3), "warm": round(warm, 1), "vintage": old})
-        if old and not (sat < 0.45 and warm > 15.0):
+        rows.append({"segment": s["label"], "one_hue": round(r, 4), "hue_deg": round(hue, 1), "vintage": old})
+        if old and not (r >= 0.995 and 15.0 <= hue <= 50.0):
             problems.append(f"{s['label']} does not read as old sepia film")
     if not any(r["vintage"] for r in rows):
         problems.append("no shot is marked as the past")
