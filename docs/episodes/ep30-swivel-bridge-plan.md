@@ -40,7 +40,9 @@ degrees at the end (gated: the drawn angle equals the model's turn on every fram
 
 v2 local low-res run (whole film re-rendered with the swept angle): every gate PASS (944 frames, 39.3 s, 19.8 cuts/min, the deck
 64% of the width in the first second, mix -15.1 LUFS, speech 10.2 dB over the effects; visible_action checks the drawn angle).
-CI v2: (to be recorded)
+CI v2 run 45705745880: every gate PASS, preview_status PASS (944 frames, 39.3 s, the deck 64% of the width in the first second, mix
+-15.1 LUFS, speech 10.2 dB over the effects), renderer source sha256 7ec3a8ff..., film sha256 4c76a35b...; copied to
+ep05-review/EP30-swivel-bridge.mp4 (git-ignored).
 
 ## Audience data
 (to be recorded at 48 h and 7 days)
