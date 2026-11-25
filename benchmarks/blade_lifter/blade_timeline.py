@@ -38,12 +38,12 @@ B = cam(rp(245.0, 60.0, 70.0), rp(215.0, -10.0, 15.0), 28.0, 11.0)             #
 B_B = cam(rp(252.0, 58.0, 68.0), rp(222.0, -10.0, 15.0), 28.0, 11.0)
 C = cam(rp(128.0, 14.0, 92.0), rp(129.0, 14.0, 0.0), 24.0, 11.0)             # from above: lying flat, it hangs off the bend into the trees
 C_B = cam(rp(131.0, 14.0, 90.0), rp(132.0, 14.0, 0.0), 24.0, 11.0)
-D = cam(rp(38.0, 48.0, 10.0), rp(38.0, 0.0, 22.0), 26.0, 11.0)               # the trailer tilts the blade up to 60 degrees
-D_B = cam(rp(46.0, 47.0, 11.0), rp(46.0, 0.0, 24.0), 26.0, 11.0)
+D = cam(rp(-52.0, 100.0, 20.0), rp(-48.0, 0.0, 30.0), 32.0, 11.0)             # the trailer tilts the blade up from 35 to 58 degrees
+D_B = cam(rp(-46.0, 98.0, 21.0), rp(-43.0, 0.0, 33.0), 32.0, 11.0)
 E = cam(rp(92.0, 75.0, 18.0), rp(92.0, 0.0, 20.0), 26.0, 11.0)               # side by side: tilted, it sticks out half as far
 E_B = cam(rp(94.0, 74.0, 18.0), rp(94.0, 0.0, 20.0), 26.0, 11.0)
-F1 = cam(rp(166.0, 1.0, 13.0), rp(214.0, -2.0, 28.0), 26.0, 11.0)             # behind the rig: it swings the blade toward the road ahead
-F1_B = cam(rp(174.0, 1.0, 13.0), rp(220.0, -2.0, 28.0), 26.0, 11.0)
+F1 = cam(rp(150.0, -30.0, 50.0), rp(196.0, 0.0, 25.0), 26.0, 11.0)             # behind the rig: it swings the blade toward the road ahead
+F1_B = cam(rp(157.0, -30.0, 50.0), rp(203.0, 0.0, 25.0), 26.0, 11.0)
 F2 = cam(rp(222.0, 45.0, 26.0), rp(222.0, -14.0, 18.0), 24.0, 11.0)            # over the rock cut and the trees
 F2_B = cam(rp(226.0, 44.0, 26.0), rp(226.0, -14.0, 18.0), 24.0, 11.0)
 G = cam(rp(282.0, 72.0, 16.0), rp(282.0, 0.0, 20.0), 26.0, 11.0)               # the whole rig: a blade almost as long as a football field
@@ -61,9 +61,9 @@ ROWS = [
     ("A1-blade-at-the-sky", 1, [(0.0, OPEN_SIM), (1.0, 22.0)], A1, A1_B, {}, (1,)),                     # held through line 1
     ("B-mountain-road", 2, [(0.0, 24.0), (1.0, 30.0)], B, B_B, {}, (2,)),
     ("C-flat-would-hit", 3, [(0.0, 1.0), (1.0, 4.0)], C, C_B, {"ghost": True, "flat_only": True}, (3,)),
-    ("D-tilts-to-60", 4, [(0.0, -17.0), (1.0, -8.0)], D, D_B, {}, (4,)),
+    ("D-tilts-to-60", 4, [(0.0, -32.2), (1.0, -30.2)], D, D_B, {}, (4,)),
     ("E-half-as-far", 5, [(0.0, -9.0), (1.0, -6.0)], E, E_B, {"ghost": True}, (5,)),
-    ("F1-swings-sideways", 6, [(0.0, 15.5), (1.0, 20.0)], F1, F1_B, {}, (6,)),
+    ("F1-swings-sideways", 6, [(0.0, 12.6), (1.0, 15.9)], F1, F1_B, {}, (6,)),
     ("F2-clears-cliffs-trees", 6.5, [(0.0, 20.0), (1.0, 24.0)], F2, F2_B, {}, (6,)),
     ("G-football-field-long", 7, [(0.0, 26.0), (1.0, 30.0)], G, G_B, {}, (7,)),
     ("H-twelve-mph", 8, [(0.0, 26.0), (1.0, 30.0)], H, H_B, {}, (8,)),

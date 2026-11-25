@@ -37,4 +37,5 @@ the rig).
 (to be recorded at 48 h and 7 days)
 
 ## Preview
-(local low-res run and CI to be recorded)
+Local low-res run (whole film, 162x288 at 3 samples, 4 shards): every gate PASS (948 frames, 39.5 s, pace 18.2 cuts/min at 193 wpm, opening shot 3.44 s with the subject 100% in frame and 48% of the width, mix -15.2 LUFS, speech 15.7 dB over the effects). The first run failed visible_action twice: the D shot sat where the blade was already at 58-60 degrees (no tilt seen) and F1 where the swing had nearly reached its 20 degree stop (4.5 degrees seen). D now runs where the rig leaves the straight before the sharp bend (37 -> 58 degrees, seen from 100 m across the valley so the whole blade is in frame) and F1 where the swing starts (1 -> 18 degrees, from behind and above); those 128 frames were re-rendered and the gates re-run.
+CI: (to be recorded)
