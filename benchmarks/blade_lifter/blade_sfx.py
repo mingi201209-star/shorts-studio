@@ -1,5 +1,6 @@
 """EP.29 sound design (pure numpy, deterministic), built like EP.13-EP.28's: every sound is placed from the model and the timeline.
 - the mountain in the morning: wind in the trees, birds; in the wind shot a gale with gusts howling past the raised blade;
+- the football-field comparison: a referee's whistle, birds; no rig sounds;
 - the rig: the tractor's diesel at a crawl (louder near the camera), the trailer's many tyres on the asphalt, the lifter's hydraulic
   whine while the blade tilts or swings (from blade_motion's tilt and swing rates), a soft creak from the blade;
 - a whoosh on every cut and a quiet low pulse.
@@ -71,8 +72,15 @@ def render_sfx(n_samples: int, narration: np.ndarray | None = None) -> tuple[np.
         bed[i0:i1] += db(-28) * near * rate * (0.6 * whine + _band_noise(n, 500, 3000, rng))
         if rate.max() > 0.3:
             ev(s["t0"] + float(np.argmax(rate > 0.3)) / SR, "lifter hydraulics", s["label"])
-        for _ in range(int((s["t1"] - s["t0"]) * 0.5)):
-            _place(hits, s["t0"] + rng.uniform(0, s["t1"] - s["t0"]), creak(rng), db(-34))
+        if s["flags"].get("field"):                                         # the football field: a referee's whistle, no rig
+            m_ = int(0.55 * SR)
+            tw = np.arange(m_) / SR
+            whistle = np.sin(2 * np.pi * np.cumsum(2900.0 + 60.0 * np.sign(np.sin(2 * np.pi * 28 * tw))) / SR) * _env(m_, 0.01, 0.08)
+            _place(hits, s["t0"] + 0.35, whistle, db(-24))
+            ev(s["t0"] + 0.35, "referee's whistle", s["label"])
+        else:
+            for _ in range(int((s["t1"] - s["t0"]) * 0.5)):
+                _place(hits, s["t0"] + rng.uniform(0, s["t1"] - s["t0"]), creak(rng), db(-34))
         if wind:
             gust = 0.6 + 0.4 * np.sin(2 * np.pi * 0.35 * seg_t) ** 2
             howl = np.sin(2 * np.pi * np.cumsum(420.0 + 120.0 * np.sin(2 * np.pi * 0.35 * seg_t)) / SR)

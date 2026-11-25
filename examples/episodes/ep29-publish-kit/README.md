@@ -38,5 +38,9 @@ blade lifter, wind turbine blade transport, wind turbine, oversize load, mountai
   the hillside; tilted and swung it stays at least 18 m above them; at the wind limit the wind's push on the raised blade is about
   40 % of what holds the rig upright, and a gust twice as strong would be enough to tip it.
 
+## v2
+The football-field line shows the blade lying on an American football field, root on one goal line, tip 7 yards short of the
+other (85 m against 91.4 m goal line to goal line). Upload v2 (ep05-review/EP29-blade-lifter-v2.mp4) instead of v1.
+
 ## Not verified
 The sound mix and voice by ear, readability with the sound off, a human first view.

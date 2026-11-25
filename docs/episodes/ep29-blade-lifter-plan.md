@@ -33,6 +33,14 @@ gale), sound blade_sfx.py, assembly assemble_blade_film.py, CI .github/workflows
 examples/experiments/blade-film-request.json), tests tests/test_ep29_blade.py (incl. no camera in the land, the trees, the blade or
 the rig).
 
+## v2 (owner feedback 2026-11-25)
+"축구장 만큼 길다 하는데 그럼 축구장이 나와서 직접 비교해보는 걸로" (it says as long as a football field, so show a football field and
+compare directly), then the standing rule: show exactly what each line says (docs/episode-playbook.md, section 2). Line 7 now
+shows the same 85 m blade lying on transport saddles on an American football field (no numbers or other text: yard lines every 5
+yards, hash marks, blue end zones, yellow goal posts, stands and light towers), its root on one goal line and its tip 7 yards short
+of the other, seen from high behind the end zone; a referee's whistle in the sound. Gate: visible_action checks the field is shown
+and the tip ends short of the far goal line. The other ten lines were checked against their shots and already show what they say.
+
 ## Audience data
 (to be recorded at 48 h and 7 days)
 
