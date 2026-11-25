@@ -1,0 +1,64 @@
+{
+ "variants": [
+  {
+   "id": "swivel",
+   "beats": [
+    {
+     "narration_en": "Why is this giant bridge spinning above a railway?",
+     "start": 0.0,
+     "end": 4.4
+    },
+    {
+     "narration_en": "It's a road bridge in China that was built beside the tracks.",
+     "start": 4.4,
+     "end": 10.3
+    },
+    {
+     "narration_en": "Trains can't stop for long so it's built first and turned into place.",
+     "start": 10.3,
+     "end": 16.7
+    },
+    {
+     "narration_en": "The whole bridge sits on one giant ball joint in its pier.",
+     "start": 16.7,
+     "end": 22.6
+    },
+    {
+     "narration_en": "It weighs forty-six thousand tons and is almost nine hundred feet long.",
+     "start": 22.6,
+     "end": 28.5
+    },
+    {
+     "narration_en": "Then it slowly turns on that one joint.",
+     "start": 28.5,
+     "end": 32.4
+    },
+    {
+     "narration_en": "It swung fifty-two degrees in sixty-eight minutes.",
+     "start": 32.4,
+     "end": 35.8
+    },
+    {
+     "narration_en": "That's about eight times slower than a clock's minute hand.",
+     "start": 35.8,
+     "end": 40.7
+    },
+    {
+     "narration_en": "The railway gave the builders a window of under two hours.",
+     "start": 40.7,
+     "end": 46.1
+    },
+    {
+     "narration_en": "And trains were rolling underneath again soon after.",
+     "start": 46.1,
+     "end": 50.0
+    },
+    {
+     "narration_en": "That's why some bridges in China are built sideways and then spun into place.",
+     "start": 50.0,
+     "end": 56.9
+    }
+   ]
+  }
+ ]
+}
