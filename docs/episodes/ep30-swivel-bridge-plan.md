@@ -38,6 +38,10 @@ Every line was checked against its shot. Changed: line 7 ("it swung fifty-two de
 the bridge sweeps from above, two translucent gold sectors growing from where each half of the deck started to where it is, 52.4
 degrees at the end (gated: the drawn angle equals the model's turn on every frame). The earlier CI run of v1 was cancelled.
 
+v2 local low-res run (whole film re-rendered with the swept angle): every gate PASS (944 frames, 39.3 s, 19.8 cuts/min, the deck
+64% of the width in the first second, mix -15.1 LUFS, speech 10.2 dB over the effects; visible_action checks the drawn angle).
+CI v2: (to be recorded)
+
 ## Audience data
 (to be recorded at 48 h and 7 days)
 
