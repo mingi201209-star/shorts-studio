@@ -45,7 +45,9 @@ line 7 ("the snow falls near freezing") shows snow falling past a thermometer wh
 v2 local low-res run (whole film re-rendered): every gate PASS (906 frames, 37.75 s). The new vintage_look gate first failed on a
 wrong measure (plain saturation: a sepia night street is still 0.48 saturated in its dark parts); it now checks that every
 coloured pixel has one warm hue (the hues' weighted mean resultant length: 1.000 for the sepia shot, at most 0.985 for the colour
-shots, whose lamps make some of them warm). CI v2: (to be recorded)
+shots, whose lamps make some of them warm). CI v2 run 45709593854: every gate PASS incl. vintage_look (one hue 0.9999),
+preview_status PASS (906 frames, 37.75 s, the subject 52% of the width in the first second, mix -15.1 LUFS, speech 15.1 dB over the
+effects), renderer source sha256 d4eaa3cd..., film sha256 95fa3570...; copied to ep05-review/EP31-snowmelt-road.mp4 (git-ignored).
 
 ## Audience data
 (to be recorded at 48 h and 7 days)
