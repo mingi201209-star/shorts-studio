@@ -7,11 +7,24 @@ A '|' in the text breaks the line; the last line is drawn in the accent colour."
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 SIZE = (1280, 720)
-FONT = "/usr/share/fonts/opentype/inter/InterDisplay-Black.otf"
+FONTS = ("/usr/share/fonts/opentype/inter/InterDisplay-Black.otf",         # the committed thumbnails used this one
+         "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf")
+
+
+def heavy_font(size: int):
+    """The heaviest installed font of the list; Pillow's built-in font if none is installed (CI runners)."""
+    for path in FONTS:
+        if Path(path).exists():
+            return ImageFont.truetype(path, size)
+    return ImageFont.load_default(size)
+
+
 WHITE, ACCENT, INK = (255, 255, 255), (255, 214, 0), (10, 10, 10)
 
 
@@ -29,7 +42,7 @@ def grade(im: Image.Image) -> Image.Image:
 
 def headline(im: Image.Image, text: str, corner: str = "tl", height_px: int = 118) -> Image.Image:
     lines = text.split("|")
-    font = ImageFont.truetype(FONT, height_px)
+    font = heavy_font(height_px)
     d = ImageDraw.Draw(im)
     stroke = max(6, height_px // 11)
     gap = int(height_px * 0.12)
