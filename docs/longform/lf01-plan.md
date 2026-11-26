@@ -27,4 +27,5 @@ frames, each episode's physics gate, lines shown, no scene text, no black frames
 examples/experiments/lf01-film-request.json. Publish kit: examples/longform/lf01-publish-kit/README.md.
 
 ## Preview
-(local preview at every 8th frame and CI to be recorded)
+Local preview (every 8th frame of every shot at 288x162, 3 samples; the frames between held): every gate PASS but smoothness, which needs every frame and runs in CI (7391 frames, 307.96 s, 87 shots, all seven episodes' physics gates PASS, every line starts on its planned shot, mix -14.3 LUFS, true peak -1.4 dBFS, speech 14.6 dB over the effects). The first run's true peak read -0.9 dBFS over the -1.0 limit; the limiter now aims at -2.0 dB (inter-sample peaks).
+CI: (to be recorded)

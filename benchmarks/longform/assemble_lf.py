@@ -122,13 +122,13 @@ def mix(narr: np.ndarray, fx: np.ndarray, out: Path, lay: dict, sfx_gain_db: flo
     peak = np.max(np.abs(fx)) + 1e-9
     if peak > db(-3):
         fx *= db(-3) / peak
-    m = limit(narr + db(sfx_gain_db) * fx)
+    m = limit(narr + db(sfx_gain_db) * fx, ceiling_db=-2.0)
     write_wav(out / "mix.wav", m)
     for _ in range(3):
         i_lufs, _tp = lufs(out / "mix.wav")
         if abs(i_lufs - target_lufs) < 0.3:
             break
-        m = limit(m * db(target_lufs - i_lufs), ceiling_db=-1.5)
+        m = limit(m * db(target_lufs - i_lufs), ceiling_db=-2.0)          # inter-sample peaks read up to ~1 dB over the ceiling
         write_wav(out / "mix.wav", m)
     i_lufs, tp = lufs(out / "mix.wav")
     worst = 99.0
