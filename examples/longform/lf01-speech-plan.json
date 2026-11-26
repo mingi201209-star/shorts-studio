@@ -1,0 +1,414 @@
+{
+ "variants": [
+  {
+   "id": "lf01_intro",
+   "beats": [
+    {
+     "narration_en": "Every day, roads catch things that are completely out of control.",
+     "start": 0.0,
+     "end": 5.42
+    },
+    {
+     "narration_en": "A car crossing into oncoming traffic.",
+     "start": 5.42,
+     "end": 8.74
+    },
+    {
+     "narration_en": "A twenty-ton boulder falling toward the road.",
+     "start": 8.74,
+     "end": 12.48
+    },
+    {
+     "narration_en": "Even a jet that couldn't stop in time.",
+     "start": 12.48,
+     "end": 16.64
+    },
+    {
+     "narration_en": "Stopping them is easy. Stopping them without hurting anyone is the hard part.",
+     "start": 16.64,
+     "end": 22.9
+    },
+    {
+     "narration_en": "Here are seven clever ways engineers do it, and the one trick almost all of them share.",
+     "start": 22.9,
+     "end": 30.84
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch1",
+   "beats": [
+    {
+     "narration_en": "Number one: the end of a guardrail.",
+     "start": 0.0,
+     "end": 3.74
+    },
+    {
+     "narration_en": "A plain rail end is dangerous.",
+     "start": 3.74,
+     "end": 7.06
+    },
+    {
+     "narration_en": "Hit it head on and it doesn't give way. It spears right into the cabin.",
+     "start": 7.06,
+     "end": 14.16
+    },
+    {
+     "narration_en": "So the end gets a steel head that slides down the rail.",
+     "start": 14.16,
+     "end": 20.0
+    },
+    {
+     "narration_en": "Inside, it squeezes the rail flat and bends it away in a long steel ribbon.",
+     "start": 20.0,
+     "end": 27.1
+    },
+    {
+     "narration_en": "Crushing steel takes a huge force, and that force is what slows the car.",
+     "start": 27.1,
+     "end": 33.78
+    },
+    {
+     "narration_en": "The posts near the end snap off, so nothing snags the wheels.",
+     "start": 33.78,
+     "end": 39.62
+    },
+    {
+     "narration_en": "Sixty to zero in about two car lengths, and the cabin is untouched.",
+     "start": 39.62,
+     "end": 45.88
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch2",
+   "beats": [
+    {
+     "narration_en": "Number two: three thin steel cables.",
+     "start": 0.0,
+     "end": 3.32
+    },
+    {
+     "narration_en": "A car that crosses the median is headed straight into oncoming traffic.",
+     "start": 3.32,
+     "end": 9.16
+    },
+    {
+     "narration_en": "So three steel ropes are strung tight between flimsy posts.",
+     "start": 9.16,
+     "end": 14.16
+    },
+    {
+     "narration_en": "When a car hits them, the posts just fold over.",
+     "start": 14.16,
+     "end": 19.16
+    },
+    {
+     "narration_en": "The cables stretch back like a slingshot, about eight feet.",
+     "start": 19.16,
+     "end": 24.16
+    },
+    {
+     "narration_en": "That long stretch slows the car gently instead of stopping it dead.",
+     "start": 24.16,
+     "end": 30.0
+    },
+    {
+     "narration_en": "Then the tension steers it back along the median, away from the other lanes.",
+     "start": 30.0,
+     "end": 36.68
+    },
+    {
+     "narration_en": "It's not a wall. It's a giant steel net.",
+     "start": 36.68,
+     "end": 41.26
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch3",
+   "beats": [
+    {
+     "narration_en": "Number three: a guardrail that spins.",
+     "start": 0.0,
+     "end": 3.32
+    },
+    {
+     "narration_en": "It's a rolling barrier made in South Korea for dangerous curves.",
+     "start": 3.32,
+     "end": 8.74
+    },
+    {
+     "narration_en": "Hit a plain steel rail and it scrapes and drags at the car.",
+     "start": 8.74,
+     "end": 15.0
+    },
+    {
+     "narration_en": "These rollers are barrels of tough foam on steel posts.",
+     "start": 15.0,
+     "end": 20.0
+    },
+    {
+     "narration_en": "When a car slides into them, they spin instead of scraping.",
+     "start": 20.0,
+     "end": 25.42
+    },
+    {
+     "narration_en": "The foam squashes to soak up the hit.",
+     "start": 25.42,
+     "end": 29.58
+    },
+    {
+     "narration_en": "And the spinning turns part of the crash into rotation.",
+     "start": 29.58,
+     "end": 34.58
+    },
+    {
+     "narration_en": "So the car keeps rolling forward and is steered back toward its lane.",
+     "start": 34.58,
+     "end": 40.84
+    },
+    {
+     "narration_en": "One version passed a sixty-two mile an hour crash test for American roads.",
+     "start": 40.84,
+     "end": 47.1
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch4",
+   "beats": [
+    {
+     "narration_en": "Number four: the police spike strip.",
+     "start": 0.0,
+     "end": 3.32
+    },
+    {
+     "narration_en": "A blowout at sixty could flip the car right over.",
+     "start": 3.32,
+     "end": 8.32
+    },
+    {
+     "narration_en": "So every spike is a hollow steel tube with a sharp tip.",
+     "start": 8.32,
+     "end": 14.16
+    },
+    {
+     "narration_en": "As the tire rolls across, the tubes punch into the tread.",
+     "start": 14.16,
+     "end": 19.58
+    },
+    {
+     "narration_en": "Then they snap off the strip and stay stuck in the rubber.",
+     "start": 19.58,
+     "end": 25.42
+    },
+    {
+     "narration_en": "Air leaks out through each tube, like breathing through a straw.",
+     "start": 25.42,
+     "end": 30.84
+    },
+    {
+     "narration_en": "The tire goes flat in about half a minute, instead of bursting.",
+     "start": 30.84,
+     "end": 36.68
+    },
+    {
+     "narration_en": "So the car slows down on its own, still steering straight.",
+     "start": 36.68,
+     "end": 42.1
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch5",
+   "beats": [
+    {
+     "narration_en": "Number five does the opposite of a gentle stop.",
+     "start": 0.0,
+     "end": 4.58
+    },
+    {
+     "narration_en": "At secure gates, a steel wall can jump out of the road in about a second.",
+     "start": 4.58,
+     "end": 12.1
+    },
+    {
+     "narration_en": "Under the road, a hinged steel plate waits inside a concrete pit.",
+     "start": 12.1,
+     "end": 17.94
+    },
+    {
+     "narration_en": "Hydraulic pistons swing its front edge up, nearly three feet high.",
+     "start": 17.94,
+     "end": 23.36
+    },
+    {
+     "narration_en": "A car that hits it doesn't just bounce off the steel.",
+     "start": 23.36,
+     "end": 28.78
+    },
+    {
+     "narration_en": "Thick struts push the crash down into tons of buried concrete.",
+     "start": 28.78,
+     "end": 34.2
+    },
+    {
+     "narration_en": "So the car stops dead, and its back end flips into the air.",
+     "start": 34.2,
+     "end": 40.46
+    },
+    {
+     "narration_en": "Tested ones can stop a fifteen thousand pound truck going fifty.",
+     "start": 40.46,
+     "end": 45.88
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch6",
+   "beats": [
+    {
+     "narration_en": "Number six: catching a twenty-ton boulder.",
+     "start": 0.0,
+     "end": 3.32
+    },
+    {
+     "narration_en": "Mountain roads hang steel nets on the slopes above them.",
+     "start": 3.32,
+     "end": 8.32
+    },
+    {
+     "narration_en": "The net is woven from steel rings, like chain mail.",
+     "start": 8.32,
+     "end": 13.32
+    },
+    {
+     "narration_en": "When a rock hits, the net doesn't try to stop it dead.",
+     "start": 13.32,
+     "end": 19.16
+    },
+    {
+     "narration_en": "It stretches like a trampoline, more than twenty feet.",
+     "start": 19.16,
+     "end": 23.74
+    },
+    {
+     "narration_en": "And the ropes that hold it pull through brake rings.",
+     "start": 23.74,
+     "end": 28.74
+    },
+    {
+     "narration_en": "These steel loops shrink and bend, turning the speed into heat.",
+     "start": 28.74,
+     "end": 34.16
+    },
+    {
+     "narration_en": "A slow stop keeps the forces low, so nothing snaps.",
+     "start": 34.16,
+     "end": 39.16
+    },
+    {
+     "narration_en": "The biggest nets stop twenty tons at sixty miles an hour.",
+     "start": 39.16,
+     "end": 44.58
+    },
+    {
+     "narration_en": "Afterward, crews clear the rock and replace the brakes.",
+     "start": 44.58,
+     "end": 49.16
+    }
+   ]
+  },
+  {
+   "id": "lf01_ch7",
+   "beats": [
+    {
+     "narration_en": "And number seven: stopping a jet.",
+     "start": 0.0,
+     "end": 3.32
+    },
+    {
+     "narration_en": "Sometimes a jet can't stop and runs off the end of the runway.",
+     "start": 3.32,
+     "end": 9.58
+    },
+    {
+     "narration_en": "So many airports add a bed of crushable concrete blocks.",
+     "start": 9.58,
+     "end": 14.58
+    },
+    {
+     "narration_en": "It looks like pavement, but it's light and full of bubbles.",
+     "start": 14.58,
+     "end": 20.0
+    },
+    {
+     "narration_en": "Under the weight of a plane, the blocks crush.",
+     "start": 20.0,
+     "end": 24.58
+    },
+    {
+     "narration_en": "The tires sink in, like driving into deep sand.",
+     "start": 24.58,
+     "end": 29.16
+    },
+    {
+     "narration_en": "Every block they crush takes away some of the speed.",
+     "start": 29.16,
+     "end": 34.16
+    },
+    {
+     "narration_en": "It's built to stop a jet rolling in at eighty miles an hour.",
+     "start": 34.16,
+     "end": 40.42
+    },
+    {
+     "narration_en": "It has already stopped more than two dozen planes, with hundreds of people aboard.",
+     "start": 40.42,
+     "end": 47.1
+    },
+    {
+     "narration_en": "Afterward, crews just replace the crushed blocks.",
+     "start": 47.1,
+     "end": 50.84
+    }
+   ]
+  },
+  {
+   "id": "lf01_outro",
+   "beats": [
+    {
+     "narration_en": "Did you spot the trick they almost all share?",
+     "start": 0.0,
+     "end": 4.58
+    },
+    {
+     "narration_en": "A crash doesn't hurt because of speed. It hurts because the speed disappears too fast.",
+     "start": 4.58,
+     "end": 11.68
+    },
+    {
+     "narration_en": "So engineers stretch the stop out.",
+     "start": 11.68,
+     "end": 15.0
+    },
+    {
+     "narration_en": "Steel that crushes, cables that stretch, nets that give, and blocks that crumble.",
+     "start": 15.0,
+     "end": 21.26
+    },
+    {
+     "narration_en": "The longer the stop, the smaller the force.",
+     "start": 21.26,
+     "end": 25.42
+    },
+    {
+     "narration_en": "Subscribe for more of the hidden engineering you pass every day.",
+     "start": 25.42,
+     "end": 30.84
+    }
+   ]
+  }
+ ]
+}
