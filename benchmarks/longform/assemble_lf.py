@@ -3,7 +3,7 @@ narration blocks end to end, places each episode's own sound design under its sh
 timeline), mixes for long-form (-14 LUFS), writes the film, an .srt of the narration and the chapter list, and runs the gates. No text
 on the picture (captions go in the .srt). Never uploads.
 Usage: PYTHONPATH=$PWD python3 benchmarks/longform/assemble_lf.py --film lf01 --panels DIR --out DIR [--frames-dir DIR]
-(DIR/<episode>/... holds each episode's rendered frames and frame logs)."""
+(DIR holds every episode's rendered frames and frame logs, in any sub-folders)."""
 from __future__ import annotations
 
 import argparse
@@ -27,14 +27,16 @@ from benchmarks.road_safety.episode2_film import probe, run
 W, H = lt.FRAME
 
 
-def compose(film, lay: dict, panels: Path, out: Path) -> dict:
-    """Every final frame from its episode's rendered virtual frame (hashes checked; one renderer version per episode)."""
+def compose(film, lay: dict, panels: Path, out: Path, step: int = 1) -> dict:
+    """Every final frame from its episode's rendered virtual frame (hashes checked; one renderer version per episode). With step > 1
+    (local preview: every step-th virtual frame rendered) a missing frame holds the last rendered one of its shot. Frames are written
+    as high-quality JPEG (a long film's PNGs would not fit on a runner's disk)."""
     out.mkdir(parents=True, exist_ok=True)
     got, shas = {}, {}
     for key in lay["episodes"]:
         prefix = lt.EPISODES[key][4]
         vframes = {}
-        for js in sorted((panels / key).rglob(f"{prefix}*.json")):
+        for js in sorted(panels.rglob(f"{prefix}*.json")):
             rec = json.loads(js.read_text())
             sha = rec["renderer_source_sha256"]
             if shas.setdefault(key, sha) != sha:
@@ -45,17 +47,25 @@ def compose(film, lay: dict, panels: Path, out: Path) -> dict:
                     raise SystemExit(f"hash mismatch {path}")
                 vframes[fr["frame"]] = (path, fr)
         need = sum(s["frames"] for s in lay["episodes"][key])
-        if sorted(vframes) != list(range(need)):
+        if step == 1 and sorted(vframes) != list(range(need)):
             raise SystemExit(f"{key}: rendered {len(vframes)} of {need} virtual frames")
+        if step > 1 and not set(range(0, need, step)) <= set(vframes):
+            raise SystemExit(f"{key}: preview frames missing")
         got[key] = vframes
     telemetry = []
     for sh in lay["shots"]:
+        last = None
         for i in range(sh["frames"]):
-            path, fr = got[sh["episode"]][sh["v0"] + i]
+            v = sh["v0"] + i
+            if v in got[sh["episode"]]:
+                last = got[sh["episode"]][v]
+            elif last is None:
+                last = got[sh["episode"]][max(k for k in got[sh["episode"]] if k <= v)]
+            path, fr = last
             im = Image.open(path).convert("RGB")
             if im.size != (W, H):
                 im = im.resize((W, H), Image.LANCZOS)
-            im.save(out / f"frame_{sh['f0'] + i + 1:05d}.png")
+            im.save(out / f"frame_{sh['f0'] + i + 1:05d}.jpg", quality=95)
             if i == 0:
                 telemetry.append({"shot": sh["row"], "episode": sh["episode"], "f0": sh["f0"], "segment_rendered": fr["segment"]})
     return {"renderer_source_sha256": shas, "first_frames": telemetry}
@@ -190,7 +200,7 @@ def lines_shown(film, lay: dict) -> dict:
 def black_frames(frames_dir: Path, n: int) -> dict:
     dark = []
     for i in range(1, n + 1, 6):
-        g = np.asarray(Image.open(frames_dir / f"frame_{i:05d}.png").convert("L").resize((96, 54)), dtype=np.float32)
+        g = np.asarray(Image.open(frames_dir / f"frame_{i:05d}.jpg").convert("L").resize((96, 54)), dtype=np.float32)
         if g.mean() < 10.0:
             dark.append(i)
     return {"status": "FAIL" if dark else "PASS", "dark_frames": dark[:20]}
@@ -202,12 +212,13 @@ def main():
     p.add_argument("--panels", type=Path, required=True)
     p.add_argument("--out", type=Path, required=True)
     p.add_argument("--frames-dir", type=Path, default=None)
+    p.add_argument("--step", type=int, default=1, help="local preview: every step-th virtual frame was rendered")
     a = p.parse_args()
     film = importlib.import_module(f"benchmarks.longform.{a.film}")
     a.out.mkdir(parents=True, exist_ok=True)
     frames_dir = a.frames_dir or (a.out / "frames")
     lay = film.layout()
-    comp = compose(film, lay, a.panels, frames_dir)
+    comp = compose(film, lay, a.panels, frames_dir, a.step)
     narr, cues = narration_track(film, lay)
     fx, events = effects_track(film, lay)
     levels = mix(narr, fx, a.out, lay)
@@ -217,7 +228,7 @@ def main():
     (a.out / f"{a.film}-chapters.txt").write_text("\n".join(chap) + "\n")
     seconds = lay["frames"] / lt.FPS
     video = a.out / f"{a.film}-1920x1080.mp4"
-    run(["ffmpeg", "-v", "error", "-y", "-framerate", str(lt.FPS), "-i", str(frames_dir / "frame_%05d.png"), "-i", str(a.out / "mix.wav"),
+    run(["ffmpeg", "-v", "error", "-y", "-framerate", str(lt.FPS), "-i", str(frames_dir / "frame_%05d.jpg"), "-i", str(a.out / "mix.wav"),
          "-af", "apad", "-map", "0:v:0", "-map", "1:a:0", "-t", f"{seconds}", "-r", str(lt.FPS), "-c:v", "libx264", "-preset", "fast", "-crf", "18",
          "-pix_fmt", "yuv420p", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", video])
     if shutil.which("ffprobe"):
@@ -231,12 +242,13 @@ def main():
         "lines_shown": lines_shown(film, lay),
         "no_scene_text": no_scene_text(lay),
         "black_frames": black_frames(frames_dir, lay["frames"]),
-        "smoothness": gates.smoothness(gray_diffs(video)),
+        "smoothness": gates.smoothness(gray_diffs(video)) if a.step == 1 else {"status": "SKIPPED_PREVIEW", "step": a.step},
         "length": {"status": "PASS" if 240 <= seconds <= 600 else "FAIL", "seconds": round(seconds, 1)},
         "audio_mix": {"status": "PASS" if (-15.0 <= levels["mix_lufs"] <= -13.0 and levels["mix_true_peak_dbfs"] <= -1.0
                                            and levels["speech_over_effects_db_min"] >= 8.0) else "FAIL", **levels},
     }
-    report["preview_status"] = "PASS" if all(v["status"] in ("PASS", "AUTO_PASS_HUMAN_REVIEW_PENDING") for v in report.values() if isinstance(v, dict) and "status" in v) else "FAIL"
+    ok = ("PASS", "AUTO_PASS_HUMAN_REVIEW_PENDING") + (("SKIPPED_PREVIEW",) if a.step > 1 else ())
+    report["preview_status"] = "PASS" if all(v["status"] in ok for v in report.values() if isinstance(v, dict) and "status" in v) else "FAIL"
     report.update(renderer_source_sha256=comp["renderer_source_sha256"], chapters=chap, shots=len(lay["shots"]),
                   note="preview only: nothing uploaded; the sound mix and voice are not human-checked; a human first view UNVERIFIED")
     (a.out / f"{a.film}-report.json").write_text(json.dumps(report, indent=1, default=str))
