@@ -8,8 +8,9 @@ in half (the steel ring down into the sea bed, packed with rock) with the channe
 them after a ship knocked down its Sunshine Skyway bridge in 1980); the next teaser is in the pinned comment.
 
 Series (owner, 2026-11-26, for subscribers): part two of "Built to Get Hit"; EP.32's teaser ends on this film's opening shot and the
-line "Subscribe for part two: what stops a giant ship." This film gets its own teaser for part three (EP.34, the runaway-truck net)
-once EP.34's opening shot is rendered (benchmarks/series_tail.py); until then upload nothing.
+line "Subscribe for part two: what stops a giant ship." v2 ends with its own 3.75 s teaser for part three: EP.34's opening shot
+(the semi plowing into a steel net) and "Subscribe for part three: what catches a runaway truck." Upload the v2 file:
+ep05-review/EP33-ship-vs-bridge-dolphins-v2.mp4 (docs/episodes/ep33-dolphin-plan.md, section v2).
 
 ## Title (recommended)
 **What Stops a Giant Ship From Hitting a Bridge? 🚢**

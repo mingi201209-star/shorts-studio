@@ -38,3 +38,21 @@ CI run 45851558094 (sha 48bb125, 63 frame jobs at 720x1280 / 16 samples + final,
 dolphin-film-1080x1920.mp4 sha256 10311976d58e2bd394a1452d0446ed155b6b1730ae235c2b4c366ecd9ff2dfae (1080x1920, 752 frames,
 31.33 s), copied to ep05-review/EP33-ship-vs-bridge-dolphins.mp4. Checked at full size: frame 1, the section (215, 300), the glowing
 load path (600). Not verified: the voice and mix by ear, a human first view.
+
+## v2: the series tail (owner, 2026-11-26)
+Part two of "Built to Get Hit". After the last frame, 3.75 s of EP.34's opening shot: its clean frames 0-89, the semi plowing into
+the first net, then the cut to the mountain highway. EP.34's effects are ducked 6 dB under the line "Subscribe for part three:
+what catches a runaway truck.", captioned like the film. The loop is given up for the teaser (accepted by the owner).
+- Line frozen in examples/episodes/ep33-audio/tail/.
+- Tool: benchmarks/series_tail.py, with the CI finals of run 45851558094 (this film) and of EP.34's run 45901227006 (frames,
+  sfx.wav).
+- Every gate PASS:
+  - 842 frames, 35.083 s; the film part re-encoded once (PSNR 54.34 dB);
+  - the tail frames hash-checked as EP.34's (A1-net-grabs, B-mountain);
+  - the captions say exactly the line;
+  - mix -15.2 LUFS, true peak -1.7 dBFS, the line 18.5 dB over the effects;
+  - no frozen frame, no black opening.
+- Film dolphin-film-v2-1080x1920.mp4 sha256 89dce4334a91704ba77578ff5d62fec46cc9c347e584c24d757b56aa0728c8a8, copied to
+  ep05-review/EP33-ship-vs-bridge-dolphins-v2.mp4 (upload this one).
+- Not verified: the tail's sound by ear.
+

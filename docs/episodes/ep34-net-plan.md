@@ -71,3 +71,14 @@ Local low-res (818 frames at 162x288, 3 samples, composed to 1080x1920): every g
 - loop (seam 1.43 against neighbouring steps 3.02 / 1.63), smoothness (no frozen frame), black opening, captions;
 - audio -15.2 LUFS, true peak -1.7 dBFS, speech 9.0 dB over the effects.
 The 1 fps sheet reads without sound.
+CI run 45901227006 (sha 40a155d, 69 frame jobs at 720x1280 / 16 samples + final): attempt 1 lost two shards (60-71, 624-635) to
+the runner's apt-get update (packages.microsoft.com answered 403), not to the film. The failed jobs were re-run, and the workflow
+now carries on past a failed update. Attempt 2: every gate PASS:
+- opening hook: truck 41 % of the width, all in frame;
+- audio -15.2 LUFS, true peak -1.7 dBFS, speech 9.0 dB over the effects;
+- loop seam 1.83 against neighbouring steps 3.73 / 1.95; no frozen frame.
+Film net-film-1080x1920.mp4 sha256 2229a3bbc3ac12243d18588497ea87876ba86ca09e9f38207018254fc6f8fef8 (1080x1920, 818 frames,
+34.083 s), copied to ep05-review/EP34-runaway-truck-nets.mp4. Checked at full size: frame 1, the coils in the cut wall (300), the
+tape through the pins (420), the driver behind the windshield (590). Not verified: the voice and mix by ear, a human first view.
+Its first 90 frames (clean) are EP.33's part-three teaser (docs/episodes/ep33-dolphin-plan.md, v2).
+
