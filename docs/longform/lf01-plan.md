@@ -40,4 +40,10 @@ rollers mid-frame and leaves on the far side (low-res check: every frame differs
 test_roller_crash_test_shot_shows_the_car_from_its_first_frame, which fails on the old camera).
 CI run 2: the workflow can now re-render only some shards on top of an earlier run (request: frames_run + rerender {episode: [[first,
 last]]}); the 5 roller shards covering virtual frames 772-916 are rendered again, the other 203 reused from run 1 (same renderer
-sources, resolution and samples). Result: (to be recorded)
+sources, resolution and samples). Result: run 45817850400 (sha 4eaf532, 5 frame jobs + final, 45 min): every gate PASS:
+frames 7391 / 307.96 s complete, all seven physics gates, every line on its planned shot, no scene text, no dark frames, smoothness
+0 frozen frames (median change 1.37), length 308 s, mix -14.3 LUFS, true peak -1.4 dBFS, speech 14.6 dB over the effects. The crash-test
+shot now opens with the car on the left, hits the rollers mid-frame and leaves on the right. Film lf01-1920x1080.mp4 sha256
+a4cd9eebae5248c0ab6505f6dc4ca6a1fc70ef6c0a76d03d3ee594ab97dec21f (h264 1920x1080 24 fps, AAC 48 kHz, 240 MB), with lf01.srt and
+lf01-chapters.txt; copied to ep05-review/LF01-roads-stop-runaways.mp4 (+ .en.srt, chapters, thumbnails). Not verified: the voice and
+mix by ear, a human first view.
