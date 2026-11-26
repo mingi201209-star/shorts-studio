@@ -33,4 +33,8 @@ bow) was wider than any portrait frame, 55 % in frame. The subject is now the co
 12 m): 100 % in frame and 75 % of the width in the first second (frames 0, 12 and 23 checked). Physics, pace 19.1 cuts a minute /
 195 wpm / 31.3 s, line alignment, telemetry, visible action, no scene text, loop, smoothness, black opening, captions and audio
 (-15.2 LUFS, true peak -1.9 dBFS, speech 9.1 dB over the effects) PASS. The 1 fps sheet reads without sound.
-CI: (to be recorded).
+CI run 45851558094 (sha 48bb125, 63 frame jobs at 720x1280 / 16 samples + final, 36 min): every gate PASS (opening hook: subject
+100 % in frame, 75 % of the width; audio -15.2 LUFS, true peak -1.9 dBFS, speech 9.0 dB over the effects). Film
+dolphin-film-1080x1920.mp4 sha256 10311976d58e2bd394a1452d0446ed155b6b1730ae235c2b4c366ecd9ff2dfae (1080x1920, 752 frames,
+31.33 s), copied to ep05-review/EP33-ship-vs-bridge-dolphins.mp4. Checked at full size: frame 1, the section (215, 300), the glowing
+load path (600). Not verified: the voice and mix by ear, a human first view.
