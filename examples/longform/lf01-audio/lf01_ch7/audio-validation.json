@@ -1,0 +1,292 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 39.622,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.09125,
+      "text": "And number seven:"
+    },
+    {
+      "start": 1.46625,
+      "end": 2.450625,
+      "text": "stopping a jet."
+    },
+    {
+      "start": 2.8706375000000004,
+      "end": 4.0112625,
+      "text": "Sometimes a jet"
+    },
+    {
+      "start": 4.0268875,
+      "end": 5.0581375,
+      "text": "can't stop and"
+    },
+    {
+      "start": 5.0737625,
+      "end": 5.7612625,
+      "text": "runs off the"
+    },
+    {
+      "start": 5.7768875,
+      "end": 6.0737625,
+      "text": "end of"
+    },
+    {
+      "start": 6.0893875,
+      "end": 6.7612625,
+      "text": "the runway."
+    },
+    {
+      "start": 7.181275,
+      "end": 8.509400000000001,
+      "text": "So many airports"
+    },
+    {
+      "start": 8.525025000000001,
+      "end": 9.040650000000001,
+      "text": "add a bed"
+    },
+    {
+      "start": 9.056275000000001,
+      "end": 9.806275000000001,
+      "text": "of crushable"
+    },
+    {
+      "start": 9.821900000000001,
+      "end": 11.150025000000001,
+      "text": "concrete blocks."
+    },
+    {
+      "start": 11.5700375,
+      "end": 12.2731625,
+      "text": "It looks like"
+    },
+    {
+      "start": 12.2887875,
+      "end": 13.6012875,
+      "text": "pavement, but it's"
+    },
+    {
+      "start": 13.6169125,
+      "end": 14.7731625,
+      "text": "light and full"
+    },
+    {
+      "start": 14.7887875,
+      "end": 15.5075375,
+      "text": "of bubbles."
+    },
+    {
+      "start": 15.927549999999998,
+      "end": 16.61505,
+      "text": "Under the weight"
+    },
+    {
+      "start": 16.630675,
+      "end": 17.318175,
+      "text": "of a plane,"
+    },
+    {
+      "start": 17.6463,
+      "end": 18.7713,
+      "text": "the blocks crush."
+    },
+    {
+      "start": 19.191312500000002,
+      "end": 20.191312500000002,
+      "text": "The tires sink"
+    },
+    {
+      "start": 20.206937500000002,
+      "end": 21.503812500000002,
+      "text": "in, like driving"
+    },
+    {
+      "start": 21.519437500000002,
+      "end": 22.597562500000002,
+      "text": "into deep sand."
+    },
+    {
+      "start": 23.017575,
+      "end": 23.9707,
+      "text": "Every block they"
+    },
+    {
+      "start": 23.986325,
+      "end": 25.0332,
+      "text": "crush takes away"
+    },
+    {
+      "start": 25.048825,
+      "end": 25.37695,
+      "text": "some of"
+    },
+    {
+      "start": 25.392575,
+      "end": 26.0332,
+      "text": "the speed."
+    },
+    {
+      "start": 26.4532125,
+      "end": 27.1094625,
+      "text": "It's built to"
+    },
+    {
+      "start": 27.1250875,
+      "end": 27.9532125,
+      "text": "stop a jet"
+    },
+    {
+      "start": 27.9688375,
+      "end": 28.6719625,
+      "text": "rolling in at"
+    },
+    {
+      "start": 28.7032125,
+      "end": 29.4063375,
+      "text": "eighty miles"
+    },
+    {
+      "start": 29.4219625,
+      "end": 29.9375875,
+      "text": "an hour."
+    },
+    {
+      "start": 30.357599999999998,
+      "end": 31.076349999999998,
+      "text": "It has already"
+    },
+    {
+      "start": 31.091974999999998,
+      "end": 32.029475,
+      "text": "stopped more than"
+    },
+    {
+      "start": 32.0451,
+      "end": 33.341975,
+      "text": "two dozen planes,"
+    },
+    {
+      "start": 33.51385,
+      "end": 34.3576,
+      "text": "with hundreds of"
+    },
+    {
+      "start": 34.373225,
+      "end": 35.2326,
+      "text": "people aboard."
+    },
+    {
+      "start": 35.6526125,
+      "end": 37.4182375,
+      "text": "Afterward, crews just"
+    },
+    {
+      "start": 37.4338625,
+      "end": 38.0901125,
+      "text": "replace the"
+    },
+    {
+      "start": 38.1057375,
+      "end": 39.2619875,
+      "text": "crushed blocks."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.8106375000000003,
+      "narration_en": "And number seven: stopping a jet.",
+      "source_audio_sha256": "30f67622f0b77befedab3213f71e96763ef4cb9e90d199f2dbc495882779a66a"
+    },
+    {
+      "start": 2.8106375000000003,
+      "end": 7.121275000000001,
+      "narration_en": "Sometimes a jet can't stop and runs off the end of the runway.",
+      "source_audio_sha256": "73955b5072f2b21a61959c6a8ab2a7c10869b819b43147010b35016bc76facf6"
+    },
+    {
+      "start": 7.121275000000001,
+      "end": 11.5100375,
+      "narration_en": "So many airports add a bed of crushable concrete blocks.",
+      "source_audio_sha256": "2eec8e85bce50045b88c052d1a4eeb601c25527a790a17bafa7a97b2a849fb1f"
+    },
+    {
+      "start": 11.5100375,
+      "end": 15.867549999999998,
+      "narration_en": "It looks like pavement, but it's light and full of bubbles.",
+      "source_audio_sha256": "e4308d0641ae7079fdaecb445636edee3db568f4846367a2f9efbcff9ae0364b"
+    },
+    {
+      "start": 15.867549999999998,
+      "end": 19.1313125,
+      "narration_en": "Under the weight of a plane, the blocks crush.",
+      "source_audio_sha256": "9fd24871a3c1649a831d23fe6215bc33e0e8fe25b4e211fd34dab514ed0bdec1"
+    },
+    {
+      "start": 19.1313125,
+      "end": 22.957575,
+      "narration_en": "The tires sink in, like driving into deep sand.",
+      "source_audio_sha256": "a01247be47128ae5ac810f8b8e9b997060c817810a9e6c576a2c41be4c8e6577"
+    },
+    {
+      "start": 22.957575,
+      "end": 26.393212499999997,
+      "narration_en": "Every block they crush takes away some of the speed.",
+      "source_audio_sha256": "17dafcc6510a06b4de10c2288ebcc4c5aefcf6846d23e1591aecb466ebc30d58"
+    },
+    {
+      "start": 26.393212499999997,
+      "end": 30.297599999999996,
+      "narration_en": "It's built to stop a jet rolling in at eighty miles an hour.",
+      "source_audio_sha256": "9b1cac4c5d4ebdb9e450096606a28498fec5642c2463d906ae3c3c4aa32b6d8f"
+    },
+    {
+      "start": 30.297599999999996,
+      "end": 35.592612499999994,
+      "narration_en": "It has already stopped more than two dozen planes, with hundreds of people aboard.",
+      "source_audio_sha256": "71dc963c25bc549e828dd0a843e86ca3d4e643fba7e7761f884f9fb65f7e6d20"
+    },
+    {
+      "start": 35.592612499999994,
+      "end": 39.622,
+      "narration_en": "Afterward, crews just replace the crushed blocks.",
+      "source_audio_sha256": "53bb4e45ace247945f04c4e9d9061ee2c1ce4f919606c477a5d57298971769f9"
+    }
+  ],
+  "silence_gaps": [
+    0.314396,
+    0.580021,
+    0.5165,
+    0.57725,
+    0.431604,
+    0.55975,
+    0.317875,
+    0.553167,
+    0.571292,
+    0.573812,
+    0.568958,
+    0.554833,
+    0.351396,
+    0.313521
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.3,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -15.2,
+      -16.2,
+      -16.9,
+      -16.2,
+      -16.5,
+      -16.4,
+      -16.3
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "9de5b85e63acde4bcedffe5b27aa5e2d57d7c62a324006cca530e673dfa2b021"
+}

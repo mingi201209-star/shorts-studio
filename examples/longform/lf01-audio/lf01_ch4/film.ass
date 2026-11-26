@@ -1,0 +1,41 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:01.51,Caption,,0,0,0,,Number four: the
+Dialogue: 0,0:00:01.53,0:00:02.73,Caption,,0,0,0,,police spike strip.
+Dialogue: 0,0:00:03.15,0:00:04.06,Caption,,0,0,0,,A blowout at
+Dialogue: 0,0:00:04.07,0:00:05.35,Caption,,0,0,0,,sixty could flip
+Dialogue: 0,0:00:05.37,0:00:05.89,Caption,,0,0,0,,the car
+Dialogue: 0,0:00:05.90,0:00:06.64,Caption,,0,0,0,,right over.
+Dialogue: 0,0:00:07.06,0:00:08.27,Caption,,0,0,0,,So every spike
+Dialogue: 0,0:00:08.29,0:00:08.98,Caption,,0,0,0,,is a hollow
+Dialogue: 0,0:00:08.99,0:00:09.93,Caption,,0,0,0,,steel tube with
+Dialogue: 0,0:00:09.95,0:00:10.79,Caption,,0,0,0,,a sharp tip.
+Dialogue: 0,0:00:11.21,0:00:12.02,Caption,,0,0,0,,As the tire
+Dialogue: 0,0:00:12.04,0:00:13.54,Caption,,0,0,0,,rolls across, the
+Dialogue: 0,0:00:13.55,0:00:14.54,Caption,,0,0,0,,tubes punch into
+Dialogue: 0,0:00:14.55,0:00:15.18,Caption,,0,0,0,,the tread.
+Dialogue: 0,0:00:15.60,0:00:16.54,Caption,,0,0,0,,Then they snap
+Dialogue: 0,0:00:16.55,0:00:17.30,Caption,,0,0,0,,off the strip
+Dialogue: 0,0:00:17.36,0:00:18.30,Caption,,0,0,0,,and stay stuck
+Dialogue: 0,0:00:18.32,0:00:18.96,Caption,,0,0,0,,in the rubber.
+Dialogue: 0,0:00:19.38,0:00:20.16,Caption,,0,0,0,,Air leaks out
+Dialogue: 0,0:00:20.18,0:00:21.10,Caption,,0,0,0,,through each tube,
+Dialogue: 0,0:00:21.41,0:00:22.27,Caption,,0,0,0,,like breathing through
+Dialogue: 0,0:00:22.28,0:00:22.93,Caption,,0,0,0,,a straw.
+Dialogue: 0,0:00:23.35,0:00:24.28,Caption,,0,0,0,,The tire goes
+Dialogue: 0,0:00:24.30,0:00:25.08,Caption,,0,0,0,,flat in about
+Dialogue: 0,0:00:25.10,0:00:25.85,Caption,,0,0,0,,half a minute,
+Dialogue: 0,0:00:26.24,0:00:27.36,Caption,,0,0,0,,instead of bursting.
+Dialogue: 0,0:00:27.78,0:00:28.53,Caption,,0,0,0,,So the car
+Dialogue: 0,0:00:28.55,0:00:29.44,Caption,,0,0,0,,slows down on
+Dialogue: 0,0:00:29.45,0:00:30.47,Caption,,0,0,0,,its own, still
+Dialogue: 0,0:00:30.48,0:00:31.45,Caption,,0,0,0,,steering straight.

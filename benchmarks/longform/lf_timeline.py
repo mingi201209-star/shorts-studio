@@ -6,6 +6,7 @@ module (its segments() and frame_state() are reused unchanged), so the episode's
 from __future__ import annotations
 
 import importlib.util
+import inspect
 import json
 from pathlib import Path
 
@@ -54,9 +55,13 @@ def landscape(cam: dict, scale: float) -> dict:
 
 def episode_timeline(key: str, shots: list[dict]):
     """The episode's timeline module with its rows replaced by `shots` (each: row label, frames, optional lens_scale / cam overrides /
-    story knots), laid back to back from virtual time 0."""
+    story knots), laid back to back from virtual time 0. Where the episode times its story knots in seconds from the shot's start,
+    they are stretched to the new shot's length, so each shot still shows its whole action (the rise, the hit, the stop) whatever the
+    long film's line length."""
     mod = fresh_module(EPISODES[key][0])
     base = {r[0]: r for r in mod.ROWS}
+    own = {sg["label"]: sg["t1"] - sg["t0"] for sg in mod.segments()}
+    seconds_knots = "u * span" not in inspect.getsource(mod.segments)
     rows, starts, t = [], [], 0.0
     for i, sh in enumerate(shots, 1):
         r = list(base[sh["row"]])
@@ -70,6 +75,9 @@ def episode_timeline(key: str, shots: list[dict]):
         r[fi] = flags
         if "knots" in sh and len(r) == 8:
             r[3] = [tuple(k) for k in sh["knots"]]
+        elif len(r) == 8 and seconds_knots:
+            k = sh["frames"] / FPS / own[sh["row"]]
+            r[3] = [(round(a * k, 6), v) for a, v in r[3]]
         rows.append(tuple(r))
         starts.append(t)
         t += sh["frames"] / FPS
@@ -89,14 +97,18 @@ def resolve_cut(spec, beat: dict, cues: list[dict]) -> float:
     span = beat["end"] - beat["start"]
     if isinstance(spec, (int, float)):
         return float(spec) * span
-    _, word = spec
+    word, nth = spec[1], (spec[2] if len(spec) > 2 else 1)
+    seen = 0
     for c in cues:
         if beat["start"] - 1e-6 <= c["start"] < beat["end"] and c["text"].split()[0].strip(".,!?").lower() == word.lower():
-            return c["start"] - beat["start"]
+            seen += 1
+            if seen == nth:
+                return c["start"] - beat["start"]
     words = [w.strip(".,!?").lower() for w in beat["narration_en"].split()]
-    if word.lower() in words:
-        return span * words.index(word.lower()) / len(words)
-    raise ValueError(f"word {word!r} not in line {beat['narration_en']!r}")
+    idx = [i for i, x in enumerate(words) if x == word.lower()]
+    if len(idx) >= nth:
+        return span * idx[nth - 1] / len(words)
+    raise ValueError(f"word {word!r} (#{nth}) not in line {beat['narration_en']!r}")
 
 
 def build_layout(blocks: list[dict], audio_root: Path, tail_s: float = 0.6) -> dict:

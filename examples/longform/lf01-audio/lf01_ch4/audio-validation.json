@@ -1,0 +1,236 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 31.813,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.513125,
+      "text": "Number four: the"
+    },
+    {
+      "start": 1.52875,
+      "end": 2.731875,
+      "text": "police spike strip."
+    },
+    {
+      "start": 3.151859375,
+      "end": 4.058109375,
+      "text": "A blowout at"
+    },
+    {
+      "start": 4.073734375,
+      "end": 5.354984375,
+      "text": "sixty could flip"
+    },
+    {
+      "start": 5.370609375,
+      "end": 5.886234375,
+      "text": "the car"
+    },
+    {
+      "start": 5.901859375,
+      "end": 6.636234375,
+      "text": "right over."
+    },
+    {
+      "start": 7.056218749999999,
+      "end": 8.274968750000001,
+      "text": "So every spike"
+    },
+    {
+      "start": 8.290593750000001,
+      "end": 8.978093750000001,
+      "text": "is a hollow"
+    },
+    {
+      "start": 8.993718750000001,
+      "end": 9.931218750000001,
+      "text": "steel tube with"
+    },
+    {
+      "start": 9.946843750000001,
+      "end": 10.790593750000001,
+      "text": "a sharp tip."
+    },
+    {
+      "start": 11.210578125,
+      "end": 12.023078125,
+      "text": "As the tire"
+    },
+    {
+      "start": 12.038703125,
+      "end": 13.538703125,
+      "text": "rolls across, the"
+    },
+    {
+      "start": 13.554328125,
+      "end": 14.538703125,
+      "text": "tubes punch into"
+    },
+    {
+      "start": 14.554328125,
+      "end": 15.179328125,
+      "text": "the tread."
+    },
+    {
+      "start": 15.599312499999998,
+      "end": 16.5368125,
+      "text": "Then they snap"
+    },
+    {
+      "start": 16.5524375,
+      "end": 17.3024375,
+      "text": "off the strip"
+    },
+    {
+      "start": 17.3649375,
+      "end": 18.3024375,
+      "text": "and stay stuck"
+    },
+    {
+      "start": 18.3180625,
+      "end": 18.9586875,
+      "text": "in the rubber."
+    },
+    {
+      "start": 19.378671875,
+      "end": 20.159921875,
+      "text": "Air leaks out"
+    },
+    {
+      "start": 20.175546875,
+      "end": 21.097421875,
+      "text": "through each tube,"
+    },
+    {
+      "start": 21.409921875,
+      "end": 22.269296875,
+      "text": "like breathing through"
+    },
+    {
+      "start": 22.284921875,
+      "end": 22.925546875,
+      "text": "a straw."
+    },
+    {
+      "start": 23.345531249999997,
+      "end": 24.283031249999997,
+      "text": "The tire goes"
+    },
+    {
+      "start": 24.298656249999997,
+      "end": 25.079906249999997,
+      "text": "flat in about"
+    },
+    {
+      "start": 25.095531249999997,
+      "end": 25.845531249999997,
+      "text": "half a minute,"
+    },
+    {
+      "start": 26.236156249999997,
+      "end": 27.361156249999993,
+      "text": "instead of bursting."
+    },
+    {
+      "start": 27.781140624999995,
+      "end": 28.531140624999995,
+      "text": "So the car"
+    },
+    {
+      "start": 28.546765624999995,
+      "end": 29.437390624999995,
+      "text": "slows down on"
+    },
+    {
+      "start": 29.453015624999995,
+      "end": 30.468640624999995,
+      "text": "its own, still"
+    },
+    {
+      "start": 30.484265624999995,
+      "end": 31.453015624999995,
+      "text": "steering straight."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.091859375,
+      "narration_en": "Number four: the police spike strip.",
+      "source_audio_sha256": "0737c1e69943be0a05004160add2de9b2b87d9e55fcf4c7e52a3344be094bd81"
+    },
+    {
+      "start": 3.091859375,
+      "end": 6.99621875,
+      "narration_en": "A blowout at sixty could flip the car right over.",
+      "source_audio_sha256": "b337301554c539a49211852c606ee077007443c79d7ed0b0953fcffc61b0edd8"
+    },
+    {
+      "start": 6.99621875,
+      "end": 11.150578125,
+      "narration_en": "So every spike is a hollow steel tube with a sharp tip.",
+      "source_audio_sha256": "2d0625c82e3877dbb5b9d35bff5bbc3c40d05123e42e25d97085749d7a2591b7"
+    },
+    {
+      "start": 11.150578125,
+      "end": 15.539312499999998,
+      "narration_en": "As the tire rolls across, the tubes punch into the tread.",
+      "source_audio_sha256": "2be80a413d87205204d01f935735082d30eba1931c9febeb7472a5d37b9bfaac"
+    },
+    {
+      "start": 15.539312499999998,
+      "end": 19.318671874999996,
+      "narration_en": "Then they snap off the strip and stay stuck in the rubber.",
+      "source_audio_sha256": "84973c3fc62b4930432b93bd4c20de5b6d8a0f36c31ade15b8dd3ed7b370d922"
+    },
+    {
+      "start": 19.318671874999996,
+      "end": 23.285531249999995,
+      "narration_en": "Air leaks out through each tube, like breathing through a straw.",
+      "source_audio_sha256": "cd33f182329c6db7e010832c0e3584c143e00cc89424d6d99cbe37b96f43505c"
+    },
+    {
+      "start": 23.285531249999995,
+      "end": 27.721140624999993,
+      "narration_en": "The tire goes flat in about half a minute, instead of bursting.",
+      "source_audio_sha256": "98c176870aa811f73db96422f20308477e1df2441d200333d4f9326fa8017af0"
+    },
+    {
+      "start": 27.721140624999993,
+      "end": 31.813,
+      "narration_en": "So the car slows down on its own, still steering straight.",
+      "source_audio_sha256": "e7e44db6ad7b5f069defc3198dda95e5b4f57b69dcb2223ab38e6dd663786968"
+    }
+  ],
+  "silence_gaps": [
+    0.432542,
+    0.558375,
+    0.574417,
+    0.568208,
+    0.3025,
+    0.5585,
+    0.568292,
+    0.500146,
+    0.384437,
+    0.525229,
+    0.313292
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.4,
+    "true_peak_dbfs": -1.3,
+    "shot_integrated_lufs": [
+      -15.8,
+      -16.2,
+      -16.5,
+      -15.8,
+      -16.3,
+      -16.5
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "12b668055c00aab0e5a2e7d3edee7836cc68f5ffcbb2a962abc0479c5ecf90c5"
+}

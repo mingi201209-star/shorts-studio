@@ -1,0 +1,242 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 33.997,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.685,
+      "text": "Number two: three"
+    },
+    {
+      "start": 1.700625,
+      "end": 3.02875,
+      "text": "thin steel cables."
+    },
+    {
+      "start": 3.4486875000000006,
+      "end": 4.1361875,
+      "text": "A car that"
+    },
+    {
+      "start": 4.1518125,
+      "end": 5.448687500000001,
+      "text": "crosses the median"
+    },
+    {
+      "start": 5.464312500000001,
+      "end": 6.526812500000001,
+      "text": "is headed straight"
+    },
+    {
+      "start": 6.542437500000001,
+      "end": 8.136187500000002,
+      "text": "into oncoming traffic."
+    },
+    {
+      "start": 8.556125,
+      "end": 9.649875,
+      "text": "So three steel"
+    },
+    {
+      "start": 9.6655,
+      "end": 10.57175,
+      "text": "ropes are strung"
+    },
+    {
+      "start": 10.587375,
+      "end": 11.353,
+      "text": "tight between"
+    },
+    {
+      "start": 11.368625,
+      "end": 12.57175,
+      "text": "flimsy posts."
+    },
+    {
+      "start": 12.9916875,
+      "end": 13.6791875,
+      "text": "When a car"
+    },
+    {
+      "start": 13.6948125,
+      "end": 14.6166875,
+      "text": "hits them, the"
+    },
+    {
+      "start": 14.6323125,
+      "end": 15.3354375,
+      "text": "posts just"
+    },
+    {
+      "start": 15.3510625,
+      "end": 16.1635625,
+      "text": "fold over."
+    },
+    {
+      "start": 16.5835,
+      "end": 17.786625,
+      "text": "The cables stretch"
+    },
+    {
+      "start": 17.80225,
+      "end": 18.380375,
+      "text": "back like a"
+    },
+    {
+      "start": 18.396,
+      "end": 19.86475,
+      "text": "slingshot, about"
+    },
+    {
+      "start": 19.896,
+      "end": 20.55225,
+      "text": "eight feet."
+    },
+    {
+      "start": 20.9721875,
+      "end": 22.0503125,
+      "text": "That long stretch"
+    },
+    {
+      "start": 22.0659375,
+      "end": 23.0346875,
+      "text": "slows the car"
+    },
+    {
+      "start": 23.0503125,
+      "end": 24.0815625,
+      "text": "gently instead of"
+    },
+    {
+      "start": 24.0971875,
+      "end": 25.144062499999997,
+      "text": "stopping it dead."
+    },
+    {
+      "start": 25.564,
+      "end": 26.454625,
+      "text": "Then the tension"
+    },
+    {
+      "start": 26.485875,
+      "end": 27.34525,
+      "text": "steers it back"
+    },
+    {
+      "start": 27.360875,
+      "end": 28.3765,
+      "text": "along the median,"
+    },
+    {
+      "start": 28.78275,
+      "end": 29.3765,
+      "text": "away from the"
+    },
+    {
+      "start": 29.392125,
+      "end": 30.28275,
+      "text": "other lanes."
+    },
+    {
+      "start": 30.7026875,
+      "end": 31.2339375,
+      "text": "It's not"
+    },
+    {
+      "start": 31.2495625,
+      "end": 31.6714375,
+      "text": "a wall."
+    },
+    {
+      "start": 32.1370625,
+      "end": 32.9183125,
+      "text": "It's a giant"
+    },
+    {
+      "start": 32.9339375,
+      "end": 33.6370625,
+      "text": "steel net."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.3886875000000005,
+      "narration_en": "Number two: three thin steel cables.",
+      "source_audio_sha256": "2027d52281f318ab0ad4569a4a1670ffcce67aa7280b72996d2e70929e7ee3b3"
+    },
+    {
+      "start": 3.3886875000000005,
+      "end": 8.496125,
+      "narration_en": "A car that crosses the median is headed straight into oncoming traffic.",
+      "source_audio_sha256": "25bb8692bdd3204fa3aaa0b700d695a09a61a787239e3b5f372556f0163b3a96"
+    },
+    {
+      "start": 8.496125,
+      "end": 12.931687499999999,
+      "narration_en": "So three steel ropes are strung tight between flimsy posts.",
+      "source_audio_sha256": "33eb257b951efe6c906cb6a085260608c8a18cfa0219b29be662ccf61d4539b6"
+    },
+    {
+      "start": 12.931687499999999,
+      "end": 16.5235,
+      "narration_en": "When a car hits them, the posts just fold over.",
+      "source_audio_sha256": "793e5411d3755e22f33e386cf8e04df4760508a86ccb567d75cb42e84e5204f2"
+    },
+    {
+      "start": 16.5235,
+      "end": 20.912187499999998,
+      "narration_en": "The cables stretch back like a slingshot, about eight feet.",
+      "source_audio_sha256": "c12d2c89a5281458979b422ebcfd84bf539c4023ff43393a0791b62e4a111676"
+    },
+    {
+      "start": 20.912187499999998,
+      "end": 25.503999999999998,
+      "narration_en": "That long stretch slows the car gently instead of stopping it dead.",
+      "source_audio_sha256": "9b6b5edcadb7ebbe7855f94977e5f3af6b2cb07601e05a3db82541494dc1a9f0"
+    },
+    {
+      "start": 25.503999999999998,
+      "end": 30.642687499999997,
+      "narration_en": "Then the tension steers it back along the median, away from the other lanes.",
+      "source_audio_sha256": "ba08ba9702f8956419d953fb283b8923671cb17d06df51d399433feb74488c9f"
+    },
+    {
+      "start": 30.642687499999997,
+      "end": 33.997,
+      "narration_en": "It's not a wall. It's a giant steel net.",
+      "source_audio_sha256": "3583f70da62634f36a2aa840b653404af881ce9c12976afbac6e469442d1565a"
+    }
+  ],
+  "silence_gaps": [
+    0.500167,
+    0.562833,
+    0.564125,
+    0.564812,
+    0.564917,
+    0.338562,
+    0.560104,
+    0.569104,
+    0.363063,
+    0.561875,
+    0.592729,
+    0.330917
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.6,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.0,
+      -16.0,
+      -17.4,
+      -15.3,
+      -16.2,
+      -16.0
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "0f48d1f2388164f293717371d9e4da5a427a633cb07aab3c3826e1a94cdcb170"
+}

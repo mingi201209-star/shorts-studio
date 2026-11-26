@@ -1,0 +1,49 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:01.09,Caption,,0,0,0,,And number seven:
+Dialogue: 0,0:00:01.47,0:00:02.45,Caption,,0,0,0,,stopping a jet.
+Dialogue: 0,0:00:02.87,0:00:04.01,Caption,,0,0,0,,Sometimes a jet
+Dialogue: 0,0:00:04.03,0:00:05.06,Caption,,0,0,0,,can't stop and
+Dialogue: 0,0:00:05.07,0:00:05.76,Caption,,0,0,0,,runs off the
+Dialogue: 0,0:00:05.78,0:00:06.07,Caption,,0,0,0,,end of
+Dialogue: 0,0:00:06.09,0:00:06.76,Caption,,0,0,0,,the runway.
+Dialogue: 0,0:00:07.18,0:00:08.51,Caption,,0,0,0,,So many airports
+Dialogue: 0,0:00:08.53,0:00:09.04,Caption,,0,0,0,,add a bed
+Dialogue: 0,0:00:09.06,0:00:09.81,Caption,,0,0,0,,of crushable
+Dialogue: 0,0:00:09.82,0:00:11.15,Caption,,0,0,0,,concrete blocks.
+Dialogue: 0,0:00:11.57,0:00:12.27,Caption,,0,0,0,,It looks like
+Dialogue: 0,0:00:12.29,0:00:13.60,Caption,,0,0,0,,pavement, but it's
+Dialogue: 0,0:00:13.62,0:00:14.77,Caption,,0,0,0,,light and full
+Dialogue: 0,0:00:14.79,0:00:15.51,Caption,,0,0,0,,of bubbles.
+Dialogue: 0,0:00:15.93,0:00:16.62,Caption,,0,0,0,,Under the weight
+Dialogue: 0,0:00:16.63,0:00:17.32,Caption,,0,0,0,,of a plane,
+Dialogue: 0,0:00:17.65,0:00:18.77,Caption,,0,0,0,,the blocks crush.
+Dialogue: 0,0:00:19.19,0:00:20.19,Caption,,0,0,0,,The tires sink
+Dialogue: 0,0:00:20.21,0:00:21.50,Caption,,0,0,0,,in, like driving
+Dialogue: 0,0:00:21.52,0:00:22.60,Caption,,0,0,0,,into deep sand.
+Dialogue: 0,0:00:23.02,0:00:23.97,Caption,,0,0,0,,Every block they
+Dialogue: 0,0:00:23.99,0:00:25.03,Caption,,0,0,0,,crush takes away
+Dialogue: 0,0:00:25.05,0:00:25.38,Caption,,0,0,0,,some of
+Dialogue: 0,0:00:25.39,0:00:26.03,Caption,,0,0,0,,the speed.
+Dialogue: 0,0:00:26.45,0:00:27.11,Caption,,0,0,0,,It's built to
+Dialogue: 0,0:00:27.13,0:00:27.95,Caption,,0,0,0,,stop a jet
+Dialogue: 0,0:00:27.97,0:00:28.67,Caption,,0,0,0,,rolling in at
+Dialogue: 0,0:00:28.70,0:00:29.41,Caption,,0,0,0,,eighty miles
+Dialogue: 0,0:00:29.42,0:00:29.94,Caption,,0,0,0,,an hour.
+Dialogue: 0,0:00:30.36,0:00:31.08,Caption,,0,0,0,,It has already
+Dialogue: 0,0:00:31.09,0:00:32.03,Caption,,0,0,0,,stopped more than
+Dialogue: 0,0:00:32.05,0:00:33.34,Caption,,0,0,0,,two dozen planes,
+Dialogue: 0,0:00:33.51,0:00:34.36,Caption,,0,0,0,,with hundreds of
+Dialogue: 0,0:00:34.37,0:00:35.23,Caption,,0,0,0,,people aboard.
+Dialogue: 0,0:00:35.65,0:00:37.42,Caption,,0,0,0,,Afterward, crews just
+Dialogue: 0,0:00:37.43,0:00:38.09,Caption,,0,0,0,,replace the
+Dialogue: 0,0:00:38.11,0:00:39.26,Caption,,0,0,0,,crushed blocks.

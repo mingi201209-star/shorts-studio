@@ -1,0 +1,184 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 24.798,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.52875,
+      "text": "Every day, roads"
+    },
+    {
+      "start": 1.544375,
+      "end": 2.388125,
+      "text": "catch things that"
+    },
+    {
+      "start": 2.40375,
+      "end": 3.435,
+      "text": "are completely out"
+    },
+    {
+      "start": 3.450625,
+      "end": 4.169375,
+      "text": "of control."
+    },
+    {
+      "start": 4.5893541666666655,
+      "end": 5.6518541666666655,
+      "text": "A car crossing"
+    },
+    {
+      "start": 5.6674791666666655,
+      "end": 7.1674791666666655,
+      "text": "into oncoming traffic."
+    },
+    {
+      "start": 7.587458333333332,
+      "end": 8.868708333333334,
+      "text": "A twenty-ton boulder"
+    },
+    {
+      "start": 8.884333333333334,
+      "end": 9.681208333333334,
+      "text": "falling toward"
+    },
+    {
+      "start": 9.696833333333334,
+      "end": 10.306208333333334,
+      "text": "the road."
+    },
+    {
+      "start": 10.7261875,
+      "end": 11.4918125,
+      "text": "Even a jet"
+    },
+    {
+      "start": 11.5074375,
+      "end": 12.4293125,
+      "text": "that couldn't stop"
+    },
+    {
+      "start": 12.4449375,
+      "end": 13.0699375,
+      "text": "in time."
+    },
+    {
+      "start": 13.489916666666668,
+      "end": 14.349291666666668,
+      "text": "Stopping them"
+    },
+    {
+      "start": 14.364916666666668,
+      "end": 15.036791666666668,
+      "text": "is easy."
+    },
+    {
+      "start": 15.502416666666669,
+      "end": 16.64304166666667,
+      "text": "Stopping them without"
+    },
+    {
+      "start": 16.65866666666667,
+      "end": 17.78366666666667,
+      "text": "hurting anyone is"
+    },
+    {
+      "start": 17.79929166666667,
+      "end": 18.67429166666667,
+      "text": "the hard part."
+    },
+    {
+      "start": 19.094270833333336,
+      "end": 19.906770833333336,
+      "text": "Here are seven"
+    },
+    {
+      "start": 19.922395833333336,
+      "end": 21.281770833333336,
+      "text": "clever ways engineers"
+    },
+    {
+      "start": 21.297395833333336,
+      "end": 22.203645833333336,
+      "text": "do it, and"
+    },
+    {
+      "start": 22.219270833333336,
+      "end": 22.922395833333336,
+      "text": "the one trick"
+    },
+    {
+      "start": 22.938020833333336,
+      "end": 23.734895833333333,
+      "text": "almost all of"
+    },
+    {
+      "start": 23.750520833333333,
+      "end": 24.438020833333333,
+      "text": "them share."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 4.529354166666666,
+      "narration_en": "Every day, roads catch things that are completely out of control.",
+      "source_audio_sha256": "062765e7d6c8dcc71ca2c88418b266518cd9308339fc23795e0cf13b14b5c730"
+    },
+    {
+      "start": 4.529354166666666,
+      "end": 7.527458333333333,
+      "narration_en": "A car crossing into oncoming traffic.",
+      "source_audio_sha256": "0762addbd0bbe35a444f00d97d87f64c36a07aec343fa9d21dafc6eb280b960f"
+    },
+    {
+      "start": 7.527458333333333,
+      "end": 10.6661875,
+      "narration_en": "A twenty-ton boulder falling toward the road.",
+      "source_audio_sha256": "12f3c503708864ec0d32311795c4f4b67a14211cf0617f828cd3d9dd0ad4d63b"
+    },
+    {
+      "start": 10.6661875,
+      "end": 13.429916666666667,
+      "narration_en": "Even a jet that couldn't stop in time.",
+      "source_audio_sha256": "8d222079f76ffcfcf49b1bb18f821b2e112e1d06b7020d8f876942f01ef055e6"
+    },
+    {
+      "start": 13.429916666666667,
+      "end": 19.034270833333334,
+      "narration_en": "Stopping them is easy. Stopping them without hurting anyone is the hard part.",
+      "source_audio_sha256": "118adee4af03ae9bea9dc0ef87ef15ddf398aa2d4abc7af5e538ce5632b5d176"
+    },
+    {
+      "start": 19.034270833333334,
+      "end": 24.798,
+      "narration_en": "Here are seven clever ways engineers do it, and the one trick almost all of them share.",
+      "source_audio_sha256": "8c40b01f09a490bb939434f89b7a4500cdc6b3591a2de0bf0195d9d3685786bf"
+    }
+  ],
+  "silence_gaps": [
+    0.554333,
+    0.564021,
+    0.555417,
+    0.588271,
+    0.571583,
+    0.578417,
+    0.461333,
+    0.309854
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 1.9,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.8,
+      -16.1,
+      -16.0,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "42da9e556e4efcd362072706c268f3cabe0db436e9121c870c945f5210217654"
+}

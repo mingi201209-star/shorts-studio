@@ -20,7 +20,7 @@ BLOCKS = [
         [("cable", "B-oncoming", 0)],                                                   # a car crossing into oncoming traffic
         [("rocknet", "A1-boulder-in-the-net", 0)],                                      # a twenty-ton boulder
         [("emas", "B-runs-off-the-end", 0)],                                            # a jet that couldn't stop in time
-        [("wedge", "A1-slam", 0), ("cable", "A2-slingshot", w("Stopping"))],           # stopping is easy / without hurting anyone
+        [("wedge", "A1-slam", 0), ("cable", "A2-slingshot", ("word", "Stopping", 2))],  # stopping is easy / without hurting anyone
         [("terminal", "C-steel-head", 0), ("cable", "C-ropes", 1 / 7), ("roller", "E-rollers-spin", 2 / 7), ("spike", "D-punch-into-tread", 3 / 7),
          ("wedge", "B-rises-in-a-second", 4 / 7), ("rocknet", "E-stretches-twenty-feet", 5 / 7), ("emas", "E-blocks-crush", 6 / 7)],   # seven ways
     ]},
@@ -111,7 +111,11 @@ BLOCKS = [
 ]
 
 # per (episode, row) camera adjustments for 16:9 found in the storyboard review
-OVERRIDES: dict = {}
+OVERRIDES: dict = {
+    ("wedge", "B-rises-in-a-second"): {                                            # the rising plate was below the 16:9 frame
+        "cam_a": {"rel": "world", "loc": (-0.4, 6.5, 1.5), "target": (-1.9, -1.0, 0.15), "lens": 24.0, "fstop": 5.6},
+        "cam_b": {"rel": "world", "loc": (-0.5, 6.0, 1.4), "target": (-1.9, -1.0, 0.25), "lens": 24.0, "fstop": 5.6}},
+}
 
 TITLE = "7 Clever Ways Roads Stop Things That Are Out of Control"
 CHAPTER_NAMES = {"lf01_intro": "Intro", "lf01_ch1": "1. The guardrail end that peels into a ribbon", "lf01_ch2": "2. Cable barriers",

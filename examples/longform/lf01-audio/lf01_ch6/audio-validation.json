@@ -1,0 +1,283 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 38.669,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.8725,
+      "text": "Number six: catching"
+    },
+    {
+      "start": 1.888125,
+      "end": 3.21625,
+      "text": "a twenty-ton boulder."
+    },
+    {
+      "start": 3.636275,
+      "end": 4.761275,
+      "text": "Mountain roads hang"
+    },
+    {
+      "start": 4.7769,
+      "end": 5.5894,
+      "text": "steel nets on"
+    },
+    {
+      "start": 5.605025,
+      "end": 6.18315,
+      "text": "the slopes"
+    },
+    {
+      "start": 6.198775,
+      "end": 6.730025,
+      "text": "above them."
+    },
+    {
+      "start": 7.150049999999999,
+      "end": 7.743799999999999,
+      "text": "The net is"
+    },
+    {
+      "start": 7.759424999999999,
+      "end": 8.790675,
+      "text": "woven from steel"
+    },
+    {
+      "start": 8.8063,
+      "end": 9.52505,
+      "text": "rings, like"
+    },
+    {
+      "start": 9.540675,
+      "end": 10.3063,
+      "text": "chain mail."
+    },
+    {
+      "start": 10.726325000000001,
+      "end": 11.382575000000001,
+      "text": "When a rock"
+    },
+    {
+      "start": 11.398200000000001,
+      "end": 12.632575000000001,
+      "text": "hits, the net"
+    },
+    {
+      "start": 12.648200000000001,
+      "end": 13.273200000000001,
+      "text": "doesn't try to"
+    },
+    {
+      "start": 13.288825000000001,
+      "end": 14.241950000000001,
+      "text": "stop it dead."
+    },
+    {
+      "start": 14.661975,
+      "end": 15.599475,
+      "text": "It stretches like"
+    },
+    {
+      "start": 15.6151,
+      "end": 17.036975,
+      "text": "a trampoline, more"
+    },
+    {
+      "start": 17.0526,
+      "end": 18.068225,
+      "text": "than twenty feet."
+    },
+    {
+      "start": 18.48825,
+      "end": 19.207,
+      "text": "And the ropes"
+    },
+    {
+      "start": 19.222625,
+      "end": 19.8945,
+      "text": "that hold it"
+    },
+    {
+      "start": 19.910125,
+      "end": 20.42575,
+      "text": "pull through"
+    },
+    {
+      "start": 20.441375,
+      "end": 21.3945,
+      "text": "brake rings."
+    },
+    {
+      "start": 21.814525,
+      "end": 22.76765,
+      "text": "These steel loops"
+    },
+    {
+      "start": 22.783275,
+      "end": 23.814525,
+      "text": "shrink and bend,"
+    },
+    {
+      "start": 24.1739,
+      "end": 25.033275,
+      "text": "turning the speed"
+    },
+    {
+      "start": 25.0489,
+      "end": 25.689525,
+      "text": "into heat."
+    },
+    {
+      "start": 26.10955,
+      "end": 27.093925,
+      "text": "A slow stop"
+    },
+    {
+      "start": 27.10955,
+      "end": 28.093925,
+      "text": "keeps the forces"
+    },
+    {
+      "start": 28.10955,
+      "end": 28.98455,
+      "text": "low, so"
+    },
+    {
+      "start": 29.000175,
+      "end": 30.093925,
+      "text": "nothing snaps."
+    },
+    {
+      "start": 30.513949999999998,
+      "end": 31.435824999999998,
+      "text": "The biggest nets"
+    },
+    {
+      "start": 31.451449999999998,
+      "end": 32.513949999999994,
+      "text": "stop twenty tons"
+    },
+    {
+      "start": 32.529574999999994,
+      "end": 33.607699999999994,
+      "text": "at sixty miles"
+    },
+    {
+      "start": 33.623324999999994,
+      "end": 34.138949999999994,
+      "text": "an hour."
+    },
+    {
+      "start": 34.558975,
+      "end": 36.2621,
+      "text": "Afterward, crews clear"
+    },
+    {
+      "start": 36.277725,
+      "end": 37.0121,
+      "text": "the rock and"
+    },
+    {
+      "start": 37.027725,
+      "end": 38.308975,
+      "text": "replace the brakes."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.576275,
+      "narration_en": "Number six: catching a twenty-ton boulder.",
+      "source_audio_sha256": "f662a281e9333d02fde81cf38213c5e1f180eee0daaf6be59b2a81adedf9a4b5"
+    },
+    {
+      "start": 3.576275,
+      "end": 7.09005,
+      "narration_en": "Mountain roads hang steel nets on the slopes above them.",
+      "source_audio_sha256": "fe0b9de0a5fb4b119943791000a804ccda8cea5576a49bda0c80a1249d4af370"
+    },
+    {
+      "start": 7.09005,
+      "end": 10.666325,
+      "narration_en": "The net is woven from steel rings, like chain mail.",
+      "source_audio_sha256": "1e021cdc823443fecb7e79b105cbe6af6a44ae58791a6779d5c4540633898946"
+    },
+    {
+      "start": 10.666325,
+      "end": 14.601975,
+      "narration_en": "When a rock hits, the net doesn't try to stop it dead.",
+      "source_audio_sha256": "d5c3998c1a106069331e587aa429083ee34412b7f85cebce7f6fdf078d21d650"
+    },
+    {
+      "start": 14.601975,
+      "end": 18.42825,
+      "narration_en": "It stretches like a trampoline, more than twenty feet.",
+      "source_audio_sha256": "1e7d4afe90cfd12298627bcb46f4a5c61478e82e6f98b1f6bbf0cf6a2ca83c70"
+    },
+    {
+      "start": 18.42825,
+      "end": 21.754524999999997,
+      "narration_en": "And the ropes that hold it pull through brake rings.",
+      "source_audio_sha256": "ec9436fb0592f3cb55bc629ca8f266f90154462b52981777ccfbc965deffb3c5"
+    },
+    {
+      "start": 21.754524999999997,
+      "end": 26.049549999999996,
+      "narration_en": "These steel loops shrink and bend, turning the speed into heat.",
+      "source_audio_sha256": "7ebf8c28dde9f109dac778612e7d01cd63a7ff65d3b6658e1bfbd28dcfa3c817"
+    },
+    {
+      "start": 26.049549999999996,
+      "end": 30.453949999999995,
+      "narration_en": "A slow stop keeps the forces low, so nothing snaps.",
+      "source_audio_sha256": "81cdded187670212fad4c76eeb41d1d4f3e00d8c624bc3d2af9f4bed24d55f70"
+    },
+    {
+      "start": 30.453949999999995,
+      "end": 34.498974999999994,
+      "narration_en": "The biggest nets stop twenty tons at sixty miles an hour.",
+      "source_audio_sha256": "711fd9f1bcbf6171a58af86f97f6fb197e8c9ca16f58fc09416db974e8c2221a"
+    },
+    {
+      "start": 34.498974999999994,
+      "end": 38.669,
+      "narration_en": "Afterward, crews clear the rock and replace the brakes.",
+      "source_audio_sha256": "56a82372134e78e58e6f9b75c4b4efc91d1a50bfd778d974f7627f9e169fefa7"
+    }
+  ],
+  "silence_gaps": [
+    0.565125,
+    0.540771,
+    0.555458,
+    0.346146,
+    0.564979,
+    0.358625,
+    0.568396,
+    0.557167,
+    0.367396,
+    0.554708,
+    0.340292,
+    0.590437,
+    0.563146,
+    0.309146,
+    0.307979
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.1,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -15.7,
+      -16.3,
+      -16.6,
+      -15.2,
+      -16.4,
+      -16.6,
+      -16.2
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "e948e47866df702d5bbe851fd597b17865290ea823178ba8db0c25653608b6ba"
+}

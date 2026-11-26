@@ -1,0 +1,256 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 35.344,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.21625,
+      "text": "Number five does"
+    },
+    {
+      "start": 1.231875,
+      "end": 2.231875,
+      "text": "the opposite of"
+    },
+    {
+      "start": 2.2475,
+      "end": 3.294375,
+      "text": "a gentle stop."
+    },
+    {
+      "start": 3.714328125000001,
+      "end": 4.901828125000001,
+      "text": "At secure gates,"
+    },
+    {
+      "start": 5.073703125000001,
+      "end": 5.886203125000001,
+      "text": "a steel wall"
+    },
+    {
+      "start": 5.901828125000001,
+      "end": 6.573703125000001,
+      "text": "can jump out"
+    },
+    {
+      "start": 6.589328125000001,
+      "end": 7.214328125000001,
+      "text": "of the road"
+    },
+    {
+      "start": 7.229953125000001,
+      "end": 7.604953125000001,
+      "text": "in about"
+    },
+    {
+      "start": 7.620578125000001,
+      "end": 8.261203125000002,
+      "text": "a second."
+    },
+    {
+      "start": 8.681156250000003,
+      "end": 9.649906250000003,
+      "text": "Under the road,"
+    },
+    {
+      "start": 10.103031250000003,
+      "end": 10.993656250000003,
+      "text": "a hinged steel"
+    },
+    {
+      "start": 11.009281250000003,
+      "end": 12.321781250000003,
+      "text": "plate waits inside"
+    },
+    {
+      "start": 12.337406250000003,
+      "end": 13.462406250000003,
+      "text": "a concrete pit."
+    },
+    {
+      "start": 13.882359375000002,
+      "end": 15.413609375000002,
+      "text": "Hydraulic pistons swing"
+    },
+    {
+      "start": 15.429234375000002,
+      "end": 16.116734375000004,
+      "text": "its front edge"
+    },
+    {
+      "start": 16.132359375000004,
+      "end": 17.476109375000004,
+      "text": "up, nearly three"
+    },
+    {
+      "start": 17.491734375000004,
+      "end": 18.147984375,
+      "text": "feet high."
+    },
+    {
+      "start": 18.567937500000003,
+      "end": 19.271062500000003,
+      "text": "A car that"
+    },
+    {
+      "start": 19.286687500000003,
+      "end": 20.021062500000003,
+      "text": "hits it doesn't"
+    },
+    {
+      "start": 20.036687500000003,
+      "end": 20.911687500000003,
+      "text": "just bounce off"
+    },
+    {
+      "start": 20.927312500000003,
+      "end": 21.583562500000003,
+      "text": "the steel."
+    },
+    {
+      "start": 22.003515625000006,
+      "end": 23.066015625000006,
+      "text": "Thick struts push"
+    },
+    {
+      "start": 23.081640625000006,
+      "end": 24.034765625000006,
+      "text": "the crash down"
+    },
+    {
+      "start": 24.050390625000006,
+      "end": 24.816015625000006,
+      "text": "into tons of"
+    },
+    {
+      "start": 24.831640625000006,
+      "end": 25.972265625000006,
+      "text": "buried concrete."
+    },
+    {
+      "start": 26.392218750000005,
+      "end": 27.048468750000005,
+      "text": "So the car"
+    },
+    {
+      "start": 27.064093750000005,
+      "end": 28.439093750000005,
+      "text": "stops dead, and"
+    },
+    {
+      "start": 28.454718750000005,
+      "end": 29.235968750000005,
+      "text": "its back end"
+    },
+    {
+      "start": 29.251593750000005,
+      "end": 29.767218750000005,
+      "text": "flips into"
+    },
+    {
+      "start": 29.782843750000005,
+      "end": 30.282843750000005,
+      "text": "the air."
+    },
+    {
+      "start": 30.702796875000004,
+      "end": 31.749671875000004,
+      "text": "Tested ones can"
+    },
+    {
+      "start": 31.765296875000004,
+      "end": 32.812171875000004,
+      "text": "stop a fifteen"
+    },
+    {
+      "start": 32.827796875000004,
+      "end": 34.109046875000004,
+      "text": "thousand pound truck"
+    },
+    {
+      "start": 34.124671875000004,
+      "end": 34.984046875000004,
+      "text": "going fifty."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.654328125000001,
+      "narration_en": "Number five does the opposite of a gentle stop.",
+      "source_audio_sha256": "ade624e4c918f3ee39f471b3beedff0aaa515f80f34da6184839a9f15d4f6d0b"
+    },
+    {
+      "start": 3.654328125000001,
+      "end": 8.621156250000002,
+      "narration_en": "At secure gates, a steel wall can jump out of the road in about a second.",
+      "source_audio_sha256": "7b464d170383183d468d589a6913b3926b54f77313f9a08432bd0b499dcbfbd5"
+    },
+    {
+      "start": 8.621156250000002,
+      "end": 13.822359375000001,
+      "narration_en": "Under the road, a hinged steel plate waits inside a concrete pit.",
+      "source_audio_sha256": "a3cbeb12b2f6b57277a1ef00cb2f20f35b1439bd416253a1c6ef9b7a52c0b501"
+    },
+    {
+      "start": 13.822359375000001,
+      "end": 18.5079375,
+      "narration_en": "Hydraulic pistons swing its front edge up, nearly three feet high.",
+      "source_audio_sha256": "771ae24eca3cab680caea55f152b4f7aa7df05c05df08a2359e517246fcbefd0"
+    },
+    {
+      "start": 18.5079375,
+      "end": 21.943515625000003,
+      "narration_en": "A car that hits it doesn't just bounce off the steel.",
+      "source_audio_sha256": "968b809b8c96ccebe3386c13394027fe5193c92e547b7074b80b0ef67fae85a9"
+    },
+    {
+      "start": 21.943515625000003,
+      "end": 26.332218750000003,
+      "narration_en": "Thick struts push the crash down into tons of buried concrete.",
+      "source_audio_sha256": "f173d98b52079517b93460e956aa321b07f544b8cfd05e6f27985eb30686ba6e"
+    },
+    {
+      "start": 26.332218750000003,
+      "end": 30.642796875000002,
+      "narration_en": "So the car stops dead, and its back end flips into the air.",
+      "source_audio_sha256": "2271426d8fc4ce72c0e417d0cf7661aa2ffbb0dc3c44eba7fcd4cb55489d0369"
+    },
+    {
+      "start": 30.642796875000002,
+      "end": 35.344,
+      "narration_en": "Tested ones can stop a fifteen thousand pound truck going fifty.",
+      "source_audio_sha256": "4747eb4f48152ad1cbec8ed91ad3d2f5a1877343c731429b79b00a588352a318"
+    }
+  ],
+  "silence_gaps": [
+    0.559271,
+    0.576,
+    0.415687,
+    0.583437,
+    0.405854,
+    0.500958,
+    0.643188,
+    0.562729,
+    0.380146,
+    0.573354
+  ],
+  "loudness": {
+    "integrated_lufs": -16.3,
+    "loudness_range_lu": 2.6,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.4,
+      -15.5,
+      -16.5,
+      -16.4,
+      -16.1,
+      -16.3,
+      -16.6
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "6ab9b9ea4f06d2235612401372da48b661c7d13caa6f0f400028ebaebfa34f0d"
+}

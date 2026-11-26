@@ -1,0 +1,254 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 35.732,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 1.388125,
+      "text": "Number one: the"
+    },
+    {
+      "start": 1.40375,
+      "end": 1.669375,
+      "text": "end of"
+    },
+    {
+      "start": 1.685,
+      "end": 2.4975,
+      "text": "a guardrail."
+    },
+    {
+      "start": 2.9175156250000005,
+      "end": 3.980015625000001,
+      "text": "A plain rail"
+    },
+    {
+      "start": 3.995640625000001,
+      "end": 5.198765625000001,
+      "text": "end is dangerous."
+    },
+    {
+      "start": 5.6187812500000005,
+      "end": 6.1812812500000005,
+      "text": "Hit it head"
+    },
+    {
+      "start": 6.1969062500000005,
+      "end": 7.0875312500000005,
+      "text": "on and it"
+    },
+    {
+      "start": 7.1031562500000005,
+      "end": 8.056281250000001,
+      "text": "doesn't give way."
+    },
+    {
+      "start": 8.52190625,
+      "end": 9.58440625,
+      "text": "It spears right"
+    },
+    {
+      "start": 9.60003125,
+      "end": 10.45940625,
+      "text": "into the cabin."
+    },
+    {
+      "start": 10.879421875,
+      "end": 11.566921875,
+      "text": "So the end"
+    },
+    {
+      "start": 11.582546875,
+      "end": 12.410671875,
+      "text": "gets a steel"
+    },
+    {
+      "start": 12.426296875,
+      "end": 13.363796875,
+      "text": "head that slides"
+    },
+    {
+      "start": 13.379421875,
+      "end": 14.191921875,
+      "text": "down the rail."
+    },
+    {
+      "start": 14.611937500000002,
+      "end": 16.471312500000003,
+      "text": "Inside, it squeezes"
+    },
+    {
+      "start": 16.486937500000003,
+      "end": 17.518187500000003,
+      "text": "the rail flat"
+    },
+    {
+      "start": 17.627562500000003,
+      "end": 18.174437500000003,
+      "text": "and bends it"
+    },
+    {
+      "start": 18.190062500000003,
+      "end": 18.861937500000003,
+      "text": "away in a"
+    },
+    {
+      "start": 18.877562500000003,
+      "end": 20.096312500000003,
+      "text": "long steel ribbon."
+    },
+    {
+      "start": 20.516328125,
+      "end": 21.750703125,
+      "text": "Crushing steel takes"
+    },
+    {
+      "start": 21.766328125,
+      "end": 22.938203125,
+      "text": "a huge force,"
+    },
+    {
+      "start": 23.281953125,
+      "end": 24.125703125,
+      "text": "and that force"
+    },
+    {
+      "start": 24.141328125,
+      "end": 24.985078125,
+      "text": "is what slows"
+    },
+    {
+      "start": 25.000703125,
+      "end": 25.610078125,
+      "text": "the car."
+    },
+    {
+      "start": 26.03009375,
+      "end": 26.93634375,
+      "text": "The posts near"
+    },
+    {
+      "start": 26.95196875,
+      "end": 27.79571875,
+      "text": "the end snap"
+    },
+    {
+      "start": 27.81134375,
+      "end": 29.01446875,
+      "text": "off, so nothing"
+    },
+    {
+      "start": 29.03009375,
+      "end": 30.13946875,
+      "text": "snags the wheels."
+    },
+    {
+      "start": 30.559484374999997,
+      "end": 31.762609374999997,
+      "text": "Sixty to zero"
+    },
+    {
+      "start": 31.778234374999997,
+      "end": 32.543859375,
+      "text": "in about two"
+    },
+    {
+      "start": 32.559484375,
+      "end": 33.856359375,
+      "text": "car lengths, and"
+    },
+    {
+      "start": 33.871984375,
+      "end": 34.465734375,
+      "text": "the cabin"
+    },
+    {
+      "start": 34.481359375,
+      "end": 35.371984375,
+      "text": "is untouched."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.8575156250000004,
+      "narration_en": "Number one: the end of a guardrail.",
+      "source_audio_sha256": "b94637c15def78b4b3c3caf70040dbc5831a6d59745fce6701a2a4bb407f0396"
+    },
+    {
+      "start": 2.8575156250000004,
+      "end": 5.558781250000001,
+      "narration_en": "A plain rail end is dangerous.",
+      "source_audio_sha256": "8df3596d76770511734bdc7f60cf00b434a62e6406d9f1314b3c3eb0e5da2a21"
+    },
+    {
+      "start": 5.558781250000001,
+      "end": 10.819421875,
+      "narration_en": "Hit it head on and it doesn't give way. It spears right into the cabin.",
+      "source_audio_sha256": "4e9c9ce219c1142d119ddc534cc9cab9064f3a14848a0c48bf3670d5ca9598a5"
+    },
+    {
+      "start": 10.819421875,
+      "end": 14.551937500000001,
+      "narration_en": "So the end gets a steel head that slides down the rail.",
+      "source_audio_sha256": "9916c29a0c04980d8e5bde126a7e93dd6e5f86361f8be97c410b996bc46798d5"
+    },
+    {
+      "start": 14.551937500000001,
+      "end": 20.456328125,
+      "narration_en": "Inside, it squeezes the rail flat and bends it away in a long steel ribbon.",
+      "source_audio_sha256": "a4d17bf110c6bf790c5800291833bec3e2ec10b81d50f0e6accccad775e230f1"
+    },
+    {
+      "start": 20.456328125,
+      "end": 25.970093749999997,
+      "narration_en": "Crushing steel takes a huge force, and that force is what slows the car.",
+      "source_audio_sha256": "d5b9d4d85d1ec0b81d18e7f2208167dd4f0d1f388da52a57706358162c6ed62c"
+    },
+    {
+      "start": 25.970093749999997,
+      "end": 30.499484374999994,
+      "narration_en": "The posts near the end snap off, so nothing snags the wheels.",
+      "source_audio_sha256": "5641457e8ebf6fc9ed03cdd8d49d031e6969a0e7668f1b9063f716fbaa457b29"
+    },
+    {
+      "start": 30.499484374999994,
+      "end": 35.732,
+      "narration_en": "Sixty to zero in about two car lengths, and the cabin is untouched.",
+      "source_audio_sha256": "4540643e65349a71bf53b73d3aede6db0b6fe41a1cd0c5db923dcbdf31fa30f7"
+    }
+  ],
+  "silence_gaps": [
+    0.354563,
+    0.554667,
+    0.583313,
+    0.5535,
+    0.568437,
+    0.536021,
+    0.545438,
+    0.36225,
+    0.550208,
+    0.3155,
+    0.55225,
+    0.364896,
+    0.303042
+  ],
+  "loudness": {
+    "integrated_lufs": -16.1,
+    "loudness_range_lu": 1.7,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -15.9,
+      -15.6,
+      -16.7,
+      -16.1,
+      -15.8,
+      -16.5,
+      -16.1
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "f13d081812f417e6ab904732b9e8700a42bf9657b8a23480836b7c5c207812f6"
+}

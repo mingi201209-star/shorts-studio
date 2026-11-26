@@ -1,0 +1,34 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.75,Caption,,0,0,0,,Did you spot
+Dialogue: 0,0:00:00.76,0:00:01.22,Caption,,0,0,0,,the trick they
+Dialogue: 0,0:00:01.23,0:00:02.36,Caption,,0,0,0,,almost all share?
+Dialogue: 0,0:00:02.78,0:00:03.95,Caption,,0,0,0,,A crash doesn't
+Dialogue: 0,0:00:03.96,0:00:04.65,Caption,,0,0,0,,hurt because
+Dialogue: 0,0:00:04.67,0:00:05.32,Caption,,0,0,0,,of speed.
+Dialogue: 0,0:00:05.79,0:00:06.77,Caption,,0,0,0,,It hurts because
+Dialogue: 0,0:00:06.79,0:00:08.06,Caption,,0,0,0,,the speed disappears
+Dialogue: 0,0:00:08.07,0:00:09.04,Caption,,0,0,0,,too fast.
+Dialogue: 0,0:00:09.46,0:00:10.85,Caption,,0,0,0,,So engineers stretch
+Dialogue: 0,0:00:10.87,0:00:11.65,Caption,,0,0,0,,the stop out.
+Dialogue: 0,0:00:12.07,0:00:13.47,Caption,,0,0,0,,Steel that crushes,
+Dialogue: 0,0:00:13.71,0:00:14.99,Caption,,0,0,0,,cables that stretch,
+Dialogue: 0,0:00:15.41,0:00:16.33,Caption,,0,0,0,,nets that give,
+Dialogue: 0,0:00:16.72,0:00:17.30,Caption,,0,0,0,,and blocks
+Dialogue: 0,0:00:17.32,0:00:18.00,Caption,,0,0,0,,that crumble.
+Dialogue: 0,0:00:18.42,0:00:19.10,Caption,,0,0,0,,The longer the
+Dialogue: 0,0:00:19.11,0:00:20.64,Caption,,0,0,0,,stop, the smaller
+Dialogue: 0,0:00:20.66,0:00:21.41,Caption,,0,0,0,,the force.
+Dialogue: 0,0:00:21.83,0:00:23.02,Caption,,0,0,0,,Subscribe for more
+Dialogue: 0,0:00:23.03,0:00:23.55,Caption,,0,0,0,,of the hidden
+Dialogue: 0,0:00:23.56,0:00:24.78,Caption,,0,0,0,,engineering you pass
+Dialogue: 0,0:00:24.81,0:00:25.41,Caption,,0,0,0,,every day.

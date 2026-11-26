@@ -1,0 +1,186 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 25.767,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.7474999999999999,
+      "text": "Did you spot"
+    },
+    {
+      "start": 0.7631249999999999,
+      "end": 1.21625,
+      "text": "the trick they"
+    },
+    {
+      "start": 1.231875,
+      "end": 2.356875,
+      "text": "almost all share?"
+    },
+    {
+      "start": 2.7768958333333336,
+      "end": 3.9487708333333336,
+      "text": "A crash doesn't"
+    },
+    {
+      "start": 3.9643958333333336,
+      "end": 4.651895833333334,
+      "text": "hurt because"
+    },
+    {
+      "start": 4.667520833333334,
+      "end": 5.323770833333334,
+      "text": "of speed."
+    },
+    {
+      "start": 5.789395833333333,
+      "end": 6.773770833333333,
+      "text": "It hurts because"
+    },
+    {
+      "start": 6.789395833333333,
+      "end": 8.055020833333334,
+      "text": "the speed disappears"
+    },
+    {
+      "start": 8.070645833333334,
+      "end": 9.039395833333334,
+      "text": "too fast."
+    },
+    {
+      "start": 9.459416666666668,
+      "end": 10.850041666666668,
+      "text": "So engineers stretch"
+    },
+    {
+      "start": 10.865666666666668,
+      "end": 11.646916666666668,
+      "text": "the stop out."
+    },
+    {
+      "start": 12.066937500000002,
+      "end": 13.473187500000002,
+      "text": "Steel that crushes,"
+    },
+    {
+      "start": 13.707562500000002,
+      "end": 14.988812500000002,
+      "text": "cables that stretch,"
+    },
+    {
+      "start": 15.410687500000002,
+      "end": 16.3325625,
+      "text": "nets that give,"
+    },
+    {
+      "start": 16.7231875,
+      "end": 17.3013125,
+      "text": "and blocks"
+    },
+    {
+      "start": 17.3169375,
+      "end": 18.0044375,
+      "text": "that crumble."
+    },
+    {
+      "start": 18.424458333333337,
+      "end": 19.096333333333337,
+      "text": "The longer the"
+    },
+    {
+      "start": 19.111958333333337,
+      "end": 20.643208333333337,
+      "text": "stop, the smaller"
+    },
+    {
+      "start": 20.658833333333337,
+      "end": 21.408833333333337,
+      "text": "the force."
+    },
+    {
+      "start": 21.82885416666667,
+      "end": 23.01635416666667,
+      "text": "Subscribe for more"
+    },
+    {
+      "start": 23.03197916666667,
+      "end": 23.54760416666667,
+      "text": "of the hidden"
+    },
+    {
+      "start": 23.56322916666667,
+      "end": 24.78197916666667,
+      "text": "engineering you pass"
+    },
+    {
+      "start": 24.81322916666667,
+      "end": 25.40697916666667,
+      "text": "every day."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.7168958333333335,
+      "narration_en": "Did you spot the trick they almost all share?",
+      "source_audio_sha256": "5113c01141332666ea3d899f46826f46156df55e624010795259381dee16cc92"
+    },
+    {
+      "start": 2.7168958333333335,
+      "end": 9.399416666666667,
+      "narration_en": "A crash doesn't hurt because of speed. It hurts because the speed disappears too fast.",
+      "source_audio_sha256": "49732abf7444c7f5d1f67a2bf72187224dd4d7a294879a1c2b1a764e2bb103b6"
+    },
+    {
+      "start": 9.399416666666667,
+      "end": 12.006937500000001,
+      "narration_en": "So engineers stretch the stop out.",
+      "source_audio_sha256": "d890b41ecb23f2782a06cf50516d3ae3729da157d6418369499c06ac612882e1"
+    },
+    {
+      "start": 12.006937500000001,
+      "end": 18.364458333333335,
+      "narration_en": "Steel that crushes, cables that stretch, nets that give, and blocks that crumble.",
+      "source_audio_sha256": "5687303ace95c2009ca6f03eb1236871e09bead044226971b3ed2fd3d5185d93"
+    },
+    {
+      "start": 18.364458333333335,
+      "end": 21.768854166666667,
+      "narration_en": "The longer the stop, the smaller the force.",
+      "source_audio_sha256": "98104344767e224d178a8a46b8dd9f72d49ac79d0ac1ef535be9092458848751"
+    },
+    {
+      "start": 21.768854166666667,
+      "end": 25.767,
+      "narration_en": "Subscribe for more of the hidden engineering you pass every day.",
+      "source_audio_sha256": "548b03487186e2eafa1fa548768e9bb2df2853709f41cb892b6c5f989357aef9"
+    }
+  ],
+  "silence_gaps": [
+    0.569583,
+    0.589729,
+    0.580333,
+    0.573958,
+    0.382188,
+    0.355625,
+    0.555187,
+    0.428771,
+    0.569229
+  ],
+  "loudness": {
+    "integrated_lufs": -16.1,
+    "loudness_range_lu": 1.9,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.0,
+      -16.1,
+      -15.7,
+      -16.6,
+      -16.1
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "1f876394f2b125d5f1041ca9cdd800ea2bb92fddc19408e78e5a7091e280b205"
+}
