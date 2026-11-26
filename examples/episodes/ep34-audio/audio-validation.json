@@ -1,0 +1,288 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 33.848,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.490124,
+      "text": "How do you"
+    },
+    {
+      "start": 0.503541,
+      "end": 1.215916,
+      "text": "stop a truck"
+    },
+    {
+      "start": 1.2293749999999999,
+      "end": 1.753582,
+      "text": "that's lost"
+    },
+    {
+      "start": 1.767,
+      "end": 2.439041,
+      "text": "its brakes?"
+    },
+    {
+      "start": 2.7590646666666667,
+      "end": 3.471438666666667,
+      "text": "On some steep"
+    },
+    {
+      "start": 3.484855666666667,
+      "end": 4.546688666666666,
+      "text": "mountain roads, you"
+    },
+    {
+      "start": 4.5601476666666665,
+      "end": 5.003647666666667,
+      "text": "catch it in"
+    },
+    {
+      "start": 5.017147666666667,
+      "end": 5.7966896666666665,
+      "text": "a giant net."
+    },
+    {
+      "start": 6.116713333333332,
+      "end": 7.151629333333333,
+      "text": "Steel cable nets"
+    },
+    {
+      "start": 7.165088333333332,
+      "end": 7.8505873333333325,
+      "text": "hang across the"
+    },
+    {
+      "start": 7.864004333333333,
+      "end": 8.724212333333334,
+      "text": "ramp, one"
+    },
+    {
+      "start": 8.737671333333333,
+      "end": 9.450046333333333,
+      "text": "after another."
+    },
+    {
+      "start": 9.77007,
+      "end": 10.348027,
+      "text": "Each one is"
+    },
+    {
+      "start": 10.361486000000001,
+      "end": 11.073861,
+      "text": "tied to steel"
+    },
+    {
+      "start": 11.087278000000001,
+      "end": 12.243194,
+      "text": "tape, coiled up"
+    },
+    {
+      "start": 12.256611000000001,
+      "end": 13.331903,
+      "text": "in boxes inside"
+    },
+    {
+      "start": 13.345320000000001,
+      "end": 13.92332,
+      "text": "the walls."
+    },
+    {
+      "start": 14.243343666666666,
+      "end": 14.821301666666667,
+      "text": "When the truck"
+    },
+    {
+      "start": 14.834759666666667,
+      "end": 15.842801666666666,
+      "text": "hits, the tape"
+    },
+    {
+      "start": 15.856259666666666,
+      "end": 16.555134666666667,
+      "text": "is dragged through"
+    },
+    {
+      "start": 16.568593666666665,
+      "end": 17.428843666666666,
+      "text": "pins that bend"
+    },
+    {
+      "start": 17.442259666666665,
+      "end": 17.926134666666666,
+      "text": "it back"
+    },
+    {
+      "start": 17.966468666666668,
+      "end": 18.584759666666667,
+      "text": "and forth."
+    },
+    {
+      "start": 18.904783333333334,
+      "end": 19.65749033333333,
+      "text": "Bending all that"
+    },
+    {
+      "start": 19.670908333333333,
+      "end": 20.558032333333333,
+      "text": "steel soaks up"
+    },
+    {
+      "start": 20.571449333333334,
+      "end": 21.700490333333335,
+      "text": "the speed, net"
+    },
+    {
+      "start": 21.713908333333332,
+      "end": 22.372532333333332,
+      "text": "after net."
+    },
+    {
+      "start": 22.692556,
+      "end": 23.297389,
+      "text": "The catch is"
+    },
+    {
+      "start": 23.310847,
+      "end": 24.063513999999998,
+      "text": "gentle enough to"
+    },
+    {
+      "start": 24.076971999999998,
+      "end": 25.085013999999997,
+      "text": "protect the driver."
+    },
+    {
+      "start": 25.405037666666665,
+      "end": 26.023287666666665,
+      "text": "They're built to"
+    },
+    {
+      "start": 26.036745666666665,
+      "end": 27.569036666666662,
+      "text": "stop\\Na ninety-thousand-pound"
+    },
+    {
+      "start": 27.582453666666662,
+      "end": 28.294828666666664,
+      "text": "truck at ninety"
+    },
+    {
+      "start": 28.308245666666664,
+      "end": 29.128161666666664,
+      "text": "miles an hour."
+    },
+    {
+      "start": 29.44818533333333,
+      "end": 30.37560133333333,
+      "text": "Then crews swap"
+    },
+    {
+      "start": 30.38906033333333,
+      "end": 31.18205933333333,
+      "text": "in fresh tape,"
+    },
+    {
+      "start": 31.55839333333333,
+      "end": 32.096018333333326,
+      "text": "and it's ready"
+    },
+    {
+      "start": 32.109476333333326,
+      "end": 32.72776833333333,
+      "text": "again in about"
+    },
+    {
+      "start": 32.74118533333333,
+      "end": 33.58797633333333,
+      "text": "four hours."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.6990646666666667,
+      "narration_en": "How do you stop a truck that's lost its brakes?",
+      "source_audio_sha256": "e50853c87ec129dc35bf82ae7e49f65d790e86052671cf7b12c65f47750db5a1"
+    },
+    {
+      "start": 2.6990646666666667,
+      "end": 6.056713333333333,
+      "narration_en": "On some steep mountain roads, you catch it in a giant net.",
+      "source_audio_sha256": "cc1ae3675adb1c1a845e278d74cf8b0e7721dc636490d6099aa699fdfe960626"
+    },
+    {
+      "start": 6.056713333333333,
+      "end": 9.71007,
+      "narration_en": "Steel cable nets hang across the ramp, one after another.",
+      "source_audio_sha256": "09722189a492a0a347d5d61ef8e126c345a4552ca61d76395c921af0692b449e"
+    },
+    {
+      "start": 9.71007,
+      "end": 14.183343666666666,
+      "narration_en": "Each one is tied to steel tape, coiled up in boxes inside the walls.",
+      "source_audio_sha256": "fdb7924e136dc2631f54f923326aade7f55c91d713ff50faacda29231319f7a3"
+    },
+    {
+      "start": 14.183343666666666,
+      "end": 18.844783333333332,
+      "narration_en": "When the truck hits, the tape is dragged through pins that bend it back and forth.",
+      "source_audio_sha256": "fc9442f8f76bb413e33f542376aa97bf3814d96af8263d005a27014d1f5ae6b8"
+    },
+    {
+      "start": 18.844783333333332,
+      "end": 22.632555999999997,
+      "narration_en": "Bending all that steel soaks up the speed, net after net.",
+      "source_audio_sha256": "a5009e0e44ffe87bd5e8d1ef47d607168cea015e0abd3b7ff2d28a753c2e39e3"
+    },
+    {
+      "start": 22.632555999999997,
+      "end": 25.345037666666663,
+      "narration_en": "The catch is gentle enough to protect the driver.",
+      "source_audio_sha256": "6a5354bc4828b6aa03e01a6e7225b489b47c0d21afe15cd2eb0950ea41d99ffd"
+    },
+    {
+      "start": 25.345037666666663,
+      "end": 29.38818533333333,
+      "narration_en": "They're built to stop a ninety-thousand-pound truck at ninety miles an hour.",
+      "source_audio_sha256": "390529adbd2200d0300c05bfcc55d648f6ea101c0f187353c95bf3a635e0f569"
+    },
+    {
+      "start": 29.38818533333333,
+      "end": 33.848,
+      "narration_en": "Then crews swap in fresh tape, and it's ready again in about four hours.",
+      "source_audio_sha256": "3f117df0634a60b33e3c3e4bd4423d9ddf0d723c3e9f256489f6364e8eff18f9"
+    }
+  ],
+  "silence_gaps": [
+    0.44625,
+    0.442521,
+    0.364333,
+    0.451313,
+    0.316667,
+    0.45,
+    0.4425,
+    0.339833,
+    0.447542,
+    0.458813,
+    0.456604,
+    0.357458
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.2,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -16.1,
+      -16.4,
+      -16.0,
+      -16.2,
+      -16.9,
+      -16.1
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "78e156b402218d9370bf61a5aabca3ea0260d600ad787f9408863487f2065bfc"
+}

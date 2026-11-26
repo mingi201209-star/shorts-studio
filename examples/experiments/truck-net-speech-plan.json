@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "truck_net",
+   "beats": [
+    {
+     "narration_en": "How do you stop a truck that's lost its brakes?",
+     "start": 0.0,
+     "end": 3.5
+    },
+    {
+     "narration_en": "On some steep mountain roads, you catch it in a giant net.",
+     "start": 3.5,
+     "end": 7.7
+    },
+    {
+     "narration_en": "Steel cable nets hang across the ramp, one after another.",
+     "start": 7.7,
+     "end": 11.2
+    },
+    {
+     "narration_en": "Each one is tied to steel tape, coiled up in boxes inside the walls.",
+     "start": 11.2,
+     "end": 16.0
+    },
+    {
+     "narration_en": "When the truck hits, the tape is dragged through pins that bend it back and forth.",
+     "start": 16.0,
+     "end": 21.4
+    },
+    {
+     "narration_en": "Bending all that steel soaks up the speed, net after net.",
+     "start": 21.4,
+     "end": 25.2
+    },
+    {
+     "narration_en": "The catch is gentle enough to protect the driver.",
+     "start": 25.2,
+     "end": 28.4
+    },
+    {
+     "narration_en": "They're built to stop a ninety-thousand-pound truck at ninety miles an hour.",
+     "start": 28.4,
+     "end": 32.6
+    },
+    {
+     "narration_en": "Then crews swap in fresh tape, and it's ready again in about four hours.",
+     "start": 32.6,
+     "end": 37.4
+    }
+   ]
+  }
+ ]
+}

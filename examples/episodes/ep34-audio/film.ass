@@ -1,0 +1,50 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.49,Caption,,0,0,0,,How do you
+Dialogue: 0,0:00:00.50,0:00:01.22,Caption,,0,0,0,,stop a truck
+Dialogue: 0,0:00:01.23,0:00:01.75,Caption,,0,0,0,,that's lost
+Dialogue: 0,0:00:01.77,0:00:02.44,Caption,,0,0,0,,its brakes?
+Dialogue: 0,0:00:02.76,0:00:03.47,Caption,,0,0,0,,On some steep
+Dialogue: 0,0:00:03.48,0:00:04.55,Caption,,0,0,0,,mountain roads, you
+Dialogue: 0,0:00:04.56,0:00:05.00,Caption,,0,0,0,,catch it in
+Dialogue: 0,0:00:05.02,0:00:05.80,Caption,,0,0,0,,a giant net.
+Dialogue: 0,0:00:06.12,0:00:07.15,Caption,,0,0,0,,Steel cable nets
+Dialogue: 0,0:00:07.17,0:00:07.85,Caption,,0,0,0,,hang across the
+Dialogue: 0,0:00:07.86,0:00:08.72,Caption,,0,0,0,,ramp, one
+Dialogue: 0,0:00:08.74,0:00:09.45,Caption,,0,0,0,,after another.
+Dialogue: 0,0:00:09.77,0:00:10.35,Caption,,0,0,0,,Each one is
+Dialogue: 0,0:00:10.36,0:00:11.07,Caption,,0,0,0,,tied to steel
+Dialogue: 0,0:00:11.09,0:00:12.24,Caption,,0,0,0,,tape, coiled up
+Dialogue: 0,0:00:12.26,0:00:13.33,Caption,,0,0,0,,in boxes inside
+Dialogue: 0,0:00:13.35,0:00:13.92,Caption,,0,0,0,,the walls.
+Dialogue: 0,0:00:14.24,0:00:14.82,Caption,,0,0,0,,When the truck
+Dialogue: 0,0:00:14.83,0:00:15.84,Caption,,0,0,0,,hits, the tape
+Dialogue: 0,0:00:15.86,0:00:16.56,Caption,,0,0,0,,is dragged through
+Dialogue: 0,0:00:16.57,0:00:17.43,Caption,,0,0,0,,pins that bend
+Dialogue: 0,0:00:17.44,0:00:17.93,Caption,,0,0,0,,it back
+Dialogue: 0,0:00:17.97,0:00:18.58,Caption,,0,0,0,,and forth.
+Dialogue: 0,0:00:18.90,0:00:19.66,Caption,,0,0,0,,Bending all that
+Dialogue: 0,0:00:19.67,0:00:20.56,Caption,,0,0,0,,steel soaks up
+Dialogue: 0,0:00:20.57,0:00:21.70,Caption,,0,0,0,,the speed, net
+Dialogue: 0,0:00:21.71,0:00:22.37,Caption,,0,0,0,,after net.
+Dialogue: 0,0:00:22.69,0:00:23.30,Caption,,0,0,0,,The catch is
+Dialogue: 0,0:00:23.31,0:00:24.06,Caption,,0,0,0,,gentle enough to
+Dialogue: 0,0:00:24.08,0:00:25.09,Caption,,0,0,0,,protect the driver.
+Dialogue: 0,0:00:25.41,0:00:26.02,Caption,,0,0,0,,They're built to
+Dialogue: 0,0:00:26.04,0:00:27.57,Caption,,0,0,0,,stop\Na ninety-thousand-pound
+Dialogue: 0,0:00:27.58,0:00:28.29,Caption,,0,0,0,,truck at ninety
+Dialogue: 0,0:00:28.31,0:00:29.13,Caption,,0,0,0,,miles an hour.
+Dialogue: 0,0:00:29.45,0:00:30.38,Caption,,0,0,0,,Then crews swap
+Dialogue: 0,0:00:30.39,0:00:31.18,Caption,,0,0,0,,in fresh tape,
+Dialogue: 0,0:00:31.56,0:00:32.10,Caption,,0,0,0,,and it's ready
+Dialogue: 0,0:00:32.11,0:00:32.73,Caption,,0,0,0,,again in about
+Dialogue: 0,0:00:32.74,0:00:33.59,Caption,,0,0,0,,four hours.

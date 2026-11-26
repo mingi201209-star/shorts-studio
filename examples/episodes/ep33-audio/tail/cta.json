@@ -1,0 +1,64 @@
+{
+ "text": "Subscribe for part three: what catches a runaway truck.",
+ "voice": "en-US-AndrewNeural",
+ "rate": "-3%",
+ "words": [
+  {
+   "text": "Subscribe",
+   "start": 0.1,
+   "end": 0.692791
+  },
+  {
+   "text": "for",
+   "start": 0.705666,
+   "end": 0.847416
+  },
+  {
+   "text": "part",
+   "start": 0.860291,
+   "end": 1.169582
+  },
+  {
+   "text": "three",
+   "start": 1.182458,
+   "end": 1.543291
+  },
+  {
+   "text": "what",
+   "start": 1.917,
+   "end": 2.071625
+  },
+  {
+   "text": "catches",
+   "start": 2.084541,
+   "end": 2.496916
+  },
+  {
+   "text": "a",
+   "start": 2.509791,
+   "end": 2.5613319
+  },
+  {
+   "text": "runaway",
+   "start": 2.574208,
+   "end": 2.947916
+  },
+  {
+   "text": "truck",
+   "start": 2.960833,
+   "end": 3.360333
+  }
+ ],
+ "source_mp3_sha256": "9f956fe89fec74682c2aa5c8f2561ce778b07493d19ae22a43b731204a0e8a64",
+ "wav_sha256": "c82dbbf3f4c982b28b437cd913ec218b08694d380deb9b97565c7e2b04aa4c8d",
+ "note": "the series tail's spoken line, captured with the films' voice and rate (edge-tts), decoded to 48 kHz mono; word timings measured by the TTS service, not interpolated",
+ "next_episode": {
+  "episode": "EP.34",
+  "film": "How do you stop a truck that's lost its brakes?",
+  "frames": [
+   0,
+   89
+  ],
+  "ci_run": "pending"
+ }
+}
