@@ -1,5 +1,6 @@
 """Storyboard stills for a long-form film's 16:9 framing, before the narration exists: renders the middle frame of each listed row of
-one episode with the film's camera conversion (each row given 48 frames). Environment: LF_FILM, LF_EPISODE, LF_ROWS (comma list).
+one episode with the film's camera conversion (each row given 48 frames). Environment: LF_FILM, LF_EPISODE, LF_ROWS (comma list),
+LF_AT (optional: where in each shot, 0..1, default the middle; thumbnails pick the moment).
 Usage: LF_FILM=lf01 LF_EPISODE=rocknet LF_ROWS=A1-boulder-in-the-net,C-chain-mail-rings blender -b -P benchmarks/longform/storyboard_lf.py --
 --source car.blend --res-scale 0.3 --samples 8 --out DIR"""
 import importlib
@@ -21,5 +22,6 @@ for r in rows:
 renderer = importlib.import_module(lt.EPISODES[key][1])
 renderer.tl = lt.episode_timeline(key, shots)
 renderer.FRAME = lt.FRAME
-sys.argv += ["--list", ",".join(str(48 * i + 24) for i in range(len(rows)))]
+at = float(os.environ.get("LF_AT", "0.5"))
+sys.argv += ["--list", ",".join(str(48 * i + min(47, max(0, round(48 * at)))) for i in range(len(rows)))]
 renderer.main()

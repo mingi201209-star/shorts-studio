@@ -40,8 +40,15 @@ road safety engineering, guardrail end terminal, cable barrier, roller barrier, 
 runway arrestor, how it works, physics of crashes, Curious Mechanics
 
 ## Thumbnail
-Upload a custom thumbnail (long videos need one): lf01-thumbnail.png in this folder once rendered (a single striking still, no text
-on the video itself).
+Three 1280x720 candidates in this folder (text only on the thumbnail, never in the video):
+- **thumbnail-A-wedge.jpg (recommended)**: the car's back end flipping up on the wedge barrier, "ROADS / FIGHT BACK".
+- thumbnail-B-ribbon.jpg: the guardrail end peeling into a steel ribbon with sparks, the car behind it (no text).
+- thumbnail-C-net.jpg: the boulder wrapped in the ring net, "20 TONS / CAUGHT" (the channel's best Short was the rockfall net).
+
+If Studio offers "Test & compare" on the upload page, give it all three and let YouTube pick by watch time; otherwise use A.
+Made from the film's own 16:9 shots: stills by benchmarks/longform/storyboard_lf.py (LF_AT picks the moment in the shot; 1280x720,
+48 samples): wedge G-back-end-flips at 0.5, terminal A-ribbon at 0.5, rocknet I-twenty-tons-sixty-mph at 0.2; then
+benchmarks/longform/thumbnail_lf.py (light grade, vignette, headline in Inter Display Black).
 
 ## Claims check
 Every chapter repeats the verified claims of its Short; sources are in each Short's publish kit:
@@ -57,4 +64,4 @@ Every chapter repeats the verified claims of its Short; sources are in each Shor
   barrier is the deliberate exception (a security stop).
 
 ## Not verified
-The sound mix and voice by ear, a human first view, the thumbnail's click-through.
+The sound mix and voice by ear, a human first view, which thumbnail gets the most clicks.
