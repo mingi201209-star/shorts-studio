@@ -79,3 +79,34 @@ def test_thumbnails(tmp_path):
     assert (c.min(axis=1) > 235).sum() > 2000                                 # white first line
     assert ((c[:, 0] > 230) & (c[:, 1] > 190) & (c[:, 1] < 235) & (c[:, 2] < 60)).sum() > 2000   # accent last line
     assert (c.max(axis=1) < 40).sum() > 2000                                  # dark outline
+
+def _in_frame(cam: dict, point) -> tuple[float, float]:
+    """Where a world point lands in the 16:9 picture (x, y as shares of the width from the centre; inside when |x| <= 0.5 and
+    |y| <= 0.28): pinhole camera aimed with the renderers' rule (image up = world Z made square to the view), sensor 36 mm wide."""
+    loc, tgt = np.array(cam["loc"], float), np.array(cam["target"], float)
+    f = (tgt - loc) / np.linalg.norm(tgt - loc)
+    up = np.array([0.0, 0.0, 1.0]) - f[2] * f
+    up /= np.linalg.norm(up)
+    right = np.cross(f, up)
+    d = np.array(point, float) - loc
+    z = d @ f
+    k = cam["lens"] / 36.0 / z
+    return float(d @ right * k), float(d @ up * k)
+
+
+def test_roller_crash_test_shot_shows_the_car_from_its_first_frame():
+    """CI run 45784358840: the straight-down crash-test camera, kept as in the 9:16 Short, showed an empty road for the first second
+    in 16:9 (10 frozen frames). The camera is turned so the run lies along the frame's long side: the car is in the picture from the
+    first frame until it leaves on the far side."""
+    from benchmarks.roller_barrier import roller_motion as rm
+    mod = lf01.episode_timeline("roller", LAY)
+    segs = mod.segments()
+    seg = next(s for s in segs if s["label"] == "I-62-mph-test")
+    f0, f1 = int(round(seg["t0"] * lt.FPS)), int(round(seg["t1"] * lt.FPS))
+    for v in range(f0, f0 + int(0.85 * (f1 - f0))):
+        st = mod.frame_state(v, segs)
+        p = rm.pose(st["t"], "roller")
+        x, y = _in_frame(st["cam"], (p["x"], p["y"], 0.7))
+        assert abs(x) < 0.47 and abs(y) < 0.26, (v, round(st["t"], 3), x, y)
+    a, b = seg["cam_a"], seg["cam_b"]
+    assert a["loc"] != b["loc"]                                                # a slow push in: no still picture

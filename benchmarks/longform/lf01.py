@@ -115,6 +115,12 @@ OVERRIDES: dict = {
     ("wedge", "B-rises-in-a-second"): {                                            # the rising plate was below the 16:9 frame
         "cam_a": {"rel": "world", "loc": (-0.4, 6.5, 1.5), "target": (-1.9, -1.0, 0.15), "lens": 24.0, "fstop": 5.6},
         "cam_b": {"rel": "world", "loc": (-0.5, 6.0, 1.4), "target": (-1.9, -1.0, 0.25), "lens": 24.0, "fstop": 5.6}},
+    ("roller", "I-62-mph-test"): {                                                 # the straight-down crash-test camera: in 16:9 the run
+        # along the road (y -12 to +14) lay across the frame's short side, so the first second showed an empty road (CI run
+        # 45784358840: 10 frozen frames). Turned a quarter: the road runs across the long side, the car in view from the first frame,
+        # a slow push in.
+        "cam_a": {"rel": "world", "loc": (1.2, 1.0, 14.2), "target": (1.19, 1.0, 0.0), "lens": 19.0, "fstop": 11.0},
+        "cam_b": {"rel": "world", "loc": (1.2, 1.3, 13.0), "target": (1.19, 1.3, 0.0), "lens": 19.0, "fstop": 11.0}},
 }
 
 TITLE = "7 Clever Ways Roads Stop Things That Are Out of Control"

@@ -19,6 +19,7 @@ jobs:
       matrix: ${{ steps.p.outputs.matrix }}
       shards: ${{ steps.p.outputs.shards }}
       frames_run: ${{ steps.p.outputs.frames_run }}
+      render: ${{ steps.p.outputs.render }}
       res_scale: ${{ steps.p.outputs.res_scale }}
       samples: ${{ steps.p.outputs.samples }}
     steps:
@@ -36,20 +37,29 @@ jobs:
           req = json.load(open("examples/experiments/lf01-film-request.json"))
           lay = lf01.layout()
           size = int(req.get("shard", 36))
-          include = []
+          every = []
           for ep, shots in lay["episodes"].items():
               n = sum(s["frames"] for s in shots)
-              include += [{"episode": ep, "start": s, "end": min(s + size - 1, n - 1)} for s in range(0, n, size)]
+              every += [{"episode": ep, "start": s, "end": min(s + size - 1, n - 1)} for s in range(0, n, size)]
+          # frames_run: reuse that run's shards; rerender {episode: [[first, last], ...]} (virtual frames): render only the shards
+          # that touch those frames here, on top of the reused ones (same shard size, resolution and samples as frames_run)
+          base = str(req.get("frames_run", ""))
+          redo = req.get("rerender", {}) if base else {}
+          if base:
+              include = [sh for sh in every if any(sh["start"] <= b and a <= sh["end"] for a, b in redo.get(sh["episode"], []))]
+          else:
+              include = every
           assert len(include) <= 256, len(include)
           print("res_scale=" + str(float(req.get("res_scale", 0.6667))))
           print("samples=" + str(int(req.get("samples", 16))))
-          print("frames_run=" + str(req.get("frames_run", "")))
-          print("shards=" + str(len(include)))
-          print("matrix=" + json.dumps({"include": include}))
+          print("frames_run=" + base)
+          print("render=" + ("true" if include else "false"))
+          print("shards=" + str(len(every)))
+          print("matrix=" + json.dumps({"include": include or [{"episode": "none", "start": 0, "end": 0}]}))
           PY
   frames:
     needs: plan
-    if: ${{ needs.plan.outputs.frames_run == '' }}
+    if: ${{ needs.plan.outputs.render == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 120
     strategy:
@@ -137,7 +147,20 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$LF_WORK/native"
-          gh run download "${{ needs.plan.outputs.frames_run || github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'lf01-panels-*' --dir "$LF_WORK/native"
+          base="${{ needs.plan.outputs.frames_run }}"
+          if [ -n "$base" ]; then
+            gh run download "$base" --repo "$GITHUB_REPOSITORY" --pattern 'lf01-panels-*' --dir "$LF_WORK/native"
+          fi
+          if [ "${{ needs.plan.outputs.render }}" = "true" ]; then
+            # this run's shards (all of them, or only the re-rendered ones on top of frames_run)
+            mkdir -p "$LF_WORK/fresh"
+            gh run download "${{ github.run_id }}" --repo "$GITHUB_REPOSITORY" --pattern 'lf01-panels-*' --dir "$LF_WORK/fresh"
+            for d in "$LF_WORK/fresh"/*; do
+              n="$(basename "$d")"
+              if [ -n "$base" ]; then echo "re-rendered shard $n replaces run $base's"; fi
+              rm -rf "$LF_WORK/native/$n"; mv "$d" "$LF_WORK/native/$n"
+            done
+          fi
           test "$(ls "$LF_WORK/native" | wc -l)" = "${{ needs.plan.outputs.shards }}"
       - name: Compose, mux and run every gate
         id: gates

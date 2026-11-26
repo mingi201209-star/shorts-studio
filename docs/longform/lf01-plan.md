@@ -28,4 +28,16 @@ examples/experiments/lf01-film-request.json. Publish kit: examples/longform/lf01
 
 ## Preview
 Local preview (every 8th frame of every shot at 288x162, 3 samples; the frames between held): every gate PASS but smoothness, which needs every frame and runs in CI (7391 frames, 307.96 s, 87 shots, all seven episodes' physics gates PASS, every line starts on its planned shot, mix -14.3 LUFS, true peak -1.4 dBFS, speech 14.6 dB over the effects). The first run's true peak read -0.9 dBFS over the -1.0 limit; the limiter now aims at -2.0 dB (inter-sample peaks).
-CI: (to be recorded)
+CI run 1 (45784358840, sha cf108a8, 208 frame jobs + final, 3 h 24 min): every gate PASS but smoothness. frames 7391 / 307.96 s
+complete, all seven physics gates, every line on its planned shot, no scene text, no dark frames, length 308 s, mix -14.3 LUFS, true
+peak -1.4 dBFS, speech 14.6 dB over the effects; smoothness FAIL: 10 frozen frames (film frames 3066-3076), the first second of the
+roller crash-test shot ("One version passed a sixty-two mile an hour crash test"). Cause: its straight-down camera was kept as in the
+9:16 Short, where the car's 22 m run (y -12 to +14) lies along the tall side; in 16:9 that is the short side, so the shot opened on an
+empty road and the car entered only after about a second (also against the owner rule: the line's picture must show the test from its
+first frame). The 16:9 preview could not see it (every 8th frame held). Fix: lf01.OVERRIDES turns that camera a quarter (the run
+across the long side, 19 mm, 14.2 m above the road pushing in to 13.0 m): the car is in the picture from the first frame, hits the
+rollers mid-frame and leaves on the far side (low-res check: every frame differs from the last, min mean change 0.52 of 255; test
+test_roller_crash_test_shot_shows_the_car_from_its_first_frame, which fails on the old camera).
+CI run 2: the workflow can now re-render only some shards on top of an earlier run (request: frames_run + rerender {episode: [[first,
+last]]}); the 5 roller shards covering virtual frames 772-916 are rendered again, the other 203 reused from run 1 (same renderer
+sources, resolution and samples). Result: (to be recorded)
