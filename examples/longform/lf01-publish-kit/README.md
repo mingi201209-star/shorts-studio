@@ -50,6 +50,14 @@ Made from the film's own 16:9 shots: stills by benchmarks/longform/storyboard_lf
 48 samples): wedge G-back-end-flips at 0.5, terminal A-ribbon at 0.5, rocknet I-twenty-tons-sixty-mph at 0.2; then
 benchmarks/longform/thumbnail_lf.py (light grade, vignette, headline in Inter Display Black).
 
+## End screen and cards (Studio, upload step "Video elements")
+- End screen: the last 5 s (5:02.9 to the end at 5:07.9), template "1 video, 1 playlist, subscribe": video = "Best for viewer",
+  playlist = the seven Shorts plus this video (make it first), subscribe. It sits on the last line ("Subscribe for more of the hidden
+  engineering you pass every day.", from 5:03.3) and the mountain-road shot. A longer end screen would start over the outro's key
+  montage and "the longer the stop" (from 4:48), so keep 5 s unless a quiet ending is added. Link elements need the Partner Program.
+- Cards (optional): at each chapter start, a card to that chapter's Short: 0:25 EP.13, 1:01 EP.15, 1:36 EP.26, 2:13 EP.19,
+  2:46 EP.18, 3:22 EP.21, 4:01 EP.22 (each Short's "Related video" points back here).
+
 ## Claims check
 Every chapter repeats the verified claims of its Short; sources are in each Short's publish kit:
 - Chapter 1: examples/episodes/ep13-publish-kit (extruding end terminals; model: 60 mph to zero in 9.0 m, about two car lengths).
