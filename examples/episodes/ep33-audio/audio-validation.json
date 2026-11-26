@@ -1,0 +1,270 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 31.089,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.6656658999999999,
+      "text": "What stops a"
+    },
+    {
+      "start": 0.678541,
+      "end": 1.4517499999999999,
+      "text": "giant ship from"
+    },
+    {
+      "start": 1.464625,
+      "end": 2.031624,
+      "text": "knocking down"
+    },
+    {
+      "start": 2.044541,
+      "end": 2.5470829999999998,
+      "text": "a bridge?"
+    },
+    {
+      "start": 2.8671115555555553,
+      "end": 3.524319555555555,
+      "text": "A pier can't"
+    },
+    {
+      "start": 3.5371945555555553,
+      "end": 4.117110555555555,
+      "text": "take that hit,"
+    },
+    {
+      "start": 4.555236555555555,
+      "end": 5.367110555555555,
+      "text": "so engineers put"
+    },
+    {
+      "start": 5.379986555555555,
+      "end": 6.166069555555555,
+      "text": "guards around it."
+    },
+    {
+      "start": 6.486098111111111,
+      "end": 7.375306111111111,
+      "text": "These round islands"
+    },
+    {
+      "start": 7.388139111111111,
+      "end": 8.419097111111112,
+      "text": "are called dolphins."
+    },
+    {
+      "start": 8.739125666666666,
+      "end": 9.190124666666666,
+      "text": "Each is a"
+    },
+    {
+      "start": 9.203041666666667,
+      "end": 10.208208666666668,
+      "text": "steel ring packed"
+    },
+    {
+      "start": 10.221083666666667,
+      "end": 10.556166666666666,
+      "text": "with up to"
+    },
+    {
+      "start": 10.569041666666667,
+      "end": 11.677249666666667,
+      "text": "six thousand seven"
+    },
+    {
+      "start": 11.690166666666666,
+      "end": 12.424708666666668,
+      "text": "hundred tons of"
+    },
+    {
+      "start": 12.437583666666667,
+      "end": 13.133458666666666,
+      "text": "crushed rock."
+    },
+    {
+      "start": 13.453487222222222,
+      "end": 14.007612222222223,
+      "text": "When a ship"
+    },
+    {
+      "start": 14.020487222222222,
+      "end": 14.935445222222222,
+      "text": "hits, the ring"
+    },
+    {
+      "start": 14.948320222222222,
+      "end": 15.631320222222222,
+      "text": "bends and the"
+    },
+    {
+      "start": 15.644195222222223,
+      "end": 16.688028222222222,
+      "text": "rock packs tighter."
+    },
+    {
+      "start": 17.008056777777778,
+      "end": 17.691014777777777,
+      "text": "The ship's bow"
+    },
+    {
+      "start": 17.703931777777775,
+      "end": 19.121472777777775,
+      "text": "crumples too, soaking"
+    },
+    {
+      "start": 19.134347777777776,
+      "end": 19.804430777777775,
+      "text": "up its energy."
+    },
+    {
+      "start": 20.124459333333334,
+      "end": 20.70437533333333,
+      "text": "So the ship"
+    },
+    {
+      "start": 20.717250333333332,
+      "end": 21.541958333333334,
+      "text": "stops before it"
+    },
+    {
+      "start": 21.580625333333334,
+      "end": 22.121917333333332,
+      "text": "ever touches"
+    },
+    {
+      "start": 22.134750333333333,
+      "end": 22.598708333333335,
+      "text": "the pier."
+    },
+    {
+      "start": 22.91873688888889,
+      "end": 23.498652888888888,
+      "text": "Each one can"
+    },
+    {
+      "start": 23.51152788888889,
+      "end": 24.46511088888889,
+      "text": "take nearly thirty"
+    },
+    {
+      "start": 24.47802788888889,
+      "end": 25.225444888888887,
+      "text": "million pounds"
+    },
+    {
+      "start": 25.23831988888889,
+      "end": 25.843985888888888,
+      "text": "of force."
+    },
+    {
+      "start": 26.164014444444447,
+      "end": 27.053221444444446,
+      "text": "Florida built them"
+    },
+    {
+      "start": 27.156264444444446,
+      "end": 27.839264444444446,
+      "text": "after a ship"
+    },
+    {
+      "start": 27.852139444444447,
+      "end": 28.483597444444445,
+      "text": "knocked down its"
+    },
+    {
+      "start": 28.496472444444446,
+      "end": 29.849555444444444,
+      "text": "Sunshine Skyway bridge"
+    },
+    {
+      "start": 29.862472444444446,
+      "end": 30.828971444444445,
+      "text": "in nineteen eighty."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.8071115555555552,
+      "narration_en": "What stops a giant ship from knocking down a bridge?",
+      "source_audio_sha256": "ea2c67bee45f2dadc1047319d37de5cace052096c9d207a21160f794faeda156"
+    },
+    {
+      "start": 2.8071115555555552,
+      "end": 6.426098111111111,
+      "narration_en": "A pier can't take that hit, so engineers put guards around it.",
+      "source_audio_sha256": "9ab2bd78a8830ab965233d97c48833fe1f3563e11f533fc601c9821cf76c2f8d"
+    },
+    {
+      "start": 6.426098111111111,
+      "end": 8.679125666666666,
+      "narration_en": "These round islands are called dolphins.",
+      "source_audio_sha256": "6ac8382720b6142d6ebb94ff69cde901122d30cd3341422649ffb0d5412e8d7c"
+    },
+    {
+      "start": 8.679125666666666,
+      "end": 13.393487222222221,
+      "narration_en": "Each is a steel ring packed with up to six thousand seven hundred tons of crushed rock.",
+      "source_audio_sha256": "19bf8eda91f50fb949ef29a561b20f69ba800bb383958047ef67dce9a47bf56d"
+    },
+    {
+      "start": 13.393487222222221,
+      "end": 16.948056777777776,
+      "narration_en": "When a ship hits, the ring bends and the rock packs tighter.",
+      "source_audio_sha256": "0556e058618bd2a339e646397a6eb21fafaa6230881a9345cd4e972a5599244e"
+    },
+    {
+      "start": 16.948056777777776,
+      "end": 20.064459333333332,
+      "narration_en": "The ship's bow crumples too, soaking up its energy.",
+      "source_audio_sha256": "44251479ff4bf2f58ec7d3d8bd0ae51c38c9193eb5eaafad8df014231db6d418"
+    },
+    {
+      "start": 20.064459333333332,
+      "end": 22.858736888888888,
+      "narration_en": "So the ship stops before it ever touches the pier.",
+      "source_audio_sha256": "534ca61527ee5d88a12ae2665f8afe338d835083ec5c7b0ef3d248ba3b83cc56"
+    },
+    {
+      "start": 22.858736888888888,
+      "end": 26.104014444444445,
+      "narration_en": "Each one can take nearly thirty million pounds of force.",
+      "source_audio_sha256": "8c1742916d788cefbe7ea12e1446fc8c7d3b2945f1d34666d0f2ae92f379b20f"
+    },
+    {
+      "start": 26.104014444444445,
+      "end": 31.089,
+      "narration_en": "Florida built them after a ship knocked down its Sunshine Skyway bridge in nineteen eighty.",
+      "source_audio_sha256": "1c1a548cd292f013fe0b3bc5aebcce75ac8dc1e9209531ea580049cc862e5131"
+    }
+  ],
+  "silence_gaps": [
+    0.443917,
+    0.402438,
+    0.462562,
+    0.433062,
+    0.436021,
+    0.451813,
+    0.424292,
+    0.454271,
+    0.462271
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.0,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.2,
+      -15.9,
+      -16.6,
+      -16.6,
+      -15.5,
+      -16.6
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "b09e13c3413efecb92edd258741408749747ba64d1e01adcf76e5ef2d3b48122"
+}
