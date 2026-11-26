@@ -52,3 +52,12 @@ def test_effects_duck_under_the_line_and_come_back():
 
 def test_tail_draws_no_text():
     assert st.no_scene_text()["status"] == "PASS"
+
+
+def test_part_three_line_fits_ninety_frames():
+    cta, _ = st.load_cta(ROOT / "examples/episodes/ep33-audio/tail")
+    assert cta["text"] == "Subscribe for part three: what catches a runaway truck."
+    a, b = st.voice_span(cta, 0.25)
+    assert b <= 90 / st.FPS - 0.2
+    cues = st.cues(cta, 752 / st.FPS, 0.25, 90 / st.FPS)
+    assert " ".join(c["text"].replace(r"\N", " ") for c in cues) == cta["text"]

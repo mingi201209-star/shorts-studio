@@ -65,4 +65,9 @@ At -3 % the same lines ran 199 wpm, at the pace gate's edge; -7 % reads easier.
 - The wide and the tanker shots lost the truck at a distance; they now track it (cameras relative to the truck's front).
 
 ## Local and CI
-(recorded below as they run)
+Local low-res (818 frames at 162x288, 3 samples, composed to 1080x1920): every gate PASS on the first run:
+- physics, pace (21.1 cuts a minute, 191 wpm, 34.1 s), opening hook (truck 41 % of the width, all in frame);
+- line alignment, telemetry, visible action, no scene text;
+- loop (seam 1.43 against neighbouring steps 3.02 / 1.63), smoothness (no frozen frame), black opening, captions;
+- audio -15.2 LUFS, true peak -1.7 dBFS, speech 9.0 dB over the effects.
+The 1 fps sheet reads without sound.
