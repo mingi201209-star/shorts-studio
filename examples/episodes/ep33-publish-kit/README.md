@@ -7,6 +7,10 @@ the bridge's tower behind, held through the first line. Retention plan (playbook
 in half (the steel ring down into the sea bed, packed with rock) with the channel's sting; the end punch is the history (Florida built
 them after a ship knocked down its Sunshine Skyway bridge in 1980); the next teaser is in the pinned comment.
 
+Series (owner, 2026-11-26, for subscribers): part two of "Built to Get Hit"; EP.32's teaser ends on this film's opening shot and the
+line "Subscribe for part two: what stops a giant ship." This film gets its own teaser for part three (EP.34, the runaway-truck net)
+once EP.34's opening shot is rendered (benchmarks/series_tail.py); until then upload nothing.
+
 ## Title (recommended)
 **What Stops a Giant Ship From Hitting a Bridge? 🚢**
 
@@ -17,12 +21,14 @@ Alternatives:
 ## Description
 What stops a giant ship from knocking down a bridge? Round islands called dolphins: steel rings packed with up to 6,700 tons of crushed rock. When a ship hits one, the ring bends, the rock packs tighter and the ship's bow crumples, so the ship stops before it ever touches the pier. Florida built them after a ship knocked down its Sunshine Skyway bridge in 1980.
 
+Part 2 of Built to Get Hit. Part 1: the truck that's built to get hit.
+
 Simplified animation for explanation; not a specific ship, and the bridge is not drawn to plan.
 
 #Shorts #Engineering #Bridges #Ships #HowItWorks #Infrastructure
 
 ## Pinned comment
-Would you trust a pile of rock to stop a 87,000-ton ship? 👇 Next: (the next topic)
+Would you trust a pile of rock to stop an 87,000-ton ship? 👇 Next: (the next topic)
 
 (Fill in "Next:" with the topic of the next upload.)
 

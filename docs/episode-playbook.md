@@ -115,6 +115,18 @@ Applied from EP.32 on, on top of sections 1-8:
       (EP.32: honeycomb seen side-on looked like white boxes; straight into the cells with bright rims and dark wells reads at once).
 - [ ] With-vs-without or a familiar comparison where the line makes one (show it literally: section 2).
 - [ ] End punch: the last line is the most surprising fact or number (it plays as the loop runs into frame 1).
-- [ ] Next-episode teaser in the pinned comment ("Next: ..."), not in the film, so the loop stays intact; long videos tease the next
-      long video in the outro and point the end screen at it.
+- [ ] Next-episode teaser in the pinned comment ("Next: ..."); from EP.32 v2 also at the end of the film (section 10). Long videos
+      tease the next long video in the outro and point the end screen at it.
 - [ ] Publish kit: Related video = the long video on the same theme; keep upload days steady (e.g. Shorts Mon/Wed/Fri, US evening).
+
+## 10. Subscriber plan (owner, 2026-11-26: "views are quite high but almost nobody subscribes")
+Diagnosis: one-off "wow" Shorts answer their question completely and end, so a viewer has no reason to come back. On top of
+section 9, from EP.32 v2 on:
+- [ ] Runs, not one-offs: three or so Shorts on one theme, numbered parts ("Built to Get Hit": EP.32 truck, EP.33 ship dolphins,
+      EP.34 runaway-truck net), each a complete Short on its own.
+- [ ] Series tail: after the last frame, about 3.5 s of the next part's opening shot (its clean rendered frames, no captions) with
+      its effects ducked under one line in the narration voice, "Subscribe for part N: <the next question>.", captioned like the
+      film. Built by benchmarks/series_tail.py from the two CI renders; the line is frozen next to the film's audio (epNN-audio/tail).
+      The loop is given up for it (owner accepted). The end punch stays the last narrated line, before the tail.
+- [ ] So the next part is rendered before the current one is uploaded; the pinned comment says "Part N is next: ...".
+- [ ] Publish kit: "Part N of <run>" in the description, a playlist per run, upload the parts in order on the steady days.

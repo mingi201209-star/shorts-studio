@@ -39,3 +39,25 @@ local; audio -15.2 LUFS, true peak -1.8 dBFS, speech 9.8 dB over the effects). F
 3783e1c2345a5e92764e98bb50c2ce139e810b1f1c887107460a23e7fa09dc99 (1080x1920, 765 frames, 31.875 s), copied to
 ep05-review/EP32-truck-built-to-get-hit.mp4. Checked at full size: frame 1, the honeycomb face (246), the blocks apart (300), the
 uncrushed outline (450). Not verified: the voice and mix by ear, a human first view.
+
+## v2: the series tail (owner, 2026-11-26)
+Owner: "views are quite high but almost nobody subscribes", then yes to "series number + next-part teaser + subscribe line at the
+end". EP.32 becomes part one of a run (part two EP.33, the ship dolphins; part three EP.34, the runaway-truck net). After the last
+frame, 3.5 s of EP.33's opening shot (its clean rendered frames 0-83, no captions: the bow crushing into the dolphin, then the cut
+to the wide shot of the dolphins around the pier), its effects ducked 6 dB under one line in the narration voice, "Subscribe for
+part two: what stops a giant ship.", captioned like the film. The loop is given up for the teaser (accepted by the owner).
+- Tool: benchmarks/series_tail.py (tests/test_series_tail.py). The line is frozen in examples/episodes/ep32-audio/tail/ (cta.wav
+  48 kHz mono and cta.json with the measured word timings; edge-tts Andrew at -3 %, the films' voice and rate). "Subscribe" rather
+  than "Follow": the word on YouTube's button.
+- Inputs: the CI final outputs of run 45846376909 (tma-film-1080x1920.mp4 sha256 3783e1c2..., mix.wav, sfx.wav, film.ass) and of
+  EP.33's run 45851558094 (panel shards 0-72 = frames 0-83, renderer 1bb9ef2b...; sfx.wav).
+- Command: `python3 -m benchmarks.series_tail --film tma-film-1080x1920.mp4 --film-dir <EP.32 final> --narration
+  examples/episodes/ep32-audio/narration.wav --next-panels <EP.33 panels 0-72> --next-sfx <EP.33 final>/sfx.wav --cta
+  examples/episodes/ep32-audio/tail --out OUT --name tma-film-v2`
+- Result: every gate PASS. 849 frames, 35.375 s; the film part re-encoded once (PSNR 54.45 dB against the input); the tail frames
+  hash-checked as EP.33's (segments A1-bow-hits, B-guards); the captions say exactly the line and sit in the film's caption rows
+  (1447-1498), the last one up to the last frame; mix -15.2 LUFS, true peak -1.4 dBFS, the line 19.7 dB over the effects; the film's
+  own sound unchanged apart from a 0.2 dB trim; no frozen frame; no black opening. Film tma-film-v2-1080x1920.mp4 sha256
+  f48a3bb31a7fa67b0b6ad46ccdb39edb5db370a39af7a960645d583f08da57c5, copied to ep05-review/EP32-truck-built-to-get-hit-v2.mp4 (upload
+  this one). Not verified: the tail's sound by ear.
+

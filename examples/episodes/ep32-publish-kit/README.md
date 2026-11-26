@@ -12,6 +12,11 @@ First Short made under the retention plan (docs/episode-playbook.md section 9):
 - the end punch: the last line is the surprising number (39 hits in one state in under eight months);
 - the next-episode teaser: in the pinned comment (below), so the Short's loop stays intact.
 
+v2 (owner, 2026-11-26, for subscribers): part one of a three-part run, "Built to Get Hit" (part two EP.33, the ship dolphins; part
+three EP.34, the runaway-truck net). After the last frame, a 3.5 s teaser: EP.33's opening shot (the ship's bow crushing into the
+dolphin) with one line, "Subscribe for part two: what stops a giant ship." The loop is given up for it. Upload the v2 file:
+ep05-review/EP32-truck-built-to-get-hit-v2.mp4 (docs/episodes/ep32-tma-plan.md, section v2).
+
 ## Title (recommended)
 **The Truck That's Built to Get Hit 🚧**
 
@@ -22,18 +27,22 @@ Alternatives:
 ## Description
 Why would road crews park a truck right in your lane? It's a shield between traffic and the workers. On its back is a crash cushion full of aluminum honeycomb that crushes row by row, so a car slows down over about eight feet instead of hitting solid steel. They're built to stop a 5,000-pound pickup at 62 mph.
 
+Part 1 of Built to Get Hit. Part 2: what stops a giant ship from knocking down a bridge.
+
 Simplified animation for explanation; no real crash test, product or agency is shown.
 
 #Shorts #RoadSafety #Engineering #WorkZone #Physics #HowItWorks
 
 ## Pinned comment
-Have you ever seen one of these trucks on the highway? Next: what stops a giant ship from knocking down a bridge 👀
+Have you ever seen one of these trucks on the highway? Part 2 is next: what stops a giant ship from knocking down a bridge 👀
 
-(Change the "Next:" half if the next upload is a different topic.)
+(Keep it in step with the teaser at the end of the video: part two is EP.33.)
 
 ## Upload
 - Related video: the long video "7 Clever Ways Roads Stop Things That Are Out of Control" (LF01), same theme.
 - Keep the upload days steady (owner plan 2026-11-26: for example Shorts Mon/Wed/Fri, US evening).
+- Playlist "Built to Get Hit": EP.32, then EP.33 and EP.34 as they go up, so a new subscriber can binge the run.
+- Upload EP.33 next (its teaser promises it).
 
 ## Tags
 truck mounted attenuator, TMA, crash cushion, shadow vehicle, work zone safety, highway work zone, aluminum honeycomb, crash test,
@@ -63,4 +72,4 @@ how it works, road safety engineering, Curious Mechanics
   model, not a crash-test simulation or a product's data.
 
 ## Not verified
-The sound mix and voice by ear, readability with the sound off, a human first view.
+The sound mix and voice by ear (the teaser's too), readability with the sound off, a human first view.

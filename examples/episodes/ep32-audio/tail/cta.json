@@ -1,0 +1,64 @@
+{
+ "text": "Subscribe for part two: what stops a giant ship.",
+ "voice": "en-US-AndrewNeural",
+ "rate": "-3%",
+ "words": [
+  {
+   "text": "Subscribe",
+   "start": 0.1,
+   "end": 0.679916
+  },
+  {
+   "text": "for",
+   "start": 0.692791,
+   "end": 0.821666
+  },
+  {
+   "text": "part",
+   "start": 0.834541,
+   "end": 1.130916
+  },
+  {
+   "text": "two",
+   "start": 1.143833,
+   "end": 1.427333
+  },
+  {
+   "text": "what",
+   "start": 1.788125,
+   "end": 1.917
+  },
+  {
+   "text": "stops",
+   "start": 1.929916,
+   "end": 2.252082
+  },
+  {
+   "text": "a",
+   "start": 2.264958,
+   "end": 2.3164989
+  },
+  {
+   "text": "giant",
+   "start": 2.329375,
+   "end": 2.664416
+  },
+  {
+   "text": "ship",
+   "start": 2.677333,
+   "end": 3.038166
+  }
+ ],
+ "source_mp3_sha256": "ada2f1a970870aad766c10cedb5898cbec7edf5f097c4b8dde77322210a5584d",
+ "wav_sha256": "74af96e9b82e9beff925c383ec84b70e71f158e0596bef4a53f402bc4627e060",
+ "note": "the series tail's spoken line, captured with the films' voice and rate (edge-tts), decoded to 48 kHz mono; word timings measured by the TTS service, not interpolated",
+ "next_episode": {
+  "episode": "EP.33",
+  "film": "What Stops a Giant Ship From Hitting a Bridge?",
+  "frames": [
+   0,
+   83
+  ],
+  "ci_run": "45851558094 (dolphin-film panel shards 0-72: frames 0-83, renderer 1bb9ef2b) and its final sfx.wav"
+ }
+}
