@@ -34,4 +34,8 @@ crushes 10.1 ft of the 10.5 ft stroke. Sources and the claims check: examples/ep
 Local low-res (765 frames at 162x288, 3 samples, composed to 1080x1920): every gate PASS on the first run (physics, pace 18.8 cuts a
 minute / 192 wpm / 31.9 s, opening hook, line alignment, telemetry, visible action, no scene text, loop, smoothness, black opening,
 captions, audio -15.2 LUFS / true peak -1.8 dBFS / speech 9.8 dB over the effects). The 1 fps sheet reads without sound.
-CI: (to be recorded).
+CI run 45846376909 (sha 73a59d9, 64 frame jobs at 720x1280 / 16 samples + final, 30 min): every gate PASS (the same twelve as
+local; audio -15.2 LUFS, true peak -1.8 dBFS, speech 9.8 dB over the effects). Film tma-film-1080x1920.mp4 sha256
+3783e1c2345a5e92764e98bb50c2ce139e810b1f1c887107460a23e7fa09dc99 (1080x1920, 765 frames, 31.875 s), copied to
+ep05-review/EP32-truck-built-to-get-hit.mp4. Checked at full size: frame 1, the honeycomb face (246), the blocks apart (300), the
+uncrushed outline (450). Not verified: the voice and mix by ear, a human first view.
