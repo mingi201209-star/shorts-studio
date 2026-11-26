@@ -57,7 +57,9 @@ jobs:
       - name: Install hash-pinned Blender 5.0.1
         run: |
           set -euo pipefail
-          sudo apt-get update -qq
+          # a third-party list on the runner image (packages.microsoft.com) sometimes answers 403: run 45901227006 lost two shards to it.
+          # The Ubuntu lists still update, so a failed update is not fatal; the install below is.
+          sudo apt-get update -qq || echo "apt-get update reported errors; continuing with the lists it did fetch"
           sudo apt-get install -y xvfb libxrender1 libxi6 libxfixes3 libxkbcommon0 libsm6
           # official site first, then public mirrors: some runners get a persistent 403 from download.blender.org.
           # Whatever the source, the pinned SHA-256 below decides whether the file is accepted.
