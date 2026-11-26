@@ -1,0 +1,276 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 31.617,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.665666,
+      "text": "Why would road"
+    },
+    {
+      "start": 0.678541,
+      "end": 1.2842489,
+      "text": "crews park a"
+    },
+    {
+      "start": 1.2971249999999999,
+      "end": 1.902791,
+      "text": "truck right in"
+    },
+    {
+      "start": 1.9156659999999999,
+      "end": 2.379582,
+      "text": "your lane?"
+    },
+    {
+      "start": 2.6995642222222225,
+      "end": 3.4856462222222224,
+      "text": "It's a shield,"
+    },
+    {
+      "start": 3.7304802222222224,
+      "end": 4.632522222222222,
+      "text": "parked on purpose"
+    },
+    {
+      "start": 4.6454392222222225,
+      "end": 5.7923552222222225,
+      "text": "between traffic and"
+    },
+    {
+      "start": 5.805230222222222,
+      "end": 6.488230222222223,
+      "text": "the workers."
+    },
+    {
+      "start": 6.808212444444444,
+      "end": 7.555628444444444,
+      "text": "On its back"
+    },
+    {
+      "start": 7.568503444444445,
+      "end": 8.148420444444445,
+      "text": "is a crash"
+    },
+    {
+      "start": 8.161295444444445,
+      "end": 8.986045444444446,
+      "text": "cushion that folds"
+    },
+    {
+      "start": 8.998920444444446,
+      "end": 9.424211444444445,
+      "text": "down like"
+    },
+    {
+      "start": 9.437087444444446,
+      "end": 9.901003444444445,
+      "text": "a tail."
+    },
+    {
+      "start": 10.220985666666667,
+      "end": 11.277693666666668,
+      "text": "Inside are blocks"
+    },
+    {
+      "start": 11.290568666666667,
+      "end": 11.586984666666668,
+      "text": "of thin"
+    },
+    {
+      "start": 11.599860666666668,
+      "end": 12.592110666666667,
+      "text": "aluminum honeycomb."
+    },
+    {
+      "start": 12.912092888888889,
+      "end": 13.46621788888889,
+      "text": "When a car"
+    },
+    {
+      "start": 13.47909288888889,
+      "end": 14.69046788888889,
+      "text": "hits, the honeycomb"
+    },
+    {
+      "start": 14.703342888888889,
+      "end": 15.36055088888889,
+      "text": "crushes row"
+    },
+    {
+      "start": 15.373425888888889,
+      "end": 15.888924888888889,
+      "text": "by row."
+    },
+    {
+      "start": 16.208907111111113,
+      "end": 16.814573111111113,
+      "text": "So the car"
+    },
+    {
+      "start": 16.82744811111111,
+      "end": 17.75532311111111,
+      "text": "slows down over"
+    },
+    {
+      "start": 17.76819811111111,
+      "end": 18.56715711111111,
+      "text": "about eight feet"
+    },
+    {
+      "start": 18.580032111111112,
+      "end": 19.469240111111112,
+      "text": "of crushing metal."
+    },
+    {
+      "start": 19.789222333333335,
+      "end": 20.459347333333334,
+      "text": "The truck is"
+    },
+    {
+      "start": 20.472222333333335,
+      "end": 21.348513333333333,
+      "text": "heavy and braked,"
+    },
+    {
+      "start": 21.670680333333333,
+      "end": 22.173263333333335,
+      "text": "so it only"
+    },
+    {
+      "start": 22.186138333333332,
+      "end": 22.598513233333332,
+      "text": "rolls a"
+    },
+    {
+      "start": 22.611388333333334,
+      "end": 23.204180333333333,
+      "text": "few feet."
+    },
+    {
+      "start": 23.524162555555556,
+      "end": 24.052494555555555,
+      "text": "It's built to"
+    },
+    {
+      "start": 24.065412555555554,
+      "end": 25.470036555555556,
+      "text": "stop\\Na five-thousand-pound"
+    },
+    {
+      "start": 25.482912555555554,
+      "end": 26.616911555555554,
+      "text": "pickup at sixty-two"
+    },
+    {
+      "start": 26.629828555555555,
+      "end": 27.377244555555556,
+      "text": "miles an hour."
+    },
+    {
+      "start": 27.69722677777778,
+      "end": 28.444684777777777,
+      "text": "In one state,"
+    },
+    {
+      "start": 28.741059777777778,
+      "end": 29.978142777777776,
+      "text": "drivers hit thirty-nine"
+    },
+    {
+      "start": 29.991059777777778,
+      "end": 30.377642777777776,
+      "text": "of them in"
+    },
+    {
+      "start": 30.390517777777777,
+      "end": 31.357017777777777,
+      "text": "under eight months."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 2.6395642222222224,
+      "narration_en": "Why would road crews park a truck right in your lane?",
+      "source_audio_sha256": "1227e3042619f540145ec4717dde7da581de6b78fcf9112b9d169c42049b0b6b"
+    },
+    {
+      "start": 2.6395642222222224,
+      "end": 6.7482124444444445,
+      "narration_en": "It's a shield, parked on purpose between traffic and the workers.",
+      "source_audio_sha256": "15314d5f9398337af4832900440c649306dfc9db01205e8d1401dc6d4e80e7f0"
+    },
+    {
+      "start": 6.7482124444444445,
+      "end": 10.160985666666667,
+      "narration_en": "On its back is a crash cushion that folds down like a tail.",
+      "source_audio_sha256": "1b93ec9f8a4784949d61080df2872d3e07a5251d1a6a6d50d765d07f681bd305"
+    },
+    {
+      "start": 10.160985666666667,
+      "end": 12.852092888888889,
+      "narration_en": "Inside are blocks of thin aluminum honeycomb.",
+      "source_audio_sha256": "d57d701e87980e1e6434ac77844f539acf774cfa3aefa77524cd36882ec74fa4"
+    },
+    {
+      "start": 12.852092888888889,
+      "end": 16.14890711111111,
+      "narration_en": "When a car hits, the honeycomb crushes row by row.",
+      "source_audio_sha256": "99b0ffdd88fb9600995af47b6552858b01683ad2474d9da91caae41e6e406013"
+    },
+    {
+      "start": 16.14890711111111,
+      "end": 19.729222333333333,
+      "narration_en": "So the car slows down over about eight feet of crushing metal.",
+      "source_audio_sha256": "1dfa022366648f47c0023b860118cee9733053dcd2a1fe9aaebe9153ba4f1a77"
+    },
+    {
+      "start": 19.729222333333333,
+      "end": 23.464162555555554,
+      "narration_en": "The truck is heavy and braked, so it only rolls a few feet.",
+      "source_audio_sha256": "af3308c4bd6b0d4dbbdf40d8a8385460201a776e6c5842e6d693c53a1da500a9"
+    },
+    {
+      "start": 23.464162555555554,
+      "end": 27.637226777777776,
+      "narration_en": "It's built to stop a five-thousand-pound pickup at sixty-two miles an hour.",
+      "source_audio_sha256": "9d42e4377441dcc498b4d29640a55f37ae56996e291f1e9402af5fe379da084e"
+    },
+    {
+      "start": 27.637226777777776,
+      "end": 31.617,
+      "narration_en": "In one state, drivers hit thirty-nine of them in under eight months.",
+      "source_audio_sha256": "9ab9ceff767aef2ec5b0654b364454ab8c55ed3a23ed59926683b2f4c80b5611"
+    }
+  ],
+  "silence_gaps": [
+    0.430333,
+    0.441604,
+    0.435417,
+    0.472542,
+    0.426167,
+    0.449542,
+    0.306979,
+    0.447583,
+    0.452042,
+    0.323896
+  ],
+  "loudness": {
+    "integrated_lufs": -16.1,
+    "loudness_range_lu": 1.7,
+    "true_peak_dbfs": -1.4,
+    "shot_integrated_lufs": [
+      -15.6,
+      -16.6,
+      -16.1,
+      -16.5,
+      -15.6,
+      -16.5
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "759208437f97bf95560147e25ca70606274ae9f7db201efedc6ef14dd27a67e8"
+}

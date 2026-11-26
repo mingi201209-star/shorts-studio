@@ -104,3 +104,17 @@ python3 scripts/episode/contact_sheet.py video <dir>/final/<x>-film-1080x1920.mp
 ## 8. Publish kit and after the upload
 - [ ] Title: a few words, exactly one emoji. Description short; it barely matters. Pinned comment asks what to explain next.
 - [ ] Read the numbers at 48 h and 7 days, not in the first hour; record them in the episode plan and in the series table.
+
+## 9. Retention plan (owner, 2026-11-26: "make people like the videos, keep watching, and look forward to the next one")
+Applied from EP.32 on, on top of sections 1-8:
+- [ ] Topic shape of the two hits (EP.21 rockfall net, EP.13 guardrail end): a big piece of road hardware catching something huge
+      by giving way (peeling, stretching, crushing), shown mid-catch in frame 1, one counter-intuitive idea, big plain numbers.
+- [ ] One signature reveal shot per Short: the device opened up to show its hidden mechanism (cut-away, x-ray, parts sliding apart),
+      flagged `reveal` in the timeline. Its sound is always the channel sting (benchmarks/signature_sting.py, placed RISE_S before
+      the cut, replacing that cut's whoosh), so viewers learn the beat. Look at the reveal at full size: it must read at phone size
+      (EP.32: honeycomb seen side-on looked like white boxes; straight into the cells with bright rims and dark wells reads at once).
+- [ ] With-vs-without or a familiar comparison where the line makes one (show it literally: section 2).
+- [ ] End punch: the last line is the most surprising fact or number (it plays as the loop runs into frame 1).
+- [ ] Next-episode teaser in the pinned comment ("Next: ..."), not in the film, so the loop stays intact; long videos tease the next
+      long video in the outro and point the end screen at it.
+- [ ] Publish kit: Related video = the long video on the same theme; keep upload days steady (e.g. Shorts Mon/Wed/Fri, US evening).
