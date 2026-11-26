@@ -524,8 +524,8 @@ def main():
         base.set_camera(cam, loc, tgt)
         bpy.context.view_layer.update()
         from mathutils import Matrix
-        info["subject_box"] = hook_gate.project_box(scene, cam, Matrix.Identity(4), (CX - 13.0, CY - m.DOL_R - 26.0, -1.0),
-                                                    (CX + 13.0, CY + m.DOL_R, 10.0))
+        info["subject_box"] = hook_gate.project_box(scene, cam, Matrix.Identity(4), (CX - 10.0, CY - m.DOL_R - 12.0, -1.0),
+                                                    (CX + 10.0, CY + m.DOL_R, 9.0))          # the collision: the dolphin and the bow's front 12 m
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         info["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()

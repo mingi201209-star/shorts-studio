@@ -28,4 +28,9 @@ after 4.5 m (bow 2.7 m, ring 1.8 m), peak 27.4 million lb, 39.5 m short of the p
 - Spray: bigger and more pieces, or the hit reads as a gentle bump at phone size.
 
 ## Local and CI
-Local low-res: (to be recorded). CI: (to be recorded).
+Local low-res (752 frames at 162x288, 3 samples): every gate PASS but the opening hook: its subject box (the dolphin plus 26 m of
+bow) was wider than any portrait frame, 55 % in frame. The subject is now the collision itself (the dolphin and the bow's front
+12 m): 100 % in frame and 75 % of the width in the first second (frames 0, 12 and 23 checked). Physics, pace 19.1 cuts a minute /
+195 wpm / 31.3 s, line alignment, telemetry, visible action, no scene text, loop, smoothness, black opening, captions and audio
+(-15.2 LUFS, true peak -1.9 dBFS, speech 9.1 dB over the effects) PASS. The 1 fps sheet reads without sound.
+CI: (to be recorded).
