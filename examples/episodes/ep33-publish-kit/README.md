@@ -21,20 +21,21 @@ Alternatives:
 ## Description
 What stops a giant ship from knocking down a bridge? Round islands called dolphins: steel rings packed with up to 6,700 tons of crushed rock. When a ship hits one, the ring bends, the rock packs tighter and the ship's bow crumples, so the ship stops before it ever touches the pier. Florida built them after a ship knocked down its Sunshine Skyway bridge in 1980.
 
-Part 2 of Built to Get Hit. Part 1: the truck that's built to get hit.
+Part 2 of Built to Get Hit. Part 1: the truck that's built to get hit. Part 3: what catches a runaway truck.
 
 Simplified animation for explanation; not a specific ship, and the bridge is not drawn to plan.
 
 #Shorts #Engineering #Bridges #Ships #HowItWorks #Infrastructure
 
 ## Pinned comment
-Would you trust a pile of rock to stop an 87,000-ton ship? 👇 Next: (the next topic)
+Would you trust a pile of rock to stop an 87,000-ton ship? 👇 Part 3 is next: how do you stop a truck that's lost its brakes? 👀
 
-(Fill in "Next:" with the topic of the next upload.)
+(Keep it in step with the teaser at the end of the video: part three is EP.34.)
 
 ## Upload
 - Related video: EP.32 (the truck that's built to get hit) until there is a long video on the theme.
 - Keep the upload days steady (owner plan 2026-11-26).
+- Add it to the "Built to Get Hit" playlist after EP.32; upload EP.34 next (its teaser promises it).
 
 ## Tags
 bridge dolphins, pier protection, ship collision, Sunshine Skyway, bridge ship strike, Key Bridge, vessel collision, how it works,
