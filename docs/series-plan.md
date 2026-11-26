@@ -97,3 +97,13 @@ of it in frame, or at least 60 % when it fills the picture; at least 30 % of the
 (v2) to this rule.
 All four v2 films pass every gate in CI (commit ca1e350; openings held 3.40 / 2.42 / 2.17 / 2.68 s). Verification is the owner's
 Studio numbers: viewed % of the v2 uploads against EP.14-EP.15 (and v1 where it was uploaded).
+
+## Channel eligibility (owner's Studio Earn tab, data as of 2026-11-21, reported 2026-11-26)
+30 subscribers (of 1,000), 0 qualified public watch hours in 365 days (of 4,000), 22,000 qualified Shorts views in 90 days (of 10
+million). The Shorts route is out of reach (0.2 %). Watch hours come only from public long videos, and there were none until LF01.
+Reported change (YouTube blog and press, Aug 2026): new applicants from 2027-02-01 need 1,000 subscribers plus 8,000 hours or 20
+million Shorts views; the fan-funding tier (500 subscribers plus 3,000 hours or 3 million Shorts views) is unchanged. 4,000 hours
+before February would take about 60 hours a day (some 1,800 views a day of a 5-minute video), so plan for the 2027 bar: long videos
+are the main lever (watch hours and subscribers; 8-10 minutes doubles the hours per view of LF01's 5), built quickly from the existing
+episodes' worlds; Shorts keep bringing new viewers and point to a long video ("Related video"). Record each long video's impressions
+click-through, average view duration and subscribers gained.
