@@ -127,5 +127,8 @@ Local low-res v2 (845 frames at 162x288, 3 samples, composed to 1080x1920): ever
 - captions (widest line 876 px of 900 with the new tracking);
 - audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects.
 The low-res run rendered before the flame, seat, landing-aid and plating changes; CI renders and gates the final code.
-CI v2 renders every frame at the full 1080x1920 (16 samples), with no upscale. Run 46059395719 (sha 23a002e) was checked at
-full size before its final job, and that check led to the panel and x-ray changes above. CI v3 renders the film with them.
+CI v2 renders every frame at the full 1080x1920 (16 samples), with no upscale. Run 46059395719 (sha 23a002e) passed every gate.
+Its median frame job took 12 min. Its frames, checked at full size, led to the panel and x-ray changes above, so it is not
+the delivered film.
+Local low-res v3 (sha 1bd2cf4, renderer 0e22fb64): every gate PASS, with the same numbers as above (no frozen frame, median
+step 0.96). CI v3, run 46066180867, renders the delivered film.
