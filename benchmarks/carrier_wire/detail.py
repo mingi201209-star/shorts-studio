@@ -55,7 +55,7 @@ def _sphere(name, r, loc, mat, scale=(1, 1, 1)):
 # ---------------------------------------------------------------------------------------------------------------------- materials
 
 def navy_paint(name="Navy paint"):
-    """Two-tone tactical grey (lighter underneath), fine panel lines and light weathering, in object space."""
+    """Two-tone tactical grey (lighter underneath), rectangular panel lines and light weathering, in object space."""
     mt = bpy.data.materials.get(name)
     if mt is not None:
         return mt
@@ -74,16 +74,51 @@ def navy_paint(name="Navy paint"):
     tone.inputs[6].default_value = (0.60, 0.63, 0.66, 1)          # underside
     tone.inputs[7].default_value = (0.33, 0.36, 0.40, 1)          # top
     nt.links.new(under.outputs["Result"], tone.inputs[0])
-    vor = nt.nodes.new("ShaderNodeTexVoronoi")
-    vor.feature = "DISTANCE_TO_EDGE"
-    vor.inputs["Scale"].default_value = 1.1
-    nt.links.new(tc.outputs["Object"], vor.inputs["Vector"])
-    line = nt.nodes.new("ShaderNodeMapRange")
-    line.inputs["From Min"].default_value = 0.0
-    line.inputs["From Max"].default_value = 0.025
-    line.inputs["To Min"].default_value = 0.72
-    line.inputs["To Max"].default_value = 1.0
-    nt.links.new(vor.outputs["Distance"], line.inputs["Value"])
+    # panel lines as on a real airframe: rings at the frames along the length, stringer lines along it, staggered butts, laid out
+    # by planes in object space; each family fades where the skin runs parallel to its planes (so no smeared bands), so the
+    # skin reads as rectangular panels, never as crazing or cracks
+    def math_node(op, a=None, b=None):
+        n = nt.nodes.new("ShaderNodeMath")
+        n.operation = op
+        for i, v in enumerate((a, b)):
+            if v is None:
+                continue
+            if isinstance(v, (int, float)):
+                n.inputs[i].default_value = float(v)
+            else:
+                nt.links.new(v, n.inputs[i])
+        return n.outputs[0]
+
+    def plane_distance(coord, spacing, offset=None):
+        """Distance (m) from coord to the nearest of the planes coord = k * spacing (+ offset)."""
+        c = coord if offset is None else math_node("ADD", coord, offset)
+        f = math_node("FRACT", math_node("DIVIDE", c, spacing))
+        return math_node("MULTIPLY", math_node("SUBTRACT", 0.5, math_node("ABSOLUTE", math_node("SUBTRACT", f, 0.5))), spacing)
+
+    def seam_factor(distance, normal_component):
+        line = nt.nodes.new("ShaderNodeMapRange")
+        line.inputs["From Min"].default_value, line.inputs["From Max"].default_value = 0.0, 0.012
+        line.inputs["To Min"].default_value, line.inputs["To Max"].default_value = 0.74, 1.0
+        nt.links.new(distance, line.inputs["Value"])
+        fade = nt.nodes.new("ShaderNodeMapRange")                 # 1 where the planes cut the skin squarely, 0 where parallel
+        fade.inputs["From Min"].default_value, fade.inputs["From Max"].default_value = 0.6, 0.85
+        fade.inputs["To Min"].default_value, fade.inputs["To Max"].default_value = 1.0, 0.0
+        nt.links.new(math_node("ABSOLUTE", normal_component), fade.inputs["Value"])
+        mix = nt.nodes.new("ShaderNodeMix")                       # float mix: 1 (no line) to the line factor
+        mix.data_type = "FLOAT"
+        nt.links.new(fade.outputs["Result"], mix.inputs["Factor"])
+        mix.inputs["A"].default_value = 1.0
+        nt.links.new(line.outputs["Result"], mix.inputs["B"])
+        return mix.outputs["Result"]
+
+    nrm = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Normal"], nrm.inputs["Vector"])
+    band = math_node("FLOOR", math_node("DIVIDE", sep.outputs["Y"], 1.35))
+    stagger = math_node("MULTIPLY", band, 0.37)
+    fy = seam_factor(plane_distance(sep.outputs["Y"], 1.35), nrm.outputs["Y"])
+    fx = seam_factor(plane_distance(sep.outputs["X"], 0.85, stagger), nrm.outputs["X"])
+    fz = seam_factor(plane_distance(sep.outputs["Z"], 0.55, stagger), nrm.outputs["Z"])
+    line_out = math_node("MULTIPLY", math_node("MULTIPLY", fy, fx), fz)
     noise = nt.nodes.new("ShaderNodeTexNoise")
     noise.inputs["Scale"].default_value = 3.0
     noise.inputs["Detail"].default_value = 6
@@ -94,7 +129,7 @@ def navy_paint(name="Navy paint"):
     nt.links.new(noise.outputs["Fac"], wear.inputs["Value"])
     m1 = nt.nodes.new("ShaderNodeMath")
     m1.operation = "MULTIPLY"
-    nt.links.new(line.outputs["Result"], m1.inputs[0])
+    nt.links.new(line_out, m1.inputs[0])
     nt.links.new(wear.outputs["Result"], m1.inputs[1])
     col = nt.nodes.new("ShaderNodeMix")
     col.data_type = "RGBA"
