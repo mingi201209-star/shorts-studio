@@ -174,6 +174,80 @@ def deck_material(name="Flight deck"):
     return mt
 
 
+def hull_material(name="Hull grey", colour=(0.15, 0.16, 0.175)):
+    """Haze-grey ship steel: welded plates (seams, a few metres across, rows about 2 m tall, laid out along the side and up the
+    height, so the stern and both sides get them), faint grime streaks running down, and a little mottling."""
+    mt = bpy.data.materials.get(name)
+    if mt is not None:
+        return mt
+    mt = material(name, colour, rough=0.7)
+    nt = mt.node_tree
+    b = nt.nodes.get("Principled BSDF")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Object"], sep.inputs["Vector"])
+    along = nt.nodes.new("ShaderNodeMath")                 # x + y runs along the stern and both sides alike
+    along.operation = "ADD"
+    nt.links.new(sep.outputs["X"], along.inputs[0])
+    nt.links.new(sep.outputs["Y"], along.inputs[1])
+    uv = nt.nodes.new("ShaderNodeCombineXYZ")
+    nt.links.new(along.outputs[0], uv.inputs["X"])
+    nt.links.new(sep.outputs["Z"], uv.inputs["Y"])
+    brick = nt.nodes.new("ShaderNodeTexBrick")
+    brick.inputs["Scale"].default_value = 0.125              # 8 m per texture unit: plates 4 m by 2 m
+    brick.inputs["Mortar Size"].default_value = 0.004
+    brick.inputs["Color1"].default_value = (*colour, 1)
+    brick.inputs["Color2"].default_value = tuple(c * 0.95 for c in colour) + (1,)
+    brick.inputs["Mortar"].default_value = tuple(c * 0.78 for c in colour) + (1,)     # seams faint: plating, not tiles
+    nt.links.new(uv.outputs["Vector"], brick.inputs["Vector"])
+    streak_v = nt.nodes.new("ShaderNodeCombineXYZ")          # streaks: fine along the side, long down the height
+    m1 = nt.nodes.new("ShaderNodeMath")
+    m1.operation = "MULTIPLY"
+    m1.inputs[1].default_value = 1.2
+    nt.links.new(along.outputs[0], m1.inputs[0])
+    m2 = nt.nodes.new("ShaderNodeMath")
+    m2.operation = "MULTIPLY"
+    m2.inputs[1].default_value = 0.06
+    nt.links.new(sep.outputs["Z"], m2.inputs[0])
+    nt.links.new(m1.outputs[0], streak_v.inputs["X"])
+    nt.links.new(m2.outputs[0], streak_v.inputs["Y"])
+    streak = nt.nodes.new("ShaderNodeTexNoise")
+    streak.inputs["Scale"].default_value = 1.0
+    streak.inputs["Detail"].default_value = 4
+    nt.links.new(streak_v.outputs["Vector"], streak.inputs["Vector"])
+    grime = nt.nodes.new("ShaderNodeMapRange")
+    grime.inputs["From Min"].default_value, grime.inputs["From Max"].default_value = 0.5, 0.75
+    grime.inputs["To Min"].default_value, grime.inputs["To Max"].default_value = 1.0, 0.72
+    nt.links.new(streak.outputs["Fac"], grime.inputs["Value"])
+    mottle = nt.nodes.new("ShaderNodeTexNoise")
+    mottle.inputs["Scale"].default_value = 0.3
+    nt.links.new(tc.outputs["Object"], mottle.inputs["Vector"])
+    mot = nt.nodes.new("ShaderNodeMapRange")
+    mot.inputs["To Min"].default_value, mot.inputs["To Max"].default_value = 0.9, 1.1
+    nt.links.new(mottle.outputs["Fac"], mot.inputs["Value"])
+    k = nt.nodes.new("ShaderNodeMath")
+    k.operation = "MULTIPLY"
+    nt.links.new(grime.outputs["Result"], k.inputs[0])
+    nt.links.new(mot.outputs["Result"], k.inputs[1])
+    shade = nt.nodes.new("ShaderNodeMix")
+    shade.data_type = "RGBA"
+    shade.blend_type = "MULTIPLY"
+    shade.inputs["Factor"].default_value = 1.0
+    nt.links.new(brick.outputs["Color"], shade.inputs["A"])
+    kc = nt.nodes.new("ShaderNodeCombineColor")
+    for i in range(3):
+        nt.links.new(k.outputs[0], kc.inputs[i])
+    nt.links.new(kc.outputs["Color"], shade.inputs["B"])
+    nt.links.new(shade.outputs["Result"], b.inputs["Base Color"])
+    bump = nt.nodes.new("ShaderNodeBump")
+    bump.inputs["Strength"].default_value = 0.2
+    bump.inputs["Distance"].default_value = 0.02
+    bump.invert = True                                       # the brick texture's Fac is 1 on the mortar: the seams sit in
+    nt.links.new(brick.outputs["Fac"], bump.inputs["Height"])
+    nt.links.new(bump.outputs["Normal"], b.inputs["Normal"])
+    return mt
+
+
 def glass(name, colour=(0.10, 0.12, 0.13), alpha=0.85, rough=0.05):
     mt = bpy.data.materials.get(name)
     if mt is None:
@@ -419,6 +493,21 @@ def deck_furniture(deck_y, outline):
     for k in range(0, 40):
         y = deck_y[0] + 6 + k * 8.0
         obs.append(cube(f"Foul stripe {k}", (-17.6, y, 0.007), (0.4, 2.0, 0.012), red if k % 2 else yellow))
+    # the optical landing aid on the port side, facing the approach: a lens column with the amber "ball" lit in its middle and a
+    # bar of green datum lights either side (lit, so it reads in the approach and on-deck shots)
+    housing = material("Lens housing", (0.10, 0.10, 0.11), rough=0.6)
+    amber = material("Lens amber", (1.0, 0.55, 0.05), emission=6.0)
+    green = material("Datum green", (0.15, 1.0, 0.25), emission=5.0)
+    cell = material("Lens cell", (0.03, 0.03, 0.035), metal=0.4, rough=0.3)
+    lx, ly = -24.0, 20.0
+    obs.append(cube("Lens base", (lx, ly + 0.4, 0.6), (1.0, 1.0, 1.2), housing))
+    obs.append(cube("Lens column", (lx, ly, 1.9), (0.9, 0.6, 1.9), housing))
+    for j in range(5):
+        obs.append(cube(f"Lens cell {j}", (lx, ly - 0.31, 1.2 + j * 0.34), (0.6, 0.04, 0.26), amber if j == 2 else cell))
+    for sx in (-1, 1):
+        obs.append(cube(f"Datum bar {sx}", (lx + sx * 2.1, ly, 1.88), (3.0, 0.25, 0.22), housing))
+        for j in range(5):
+            obs.append(cube(f"Datum light {sx} {j}", (lx + sx * (1.0 + j * 0.55), ly - 0.14, 1.88), (0.28, 0.04, 0.14), green))
     n = len(outline)
     for i in range(n):
         (xa, ya), (xb, yb) = outline[i], outline[(i + 1) % n]

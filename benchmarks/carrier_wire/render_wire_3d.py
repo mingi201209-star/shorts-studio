@@ -153,7 +153,7 @@ def deck_outline():
 class Carrier:
     def __init__(self):
         deck_mt = detail.deck_material()
-        hull_mt = noisy("Hull grey", (0.165, 0.175, 0.19), rough=0.7, scale=0.5, amount=0.1)      # haze grey: lighter read as white in the sky fill
+        hull_mt = detail.hull_material()            # haze grey steel in welded plates with grime streaks (plain grey read as a blank wall)
         white = material("Deck white", (0.86, 0.86, 0.82), rough=0.6)
         yellow = material("Deck yellow", (0.88, 0.70, 0.08), rough=0.6)
         dark = material("Carrier dark", (0.05, 0.05, 0.06), rough=0.6)

@@ -93,7 +93,9 @@ What is new (benchmarks/carrier_wire/detail.py):
 - Parked jets with folded wings and coloured bands, tow tractors.
 - The deck crew: float vests with reflective bands over their jerseys, cranial helmets with goggles and ear defenders, gloves and
   boots. The arresting-gear crew wears green.
-- The hull: near-vertical sides with a boot-top band at the waterline, hangar doors with lamps, the fantail, galleries.
+- The hull and island: haze-grey steel in welded plates with faint grime streaks. The hull has near-vertical sides with a
+  boot-top band at the waterline, hangar doors with lamps, the fantail and galleries.
+- The optical landing aid on the port side: the amber ball between two bars of green datum lights.
 - The sea: the wake as streaked foam over turquoise prop wash, and an escort on the horizon.
 
 Storyboard fixes:
@@ -110,3 +112,11 @@ Storyboard fixes:
   the tip, with shock diamonds and soft edges.
 
 Captions: a little tracking (spacing 1.5), so the heavy face's word spaces read at phone size.
+
+Local low-res v2 (845 frames at 162x288, 3 samples, composed to 1080x1920): every gate PASS on the first run:
+- physics, pace (20.4 cuts a minute, 190 wpm, 35.2 s), opening hook (jet 89 % of the width, 94 % in frame);
+- line alignment, telemetry, visible action, no scene text, smoothness (no frozen frame), black opening;
+- captions (widest line 876 px of 900 with the new tracking);
+- audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects.
+The low-res run rendered before the flame, seat, landing-aid and plating changes; CI renders and gates the final code.
+CI v2 renders every frame at the full 1080x1920 (16 samples), with no upscale.
