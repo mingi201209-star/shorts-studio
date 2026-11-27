@@ -1,0 +1,91 @@
+{
+ "text": "How do you stop a truck that's lost its brakes? On some steep mountain roads, you catch it in a giant net. They're built to stop a ninety-thousand-pound truck at ninety miles an hour.",
+ "model": "eleven_multilingual_ttv_v2",
+ "candidates": [
+  {
+   "candidate": "1.1",
+   "description": "A middle-aged American man with a warm, slightly gravelly, weathered voice, like a veteran crash-test engineer who has watched a thousand collisions. Calm and confident with a hint of dry humor, crisp diction, medium pace. Clean studio recording.",
+   "generated_voice_id": "OzrNVW7lXHyC830PO3Oy",
+   "file": "cand1_1.mp3",
+   "label": "1A Veteran engineer"
+  },
+  {
+   "candidate": "1.2",
+   "description": "A middle-aged American man with a warm, slightly gravelly, weathered voice, like a veteran crash-test engineer who has watched a thousand collisions. Calm and confident with a hint of dry humor, crisp diction, medium pace. Clean studio recording.",
+   "generated_voice_id": "fZp9SCyyvgreWfbMuVaK",
+   "file": "cand1_2.mp3",
+   "label": "1B Veteran engineer"
+  },
+  {
+   "candidate": "1.3",
+   "description": "A middle-aged American man with a warm, slightly gravelly, weathered voice, like a veteran crash-test engineer who has watched a thousand collisions. Calm and confident with a hint of dry humor, crisp diction, medium pace. Clean studio recording.",
+   "generated_voice_id": "kyLas78peVuW3RX0H5go",
+   "file": "cand1_3.mp3",
+   "label": "1C Veteran engineer"
+  },
+  {
+   "candidate": "2.1",
+   "description": "A cheerful, curious American male voice with a faint metallic, synthetic sheen, like a friendly crash-test dummy narrating his own experiments. Bright and energetic but perfectly clear diction, medium-fast pace. Clean studio recording.",
+   "generated_voice_id": "C8ZOgGyRbBGuOKYBRz1T",
+   "file": "cand2_1.mp3",
+   "label": "2A Crash-test dummy"
+  },
+  {
+   "candidate": "2.2",
+   "description": "A cheerful, curious American male voice with a faint metallic, synthetic sheen, like a friendly crash-test dummy narrating his own experiments. Bright and energetic but perfectly clear diction, medium-fast pace. Clean studio recording.",
+   "generated_voice_id": "K53Vjt7kKqCUbAwe7Y34",
+   "file": "cand2_2.mp3",
+   "label": "2B Crash-test dummy"
+  },
+  {
+   "candidate": "2.3",
+   "description": "A cheerful, curious American male voice with a faint metallic, synthetic sheen, like a friendly crash-test dummy narrating his own experiments. Bright and energetic but perfectly clear diction, medium-fast pace. Clean studio recording.",
+   "generated_voice_id": "AMWkFWzwlwVgkg854Qkl",
+   "file": "cand2_3.mp3",
+   "label": "2C Crash-test dummy"
+  },
+  {
+   "candidate": "3.1",
+   "description": "An American male announcer with the punchy, crisp, slightly nasal delivery of a 1950s newsreel or safety-film narrator. Upbeat and dramatic, very clear articulation, medium-fast pace. Clean studio recording with no vintage noise.",
+   "generated_voice_id": "qo20Nj7zGH1MGdtchU2n",
+   "file": "cand3_1.mp3",
+   "label": "3A 1950s announcer"
+  },
+  {
+   "candidate": "3.2",
+   "description": "An American male announcer with the punchy, crisp, slightly nasal delivery of a 1950s newsreel or safety-film narrator. Upbeat and dramatic, very clear articulation, medium-fast pace. Clean studio recording with no vintage noise.",
+   "generated_voice_id": "7iBVzS2OduslBqJZyxNC",
+   "file": "cand3_2.mp3",
+   "label": "3B 1950s announcer"
+  },
+  {
+   "candidate": "3.3",
+   "description": "An American male announcer with the punchy, crisp, slightly nasal delivery of a 1950s newsreel or safety-film narrator. Upbeat and dramatic, very clear articulation, medium-fast pace. Clean studio recording with no vintage noise.",
+   "generated_voice_id": "CsnoPvSYwi0jJsL18LLc",
+   "file": "cand3_3.mp3",
+   "label": "3C 1950s announcer"
+  },
+  {
+   "candidate": "4.1",
+   "description": "A confident American woman in her thirties with a low, smooth voice and a wry, playful tone, like an engineer explaining her favorite machines to a friend. Clear diction, medium pace. Clean studio recording.",
+   "generated_voice_id": "pyRdEc1CSaV2lMXqIqGl",
+   "file": "cand4_1.mp3",
+   "label": "4A Female engineer"
+  },
+  {
+   "candidate": "4.2",
+   "description": "A confident American woman in her thirties with a low, smooth voice and a wry, playful tone, like an engineer explaining her favorite machines to a friend. Clear diction, medium pace. Clean studio recording.",
+   "generated_voice_id": "qTsQrRap3A8qzqnc74rE",
+   "file": "cand4_2.mp3",
+   "label": "4B Female engineer"
+  },
+  {
+   "candidate": "4.3",
+   "description": "A confident American woman in her thirties with a low, smooth voice and a wry, playful tone, like an engineer explaining her favorite machines to a friend. Clear diction, medium pace. Clean studio recording.",
+   "generated_voice_id": "xE6dut2h7fr5oe7FlN52",
+   "file": "cand4_3.mp3",
+   "label": "4C Female engineer"
+  }
+ ],
+ "note": "voice design candidates sent to the owner as ep05-review/voice-audition-3-designed.mp4 (2026-11-27); the chosen one is saved with: python3 -m benchmarks.voice.eleven create --generated-id ID --name NAME --desc DESC"
+}
