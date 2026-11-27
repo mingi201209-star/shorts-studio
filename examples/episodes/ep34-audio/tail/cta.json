@@ -1,0 +1,75 @@
+{
+ "text": "Subscribe for part four: how do you stop a fighter jet?",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "Subscribe",
+   "start": 0.496937,
+   "end": 1.149
+  },
+  {
+   "text": "for",
+   "start": 1.184,
+   "end": 1.312
+  },
+  {
+   "text": "part",
+   "start": 1.382,
+   "end": 1.649
+  },
+  {
+   "text": "four",
+   "start": 1.718,
+   "end": 2.101
+  },
+  {
+   "text": "how",
+   "start": 2.659,
+   "end": 2.786
+  },
+  {
+   "text": "do",
+   "start": 2.81,
+   "end": 2.868
+  },
+  {
+   "text": "you",
+   "start": 2.914,
+   "end": 2.984
+  },
+  {
+   "text": "stop",
+   "start": 3.03,
+   "end": 3.286
+  },
+  {
+   "text": "a",
+   "start": 3.344,
+   "end": 3.367
+  },
+  {
+   "text": "fighter",
+   "start": 3.425,
+   "end": 3.715
+  },
+  {
+   "text": "jet",
+   "start": 3.785,
+   "end": 4.087
+  }
+ ],
+ "audio_onset_s": 0.527,
+ "source_mp3_sha256": "3d532c3fda41c67e0be0d761ccc6643fa82f5495b7ed3efee94dcd9c9822d853",
+ "wav_sha256": "5b5daecb27d5adbdd26e3f6ad5ba84fd2cef61cdc31dd5ca0ca40ad5fd32d18e",
+ "note": "the series tail's line in the channel's new voice (Bumper, ElevenLabs; introduces it before EP.35), decoded to 48 kHz mono; word timings measured by the service, the first word moved to where the sound starts",
+ "next_episode": {
+  "episode": "EP.35",
+  "film": "How do you stop a jet doing a hundred fifty miles an hour?",
+  "frames": [
+   0,
+   96
+  ],
+  "ci_run": "pending"
+ }
+}

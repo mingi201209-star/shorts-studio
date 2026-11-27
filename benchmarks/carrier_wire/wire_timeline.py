@@ -39,8 +39,8 @@ B1 = cam((-7.0, -40.0, 11.0), (0.0, 150.0, -12.0), 28.0, rel="hook")      # chas
 B1_B = cam((-6.0, -34.0, 9.5), (0.0, 150.0, -12.0), 28.0, rel="hook")
 B2 = cam((-5.2, -0.5, 3.4), (0.0, 1.6, 1.4), 30.0, rel="hook")           # beside the tail: the hook swings down
 B2_B = cam((-5.0, 0.0, 3.2), (0.0, 1.8, 1.3), 30.0, rel="hook")
-C = cam((-9.0, Y3 - 7.5, 0.9), (0.0, Y3 + 1.5, 0.4), 28.0)               # low on the deck: four wires, the hook snags the third
-C_B = cam((-9.0, Y3 - 5.5, 0.9), (0.0, Y3 + 3.5, 0.5), 28.0)
+C = cam((-4.6, -6.5, 0.9), (0.0, 1.5, 0.3), 28.0, rel="hook")             # low, tracking the hook: it skips two wires, snags the third
+C_B = cam((-4.4, -6.0, 0.85), (0.0, 1.8, 0.3), 28.0, rel="hook")
 D = cam((-17.0, Y3 + 3.0, 6.5), (0.0, Y3 - 9.0, -7.0), 24.0)             # x-ray: the deck see-through, the cable down to the engine
 D_B = cam((-15.5, Y3 + 2.0, 5.5), (0.0, Y3 - 10.0, -7.5), 24.0)
 E1 = cam((-7.5, Y3 - 9.0, -5.8), (0.0, Y3 - 17.0, -8.5), 26.0)           # x-ray, below deck: the crosshead drives the ram in
