@@ -106,5 +106,7 @@ Storyboard fixes:
 - In the cockpit shot the canopy bow was a solid disc, so Bumper looked as if he sat on top of the jet in front of a grey
   dome. The bow and a windscreen arch are now open rings. The ejection seat sits right behind his back, and the glass reflects
   the sky toward its edges (Fresnel), so he reads as inside the canopy.
+- The full-power exhaust was a solid peach cone. It is now a flame: white-hot at the nozzle, thinning to orange and nothing at
+  the tip, with shock diamonds and soft edges.
 
 Captions: a little tracking (spacing 1.5), so the heavy face's word spaces read at phone size.

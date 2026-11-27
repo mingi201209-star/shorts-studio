@@ -233,23 +233,66 @@ class Jet:
         black = material("Jet black", (0.02, 0.02, 0.025), rough=0.6)
         P = []
         # exhaust plumes (full power)
+        # the exhaust at full power: a flame that is white-hot at the nozzle and thins to orange and nothing at its tip, with shock
+        # diamonds (bright bands) along it, and soft edges (denser where you look into it, clear where you see it edge-on)
         self.plume_mt = bpy.data.materials.new("Plume")
         self.plume_mt.use_nodes = True
         nt = self.plume_mt.node_tree
         nt.nodes.clear()
         out = nt.nodes.new("ShaderNodeOutputMaterial")
+        gen = nt.nodes.new("ShaderNodeTexCoord")
+        sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+        nt.links.new(gen.outputs["Generated"], sep.inputs["Vector"])          # z: 0 at the nozzle, 1 at the tip
+
+        def node(kind, op=None, **inputs):
+            n = nt.nodes.new(kind)
+            if op:
+                n.operation = op
+            for k, v in inputs.items():
+                n.inputs[int(k[1:])].default_value = v
+            return n
+        fade = node("ShaderNodeMath", "SUBTRACT", i0=1.0)
+        nt.links.new(sep.outputs["Z"], fade.inputs[1])
+        fade2 = node("ShaderNodeMath", "POWER", i1=1.6)
+        nt.links.new(fade.outputs[0], fade2.inputs[0])
+        bands = node("ShaderNodeMath", "MULTIPLY", i1=34.0)
+        nt.links.new(sep.outputs["Z"], bands.inputs[0])
+        sine = node("ShaderNodeMath", "SINE")
+        nt.links.new(bands.outputs[0], sine.inputs[0])
+        diamond = node("ShaderNodeMapRange")
+        diamond.inputs["From Min"].default_value, diamond.inputs["From Max"].default_value = 0.6, 1.0
+        diamond.inputs["To Min"].default_value, diamond.inputs["To Max"].default_value = 1.0, 1.8
+        nt.links.new(sine.outputs[0], diamond.inputs["Value"])
+        strength = node("ShaderNodeMath", "MULTIPLY", i1=9.0)
+        nt.links.new(fade2.outputs[0], strength.inputs[0])
+        strength2 = node("ShaderNodeMath", "MULTIPLY")
+        nt.links.new(strength.outputs[0], strength2.inputs[0])
+        nt.links.new(diamond.outputs["Result"], strength2.inputs[1])
+        ramp = nt.nodes.new("ShaderNodeValToRGB")
+        ramp.color_ramp.elements[0].color = (1.0, 0.88, 0.62, 1)
+        ramp.color_ramp.elements[1].color = (1.0, 0.30, 0.06, 1)
+        nt.links.new(sep.outputs["Z"], ramp.inputs["Fac"])
         em = nt.nodes.new("ShaderNodeEmission")
-        em.inputs["Color"].default_value = (1.0, 0.55, 0.18, 1)
-        em.inputs["Strength"].default_value = 6.0
+        nt.links.new(ramp.outputs["Color"], em.inputs["Color"])
+        nt.links.new(strength2.outputs[0], em.inputs["Strength"])
+        lw = nt.nodes.new("ShaderNodeLayerWeight")
+        lw.inputs["Blend"].default_value = 0.5
+        dense = node("ShaderNodeMath", "SUBTRACT", i0=1.0)
+        nt.links.new(lw.outputs["Facing"], dense.inputs[1])
+        dense2 = node("ShaderNodeMath", "MULTIPLY")
+        nt.links.new(dense.outputs[0], dense2.inputs[0])
+        nt.links.new(fade.outputs[0], dense2.inputs[1])
+        dense3 = node("ShaderNodeMath", "MULTIPLY", i1=0.8)
+        nt.links.new(dense2.outputs[0], dense3.inputs[0])
         tr = nt.nodes.new("ShaderNodeBsdfTransparent")
         mix = nt.nodes.new("ShaderNodeMixShader")
-        mix.inputs["Fac"].default_value = 0.45
+        nt.links.new(dense3.outputs[0], mix.inputs["Fac"])
         nt.links.new(tr.outputs["BSDF"], mix.inputs[1])
         nt.links.new(em.outputs["Emission"], mix.inputs[2])
         nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
         self.plumes = []
         for sx in (-1, 1):
-            bpy.ops.mesh.primitive_cone_add(vertices=16, radius1=0.42, radius2=0.08, depth=3.2, location=(sx * 0.62, -0.9, 1.75), rotation=(math.pi / 2, 0, 0))
+            bpy.ops.mesh.primitive_cone_add(vertices=24, radius1=0.40, radius2=0.12, depth=3.8, location=(sx * 0.62, -1.2, 1.75), rotation=(math.pi / 2, 0, 0))
             pl = bpy.context.object
             pl.data.materials.append(self.plume_mt)
             self.plumes.append(pl)
