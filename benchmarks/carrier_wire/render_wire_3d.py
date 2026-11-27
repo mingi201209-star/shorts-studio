@@ -29,6 +29,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from benchmarks import hook_gate  # noqa: E402
 from benchmarks.carrier_wire import wire_motion as m  # noqa: E402
 from benchmarks.carrier_wire import wire_timeline as tl  # noqa: E402
+from benchmarks.carrier_wire import detail  # noqa: E402
 from benchmarks.identity import dummy, xray  # noqa: E402
 from benchmarks.road_safety import cinematic  # noqa: E402
 from benchmarks.road_safety import render_jersey_barrier as base  # noqa: E402
@@ -48,6 +49,8 @@ ACC = (3.4, Y3 - 10.5)           # accumulator tank (x, y)
 T_TD = -0.35                     # main wheels and hook on the deck
 GLIDE = math.radians(3.5)
 N_SPARK = 60
+SKY = 0.26                       # house-style sky fill (EP.32-34: 0.24-0.30); the sun does the modelling
+SUN = 6.5
 
 
 def arguments():
@@ -149,8 +152,8 @@ def deck_outline():
 
 class Carrier:
     def __init__(self):
-        deck_mt = noisy("Flight deck", (0.075, 0.078, 0.085), rough=0.92, scale=3.0, amount=0.25)
-        hull_mt = noisy("Hull grey", (0.24, 0.26, 0.28), rough=0.7, scale=0.5, amount=0.1)
+        deck_mt = detail.deck_material()
+        hull_mt = noisy("Hull grey", (0.165, 0.175, 0.19), rough=0.7, scale=0.5, amount=0.1)      # haze grey: lighter read as white in the sky fill
         white = material("Deck white", (0.86, 0.86, 0.82), rough=0.6)
         yellow = material("Deck yellow", (0.88, 0.70, 0.08), rough=0.6)
         dark = material("Carrier dark", (0.05, 0.05, 0.06), rough=0.6)
@@ -158,13 +161,17 @@ class Carrier:
         n = len(outline)
         top = [(x, y, 0.0) for x, y in outline]
         bot = [(x * 0.95, y, -0.6) for x, y in outline]
+        # near-vertical sides down to just above the waterline (as a real carrier's), then in to the keel under the sea; the faces
+        # below the last ring carry the dark red boot-top, so a band of it shows at the waterline
+        mid = [(x * 0.93, y, SEA_Z + 1.0) for x, y in outline]
         keel = [(x * 0.52, y * 0.97 + 4.0, SEA_Z - 6.0) for x, y in outline]
-        verts = top + bot + keel
-        faces = [tuple(range(n))[::-1] if False else tuple(range(n))]
-        faces += [(i, (i + 1) % n, n + (i + 1) % n, n + i) for i in range(n)]
-        faces += [(n + i, n + (i + 1) % n, 2 * n + (i + 1) % n, 2 * n + i) for i in range(n)]
+        verts = top + bot + mid + keel
+        faces = [(r * n + i, r * n + (i + 1) % n, (r + 1) * n + (i + 1) % n, (r + 1) * n + i) for r in range(3) for i in range(n)]
         self.deck = mesh_object("Flight deck", top, [tuple(range(n))], deck_mt)
-        self.hull = mesh_object("Hull", verts, faces[1:], hull_mt)
+        self.hull = mesh_object("Hull", verts, faces, hull_mt)
+        self.hull.data.materials.append(material("Boot-top red", (0.30, 0.05, 0.04), rough=0.8))
+        for poly in self.hull.data.polygons:
+            poly.material_index = 1 if poly.index >= 2 * n else 0
         # markings: landing-area edges and centre line (dashes), the foul lines, a yellow ramp edge at the stern
         for x in (-14.0, 14.0):
             y = DECK_Y[0] + 6
@@ -178,12 +185,10 @@ class Carrier:
         cube("Stern edge", (-3.0, DECK_Y[0] + 0.6, 0.006), (54.0, 0.6, 0.01), yellow)
         for x in (-17.6, 17.6):
             cube(f"Foul line {x}", (x, 50.0, 0.006), (0.25, 160.0, 0.01), yellow)
-        # the island to starboard, with a mast and dark windows
-        cube("Island", (30.5, 85.0, 9.0), (8.0, 30.0, 18.0), hull_mt)
-        cube("Island top", (30.5, 82.0, 21.0), (6.5, 16.0, 6.0), hull_mt)
-        cube("Island windows", (26.45, 84.0, 16.0), (0.1, 24.0, 1.6), dark)
-        cube("Mast", (30.5, 80.0, 28.0), (0.8, 0.8, 10.0), hull_mt)
-        cube("Radar", (30.5, 80.0, 30.5), (4.5, 0.4, 1.2), dark)
+        # the island to starboard, the bow catapults and blast deflectors, elevators, catwalks with nets and rafts, a waterline stripe
+        self.island = detail.island(hull_mt)
+        self.furniture = detail.deck_furniture(DECK_Y, outline)
+        self.furniture += detail.hull_openings(outline, SEA_Z)
         self.parked = []
 
 
@@ -220,40 +225,13 @@ class Jet:
     def __init__(self):
         self.root = bpy.data.objects.new("Jet root", None)
         bpy.context.collection.objects.link(self.root)
-        paint = material("Jet grey", (0.40, 0.43, 0.46), metal=0.2, rough=0.45)
+        f = detail.fighter("Hero", band=(0.80, 0.10, 0.06))
+        bpy.data.objects.remove(self.root)
+        self.root = f["root"]
+        self.nozzle_glow = f["nozzle_glow"]
         darker = material("Jet dark grey", (0.24, 0.26, 0.28), metal=0.3, rough=0.5)
-        black = material("Jet black", (0.03, 0.03, 0.035), rough=0.6)
-        glass = material("Canopy", (0.25, 0.32, 0.36), rough=0.2)
-        glass.node_tree.nodes.get("Principled BSDF").inputs["Alpha"].default_value = 0.10
-        tyre = material("Jet tyre", (0.03, 0.03, 0.03), rough=0.85)
-        self.nozzle_glow = material("Nozzle glow", (1.0, 0.45, 0.1), rough=0.4, emission=0.0)
+        black = material("Jet black", (0.02, 0.02, 0.025), rough=0.6)
         P = []
-        P.append(cyl("Fuselage", 1.05, 13.0, (0.0, 9.0, 1.9), paint, rot=(math.pi / 2, 0, 0), verts=20))
-        P[-1].scale = (1.0, 1.0, 1.0)
-        bpy.ops.mesh.primitive_cone_add(vertices=20, radius1=1.05, radius2=0.08, depth=3.6, location=(0.0, 17.3, 1.9), rotation=(-math.pi / 2, 0, 0))
-        nose = bpy.context.object
-        nose.data.materials.append(paint)
-        P.append(nose)
-        for sx in (-1, 1):
-            P.append(cube(f"Intake {sx}", (sx * 1.25, 11.0, 1.55), (0.7, 5.0, 1.0), darker))
-            P.append(mesh_object(f"Wing {sx}", [(sx * 0.9, 5.6, 1.7), (sx * 0.9, 12.2, 1.7), (sx * 6.4, 10.2, 1.62), (sx * 6.4, 8.4, 1.62)],
-                                 [(0, 1, 2, 3)], paint))
-            P.append(mesh_object(f"Stabilizer {sx}", [(sx * 0.8, 0.6, 1.8), (sx * 0.8, 3.6, 1.8), (sx * 3.4, 2.0, 1.75), (sx * 3.4, 0.9, 1.75)],
-                                 [(0, 1, 2, 3)], paint))
-            P.append(mesh_object(f"Tail {sx}", [(sx * 1.0, 1.4, 2.6), (sx * 1.0, 5.2, 2.6), (sx * 1.55, 2.6, 5.0), (sx * 1.55, 1.6, 5.0)],
-                                 [(0, 1, 2, 3)], darker))
-            P.append(cyl(f"Nozzle {sx}", 0.52, 1.2, (sx * 0.62, 1.4, 1.75), black, rot=(math.pi / 2, 0, 0)))
-            P.append(cyl(f"Nozzle fire {sx}", 0.40, 0.05, (sx * 0.62, 0.78, 1.75), self.nozzle_glow, rot=(math.pi / 2, 0, 0)))
-            P.append(cyl(f"Main wheel {sx}", 0.45, 0.32, (sx * 1.7, 7.0, 0.45), tyre, rot=(0, math.pi / 2, 0)))
-            P.append(cube(f"Main strut {sx}", (sx * 1.55, 7.0, 1.0), (0.14, 0.14, 1.2), darker))
-        P.append(cyl("Nose wheel", 0.32, 0.22, (0.0, 14.6, 0.32), tyre, rot=(0, math.pi / 2, 0)))
-        P.append(cube("Nose strut", (0.0, 14.6, 0.9), (0.12, 0.12, 1.2), darker))
-        bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=1.0, location=(0.0, 14.9, 2.9))
-        can = bpy.context.object
-        can.scale = (0.66, 1.9, 0.72)
-        can.data.materials.append(glass)
-        P.append(can)
-        P.append(cube("Cockpit tub", (0.0, 14.9, 1.75), (1.1, 2.8, 0.5), black))
         # exhaust plumes (full power)
         self.plume_mt = bpy.data.materials.new("Plume")
         self.plume_mt.use_nodes = True
@@ -311,14 +289,14 @@ class Jet:
             ob.parent = self.root
         self.pilot = dummy.build("Bumper")
         self.pilot["root"].parent = self.root
-        self.pilot["root"].location = (0.0, 14.75, 2.5)           # head and shoulders above the canopy rail, as a pilot sits
-        self.pilot["root"].scale = (0.85, 0.85, 0.85)
+        self.pilot["root"].location = (0.0, 14.85, 2.35)          # head and shoulders above the canopy rail, as a pilot sits
+        self.pilot["root"].scale = (0.8, 0.8, 0.8)
         bpy.ops.object.light_add(type="POINT", location=(0.0, 15.8, 3.2))
         self.cockpit_light = bpy.context.object
         self.cockpit_light.parent = self.root
         self.cockpit_light.data.energy = 0.0
         self.cockpit_light.data.shadow_soft_size = 0.4
-        self.parts = P
+        self.parts = f["parts"] + P
 
     def place(self, t, hook_drop_u=None):
         """Position from the model: the hook's tip at the wire's line plus d; before touchdown the jet is still on the glide slope."""
@@ -464,31 +442,8 @@ def football_field():
 
 
 def crew_figure(k, colour=(0.10, 0.55, 0.15)):
-    jersey = material(f"Jersey {k}", colour, rough=0.6)
-    trousers = material(f"Crew trousers {k}", (0.12, 0.13, 0.12), rough=0.8)
-    helmet = material(f"Cranial {k}", (0.92, 0.92, 0.9), rough=0.4)
-    skin = material(f"Crew skin {k}", (0.55, 0.38, 0.27), rough=0.7)
-    root = bpy.data.objects.new(f"Crew {k}", None)
-    bpy.context.collection.objects.link(root)
-    torso = bpy.data.objects.new(f"Crew torso {k}", None)
-    bpy.context.collection.objects.link(torso)
-    torso.parent = root
-    torso.location = (0, 0, 0.9)
-    legs = [cube(f"Crew leg L {k}", (-0.1, 0, 0.45), (0.16, 0.18, 0.9), trousers), cube(f"Crew leg R {k}", (0.1, 0, 0.45), (0.16, 0.18, 0.9), trousers)]
-    up = [cube(f"Crew body {k}", (0, 0, 0.32), (0.44, 0.26, 0.62), jersey), cube(f"Crew arm L {k}", (-0.27, 0.15, 0.32), (0.11, 0.45, 0.12), jersey),
-          cube(f"Crew arm R {k}", (0.27, 0.15, 0.32), (0.11, 0.45, 0.12), jersey)]
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=10, radius=0.12, location=(0, 0, 0.76))
-    head = bpy.context.object
-    head.data.materials.append(skin)
-    bpy.ops.mesh.primitive_uv_sphere_add(segments=16, ring_count=8, radius=0.145, location=(0, 0, 0.82))
-    cap = bpy.context.object
-    cap.scale = (1.0, 1.1, 0.75)
-    cap.data.materials.append(helmet)
-    for ob in up + [head, cap]:
-        ob.parent = torso
-    for ob in legs:
-        ob.parent = root
-    return root, torso
+    """A deck crew member (detail.crew_member); green jerseys by default, the arresting-gear crew's colour."""
+    return detail.crew_member(k, colour)
 
 
 def main():
@@ -504,14 +459,14 @@ def main():
     scene.render.image_settings.file_format = "PNG"
     scene.view_settings.view_transform = "AgX"
     scene.view_settings.look = "AgX - Punchy"
-    scene.view_settings.exposure = -0.25
+    scene.view_settings.exposure = 0.15
     scene.world = bpy.data.worlds.new("World")
-    sun_to = cinematic.sun_vector((-0.45, 0.9), 22.0)                  # low sun ahead-left of the landing jet: its left side lit
-    cinematic.apply_sky(scene, sun_to, strength=0.2, dust=0.35)
+    sun_to = cinematic.sun_vector((-0.45, 0.9), 16.0)                  # low sun ahead-left of the landing jet: its left side lit
+    cinematic.apply_sky(scene, sun_to, strength=SKY, dust=0.7)
     sky_nodes = [n for n in scene.world.node_tree.nodes if n.type == "BACKGROUND"]
     bpy.ops.object.light_add(type="SUN")
     sun = bpy.context.object
-    sun.data.energy, sun.data.angle = 6.0, 0.02
+    sun.data.energy, sun.data.angle = SUN, 0.02
     sun.data.color = (1.0, 0.78, 0.56)
     sun.rotation_euler = Vector(cinematic.light_direction(sun_to)).to_track_quat("-Z", "Y").to_euler()
     sea_mt = sea_material()
@@ -527,6 +482,22 @@ def main():
     spark_mt = material("Spark", (1.0, 0.7, 0.25), emission=12.0)
     spark_obs = [cube(f"Spark {k}", (0, 0, -50), (s, s * 2.5, s), spark_mt) for k, (_, _, s) in enumerate(SPARKS)]
     crew = [crew_figure(k) for k in range(4)]
+    parked = []
+    for k, (x, y, yaw) in enumerate(((23.5, 118.0, -2.0), (27.5, 131.0, -2.0), (23.5, 146.0, -2.1), (27.0, 160.0, -2.1), (24.0, 176.0, -2.2),
+                                     (29.0, -55.0, 1.2), (31.0, -40.0, 1.2))):
+        pj = detail.fighter(f"Parked {k}", band=((0.10, 0.25, 0.7) if k % 2 else (0.85, 0.65, 0.05)), folded=True, simple=True)
+        pj["root"].location = (x, y, 0.0)
+        pj["root"].rotation_euler = (0.0, 0.0, yaw)
+        parked.append(pj)
+    tractors = [detail.tow_tractor(k, loc, yaw) for k, (loc, yaw) in enumerate((((19.5, 125.0, 0.0), 0.4), ((20.5, 152.0, 0.0), -0.3), ((24.5, -47.0, 0.0), 1.0)))]
+    people = detail.crowd(crew_figure, n=18)
+    wake = detail.wake(DECK_Y[0], SEA_Z)
+    escort = detail.escort(SEA_Z)
+    clutter = [carrier.hull] + carrier.island + carrier.furniture + wake + escort
+    for pj in parked:
+        clutter += [pj["root"]] + list(pj["root"].children_recursive)
+    for r in tractors + people:
+        clutter += [r] + list(r.children_recursive)
     old_wire = curve_object("Old wire", material("Worn wire", (0.36, 0.33, 0.30), metal=0.6, rough=0.6), 0.024)
     mech = [wires.curves[m.CAUGHT]] + engine.parts + [bpy.data.objects[f"Deck sheave {m.CAUGHT} {sx}"] for sx in (-1, 1)]
     xr = xray.Xray(mechanism=mech, spared=[sea])
@@ -596,12 +567,12 @@ def main():
         info["sparks"] = air
         for ob in field:
             ob.hide_render = not fld
-        for ob in [carrier.hull] + engine.room + [bpy.data.objects[n] for n in ("Island", "Island top", "Island windows", "Mast", "Radar")]:
+        for ob in clutter + engine.room:
             ob.hide_render = xr_on
         xr.set(xr_on, glow_strength=4.0 if heat else 2.2)
         for n in sky_nodes:
-            n.inputs["Strength"].default_value = 0.06 if xr_on else 1.0
-        sun.data.energy = 1.5 if xr_on else 6.0
+            n.inputs["Strength"].default_value = 0.06 if xr_on else SKY      # was 1.0 here: a sky four times too bright washed every shot out
+        sun.data.energy = 1.5 if xr_on else SUN
         c = sh["cam"]
         loc, tgt = Vector(c["loc"]), Vector(c["target"])
         if c["rel"] == "hook":

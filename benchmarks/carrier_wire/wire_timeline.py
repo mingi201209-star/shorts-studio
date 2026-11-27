@@ -55,8 +55,8 @@ H = cam((-1.15, 16.1, 3.5), (0.0, 14.75, 3.1), 30.0, rel="hook")         # the c
 H_B = cam((-1.05, 16.0, 3.45), (0.0, 14.75, 3.1), 30.0, rel="hook")
 I1 = cam((-20.8, Y3 - 3.4, 2.2), (-17.3, Y3 + 1.4, 0.6), 30.0)           # the deck crew unhooking the worn wire
 I1_B = cam((-20.4, Y3 - 3.0, 2.1), (-17.5, Y3 + 1.4, 0.6), 30.0)
-I2 = cam((-19.0, Y3 - 9.0, 4.0), (-23.0, Y3 + 1.5, 0.5), 28.0)           # ...and dragging it away
-I2_B = cam((-25.0, Y3 - 8.5, 3.8), (-31.0, Y3 + 1.5, 0.5), 28.0)
+I2 = cam((-16.0, Y3 - 5.5, 2.4), (-19.5, Y3 + 1.6, 0.8), 30.0)           # ...and dragging it away: tracking the crew, close enough to read
+I2_B = cam((-28.0, Y3 - 5.0, 2.4), (-31.5, Y3 + 1.6, 0.8), 30.0)
 
 JET, CREW = "jet", "crew"
 XR = {"xray": True}

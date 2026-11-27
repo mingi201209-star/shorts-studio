@@ -11,7 +11,8 @@ FONT_DIR = ROOT / "assets/fonts"
 FONT_FILE = FONT_DIR / "InterDisplay-Black.otf"
 FONT_NAME = "Inter Display Black"
 SIZE = 72
-STYLE = (f"Style: Caption,{FONT_NAME},{SIZE},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,0,0,1,6,2,2,90,90,420,1")
+SPACING = 1.5                         # a little tracking: the heavy face's word spaces read tight at phone size
+STYLE = (f"Style: Caption,{FONT_NAME},{SIZE},&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,0,0,0,0,100,100,{SPACING},0,1,6,2,2,90,90,420,1")
 YELLOW = r"{\c&H0000D6FF&}"          # safety yellow (255, 214, 0) in ASS order &HAABBGGRR
 WHITE = r"{\c&H00FFFFFF&}"
 MAX_LINE_PX = 900                     # 1080 minus the side margins
@@ -68,5 +69,5 @@ def widest_line_px(ass_text: str) -> float:
     for ln in ass_text.splitlines():
         if ln.startswith("Dialogue:"):
             text = re.sub(r"\{[^}]*\}", "", ln.split(",,0,0,0,,", 1)[1])
-            widest = max(widest, max(font.getlength(part) for part in text.split(r"\N")))
+            widest = max(widest, max(font.getlength(part) + SPACING * max(0, len(part) - 1) for part in text.split(r"\N")))
     return widest

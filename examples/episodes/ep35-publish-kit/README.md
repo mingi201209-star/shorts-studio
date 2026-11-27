@@ -35,7 +35,10 @@ Would you want to be the pilot (or the dummy) on that cable? 👇 Part 5 is next
 (Keep "Part 5" in step with the teaser that will be added at the end of this video once part five is rendered.)
 
 ## Upload
-- After EP.34 v2 (its teaser promises this one), on the steady days; add to the "Built to Get Hit" playlist.
+- Upload the v2 file, ep05-review/EP35-carrier-arresting-wire-v2.mp4: the detail pass after the owner's note that the detail
+  went missing (a richer carrier, jet and deck crew, and the house-style light; docs/episodes/ep35-wire-plan.md, section v2).
+  Not the first file.
+- After EP.34 (its teaser promises this one), on the steady days; add to the "Built to Get Hit" playlist.
 - Related video: the long video "7 Clever Ways Roads Stop Things That Are Out of Control" (LF01), same theme.
 - Channel: from this upload on, the channel description can carry the identity line "Hidden machines built to take the hit,
   every crash simulated with real numbers. Narrated by Bumper, the crash-test dummy." and Bumper can be the profile picture.

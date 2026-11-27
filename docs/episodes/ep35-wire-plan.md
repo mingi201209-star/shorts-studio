@@ -73,3 +73,38 @@ Film wire-film-1080x1920.mp4 sha256 94c9553b616f70c78c18ee6807f1e5206be6530491c4
 35.208 s), copied to ep05-review/EP35-carrier-arresting-wire.mp4. Its first 97 frames are EP.34 v2's part-four teaser. Not
 verified: the new voice and the mix by ear, a human first view.
 
+## v2: the detail pass (owner, 2026-11-27: "근데 좀 디테일이 사라졌어", the detail went missing)
+Not uploaded yet, so the whole film is rendered again; EP.34 v2's teaser is rebuilt from the new opening.
+
+What was wrong:
+- The main cause was a sky-strength override. Every outdoor frame set the sky to 1.0, about four times the house style's
+  0.24-0.30 (EP.32-34), so the fill light flattened every shadow and the film read pale and flat. The fix restores the house
+  style: sky 0.26, dust 0.7, sun 6.5, exposure +0.15.
+- The scene itself was plain: box island, flat deck, a simple jet, block crew.
+
+What is new (benchmarks/carrier_wire/detail.py):
+- The fighter:
+  - a lofted fuselage under a subdivision surface, in two-tone grey with panel lines;
+  - strakes, intakes, canted fins with a red band, petalled nozzles, landing gear, lights;
+  - a framed canopy with an instrument panel.
+- The deck: fine grain, tyre rubber laid down along the centre line, oil stains, catapult tracks, elevators, foul stripes.
+- The deck edge: catwalks with safety nets and life-raft canisters.
+- The island: built up in tiers, with a lattice mast, radars and radomes.
+- Parked jets with folded wings and coloured bands, tow tractors.
+- The deck crew: float vests with reflective bands over their jerseys, cranial helmets with goggles and ear defenders, gloves and
+  boots. The arresting-gear crew wears green.
+- The hull: near-vertical sides with a boot-top band at the waterline, hangar doors with lamps, the fantail, galleries.
+- The sea: the wake as streaked foam over turquoise prop wash, and an escort on the horizon.
+
+Storyboard fixes:
+- The bow catapults' blast deflectors first stood in the landing runout, where the jet would hit them, and filled the full-throttle
+  shot. A ray-cast from every outdoor camera found them. They now stand past the end of the runout, as on a real deck.
+- The first deck texture was stripey. The rubber is now soft and only near the centre line.
+- The first wake read as clouds. It is now foam streaks over turquoise prop wash.
+- The hull read white in the sky fill. It is now a darker haze grey.
+- The crew shot I2 now tracks the crew from closer.
+- In the cockpit shot the canopy bow was a solid disc, so Bumper looked as if he sat on top of the jet in front of a grey
+  dome. The bow and a windscreen arch are now open rings. The ejection seat sits right behind his back, and the glass reflects
+  the sky toward its edges (Fresnel), so he reads as inside the canopy.
+
+Captions: a little tracking (spacing 1.5), so the heavy face's word spaces read at phone size.
