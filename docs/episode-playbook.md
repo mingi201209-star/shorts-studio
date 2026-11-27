@@ -130,3 +130,17 @@ section 9, from EP.32 v2 on:
       The loop is given up for it (owner accepted). The end punch stays the last narrated line, before the tail.
 - [ ] So the next part is rendered before the current one is uploaded; the pinned comment says "Part N is next: ...".
 - [ ] Publish kit: "Part N of <run>" in the description, a playlist per run, upload the parts in order on the steady days.
+
+## 11. Channel identity (owner, 2026-11-27: "without our own character the channel gets buried")
+Proposed together, from EP.35 on (EP.32-EP.34 stay as rendered):
+- [ ] One promise: hidden machines built to take the hit (the "Built to Get Hit" idea as the channel's subject, the shape of the best
+      Shorts). Channel description line: "Hidden machines built to take the hit, every crash simulated with real numbers."
+- [ ] One look for the reveal: the scene turns blueprint blue and the hidden mechanism glows safety orange, with the channel's sting.
+- [ ] One character: an original crash-test dummy (yellow and black targets, working name "Bumper") takes the hit in every film and
+      is shown fine at the end; also the channel's profile picture.
+- [ ] One caption look: a heavy font with the key number in safety yellow (captions remain the only words on screen).
+- [x] One voice: a designed voice of the channel's own (owner chose it over a common or accented TTS voice, 2026-11-27):
+      ElevenLabs voice design, benchmarks/voice/eleven.py (design -> create -> capture with measured word timings). The key is a
+      network secret on the shorts-studio cloud environment (host api.elevenlabs.io, header xi-api-key); the voice id is kept in
+      examples/voice/channel-voice.json.
+
