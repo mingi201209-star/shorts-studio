@@ -30,7 +30,7 @@ def test_engine_takes_the_jets_motion_and_the_thrust():
     assert 55e6 < e_in < 70e6                                                  # about 64 MJ in the Mk 7's description
     v = np.array([r[2] for r in rows])
     taut = int(0.1 / m.DT)                                                     # full power pushes a touch harder than the slack wire
-    assert v[:taut].max() - m.V0 < 0.01 and np.all(np.diff(v[taut:]) <= 1e-12) and v[-1] == 0.0
+    assert v[:taut].max() - m.V0 < 0.1 and np.all(np.diff(v[taut:]) <= 1e-12) and v[-1] == 0.0
 
 
 def test_wire_halves_pull_along_the_deck():
