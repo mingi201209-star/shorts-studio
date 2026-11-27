@@ -142,5 +142,7 @@ Proposed together, from EP.35 on (EP.32-EP.34 stay as rendered):
 - [x] One voice: a designed voice of the channel's own (owner chose it over a common or accented TTS voice, 2026-11-27):
       ElevenLabs voice design, benchmarks/voice/eleven.py (design -> create -> capture with measured word timings). The key is a
       network secret on the shorts-studio cloud environment (host api.elevenlabs.io, header xi-api-key); the voice id is kept in
-      examples/voice/channel-voice.json.
+      examples/voice/channel-voice.json. Owner's pick 2026-11-27: candidate 2B, "Crash-test dummy" (cheerful, curious, a faint
+      synthetic sheen), saved as "Curious Mechanics - Bumper": the narrator is the dummy character. Tested through capture,
+      level_beats and the caption build: word timings measured per word.
 

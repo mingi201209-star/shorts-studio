@@ -1,0 +1,13 @@
+{
+ "voice_id": "K53Vjt7kKqCUbAwe7Y34",
+ "name": "Curious Mechanics - Bumper",
+ "description": "A cheerful, curious American male voice with a faint metallic, synthetic sheen, like a friendly crash-test dummy narrating his own experiments. Bright and energetic but perfectly clear diction, medium-fast pace. Clean studio recording.",
+ "generated_voice_id": "K53Vjt7kKqCUbAwe7Y34",
+ "speech_model": "eleven_multilingual_v2",
+ "settings": {
+  "stability": 0.5,
+  "similarity_boost": 0.8,
+  "style": 0.15,
+  "use_speaker_boost": true
+ }
+}
