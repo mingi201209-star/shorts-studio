@@ -1,0 +1,294 @@
+{
+  "status": "PASS",
+  "voice": "elevenlabs: Curious Mechanics - Bumper (examples/voice/channel-voice.json)",
+  "rate": "model default",
+  "seconds": 34.976,
+  "cues": [
+    {
+      "start": 0.05999999999999994,
+      "end": 1.128417,
+      "text": "How do you"
+    },
+    {
+      "start": 1.174417,
+      "end": 1.7784170000000001,
+      "text": "stop a jet"
+    },
+    {
+      "start": 1.836417,
+      "end": 2.394417,
+      "text": "doing a hundred"
+    },
+    {
+      "start": 2.428417,
+      "end": 2.997417,
+      "text": "fifty miles"
+    },
+    {
+      "start": 3.032417,
+      "end": 3.404417,
+      "text": "an hour?"
+    },
+    {
+      "start": 3.712194999999999,
+      "end": 4.233423999999999,
+      "text": "The deck is"
+    },
+    {
+      "start": 4.291423999999999,
+      "end": 5.046423999999999,
+      "text": "far too short"
+    },
+    {
+      "start": 5.092423999999999,
+      "end": 5.951423999999999,
+      "text": "to brake, so"
+    },
+    {
+      "start": 6.009423999999999,
+      "end": 6.648423999999999,
+      "text": "the jet drops"
+    },
+    {
+      "start": 6.683423999999999,
+      "end": 7.089423999999999,
+      "text": "a hook."
+    },
+    {
+      "start": 7.376659999999998,
+      "end": 8.347430999999998,
+      "text": "It snags one"
+    },
+    {
+      "start": 8.382430999999999,
+      "end": 9.079430999999998,
+      "text": "of four steel"
+    },
+    {
+      "start": 9.149430999999998,
+      "end": 10.263430999999999,
+      "text": "cables stretched across"
+    },
+    {
+      "start": 10.310430999999998,
+      "end": 10.681430999999998,
+      "text": "the deck."
+    },
+    {
+      "start": 11.001437999999997,
+      "end": 12.164499999999997,
+      "text": "Below deck, the"
+    },
+    {
+      "start": 12.2335,
+      "end": 13.116499999999998,
+      "text": "cable runs around"
+    },
+    {
+      "start": 13.185499999999998,
+      "end": 13.801499999999997,
+      "text": "pulleys to a"
+    },
+    {
+      "start": 13.917499999999997,
+      "end": 15.426499999999997,
+      "text": "giant hydraulic piston."
+    },
+    {
+      "start": 15.746506999999998,
+      "end": 16.365964999999996,
+      "text": "As the jet"
+    },
+    {
+      "start": 16.412964999999996,
+      "end": 17.201964999999994,
+      "text": "drags the cable"
+    },
+    {
+      "start": 17.247964999999997,
+      "end": 18.234964999999995,
+      "text": "out, the piston"
+    },
+    {
+      "start": 18.292964999999995,
+      "end": 19.233964999999994,
+      "text": "forces oil through"
+    },
+    {
+      "start": 19.279964999999997,
+      "end": 20.487964999999996,
+      "text": "a valve, turning"
+    },
+    {
+      "start": 20.568964999999995,
+      "end": 21.799964999999997,
+      "text": "speed into heat."
+    },
+    {
+      "start": 22.087284999999994,
+      "end": 22.732971999999997,
+      "text": "It stops a"
+    },
+    {
+      "start": 22.779971999999994,
+      "end": 24.102971999999994,
+      "text": "fifty-thousand-pound\\Njet in"
+    },
+    {
+      "start": 24.149971999999995,
+      "end": 24.764971999999993,
+      "text": "about the length"
+    },
+    {
+      "start": 24.799971999999997,
+      "end": 24.927971999999993,
+      "text": "of a"
+    },
+    {
+      "start": 24.973971999999996,
+      "end": 25.681971999999995,
+      "text": "football field."
+    },
+    {
+      "start": 25.99599999999999,
+      "end": 26.68497899999999,
+      "text": "The pilot hits"
+    },
+    {
+      "start": 26.730978999999994,
+      "end": 27.636978999999993,
+      "text": "full throttle anyway,"
+    },
+    {
+      "start": 27.682978999999992,
+      "end": 28.124978999999993,
+      "text": "in case the"
+    },
+    {
+      "start": 28.159978999999993,
+      "end": 28.774978999999995,
+      "text": "hook misses."
+    },
+    {
+      "start": 29.092089999999992,
+      "end": 29.580985999999992,
+      "text": "That's me in"
+    },
+    {
+      "start": 29.61498599999999,
+      "end": 30.334985999999994,
+      "text": "the cockpit, by"
+    },
+    {
+      "start": 30.381985999999994,
+      "end": 30.717985999999993,
+      "text": "the way."
+    },
+    {
+      "start": 31.02930499999999,
+      "end": 31.61699299999999,
+      "text": "And after a"
+    },
+    {
+      "start": 31.68599299999999,
+      "end": 32.997992999999994,
+      "text": "hundred\\Ntwenty-five landings,"
+    },
+    {
+      "start": 33.26499299999999,
+      "end": 33.93899299999999,
+      "text": "the cable gets"
+    },
+    {
+      "start": 33.98499299999999,
+      "end": 34.71599299999999,
+      "text": "thrown away."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 3.664423999999999,
+      "narration_en": "How do you stop a jet doing a hundred fifty miles an hour?",
+      "source_audio_sha256": "9502264e02b7bba204a20919eca1dac07df7015e381143af62e6c595388b4780"
+    },
+    {
+      "start": 3.664423999999999,
+      "end": 7.349430999999998,
+      "narration_en": "The deck is far too short to brake, so the jet drops a hook.",
+      "source_audio_sha256": "3b49241eb57a91505eb11fe89bc009849ff33ddf2ab9606ed31f154813c08d05"
+    },
+    {
+      "start": 7.349430999999998,
+      "end": 10.941437999999998,
+      "narration_en": "It snags one of four steel cables stretched across the deck.",
+      "source_audio_sha256": "e0027ff821528c571e386b25f94c23c2c9528f60d8cab26b692ab83bf7baade7"
+    },
+    {
+      "start": 10.941437999999998,
+      "end": 15.686506999999997,
+      "narration_en": "Below deck, the cable runs around pulleys to a giant hydraulic piston.",
+      "source_audio_sha256": "fc191bf75585925cecbe2e7f7e0a26758fe6d6dd6c22431ca4c3a3dba68eff42"
+    },
+    {
+      "start": 15.686506999999997,
+      "end": 22.059971999999995,
+      "narration_en": "As the jet drags the cable out, the piston forces oil through a valve, turning speed into heat.",
+      "source_audio_sha256": "eec1aa1e2ef62081a80cb6b0962a07ff943ce3b737805129e123b2d211dd8b3c"
+    },
+    {
+      "start": 22.059971999999995,
+      "end": 25.941978999999993,
+      "narration_en": "It stops a fifty-thousand-pound jet in about the length of a football field.",
+      "source_audio_sha256": "100ea7c45ce5f1c32e08b977e2e53452347d105b7b55ac2e28195e41c89a1fcf"
+    },
+    {
+      "start": 25.941978999999993,
+      "end": 29.034985999999993,
+      "narration_en": "The pilot hits full throttle anyway, in case the hook misses.",
+      "source_audio_sha256": "71ecec8d7c4bc8ebbe842c31c4155a78d1ab2db78e485095f8b95c4d8219241b"
+    },
+    {
+      "start": 29.034985999999993,
+      "end": 30.97799299999999,
+      "narration_en": "That's me in the cockpit, by the way.",
+      "source_audio_sha256": "05e7373f40144db59249342860ff323bca067fd8b81e700d54896c0e10d2eeaf"
+    },
+    {
+      "start": 30.97799299999999,
+      "end": 34.976,
+      "narration_en": "And after a hundred twenty-five landings, the cable gets thrown away.",
+      "source_audio_sha256": "a8832c45dea28d9f30b434dfbe4843b70bd5e61aafa92f6239545b0f99335bcd"
+    }
+  ],
+  "silence_gaps": [
+    0.34475,
+    0.363146,
+    0.30125,
+    0.341208,
+    0.339,
+    0.355521,
+    0.385729,
+    0.331146,
+    0.395604,
+    0.310312,
+    0.368875,
+    0.303125,
+    0.319167
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 1.9,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.2,
+      -16.2,
+      -16.3,
+      -16.4,
+      -15.6,
+      -16.4
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "46c98110e7509a24d81a21d165e1a52dd000de4847044ecfe2f5d69750403ccf"
+}

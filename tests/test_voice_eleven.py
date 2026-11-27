@@ -28,3 +28,16 @@ def test_contractions_and_hyphens_stay_one_word():
 def test_alignment_must_spell_the_text():
     with pytest.raises(ValueError):
         words_from_alignment("Hello there.", _alignment("Hello there!"))
+
+
+def test_first_word_starts_where_the_sound_does():
+    import numpy as np
+    from benchmarks.voice.eleven import onset_of, retime_first_word
+    sr = 48000
+    x = np.zeros(sr * 2)
+    x[int(0.7 * sr):int(1.4 * sr)] = 0.3 * np.sin(np.arange(int(0.7 * sr)) * 0.05)
+    on = onset_of(x, sr)
+    assert 0.68 <= on <= 0.71
+    w = retime_first_word([{"text": "How", "start": 0.0, "end": 0.95}, {"text": "do", "start": 1.0, "end": 1.1}], on)
+    assert 0.64 <= w[0]["start"] <= 0.7 and w[1]["start"] == 1.0                  # only the first word moves
+    assert retime_first_word([{"text": "a", "start": 0.2, "end": 0.3}], 0.05)[0]["start"] == 0.2   # never earlier

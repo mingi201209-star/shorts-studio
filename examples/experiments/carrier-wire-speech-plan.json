@@ -1,0 +1,54 @@
+{
+ "variants": [
+  {
+   "id": "carrier_wire",
+   "beats": [
+    {
+     "narration_en": "How do you stop a jet doing a hundred fifty miles an hour?",
+     "start": 0.0,
+     "end": 4.6
+    },
+    {
+     "narration_en": "The deck is far too short to brake, so the jet drops a hook.",
+     "start": 4.6,
+     "end": 9.5
+    },
+    {
+     "narration_en": "It snags one of four steel cables stretched across the deck.",
+     "start": 9.5,
+     "end": 13.4
+    },
+    {
+     "narration_en": "Below deck, the cable runs around pulleys to a giant hydraulic piston.",
+     "start": 13.4,
+     "end": 17.7
+    },
+    {
+     "narration_en": "As the jet drags the cable out, the piston forces oil through a valve, turning speed into heat.",
+     "start": 17.7,
+     "end": 23.9
+    },
+    {
+     "narration_en": "It stops a fifty-thousand-pound jet in about the length of a football field.",
+     "start": 23.9,
+     "end": 28.5
+    },
+    {
+     "narration_en": "The pilot hits full throttle anyway, in case the hook misses.",
+     "start": 28.5,
+     "end": 32.4
+    },
+    {
+     "narration_en": "That's me in the cockpit, by the way.",
+     "start": 32.4,
+     "end": 35.4
+    },
+    {
+     "narration_en": "And after a hundred twenty-five landings, the cable gets thrown away.",
+     "start": 35.4,
+     "end": 39.3
+    }
+   ]
+  }
+ ]
+}

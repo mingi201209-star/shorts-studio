@@ -1,0 +1,668 @@
+{
+  "variant": "carrier_wire",
+  "beats": [
+    {
+      "text": "How do you stop a jet doing a hundred fifty miles an hour?",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "How",
+          "start": 0.626583,
+          "end": 1.486
+        },
+        {
+          "text": "do",
+          "start": 1.521,
+          "end": 1.579
+        },
+        {
+          "text": "you",
+          "start": 1.625,
+          "end": 1.695
+        },
+        {
+          "text": "stop",
+          "start": 1.741,
+          "end": 1.997
+        },
+        {
+          "text": "a",
+          "start": 2.055,
+          "end": 2.078
+        },
+        {
+          "text": "jet",
+          "start": 2.148,
+          "end": 2.345
+        },
+        {
+          "text": "doing",
+          "start": 2.403,
+          "end": 2.624
+        },
+        {
+          "text": "a",
+          "start": 2.659,
+          "end": 2.694
+        },
+        {
+          "text": "hundred",
+          "start": 2.74,
+          "end": 2.961
+        },
+        {
+          "text": "fifty",
+          "start": 2.995,
+          "end": 3.228
+        },
+        {
+          "text": "miles",
+          "start": 3.286,
+          "end": 3.564
+        },
+        {
+          "text": "an",
+          "start": 3.599,
+          "end": 3.657
+        },
+        {
+          "text": "hour",
+          "start": 3.704,
+          "end": 3.971
+        }
+      ],
+      "duration": 4.257959,
+      "audio_sha256": "9502264e02b7bba204a20919eca1dac07df7015e381143af62e6c595388b4780",
+      "available_seconds": 4.6,
+      "fits": true,
+      "audio_onset_s": 0.657
+    },
+    {
+      "text": "The deck is far too short to brake, so the jet drops a hook.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "The",
+          "start": 0.047771,
+          "end": 0.151
+        },
+        {
+          "text": "deck",
+          "start": 0.209,
+          "end": 0.43
+        },
+        {
+          "text": "is",
+          "start": 0.488,
+          "end": 0.569
+        },
+        {
+          "text": "far",
+          "start": 0.627,
+          "end": 0.848
+        },
+        {
+          "text": "too",
+          "start": 0.917,
+          "end": 1.08
+        },
+        {
+          "text": "short",
+          "start": 1.138,
+          "end": 1.382
+        },
+        {
+          "text": "to",
+          "start": 1.428,
+          "end": 1.498
+        },
+        {
+          "text": "brake",
+          "start": 1.556,
+          "end": 1.916
+        },
+        {
+          "text": "so",
+          "start": 2.125,
+          "end": 2.287
+        },
+        {
+          "text": "the",
+          "start": 2.345,
+          "end": 2.415
+        },
+        {
+          "text": "jet",
+          "start": 2.485,
+          "end": 2.682
+        },
+        {
+          "text": "drops",
+          "start": 2.717,
+          "end": 2.984
+        },
+        {
+          "text": "a",
+          "start": 3.019,
+          "end": 3.053
+        },
+        {
+          "text": "hook",
+          "start": 3.1,
+          "end": 3.425
+        }
+      ],
+      "duration": 3.709388,
+      "audio_sha256": "3b49241eb57a91505eb11fe89bc009849ff33ddf2ab9606ed31f154813c08d05",
+      "available_seconds": 4.9,
+      "fits": true,
+      "audio_onset_s": 0.078
+    },
+    {
+      "text": "It snags one of four steel cables stretched across the deck.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "It",
+          "start": 0.027229,
+          "end": 0.163
+        },
+        {
+          "text": "snags",
+          "start": 0.221,
+          "end": 0.766
+        },
+        {
+          "text": "one",
+          "start": 0.836,
+          "end": 0.998
+        },
+        {
+          "text": "of",
+          "start": 1.033,
+          "end": 1.091
+        },
+        {
+          "text": "four",
+          "start": 1.149,
+          "end": 1.405
+        },
+        {
+          "text": "steel",
+          "start": 1.463,
+          "end": 1.73
+        },
+        {
+          "text": "cables",
+          "start": 1.8,
+          "end": 2.148
+        },
+        {
+          "text": "stretched",
+          "start": 2.183,
+          "end": 2.554
+        },
+        {
+          "text": "across",
+          "start": 2.589,
+          "end": 2.914
+        },
+        {
+          "text": "the",
+          "start": 2.961,
+          "end": 3.03
+        },
+        {
+          "text": "deck",
+          "start": 3.088,
+          "end": 3.332
+        }
+      ],
+      "duration": 3.604898,
+      "audio_sha256": "e0027ff821528c571e386b25f94c23c2c9528f60d8cab26b692ab83bf7baade7",
+      "available_seconds": 3.9000000000000004,
+      "fits": true,
+      "audio_onset_s": 0.057
+    },
+    {
+      "text": "Below deck, the cable runs around pulleys to a giant hydraulic piston.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Below",
+          "start": 1.135938,
+          "end": 1.509
+        },
+        {
+          "text": "deck",
+          "start": 1.602,
+          "end": 1.904
+        },
+        {
+          "text": "the",
+          "start": 2.194,
+          "end": 2.299
+        },
+        {
+          "text": "cable",
+          "start": 2.368,
+          "end": 2.682
+        },
+        {
+          "text": "runs",
+          "start": 2.728,
+          "end": 2.961
+        },
+        {
+          "text": "around",
+          "start": 2.995,
+          "end": 3.251
+        },
+        {
+          "text": "pulleys",
+          "start": 3.32,
+          "end": 3.669
+        },
+        {
+          "text": "to",
+          "start": 3.727,
+          "end": 3.82
+        },
+        {
+          "text": "a",
+          "start": 3.901,
+          "end": 3.936
+        },
+        {
+          "text": "giant",
+          "start": 4.052,
+          "end": 4.458
+        },
+        {
+          "text": "hydraulic",
+          "start": 4.505,
+          "end": 5.05
+        },
+        {
+          "text": "piston",
+          "start": 5.108,
+          "end": 5.561
+        }
+      ],
+      "duration": 5.851429,
+      "audio_sha256": "fc191bf75585925cecbe2e7f7e0a26758fe6d6dd6c22431ca4c3a3dba68eff42",
+      "available_seconds": 4.299999999999999,
+      "fits": false,
+      "audio_onset_s": 1.166
+    },
+    {
+      "text": "As the jet drags the cable out, the piston forces oil through a valve, turning speed into heat.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "As",
+          "start": 0.239542,
+          "end": 0.406
+        },
+        {
+          "text": "the",
+          "start": 0.476,
+          "end": 0.569
+        },
+        {
+          "text": "jet",
+          "start": 0.65,
+          "end": 0.859
+        },
+        {
+          "text": "drags",
+          "start": 0.906,
+          "end": 1.219
+        },
+        {
+          "text": "the",
+          "start": 1.265,
+          "end": 1.335
+        },
+        {
+          "text": "cable",
+          "start": 1.382,
+          "end": 1.695
+        },
+        {
+          "text": "out",
+          "start": 1.741,
+          "end": 1.962
+        },
+        {
+          "text": "the",
+          "start": 2.218,
+          "end": 2.322
+        },
+        {
+          "text": "piston",
+          "start": 2.38,
+          "end": 2.728
+        },
+        {
+          "text": "forces",
+          "start": 2.786,
+          "end": 3.135
+        },
+        {
+          "text": "oil",
+          "start": 3.204,
+          "end": 3.425
+        },
+        {
+          "text": "through",
+          "start": 3.483,
+          "end": 3.727
+        },
+        {
+          "text": "a",
+          "start": 3.773,
+          "end": 3.796
+        },
+        {
+          "text": "valve",
+          "start": 3.855,
+          "end": 4.331
+        },
+        {
+          "text": "turning",
+          "start": 4.574,
+          "end": 4.981
+        },
+        {
+          "text": "speed",
+          "start": 5.062,
+          "end": 5.642
+        },
+        {
+          "text": "into",
+          "start": 5.712,
+          "end": 5.921
+        },
+        {
+          "text": "heat",
+          "start": 6.002,
+          "end": 6.293
+        }
+      ],
+      "duration": 6.452245,
+      "audio_sha256": "eec1aa1e2ef62081a80cb6b0962a07ff943ce3b737805129e123b2d211dd8b3c",
+      "available_seconds": 6.199999999999999,
+      "fits": false,
+      "audio_onset_s": 0.27
+    },
+    {
+      "text": "It stops a fifty-thousand-pound jet in about the length of a football field.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "It",
+          "start": 0.027313,
+          "end": 0.151
+        },
+        {
+          "text": "stops",
+          "start": 0.209,
+          "end": 0.604
+        },
+        {
+          "text": "a",
+          "start": 0.639,
+          "end": 0.673
+        },
+        {
+          "text": "fifty-thousand-pound",
+          "start": 0.72,
+          "end": 1.649
+        },
+        {
+          "text": "jet",
+          "start": 1.718,
+          "end": 1.95
+        },
+        {
+          "text": "in",
+          "start": 1.985,
+          "end": 2.043
+        },
+        {
+          "text": "about",
+          "start": 2.09,
+          "end": 2.299
+        },
+        {
+          "text": "the",
+          "start": 2.334,
+          "end": 2.403
+        },
+        {
+          "text": "length",
+          "start": 2.473,
+          "end": 2.705
+        },
+        {
+          "text": "of",
+          "start": 2.74,
+          "end": 2.798
+        },
+        {
+          "text": "a",
+          "start": 2.844,
+          "end": 2.868
+        },
+        {
+          "text": "football",
+          "start": 2.914,
+          "end": 3.286
+        },
+        {
+          "text": "field",
+          "start": 3.332,
+          "end": 3.622
+        }
+      ],
+      "duration": 3.94449,
+      "audio_sha256": "100ea7c45ce5f1c32e08b977e2e53452347d105b7b55ac2e28195e41c89a1fcf",
+      "available_seconds": 4.600000000000001,
+      "fits": true,
+      "audio_onset_s": 0.057
+    },
+    {
+      "text": "The pilot hits full throttle anyway, in case the hook misses.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "The",
+          "start": 0.054021,
+          "end": 0.139
+        },
+        {
+          "text": "pilot",
+          "start": 0.186,
+          "end": 0.534
+        },
+        {
+          "text": "hits",
+          "start": 0.58,
+          "end": 0.743
+        },
+        {
+          "text": "full",
+          "start": 0.789,
+          "end": 0.964
+        },
+        {
+          "text": "throttle",
+          "start": 0.998,
+          "end": 1.358
+        },
+        {
+          "text": "anyway",
+          "start": 1.393,
+          "end": 1.695
+        },
+        {
+          "text": "in",
+          "start": 1.741,
+          "end": 1.8
+        },
+        {
+          "text": "case",
+          "start": 1.846,
+          "end": 2.078
+        },
+        {
+          "text": "the",
+          "start": 2.113,
+          "end": 2.183
+        },
+        {
+          "text": "hook",
+          "start": 2.218,
+          "end": 2.38
+        },
+        {
+          "text": "misses",
+          "start": 2.438,
+          "end": 2.833
+        }
+      ],
+      "duration": 3.108571,
+      "audio_sha256": "71ecec8d7c4bc8ebbe842c31c4155a78d1ab2db78e485095f8b95c4d8219241b",
+      "available_seconds": 3.8999999999999986,
+      "fits": true,
+      "audio_onset_s": 0.084
+    },
+    {
+      "text": "That's me in the cockpit, by the way.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "That's",
+          "start": 0.057104,
+          "end": 0.267
+        },
+        {
+          "text": "me",
+          "start": 0.325,
+          "end": 0.441
+        },
+        {
+          "text": "in",
+          "start": 0.488,
+          "end": 0.546
+        },
+        {
+          "text": "the",
+          "start": 0.58,
+          "end": 0.65
+        },
+        {
+          "text": "cockpit",
+          "start": 0.697,
+          "end": 1.126
+        },
+        {
+          "text": "by",
+          "start": 1.173,
+          "end": 1.3
+        },
+        {
+          "text": "the",
+          "start": 1.347,
+          "end": 1.416
+        },
+        {
+          "text": "way",
+          "start": 1.463,
+          "end": 1.683
+        }
+      ],
+      "duration": 1.933061,
+      "audio_sha256": "05e7373f40144db59249342860ff323bca067fd8b81e700d54896c0e10d2eeaf",
+      "available_seconds": 3.0,
+      "fits": true,
+      "audio_onset_s": 0.087
+    },
+    {
+      "text": "And after a hundred twenty-five landings, the cable gets thrown away.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "And",
+          "start": 0.051312,
+          "end": 0.255
+        },
+        {
+          "text": "after",
+          "start": 0.313,
+          "end": 0.557
+        },
+        {
+          "text": "a",
+          "start": 0.604,
+          "end": 0.639
+        },
+        {
+          "text": "hundred",
+          "start": 0.708,
+          "end": 0.998
+        },
+        {
+          "text": "twenty-five",
+          "start": 1.022,
+          "end": 1.509
+        },
+        {
+          "text": "landings",
+          "start": 1.556,
+          "end": 2.02
+        },
+        {
+          "text": "the",
+          "start": 2.287,
+          "end": 2.392
+        },
+        {
+          "text": "cable",
+          "start": 2.45,
+          "end": 2.752
+        },
+        {
+          "text": "gets",
+          "start": 2.786,
+          "end": 2.961
+        },
+        {
+          "text": "thrown",
+          "start": 3.007,
+          "end": 3.309
+        },
+        {
+          "text": "away",
+          "start": 3.355,
+          "end": 3.738
+        }
+      ],
+      "duration": 4.022857,
+      "audio_sha256": "a8832c45dea28d9f30b434dfbe4843b70bd5e61aafa92f6239545b0f99335bcd",
+      "available_seconds": 3.8999999999999986,
+      "fits": false,
+      "audio_onset_s": 0.081
+    }
+  ]
+}

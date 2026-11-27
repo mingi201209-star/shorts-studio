@@ -15,7 +15,8 @@ usage:
   python3 -m benchmarks.voice.eleven check
   python3 -m benchmarks.voice.eleven design --out DIR --text "sample" --desc "voice one" --desc "voice two" ...
   python3 -m benchmarks.voice.eleven create --generated-id ID --name NAME --desc "description"
-  python3 -m benchmarks.voice.eleven capture --plan PLAN.json --variant ID --out DIR"""
+  python3 -m benchmarks.voice.eleven capture --plan PLAN.json --variant ID --out DIR
+  python3 -m benchmarks.voice.eleven retime --dir DIR        (the first-word correction for an older capture)"""
 from __future__ import annotations
 
 import argparse
@@ -73,6 +74,41 @@ def words_from_alignment(text: str, alignment: dict) -> list[dict]:
     return out
 
 
+def audio_onset(mp3: Path, threshold_db: float = -40.0) -> float:
+    """Seconds to the first 10 ms window above threshold_db (RMS) in the decoded audio."""
+    import numpy as np
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", str(mp3), "-f", "s16le", "-ac", "1", "-ar", "48000", "-"], capture_output=True, check=True).stdout
+    return onset_of(np.frombuffer(raw, "<i2").astype(float) / 32768.0, 48000, threshold_db)
+
+
+def onset_of(x, sr: int, threshold_db: float = -40.0) -> float:
+    import numpy as np
+    win = max(1, sr // 100)
+    e = np.sqrt(np.convolve(x ** 2, np.ones(win) / win, mode="same"))
+    on = np.flatnonzero(e > 10 ** (threshold_db / 20))
+    return float(on[0]) / sr if len(on) else 0.0
+
+
+def retime_first_word(words: list[dict], onset: float) -> list[dict]:
+    """The service pins the first character to 0 s even when the take starts with silence (seen up to 1.2 s): the first word starts
+    where the sound does. Only moves it later, never earlier."""
+    out = [dict(w) for w in words]
+    out[0]["start"] = round(max(out[0]["start"], min(onset - 0.03, out[0]["end"] - 0.05)), 6)
+    return out
+
+
+def retime(folder: Path) -> None:
+    """Apply the first-word correction to an existing capture (capture.json and beat_NN.json), from its own audio."""
+    cap = json.loads((folder / "capture.json").read_text())
+    for i, b in enumerate(cap["beats"], 1):
+        onset = audio_onset(folder / f"beat_{i:02}.mp3")
+        b["words"] = retime_first_word(b["words"], onset)
+        b["audio_onset_s"] = round(onset, 3)
+        (folder / f"beat_{i:02}.json").write_text(json.dumps(b, indent=1))
+        print(f"line {i}: sound starts at {onset:.2f}s, first word now {b['words'][0]['start']:.2f}s", flush=True)
+    (folder / "capture.json").write_text(json.dumps(cap, indent=2) + "\n")
+
+
 def check() -> None:
     code, body = _get("/v1/user/subscription")
     tier = body.get("tier") if isinstance(body, dict) else None
@@ -117,10 +153,11 @@ def capture(plan: Path, variant: str, out: Path) -> None:
                   {"text": text, "model_id": voice["speech_model"], "voice_settings": voice["settings"]})
         mp3 = out / f"beat_{i:02}.mp3"
         mp3.write_bytes(base64.b64decode(r["audio_base64"]))
-        words = words_from_alignment(text, r["alignment"])
+        onset = audio_onset(mp3)
+        words = retime_first_word(words_from_alignment(text, r["alignment"]), onset)
         dur = _duration(mp3)
         beats.append({"text": text, "voice": f"elevenlabs:{voice['name']}:{voice['voice_id']}", "rate": "model default", "words": words,
-                      "duration": dur, "audio_sha256": hashlib.sha256(mp3.read_bytes()).hexdigest(),
+                      "duration": dur, "audio_onset_s": round(onset, 3), "audio_sha256": hashlib.sha256(mp3.read_bytes()).hexdigest(),
                       "available_seconds": b["end"] - b["start"], "fits": dur <= b["end"] - b["start"] - 0.1})
         (out / f"beat_{i:02}.json").write_text(json.dumps(beats[-1], indent=1))
         print(f"line {i}: {dur:.2f}s, {len(words)} words", flush=True)
@@ -139,6 +176,8 @@ def main() -> None:
     c.add_argument("--generated-id", required=True)
     c.add_argument("--name", required=True)
     c.add_argument("--desc", required=True)
+    rt = sub.add_parser("retime")
+    rt.add_argument("--dir", type=Path, required=True)
     k = sub.add_parser("capture")
     k.add_argument("--plan", type=Path, required=True)
     k.add_argument("--variant", required=True)
@@ -150,6 +189,8 @@ def main() -> None:
         design(a.out, a.text, a.desc)
     elif a.cmd == "create":
         create(a.generated_id, a.name, a.desc)
+    elif a.cmd == "retime":
+        retime(a.dir)
     else:
         capture(a.plan, a.variant, a.out)
 
