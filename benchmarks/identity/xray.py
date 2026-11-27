@@ -7,8 +7,98 @@ BLUE = (0.10, 0.42, 1.0)
 ORANGE = (1.0, 0.30, 0.01)
 
 
+def _grid_lines(nt, coords, normal, spacing, width):
+    """0..1: how much a point sits on a grid line (planes every `spacing` along x, y and z, each family fading where the surface
+    runs parallel to its planes, so lines stay thin on every face)."""
+    sep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(coords, sep.inputs["Vector"])
+    nsep = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(normal, nsep.inputs["Vector"])
+
+    def math(op, a, b=None):
+        n = nt.nodes.new("ShaderNodeMath")
+        n.operation = op
+        for i, v in enumerate((a, b)):
+            if v is None:
+                continue
+            if isinstance(v, (int, float)):
+                n.inputs[i].default_value = float(v)
+            else:
+                nt.links.new(v, n.inputs[i])
+        return n.outputs[0]
+
+    def remap(v, lo, hi, to_lo, to_hi):
+        r = nt.nodes.new("ShaderNodeMapRange")
+        r.inputs["From Min"].default_value, r.inputs["From Max"].default_value = lo, hi
+        r.inputs["To Min"].default_value, r.inputs["To Max"].default_value = to_lo, to_hi
+        nt.links.new(v, r.inputs["Value"])
+        return r.outputs["Result"]
+
+    total = None
+    for axis in ("X", "Y", "Z"):
+        f = math("FRACT", math("DIVIDE", sep.outputs[axis], spacing))
+        dist = math("MULTIPLY", math("SUBTRACT", 0.5, math("ABSOLUTE", math("SUBTRACT", f, 0.5))), spacing)
+        on_line = remap(dist, 0.0, width, 1.0, 0.0)
+        square = remap(math("ABSOLUTE", nsep.outputs[axis]), 0.55, 0.85, 1.0, 0.0)
+        g = math("MULTIPLY", on_line, square)
+        total = g if total is None else math("MAXIMUM", total, g)
+    return total
+
+
 def blueprint_material(name: str = "Xray blueprint"):
-    """See-through blue that glows on the edges facing away from the camera (an x-ray outline), faint on faces turned to it."""
+    """See-through blue that glows on the edges turned away from the camera (an x-ray outline), faint on faces turned to it, with a
+    fine blueprint grid on every surface (lines each metre, stronger every five), so big faces read as drawn, not empty."""
+    import bpy
+    mt = bpy.data.materials.get(name)
+    if mt is not None:
+        return mt
+    mt = bpy.data.materials.new(name)
+    mt.use_nodes = True
+    nt = mt.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    lw = nt.nodes.new("ShaderNodeLayerWeight")
+    lw.inputs["Blend"].default_value = 0.35
+    ramp = nt.nodes.new("ShaderNodeMapRange")
+    ramp.inputs["From Min"].default_value = 0.0
+    ramp.inputs["From Max"].default_value = 1.0
+    ramp.inputs["To Min"].default_value = 0.08
+    ramp.inputs["To Max"].default_value = 1.0
+    nt.links.new(lw.outputs["Facing"], ramp.inputs["Value"])
+    fine = _grid_lines(nt, tc.outputs["Object"], tc.outputs["Normal"], 1.0, 0.018)
+    major = _grid_lines(nt, tc.outputs["Object"], tc.outputs["Normal"], 5.0, 0.04)
+    grid = nt.nodes.new("ShaderNodeMath")
+    grid.operation = "MAXIMUM"
+    fine_k = nt.nodes.new("ShaderNodeMath")
+    fine_k.operation = "MULTIPLY"
+    fine_k.inputs[1].default_value = 0.35
+    nt.links.new(fine, fine_k.inputs[0])
+    nt.links.new(fine_k.outputs[0], grid.inputs[0])
+    major_k = nt.nodes.new("ShaderNodeMath")
+    major_k.operation = "MULTIPLY"
+    major_k.inputs[1].default_value = 0.7
+    nt.links.new(major, major_k.inputs[0])
+    nt.links.new(major_k.outputs[0], grid.inputs[1])
+    fac = nt.nodes.new("ShaderNodeMath")
+    fac.operation = "MAXIMUM"
+    nt.links.new(ramp.outputs["Result"], fac.inputs[0])
+    nt.links.new(grid.outputs[0], fac.inputs[1])
+    em = nt.nodes.new("ShaderNodeEmission")
+    em.inputs["Color"].default_value = (*BLUE, 1.0)
+    em.inputs["Strength"].default_value = 2.2
+    tr = nt.nodes.new("ShaderNodeBsdfTransparent")
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(fac.outputs[0], mix.inputs["Fac"])
+    nt.links.new(tr.outputs["BSDF"], mix.inputs[1])
+    nt.links.new(em.outputs["Emission"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    return mt
+
+
+def glow_material(name: str = "Xray glow", colour=ORANGE, strength: float = 5.0):
+    """The mechanism as a glowing scan: bright, hot rims where the surface turns away (outline and edges), a dimmer see-through core,
+    so parts behind parts still show. The strength is a node named "Glow strength" (Xray.set drives it)."""
     import bpy
     mt = bpy.data.materials.get(name)
     if mt is not None:
@@ -19,36 +109,34 @@ def blueprint_material(name: str = "Xray blueprint"):
     nt.nodes.clear()
     out = nt.nodes.new("ShaderNodeOutputMaterial")
     lw = nt.nodes.new("ShaderNodeLayerWeight")
-    lw.inputs["Blend"].default_value = 0.35
-    ramp = nt.nodes.new("ShaderNodeMapRange")
-    ramp.inputs["From Min"].default_value = 0.0
-    ramp.inputs["From Max"].default_value = 1.0
-    ramp.inputs["To Min"].default_value = 0.08
-    ramp.inputs["To Max"].default_value = 1.0
-    nt.links.new(lw.outputs["Facing"], ramp.inputs["Value"])
+    lw.inputs["Blend"].default_value = 0.4
+    value = nt.nodes.new("ShaderNodeValue")
+    value.name = value.label = "Glow strength"
+    value.outputs[0].default_value = strength
+    rim = nt.nodes.new("ShaderNodeMapRange")                  # core 0.35x, rim 1.4x the strength (brighter washes the orange out)
+    rim.inputs["To Min"].default_value, rim.inputs["To Max"].default_value = 0.35, 1.4
+    nt.links.new(lw.outputs["Facing"], rim.inputs["Value"])
+    k = nt.nodes.new("ShaderNodeMath")
+    k.operation = "MULTIPLY"
+    nt.links.new(rim.outputs["Result"], k.inputs[0])
+    nt.links.new(value.outputs[0], k.inputs[1])
+    hot = nt.nodes.new("ShaderNodeMix")                         # the rims run hotter, toward yellow-white
+    hot.data_type = "RGBA"
+    nt.links.new(lw.outputs["Facing"], hot.inputs["Factor"])
+    hot.inputs["A"].default_value = (*colour, 1.0)
+    hot.inputs["B"].default_value = (1.0, 0.55, 0.15, 1.0)
     em = nt.nodes.new("ShaderNodeEmission")
-    em.inputs["Color"].default_value = (*BLUE, 1.0)
-    em.inputs["Strength"].default_value = 2.2
+    nt.links.new(hot.outputs["Result"], em.inputs["Color"])
+    nt.links.new(k.outputs[0], em.inputs["Strength"])
+    dense = nt.nodes.new("ShaderNodeMapRange")                  # 60 % opaque in the core, solid at the rim
+    dense.inputs["To Min"].default_value, dense.inputs["To Max"].default_value = 0.6, 1.0
+    nt.links.new(lw.outputs["Facing"], dense.inputs["Value"])
     tr = nt.nodes.new("ShaderNodeBsdfTransparent")
     mix = nt.nodes.new("ShaderNodeMixShader")
-    nt.links.new(ramp.outputs["Result"], mix.inputs["Fac"])
+    nt.links.new(dense.outputs["Result"], mix.inputs["Fac"])
     nt.links.new(tr.outputs["BSDF"], mix.inputs[1])
     nt.links.new(em.outputs["Emission"], mix.inputs[2])
     nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
-    return mt
-
-
-def glow_material(name: str = "Xray glow", colour=ORANGE, strength: float = 5.0):
-    import bpy
-    mt = bpy.data.materials.get(name)
-    if mt is not None:
-        return mt
-    mt = bpy.data.materials.new(name)
-    mt.use_nodes = True
-    b = mt.node_tree.nodes.get("Principled BSDF")
-    b.inputs["Base Color"].default_value = (*colour, 1.0)
-    b.inputs["Emission Color"].default_value = (*colour, 1.0)
-    b.inputs["Emission Strength"].default_value = strength
     return mt
 
 
@@ -67,7 +155,7 @@ class Xray:
         if on == self.on and not on:
             return
         blue, glow = blueprint_material(), glow_material(strength=glow_strength)
-        glow.node_tree.nodes.get("Principled BSDF").inputs["Emission Strength"].default_value = glow_strength
+        glow.node_tree.nodes["Glow strength"].outputs[0].default_value = glow_strength
         for ob in bpy.context.scene.objects:
             if ob.type not in ("MESH", "CURVE") or ob.name in self.spared:
                 continue

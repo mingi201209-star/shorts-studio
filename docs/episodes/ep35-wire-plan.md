@@ -110,6 +110,12 @@ Storyboard fixes:
   the sky toward its edges (Fresnel), so he reads as inside the canopy.
 - At full size the jet's first panel lines (a Voronoi pattern) read as crazing, almost cracks. They are now rectangular
   panels as on a real airframe: rings at the frames along the length, stringer lines, staggered butts.
+- At full size the x-ray shots (11 s, a third of the film) were a flat blue plane and plain peach cylinders. Three changes:
+  - the blueprint now carries a fine grid (every metre, stronger every five);
+  - the mechanism glows as a scan, with hot rims and a see-through core, so the ram shows inside the cylinder;
+  - the engine gained flanges and end caps on the cylinder, saddles, the crosshead's guide rails, hubs on every sheave, the
+    accumulator's domed ends, the valve's handwheel and pipe flanges.
+  (benchmarks/identity/xray.py, the channel's reveal look, is used by this film only so far.)
 - The full-power exhaust was a solid peach cone. It is now a flame: white-hot at the nozzle, thinning to orange and nothing at
   the tip, with shock diamonds and soft edges.
 
@@ -121,4 +127,5 @@ Local low-res v2 (845 frames at 162x288, 3 samples, composed to 1080x1920): ever
 - captions (widest line 876 px of 900 with the new tracking);
 - audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects.
 The low-res run rendered before the flame, seat, landing-aid and plating changes; CI renders and gates the final code.
-CI v2 renders every frame at the full 1080x1920 (16 samples), with no upscale.
+CI v2 renders every frame at the full 1080x1920 (16 samples), with no upscale. Run 46059395719 (sha 23a002e) was checked at
+full size before its final job, and that check led to the panel and x-ray changes above. CI v3 renders the film with them.

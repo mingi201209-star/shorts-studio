@@ -413,6 +413,45 @@ class Engine:
         set_polylines(self.pipe, [[(0.0, VALVE_Y, z), (0.0, VALVE_Y, z + 1.6), (ACC[0], VALVE_Y, z + 1.6), (ACC[0], ACC[1], z + 1.6)]])
         self.acc = cyl("Accumulator", 0.85, 4.2, (ACC[0], ACC[1], z + 0.6), steel, verts=32)
         self.parts += [self.cylinder, self.ram, self.valve, self.pipe, self.acc] + xparts
+        # structure that reads in the x-ray glow: flanges and end caps on the cylinder, its saddles, the crosshead's guide rails, hubs
+        # on every sheave, the accumulator's domed ends, the valve's handwheel and pipe flanges
+        detail_parts = []
+        n_fl = 6
+        for k in range(n_fl):
+            yy = CYL[0] + 0.4 + k * (CYL[1] - CYL[0] - 0.8) / (n_fl - 1)
+            detail_parts.append(cyl(f"Cylinder flange {k}", 0.72, 0.14, (0.0, yy, z), steel, rot=(math.pi / 2, 0, 0), verts=32))
+        for k, yy in enumerate((CYL[0], CYL[1])):
+            detail_parts.append(cyl(f"Cylinder cap {k}", 0.8, 0.3, (0.0, yy, z), steel, rot=(math.pi / 2, 0, 0), verts=32))
+        for k in range(3):
+            yy = CYL[0] + 1.5 + k * (CYL[1] - CYL[0] - 3.0) / 2
+            detail_parts.append(cube(f"Cylinder saddle {k}", (0.0, yy, z - 0.8), (1.7, 0.5, 0.6), steel))
+        for sx in (-1, 1):
+            y0, y1 = CROSS0 - 1.5, CYL[0] - 0.4
+            detail_parts.append(cube(f"Crosshead rail {sx}", (sx * 2.2, (y0 + y1) / 2, z - 0.45), (0.18, y1 - y0, 0.3), steel))
+            for k in range(3):
+                detail_parts.append(cyl(f"Fixed hub {sx} {k}", 0.15, 0.24, (sx * (1.0 + 0.3 * k), FIX_Y, z), steel, rot=(0, math.pi / 2, 0), verts=16))
+            detail_parts.append(cyl(f"Turn hub {sx}", 0.2, 0.26, (sx * m.SPAN, Y3, z), steel, rot=(0, math.pi / 2, 0), verts=16))
+            for k in range(3):
+                hub = cyl(f"Crosshead hub {sx} {k}", 0.15, 0.24, (sx * (1.0 + 0.3 * k), -0.2, 0.0), steel, rot=(0, math.pi / 2, 0), verts=16)
+                hub.parent = self.cross
+                detail_parts.append(hub)
+        for k, dz in enumerate((2.1, -2.1)):
+            bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=0.85, location=(ACC[0], ACC[1], z + 0.6 + dz))
+            dome = bpy.context.object
+            dome.name = f"Accumulator dome {k}"
+            dome.scale = (1.0, 1.0, 0.45)
+            dome.data.materials.append(steel)
+            detail_parts.append(dome)
+        # the handwheel on the valve's port side (the oil line leaves from its top)
+        bpy.ops.mesh.primitive_torus_add(major_radius=0.38, minor_radius=0.045, location=(-0.98, VALVE_Y, z), rotation=(0, math.pi / 2, 0))
+        wheel = bpy.context.object
+        wheel.name = "Valve handwheel"
+        wheel.data.materials.append(steel)
+        detail_parts += [wheel, cyl("Valve stem", 0.05, 0.45, (-0.75, VALVE_Y, z), steel, rot=(0, math.pi / 2, 0), verts=12)]
+        for k, (loc, rot) in enumerate((((0.0, VALVE_Y, z + 0.62), (0, 0, 0)), ((0.0, VALVE_Y, z + 1.6), (0, math.pi / 2, 0)),
+                                         ((ACC[0], VALVE_Y, z + 1.6), (math.pi / 2, 0, 0)))):
+            detail_parts.append(cyl(f"Pipe flange {k}", 0.28, 0.1, loc, steel, rot=rot, verts=20))
+        self.parts += detail_parts
         self.oil = [cube(f"Oil pulse {k}", (0, 0, -60), (0.28, 0.28, 0.28), steel) for k in range(10)]
         self.parts += self.oil
         floor = material("Engine room floor", (0.2, 0.2, 0.22), rough=0.8)
