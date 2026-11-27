@@ -64,3 +64,12 @@ Local low-res (845 frames at 162x288, 3 samples, composed to 1080x1920): every g
 - captions in the new look (widest line 843 px of 900);
 - audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects.
 After the sheet, the snag shot became a tracking shot on the hook (the jet had crossed the fixed camera too fast to read).
+CI run 46014566989 (sha e7e3d67, 71 frame jobs at 720x1280 / 16 samples + final, 32 min): every gate PASS on the first attempt:
+- opening hook: jet 89 % of the width, 94 % in frame;
+- captions in the new look, widest line 843 px;
+- audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects;
+- no frozen frame.
+Film wire-film-1080x1920.mp4 sha256 94c9553b616f70c78c18ee6807f1e5206be6530491c4cb2c29b83ea04fea7ad6 (1080x1920, 845 frames,
+35.208 s), copied to ep05-review/EP35-carrier-arresting-wire.mp4. Its first 97 frames are EP.34 v2's part-four teaser. Not
+verified: the new voice and the mix by ear, a human first view.
+

@@ -26,17 +26,20 @@ Alternatives:
 ## Description
 How do you stop a truck that's lost its brakes? On some steep mountain roads, the escape ramp has steel cable nets hung across it, one after another. Each net is tied to steel tape coiled in boxes inside the walls. When a truck hits, the tape is dragged through pins that bend it back and forth, and bending all that steel soaks up the truck's speed, net after net. They're built to stop a 90,000-lb truck at 90 mph, and a crew can have one ready again in about four hours.
 
-Part 3 of Built to Get Hit. Part 1: the truck that's built to get hit. Part 2: what stops a giant ship from hitting a bridge.
+Part 3 of Built to Get Hit. Part 1: the truck that's built to get hit. Part 2: what stops a giant ship from hitting a bridge. Part 4: how do you stop a jet doing 150 mph?
 
 Simplified animation for explanation; not a specific product, site or agency.
 
 #Shorts #Trucks #Engineering #RoadSafety #HowItWorks #Mountains
 
 ## Pinned comment
-Would you trust a net to stop an 80,000-lb truck? 👇 That's all three parts of Built to Get Hit — which machine should get a part 4?
+Would you trust a net to stop an 80,000-lb truck? 👇 Part 4 is next: how do you stop a jet doing 150 mph? 👀
 
 ## Upload
-- Upload after EP.33 (EP.33's teaser promises this one), on the steady days.
+- Upload the v2 file, ep05-review/EP34-runaway-truck-nets-v2.mp4: it ends with a 4 s teaser of part four (EP.35's opening, the jet
+  caught on the wire) and "Subscribe for part four: how do you stop a fighter jet?" in Bumper's voice, the channel's new voice
+  (docs/episodes/ep34-net-plan.md, section v2).
+- Upload after EP.33 (EP.33's teaser promises this one), on the steady days; EP.35 next.
 - Add it to the "Built to Get Hit" playlist after EP.32 and EP.33.
 - Related video: the long video "7 Clever Ways Roads Stop Things That Are Out of Control" (LF01), same theme.
 

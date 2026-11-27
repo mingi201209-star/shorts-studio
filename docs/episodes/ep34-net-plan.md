@@ -82,3 +82,19 @@ Film net-film-1080x1920.mp4 sha256 2229a3bbc3ac12243d18588497ea87876ba86ca09e9f3
 tape through the pins (420), the driver behind the windshield (590). Not verified: the voice and mix by ear, a human first view.
 Its first 90 frames (clean) are EP.33's part-three teaser (docs/episodes/ep33-dolphin-plan.md, v2).
 
+## v2: the part-four teaser (owner, 2026-11-27: "ㅇ 예고 붙여서 올릴게")
+Not uploaded yet, so it gets a series tail like EP.32 and EP.33.
+- After the last frame, 4.04 s of EP.35's opening: its clean frames 0-96, the jet caught on the third wire, then the chase shot.
+- EP.35's effects are ducked 6 dB under "Subscribe for part four: how do you stop a fighter jet?". The line is in Bumper's voice
+  (the channel's new voice, introduced here), captioned in this film's style.
+- Line frozen in examples/episodes/ep34-audio/tail/.
+- Tool: benchmarks/series_tail.py with the CI finals of run 45901227006 (this film) and EP.35's run 46014566989.
+- Every gate PASS:
+  - 915 frames, 38.125 s; the film part re-encoded once (PSNR 52.51 dB);
+  - the tail hash-checked as EP.35's frames;
+  - the captions say the line;
+  - mix -15.1 LUFS, true peak -1.5 dBFS, the line 15.7 dB over the effects;
+  - no frozen frame.
+- Film net-film-v2-1080x1920.mp4 sha256 a9916ddafec5af6f4eb7be3616de2129c28667abe9e564b452d529b1fb2f4f17, copied to
+  ep05-review/EP34-runaway-truck-nets-v2.mp4 (upload this one).
+
