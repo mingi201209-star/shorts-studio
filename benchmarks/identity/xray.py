@@ -4,7 +4,7 @@ mechanism turns into see-through blueprint blue and the mechanism glows safety o
 from __future__ import annotations
 
 BLUE = (0.10, 0.42, 1.0)
-ORANGE = (1.0, 0.40, 0.03)
+ORANGE = (1.0, 0.30, 0.01)
 
 
 def blueprint_material(name: str = "Xray blueprint"):
