@@ -9,7 +9,7 @@ Owner, 2026-11-27: "without our own character the channel gets buried". EP.35 is
 - the caption look: heavy type with the numbers in safety yellow.
 
 Series: part four of "Built to Get Hit" (the owner's go-ahead for parts 4-6, 2026-11-27). EP.34's pinned comment asked which
-machine should get a part 4. EP.34 v2 ends with this film's first shot and "Subscribe for part four: how do you stop a fighter
+machine should get a part 4. EP.34 v3 ends with this film's first shot and "Subscribe for part four: how do you stop a fighter
 jet?" in Bumper's voice. Frame 1: a navy jet already caught on the third wire, the wire stretched into a V, sparks at the hook,
 engines at full power, held until 3.6 s.
 

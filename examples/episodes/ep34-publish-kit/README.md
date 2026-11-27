@@ -36,9 +36,10 @@ Simplified animation for explanation; not a specific product, site or agency.
 Would you trust a net to stop an 80,000-lb truck? 👇 Part 4 is next: how do you stop a jet doing 150 mph? 👀
 
 ## Upload
-- Upload the v2 file, ep05-review/EP34-runaway-truck-nets-v2.mp4: it ends with a 4 s teaser of part four (EP.35's opening, the jet
-  caught on the wire) and "Subscribe for part four: how do you stop a fighter jet?" in Bumper's voice, the channel's new voice
-  (docs/episodes/ep34-net-plan.md, section v2).
+- Upload the v3 file, ep05-review/EP34-runaway-truck-nets-v3.mp4. It ends with a 4 s teaser of part four, "Subscribe for part
+  four: how do you stop a fighter jet?", in Bumper's voice, the channel's new voice. The teaser shows EP.35's opening, the jet
+  caught on the wire, from EP.35's detail pass (docs/episodes/ep34-net-plan.md, sections v2 and v3). If v2 is already up, it
+  can stay.
 - Upload after EP.33 (EP.33's teaser promises this one), on the steady days; EP.35 next.
 - Add it to the "Built to Get Hit" playlist after EP.32 and EP.33.
 - Related video: the long video "7 Clever Ways Roads Stop Things That Are Out of Control" (LF01), same theme.

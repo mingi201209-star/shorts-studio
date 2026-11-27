@@ -70,8 +70,8 @@ CI run 46014566989 (sha e7e3d67, 71 frame jobs at 720x1280 / 16 samples + final,
 - audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects;
 - no frozen frame.
 Film wire-film-1080x1920.mp4 sha256 94c9553b616f70c78c18ee6807f1e5206be6530491c4cb2c29b83ea04fea7ad6 (1080x1920, 845 frames,
-35.208 s), copied to ep05-review/EP35-carrier-arresting-wire.mp4. Its first 97 frames are EP.34 v2's part-four teaser. Not
-verified: the new voice and the mix by ear, a human first view.
+35.208 s), copied to ep05-review/EP35-carrier-arresting-wire.mp4. Its first 97 frames are EP.34 v2's part-four teaser. Both
+were superseded by v2 below, after the owner's note that the detail went missing.
 
 ## v2: the detail pass (owner, 2026-11-27: "근데 좀 디테일이 사라졌어", the detail went missing)
 Not uploaded yet, so the whole film is rendered again; EP.34 v2's teaser is rebuilt from the new opening.
@@ -131,4 +131,16 @@ CI v2 renders every frame at the full 1080x1920 (16 samples), with no upscale. R
 Its median frame job took 12 min. Its frames, checked at full size, led to the panel and x-ray changes above, so it is not
 the delivered film.
 Local low-res v3 (sha 1bd2cf4, renderer 0e22fb64): every gate PASS, with the same numbers as above (no frozen frame, median
-step 0.96). CI v3, run 46066180867, renders the delivered film.
+step 0.96).
+CI v3, run 46066180867 (sha 1bd2cf4, 71 frame jobs at the full 1080x1920 / 16 samples + final, 70 min): every gate PASS on the
+first attempt:
+- opening hook: jet 89 % of the width, 94 % in frame;
+- pace 20.4 cuts a minute, 190 wpm, 35.2 s; captions widest line 876 px;
+- audio -15.3 LUFS, true peak -1.9 dBFS, speech 8.9 dB over the effects;
+- no frozen frame.
+Film wire-film-1080x1920.mp4 sha256 68e86165dfb821516eb7ffcf9c93f942fa346d1f35bb73796825f68cdffc65bf (1080x1920, 845
+frames, 35.208 s), copied to ep05-review/EP35-carrier-arresting-wire-v2.mp4 (upload this one).
+Checked at full size: the opening, the approach, the snag, the three x-ray shots, the football field, full throttle, the
+cockpit, the crew. In the last half second a crew member from the crowd crosses the left edge of the frame; it is left in.
+Its first 97 frames are EP.34 v3's part-four teaser (docs/episodes/ep34-net-plan.md, v3).
+Not verified: the new voice and the mix by ear, a human first view.

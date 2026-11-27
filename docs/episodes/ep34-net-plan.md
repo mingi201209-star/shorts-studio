@@ -98,3 +98,18 @@ Not uploaded yet, so it gets a series tail like EP.32 and EP.33.
 - Film net-film-v2-1080x1920.mp4 sha256 a9916ddafec5af6f4eb7be3616de2129c28667abe9e564b452d529b1fb2f4f17, copied to
   ep05-review/EP34-runaway-truck-nets-v2.mp4 (upload this one).
 
+## v3: the part-four teaser from EP.35's detail pass (owner, 2026-11-27: "근데 좀 디테일이 사라졌어")
+EP.35 was rendered again with far more detail and the house-style light (docs/episodes/ep35-wire-plan.md, v2). The teaser at the
+end of this film shows EP.35's opening, so it is rebuilt from the new frames. Everything else is as in v2: the same line in
+Bumper's voice, the same frozen take (examples/episodes/ep34-audio/tail/).
+- Tool: benchmarks/series_tail.py with this film's CI final (run 45901227006) and EP.35 v2's run 46066180867 (frames 0-96, renderer
+  0e22fb64, and its effects bed).
+- Every gate PASS:
+  - 915 frames, 38.125 s; the film part re-encoded once (PSNR 52.51 dB);
+  - the tail hash-checked as EP.35 v2's frames;
+  - the captions say the line;
+  - mix -15.1 LUFS, true peak -1.5 dBFS, the line 15.7 dB over the effects;
+  - no frozen frame.
+- Film net-film-v3-1080x1920.mp4 sha256 0538c87d3110b6c94aca915ceb7c1bd42d38df91dbc6dc791a622774c6d4daa7, copied to
+  ep05-review/EP34-runaway-truck-nets-v3.mp4. Upload this one, not v2. If v2 is already up, it can stay: its teaser shows the
+  same shot, only plainer.
