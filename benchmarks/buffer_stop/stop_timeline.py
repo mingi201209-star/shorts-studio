@@ -53,8 +53,8 @@ E2 = cam((1.55, 6.7, 0.38), (0.75, 2.8, 0.0), 32.0, rel="stop")            # x-r
 E2_B = cam((1.45, 6.3, 0.36), (0.75, 2.8, 0.0), 32.0, rel="stop")
 F = cam((5.2, 27.5, 7.0), (0.0, 5.0, 0.4), 26.0)                            # behind the stop, high: its slide laid out (about 60 ft), the train coming
 F_B = cam((5.0, 27.0, 6.8), (0.0, 6.5, 0.4), 26.0)
-G_TOP = cam((0.55, -1.0, 2.55), (-0.45, -3.2, 2.25), 26.0, rel="train")     # split, top: inside the cab, Bumper at the controls
-G_BOT = cam((4.6, -1.2, 1.1), (0.0, 0.4, 0.75), 24.0, rel="car")            # split, bottom: the car stopping hard, the dummy thrown
+G_TOP = cam((0.4, -1.15, 2.5), (-0.45, -2.3, 2.2), 28.0, rel="train")       # split, top: inside the cab, Bumper at the controls
+G_BOT = cam((2.7, 0.2, 1.2), (-0.35, -0.2, 0.95), 30.0, rel="car")          # split, bottom: beside the car, the dummy thrown forward
 H = cam((0.5, 1.8, 3.0), (-0.45, -2.2, 2.55), 40.0, rel="train")            # Bumper through the windscreen, waving
 H_B = cam((0.45, 1.6, 2.98), (-0.45, -2.2, 2.55), 40.0, rel="train")
 I1 = cam((2.8, 1.0, 1.4), (0.7, 2.6, 0.2), 28.0, rel="stop")               # the crew loosening a shoe's bolts

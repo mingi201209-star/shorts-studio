@@ -74,4 +74,12 @@ as the car comparison, which holds by a wide margin, before anything was rendere
   two. EP.35's captions are unchanged (widest 876 px).
 
 ## Local and CI
-(recorded below as they run)
+Local low-res (837 frames at 162x288, 3 samples, composed to 1080x1920). Every gate PASS but one:
+- passed: physics, pace (20.7 cuts a minute, 185 wpm, 34.9 s), line alignment, telemetry, visible action, no scene text,
+  smoothness (no frozen frame), black opening;
+- passed: captions (widest line 705 px), audio -15.1 LUFS, true peak -1.9 dBFS, speech 11.8 dB over the effects;
+- failed: the opening hook, because of how its box was drawn. The subject box reached behind the opening camera, so it projected
+  as off screen. It now covers the train's nose and the stop's buffers and beam: in the first second the subject is 100 % in frame
+  and 61 % of the width (re-rendered and checked). The crew shots' telemetry check was too strict for positions recorded to four
+  decimals; its tolerance is now 1 mm.
+After the 1 fps sheet, the split's two cameras moved in: the car's dummy is seen thrown forward, Bumper in the cab barely moves.

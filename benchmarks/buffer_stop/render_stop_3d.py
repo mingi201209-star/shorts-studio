@@ -310,8 +310,8 @@ def main():
             sy = stop["root"].location.y
             info["subject_box"] = hook_gate.project_box(scene, cam, Matrix.Identity(4), (-2.6, sy - 1.2, 0.0), (2.6, sy + 5.0, 2.4))
         else:
-            fy = hero["root"].location.y
-            info["subject_box"] = hook_gate.project_box(scene, cam, Matrix.Identity(4), (-1.6, fy - 2.6, 0.0), (1.6, fy + 4.6, 3.9))
+            fy = hero["root"].location.y               # the subject: the train's nose and the stop's buffers and beam (all in front of the
+            info["subject_box"] = hook_gate.project_box(scene, cam, Matrix.Identity(4), (-1.6, fy - 3.0, 0.0), (1.6, fy + 1.4, 3.9))   # opening camera)
         scene.render.filepath = str(path)
         bpy.ops.render.render(write_still=True)
         info["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()

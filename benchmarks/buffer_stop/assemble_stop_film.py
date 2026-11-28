@@ -116,7 +116,7 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
                 if abs(p["car_x"] - m.car_state(t - 0.25)["x"]) > 1e-3:
                     problems.append(f"frame {fr['frame']}: the car differs from the model")
             elif v == "crew":
-                if not p.get("crew") or not -1e-6 <= p["stop_y"] <= m.impact()[-1][4] + 1e-6:
+                if not p.get("crew") or not -1e-3 <= p["stop_y"] <= m.impact()[-1][4] + 1e-3:          # recorded to 4 decimals
                     problems.append(f"frame {fr['frame']}: the crew or the stop's place is wrong")
             else:
                 problems.append(f"frame {fr['frame']}: unknown variant {v}")
