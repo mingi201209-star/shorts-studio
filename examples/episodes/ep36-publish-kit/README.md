@@ -8,7 +8,7 @@ people caught by its safety gear, and "Subscribe for part six: what stops a fall
 Frame 1: a six-car train already shoving a friction buffer stop along the rails at the end of a station track, the buffers
 squashed, sparks flying off the shoes, held through the first line. The channel's identity throughout (playbook section 11):
 Bumper's voice; Bumper at the train's controls (and, in the comparison, a dummy thrown forward in a car braking hard); the x-ray
-reveal on the shoes and buffers with the channel's sting; the caption look.
+reveal on the shoes and buffers with the channel's sting, and a thermal look for the heat; the caption look.
 
 ## Title (recommended)
 **How Do You Stop a Runaway Train at the End of the Line? 🚆**

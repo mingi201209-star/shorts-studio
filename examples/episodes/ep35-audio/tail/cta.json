@@ -60,6 +60,6 @@
    0,
    101
   ],
-  "ci_run": "46094432645 (stop-film panel shards 0-96: frames 0-101 used, renderer 25f62fdf) and its final sfx.wav"
+  "ci_run": "46122473476 (stop-film panel shards 0-96: frames 0-101 used, renderer b2b684de) and its final sfx.wav (the same as run 46094432645's)"
  }
 }

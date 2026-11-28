@@ -35,7 +35,7 @@ Would you want to be the pilot (or the dummy) on that cable? 👇 Part 5 is next
 (The v3 file ends with the part-five teaser, so the comment and the video's last line say the same thing.)
 
 ## Upload
-- Upload the v3 file, ep05-review/EP35-carrier-arresting-wire-v3.mp4, once it is rebuilt from EP.36's new run (pending): the v2
+- Upload the v3 file, ep05-review/EP35-carrier-arresting-wire-v3.mp4: the v2
   detail pass (a richer carrier, jet and deck crew, and the house-style light) with the part-five teaser at the end, EP.36's
   opening and "Subscribe for part five: what stops a runaway train?" in Bumper's voice (docs/episodes/ep35-wire-plan.md,
   sections v2 and v3). Not the first or the v2 file.

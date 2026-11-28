@@ -148,17 +148,18 @@ Not verified: the new voice and the mix by ear, a human first view.
 ## v3: the part-five teaser (owner, 2026-11-28: "처음 만들 때부터 예고를 붙여", the teaser comes with the first build)
 The film is v2 unchanged, with EP.36's opening appended as the part-five teaser. The line: "Subscribe for part five: what stops a
 runaway train?" in Bumper's voice, the shortest of four takes (3.79 s), frozen in examples/episodes/ep35-audio/tail.
-- The tail is EP.36's frames 0-101 (4.25 s) from its run 46094432645 (renderer 25f62fdf):
+- The tail is EP.36's frames 0-101 (4.25 s) from EP.36's delivered run 46122473476 (renderer b2b684de):
   - the train shoving the stop along the rails with sparks;
-  - then the what-if shot, the train running at a solid wall, cut just before it hits.
+  - then the what-if shot from the platform beside the wall, the train coming at us, cut just before it hits.
   EP.36's own effects play under the line, 6 dB down.
-- EP.36 is rendered again for its wall crash, shoe and heat shots (docs/episodes/ep36-stop-plan.md). The wall shot has a new
-  camera, so its frames 68-101 change: this build is not delivered, and the teaser is rebuilt from EP.36's new run.
-- Tool: benchmarks/series_tail.py with v2's CI final (run 46066180867) and EP.36's CI final (its effects bed). Every gate PASS:
+- A first v3 build used EP.36's first run (46094432645). Its wall shot then got a new camera, so that build was not delivered;
+  this one is rebuilt from the new frames and matches EP.36 exactly.
+- Tool: benchmarks/series_tail.py with v2's CI final (run 46066180867) and EP.36's CI final (its effects bed, unchanged between
+  EP.36's two runs, sha256 24c99b71). Every gate PASS:
   - 947 frames, 39.458 s; the film part re-encoded once (PSNR 54.04 dB);
   - the tail hash-checked as EP.36's frames;
   - the captions say the line;
   - mix -15.2 LUFS, true peak -1.9 dBFS, the line 22.7 dB over the effects;
   - no frozen frame.
-- Film wire-film-v3-1080x1920.mp4 sha256 fffe29f39caeb03f90da88cdf2c9d783463a3b77b6d11a8003f2e829421cfb9a, copied to
+- Film wire-film-v3-1080x1920.mp4 sha256 a197771ee417ea074e843e9b5c6ad0d859194217d2cb17d1bf96562a237a43b5, copied to
   ep05-review/EP35-carrier-arresting-wire-v3.mp4. Upload this one, not v2.

@@ -60,6 +60,6 @@
    0,
    90
   ],
-  "ci_run": "pending"
+  "ci_run": "46092206288 (car-film panel shards 0-84: frames 0-90 used, renderer 1b43eb9f) and benchmarks/elevator_safety/car_sfx.py's opening effects"
  }
 }

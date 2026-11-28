@@ -94,6 +94,9 @@ def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
     return [frames[i] for i in range(n)], sha
 
 
+HEAT_END = m.state(m.impact()[-1][0])["shoe_heat_kJ"]          # each shoe's friction heat by the end of the slide (kJ)
+
+
 def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
     """Every frame was drawn from the model state of its simulated time: the train's front, the stop's slide and the buffers'
     squash; the shoes' heat in the thermal look; the wall what-if's train, its crush and the cab's folds; the comparison car;
@@ -118,8 +121,6 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
                 folds = [math.degrees(a) for a in m.fold_angles(ws["crush"])]
                 if len(p.get("fold_deg", [])) != len(folds) or any(abs(a - b) > 0.05 for a, b in zip(p["fold_deg"], folds)):
                     problems.append(f"frame {fr['frame']}: the cab's folds differ from the model's crush")
-            if p.get("heat") is not None and abs(p["heat"] - m.state(t)["shoe_heat_kJ"] / m.state(m.impact()[-1][0])["shoe_heat_kJ"]) > 1e-3:
-                problems.append(f"frame {fr['frame']}: the shoes' heat differs from the model")
             elif v == "car":
                 if abs(p["car_x"] - m.car_state(t - 0.25)["x"]) > 1e-3:
                     problems.append(f"frame {fr['frame']}: the car differs from the model")
@@ -128,6 +129,8 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
                     problems.append(f"frame {fr['frame']}: the crew or the stop's place is wrong")
             else:
                 problems.append(f"frame {fr['frame']}: unknown variant {v}")
+            if p.get("heat") is not None and abs(p["heat"] - m.state(t)["shoe_heat_kJ"] / HEAT_END) > 1e-3:     # the thermal look
+                problems.append(f"frame {fr['frame']}: the shoes' heat differs from the model")
         if len(problems) > 5:
             break
     return {"status": "FAIL" if problems else "PASS", "problems": problems}

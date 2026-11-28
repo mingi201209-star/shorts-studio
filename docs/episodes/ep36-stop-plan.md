@@ -104,6 +104,36 @@ Local low-res (837 frames at 162x288, 3 samples, composed to 1080x1920). Every g
   decimals; its tolerance is now 1 mm.
 After the 1 fps sheet, the split's two cameras moved in: the car's dummy is seen thrown forward, Bumper in the cab barely moves.
 
+CI v1, run 46094432645 (sha 52eed2e, renderer 25f62fdf, 70 frame jobs at the full 1080x1920 / 16 samples + final, 74 min):
+every gate PASS. Checked at full size it was not delivered: the wall what-if, the shoes and the heat shot did not show their
+lines well enough (storyboard notes above).
+
+CI v2, run 46122473476 (sha 16bf9ca, renderer b2b684de, 70 frame jobs + final, 72 min): every frame rendered.
+- The final failed on one gate, telemetry, and the cause was a bug in the gate, not the film. The new heat check had been placed
+  inside the gate's chain of variant checks, so every train frame fell through to "unknown variant".
+- The fix moves the check after the chain. tests/test_ep36_stop.py::test_telemetry_gate_takes_every_variant now feeds the gate
+  model-true records of every frame and variant; it fails on the old code with CI's exact message and passes on the fix.
+- The fixed gate was run on CI v2's own frame records for every frame the v2 changes touched: PASS on 228 frames, one renderer.
+  Those frames are the opening, the whole wall shot and the whole heat shot (frames 0-143 and 420-503):
+  - the folds reach 62 degrees at the 0.3 m crush;
+  - 28 shards;
+  - the heat runs from 61 % to 94 %.
+  The other shots' records were not fetched again; their checks are the same as in CI v1, which passed them.
+- Every other gate PASS in CI:
+  - physics, pace (20.7 cuts a minute, 185 wpm, 34.9 s), line alignment;
+  - opening hook (the subject 100 % in frame, 61 % of the width);
+  - visible action, with the new checks: the folds, the shards, the shoes in focus, the heat rising;
+  - no scene text, smoothness (no frozen frame), black opening;
+  - captions (widest line 705 px);
+  - audio -15.1 LUFS, true peak -1.9 dBFS, speech 11.8 dB over the effects.
+- Film stop-film-1080x1920.mp4 sha256 8016624e17c465c998e52cc172a048a3363ebf1515b6d0ee861b54dc59b9c14a (837 frames, 34.875 s).
+  Its effects bed is the same as v1's (sha256 24c99b71).
+- Checked at full size:
+  - the wall what-if: the train coming at the platform, the windscreen crazing, the cab's sides folding, glass, concrete and dust;
+  - the shoes yellow on the orange frame, pushing in to the bolts on "bolted on tight";
+  - the shoes glowing in the thermal look on "speed into heat";
+  - the rest as in v1.
+
 ## The part-six teaser, in the first build (owner, 2026-11-28: "처음 만들 때부터 예고를 붙여")
 - EP.37's first line was recorded first and frozen (examples/episodes/ep37-audio/line1): "What stops an elevator full of people
   from falling if every one of its cables snaps?". It is 4.4 s long, so EP.37's opening shot is held to 3.6 s and a close shot
@@ -115,4 +145,15 @@ After the 1 fps sheet, the split's two cameras moved in: the car's dummy is seen
   Its effects come from benchmarks/elevator_safety/car_sfx.py (the opening only). That opening is now frozen for EP.37.
 - The line: "Subscribe for part six: what stops a falling elevator?" in Bumper's voice, the shortest of four takes (3.32 s), frozen
   in examples/episodes/ep36-audio/tail. The tail is EP.37's frames 0-90 (3.79 s).
+- Built with benchmarks/series_tail.py from CI v2's final and EP.37's opening (frames 0-90 of run 46092206288, renderer 1b43eb9f,
+  and its effects). Every gate PASS:
+  - 928 frames, 38.667 s; the film part re-encoded once (PSNR 52.55 dB);
+  - the tail hash-checked as EP.37's frames;
+  - the captions say the line;
+  - mix -15.1 LUFS, true peak -1.9 dBFS, the line 14.9 dB over the effects;
+  - no frozen frame.
+- Film stop-film-1080x1920.mp4 with the tail, sha256 e320d79213dd90443e01fffda62f56f4e0bb5d789d41b0bf8dfcfa26379742cf, copied to
+  ep05-review/EP36-friction-buffer-stop.mp4 (upload this one).
+- EP.35 v3 ends with this film's opening (frames 0-101 of CI v2), rebuilt after the wall shot's new camera
+  (docs/episodes/ep35-wire-plan.md, v3).
 
