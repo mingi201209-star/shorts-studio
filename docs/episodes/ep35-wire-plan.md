@@ -144,3 +144,21 @@ Checked at full size: the opening, the approach, the snag, the three x-ray shots
 cockpit, the crew. In the last half second a crew member from the crowd crosses the left edge of the frame; it is left in.
 Its first 97 frames are EP.34 v3's part-four teaser (docs/episodes/ep34-net-plan.md, v3).
 Not verified: the new voice and the mix by ear, a human first view.
+
+## v3: the part-five teaser (owner, 2026-11-28: "처음 만들 때부터 예고를 붙여", the teaser comes with the first build)
+The film is v2 unchanged, with EP.36's opening appended as the part-five teaser. The line: "Subscribe for part five: what stops a
+runaway train?" in Bumper's voice, the shortest of four takes (3.79 s), frozen in examples/episodes/ep35-audio/tail.
+- The tail is EP.36's frames 0-101 (4.25 s) from its run 46094432645 (renderer 25f62fdf):
+  - the train shoving the stop along the rails with sparks;
+  - then the what-if shot, the train running at a solid wall, cut just before it hits.
+  EP.36's own effects play under the line, 6 dB down.
+- EP.36 is rendered again for its wall crash, shoe and heat shots (docs/episodes/ep36-stop-plan.md). Those changes start after
+  frame 110 or are x-ray shots, so this teaser's frames stay as EP.36's new opening (checked against the new run when it lands).
+- Tool: benchmarks/series_tail.py with v2's CI final (run 46066180867) and EP.36's CI final (its effects bed). Every gate PASS:
+  - 947 frames, 39.458 s; the film part re-encoded once (PSNR 54.04 dB);
+  - the tail hash-checked as EP.36's frames;
+  - the captions say the line;
+  - mix -15.2 LUFS, true peak -1.9 dBFS, the line 22.7 dB over the effects;
+  - no frozen frame.
+- Film wire-film-v3-1080x1920.mp4 sha256 fffe29f39caeb03f90da88cdf2c9d783463a3b77b6d11a8003f2e829421cfb9a, copied to
+  ep05-review/EP35-carrier-arresting-wire-v3.mp4. Upload this one, not v2.

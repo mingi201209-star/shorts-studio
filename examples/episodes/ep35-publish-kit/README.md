@@ -32,12 +32,12 @@ Simplified animation for explanation; not a specific aircraft or ship.
 ## Pinned comment
 Would you want to be the pilot (or the dummy) on that cable? 👇 Part 5 is next: what stops a runaway train at the end of the line 👀
 
-(Keep "Part 5" in step with the teaser that will be added at the end of this video once part five is rendered.)
+(The v3 file ends with the part-five teaser, so the comment and the video's last line say the same thing.)
 
 ## Upload
-- Upload the v2 file, ep05-review/EP35-carrier-arresting-wire-v2.mp4: the detail pass after the owner's note that the detail
-  went missing (a richer carrier, jet and deck crew, and the house-style light; docs/episodes/ep35-wire-plan.md, section v2).
-  Not the first file.
+- Upload the v3 file, ep05-review/EP35-carrier-arresting-wire-v3.mp4: the v2 detail pass (a richer carrier, jet and deck crew,
+  and the house-style light) with the part-five teaser at the end, EP.36's opening and "Subscribe for part five: what stops a
+  runaway train?" in Bumper's voice (docs/episodes/ep35-wire-plan.md, sections v2 and v3). Not the first or the v2 file.
 - After EP.34 (its teaser promises this one), on the steady days; add to the "Built to Get Hit" playlist.
 - Related video: the long video "7 Clever Ways Roads Stop Things That Are Out of Control" (LF01), same theme.
 - Channel: from this upload on, the channel description can carry the identity line "Hidden machines built to take the hit,

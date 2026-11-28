@@ -70,6 +70,6 @@
    0,
    96
   ],
-  "ci_run": "46014566989 (wire-film panel shards 0-96: frames 0-96 used, renderer 5e2c1e40) and its final sfx.wav"
+  "ci_run": "46066180867 (EP.35 v2's run: wire-film panel shards 0-96, frames 0-96 used, renderer 0e22fb64) and its final sfx.wav, for EP.34 v3; EP.34 v2's tail used run 46014566989 (renderer 5e2c1e40)"
  }
 }
