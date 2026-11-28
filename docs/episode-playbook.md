@@ -151,3 +151,7 @@ Proposed together, from EP.35 on (EP.32-EP.34 stay as rendered):
       synthetic sheen), saved as "Curious Mechanics - Bumper": the narrator is the dummy character. Tested through capture,
       level_beats and the caption build: word timings measured per word.
 
+
+Owner, 2026-11-28: "이전편은 고치지 말고 한번 만들 때 예고까지 한번에 넣어". An episode is delivered once, teaser included, and
+is not reopened afterwards. A later change to the next episode never sends an earlier one back for a rebuild. So the next
+episode's opening is built and frozen before the current episode is finished, and that frozen opening is what the teaser shows.
