@@ -1,0 +1,293 @@
+{
+  "status": "PASS",
+  "voice": "en-US-AndrewNeural",
+  "rate": "+5%",
+  "seconds": 32.983,
+  "cues": [
+    {
+      "start": 0.06,
+      "end": 0.671937,
+      "text": "What stops an"
+    },
+    {
+      "start": 0.729937,
+      "end": 1.4149370000000001,
+      "text": "elevator full of"
+    },
+    {
+      "start": 1.4499369999999998,
+      "end": 2.3779369999999997,
+      "text": "people from falling"
+    },
+    {
+      "start": 2.447937,
+      "end": 3.132937,
+      "text": "if every one"
+    },
+    {
+      "start": 3.167937,
+      "end": 3.376937,
+      "text": "of its"
+    },
+    {
+      "start": 3.4229369999999997,
+      "end": 4.4449369999999995,
+      "text": "cables snaps?"
+    },
+    {
+      "start": 4.7649578749999995,
+      "end": 5.661395874999999,
+      "text": "First, there are"
+    },
+    {
+      "start": 5.707395875,
+      "end": 6.241395874999999,
+      "text": "four to eight"
+    },
+    {
+      "start": 6.276395874999999,
+      "end": 7.170395874999999,
+      "text": "cables, and any"
+    },
+    {
+      "start": 7.228395874999999,
+      "end": 7.716395874999999,
+      "text": "one could hold"
+    },
+    {
+      "start": 7.750395874999999,
+      "end": 8.644395874999999,
+      "text": "the car alone."
+    },
+    {
+      "start": 8.93252075,
+      "end": 9.508416749999999,
+      "text": "If they all"
+    },
+    {
+      "start": 9.57741675,
+      "end": 10.54141675,
+      "text": "broke, a second"
+    },
+    {
+      "start": 10.58741675,
+      "end": 11.156416749999998,
+      "text": "rope would catch"
+    },
+    {
+      "start": 11.191416749999998,
+      "end": 11.40041675,
+      "text": "you, the"
+    },
+    {
+      "start": 11.45841675,
+      "end": 12.07441675,
+      "text": "governor rope."
+    },
+    {
+      "start": 12.394437625,
+      "end": 13.040895625,
+      "text": "It loops up"
+    },
+    {
+      "start": 13.086895624999999,
+      "end": 13.586895624999999,
+      "text": "to a wheel"
+    },
+    {
+      "start": 13.644895624999998,
+      "end": 13.818895625,
+      "text": "in the"
+    },
+    {
+      "start": 13.841895625,
+      "end": 14.433895625,
+      "text": "machine room."
+    },
+    {
+      "start": 14.770895625,
+      "end": 15.315895624999998,
+      "text": "Spin it too"
+    },
+    {
+      "start": 15.385895624999998,
+      "end": 16.337895625,
+      "text": "fast, and weights"
+    },
+    {
+      "start": 16.384895625000002,
+      "end": 17.022895625,
+      "text": "fly out and"
+    },
+    {
+      "start": 17.092895625,
+      "end": 17.510895625,
+      "text": "lock it."
+    },
+    {
+      "start": 17.830916499999997,
+      "end": 18.532916499999995,
+      "text": "The locked rope"
+    },
+    {
+      "start": 18.660916499999995,
+      "end": 19.357916499999998,
+      "text": "yanks a lever"
+    },
+    {
+      "start": 19.415916499999998,
+      "end": 19.925916499999996,
+      "text": "on the car,"
+    },
+    {
+      "start": 20.076916499999996,
+      "end": 21.040916499999998,
+      "text": "and steel wedges"
+    },
+    {
+      "start": 21.121916499999998,
+      "end": 21.864916499999996,
+      "text": "jam against the"
+    },
+    {
+      "start": 21.911916499999997,
+      "end": 22.5619165,
+      "text": "guide rails."
+    },
+    {
+      "start": 22.873499374999998,
+      "end": 23.680937375,
+      "text": "The car stops"
+    },
+    {
+      "start": 23.727937374999996,
+      "end": 24.284937375,
+      "text": "in about three"
+    },
+    {
+      "start": 24.319937375,
+      "end": 24.690937374999997,
+      "text": "and a half"
+    },
+    {
+      "start": 24.737937374999998,
+      "end": 25.480937374999996,
+      "text": "feet, a hard"
+    },
+    {
+      "start": 25.526937374999996,
+      "end": 26.165937375,
+      "text": "squeeze, not"
+    },
+    {
+      "start": 26.200937375,
+      "end": 26.780937374999997,
+      "text": "a crash."
+    },
+    {
+      "start": 27.086875249999995,
+      "end": 27.946958249999994,
+      "text": "Yes, that's me"
+    },
+    {
+      "start": 28.004958249999994,
+      "end": 28.805958249999996,
+      "text": "in there, again."
+    },
+    {
+      "start": 29.071979124999995,
+      "end": 30.319979124999996,
+      "text": "Elisha Otis proved"
+    },
+    {
+      "start": 30.354979124999996,
+      "end": 31.573979124999994,
+      "text": "it in 1854"
+    },
+    {
+      "start": 31.642979124999997,
+      "end": 32.246979124999996,
+      "text": "by cutting his"
+    },
+    {
+      "start": 32.29397912499999,
+      "end": 32.722979124999995,
+      "text": "own rope."
+    }
+  ],
+  "beats": [
+    {
+      "start": 0,
+      "end": 4.704957874999999,
+      "narration_en": "What stops an elevator full of people from falling if every one of its cables snaps?",
+      "source_audio_sha256": "982e0ac0d1dd74b49743821b4a5ed7a18342e25f18063ebeeb90f59060bf28a6"
+    },
+    {
+      "start": 4.704957874999999,
+      "end": 8.90441675,
+      "narration_en": "First, there are four to eight cables, and any one could hold the car alone.",
+      "source_audio_sha256": "cfc3f71079be4fa8dd23f8b76c165719b5d8481ddbd87590f358408b27e7d338"
+    },
+    {
+      "start": 8.90441675,
+      "end": 12.334437625,
+      "narration_en": "If they all broke, a second rope would catch you, the governor rope.",
+      "source_audio_sha256": "787792de8dfeaa18cf400f6bdbea000351e5060272a065d5b64b077ea625bfc6"
+    },
+    {
+      "start": 12.334437625,
+      "end": 17.7709165,
+      "narration_en": "It loops up to a wheel in the machine room. Spin it too fast, and weights fly out and lock it.",
+      "source_audio_sha256": "735b164ce5cf84170d4f88cf5ea96d63b07957eda32c29d4858ee7a65bf8b315"
+    },
+    {
+      "start": 17.7709165,
+      "end": 22.821937374999997,
+      "narration_en": "The locked rope yanks a lever on the car, and steel wedges jam against the guide rails.",
+      "source_audio_sha256": "3d818910b8df860d61c1ea74cca1838aeac2a1298e64cb9aef2c48b6696e16b6"
+    },
+    {
+      "start": 22.821937374999997,
+      "end": 27.040958249999996,
+      "narration_en": "The car stops in about three and a half feet, a hard squeeze, not a crash.",
+      "source_audio_sha256": "c5aa11034521b13313e18dc38706b7ca215ca0fb9274e960993087da1860566f"
+    },
+    {
+      "start": 27.040958249999996,
+      "end": 29.065979124999995,
+      "narration_en": "Yes, that's me in there, again.",
+      "source_audio_sha256": "2f56031db9ce32d8089efa1adcb153d9f44c240e811089eff877b82132b47fff"
+    },
+    {
+      "start": 29.065979124999995,
+      "end": 32.983,
+      "narration_en": "Elisha Otis proved it in 1854 by cutting his own rope.",
+      "source_audio_sha256": "f3d0d7c058d78dbd53e36ea9c0d36971e1fd4b46e2d34932f78d9d7d349d6dec"
+    }
+  ],
+  "silence_gaps": [
+    0.325937,
+    0.466021,
+    0.366812,
+    0.332083,
+    0.432208,
+    0.303104,
+    0.350604,
+    0.363271
+  ],
+  "loudness": {
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.1,
+    "true_peak_dbfs": -1.5,
+    "shot_integrated_lufs": [
+      -16.3,
+      -15.9,
+      -16.7,
+      -15.2,
+      -18.0,
+      -15.7
+    ]
+  },
+  "production_approved": false,
+  "narration_sha256": "994cfcf1b974956484cb375c21484c490afa15312445f14ac935e3520705c2a3"
+}

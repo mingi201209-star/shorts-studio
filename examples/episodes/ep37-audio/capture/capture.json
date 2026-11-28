@@ -1,0 +1,677 @@
+{
+  "variant": "ep37",
+  "note": "line 1 frozen (line1/); lines 2-8 the shortest clean take of each",
+  "beats": [
+    {
+      "text": "What stops an elevator full of people from falling if every one of its cables snaps?",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "What",
+          "start": 0.143063,
+          "end": 0.29
+        },
+        {
+          "text": "stops",
+          "start": 0.337,
+          "end": 0.65
+        },
+        {
+          "text": "an",
+          "start": 0.685,
+          "end": 0.755
+        },
+        {
+          "text": "elevator",
+          "start": 0.813,
+          "end": 1.219
+        },
+        {
+          "text": "full",
+          "start": 1.265,
+          "end": 1.405
+        },
+        {
+          "text": "of",
+          "start": 1.451,
+          "end": 1.498
+        },
+        {
+          "text": "people",
+          "start": 1.533,
+          "end": 1.765
+        },
+        {
+          "text": "from",
+          "start": 1.8,
+          "end": 1.939
+        },
+        {
+          "text": "falling",
+          "start": 2.032,
+          "end": 2.461
+        },
+        {
+          "text": "if",
+          "start": 2.531,
+          "end": 2.635
+        },
+        {
+          "text": "every",
+          "start": 2.717,
+          "end": 2.995
+        },
+        {
+          "text": "one",
+          "start": 3.065,
+          "end": 3.216
+        },
+        {
+          "text": "of",
+          "start": 3.251,
+          "end": 3.297
+        },
+        {
+          "text": "its",
+          "start": 3.344,
+          "end": 3.46
+        },
+        {
+          "text": "cables",
+          "start": 3.506,
+          "end": 3.878
+        },
+        {
+          "text": "snaps",
+          "start": 3.936,
+          "end": 4.528
+        }
+      ],
+      "duration": 4.858776,
+      "audio_onset_s": 0.173,
+      "audio_sha256": "982e0ac0d1dd74b49743821b4a5ed7a18342e25f18063ebeeb90f59060bf28a6",
+      "available_seconds": 4.0,
+      "fits": false
+    },
+    {
+      "text": "First, there are four to eight cables, and any one could hold the car alone.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "First",
+          "start": 0.218562,
+          "end": 0.627
+        },
+        {
+          "text": "there",
+          "start": 0.778,
+          "end": 0.964
+        },
+        {
+          "text": "are",
+          "start": 0.998,
+          "end": 1.115
+        },
+        {
+          "text": "four",
+          "start": 1.161,
+          "end": 1.358
+        },
+        {
+          "text": "to",
+          "start": 1.405,
+          "end": 1.451
+        },
+        {
+          "text": "eight",
+          "start": 1.521,
+          "end": 1.695
+        },
+        {
+          "text": "cables",
+          "start": 1.73,
+          "end": 2.136
+        },
+        {
+          "text": "and",
+          "start": 2.252,
+          "end": 2.403
+        },
+        {
+          "text": "any",
+          "start": 2.461,
+          "end": 2.624
+        },
+        {
+          "text": "one",
+          "start": 2.682,
+          "end": 2.81
+        },
+        {
+          "text": "could",
+          "start": 2.844,
+          "end": 2.984
+        },
+        {
+          "text": "hold",
+          "start": 3.019,
+          "end": 3.17
+        },
+        {
+          "text": "the",
+          "start": 3.204,
+          "end": 3.274
+        },
+        {
+          "text": "car",
+          "start": 3.32,
+          "end": 3.541
+        },
+        {
+          "text": "alone",
+          "start": 3.599,
+          "end": 4.098
+        }
+      ],
+      "duration": 4.310204,
+      "audio_onset_s": 0.249,
+      "audio_sha256": "cfc3f71079be4fa8dd23f8b76c165719b5d8481ddbd87590f358408b27e7d338",
+      "available_seconds": 0.0,
+      "fits": false
+    },
+    {
+      "text": "If they all broke, a second rope would catch you, the governor rope.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "If",
+          "start": 0.028104,
+          "end": 0.163
+        },
+        {
+          "text": "they",
+          "start": 0.209,
+          "end": 0.383
+        },
+        {
+          "text": "all",
+          "start": 0.441,
+          "end": 0.604
+        },
+        {
+          "text": "broke",
+          "start": 0.673,
+          "end": 1.033
+        },
+        {
+          "text": "a",
+          "start": 1.138,
+          "end": 1.196
+        },
+        {
+          "text": "second",
+          "start": 1.312,
+          "end": 1.637
+        },
+        {
+          "text": "rope",
+          "start": 1.683,
+          "end": 1.858
+        },
+        {
+          "text": "would",
+          "start": 1.881,
+          "end": 2.009
+        },
+        {
+          "text": "catch",
+          "start": 2.043,
+          "end": 2.252
+        },
+        {
+          "text": "you",
+          "start": 2.287,
+          "end": 2.368
+        },
+        {
+          "text": "the",
+          "start": 2.426,
+          "end": 2.496
+        },
+        {
+          "text": "governor",
+          "start": 2.554,
+          "end": 2.868
+        },
+        {
+          "text": "rope",
+          "start": 2.926,
+          "end": 3.17
+        }
+      ],
+      "duration": 3.474286,
+      "audio_onset_s": 0.058,
+      "audio_sha256": "787792de8dfeaa18cf400f6bdbea000351e5060272a065d5b64b077ea625bfc6",
+      "available_seconds": 0.0,
+      "fits": false
+    },
+    {
+      "text": "It loops up to a wheel in the machine room. Spin it too fast, and weights fly out and lock it.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "It",
+          "start": 1.292542,
+          "end": 1.428
+        },
+        {
+          "text": "loops",
+          "start": 1.509,
+          "end": 1.788
+        },
+        {
+          "text": "up",
+          "start": 1.846,
+          "end": 1.939
+        },
+        {
+          "text": "to",
+          "start": 1.985,
+          "end": 2.055
+        },
+        {
+          "text": "a",
+          "start": 2.148,
+          "end": 2.183
+        },
+        {
+          "text": "wheel",
+          "start": 2.229,
+          "end": 2.485
+        },
+        {
+          "text": "in",
+          "start": 2.543,
+          "end": 2.601
+        },
+        {
+          "text": "the",
+          "start": 2.647,
+          "end": 2.717
+        },
+        {
+          "text": "machine",
+          "start": 2.74,
+          "end": 3.065
+        },
+        {
+          "text": "room",
+          "start": 3.1,
+          "end": 3.332
+        },
+        {
+          "text": "Spin",
+          "start": 3.669,
+          "end": 3.924
+        },
+        {
+          "text": "it",
+          "start": 3.971,
+          "end": 4.04
+        },
+        {
+          "text": "too",
+          "start": 4.063,
+          "end": 4.214
+        },
+        {
+          "text": "fast",
+          "start": 4.284,
+          "end": 4.714
+        },
+        {
+          "text": "and",
+          "start": 4.807,
+          "end": 4.957
+        },
+        {
+          "text": "weights",
+          "start": 5.016,
+          "end": 5.236
+        },
+        {
+          "text": "fly",
+          "start": 5.283,
+          "end": 5.584
+        },
+        {
+          "text": "out",
+          "start": 5.666,
+          "end": 5.805
+        },
+        {
+          "text": "and",
+          "start": 5.84,
+          "end": 5.921
+        },
+        {
+          "text": "lock",
+          "start": 5.991,
+          "end": 6.223
+        },
+        {
+          "text": "it",
+          "start": 6.293,
+          "end": 6.409
+        }
+      ],
+      "duration": 6.687347,
+      "audio_onset_s": 1.323,
+      "audio_sha256": "735b164ce5cf84170d4f88cf5ea96d63b07957eda32c29d4858ee7a65bf8b315",
+      "available_seconds": 0.0,
+      "fits": false
+    },
+    {
+      "text": "The locked rope yanks a lever on the car, and steel wedges jam against the guide rails.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "The",
+          "start": 0.064,
+          "end": 0.139
+        },
+        {
+          "text": "locked",
+          "start": 0.197,
+          "end": 0.453
+        },
+        {
+          "text": "rope",
+          "start": 0.499,
+          "end": 0.766
+        },
+        {
+          "text": "yanks",
+          "start": 0.894,
+          "end": 1.219
+        },
+        {
+          "text": "a",
+          "start": 1.265,
+          "end": 1.3
+        },
+        {
+          "text": "lever",
+          "start": 1.358,
+          "end": 1.591
+        },
+        {
+          "text": "on",
+          "start": 1.649,
+          "end": 1.718
+        },
+        {
+          "text": "the",
+          "start": 1.765,
+          "end": 1.834
+        },
+        {
+          "text": "car",
+          "start": 1.869,
+          "end": 2.159
+        },
+        {
+          "text": "and",
+          "start": 2.31,
+          "end": 2.473
+        },
+        {
+          "text": "steel",
+          "start": 2.554,
+          "end": 2.856
+        },
+        {
+          "text": "wedges",
+          "start": 2.914,
+          "end": 3.274
+        },
+        {
+          "text": "jam",
+          "start": 3.355,
+          "end": 3.622
+        },
+        {
+          "text": "against",
+          "start": 3.68,
+          "end": 3.982
+        },
+        {
+          "text": "the",
+          "start": 4.029,
+          "end": 4.098
+        },
+        {
+          "text": "guide",
+          "start": 4.145,
+          "end": 4.389
+        },
+        {
+          "text": "rails",
+          "start": 4.423,
+          "end": 4.795
+        }
+      ],
+      "duration": 5.093878,
+      "audio_onset_s": 0.094,
+      "audio_sha256": "3d818910b8df860d61c1ea74cca1838aeac2a1298e64cb9aef2c48b6696e16b6",
+      "available_seconds": 0.0,
+      "fits": false
+    },
+    {
+      "text": "The car stops in about three and a half feet, a hard squeeze, not a crash.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "The",
+          "start": 0.051562,
+          "end": 0.139
+        },
+        {
+          "text": "car",
+          "start": 0.186,
+          "end": 0.383
+        },
+        {
+          "text": "stops",
+          "start": 0.453,
+          "end": 0.859
+        },
+        {
+          "text": "in",
+          "start": 0.906,
+          "end": 0.975
+        },
+        {
+          "text": "about",
+          "start": 1.01,
+          "end": 1.231
+        },
+        {
+          "text": "three",
+          "start": 1.265,
+          "end": 1.463
+        },
+        {
+          "text": "and",
+          "start": 1.498,
+          "end": 1.567
+        },
+        {
+          "text": "a",
+          "start": 1.602,
+          "end": 1.637
+        },
+        {
+          "text": "half",
+          "start": 1.707,
+          "end": 1.869
+        },
+        {
+          "text": "feet",
+          "start": 1.916,
+          "end": 2.148
+        },
+        {
+          "text": "a",
+          "start": 2.264,
+          "end": 2.334
+        },
+        {
+          "text": "hard",
+          "start": 2.426,
+          "end": 2.659
+        },
+        {
+          "text": "squeeze",
+          "start": 2.705,
+          "end": 3.146
+        },
+        {
+          "text": "not",
+          "start": 3.193,
+          "end": 3.344
+        },
+        {
+          "text": "a",
+          "start": 3.379,
+          "end": 3.413
+        },
+        {
+          "text": "crash",
+          "start": 3.448,
+          "end": 3.959
+        }
+      ],
+      "duration": 4.257959,
+      "audio_onset_s": 0.082,
+      "audio_sha256": "c5aa11034521b13313e18dc38706b7ca215ca0fb9274e960993087da1860566f",
+      "available_seconds": 0.0,
+      "fits": false
+    },
+    {
+      "text": "Yes, that's me in there, again.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Yes",
+          "start": 0.045917,
+          "end": 0.337
+        },
+        {
+          "text": "that's",
+          "start": 0.406,
+          "end": 0.662
+        },
+        {
+          "text": "me",
+          "start": 0.731,
+          "end": 0.906
+        },
+        {
+          "text": "in",
+          "start": 0.964,
+          "end": 1.045
+        },
+        {
+          "text": "there",
+          "start": 1.091,
+          "end": 1.3
+        },
+        {
+          "text": "again",
+          "start": 1.347,
+          "end": 1.765
+        }
+      ],
+      "duration": 1.906939,
+      "audio_onset_s": 0.076,
+      "audio_sha256": "2f56031db9ce32d8089efa1adcb153d9f44c240e811089eff877b82132b47fff",
+      "available_seconds": 0.0,
+      "fits": false
+    },
+    {
+      "text": "Elisha Otis proved it in 1854 by cutting his own rope.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Elisha",
+          "start": 0.006,
+          "end": 0.534
+        },
+        {
+          "text": "Otis",
+          "start": 0.627,
+          "end": 0.917
+        },
+        {
+          "text": "proved",
+          "start": 0.975,
+          "end": 1.254
+        },
+        {
+          "text": "it",
+          "start": 1.289,
+          "end": 1.358
+        },
+        {
+          "text": "in",
+          "start": 1.405,
+          "end": 1.463
+        },
+        {
+          "text": "1854",
+          "start": 1.486,
+          "end": 2.508
+        },
+        {
+          "text": "by",
+          "start": 2.577,
+          "end": 2.705
+        },
+        {
+          "text": "cutting",
+          "start": 2.775,
+          "end": 3.053
+        },
+        {
+          "text": "his",
+          "start": 3.088,
+          "end": 3.181
+        },
+        {
+          "text": "own",
+          "start": 3.228,
+          "end": 3.355
+        },
+        {
+          "text": "rope",
+          "start": 3.413,
+          "end": 3.657
+        }
+      ],
+      "duration": 3.94449,
+      "audio_onset_s": 0.036,
+      "audio_sha256": "f3d0d7c058d78dbd53e36ea9c0d36971e1fd4b46e2d34932f78d9d7d349d6dec",
+      "available_seconds": 0.0,
+      "fits": false
+    }
+  ]
+}

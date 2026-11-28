@@ -1,0 +1,77 @@
+{
+ "text": "If they all broke, a second rope would catch you, the governor rope.",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "If",
+   "start": 0.028104,
+   "end": 0.163
+  },
+  {
+   "text": "they",
+   "start": 0.209,
+   "end": 0.383
+  },
+  {
+   "text": "all",
+   "start": 0.441,
+   "end": 0.604
+  },
+  {
+   "text": "broke",
+   "start": 0.673,
+   "end": 1.033
+  },
+  {
+   "text": "a",
+   "start": 1.138,
+   "end": 1.196
+  },
+  {
+   "text": "second",
+   "start": 1.312,
+   "end": 1.637
+  },
+  {
+   "text": "rope",
+   "start": 1.683,
+   "end": 1.858
+  },
+  {
+   "text": "would",
+   "start": 1.881,
+   "end": 2.009
+  },
+  {
+   "text": "catch",
+   "start": 2.043,
+   "end": 2.252
+  },
+  {
+   "text": "you",
+   "start": 2.287,
+   "end": 2.368
+  },
+  {
+   "text": "the",
+   "start": 2.426,
+   "end": 2.496
+  },
+  {
+   "text": "governor",
+   "start": 2.554,
+   "end": 2.868
+  },
+  {
+   "text": "rope",
+   "start": 2.926,
+   "end": 3.17
+  }
+ ],
+ "duration": 3.474286,
+ "audio_onset_s": 0.058,
+ "audio_sha256": "a0da59ff93a6f504239452880e1630300a07a24e140beb3e0d7873f646ffae67",
+ "available_seconds": 0.0,
+ "fits": false
+}

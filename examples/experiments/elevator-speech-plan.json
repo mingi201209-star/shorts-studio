@@ -1,0 +1,44 @@
+{
+ "variants": [
+  {
+   "id": "elevator_rest",
+   "beats": [
+    {
+     "narration_en": "First, there are four to eight cables, and any one could hold the car alone.",
+     "start": 0.0,
+     "end": 0.0
+    },
+    {
+     "narration_en": "If they all broke, a second rope would catch you, the governor rope.",
+     "start": 0.0,
+     "end": 0.0
+    },
+    {
+     "narration_en": "It loops up to a wheel in the machine room. Spin it too fast, and weights fly out and lock it.",
+     "start": 0.0,
+     "end": 0.0
+    },
+    {
+     "narration_en": "The locked rope yanks a lever on the car, and steel wedges jam against the guide rails.",
+     "start": 0.0,
+     "end": 0.0
+    },
+    {
+     "narration_en": "The car stops in about three and a half feet, a hard squeeze, not a crash.",
+     "start": 0.0,
+     "end": 0.0
+    },
+    {
+     "narration_en": "Yes, that's me in there, again.",
+     "start": 0.0,
+     "end": 0.0
+    },
+    {
+     "narration_en": "Elisha Otis proved it in 1854 by cutting his own rope.",
+     "start": 0.0,
+     "end": 0.0
+    }
+   ]
+  }
+ ]
+}

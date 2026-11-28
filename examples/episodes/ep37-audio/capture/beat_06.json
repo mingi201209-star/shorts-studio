@@ -1,0 +1,92 @@
+{
+ "text": "The car stops in about three and a half feet, a hard squeeze, not a crash.",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "The",
+   "start": 0.051562,
+   "end": 0.139
+  },
+  {
+   "text": "car",
+   "start": 0.186,
+   "end": 0.383
+  },
+  {
+   "text": "stops",
+   "start": 0.453,
+   "end": 0.859
+  },
+  {
+   "text": "in",
+   "start": 0.906,
+   "end": 0.975
+  },
+  {
+   "text": "about",
+   "start": 1.01,
+   "end": 1.231
+  },
+  {
+   "text": "three",
+   "start": 1.265,
+   "end": 1.463
+  },
+  {
+   "text": "and",
+   "start": 1.498,
+   "end": 1.567
+  },
+  {
+   "text": "a",
+   "start": 1.602,
+   "end": 1.637
+  },
+  {
+   "text": "half",
+   "start": 1.707,
+   "end": 1.869
+  },
+  {
+   "text": "feet",
+   "start": 1.916,
+   "end": 2.148
+  },
+  {
+   "text": "a",
+   "start": 2.264,
+   "end": 2.334
+  },
+  {
+   "text": "hard",
+   "start": 2.426,
+   "end": 2.659
+  },
+  {
+   "text": "squeeze",
+   "start": 2.705,
+   "end": 3.146
+  },
+  {
+   "text": "not",
+   "start": 3.193,
+   "end": 3.344
+  },
+  {
+   "text": "a",
+   "start": 3.379,
+   "end": 3.413
+  },
+  {
+   "text": "crash",
+   "start": 3.448,
+   "end": 3.959
+  }
+ ],
+ "duration": 4.257959,
+ "audio_onset_s": 0.082,
+ "audio_sha256": "2094da0d82363d54123c74fa88eb30883bc22a99647c533e7d59e6d00c9edc42",
+ "available_seconds": 0.0,
+ "fits": false
+}

@@ -1,0 +1,117 @@
+{
+ "text": "It loops up to a wheel in the machine room. Spin it too fast, and weights fly out and lock it.",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "It",
+   "start": 1.292542,
+   "end": 1.428
+  },
+  {
+   "text": "loops",
+   "start": 1.509,
+   "end": 1.788
+  },
+  {
+   "text": "up",
+   "start": 1.846,
+   "end": 1.939
+  },
+  {
+   "text": "to",
+   "start": 1.985,
+   "end": 2.055
+  },
+  {
+   "text": "a",
+   "start": 2.148,
+   "end": 2.183
+  },
+  {
+   "text": "wheel",
+   "start": 2.229,
+   "end": 2.485
+  },
+  {
+   "text": "in",
+   "start": 2.543,
+   "end": 2.601
+  },
+  {
+   "text": "the",
+   "start": 2.647,
+   "end": 2.717
+  },
+  {
+   "text": "machine",
+   "start": 2.74,
+   "end": 3.065
+  },
+  {
+   "text": "room",
+   "start": 3.1,
+   "end": 3.332
+  },
+  {
+   "text": "Spin",
+   "start": 3.669,
+   "end": 3.924
+  },
+  {
+   "text": "it",
+   "start": 3.971,
+   "end": 4.04
+  },
+  {
+   "text": "too",
+   "start": 4.063,
+   "end": 4.214
+  },
+  {
+   "text": "fast",
+   "start": 4.284,
+   "end": 4.714
+  },
+  {
+   "text": "and",
+   "start": 4.807,
+   "end": 4.957
+  },
+  {
+   "text": "weights",
+   "start": 5.016,
+   "end": 5.236
+  },
+  {
+   "text": "fly",
+   "start": 5.283,
+   "end": 5.584
+  },
+  {
+   "text": "out",
+   "start": 5.666,
+   "end": 5.805
+  },
+  {
+   "text": "and",
+   "start": 5.84,
+   "end": 5.921
+  },
+  {
+   "text": "lock",
+   "start": 5.991,
+   "end": 6.223
+  },
+  {
+   "text": "it",
+   "start": 6.293,
+   "end": 6.409
+  }
+ ],
+ "duration": 6.687347,
+ "audio_onset_s": 1.323,
+ "audio_sha256": "cf5ac3c948f31a27fd4476a7426a420bc5846a5a707045f0d5b8a2929604c941",
+ "available_seconds": 0.0,
+ "fits": false
+}

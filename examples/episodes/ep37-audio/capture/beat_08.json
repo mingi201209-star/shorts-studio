@@ -1,0 +1,67 @@
+{
+ "text": "Elisha Otis proved it in 1854 by cutting his own rope.",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "Elisha",
+   "start": 0.006,
+   "end": 0.534
+  },
+  {
+   "text": "Otis",
+   "start": 0.627,
+   "end": 0.917
+  },
+  {
+   "text": "proved",
+   "start": 0.975,
+   "end": 1.254
+  },
+  {
+   "text": "it",
+   "start": 1.289,
+   "end": 1.358
+  },
+  {
+   "text": "in",
+   "start": 1.405,
+   "end": 1.463
+  },
+  {
+   "text": "1854",
+   "start": 1.486,
+   "end": 2.508
+  },
+  {
+   "text": "by",
+   "start": 2.577,
+   "end": 2.705
+  },
+  {
+   "text": "cutting",
+   "start": 2.775,
+   "end": 3.053
+  },
+  {
+   "text": "his",
+   "start": 3.088,
+   "end": 3.181
+  },
+  {
+   "text": "own",
+   "start": 3.228,
+   "end": 3.355
+  },
+  {
+   "text": "rope",
+   "start": 3.413,
+   "end": 3.657
+  }
+ ],
+ "duration": 3.94449,
+ "audio_onset_s": 0.036,
+ "audio_sha256": "ede09f793b97869e8b1833a769648fbcd4313ec9858869fd714d0641a54e56e0",
+ "available_seconds": 0.0,
+ "fits": false
+}

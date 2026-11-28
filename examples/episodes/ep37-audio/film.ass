@@ -1,0 +1,53 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.67,Caption,,0,0,0,,What stops an
+Dialogue: 0,0:00:00.73,0:00:01.41,Caption,,0,0,0,,elevator full of
+Dialogue: 0,0:00:01.45,0:00:02.38,Caption,,0,0,0,,people from falling
+Dialogue: 0,0:00:02.45,0:00:03.13,Caption,,0,0,0,,if every one
+Dialogue: 0,0:00:03.17,0:00:03.38,Caption,,0,0,0,,of its
+Dialogue: 0,0:00:03.42,0:00:04.44,Caption,,0,0,0,,cables snaps?
+Dialogue: 0,0:00:04.76,0:00:05.66,Caption,,0,0,0,,First, there are
+Dialogue: 0,0:00:05.71,0:00:06.24,Caption,,0,0,0,,four to eight
+Dialogue: 0,0:00:06.28,0:00:07.17,Caption,,0,0,0,,cables, and any
+Dialogue: 0,0:00:07.23,0:00:07.72,Caption,,0,0,0,,one could hold
+Dialogue: 0,0:00:07.75,0:00:08.64,Caption,,0,0,0,,the car alone.
+Dialogue: 0,0:00:08.93,0:00:09.51,Caption,,0,0,0,,If they all
+Dialogue: 0,0:00:09.58,0:00:10.54,Caption,,0,0,0,,broke, a second
+Dialogue: 0,0:00:10.59,0:00:11.16,Caption,,0,0,0,,rope would catch
+Dialogue: 0,0:00:11.19,0:00:11.40,Caption,,0,0,0,,you, the
+Dialogue: 0,0:00:11.46,0:00:12.07,Caption,,0,0,0,,governor rope.
+Dialogue: 0,0:00:12.39,0:00:13.04,Caption,,0,0,0,,It loops up
+Dialogue: 0,0:00:13.09,0:00:13.59,Caption,,0,0,0,,to a wheel
+Dialogue: 0,0:00:13.64,0:00:13.82,Caption,,0,0,0,,in the
+Dialogue: 0,0:00:13.84,0:00:14.43,Caption,,0,0,0,,machine room.
+Dialogue: 0,0:00:14.77,0:00:15.32,Caption,,0,0,0,,Spin it too
+Dialogue: 0,0:00:15.39,0:00:16.34,Caption,,0,0,0,,fast, and weights
+Dialogue: 0,0:00:16.38,0:00:17.02,Caption,,0,0,0,,fly out and
+Dialogue: 0,0:00:17.09,0:00:17.51,Caption,,0,0,0,,lock it.
+Dialogue: 0,0:00:17.83,0:00:18.53,Caption,,0,0,0,,The locked rope
+Dialogue: 0,0:00:18.66,0:00:19.36,Caption,,0,0,0,,yanks a lever
+Dialogue: 0,0:00:19.42,0:00:19.93,Caption,,0,0,0,,on the car,
+Dialogue: 0,0:00:20.08,0:00:21.04,Caption,,0,0,0,,and steel wedges
+Dialogue: 0,0:00:21.12,0:00:21.86,Caption,,0,0,0,,jam against the
+Dialogue: 0,0:00:21.91,0:00:22.56,Caption,,0,0,0,,guide rails.
+Dialogue: 0,0:00:22.87,0:00:23.68,Caption,,0,0,0,,The car stops
+Dialogue: 0,0:00:23.73,0:00:24.28,Caption,,0,0,0,,in about three
+Dialogue: 0,0:00:24.32,0:00:24.69,Caption,,0,0,0,,and a half
+Dialogue: 0,0:00:24.74,0:00:25.48,Caption,,0,0,0,,feet, a hard
+Dialogue: 0,0:00:25.53,0:00:26.17,Caption,,0,0,0,,squeeze, not
+Dialogue: 0,0:00:26.20,0:00:26.78,Caption,,0,0,0,,a crash.
+Dialogue: 0,0:00:27.09,0:00:27.95,Caption,,0,0,0,,Yes, that's me
+Dialogue: 0,0:00:28.00,0:00:28.81,Caption,,0,0,0,,in there, again.
+Dialogue: 0,0:00:29.07,0:00:30.32,Caption,,0,0,0,,Elisha Otis proved
+Dialogue: 0,0:00:30.35,0:00:31.57,Caption,,0,0,0,,it in 1854
+Dialogue: 0,0:00:31.64,0:00:32.25,Caption,,0,0,0,,by cutting his
+Dialogue: 0,0:00:32.29,0:00:32.72,Caption,,0,0,0,,own rope.

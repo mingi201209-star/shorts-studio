@@ -1,0 +1,87 @@
+{
+ "text": "First, there are four to eight cables, and any one could hold the car alone.",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "First",
+   "start": 0.218562,
+   "end": 0.627
+  },
+  {
+   "text": "there",
+   "start": 0.778,
+   "end": 0.964
+  },
+  {
+   "text": "are",
+   "start": 0.998,
+   "end": 1.115
+  },
+  {
+   "text": "four",
+   "start": 1.161,
+   "end": 1.358
+  },
+  {
+   "text": "to",
+   "start": 1.405,
+   "end": 1.451
+  },
+  {
+   "text": "eight",
+   "start": 1.521,
+   "end": 1.695
+  },
+  {
+   "text": "cables",
+   "start": 1.73,
+   "end": 2.136
+  },
+  {
+   "text": "and",
+   "start": 2.252,
+   "end": 2.403
+  },
+  {
+   "text": "any",
+   "start": 2.461,
+   "end": 2.624
+  },
+  {
+   "text": "one",
+   "start": 2.682,
+   "end": 2.81
+  },
+  {
+   "text": "could",
+   "start": 2.844,
+   "end": 2.984
+  },
+  {
+   "text": "hold",
+   "start": 3.019,
+   "end": 3.17
+  },
+  {
+   "text": "the",
+   "start": 3.204,
+   "end": 3.274
+  },
+  {
+   "text": "car",
+   "start": 3.32,
+   "end": 3.541
+  },
+  {
+   "text": "alone",
+   "start": 3.599,
+   "end": 4.098
+  }
+ ],
+ "duration": 4.310204,
+ "audio_onset_s": 0.249,
+ "audio_sha256": "97d0845027261117d808793db8b3fbe62647f68c9bd190ae28aa8c9238fe463a",
+ "available_seconds": 0.0,
+ "fits": false
+}
