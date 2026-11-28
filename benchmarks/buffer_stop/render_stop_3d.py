@@ -112,7 +112,7 @@ def main():
     screen = next(ob for ob in hero["nose"] if ob.name.endswith(" windscreen"))
     cracked = sp.cracked(mt["glass"])
     thermal = xray.thermal_material()
-    shoe_glow = xray.glow_material("Xray glow shoes", colour=(1.0, 0.86, 0.36), strength=3.0)
+    shoe_glow = xray.glow_material("Xray glow shoes", colour=(1.0, 0.80, 0.10), strength=4.5)
     road = sp.road_scene(mt)
     car = sp.sedan(mt)
     trac = sp.tractor(mt)

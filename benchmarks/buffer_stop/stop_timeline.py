@@ -39,8 +39,8 @@ def cam(loc, target, lens, fstop=11.0, rel="world"):
 # the track runs along +y; the stop's buffer faces at y = 0 at rest (+y is behind the stop); the platform is on the left (x < 0)
 A1 = cam((3.3, 3.9, 1.75), (-0.2, -0.7, 1.05), 22.0, rel="stop")          # ahead-right of the sliding stop: the train shoving it, shoes sparking
 A1_B = cam((3.15, 3.7, 1.7), (-0.2, -0.7, 1.05), 22.0, rel="stop")
-B1 = cam((-3.5, 1.4, 2.45), (-0.8, -3.2, 1.75), 24.0)                      # the what-if, from the platform beside the wall: the train comes
-B1_B = cam((-3.4, 1.3, 2.4), (-0.8, -3.0, 1.75), 24.0)                      # at us and hits it; its cab's corner folds up in front of us
+B1 = cam((-3.5, 1.4, 2.45), (0.3, -3.0, 1.7), 24.0)                        # the what-if, from the platform beside the wall: the train comes
+B1_B = cam((-3.4, 1.3, 2.4), (0.3, -2.8, 1.7), 24.0)                        # at us and hits it; its cab's corner folds up in front of us
 B2 = cam((1.5, 15.0, 1.4), (0.0, 1.5, 1.0), 28.0)                           # the stop at rest, the empty rails behind it to slide on
 B2_B = cam((1.3, 9.5, 1.2), (0.0, 1.0, 1.0), 28.0)
 C = cam((3.6, 6.8, 3.4), (0.0, 2.2, 0.2), 28.0)                             # x-ray: the shoes clamped on both rails, their bolts
@@ -49,8 +49,8 @@ D = cam((2.9, -1.2, 1.25), (0.85, 0.15, 1.06), 30.0, rel="stop")           # x-r
 D_B = cam((2.6, -0.9, 1.2), (0.85, 0.2, 1.06), 30.0, rel="stop")
 E1 = cam((4.0, 3.0, 0.75), (0.0, 0.8, 0.55), 26.0, rel="stop")             # low beside the stop: shoved along, sparks off the shoes
 E1_B = cam((3.8, 3.4, 0.75), (0.0, 1.0, 0.55), 26.0, rel="stop")
-E2 = cam((1.55, 6.7, 0.38), (0.75, 2.8, 0.0), 32.0, rel="stop")            # x-ray, low behind the last shoe: the four shoes sliding on the rail, hot
-E2_B = cam((1.45, 6.3, 0.36), (0.75, 2.8, 0.0), 32.0, rel="stop")
+E2 = cam((1.1, 5.55, 0.3), (0.72, 3.1, 0.03), 26.0, rel="stop")            # thermal look, low just ahead of the last shoe: the shoes on the
+E2_B = cam((1.05, 5.4, 0.28), (0.72, 3.1, 0.03), 26.0, rel="stop")          # rail, glowing hotter
 F = cam((5.2, 27.5, 7.0), (0.0, 5.0, 0.4), 26.0)                            # behind the stop, high: its slide laid out (about 60 ft), the train coming
 F_B = cam((5.0, 27.0, 6.8), (0.0, 6.5, 0.4), 26.0)
 G_TOP = cam((0.4, -1.15, 2.5), (-0.45, -2.3, 2.2), 28.0, rel="train")       # split, top: inside the cab, Bumper at the controls

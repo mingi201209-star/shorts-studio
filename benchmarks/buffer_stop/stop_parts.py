@@ -765,12 +765,21 @@ def cracked(base, name="Cracked windscreen"):
     out = next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL")
     src = out.inputs["Surface"].links[0].from_socket
     tc = nt.nodes.new("ShaderNodeTexCoord")
+    warp = nt.nodes.new("ShaderNodeTexNoise")                       # wavy cracks, not a mosaic of straight cell edges
+    warp.inputs["Scale"].default_value = 3.0
+    warp.inputs["Detail"].default_value = 4
+    nt.links.new(tc.outputs["Object"], warp.inputs["Vector"])
+    bend = nt.nodes.new("ShaderNodeVectorMath")
+    bend.operation = "MULTIPLY_ADD"
+    bend.inputs[1].default_value = (0.12, 0.12, 0.12)
+    nt.links.new(warp.outputs["Color"], bend.inputs[0])
+    nt.links.new(tc.outputs["Object"], bend.inputs[2])
     vor = nt.nodes.new("ShaderNodeTexVoronoi")
     vor.feature = "DISTANCE_TO_EDGE"
-    vor.inputs["Scale"].default_value = 6.0
-    nt.links.new(tc.outputs["Object"], vor.inputs["Vector"])
+    vor.inputs["Scale"].default_value = 11.0
+    nt.links.new(bend.outputs["Vector"], vor.inputs["Vector"])
     line = nt.nodes.new("ShaderNodeMapRange")
-    line.inputs["From Min"].default_value, line.inputs["From Max"].default_value = 0.0, 0.03
+    line.inputs["From Min"].default_value, line.inputs["From Max"].default_value = 0.0, 0.018
     line.inputs["To Min"].default_value, line.inputs["To Max"].default_value = 1.0, 0.0
     nt.links.new(vor.outputs["Distance"], line.inputs["Value"])
     white = nt.nodes.new("ShaderNodeBsdfDiffuse")

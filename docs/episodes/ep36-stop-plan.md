@@ -38,7 +38,7 @@ as the car comparison, which holds by a wide margin, before anything was rendere
 | C-shoes (reveal) | 7.48-11.11 | X-ray with the sting: the stop's frame glows orange and the eight shoes on the rails, with their bolts, yellow-white; pushing in to a shoe's bolts. |
 | D-buffers | 11.11-14.68 | X-ray: the train's buffer meets the stop's; the plunger squashes 0.48 m. |
 | E1-shoved | 14.68-17.78 | Low beside the stop: shoved along the rails by the train, sparks off the shoes. |
-| E2-heat | 17.78-20.52 | Thermal look, low behind the last shoe: the stop blueprint blue, the shoes and the rail they have rubbed glowing from red to yellow-white as their heat builds (61 % to 94 % of each shoe's 360 kJ, from the model). |
+| E2-heat | 17.78-20.52 | Thermal look, low on the rail just ahead of the last shoe: the stop blueprint blue, the shoes and the rail they have rubbed glowing from red to yellow-white as their heat builds (61 % to 94 % of each shoe's 360 kJ, from the model). |
 | F-sixty-feet | 20.52-24.55 | High behind the stop: its slide laid out in yellow on the track (59 ft), the train following it in and stopping. |
 | G-gentler | 24.55-27.47 | Split: Bumper in the cab, barely moved (top); a dummy thrown forward in a car braking hard (bottom). |
 | H-thats-me | 27.47-29.83 | Through the windscreen: Bumper at the controls, waving once stopped. |
@@ -67,7 +67,8 @@ as the car comparison, which holds by a wide margin, before anything was rendere
 - Cameras moved after the sheets:
   - the wall shot's camera first sat beside the parked train, then behind the wall; it is now side on from the platform;
   - the push-back shot's camera first sat inside the parked train's cab;
-  - the heat shot's camera first sat between two shoes;
+  - the heat shot's camera first sat between two shoes; after the full-size check it came down to the rail, just ahead of the
+    last shoe, so the glowing shoes fill the frame;
   - the opening, the slide and the cab shots came in closer.
 - The dust first read as glass bubbles; it is now a cloudy, soft-edged grey.
 - Captions: "Afterwards, crews loosen" was 928 px in the heavy face, so captions.restyle now breaks any line wider than 900 px in

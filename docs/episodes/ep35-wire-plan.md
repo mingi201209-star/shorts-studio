@@ -152,8 +152,8 @@ runaway train?" in Bumper's voice, the shortest of four takes (3.79 s), frozen i
   - the train shoving the stop along the rails with sparks;
   - then the what-if shot, the train running at a solid wall, cut just before it hits.
   EP.36's own effects play under the line, 6 dB down.
-- EP.36 is rendered again for its wall crash, shoe and heat shots (docs/episodes/ep36-stop-plan.md). Those changes start after
-  frame 110 or are x-ray shots, so this teaser's frames stay as EP.36's new opening (checked against the new run when it lands).
+- EP.36 is rendered again for its wall crash, shoe and heat shots (docs/episodes/ep36-stop-plan.md). The wall shot has a new
+  camera, so its frames 68-101 change: this build is not delivered, and the teaser is rebuilt from EP.36's new run.
 - Tool: benchmarks/series_tail.py with v2's CI final (run 46066180867) and EP.36's CI final (its effects bed). Every gate PASS:
   - 947 frames, 39.458 s; the film part re-encoded once (PSNR 54.04 dB);
   - the tail hash-checked as EP.36's frames;
