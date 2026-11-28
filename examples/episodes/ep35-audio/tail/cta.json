@@ -1,0 +1,65 @@
+{
+ "text": "Subscribe for part five: what stops a runaway train?",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "Subscribe",
+   "start": 0.428792,
+   "end": 1.091
+  },
+  {
+   "text": "for",
+   "start": 1.126,
+   "end": 1.254
+  },
+  {
+   "text": "part",
+   "start": 1.312,
+   "end": 1.556
+  },
+  {
+   "text": "five",
+   "start": 1.602,
+   "end": 2.043
+  },
+  {
+   "text": "what",
+   "start": 2.461,
+   "end": 2.694
+  },
+  {
+   "text": "stops",
+   "start": 2.786,
+   "end": 3.204
+  },
+  {
+   "text": "a",
+   "start": 3.251,
+   "end": 3.286
+  },
+  {
+   "text": "runaway",
+   "start": 3.355,
+   "end": 3.727
+  },
+  {
+   "text": "train",
+   "start": 3.785,
+   "end": 4.214
+  }
+ ],
+ "audio_onset_s": 0.459,
+ "source_mp3_sha256": "31c131e5061195de72a3e1723ae67bad02191326d0fd8db9d1b2fe4c88a18594",
+ "wav_sha256": "09cb9e56e17662cd8d1e5f5cbafde5f3d526061d181932703a9a4004755f05ca",
+ "note": "the series tail's line in the channel's voice (Bumper, ElevenLabs), decoded to 48 kHz mono; word timings measured by the service, the first word moved to where the sound starts; the shortest of four takes",
+ "next_episode": {
+  "episode": "EP.36",
+  "film": "How do you stop a runaway train at the end of the line?",
+  "frames": [
+   0,
+   101
+  ],
+  "ci_run": "pending"
+ }
+}

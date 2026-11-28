@@ -1,0 +1,65 @@
+{
+ "text": "Subscribe for part six: what stops a falling elevator?",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "Subscribe",
+   "start": 0.263062,
+   "end": 0.894
+  },
+  {
+   "text": "for",
+   "start": 0.929,
+   "end": 1.045
+  },
+  {
+   "text": "part",
+   "start": 1.103,
+   "end": 1.358
+  },
+  {
+   "text": "six",
+   "start": 1.416,
+   "end": 1.765
+  },
+  {
+   "text": "what",
+   "start": 2.101,
+   "end": 2.299
+  },
+  {
+   "text": "stops",
+   "start": 2.345,
+   "end": 2.647
+  },
+  {
+   "text": "a",
+   "start": 2.682,
+   "end": 2.717
+  },
+  {
+   "text": "falling",
+   "start": 2.763,
+   "end": 3.065
+  },
+  {
+   "text": "elevator",
+   "start": 3.123,
+   "end": 3.587
+  }
+ ],
+ "audio_onset_s": 0.293,
+ "source_mp3_sha256": "6cee174ebc0e5ec070f1f0c8510051a3f64f67314051c8a77ec0476020b2a2a3",
+ "wav_sha256": "74b15639153e3fa70ab8c8f423fde775f91f5ed7209584ad4690f9b139647c21",
+ "note": "the series tail's line in the channel's voice (Bumper, ElevenLabs), decoded to 48 kHz mono; word timings measured by the service, the first word moved to where the sound starts; the shortest of four takes",
+ "next_episode": {
+  "episode": "EP.37",
+  "film": "What stops an elevator full of people from falling if every one of its cables snaps?",
+  "frames": [
+   0,
+   90
+  ],
+  "ci_run": "pending"
+ }
+}

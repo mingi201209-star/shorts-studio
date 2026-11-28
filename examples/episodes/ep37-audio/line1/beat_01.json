@@ -1,0 +1,92 @@
+{
+ "text": "What stops an elevator full of people from falling if every one of its cables snaps?",
+ "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+ "rate": "model default",
+ "words": [
+  {
+   "text": "What",
+   "start": 0.143063,
+   "end": 0.29
+  },
+  {
+   "text": "stops",
+   "start": 0.337,
+   "end": 0.65
+  },
+  {
+   "text": "an",
+   "start": 0.685,
+   "end": 0.755
+  },
+  {
+   "text": "elevator",
+   "start": 0.813,
+   "end": 1.219
+  },
+  {
+   "text": "full",
+   "start": 1.265,
+   "end": 1.405
+  },
+  {
+   "text": "of",
+   "start": 1.451,
+   "end": 1.498
+  },
+  {
+   "text": "people",
+   "start": 1.533,
+   "end": 1.765
+  },
+  {
+   "text": "from",
+   "start": 1.8,
+   "end": 1.939
+  },
+  {
+   "text": "falling",
+   "start": 2.032,
+   "end": 2.461
+  },
+  {
+   "text": "if",
+   "start": 2.531,
+   "end": 2.635
+  },
+  {
+   "text": "every",
+   "start": 2.717,
+   "end": 2.995
+  },
+  {
+   "text": "one",
+   "start": 3.065,
+   "end": 3.216
+  },
+  {
+   "text": "of",
+   "start": 3.251,
+   "end": 3.297
+  },
+  {
+   "text": "its",
+   "start": 3.344,
+   "end": 3.46
+  },
+  {
+   "text": "cables",
+   "start": 3.506,
+   "end": 3.878
+  },
+  {
+   "text": "snaps",
+   "start": 3.936,
+   "end": 4.528
+  }
+ ],
+ "duration": 4.858776,
+ "audio_onset_s": 0.173,
+ "audio_sha256": "688c0175c5954876f9509efb773845af915a516220279a6a6733bbe097a5b796",
+ "available_seconds": 4.0,
+ "fits": false
+}
