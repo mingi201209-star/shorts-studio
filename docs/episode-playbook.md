@@ -129,6 +129,11 @@ section 9, from EP.32 v2 on:
       film. Built by benchmarks/series_tail.py from the two CI renders; the line is frozen next to the film's audio (epNN-audio/tail).
       The loop is given up for it (owner accepted). The end punch stays the last narrated line, before the tail.
 - [ ] So the next part is rendered before the current one is uploaded; the pinned comment says "Part N is next: ...".
+- [ ] The tail comes with the first build (owner, 2026-11-28: "처음 만들 때부터 예고를 붙여", attach the teaser from the very first
+      build). The first delivered file already ends with the next part's teaser, never a later v2. So the next part's opening
+      shot (its frame-1 money shot and its first line) is designed, recorded and rendered at final quality before or while the
+      current film is made, and then frozen: the next film keeps it unchanged. If that opening ever has to change before the
+      current film is uploaded, the current film's tail is rebuilt.
 - [ ] Publish kit: "Part N of <run>" in the description, a playlist per run, upload the parts in order on the steady days.
 
 ## 11. Channel identity (owner, 2026-11-27: "without our own character the channel gets buried")

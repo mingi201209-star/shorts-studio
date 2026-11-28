@@ -1,0 +1,18 @@
+{
+ "variants": [
+  {
+   "id": "buffer_stop",
+   "beats": [
+    {"narration_en": "How do you stop a runaway train at the end of the line?", "start": 0.0, "end": 3.6},
+    {"narration_en": "Hitting a solid wall would wreck it, so this buffer stop is built to slide.", "start": 3.6, "end": 8.2},
+    {"narration_en": "It's clamped to the rails by steel shoes, bolted on tight.", "start": 8.2, "end": 11.6},
+    {"narration_en": "When a train hits, the stop's hydraulic buffers squash first.", "start": 11.6, "end": 14.9},
+    {"narration_en": "Then the whole stop gets shoved along the rails, and the friction turns the train's speed into heat.", "start": 14.9, "end": 20.8},
+    {"narration_en": "A six-car train at fifteen miles an hour stops in about sixty feet.", "start": 20.8, "end": 24.9},
+    {"narration_en": "Gentle enough that the coffee in the cab doesn't spill.", "start": 24.9, "end": 28.1},
+    {"narration_en": "Yes, that's me driving. Again.", "start": 28.1, "end": 30.4},
+    {"narration_en": "Afterwards, crews loosen the bolts, push it back, and tighten them again.", "start": 30.4, "end": 34.4}
+   ]
+  }
+ ]
+}

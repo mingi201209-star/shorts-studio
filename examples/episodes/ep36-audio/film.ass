@@ -1,0 +1,51 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 2
+ScaledBorderAndShadow: yes
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Caption,DejaVu Sans,62,&H00FFFFFF,&H00FFFFFF,&H00000000,&H00000000,-1,0,0,0,100,100,0,0,1,3,0,2,90,90,210,1
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.06,0:00:00.41,Caption,,0,0,0,,How do you
+Dialogue: 0,0:00:00.47,0:00:01.24,Caption,,0,0,0,,stop a runaway
+Dialogue: 0,0:00:01.29,0:00:01.76,Caption,,0,0,0,,train at the
+Dialogue: 0,0:00:01.82,0:00:02.01,Caption,,0,0,0,,end of
+Dialogue: 0,0:00:02.05,0:00:02.56,Caption,,0,0,0,,the line?
+Dialogue: 0,0:00:02.86,0:00:03.60,Caption,,0,0,0,,Hitting a solid
+Dialogue: 0,0:00:03.64,0:00:04.33,Caption,,0,0,0,,wall would wreck
+Dialogue: 0,0:00:04.39,0:00:05.48,Caption,,0,0,0,,it, so this
+Dialogue: 0,0:00:05.56,0:00:06.31,Caption,,0,0,0,,buffer stop is
+Dialogue: 0,0:00:06.38,0:00:07.22,Caption,,0,0,0,,built to slide.
+Dialogue: 0,0:00:07.51,0:00:08.09,Caption,,0,0,0,,It's clamped to
+Dialogue: 0,0:00:08.15,0:00:08.77,Caption,,0,0,0,,the rails by
+Dialogue: 0,0:00:08.84,0:00:10.28,Caption,,0,0,0,,steel shoes, bolted
+Dialogue: 0,0:00:10.34,0:00:10.85,Caption,,0,0,0,,on tight.
+Dialogue: 0,0:00:11.17,0:00:11.73,Caption,,0,0,0,,When a train
+Dialogue: 0,0:00:11.79,0:00:12.75,Caption,,0,0,0,,hits, the stop's
+Dialogue: 0,0:00:12.79,0:00:13.65,Caption,,0,0,0,,hydraulic buffers
+Dialogue: 0,0:00:13.67,0:00:14.42,Caption,,0,0,0,,squash first.
+Dialogue: 0,0:00:14.74,0:00:15.88,Caption,,0,0,0,,Then the whole
+Dialogue: 0,0:00:15.92,0:00:16.79,Caption,,0,0,0,,stop gets shoved
+Dialogue: 0,0:00:16.82,0:00:17.64,Caption,,0,0,0,,along the rails,
+Dialogue: 0,0:00:17.78,0:00:18.46,Caption,,0,0,0,,and the friction
+Dialogue: 0,0:00:18.52,0:00:19.27,Caption,,0,0,0,,turns the train's
+Dialogue: 0,0:00:19.30,0:00:20.26,Caption,,0,0,0,,speed into heat.
+Dialogue: 0,0:00:20.58,0:00:21.57,Caption,,0,0,0,,A six-car train
+Dialogue: 0,0:00:21.63,0:00:22.44,Caption,,0,0,0,,at fifteen miles
+Dialogue: 0,0:00:22.48,0:00:23.21,Caption,,0,0,0,,an hour stops
+Dialogue: 0,0:00:23.25,0:00:23.63,Caption,,0,0,0,,in about
+Dialogue: 0,0:00:23.67,0:00:24.30,Caption,,0,0,0,,sixty feet.
+Dialogue: 0,0:00:24.61,0:00:25.89,Caption,,0,0,0,,Gentle enough that
+Dialogue: 0,0:00:25.93,0:00:26.52,Caption,,0,0,0,,the coffee in
+Dialogue: 0,0:00:26.56,0:00:26.94,Caption,,0,0,0,,the cab
+Dialogue: 0,0:00:27.01,0:00:27.61,Caption,,0,0,0,,doesn't spill.
+Dialogue: 0,0:00:27.87,0:00:28.80,Caption,,0,0,0,,Yes, that's
+Dialogue: 0,0:00:28.84,0:00:29.38,Caption,,0,0,0,,me driving.
+Dialogue: 0,0:00:29.46,0:00:29.97,Caption,,0,0,0,,Again.
+Dialogue: 0,0:00:30.29,0:00:32.10,Caption,,0,0,0,,Afterwards, crews loosen
+Dialogue: 0,0:00:32.15,0:00:33.22,Caption,,0,0,0,,the bolts, push
+Dialogue: 0,0:00:33.28,0:00:33.86,Caption,,0,0,0,,it back, and
+Dialogue: 0,0:00:33.93,0:00:34.75,Caption,,0,0,0,,tighten them again.

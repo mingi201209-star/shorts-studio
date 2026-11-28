@@ -1,0 +1,648 @@
+{
+  "variant": "buffer_stop",
+  "beats": [
+    {
+      "text": "How do you stop a runaway train at the end of the line?",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "How",
+          "start": 1.355917,
+          "end": 1.486
+        },
+        {
+          "text": "do",
+          "start": 1.533,
+          "end": 1.591
+        },
+        {
+          "text": "you",
+          "start": 1.637,
+          "end": 1.707
+        },
+        {
+          "text": "stop",
+          "start": 1.765,
+          "end": 1.997
+        },
+        {
+          "text": "a",
+          "start": 2.067,
+          "end": 2.09
+        },
+        {
+          "text": "runaway",
+          "start": 2.159,
+          "end": 2.531
+        },
+        {
+          "text": "train",
+          "start": 2.589,
+          "end": 2.844
+        },
+        {
+          "text": "at",
+          "start": 2.891,
+          "end": 2.949
+        },
+        {
+          "text": "the",
+          "start": 2.984,
+          "end": 3.053
+        },
+        {
+          "text": "end",
+          "start": 3.111,
+          "end": 3.216
+        },
+        {
+          "text": "of",
+          "start": 3.262,
+          "end": 3.309
+        },
+        {
+          "text": "the",
+          "start": 3.344,
+          "end": 3.413
+        },
+        {
+          "text": "line",
+          "start": 3.471,
+          "end": 3.855
+        }
+      ],
+      "duration": 4.127347,
+      "audio_onset_s": 1.386,
+      "audio_sha256": "59ab18545f7c382af6792a9547bbd05e454c65bb0cb4c3cfcb290eb2eecb4d95",
+      "available_seconds": 3.6,
+      "fits": false
+    },
+    {
+      "text": "Hitting a solid wall would wreck it, so this buffer stop is built to slide.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Hitting",
+          "start": 0.037604,
+          "end": 0.313
+        },
+        {
+          "text": "a",
+          "start": 0.372,
+          "end": 0.395
+        },
+        {
+          "text": "solid",
+          "start": 0.453,
+          "end": 0.778
+        },
+        {
+          "text": "wall",
+          "start": 0.824,
+          "end": 1.057
+        },
+        {
+          "text": "would",
+          "start": 1.115,
+          "end": 1.265
+        },
+        {
+          "text": "wreck",
+          "start": 1.3,
+          "end": 1.509
+        },
+        {
+          "text": "it",
+          "start": 1.567,
+          "end": 1.683
+        },
+        {
+          "text": "so",
+          "start": 1.985,
+          "end": 2.345
+        },
+        {
+          "text": "this",
+          "start": 2.461,
+          "end": 2.659
+        },
+        {
+          "text": "buffer",
+          "start": 2.74,
+          "end": 3.053
+        },
+        {
+          "text": "stop",
+          "start": 3.088,
+          "end": 3.367
+        },
+        {
+          "text": "is",
+          "start": 3.425,
+          "end": 3.495
+        },
+        {
+          "text": "built",
+          "start": 3.564,
+          "end": 3.762
+        },
+        {
+          "text": "to",
+          "start": 3.796,
+          "end": 3.855
+        },
+        {
+          "text": "slide",
+          "start": 3.901,
+          "end": 4.4
+        }
+      ],
+      "duration": 4.623673,
+      "audio_onset_s": 0.068,
+      "audio_sha256": "19a8366398f6372c97cab4c58fac5308ec1aee6a9bcf98adc51c128fb0a9fa04",
+      "available_seconds": 4.6,
+      "fits": false
+    },
+    {
+      "text": "It's clamped to the rails by steel shoes, bolted on tight.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "It's",
+          "start": 0.028188,
+          "end": 0.174
+        },
+        {
+          "text": "clamped",
+          "start": 0.209,
+          "end": 0.534
+        },
+        {
+          "text": "to",
+          "start": 0.557,
+          "end": 0.615
+        },
+        {
+          "text": "the",
+          "start": 0.673,
+          "end": 0.743
+        },
+        {
+          "text": "rails",
+          "start": 0.801,
+          "end": 1.103
+        },
+        {
+          "text": "by",
+          "start": 1.161,
+          "end": 1.289
+        },
+        {
+          "text": "steel",
+          "start": 1.358,
+          "end": 1.637
+        },
+        {
+          "text": "shoes",
+          "start": 1.707,
+          "end": 2.171
+        },
+        {
+          "text": "bolted",
+          "start": 2.403,
+          "end": 2.798
+        },
+        {
+          "text": "on",
+          "start": 2.856,
+          "end": 2.995
+        },
+        {
+          "text": "tight",
+          "start": 3.065,
+          "end": 3.367
+        }
+      ],
+      "duration": 3.526531,
+      "audio_onset_s": 0.058,
+      "audio_sha256": "f34df6ccf6827b45daa986859855e7ec6be9b1bec7d9d60fcad4269cbc15bb23",
+      "available_seconds": 3.4000000000000004,
+      "fits": false
+    },
+    {
+      "text": "When a train hits, the stop's hydraulic buffers squash first.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "When",
+          "start": 0.18925,
+          "end": 0.313
+        },
+        {
+          "text": "a",
+          "start": 0.36,
+          "end": 0.395
+        },
+        {
+          "text": "train",
+          "start": 0.441,
+          "end": 0.755
+        },
+        {
+          "text": "hits",
+          "start": 0.813,
+          "end": 1.08
+        },
+        {
+          "text": "the",
+          "start": 1.289,
+          "end": 1.393
+        },
+        {
+          "text": "stop's",
+          "start": 1.44,
+          "end": 1.776
+        },
+        {
+          "text": "hydraulic",
+          "start": 1.811,
+          "end": 2.287
+        },
+        {
+          "text": "buffers",
+          "start": 2.345,
+          "end": 2.67
+        },
+        {
+          "text": "squash",
+          "start": 2.694,
+          "end": 3.042
+        },
+        {
+          "text": "first",
+          "start": 3.088,
+          "end": 3.448
+        }
+      ],
+      "duration": 3.709388,
+      "audio_onset_s": 0.219,
+      "audio_sha256": "84c8b37803c1effa73bca2beee02e8e2487ed86e3031b91d8742a28ca211e9b4",
+      "available_seconds": 3.3000000000000007,
+      "fits": false
+    },
+    {
+      "text": "Then the whole stop gets shoved along the rails, and the friction turns the train's speed into heat.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Then",
+          "start": 0.590042,
+          "end": 1.324
+        },
+        {
+          "text": "the",
+          "start": 1.393,
+          "end": 1.474
+        },
+        {
+          "text": "whole",
+          "start": 1.521,
+          "end": 1.73
+        },
+        {
+          "text": "stop",
+          "start": 1.765,
+          "end": 2.078
+        },
+        {
+          "text": "gets",
+          "start": 2.148,
+          "end": 2.322
+        },
+        {
+          "text": "shoved",
+          "start": 2.357,
+          "end": 2.635
+        },
+        {
+          "text": "along",
+          "start": 2.67,
+          "end": 2.926
+        },
+        {
+          "text": "the",
+          "start": 2.972,
+          "end": 3.042
+        },
+        {
+          "text": "rails",
+          "start": 3.1,
+          "end": 3.483
+        },
+        {
+          "text": "and",
+          "start": 3.622,
+          "end": 3.762
+        },
+        {
+          "text": "the",
+          "start": 3.808,
+          "end": 3.878
+        },
+        {
+          "text": "friction",
+          "start": 3.936,
+          "end": 4.307
+        },
+        {
+          "text": "turns",
+          "start": 4.365,
+          "end": 4.632
+        },
+        {
+          "text": "the",
+          "start": 4.69,
+          "end": 4.76
+        },
+        {
+          "text": "train's",
+          "start": 4.807,
+          "end": 5.12
+        },
+        {
+          "text": "speed",
+          "start": 5.143,
+          "end": 5.457
+        },
+        {
+          "text": "into",
+          "start": 5.503,
+          "end": 5.689
+        },
+        {
+          "text": "heat",
+          "start": 5.782,
+          "end": 6.107
+        }
+      ],
+      "duration": 6.4,
+      "audio_onset_s": 0.62,
+      "audio_sha256": "ba1035b9307fe3694ac74a9b3af9e11a51afad0ce6a8ee42d0e0de744da7cd23",
+      "available_seconds": 5.9,
+      "fits": false
+    },
+    {
+      "text": "A six-car train at fifteen miles an hour stops in about sixty feet.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "A",
+          "start": 0.357354,
+          "end": 0.418
+        },
+        {
+          "text": "six-car",
+          "start": 0.499,
+          "end": 0.987
+        },
+        {
+          "text": "train",
+          "start": 1.045,
+          "end": 1.347
+        },
+        {
+          "text": "at",
+          "start": 1.405,
+          "end": 1.486
+        },
+        {
+          "text": "fifteen",
+          "start": 1.533,
+          "end": 1.892
+        },
+        {
+          "text": "miles",
+          "start": 1.939,
+          "end": 2.218
+        },
+        {
+          "text": "an",
+          "start": 2.252,
+          "end": 2.322
+        },
+        {
+          "text": "hour",
+          "start": 2.357,
+          "end": 2.554
+        },
+        {
+          "text": "stops",
+          "start": 2.624,
+          "end": 2.984
+        },
+        {
+          "text": "in",
+          "start": 3.03,
+          "end": 3.1
+        },
+        {
+          "text": "about",
+          "start": 3.146,
+          "end": 3.402
+        },
+        {
+          "text": "sixty",
+          "start": 3.448,
+          "end": 3.785
+        },
+        {
+          "text": "feet",
+          "start": 3.843,
+          "end": 4.075
+        }
+      ],
+      "duration": 4.205714,
+      "audio_onset_s": 0.387,
+      "audio_sha256": "121ac86d7f6023634f26f7deacbb88f8aeb925fb9600c70b45a1f5700e57dee7",
+      "available_seconds": 4.099999999999998,
+      "fits": false
+    },
+    {
+      "text": "Gentle enough that the coffee in the cab doesn't spill.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Gentle",
+          "start": 0.658229,
+          "end": 1.498
+        },
+        {
+          "text": "enough",
+          "start": 1.533,
+          "end": 1.776
+        },
+        {
+          "text": "that",
+          "start": 1.811,
+          "end": 1.939
+        },
+        {
+          "text": "the",
+          "start": 1.974,
+          "end": 2.055
+        },
+        {
+          "text": "coffee",
+          "start": 2.136,
+          "end": 2.473
+        },
+        {
+          "text": "in",
+          "start": 2.508,
+          "end": 2.566
+        },
+        {
+          "text": "the",
+          "start": 2.612,
+          "end": 2.682
+        },
+        {
+          "text": "cab",
+          "start": 2.728,
+          "end": 2.984
+        },
+        {
+          "text": "doesn't",
+          "start": 3.053,
+          "end": 3.309
+        },
+        {
+          "text": "spill",
+          "start": 3.344,
+          "end": 3.657
+        }
+      ],
+      "duration": 3.94449,
+      "audio_onset_s": 0.688,
+      "audio_sha256": "e6d33550527c3b45cef2d3fddf51d23a1a09a8009ecb4fdaa9dcc0a0944822b2",
+      "available_seconds": 3.200000000000003,
+      "fits": false
+    },
+    {
+      "text": "Yes, that's me driving. Again.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Yes",
+          "start": 0.0,
+          "end": 0.29
+        },
+        {
+          "text": "that's",
+          "start": 0.685,
+          "end": 0.929
+        },
+        {
+          "text": "me",
+          "start": 0.975,
+          "end": 1.091
+        },
+        {
+          "text": "driving",
+          "start": 1.138,
+          "end": 1.509
+        },
+        {
+          "text": "Again",
+          "start": 1.591,
+          "end": 2.101
+        }
+      ],
+      "duration": 2.45551,
+      "audio_onset_s": 0.01,
+      "audio_sha256": "a14c74943435091ef57e948ce7fd8d2903b116931fd6f7042f8fcf749272f429",
+      "available_seconds": 2.299999999999997,
+      "fits": false
+    },
+    {
+      "text": "Afterwards, crews loosen the bolts, push it back, and tighten them again.",
+      "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
+      "rate": "model default",
+      "words": [
+        {
+          "text": "Afterwards",
+          "start": 0.203229,
+          "end": 0.859
+        },
+        {
+          "text": "crews",
+          "start": 1.184,
+          "end": 1.614
+        },
+        {
+          "text": "loosen",
+          "start": 1.695,
+          "end": 2.009
+        },
+        {
+          "text": "the",
+          "start": 2.067,
+          "end": 2.136
+        },
+        {
+          "text": "bolts",
+          "start": 2.183,
+          "end": 2.543
+        },
+        {
+          "text": "push",
+          "start": 2.868,
+          "end": 3.135
+        },
+        {
+          "text": "it",
+          "start": 3.193,
+          "end": 3.274
+        },
+        {
+          "text": "back",
+          "start": 3.332,
+          "end": 3.599
+        },
+        {
+          "text": "and",
+          "start": 3.669,
+          "end": 3.773
+        },
+        {
+          "text": "tighten",
+          "start": 3.843,
+          "end": 4.168
+        },
+        {
+          "text": "them",
+          "start": 4.203,
+          "end": 4.319
+        },
+        {
+          "text": "again",
+          "start": 4.354,
+          "end": 4.667
+        }
+      ],
+      "duration": 4.963265,
+      "audio_onset_s": 0.233,
+      "audio_sha256": "c291ca92dc0c0282c467b568cc901c489d482bdc3220eeece43bfc78fa840cbd",
+      "available_seconds": 4.0,
+      "fits": false
+    }
+  ]
+}
