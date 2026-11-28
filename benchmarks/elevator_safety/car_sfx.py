@@ -26,7 +26,7 @@ def twang(rng, p=1.0):
 
 def render_opening(n_samples: int) -> tuple[np.ndarray, list]:
     rng = np.random.default_rng(3737)
-    segs = tl.segments()
+    segs = tl.segments(opening_only=True)
     t_film = np.arange(n_samples) / SR
     bed = np.zeros(n_samples)
     hits = np.zeros(n_samples)

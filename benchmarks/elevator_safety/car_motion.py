@@ -11,6 +11,8 @@ and 1 g, required above 1 m/s).
 Simplified explanation model; not a product's test data."""
 from __future__ import annotations
 
+import math
+
 from functools import lru_cache
 
 G = 9.81
@@ -83,3 +85,38 @@ def car_physics() -> dict:
 if __name__ == "__main__":
     import json
     print(json.dumps(car_physics(), indent=1))
+
+
+GOV_R = 0.30                       # governor sheave radius (m); the rope runs over it at the car's speed
+FLY_OPEN_FROM = 0.85 * RATED       # the flyweights start to swing out above 85 % of the rated speed, fully out at the trip speed
+OTIS_PITCH = 0.30                  # 1854: the guide posts' tooth spacing (m)
+OTIS_Z0 = 3.0                      # the platform's height when the rope is cut (m)
+
+
+def travel(t: float) -> float:
+    """Rope run past the governor since the break (m, + = car going down); before the break the car runs at the rated speed."""
+    return RATED * t if t < 0 else SNAP_Z - state(t)["car_z"]
+
+
+def governor(t: float) -> dict:
+    """The governor sheave: it turns with the rope until the trip, when the pawl catches a tooth and holds it (the rope stops and
+    the still-falling car pulls the safety lever). Flyweights swing out with speed, fully out at the trip speed."""
+    st = state(t)
+    tripped = st["phase"] not in ("roped", "free")
+    t_trip = next(r[0] for r in fall() if r[4] != "free")
+    turned = travel(min(t, t_trip)) / GOV_R
+    v = st["speed"] if not tripped else TRIP
+    fly = 1.0 if tripped else min(1.0, max(0.0, (v - FLY_OPEN_FROM) / (TRIP - FLY_OPEN_FROM)))
+    return {"angle": turned, "fly": fly, "locked": tripped, "rope_speed": 0.0 if tripped else st["speed"]}
+
+
+def otis(t: float) -> dict:
+    """1854: the rope is cut at t = 0; the platform falls free until the wagon spring's pawls catch the next teeth, half a tooth
+    pitch down on average, then stops."""
+    drop = 0.5 * OTIS_PITCH
+    t_catch = math.sqrt(2 * drop / G)
+    if t < 0:
+        return {"z": OTIS_Z0, "cut": False, "caught": False, "speed": 0.0}
+    if t < t_catch:
+        return {"z": OTIS_Z0 - 0.5 * G * t * t, "cut": True, "caught": False, "speed": G * t}
+    return {"z": OTIS_Z0 - drop, "cut": True, "caught": True, "speed": 0.0}
