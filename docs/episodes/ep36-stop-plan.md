@@ -83,3 +83,16 @@ Local low-res (837 frames at 162x288, 3 samples, composed to 1080x1920). Every g
   and 61 % of the width (re-rendered and checked). The crew shots' telemetry check was too strict for positions recorded to four
   decimals; its tolerance is now 1 mm.
 After the 1 fps sheet, the split's two cameras moved in: the car's dummy is seen thrown forward, Bumper in the cab barely moves.
+
+## The part-six teaser, in the first build (owner, 2026-11-28: "처음 만들 때부터 예고를 붙여")
+- EP.37's first line was recorded first and frozen (examples/episodes/ep37-audio/line1): "What stops an elevator full of people
+  from falling if every one of its cables snaps?". It is 4.4 s long, so EP.37's opening shot is held to 3.6 s and a close shot
+  follows inside the same line.
+- EP.37's opening was then built and rendered at 1080x1920 (run 46092206288, renderer 1b43eb9f, frames 0-107):
+  - the hoistway cut away on one side, the car behind glass with Bumper and two passengers;
+  - the safety gear's wedges biting the guide rails in a shower of sparks, the broken rope ends whipping above;
+  - then a close look at a wedge on the rail.
+  Its effects come from benchmarks/elevator_safety/car_sfx.py (the opening only). That opening is now frozen for EP.37.
+- The line: "Subscribe for part six: what stops a falling elevator?" in Bumper's voice, the shortest of four takes (3.32 s), frozen
+  in examples/episodes/ep36-audio/tail. The tail is EP.37's frames 0-90 (3.79 s).
+
