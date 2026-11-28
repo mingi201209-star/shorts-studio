@@ -33,12 +33,12 @@ as the car comparison, which holds by a wide margin, before anything was rendere
 | Row | Film s | Shot |
 |---|---|---|
 | A1-slides | 0.00-2.82 | Ahead-right of the stop: the six-car train shoving it along the rails, buffers squashed, sparks off the shoes; slow motion. |
-| B1-wall | 2.82-5.56 | The what-if, side on from the platform: the same train into a solid concrete wall, the front crushed, debris and dust. |
+| B1-wall | 2.82-5.56 | The what-if, side on from the platform: the same train into a solid concrete wall; the cab sides fold up like an accordion (the model's 0.3 m crush), the windscreen crazes, glass and concrete fly, dust. |
 | B2-built-to-slide | 5.56-7.48 | From the overrun: the stop at rest with the empty rails behind it, the train still far off. |
-| C-shoes (reveal) | 7.48-11.11 | X-ray with the sting: the stop's frame and the eight shoes on the rails glow orange, pushing in to a shoe's bolts. |
+| C-shoes (reveal) | 7.48-11.11 | X-ray with the sting: the stop's frame glows orange and the eight shoes on the rails, with their bolts, yellow-white; pushing in to a shoe's bolts. |
 | D-buffers | 11.11-14.68 | X-ray: the train's buffer meets the stop's; the plunger squashes 0.48 m. |
 | E1-shoved | 14.68-17.78 | Low beside the stop: shoved along the rails by the train, sparks off the shoes. |
-| E2-heat | 17.78-20.52 | X-ray, low behind the last shoe: the shoes sliding on the rail, glowing hotter. |
+| E2-heat | 17.78-20.52 | Thermal look, low behind the last shoe: the stop blueprint blue, the shoes and the rail they have rubbed glowing from red to yellow-white as their heat builds (61 % to 94 % of each shoe's 360 kJ, from the model). |
 | F-sixty-feet | 20.52-24.55 | High behind the stop: its slide laid out in yellow on the track (59 ft), the train following it in and stopping. |
 | G-gentler | 24.55-27.47 | Split: Bumper in the cab, barely moved (top); a dummy thrown forward in a car braking hard (bottom). |
 | H-thats-me | 27.47-29.83 | Through the windscreen: Bumper at the controls, waving once stopped. |
@@ -72,6 +72,25 @@ as the car comparison, which holds by a wide margin, before anything was rendere
 - The dust first read as glass bubbles; it is now a cloudy, soft-edged grey.
 - Captions: "Afterwards, crews loosen" was 928 px in the heavy face, so captions.restyle now breaks any line wider than 900 px in
   two. EP.35's captions are unchanged (widest 876 px).
+- The full-size check of CI v1 (run 46094432645) found three shots that did not show their line well enough:
+  - B1, the wall what-if:
+    - the dust was see-through spheres, and where a puff cut into the train or the wall it drew a hard circle;
+    - the crash read as a flat white side touching a grey block. The wall reached over the platform edge and hid the corner
+      where the cab meets it, and the model's 0.3 m crush was only a uniform squeeze of the nose.
+    Now:
+    - the wall is as wide as the track bed;
+    - the camera stands on the platform beside the wall, so the train comes at us and hits it;
+    - the cab's sides fold like an accordion by exactly the model's crush, the front strips first (up to 62 degrees, stop_motion.fold_angles);
+    - the windscreen crazes and 28 glass shards fly with the concrete;
+    - the dust is a volume (no surface, so no edge where it meets the train), a little self-lit so a thick puff reads light
+      grey, rising off the contact. A first try at full density read as black smoke.
+  - C, the shoes: the whole stop glowed the same orange. Now the shoes and their bolts glow yellow-white on the orange frame.
+  - E2, the heat: it was the same orange x-ray, only a little brighter, so nothing said heat. Now it is a thermal look:
+    - the rest of the stop turns blueprint blue;
+    - the shoes, and the rail they have rubbed, glow from red through orange to yellow-white (an ironbow ramp,
+      benchmarks/identity/xray.thermal_material);
+    - the glow follows each shoe's friction heat in the model, from 61 % to 94 % of its 360 kJ through the shot.
+  New gates check all three: the folds against the model's crush, the shards, the shoes in focus, the heat against the model.
 
 ## Local and CI
 Local low-res (837 frames at 162x288, 3 samples, composed to 1080x1920). Every gate PASS but one:

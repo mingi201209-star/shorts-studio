@@ -140,6 +140,65 @@ def glow_material(name: str = "Xray glow", colour=ORANGE, strength: float = 5.0)
     return mt
 
 
+def thermal_material(name: str = "Xray thermal"):
+    """Heat in the x-ray look, the way a thermal camera shows it: an ironbow ramp (purple, red, orange, yellow, white) on an
+    emission. The object's colour carries the heat: red = heat 0..1; green = 1 makes it fade along the object's own y (hot at
+    the +y end), for a streak that cools behind what made it."""
+    import bpy
+    mt = bpy.data.materials.get(name)
+    if mt is not None:
+        return mt
+    mt = bpy.data.materials.new(name)
+    mt.use_nodes = True
+    nt = mt.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    oi = nt.nodes.new("ShaderNodeObjectInfo")
+    sep = nt.nodes.new("ShaderNodeSeparateColor")
+    nt.links.new(oi.outputs["Color"], sep.inputs["Color"])
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    gy = nt.nodes.new("ShaderNodeSeparateXYZ")
+    nt.links.new(tc.outputs["Generated"], gy.inputs["Vector"])
+    fade = nt.nodes.new("ShaderNodeMapRange")                   # 0.15 at the -y end, 1 at the +y end
+    fade.inputs["To Min"].default_value, fade.inputs["To Max"].default_value = 0.15, 1.0
+    nt.links.new(gy.outputs["Y"], fade.inputs["Value"])
+    pick = nt.nodes.new("ShaderNodeMix")                        # green 0: uniform; green 1: the fade
+    pick.data_type = "FLOAT"
+    nt.links.new(sep.outputs["Green"], pick.inputs["Factor"])
+    pick.inputs["A"].default_value = 1.0
+    nt.links.new(fade.outputs["Result"], pick.inputs["B"])
+    heat = nt.nodes.new("ShaderNodeMath")
+    heat.operation = "MULTIPLY"
+    heat.use_clamp = True
+    nt.links.new(sep.outputs["Red"], heat.inputs[0])
+    nt.links.new(pick.outputs["Result"], heat.inputs[1])
+    ramp = nt.nodes.new("ShaderNodeValToRGB")
+    cr = ramp.color_ramp
+    cr.elements[0].position, cr.elements[0].color = 0.0, (0.22, 0.02, 0.32, 1)
+    cr.elements[1].position, cr.elements[1].color = 1.0, (1.0, 0.97, 0.88, 1)
+    for pos, col in ((0.35, (0.85, 0.07, 0.04, 1)), (0.62, (1.0, 0.42, 0.03, 1)), (0.84, (1.0, 0.82, 0.18, 1))):
+        el = cr.elements.new(pos)
+        el.color = col
+    nt.links.new(heat.outputs[0], ramp.inputs["Fac"])
+    lw = nt.nodes.new("ShaderNodeLayerWeight")
+    lw.inputs["Blend"].default_value = 0.4
+    rim = nt.nodes.new("ShaderNodeMapRange")                    # rims a little brighter, so the shapes still read
+    rim.inputs["To Min"].default_value, rim.inputs["To Max"].default_value = 0.75, 1.3
+    nt.links.new(lw.outputs["Facing"], rim.inputs["Value"])
+    k = nt.nodes.new("ShaderNodeMapRange")                      # brighter as it heats
+    k.inputs["To Min"].default_value, k.inputs["To Max"].default_value = 0.8, 6.0
+    nt.links.new(heat.outputs[0], k.inputs["Value"])
+    st = nt.nodes.new("ShaderNodeMath")
+    st.operation = "MULTIPLY"
+    nt.links.new(k.outputs["Result"], st.inputs[0])
+    nt.links.new(rim.outputs["Result"], st.inputs[1])
+    em = nt.nodes.new("ShaderNodeEmission")
+    nt.links.new(ramp.outputs["Color"], em.inputs["Color"])
+    nt.links.new(st.outputs[0], em.inputs["Strength"])
+    nt.links.new(em.outputs["Emission"], out.inputs["Surface"])
+    return mt
+
+
 class Xray:
     """Swaps materials on and off. mechanism: the objects that glow; spared: objects left as they are (e.g. the sea); every other
     mesh or curve turns blueprint blue. Originals are kept and restored exactly."""

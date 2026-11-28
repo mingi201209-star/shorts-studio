@@ -39,6 +39,8 @@ BUFFER_STROKE = 0.6                # m
 END_K = 1.0e8                      # N/m if a buffer ever bottomed out
 TARGET_FT = 59.0                   # Oleo: about 18 m at 25 km/h
 WALL_CRUSH = 0.3                   # m of crushed front in the what-if
+FOLD = (1.15, 0.1, 6)              # the what-if's cab sides fold like an accordion from 1.15 m to 0.1 m back from the face, 6 strips
+FOLD_MAX = math.radians(62.0)      # a strip folds this far at most; the crush folds the front strips first
 CAR_HARD_BRAKING_G = 0.7           # a hard stop in a car on dry pavement is about 0.7 g or more
 CAR_V0 = 30 * MPH                  # the car in the comparison
 CAR_DECEL_G = 0.8                  # slamming on the brakes, ABS working, dry road
@@ -122,6 +124,22 @@ def state(t: float) -> dict:
     return {"t": t, "train_y": yt, "train_speed": vt, "decel_g": at / G, "stop_y": ys, "stop_speed": vs,
             "compression": max(0.0, min(BUFFER_STROKE, yt - ys)), "buffer_force": fb, "slide": ys,
             "shoe_heat_kJ": wf / (2 * SHOE_PAIRS) / 1000.0, "sliding": vs > 1e-4}
+
+
+def fold_angles(crush: float) -> list[float]:
+    """How far each strip of the what-if's cab sides has folded (radians, back strip first) for a crush of the front (m): the
+    front strips fold first, each up to FOLD_MAX, and the folds shorten the zone by exactly the crush."""
+    back, front, n = FOLD
+    w = (back - front) / n
+    left = max(0.0, crush)
+    th = [0.0] * n
+    for k in range(n - 1, -1, -1):
+        a = min(left, w * (1.0 - math.cos(FOLD_MAX)))
+        th[k] = math.acos(1.0 - a / w)
+        left -= a
+    if left > 1e-9:
+        raise ValueError("crush longer than the folding zone can take")
+    return th
 
 
 def wall_state(t: float) -> dict:

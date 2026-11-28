@@ -19,6 +19,7 @@ import random
 
 import bpy
 
+from benchmarks.buffer_stop import stop_motion as sm
 from benchmarks.carrier_wire import detail as cw
 from benchmarks.identity import dummy
 from benchmarks.road_safety import render_jersey_barrier as base
@@ -42,6 +43,8 @@ ROOF_Z = 3.85
 BODY_Z0 = 1.05
 SHOE_Y = (0.6, 1.6, 2.6, 3.6)   # shoes behind the stop's front plate, on each rail
 FRAME_TO_FACE = 1.0             # the buffer heads' faces sit this far ahead of the frame's front plate when free
+CAB_SIDE = [(0.1, 1.05), (0.1, 1.9), (0.5, 1.92), (1.6, 3.62), (1.6, ROOF_Z - 0.02), (CAB_LEN, ROOF_Z - 0.02), (CAB_LEN, 1.05)]
+#                                 the cab sides' outline: (distance back from the cab face, height)
 
 
 # ---------------------------------------------------------------------------------------------------------------------- materials
@@ -244,37 +247,54 @@ def mats():
 
 
 def _dust_material():
-    """Concrete dust: a cloudy, soft-edged grey (denser in the middle, thin at the rim), not a glassy bubble."""
+    """Concrete dust as a volume, not a surface: thick in the middle, thinning to nothing at the rim, clumpy. A see-through surface
+    drew hard circles at full size wherever a puff cut into the train or the wall; a volume has no edge there. The object's colour
+    (set per frame) scales the density, so a puff thins out as it spreads."""
     mt = bpy.data.materials.get("Dust")
     if mt is not None:
         return mt
     mt = bpy.data.materials.new("Dust")
     mt.use_nodes = True
     nt = mt.node_tree
-    b = nt.nodes.get("Principled BSDF")
-    b.inputs["Base Color"].default_value = (0.66, 0.63, 0.58, 1)
-    b.inputs["Roughness"].default_value = 1.0
-    b.inputs["Specular IOR Level"].default_value = 0.0
+    nt.nodes.clear()
+    out = nt.nodes.new("ShaderNodeOutputMaterial")
+    vol = nt.nodes.new("ShaderNodeVolumePrincipled")
+    vol.inputs["Color"].default_value = (0.82, 0.79, 0.74, 1)
+    vol.inputs["Anisotropy"].default_value = 0.25
     tc = nt.nodes.new("ShaderNodeTexCoord")
+    r = nt.nodes.new("ShaderNodeVectorMath")
+    r.operation = "LENGTH"
+    nt.links.new(tc.outputs["Object"], r.inputs[0])
+    rim = nt.nodes.new("ShaderNodeMapRange")                       # 1 inside 0.3 of the radius, 0 at the rim, smooth between
+    rim.interpolation_type = "SMOOTHSTEP"
+    rim.inputs["From Min"].default_value, rim.inputs["From Max"].default_value = 1.0, 0.3
+    nt.links.new(r.outputs["Value"], rim.inputs["Value"])
     n = nt.nodes.new("ShaderNodeTexNoise")
-    n.inputs["Scale"].default_value = 2.5
-    n.inputs["Detail"].default_value = 6
+    n.inputs["Scale"].default_value = 2.2
+    n.inputs["Detail"].default_value = 5
+    n.inputs["Roughness"].default_value = 0.6
     nt.links.new(tc.outputs["Object"], n.inputs["Vector"])
-    lw = nt.nodes.new("ShaderNodeLayerWeight")
-    lw.inputs["Blend"].default_value = 0.5
-    inv = nt.nodes.new("ShaderNodeMath")
-    inv.operation = "SUBTRACT"
-    inv.inputs[0].default_value = 1.0
-    nt.links.new(lw.outputs["Facing"], inv.inputs[1])
-    cloud = nt.nodes.new("ShaderNodeMapRange")
-    cloud.inputs["From Min"].default_value, cloud.inputs["From Max"].default_value = 0.4, 0.7
-    cloud.inputs["To Min"].default_value, cloud.inputs["To Max"].default_value = 0.15, 0.75
-    nt.links.new(n.outputs["Fac"], cloud.inputs["Value"])
-    a = nt.nodes.new("ShaderNodeMath")
-    a.operation = "MULTIPLY"
-    nt.links.new(cloud.outputs["Result"], a.inputs[0])
-    nt.links.new(inv.outputs[0], a.inputs[1])
-    nt.links.new(a.outputs[0], b.inputs["Alpha"])
+    clump = nt.nodes.new("ShaderNodeMapRange")
+    clump.inputs["From Min"].default_value, clump.inputs["From Max"].default_value = 0.35, 0.72
+    clump.inputs["To Min"].default_value, clump.inputs["To Max"].default_value = 0.1, 1.0
+    nt.links.new(n.outputs["Fac"], clump.inputs["Value"])
+    oi = nt.nodes.new("ShaderNodeObjectInfo")
+    d1 = nt.nodes.new("ShaderNodeMath")
+    d1.operation = "MULTIPLY"
+    nt.links.new(rim.outputs["Result"], d1.inputs[0])
+    nt.links.new(clump.outputs["Result"], d1.inputs[1])
+    d2 = nt.nodes.new("ShaderNodeMath")
+    d2.operation = "MULTIPLY"
+    nt.links.new(d1.outputs[0], d2.inputs[0])
+    nt.links.new(oi.outputs["Color"], d2.inputs[1])
+    nt.links.new(d2.outputs[0], vol.inputs["Density"])
+    glow = nt.nodes.new("ShaderNodeMath")                            # light from the many bounces inside a thick cloud
+    glow.operation = "MULTIPLY"
+    glow.inputs[1].default_value = 0.05
+    nt.links.new(d2.outputs[0], glow.inputs[0])
+    vol.inputs["Emission Color"].default_value = (0.80, 0.78, 0.74, 1)
+    nt.links.new(glow.outputs[0], vol.inputs["Emission Strength"])
+    nt.links.new(vol.outputs["Volume"], out.inputs["Volume"])
     return mt
 
 
@@ -553,8 +573,7 @@ def _cab_end(m, name, y_face, facing, lead=False):
     parts.append(_mesh(f"{name} windscreen", ws, [(0, 1, 2, 3)], m["glass"]))
     for sx in (-1, 1):
         x = sx * (w - 0.02)
-        prof = [(0.1, 1.05), (0.1, 1.9), (0.5, 1.92), (1.6, 3.62), (1.6, ROOF_Z - 0.02), (CAB_LEN, ROOF_Z - 0.02), (CAB_LEN, 1.05)]
-        verts = [(x, Y(d), z) for d, z in prof]
+        verts = [(x, Y(d), z) for d, z in CAB_SIDE]
         parts.append(_mesh(f"{name} cab side {sx}", verts, [tuple(range(len(verts)))], m["white"]))        # white sides, yellow front mask
         parts.append(_mesh(f"{name} side window {sx}", [(x + sx * 0.006, Y(1.9), 2.2), (x + sx * 0.006, Y(3.0), 2.2), (x + sx * 0.006, Y(3.0), 3.0),
                                                        (x + sx * 0.006, Y(1.9), 3.0)], [(0, 1, 2, 3)], m["window"]))
@@ -635,7 +654,7 @@ def train(m, name="Train", cars=6, bumper=True):
 
 # ---------------------------------------------------------------------------------------------------------------------- comparisons
 def wall(m):
-    obs = [_rbox("Solid wall", (0.0, 1.6, 1.1), (4.4, 3.2, 2.9), m["wall"], 0.04)]
+    obs = [_rbox("Solid wall", (0.0, 1.6, 1.1), (3.1, 3.2, 2.9), m["wall"], 0.04)]          # as wide as the track bed
     rng = random.Random(3636)
     debris, dust = [], []
     for k in range(46):
@@ -647,10 +666,121 @@ def wall(m):
         debris.append(ob)
     for k in range(9):
         ob = _sphere(f"Dust {k}", 1.0, (0, 0, -40), m["dust"])
-        ob["at"] = (rng.uniform(-1.6, 1.6), rng.uniform(-0.8, 0.2), rng.uniform(0.6, 2.4))
-        ob["grow"] = rng.uniform(1.2, 2.2)
+        ob["at"] = (rng.uniform(-1.5, 1.2), rng.uniform(-0.2, 0.5), rng.uniform(1.6, 3.2))   # off the contact, rising over the wall
+        ob["grow"] = rng.uniform(0.7, 1.3)
         dust.append(ob)
     return {"wall": obs, "debris": debris, "dust": dust}
+
+
+def _side_top(d):
+    """The cab side's top edge at d back from the face, over the folding zone (the sill, then the windscreen line)."""
+    pts = CAB_SIDE[1:4]
+    for (d0, z0), (d1, z1) in zip(pts, pts[1:]):
+        if d0 <= d <= d1:
+            return z0 + (z1 - z0) * (d - d0) / (d1 - d0)
+    raise ValueError(d)
+
+
+def wreck_sides(m):
+    """The wall what-if's wreck: the lead cab's two sides rebuilt as one mesh each, a fixed back part and FOLD strips that share
+    their hinge lines, so they fold like an accordion when the front crushes. Flat they are exactly the sides of _cab_end (the
+    renderer swaps them in for the wall shot only). Vertices in the train's frame. Returns [(object, [(d, z) per vertex], side)]."""
+    back, front, n = sm.FOLD
+    w = (back - front) / n
+    edges = [back - k * w for k in range(n + 1)]
+    out = []
+    for sx in (-1, 1):
+        x0 = sx * (CAR_W / 2 - 0.02)
+        dz = []
+
+        def vert(d, z):
+            dz.append((d, z))
+            return len(dz) - 1
+
+        bottom = [vert(e, 1.05) for e in edges]
+        top = [vert(e, _side_top(e)) for e in edges]
+        rest = [vert(d, z) for d, z in CAB_SIDE if d > back]
+        faces = [[bottom[0], top[0]] + rest]
+        for k in range(n):
+            kinks = [vert(d, z) for d, z in CAB_SIDE[1:4] if edges[k + 1] < d < edges[k]]
+            faces.append([bottom[k + 1], top[k + 1]] + kinks + [top[k], bottom[k]])
+        ob = _mesh(f"Wreck cab side {sx}", [(x0, -d, z) for d, z in dz], faces, m["white"])
+        out.append((ob, dz, sx))
+    return out
+
+
+def fold_sides(sides, crush):
+    """Pose wreck_sides for a crush (m): the back part stays, the strips zig-zag out and in from the back hinge forward."""
+    back, front, n = sm.FOLD
+    w = (back - front) / n
+    th = sm.fold_angles(crush)
+    for ob, dz, sx in sides:
+        x0 = sx * (CAR_W / 2 - 0.02)
+        hinges = [(x0, -back)]
+        for k in range(n):
+            hx, hy = hinges[-1]
+            o = 1.0 if k % 2 == 0 else -0.35                 # out, then back in a little (the skin buckles mostly outward)
+            hinges.append((hx + sx * o * w * math.sin(th[k]), hy + w * math.cos(th[k])))
+        co = []
+        for d, z in dz:
+            if d >= back - 1e-9:
+                co += [x0, -d, z]
+                continue
+            k = min(n - 1, int((back - d) / w + 1e-9))
+            hx, hy = hinges[k]
+            t = (back - k * w) - d
+            o = 1.0 if k % 2 == 0 else -0.35
+            co += [hx + sx * o * t * math.sin(th[k]), hy + t * math.cos(th[k]), z]
+        ob.data.vertices.foreach_set("co", co)
+        ob.data.update()
+    return th
+
+
+def glass_shards(m, count=28, seed=3637):
+    """Windscreen shards for the wall what-if: small bright slivers, each with a start near the windscreen's foot (train frame),
+    a launch velocity (out, back and up) and a spin."""
+    rng = random.Random(seed)
+    shard = material("Glass shard", (0.78, 0.86, 0.92), metal=0.7, rough=0.04)
+    out = []
+    for k in range(count):
+        a, b = rng.uniform(0.03, 0.08), rng.uniform(0.02, 0.06)
+        ob = _mesh(f"Shard {k}", [(-a, 0.0, -b), (a, 0.0, -b * 0.4), (rng.uniform(-a, a), 0.0, b)], [(0, 1, 2)], shard)
+        ob.location = (0, 0, -40)
+        sx = rng.choice((-1, 1))
+        ob["at"] = (sx * rng.uniform(0.2, 1.25), rng.uniform(-0.75, -0.45), rng.uniform(1.95, 2.5))
+        ob["v"] = (sx * rng.uniform(0.6, 3.2), rng.uniform(-3.2, -0.6), rng.uniform(0.8, 3.8))
+        ob["spin"] = (rng.uniform(-25, 25), rng.uniform(-25, 25), rng.uniform(-25, 25))
+        out.append(ob)
+    return out
+
+
+def cracked(base, name="Cracked windscreen"):
+    """The windscreen after the what-if's hit: the same glass, crazed white along Voronoi cell edges."""
+    mt = bpy.data.materials.get(name)
+    if mt is not None:
+        return mt
+    mt = base.copy()
+    mt.name = name
+    nt = mt.node_tree
+    out = next(n for n in nt.nodes if n.type == "OUTPUT_MATERIAL")
+    src = out.inputs["Surface"].links[0].from_socket
+    tc = nt.nodes.new("ShaderNodeTexCoord")
+    vor = nt.nodes.new("ShaderNodeTexVoronoi")
+    vor.feature = "DISTANCE_TO_EDGE"
+    vor.inputs["Scale"].default_value = 6.0
+    nt.links.new(tc.outputs["Object"], vor.inputs["Vector"])
+    line = nt.nodes.new("ShaderNodeMapRange")
+    line.inputs["From Min"].default_value, line.inputs["From Max"].default_value = 0.0, 0.03
+    line.inputs["To Min"].default_value, line.inputs["To Max"].default_value = 1.0, 0.0
+    nt.links.new(vor.outputs["Distance"], line.inputs["Value"])
+    white = nt.nodes.new("ShaderNodeBsdfDiffuse")
+    white.inputs["Color"].default_value = (0.86, 0.88, 0.9, 1)
+    mix = nt.nodes.new("ShaderNodeMixShader")
+    nt.links.new(line.outputs["Result"], mix.inputs["Fac"])
+    nt.links.new(src, mix.inputs[1])
+    nt.links.new(white.outputs["BSDF"], mix.inputs[2])
+    nt.links.new(mix.outputs["Shader"], out.inputs["Surface"])
+    return mt
 
 
 CAR_ORIGIN = (2000.0, 0.0, 0.0)

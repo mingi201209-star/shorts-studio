@@ -31,7 +31,9 @@ HALF = (1080, 960)
 SKY = 0.26                       # house-style sky fill (EP.32-35)
 SUN = 6.5
 SLID = m.impact()[-1][4]         # where the stop ends up (m past its mark)
+HEAT_END = m.state(m.impact()[-1][0])["shoe_heat_kJ"]   # each shoe's friction heat by the end of the slide (kJ)
 PARK_Y = -400.0                  # where the train waits when it is not in the shot
+DUST_DENSITY = 6.0               # the wall what-if's dust: volume density x radius^1.6 (thick puffs that thin as they spread)
 
 
 def arguments():
@@ -102,6 +104,15 @@ def main():
     for ob in hero["nose"]:
         reparent_keep(ob, pivot)
     wl = sp.wall(mt)
+    wreck = sp.wreck_sides(mt)                                       # the what-if's cab sides, folding with the crush (wall shot only)
+    for ob, _dz, _sx in wreck:
+        ob.parent = hero["root"]
+    plain_sides = [ob for ob in hero["nose"] if " cab side " in ob.name]
+    shards = sp.glass_shards(mt)
+    screen = next(ob for ob in hero["nose"] if ob.name.endswith(" windscreen"))
+    cracked = sp.cracked(mt["glass"])
+    thermal = xray.thermal_material()
+    shoe_glow = xray.glow_material("Xray glow shoes", colour=(1.0, 0.86, 0.36), strength=3.0)
     road = sp.road_scene(mt)
     car = sp.sedan(mt)
     trac = sp.tractor(mt)
@@ -125,7 +136,7 @@ def main():
 
     clutter = station + wires + old_stop + fence + kids([p for p in people]) + kids([parked["root"]])
     comparison = kids([car["root"]]) + [o for o in road]
-    wall_obs = wl["wall"] + wl["debris"] + wl["dust"]
+    wall_obs = wl["wall"] + wl["debris"] + wl["dust"] + shards
     crew_obs = kids([c[0] for c in crew]) + kids([trac["root"]])
     hero_obs = kids([hero["root"]])
     stop_obs = kids([stop["root"]])
@@ -207,6 +218,12 @@ def main():
         for ob in polish:
             ob.hide_render = True
         pivot.scale.y = 1.0
+        for ob, _dz, _sx in wreck:                                     # the wall shot swaps the folding sides in for the plain ones
+            ob.hide_render = variant != "wall"
+        for ob in plain_sides:
+            ob.hide_render = variant != "train"
+        screen.material_slots[0].material = mt["glass"]
+        scene.cycles.volume_bounces = 1 if variant == "wall" else 0      # the dust: light bounces inside the cloud (the only volume)
         hero["cab_light"].data.energy = 40.0 if sh.get("cab") else 0.0
         shake = (0.0, 0.0, 0.0)
         sparks_n = 0
@@ -234,8 +251,18 @@ def main():
             ws = m.wall_state(t)
             hero["root"].location = (0.0, ws["train_y"], 0.0)
             pivot.scale.y = (1.9 - ws["crush"]) / 1.9
-            tau = t - (m.V0 / (m.V0 ** 2 / (2 * m.WALL_CRUSH))) if ws["hit"] else -1.0
+            folds = sp.fold_sides(wreck, ws["crush"])                  # the sides take the same crush, folding from the front back
+            if ws["hit"]:
+                screen.material_slots[0].material = cracked
             tau = t if ws["hit"] else -1.0
+            for ob in shards:
+                if tau < 0:
+                    ob.location = (0, 0, -40)
+                    continue
+                at, v, sp_ = Vector(ob["at"]), Vector(ob["v"]), ob["spin"]
+                at.y += ws["train_y"]
+                ob.location = (at.x + v.x * tau, at.y + v.y * tau, max(0.02, at.z + v.z * tau - 4.9 * tau * tau))
+                ob.rotation_euler = (sp_[0] * tau, sp_[1] * tau, sp_[2] * tau)
             for ob in wl["debris"]:
                 if tau < 0:
                     ob.location = (0, 0, -40)
@@ -250,15 +277,18 @@ def main():
                     continue
                 s = ob["grow"] * min(1.0, 0.25 + tau * 2.2)
                 at = Vector(ob["at"])
-                ob.location = (at.x, at.y - 0.3 * tau, at.z + 0.15 * tau)
+                ob.location = (at.x, at.y - 0.3 * tau, at.z + 0.9 * tau)
                 ob.scale = (s, s, s * 0.8)
+                d = DUST_DENSITY * min(1.0, tau / 0.03) / s ** 1.6      # the same dust spread wider: thinner (volume density)
+                ob.color = (d, d, d, 1.0)
             jolt = 1.1 * math.exp(-max(0.0, tau) / 0.25) * (1.0 - math.exp(-max(0.0, tau) / 0.03)) if tau >= 0 else 0.0
             pose_driver(hero["bumper"], jolt)
             if tau >= 0:
                 amp = 0.06 * math.exp(-tau / 0.18)
                 shake = (amp * math.sin(97 * tau), amp * 0.5 * math.sin(71 * tau + 1.0), amp * math.sin(53 * tau + 2.0))
             info.update({"train_y": round(ws["train_y"], 4), "crush": round(ws["crush"], 4), "hit": bool(ws["hit"]), "decel_g": round(ws["decel_g"], 3),
-                         "driver_lean": round(jolt, 4), "debris": sum(1 for ob in wl["debris"] if ob.location.z > -10)})
+                         "driver_lean": round(jolt, 4), "debris": sum(1 for ob in wl["debris"] if ob.location.z > -10),
+                         "fold_deg": [round(math.degrees(a), 2) for a in folds], "shards": sum(1 for ob in shards if ob.location.z > -10)})
             set_cam(sh["cam"], 0.0, 0.0, shake)
         elif variant == "car":
             cs = m.car_state(t - 0.25)
@@ -299,7 +329,31 @@ def main():
                 w.rotation_euler = (0.0, 0.0, 0.5 * math.sin(2 * math.pi * 1.2 * sh["film_t"] + k)) if k < 2 else (0.0, 0.0, 0.0)
             info.update({"stop_y": round(stop_y, 4), "crew": True, "push": pushing, "nut_turn": round(spin, 3)})
             set_cam(sh["cam"], stop_y if sh["cam"].get("rel") == "stop" else 0.0)
-        xr.set(xr_on, glow_strength=4.0 if heat else 2.2)
+        xr.set(xr_on, glow_strength=2.2)
+        if xr_on and sh.get("reveal"):                 # the line is about the shoes: they and their bolts glow yellow-white on the orange frame
+            for ob in stop["shoes"]:
+                for slot in ob.material_slots:
+                    slot.material = shoe_glow
+            info["shoes_focus"] = True
+        if xr_on and heat:                             # the friction's heat as a thermal camera shows it: the shoes and the rubbed rail
+            hot = min(1.0, max(0.0, st["shoe_heat_kJ"] / HEAT_END))   # the share of each shoe's friction heat made so far (the model)
+            blue = xray.blueprint_material()
+            shoe_names = {ob.name for ob in stop["shoes"]}
+            for ob in mech:
+                if ob.name not in shoe_names:
+                    for slot in ob.material_slots:
+                        slot.material = blue
+            for ob in stop["shoes"]:
+                rubbing = " jaw " in ob.name or " insert " in ob.name
+                ob.color = (hot * (1.0 if rubbing else 0.6), 0.0, 0.0, 1.0)
+                for slot in ob.material_slots:
+                    slot.material = thermal
+            for ob in polish:
+                ob.hide_render = st["stop_y"] < 0.05
+                ob.color = (0.8 * hot, 1.0, 0.0, 1.0)
+                for slot in ob.material_slots:
+                    slot.material = thermal
+            info["heat"] = round(hot, 4)
         for n in sky_nodes:
             n.inputs["Strength"].default_value = 0.06 if xr_on else SKY
         sun.data.energy = 1.5 if xr_on else SUN

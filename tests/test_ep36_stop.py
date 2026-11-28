@@ -60,3 +60,28 @@ def test_caption_look_highlights_numbers_and_fits():
     assert captions.STYLE in styled
     assert captions.YELLOW + "six-car" in styled and captions.YELLOW + "fifteen" in styled and captions.YELLOW + "sixty" in styled
     assert captions.widest_line_px(styled) <= captions.MAX_LINE_PX
+
+
+def test_wreck_folds_take_exactly_the_crush():
+    """The what-if's cab sides fold like an accordion: the folds shorten the zone by exactly the model's crush, the front strips
+    fold first and most, none past FOLD_MAX, and nothing is folded before the hit."""
+    back, front, n = m.FOLD
+    w = (back - front) / n
+    for c in (0.0, 0.02, 0.1, 0.2, m.WALL_CRUSH):
+        th = m.fold_angles(c)
+        assert len(th) == n
+        assert math.isclose(sum(w * (1.0 - math.cos(a)) for a in th), c, abs_tol=1e-9)
+        assert all(0.0 <= a <= m.FOLD_MAX + 1e-12 for a in th)
+        assert th == sorted(th)
+    assert max(m.fold_angles(0.0)) == 0.0
+    assert max(m.fold_angles(m.WALL_CRUSH)) > math.radians(45)               # a wreck you can see, not a dent
+
+
+def test_heat_builds_through_the_heat_line():
+    """The thermal look in E2 follows the shoes' friction heat in the model: rising through the shot, past half of the total."""
+    segs = tl.segments()
+    e2 = next(s for s in segs if s["label"] == "E2-heat")
+    end = m.state(m.impact()[-1][0])["shoe_heat_kJ"]
+    t0, t1 = e2["sim0"], e2["sim1"]
+    h0, h1 = m.state(t0)["shoe_heat_kJ"] / end, m.state(t1)["shoe_heat_kJ"] / end
+    assert 0.3 < h0 < h1 <= 1.0

@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import shutil
 
 from pathlib import Path
@@ -95,7 +96,8 @@ def compose(panels: Path, out: Path, n: int) -> tuple[list[dict], str]:
 
 def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
     """Every frame was drawn from the model state of its simulated time: the train's front, the stop's slide and the buffers'
-    squash; the wall what-if's train; the comparison car; afterwards, the stop between its slid place and its mark."""
+    squash; the shoes' heat in the thermal look; the wall what-if's train, its crush and the cab's folds; the comparison car;
+    afterwards, the stop between its slid place and its mark."""
     problems = []
     for fr in frames:
         sh = tl.frame_state(fr["frame"], segs)
@@ -110,8 +112,14 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
                 if any(abs(p[k] - st[k2]) > 1e-3 for k, k2 in (("train_y", "train_y"), ("stop_y", "stop_y"), ("compression", "compression"))):
                     problems.append(f"frame {fr['frame']}: the train, the stop or the buffers differ from the model")
             elif v == "wall":
-                if abs(p["train_y"] - m.wall_state(t)["train_y"]) > 1e-3:
+                ws = m.wall_state(t)
+                if abs(p["train_y"] - ws["train_y"]) > 1e-3 or abs(p["crush"] - ws["crush"]) > 1e-3:
                     problems.append(f"frame {fr['frame']}: the what-if train differs from the model")
+                folds = [math.degrees(a) for a in m.fold_angles(ws["crush"])]
+                if len(p.get("fold_deg", [])) != len(folds) or any(abs(a - b) > 0.05 for a, b in zip(p["fold_deg"], folds)):
+                    problems.append(f"frame {fr['frame']}: the cab's folds differ from the model's crush")
+            if p.get("heat") is not None and abs(p["heat"] - m.state(t)["shoe_heat_kJ"] / m.state(m.impact()[-1][0])["shoe_heat_kJ"]) > 1e-3:
+                problems.append(f"frame {fr['frame']}: the shoes' heat differs from the model")
             elif v == "car":
                 if abs(p["car_x"] - m.car_state(t - 0.25)["x"]) > 1e-3:
                     problems.append(f"frame {fr['frame']}: the car differs from the model")
@@ -126,9 +134,10 @@ def telemetry_matches_model(frames: list[dict], segs: list[dict]) -> dict:
 
 
 def visible_action(frames: list[dict]) -> dict:
-    """Frame 1 is the train already shoving the stop, buffers squashed, sparks off the shoes; the what-if train hits the wall and
-    throws debris; the stop is seen at rest with the train coming; the reveal is in the x-ray look; the buffers squash in x-ray;
-    the stop slides with sparks; the shoes slide hot in x-ray; the slide is laid out and the train stops at its end; the split
+    """Frame 1 is the train already shoving the stop, buffers squashed, sparks off the shoes; the what-if train hits the wall, its
+    cab sides fold up and it throws debris and windscreen glass; the stop is seen at rest with the train coming; the reveal is in
+    the x-ray look with the shoes in focus; the buffers squash in x-ray; the stop slides with sparks; the shoes slide in the
+    thermal look, getting hotter; the slide is laid out and the train stops at its end; the split
     shows the car thrown hard and the cab gentle; Bumper waves once stopped; the crew turns the bolts, then the stop goes back."""
     by = {}
     for fr in frames:
@@ -140,12 +149,15 @@ def visible_action(frames: list[dict]) -> dict:
     b1 = [ps[0] for ps in by.get("B1-wall", [])]
     if not b1 or b1[0]["hit"] or not b1[-1]["hit"] or max(p["debris"] for p in b1) < 10:
         problems.append("the what-if train is not seen hitting the wall and throwing debris")
+    if not b1 or b1[0].get("fold_deg") is None or max(b1[0]["fold_deg"]) > 0 or max(max(p["fold_deg"]) for p in b1) < 45 \
+            or max(p["shards"] for p in b1) < 10:
+        problems.append("the what-if cab is not seen folding up and throwing windscreen glass")
     b2 = [ps[0] for ps in by.get("B2-built-to-slide", [])]
     if not b2 or any(p["stop_y"] != 0 for p in b2) or b2[-1]["train_y"] > -30:
         problems.append("the stop is not seen at rest with the train still far off")
     c = [ps[0] for ps in by.get("C-shoes", [])]
-    if not c or not all(p["xray"] for p in c):
-        problems.append("the shoes are not revealed in the x-ray look")
+    if not c or not all(p["xray"] and p.get("shoes_focus") for p in c):
+        problems.append("the shoes are not revealed in the x-ray look, in focus")
     d = [ps[0] for ps in by.get("D-buffers", [])]
     if not d or not all(p["xray"] for p in d) or d[0]["compression"] > 0 or max(p["compression"] for p in d) < 0.3:
         problems.append("the buffers are not seen squashing in the x-ray look")
@@ -155,6 +167,8 @@ def visible_action(frames: list[dict]) -> dict:
     e2 = [ps[0] for ps in by.get("E2-heat", [])]
     if not e2 or not all(p["xray"] and p["sliding"] for p in e2):
         problems.append("the shoes are not seen sliding in the x-ray look")
+    if not e2 or any(p.get("heat") is None for p in e2) or e2[-1]["heat"] <= e2[0]["heat"] or min(p["heat"] for p in e2) < 0.3:
+        problems.append("the shoes are not seen getting hot (the thermal look)")
     f = [ps[0] for ps in by.get("F-sixty-feet", [])]
     if not f or not all(p["marker"] for p in f) or f[-1]["train_speed"] > 0 or abs(f[-1]["stop_y"] - m.impact()[-1][4]) > 0.05:
         problems.append("the slide is not laid out with the train stopped at its end")

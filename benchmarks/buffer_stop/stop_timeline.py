@@ -39,8 +39,8 @@ def cam(loc, target, lens, fstop=11.0, rel="world"):
 # the track runs along +y; the stop's buffer faces at y = 0 at rest (+y is behind the stop); the platform is on the left (x < 0)
 A1 = cam((3.3, 3.9, 1.75), (-0.2, -0.7, 1.05), 22.0, rel="stop")          # ahead-right of the sliding stop: the train shoving it, shoes sparking
 A1_B = cam((3.15, 3.7, 1.7), (-0.2, -0.7, 1.05), 22.0, rel="stop")
-B1 = cam((-4.3, -1.4, 2.05), (0.0, -0.3, 1.45), 22.0)                       # the what-if, side on from the platform: the train into a solid wall
-B1_B = cam((-4.1, -1.3, 2.0), (0.0, -0.2, 1.45), 22.0)
+B1 = cam((-3.5, 1.4, 2.45), (-0.8, -3.2, 1.75), 24.0)                      # the what-if, from the platform beside the wall: the train comes
+B1_B = cam((-3.4, 1.3, 2.4), (-0.8, -3.0, 1.75), 24.0)                      # at us and hits it; its cab's corner folds up in front of us
 B2 = cam((1.5, 15.0, 1.4), (0.0, 1.5, 1.0), 28.0)                           # the stop at rest, the empty rails behind it to slide on
 B2_B = cam((1.3, 9.5, 1.2), (0.0, 1.0, 1.0), 28.0)
 C = cam((3.6, 6.8, 3.4), (0.0, 2.2, 0.2), 28.0)                             # x-ray: the shoes clamped on both rails, their bolts
