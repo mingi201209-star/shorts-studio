@@ -41,8 +41,30 @@ def highlight(text: str) -> str:
     return r"\N".join(out)
 
 
+def line_px(text: str) -> float:
+    """Width in pixels of one caption line (tags removed) in the caption font, with the tracking."""
+    from PIL import ImageFont
+    plain = re.sub(r"\{[^}]*\}", "", text)
+    return ImageFont.truetype(str(FONT_FILE), SIZE).getlength(plain) + SPACING * max(0, len(plain) - 1)
+
+
+def wrap(text: str) -> str:
+    """Break any line wider than MAX_LINE_PX at the space that balances its two halves best (the heavy face runs wider than the
+    narration build's own estimate; EP.36's "Afterwards, crews loosen" was 928 px)."""
+    out = []
+    for line in text.split(r"\N"):
+        words = line.split(" ")
+        if line_px(line) <= MAX_LINE_PX or len(words) < 2:
+            out.append(line)
+            continue
+        best = min(range(1, len(words)), key=lambda k: max(line_px(" ".join(words[:k])), line_px(" ".join(words[k:]))))
+        out += [" ".join(words[:best]), " ".join(words[best:])]
+    return r"\N".join(out)
+
+
 def restyle(ass_text: str) -> str:
-    """The film.ass written by the narration build, in the channel's caption look: the style line replaced, numbers highlighted."""
+    """The film.ass written by the narration build, in the channel's caption look: the style line replaced, over-wide lines broken
+    in two, numbers highlighted."""
     lines = ass_text.splitlines()
     styles = [i for i, ln in enumerate(lines) if ln.startswith("Style: Caption,")]
     if len(styles) != 1:
@@ -52,7 +74,7 @@ def restyle(ass_text: str) -> str:
     for ln in lines:
         if ln.startswith("Dialogue:"):
             head, text = ln.split(",,0,0,0,,", 1)
-            ln = f"{head},,0,0,0,,{highlight(text)}"
+            ln = f"{head},,0,0,0,,{highlight(wrap(text))}"
         out.append(ln)
     return "\n".join(out) + "\n"
 

@@ -2,7 +2,7 @@
   "status": "PASS",
   "voice": "en-US-AndrewNeural",
   "rate": "+5%",
-  "seconds": 35.014,
+  "seconds": 34.614,
   "cues": [
     {
       "start": 0.06000000000000005,
@@ -30,265 +30,264 @@
       "text": "the line?"
     },
     {
-      "start": 2.8567211111111117,
-      "end": 3.5971171111111118,
+      "start": 2.8566956666666656,
+      "end": 3.5970916666666657,
       "text": "Hitting a solid"
     },
     {
-      "start": 3.6431171111111116,
-      "end": 4.328117111111112,
+      "start": 3.6430916666666655,
+      "end": 4.328091666666666,
       "text": "wall would wreck"
     },
     {
-      "start": 4.386117111111112,
-      "end": 5.4781171111111115,
+      "start": 4.386091666666665,
+      "end": 5.478091666666666,
       "text": "it, so this"
     },
     {
-      "start": 5.559117111111112,
-      "end": 6.314117111111112,
+      "start": 5.559091666666665,
+      "end": 6.314091666666666,
       "text": "buffer stop is"
     },
     {
-      "start": 6.383117111111112,
-      "end": 7.219117111111112,
+      "start": 6.383091666666665,
+      "end": 7.219091666666666,
       "text": "built to slide."
     },
     {
-      "start": 7.507339222222224,
-      "end": 8.094151222222223,
+      "start": 7.507288333333332,
+      "end": 8.094100333333332,
       "text": "It's clamped to"
     },
     {
-      "start": 8.152151222222223,
-      "end": 8.768151222222224,
+      "start": 8.152100333333332,
+      "end": 8.768100333333331,
       "text": "the rails by"
     },
     {
-      "start": 8.837151222222223,
-      "end": 10.277151222222223,
+      "start": 8.837100333333332,
+      "end": 10.277100333333332,
       "text": "steel shoes, bolted"
     },
     {
-      "start": 10.335151222222223,
-      "end": 10.846151222222224,
+      "start": 10.335100333333331,
+      "end": 10.846100333333332,
       "text": "on tight."
     },
     {
-      "start": 11.166185333333335,
-      "end": 11.731935333333336,
+      "start": 11.166108999999995,
+      "end": 11.731858999999996,
       "text": "When a train"
     },
     {
-      "start": 11.789935333333336,
-      "end": 12.752935333333335,
+      "start": 11.789858999999996,
+      "end": 12.752858999999996,
       "text": "hits, the stop's"
     },
     {
-      "start": 12.787935333333335,
-      "end": 13.646935333333335,
+      "start": 12.787858999999996,
+      "end": 13.646858999999996,
       "text": "hydraulic buffers"
     },
     {
-      "start": 13.670935333333334,
-      "end": 14.424935333333336,
+      "start": 13.670858999999995,
+      "end": 14.424858999999996,
       "text": "squash first."
     },
     {
-      "start": 14.744969444444449,
-      "end": 15.884927444444449,
+      "start": 14.744867666666662,
+      "end": 15.884825666666663,
       "text": "Then the whole"
     },
     {
-      "start": 15.919927444444449,
-      "end": 16.789927444444444,
+      "start": 15.919825666666663,
+      "end": 16.78982566666666,
       "text": "stop gets shoved"
     },
     {
-      "start": 16.824927444444448,
-      "end": 17.63792744444445,
+      "start": 16.824825666666662,
+      "end": 17.637825666666664,
       "text": "along the rails,"
     },
     {
-      "start": 17.776927444444446,
-      "end": 18.46192744444445,
+      "start": 17.77682566666666,
+      "end": 18.461825666666662,
       "text": "and the friction"
     },
     {
-      "start": 18.51992744444445,
-      "end": 19.27492744444445,
+      "start": 18.519825666666662,
+      "end": 19.274825666666665,
       "text": "turns the train's"
     },
     {
-      "start": 19.297927444444447,
-      "end": 20.261927444444446,
+      "start": 19.29782566666666,
+      "end": 20.26182566666666,
       "text": "speed into heat."
     },
     {
-      "start": 20.581961555555562,
-      "end": 21.571607555555563,
+      "start": 20.58183433333333,
+      "end": 21.57148033333333,
       "text": "A six-car train"
     },
     {
-      "start": 21.629607555555562,
-      "end": 22.44260755555556,
+      "start": 21.62948033333333,
+      "end": 22.44248033333333,
       "text": "at fifteen miles"
     },
     {
-      "start": 22.47660755555556,
-      "end": 23.20860755555556,
+      "start": 22.476480333333328,
+      "end": 23.208480333333327,
       "text": "an hour stops"
     },
     {
-      "start": 23.254607555555562,
-      "end": 23.626607555555562,
+      "start": 23.25448033333333,
+      "end": 23.62648033333333,
       "text": "in about"
     },
     {
-      "start": 23.67260755555556,
-      "end": 24.29960755555556,
+      "start": 23.67248033333333,
+      "end": 24.299480333333328,
       "text": "sixty feet."
     },
     {
-      "start": 24.61035566666667,
-      "end": 25.891126666666672,
-      "text": "Gentle enough that"
+      "start": 24.603994999999994,
+      "end": 25.53720299999999,
+      "text": "That's gentler than"
     },
     {
-      "start": 25.926126666666672,
-      "end": 26.51812666666667,
-      "text": "the coffee in"
+      "start": 25.60720299999999,
+      "end": 26.245202999999993,
+      "text": "slamming on the"
     },
     {
-      "start": 26.56412666666667,
-      "end": 26.93612666666667,
-      "text": "the cab"
+      "start": 26.291202999999992,
+      "end": 26.675202999999993,
+      "text": "brakes in"
     },
     {
-      "start": 27.005126666666673,
-      "end": 27.609126666666672,
-      "text": "doesn't spill."
+      "start": 26.721202999999992,
+      "end": 27.20920299999999,
+      "text": "your car."
     },
     {
-      "start": 27.869160777777783,
-      "end": 28.79816077777778,
+      "start": 27.46921166666666,
+      "end": 28.398211666666658,
       "text": "Yes, that's"
     },
     {
-      "start": 28.844160777777784,
-      "end": 29.378160777777783,
+      "start": 28.44421166666666,
+      "end": 28.97821166666666,
       "text": "me driving."
     },
     {
-      "start": 29.460160777777784,
-      "end": 29.97016077777778,
+      "start": 29.06021166666666,
+      "end": 29.57021166666666,
       "text": "Again."
     },
     {
-      "start": 30.290194888888895,
-      "end": 32.0959658888889,
+      "start": 29.890220333333325,
+      "end": 31.695991333333325,
       "text": "Afterwards, crews loosen"
     },
     {
-      "start": 32.1539658888889,
-      "end": 33.221965888888896,
+      "start": 31.753991333333325,
+      "end": 32.82199133333333,
       "text": "the bolts, push"
     },
     {
-      "start": 33.279965888888896,
-      "end": 33.8599658888889,
+      "start": 32.87999133333333,
+      "end": 33.45999133333333,
       "text": "it back, and"
     },
     {
-      "start": 33.929965888888894,
-      "end": 34.7539658888889,
+      "start": 33.52999133333333,
+      "end": 34.353991333333326,
       "text": "tighten them again."
     }
   ],
   "beats": [
     {
       "start": 0,
-      "end": 2.8191171111111117,
+      "end": 2.8190916666666657,
       "narration_en": "How do you stop a runaway train at the end of the line?",
-      "source_audio_sha256": "59ab18545f7c382af6792a9547bbd05e454c65bb0cb4c3cfcb290eb2eecb4d95"
+      "source_audio_sha256": "a8b16b2e1289cde81611025d82d63425f4967393d8ab946b25059f133c323c7e"
     },
     {
-      "start": 2.8191171111111117,
-      "end": 7.479151222222224,
+      "start": 2.8190916666666657,
+      "end": 7.4791003333333315,
       "narration_en": "Hitting a solid wall would wreck it, so this buffer stop is built to slide.",
-      "source_audio_sha256": "19a8366398f6372c97cab4c58fac5308ec1aee6a9bcf98adc51c128fb0a9fa04"
+      "source_audio_sha256": "c56a8b27cc649d1dc7163d72def90ac4029262c720826bc25410cc29c1f83c07"
     },
     {
-      "start": 7.479151222222224,
-      "end": 11.106185333333336,
+      "start": 7.4791003333333315,
+      "end": 11.106108999999996,
       "narration_en": "It's clamped to the rails by steel shoes, bolted on tight.",
-      "source_audio_sha256": "f34df6ccf6827b45daa986859855e7ec6be9b1bec7d9d60fcad4269cbc15bb23"
+      "source_audio_sha256": "34a94c5524293e41921bcb1bfe5ef943a6bc19954a72381180d4a30e9abb11ff"
     },
     {
-      "start": 11.106185333333336,
-      "end": 14.684969444444448,
+      "start": 11.106108999999996,
+      "end": 14.684867666666662,
       "narration_en": "When a train hits, the stop's hydraulic buffers squash first.",
-      "source_audio_sha256": "84c8b37803c1effa73bca2beee02e8e2487ed86e3031b91d8742a28ca211e9b4"
+      "source_audio_sha256": "37715d09f0f11098999cf68a56c350084e16eb64833fcfa790b6ab2c68ee698d"
     },
     {
-      "start": 14.684969444444448,
-      "end": 20.52196155555556,
+      "start": 14.684867666666662,
+      "end": 20.521834333333327,
       "narration_en": "Then the whole stop gets shoved along the rails, and the friction turns the train's speed into heat.",
-      "source_audio_sha256": "ba1035b9307fe3694ac74a9b3af9e11a51afad0ce6a8ee42d0e0de744da7cd23"
+      "source_audio_sha256": "eec851fec45d05f06849e45a74276197212342444e4267de429278810519277d"
     },
     {
-      "start": 20.52196155555556,
-      "end": 24.550355666666672,
+      "start": 20.521834333333327,
+      "end": 24.550202999999993,
       "narration_en": "A six-car train at fifteen miles an hour stops in about sixty feet.",
-      "source_audio_sha256": "121ac86d7f6023634f26f7deacbb88f8aeb925fb9600c70b45a1f5700e57dee7"
+      "source_audio_sha256": "e95321f61e079d5e1a3089f54a5af46a9672f5c5aad953457d557b4040d031e3"
     },
     {
-      "start": 24.550355666666672,
-      "end": 27.869160777777783,
-      "narration_en": "Gentle enough that the coffee in the cab doesn't spill.",
-      "source_audio_sha256": "e6d33550527c3b45cef2d3fddf51d23a1a09a8009ecb4fdaa9dcc0a0944822b2"
+      "start": 24.550202999999993,
+      "end": 27.46921166666666,
+      "narration_en": "That's gentler than slamming on the brakes in your car.",
+      "source_audio_sha256": "29c2927d9855bc797d924118ff8fa19db0c9d5f2ee272f930f14b9dec7e5951c"
     },
     {
-      "start": 27.869160777777783,
-      "end": 30.230194888888896,
+      "start": 27.46921166666666,
+      "end": 29.830220333333326,
       "narration_en": "Yes, that's me driving. Again.",
-      "source_audio_sha256": "a14c74943435091ef57e948ce7fd8d2903b116931fd6f7042f8fcf749272f429"
+      "source_audio_sha256": "56bea20b75916bbc569672494982fe99d89d5696f8606f8227cfb6d677f4b578"
     },
     {
-      "start": 30.230194888888896,
-      "end": 35.014,
+      "start": 29.830220333333326,
+      "end": 34.614,
       "narration_en": "Afterwards, crews loosen the bolts, push it back, and tighten them again.",
-      "source_audio_sha256": "c291ca92dc0c0282c467b568cc901c489d482bdc3220eeece43bfc78fa840cbd"
+      "source_audio_sha256": "71cfca53118a1d99bb2fc8d46760d093f0ded6d9476a035dfcb408c036db5688"
     }
   ],
   "silence_gaps": [
-    0.461292,
-    0.42975,
-    0.406187,
-    0.334813,
-    0.389083,
-    0.369104,
-    0.400271,
-    0.465875,
-    0.433854,
-    0.315521,
-    0.371417,
-    0.348208
+    0.461229,
+    0.436104,
+    0.406146,
+    0.332833,
+    0.388083,
+    0.37375,
+    0.3945,
+    0.301667,
+    0.421979,
+    0.315458,
+    0.377896,
+    0.352125
   ],
   "loudness": {
-    "integrated_lufs": -16.1,
-    "loudness_range_lu": 1.9,
-    "true_peak_dbfs": -1.4,
+    "integrated_lufs": -16.2,
+    "loudness_range_lu": 2.0,
+    "true_peak_dbfs": -1.5,
     "shot_integrated_lufs": [
       -16.0,
       -16.7,
-      -16.0,
-      -15.9,
-      -16.2,
-      -16.1,
+      -15.8,
+      -15.8,
+      -16.7,
       -16.2
     ]
   },
   "production_approved": false,
-  "narration_sha256": "bc185d0537973de11e901c0e3e807e1e62e64c7ddaf77596542b834968dd1cd6"
+  "narration_sha256": "957926c554868c153abf86d9bcfac5da11b5748955c4953a5575272f2a70bd5b"
 }

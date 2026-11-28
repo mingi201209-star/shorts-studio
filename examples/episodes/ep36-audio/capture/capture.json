@@ -74,7 +74,7 @@
       ],
       "duration": 4.127347,
       "audio_onset_s": 1.386,
-      "audio_sha256": "59ab18545f7c382af6792a9547bbd05e454c65bb0cb4c3cfcb290eb2eecb4d95",
+      "audio_sha256": "a8b16b2e1289cde81611025d82d63425f4967393d8ab946b25059f133c323c7e",
       "available_seconds": 3.6,
       "fits": false
     },
@@ -161,7 +161,7 @@
       ],
       "duration": 4.623673,
       "audio_onset_s": 0.068,
-      "audio_sha256": "19a8366398f6372c97cab4c58fac5308ec1aee6a9bcf98adc51c128fb0a9fa04",
+      "audio_sha256": "c56a8b27cc649d1dc7163d72def90ac4029262c720826bc25410cc29c1f83c07",
       "available_seconds": 4.6,
       "fits": false
     },
@@ -228,7 +228,7 @@
       ],
       "duration": 3.526531,
       "audio_onset_s": 0.058,
-      "audio_sha256": "f34df6ccf6827b45daa986859855e7ec6be9b1bec7d9d60fcad4269cbc15bb23",
+      "audio_sha256": "34a94c5524293e41921bcb1bfe5ef943a6bc19954a72381180d4a30e9abb11ff",
       "available_seconds": 3.4000000000000004,
       "fits": false
     },
@@ -290,7 +290,7 @@
       ],
       "duration": 3.709388,
       "audio_onset_s": 0.219,
-      "audio_sha256": "84c8b37803c1effa73bca2beee02e8e2487ed86e3031b91d8742a28ca211e9b4",
+      "audio_sha256": "37715d09f0f11098999cf68a56c350084e16eb64833fcfa790b6ab2c68ee698d",
       "available_seconds": 3.3000000000000007,
       "fits": false
     },
@@ -392,7 +392,7 @@
       ],
       "duration": 6.4,
       "audio_onset_s": 0.62,
-      "audio_sha256": "ba1035b9307fe3694ac74a9b3af9e11a51afad0ce6a8ee42d0e0de744da7cd23",
+      "audio_sha256": "eec851fec45d05f06849e45a74276197212342444e4267de429278810519277d",
       "available_seconds": 5.9,
       "fits": false
     },
@@ -469,71 +469,71 @@
       ],
       "duration": 4.205714,
       "audio_onset_s": 0.387,
-      "audio_sha256": "121ac86d7f6023634f26f7deacbb88f8aeb925fb9600c70b45a1f5700e57dee7",
+      "audio_sha256": "e95321f61e079d5e1a3089f54a5af46a9672f5c5aad953457d557b4040d031e3",
       "available_seconds": 4.099999999999998,
       "fits": false
     },
     {
-      "text": "Gentle enough that the coffee in the cab doesn't spill.",
+      "text": "That's gentler than slamming on the brakes in your car.",
       "voice": "elevenlabs:Curious Mechanics - Bumper:K53Vjt7kKqCUbAwe7Y34",
       "rate": "model default",
       "words": [
         {
-          "text": "Gentle",
-          "start": 0.658229,
-          "end": 1.498
+          "text": "That's",
+          "start": 0.053792,
+          "end": 0.279
         },
         {
-          "text": "enough",
-          "start": 1.533,
-          "end": 1.776
+          "text": "gentler",
+          "start": 0.36,
+          "end": 0.801
         },
         {
-          "text": "that",
-          "start": 1.811,
-          "end": 1.939
+          "text": "than",
+          "start": 0.848,
+          "end": 0.987
+        },
+        {
+          "text": "slamming",
+          "start": 1.057,
+          "end": 1.451
+        },
+        {
+          "text": "on",
+          "start": 1.498,
+          "end": 1.579
         },
         {
           "text": "the",
-          "start": 1.974,
-          "end": 2.055
+          "start": 1.625,
+          "end": 1.695
         },
         {
-          "text": "coffee",
-          "start": 2.136,
-          "end": 2.473
+          "text": "brakes",
+          "start": 1.741,
+          "end": 2.009
         },
         {
           "text": "in",
-          "start": 2.508,
-          "end": 2.566
+          "start": 2.055,
+          "end": 2.125
         },
         {
-          "text": "the",
-          "start": 2.612,
-          "end": 2.682
+          "text": "your",
+          "start": 2.171,
+          "end": 2.276
         },
         {
-          "text": "cab",
-          "start": 2.728,
-          "end": 2.984
-        },
-        {
-          "text": "doesn't",
-          "start": 3.053,
-          "end": 3.309
-        },
-        {
-          "text": "spill",
-          "start": 3.344,
-          "end": 3.657
+          "text": "car",
+          "start": 2.322,
+          "end": 2.659
         }
       ],
-      "duration": 3.94449,
-      "audio_onset_s": 0.688,
-      "audio_sha256": "e6d33550527c3b45cef2d3fddf51d23a1a09a8009ecb4fdaa9dcc0a0944822b2",
-      "available_seconds": 3.200000000000003,
-      "fits": false
+      "duration": 2.951837,
+      "audio_onset_s": 0.084,
+      "audio_sha256": "29c2927d9855bc797d924118ff8fa19db0c9d5f2ee272f930f14b9dec7e5951c",
+      "available_seconds": 3.4,
+      "fits": true
     },
     {
       "text": "Yes, that's me driving. Again.",
@@ -568,7 +568,7 @@
       ],
       "duration": 2.45551,
       "audio_onset_s": 0.01,
-      "audio_sha256": "a14c74943435091ef57e948ce7fd8d2903b116931fd6f7042f8fcf749272f429",
+      "audio_sha256": "56bea20b75916bbc569672494982fe99d89d5696f8606f8227cfb6d677f4b578",
       "available_seconds": 2.299999999999997,
       "fits": false
     },
@@ -640,7 +640,7 @@
       ],
       "duration": 4.963265,
       "audio_onset_s": 0.233,
-      "audio_sha256": "c291ca92dc0c0282c467b568cc901c489d482bdc3220eeece43bfc78fa840cbd",
+      "audio_sha256": "71cfca53118a1d99bb2fc8d46760d093f0ded6d9476a035dfcb408c036db5688",
       "available_seconds": 4.0,
       "fits": false
     }
